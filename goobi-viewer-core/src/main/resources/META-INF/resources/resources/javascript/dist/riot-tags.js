@@ -1014,11 +1014,12 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 
 	this.loadItem = function(itemConfig) {
 	    this.item = new Crowdsourcing.Item(itemConfig, 0);
-	    console.log("load item ", this.item);
+
 	    this.item.logEndpoint = this.item.id + "/" + this.opts.pi + "/log/";
 	    if(this.opts.currentuserid) {
 	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
 	    }
+	    this.item.nextItemUrl = this.opts.nextitemurl;
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
 		this.item.onImageRotated( () => this.update());
 		fetch(this.item.imageSource)
@@ -1617,7 +1618,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	this.showThumbs = false;
 
 	this.on("mount", function() {
-		console.log("mount image view ", this.opts.item);
+
 		$("#controls_" + opts.id + " .draw_overlay").on("click", function() {
 			this.drawing=true;
 		}.bind(this));
@@ -1645,6 +1646,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 
 		this.actionListener = new rxjs.Subject();
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
+		this.opts.item.statusMapUpdates.subscribe( statusMap => this.update());
 	})
 
 	this.getPosition = function() {
@@ -1655,7 +1657,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	this.handleImageControlAction = function(event) {
-		console.log("event", event);
+
 		switch(event.action) {
 			case "toggleThumbs":
 				this.showThumbs = event.value;
@@ -1678,12 +1680,13 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	this.getPageStatusMap = function() {
-		if(this.opts.item.pageStatisticMode && this.opts.item.pageStatusMap) {
+		console.log("getPageStatusMap ", this.opts.item.pageStatusMap)
+		if(this.opts.item.pageStatusMap) {
 			let map = new Map();
-			Object.keys(this.opts.item.pageStatusMap).forEach(key => {
-				console.log("set page status ", key , this.opts.item.pageStatusMap[key])
-				map.set(key-1, this.opts.item.pageStatusMap[key].toLowerCase());
-			})
+			for(let key of this.opts.item.pageStatusMap.keys()) {
+				map.set(key-1, this.opts.item.pageStatusMap.get(key).toLowerCase());
+			}
+			console.log("got PageStatusMap ", this.opts.item.pageStatusMap)
 			return map;
 		}
 	}.bind(this)
@@ -2960,7 +2963,7 @@ riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.
 this.thumbnails = [];
 
 this.on("mount", () => {
-	console.log("mount ", this.opts);
+
 	this.type = opts.type ? opts.type : "items";
 	this.language = opts.language ? opts.language : "en";
 	this.imageSize = opts.imagesize;
@@ -2976,13 +2979,12 @@ this.on("mount", () => {
 });
 
 this.on("updated", () => {
-	console.log("updated", this.opts, this.refs);
+
 	let activeThumb = this.refs.thumb[this.opts.index];
 	activeThumb.scrollIntoView({block: "end", behavior: "smooth"});
 });
 
 this.loadThumbnails = function(source, type) {
-	console.log("Loading thumbnails from ", source);
 
 	switch(type) {
 		case "structures":
@@ -3004,13 +3006,13 @@ this.loadThumbnails = function(source, type) {
 }.bind(this)
 
 this.addThumbnail = function(item) {
-	console.log("add thumbnail from ", item);
+
 	this.thumbnails.push(item);
 	this.update();
 }.bind(this)
 
 this.createThumbnails = function(items) {
-	console.log("creating thumbnails from ", items)
+
 	this.thumbnails = items;
 	this.update();
 }.bind(this)

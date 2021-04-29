@@ -140,6 +140,7 @@ public class CampaignItemResource {
         CampaignItem item = new CampaignItem();
         URI manifestURI = new ManifestBuilder(urls).getManifestURI(pi);
         item.setSource(manifestURI);
+        item.setRecordIdentifier(pi);
         item.setCampaign(campaign);
         item.setPageStatisticMode(StatisticMode.PAGE.equals(campaign.getStatisticMode()));
         if (item.isPageStatisticMode() && campaign.getStatistics().get(pi) != null) {

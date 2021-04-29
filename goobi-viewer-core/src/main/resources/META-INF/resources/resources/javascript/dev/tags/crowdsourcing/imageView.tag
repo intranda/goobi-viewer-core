@@ -36,7 +36,7 @@
 	this.showThumbs = false;
 	
 	this.on("mount", function() {
-		console.log("mount image view ", this.opts.item);
+		//console.log("mount image view ", this.opts.item);
 		$("#controls_" + opts.id + " .draw_overlay").on("click", function() {
 			this.drawing=true; 
 		}.bind(this));
@@ -64,6 +64,7 @@
 		
 		this.actionListener = new rxjs.Subject();
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
+		this.opts.item.statusMapUpdates.subscribe( statusMap => this.update());
 	})
 	
 	
@@ -76,7 +77,7 @@
 	
 	
 	handleImageControlAction(event) {
-		console.log("event", event);
+		//console.log("event", event);
 		switch(event.action) {
 			case "toggleThumbs":
 				this.showThumbs = event.value;
@@ -99,12 +100,13 @@
 	}
 	
 	getPageStatusMap() {
-		if(this.opts.item.pageStatisticMode && this.opts.item.pageStatusMap) {
+		console.log("getPageStatusMap ", this.opts.item.pageStatusMap)
+		if(this.opts.item.pageStatusMap) {
 			let map = new Map();
-			Object.keys(this.opts.item.pageStatusMap).forEach(key => {
-				console.log("set page status ", key , this.opts.item.pageStatusMap[key])
-				map.set(key-1, this.opts.item.pageStatusMap[key].toLowerCase());
-			})
+			for(let key of this.opts.item.pageStatusMap.keys()) {
+				map.set(key-1, this.opts.item.pageStatusMap.get(key).toLowerCase());				
+			}
+			console.log("got PageStatusMap ", this.opts.item.pageStatusMap)
 			return map;
 		}
 	}

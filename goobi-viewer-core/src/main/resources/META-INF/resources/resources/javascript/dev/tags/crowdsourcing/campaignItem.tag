@@ -70,11 +70,12 @@
 
 	loadItem(itemConfig) {
 	    this.item = new Crowdsourcing.Item(itemConfig, 0);
-	    console.log("load item ", this.item);
+	    //console.log("load item ", this.item);
 	    this.item.logEndpoint = this.item.id + "/" + this.opts.pi + "/log/";
 	    if(this.opts.currentuserid) {
 	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
 	    }
+	    this.item.nextItemUrl = this.opts.nextitemurl;
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
 		this.item.onImageRotated( () => this.update());
 		fetch(this.item.imageSource)

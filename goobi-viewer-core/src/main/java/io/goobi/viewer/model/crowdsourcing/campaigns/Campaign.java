@@ -921,7 +921,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @return the id
      */
-    @JsonIgnore
     public Long getId() {
         return id;
     }
@@ -952,7 +951,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @return a {@link java.net.URI} object.
      */
-    @JsonProperty("id")
+    @JsonProperty("url")
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }

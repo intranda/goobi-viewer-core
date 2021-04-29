@@ -41,7 +41,9 @@ var Crowdsourcing = ( function(crowdsourcing) {
             console.log( '##############################' );
         }
         
-        this.id = item.campaign.id;
+        this.id = item.campaign.url;
+        this.campaignId = item.campaign.id;
+        this.recordIdentifier = item.recordIdentifier;
         this.reviewMode = false;
         this.showLog = item.campaign.showLog;
         if(this.showLog) {
@@ -53,7 +55,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.imageSource = item.source;
         this.metadata = item.metadata;
         this.pageStatisticMode = item.pageStatisticMode;
-        this.pageStatusMap = item.pageStatusMap;
+        //maps page numbers (1-based!) to one of the following status: LOCKED, REVIEW, FINISHED
+        this.pageStatusMap = viewerJS.parseMap(item.pageStatusMap);
         this.reviewActive = item.campaign.reviewMode != "NO_REVIEW";
         this.currentUser = {};
         this.imageOpenEvents = new rxjs.Subject();
@@ -61,6 +64,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.imageRotationEvents = new rxjs.Subject();
         this.annotationRelaodEvents = new rxjs.Subject();
         this.itemInitializedSubject = new rxjs.Subject();
+        this.statusMapUpdates = new rxjs.Subject();
 		this.showThumbs = false;
 
         let firstAreaQuestion = this.questions.find(q => q.isRegionTarget());
@@ -74,8 +78,62 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.Item.prototype.initWebSocket = function() {
  		this.socket = new viewerJS.WebSocket(window.location.host, window.currentPath, viewerJS.WebSocket.PATH_CAMPAIGN_SOCKET);
+    	this.socket.onMessage.subscribe((event) => {
+    		console.log("received message ", event.data);
+    		try {
+    			let locks = JSON.parse(event.data);
+    			this.handleLocks(locks);
+			} catch(error) {
+				console.warn("Error parsing socket response ", event.data, error);
+			}    		
+    		
+    	});
+    	this.onImageOpen((image) => {
+    		console.log("Call websocket on image open " + this.currentCanvasIndex);
+    		let message = {
+    			campaign : this.campaignId,
+    			record : this.recordIdentifier,
+    			page : this.currentCanvasIndex + 1
+    		}
+    		this.socket.sendMessage(JSON.stringify(message));
+    	});
     }
     
+    crowdsourcing.Item.prototype.handleLocks = function(locks) {
+    	let lockMap = new Map();
+    	Object.keys(locks).forEach( (key) => {
+    		lockMap.set(parseInt(key), locks[key]);
+    	});
+    	
+    	
+    	//check if all pages are locked
+    	if(lockMap.size == this.canvases.length) {
+    	console.log("load next item");
+    		window.location.href = this.nextitemurl;
+    		return;
+    	}
+    	
+    	//check if current page is locked
+    	let currentPageNo = this.currentCanvasIndex + 1;
+    	if(lockMap.get(currentPageNo)) {
+    		console.log("load next image " + lockMap.get(currentPageNo) + " / " + currentPageNo);
+    		if(this.currentCanvasIndex == this.canvases.length - 1) {
+    			this.loadImage(this.currentCanvasIndex - 1);
+    		} else {
+    			this.loadImage(this.currentCanvasIndex + 1);
+    		}
+    		return;
+    	}
+    	
+    	//mark locked pages
+    	this.pageStatusMap = new Map();
+    	for(let key of lockMap.keys()) {    	
+    		this.pageStatusMap.set(key, lockMap.get(key));
+    	}
+    	console.log("notify status map update ", this.pageStatusMap);
+    	this.statusMapUpdates.next(this.pageStatusMap);
+    }
+
 
     crowdsourcing.Item.prototype.setCurrentUser = function(id, name, avatar) {
         this.currentUser.userId = id;
@@ -307,8 +365,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
     crowdsourcing.Item.prototype.isReviewMode = function() {
         if (this.pageStatisticMode) {
-            console.log('statistic mode index ' + (this.currentCanvasIndex+1) + ': '  + (this.pageStatusMap['' + (this.currentCanvasIndex+1)] == 'REVIEW'))
-            return this.pageStatusMap['' + (this.currentCanvasIndex+1)] == 'REVIEW';
+            //console.log('statistic mode index ' + (this.currentCanvasIndex+1) + ': '  + (this.pageStatusMap['' + (this.currentCanvasIndex+1)] == 'REVIEW'))
+            return this.pageStatusMap.get(this.currentCanvasIndex+1) == 'REVIEW';
         } else {
             return this.reviewMode;
         }

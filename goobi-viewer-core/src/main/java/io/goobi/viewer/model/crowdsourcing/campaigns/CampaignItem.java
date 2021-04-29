@@ -42,6 +42,7 @@ import io.goobi.viewer.model.log.LogMessage;
 public class CampaignItem {
 
     private URI source;
+    private String recordIdentifier;
     private Campaign campaign;
     private CampaignRecordStatus recordStatus = null;
     private List<LogMessage> log = null;
@@ -222,5 +223,19 @@ public class CampaignItem {
      */
     public void setPageStatusMap(Map<Integer, String> pageStatusMap) {
         this.pageStatusMap = pageStatusMap;
+    }
+    
+    /**
+     * @return the recordIdentifier
+     */
+    public String getRecordIdentifier() {
+        return recordIdentifier;
+    }
+    
+    /**
+     * @param recordIdentifier the recordIdentifier to set
+     */
+    public void setRecordIdentifier(String recordIdentifier) {
+        this.recordIdentifier = recordIdentifier;
     }
 }

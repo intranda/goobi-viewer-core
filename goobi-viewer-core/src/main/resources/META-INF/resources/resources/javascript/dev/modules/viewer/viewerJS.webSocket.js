@@ -1,7 +1,7 @@
 
  var viewerJS = ( function( viewer ) {
     
-    var _debug = false;
+    var _debug = true;
     
     if(!rxjs) {
         throw "Missing dependencies for WebSocket";
@@ -37,6 +37,7 @@
 
     //prototype methods
     viewer.WebSocket.prototype.sendMessage = function(message) {
+        if(_debug)console.log("send ", message);
         this.socket.send(message);
     };
     viewer.WebSocket.prototype.close = function(reason, statusCode) {
