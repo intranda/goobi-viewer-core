@@ -20,7 +20,7 @@
 		<thumbnails class="image_thumbnails" style="display: {this.showThumbs ? 'flex' : 'none'}" 
 			source="{{items: this.opts.item.canvases}}"  
 			actionlistener="{this.actionListener}" 
-			imagesize=",120"
+			imagesize=",200"
 			index="{this.opts.item.currentCanvasIndex}" 
 			statusmap="{getPageStatusMap()}"/>
 	

@@ -195,6 +195,8 @@ public class CampaignEndpoint {
         
         pageLocks.entrySet().stream()
         .filter(entry -> !entry.getKey().equals(httpSessionId))
+        .filter(entry -> entry.getValue().campaignId == campaignId)
+        .filter(entry -> entry.getValue().recordIdentifier.equals(recordIdentifier))
         .map(Entry::getValue)
         .forEach(lock -> json.put(Integer.toString(lock.pageNumber), "LOCKED"));
         return json.toString();
