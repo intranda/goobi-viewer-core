@@ -33,6 +33,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.goobi.viewer.exceptions.DAOException;
+
 
 /**
  * @author florian
@@ -77,11 +79,12 @@ public class CampaignEndpointTest {
      }
     
     @Test
-    public void test() throws IOException, EncodeException {
+    public void test() throws IOException, EncodeException, DAOException {
         endpoint1.onMessage(createMessage(1l, "PPN1234", 0));
         endpoint2.onMessage(createMessage(1l, "PPN1234", 2));
         
         Mockito.verify(remote1).sendText("{\"2\":\"LOCKED\"}");
+        Mockito.verify(remote2).sendText("{\"0\":\"LOCKED\"}");
 
     }
 
@@ -95,7 +98,7 @@ public class CampaignEndpointTest {
         JSONObject json = new JSONObject();
         json.put("campaign", campaign);
         json.put("record", record);
-        json.put("index", index);
+        json.put("page", index);
         return json.toString();
     }
 
