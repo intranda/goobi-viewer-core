@@ -7,17 +7,17 @@
 				<i class="image-thumbs"></i>
 			</a>
 		</div>
-		<div if="{this.opts.image && !this.opts.showthumbs}" class="image-controls__action rotate-left">
+		<div if="{this.opts.image}" class="image-controls__action rotate-left">
 			<a onclick="{rotateLeft}">
 				<i class="image-rotate_left"></i>
 			</a>
 		</div>
-		<div if="{this.opts.image && !this.opts.showthumbs}" class="image-controls__action rotate-right">
+		<div if="{this.opts.image}" class="image-controls__action rotate-right">
 			<a onclick="{rotateRight}">
 				<i class="image-rotate_right"></i>
 			</a>
 		</div>
-        <div if="{this.opts.image && !this.opts.showthumbs}" class="image-controls__action zoom-slider-wrapper">
+        <div if="{this.opts.image}" class="image-controls__action zoom-slider-wrapper">
         	<input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"/>
         </div>
 	</div>

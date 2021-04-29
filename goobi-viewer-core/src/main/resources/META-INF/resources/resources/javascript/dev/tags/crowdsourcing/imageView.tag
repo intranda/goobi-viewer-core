@@ -11,9 +11,10 @@
 			<span class="error_message">{this.error.message}</span>
 		</span>
 		
-		<imageControls if="{this.image && !this.showThumbs}" 
+		<imageControls if="{this.image}" 
 			image="{this.image}" 
 			item="{this.opts.item}" 
+			style="display: {this.showThumbs ? 'none' : 'block'}"
 			actionlistener="{this.actionListener}" 
 			showthumbs="{this.showThumbs}"></imageControls>
 		
