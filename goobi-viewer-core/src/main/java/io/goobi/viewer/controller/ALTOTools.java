@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -266,7 +265,6 @@ public class ALTOTools {
                                         // with URI (skip if tag is already used so
                                         // that the tag link is not rendered for
                                         // every tagged word)
-                                        FacesContext context = FacesContext.getCurrentInstance();
                                         if (request != null) {
                                             String contextPath = request.getContextPath();
                                             strings.append("<span data-remotecontent=\"");

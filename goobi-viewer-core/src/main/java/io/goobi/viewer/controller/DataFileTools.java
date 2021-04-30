@@ -409,7 +409,7 @@ public class DataFileTools {
             } catch (PresentationException e) {
                 logger.error(e.getMessage());
             }
-            
+
         }
         if (altoFilePath != null) {
             // ALTO file
@@ -428,30 +428,39 @@ public class DataFileTools {
         return null;
     }
 
+    /**
+     * 
+     * @param altoFilePath
+     * @return
+     * @throws ContentNotFoundException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws FileNotFoundException
+     * @should throw ContentNotFoundException
+     */
     public static String loadAlto(String altoFilePath)
             throws ContentNotFoundException, IndexUnreachableException, PresentationException, FileNotFoundException {
         TextResourceBuilder builder = new TextResourceBuilder();
         if (altoFilePath != null) {
-            String filename = FileTools.getFilenameFromPathString(altoFilePath);
-            String pi = FileTools.getBottomFolderFromPathString(altoFilePath);
-            // ALTO file
-            try {
-                String alto = builder.getAltoDocument(pi, filename);
-                return alto;
-            } catch (ContentNotFoundException e) {
-                return DataManager.getInstance()
-                        .getRestApiManager()
-                        .getContentApiManager()
-                        .map(urls -> {
-                            return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build();
-                        })
-                        .map(url -> NetTools.callUrlGET(url))
-                        .map(array -> array[1])
-                        .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
-            }
+            return null;
         }
-
-        throw new ContentNotFoundException("ALTO file " + altoFilePath + " not found");
+        String filename = FileTools.getFilenameFromPathString(altoFilePath);
+        String pi = FileTools.getBottomFolderFromPathString(altoFilePath);
+        // ALTO file
+        try {
+            String alto = builder.getAltoDocument(pi, filename);
+            return alto;
+        } catch (ContentNotFoundException e) {
+            return DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
+                    .map(urls -> {
+                        return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build();
+                    })
+                    .map(url -> NetTools.callUrlGET(url))
+                    .map(array -> array[1])
+                    .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
+        }
     }
 
     /**

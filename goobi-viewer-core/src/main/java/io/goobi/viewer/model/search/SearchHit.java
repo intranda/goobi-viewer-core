@@ -455,7 +455,8 @@ public class SearchHit implements Comparable<SearchHit> {
 
         try {
             String fulltext = null;
-            if (BeanUtils.getRequest() != null && AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false)) {
+            if (BeanUtils.getRequest() != null
+                    && AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false)) {
                 fulltext = DataFileTools.loadTei((String) doc.getFieldValue(SolrConstants.PI), language);
             }
             if (fulltext != null) {
@@ -524,7 +525,6 @@ public class SearchHit implements Comparable<SearchHit> {
         }
         Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
         Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
-        List<SolrDocument> ugcDocs = null;
         for (int i = 0; i < number; ++i) {
             SolrDocument childDoc = childDocs.get(i + skip);
             String fulltext = null;
@@ -533,7 +533,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 logger.warn("Document {} has no DOCTYPE field, cannot add to child search hits.", childDoc.getFieldValue(SolrConstants.IDDOC));
                 continue;
             }
-            //                    logger.trace("Found child doc: {}", docType);
+            // logger.trace("Found child doc: {}", docType);
             boolean acccessDeniedType = false;
             switch (docType) {
                 case PAGE:

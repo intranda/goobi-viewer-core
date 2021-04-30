@@ -151,10 +151,16 @@ public class AccessConditionUtils {
             case "mp3":
             case "ogg":
             case "ogv":
-            case "txt":
-            case "xml":
                 useFileName = useFileName.replace("." + extension, "");
                 wildcard = true;
+                break;
+            case "txt":
+                useFileField = SolrConstants.FILENAME_FULLTEXT;
+                useFileName = fileName;
+                break;
+            case "xml":
+                useFileField = SolrConstants.FILENAME_ALTO;
+                useFileName = fileName;
                 break;
             case "":
                 wildcard = true;
@@ -196,7 +202,7 @@ public class AccessConditionUtils {
         }
 
         String[] query = generateAccessCheckQuery(identifier, fileName);
-        // logger.trace("query: {}", query[0]);
+        logger.trace("query: {}", query[0]);
         try {
             // Collect access conditions required by the page
             Map<String, Set<String>> requiredAccessConditions = new HashMap<>();
@@ -264,7 +270,6 @@ public class AccessConditionUtils {
                     user = userBean.getUser();
                 }
             }
-            Map<String, Boolean> ret = new HashMap<>(page.getAccessConditions().size());
             boolean access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), page.getAccessConditions(),
                     privilegeName, user, NetTools.getIpAddress(request), query);
             return access;
@@ -316,7 +321,6 @@ public class AccessConditionUtils {
         }
 
         try {
-            Set<String> requiredAccessConditions = new HashSet<>();
             SolrDocumentList results = DataManager.getInstance()
                     .getSearchIndex()
                     .search(query, 1, null, Collections.singletonList(SolrConstants.ACCESSCONDITION));
@@ -430,7 +434,7 @@ public class AccessConditionUtils {
                         }
                     }
 
-                    long start = System.nanoTime();
+                    //                    long start = System.nanoTime();
                     List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
                     for (SolrDocument doc : results) {
                         Set<String> requiredAccessConditions = new HashSet<>();
@@ -448,7 +452,7 @@ public class AccessConditionUtils {
                                     NetTools.getIpAddress(request), query));
                         }
                     }
-                    long end = System.nanoTime();
+                    //                    long end = System.nanoTime();
                 }
 
             } catch (PresentationException e) {
@@ -691,7 +695,7 @@ public class AccessConditionUtils {
     @SuppressWarnings("unchecked")
     public static boolean checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest request, String pi, String contentFileName,
             String privilegeType) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType);
+        logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType);
         if (privilegeType == null) {
             throw new IllegalArgumentException("privilegeType may not be null");
         }
@@ -719,7 +723,7 @@ public class AccessConditionUtils {
 
         String key = new StringBuilder(pi).append('_').append(contentFileName).toString();
         // pi already checked -> look in the session
-        // logger.debug("permissions key: " + key + ": " + permissions.get(key));
+        logger.debug("permissions key: " + key + ": " + permissions.get(key));
         if (permissions.containsKey(key)) {
             access = permissions.get(key);
             //            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName,
@@ -733,8 +737,7 @@ public class AccessConditionUtils {
                 permissions.put(newKey, pageAccess);
             }
             access = permissions.get(key) != null ? permissions.get(key) : false;
-            // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName,
-            // access);
+            logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName, access);
             if (request != null) {
                 request.getSession().setAttribute(attributeName, permissions);
             }
