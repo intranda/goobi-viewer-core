@@ -166,7 +166,7 @@ module.exports = function (grunt) {
                             "mirador/dist/mirador.min.js*" : "mirador/",
                             "swiper/swiper-bundle.min.js" : "swiper/",
                             "overhang/dist/overhang.min.js" : "overhang/",
-                            "sweetalert/dist/sweetalert.min.js" : "sweetalert/"
+                            "sweetalert2/dist/sweetalert2.min.js" : "sweetalert/"
                         },
                         css : {
                             "leaflet/dist/leaflet.css" : "leaflet/",
@@ -174,7 +174,8 @@ module.exports = function (grunt) {
                             "leaflet.markercluster/dist/MarkerCluster.css" : "leaflet/markercluster",
                             "swagger-ui-dist/swagger-ui.css" : "swagger/",
                             "swiper/swiper-bundle.min.css" :  "swiper/",
-                            "overhang/dist/overhang.min.css" : "overhang/"
+                            "overhang/dist/overhang.min.css" : "overhang/",
+                            "sweetalert2/dist/sweetalert2.min.css" : "sweetalert/"
                         }
                     }
                 },

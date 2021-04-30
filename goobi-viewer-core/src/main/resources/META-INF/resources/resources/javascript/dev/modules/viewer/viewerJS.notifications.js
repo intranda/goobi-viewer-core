@@ -32,7 +32,9 @@ var viewerJS = ( function( viewer ) {
 		success : (message) => viewer.notifications.notify(message, "success"),		
 		error : (message) => viewer.notifications.notify(message, "error"),
 		notify : (message, type) => {
-			if(sweetAlert) {
+			if(Swal) {
+				Swal.fire("", message, type);
+			} else if(sweetAlert) {
 				swal("", message, type);
 			} else if(jQuery().overhang) {
 				$("body").overhang({

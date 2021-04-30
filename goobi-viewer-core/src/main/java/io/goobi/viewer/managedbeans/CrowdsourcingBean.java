@@ -642,6 +642,13 @@ public class CrowdsourcingBean implements Serializable {
             setTargetIdentifier(pi);
         }
     }
+    
+    public void setNextIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
+        if (getTargetCampaign() != null) {
+            String pi = getTargetCampaign().getRandomizedTarget(CampaignRecordStatus.ANNOTATE, getTargetIdentifier());
+            setTargetIdentifier(pi);
+        }
+    }
 
     /**
      * Sets the {@link #targetIdentifier} to a random identifier/pi for the {@link #targetCampaign} which is eligible for reviewing
@@ -810,7 +817,7 @@ public class CrowdsourcingBean implements Serializable {
      *            reviewing, otherwise for annotating
      * @return The pretty url to either review or annotate a random work with the given {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
      */
-    public String getRandomItemUrl(Campaign campaign, CampaignRecordStatus status) {
+    public String getNextItemUrl(Campaign campaign, CampaignRecordStatus status) {
         String mappingId = CampaignRecordStatus.REVIEW.equals(status) ? "crowdCampaignReview1" : "crowdCampaignAnnotate1";
         URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById(mappingId).getPatternParser().getMappedURL(campaign.getId());
         logger.debug("Mapped URL {}", mappedUrl);

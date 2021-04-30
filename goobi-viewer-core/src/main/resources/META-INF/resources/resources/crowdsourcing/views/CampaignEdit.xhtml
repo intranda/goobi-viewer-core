@@ -29,7 +29,7 @@
                         campaign="#{crowdsourcingBean.targetCampaignId}"
                         pi="#{crowdsourcingBean.targetIdentifier}"
                         loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"
-                        nextitemurl="#{crowdsourcingBean.getRandomItemUrl(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetRecordStatus)}"
+                        nextitemurl="#{crowdsourcingBean.getNextItemUrl(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetRecordStatus)}"
                         itemstatus="#{crowdsourcingBean.targetRecordStatus}"
                         currentuserid="#{userBean.user.id}"
                         currentusername="#{userBean.user.displayName}"

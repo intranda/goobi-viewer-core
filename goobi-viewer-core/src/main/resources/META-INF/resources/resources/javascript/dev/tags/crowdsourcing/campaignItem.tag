@@ -78,7 +78,7 @@
 	    this.item.nextItemUrl = this.opts.nextitemurl;
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
 		this.item.onImageRotated( () => this.update());
-		fetch(this.item.imageSource)
+		return fetch(this.item.imageSource)
 		.then(response => this.handleServerResponse(response))
 		.then( imageSource => this.item.initViewer(imageSource))
 		.then( () => this.loading = false)
@@ -232,10 +232,10 @@
 		    } else if(error.message && error.message.then) {
 		    	error.message.then((err) => {
 			    	console.log("error ", err)
-			    	let errorMessage = "Error retrieving data from\n\n";
-			    	errorMessage += error.url + "\n\n";
+			    	let errorMessage = "Error retrieving data from <br/>";
+			    	errorMessage += error.url + "<br/><br/>";
 			    	if(err.message) {
-			    		errorMessage += "Message = " + err.message + "\n\n";
+			    		errorMessage += "Message = " + err.message + "<br/><br/>";
 			    	}
 			    	errorMessage += "Status = " + error.status;
 			    	viewerJS.notifications.error(errorMessage);

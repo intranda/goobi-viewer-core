@@ -1414,6 +1414,29 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         String pi = pis.get(random.nextInt(pis.size()));
         return pi;
     }
+    
+    /**
+     * Get the targetIdentifier to a random PI from the Solr query result list.
+     *
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
+     * @param piToIgnore a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public String getNextTarget(CampaignRecordStatus status, String currentPi) throws PresentationException, IndexUnreachableException {
+        User user = BeanUtils.getUserBean().getUser();
+        List<String> pis = getSolrQueryResults().stream()
+                .filter(result -> isRecordStatus(result, status))
+                .filter(result -> isEligibleToEdit(result, status, user))
+                .collect(Collectors.toList());
+        if (pis.isEmpty()) {
+            return "";
+        }
+        String pi = pis.get(random.nextInt(pis.size()));
+        return pi;
+    }
+
 
     /**
      * @return
