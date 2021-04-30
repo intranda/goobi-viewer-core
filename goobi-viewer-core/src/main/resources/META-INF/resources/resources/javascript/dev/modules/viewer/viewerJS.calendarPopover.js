@@ -125,16 +125,19 @@ var viewerJS = ( function( viewer ) {
         var workListLink = '';
         
         workList += '<ul class="list">';
-        
-        data.forEach(item => {
-            workListLink = config.appUrl + 'image/' + item.PI_TOPSTRUCT + '/' + item.THUMBPAGENO + '/' + item.LOGID + '/';
-            
-            workList += '<li>';
-            workList += '<a href="' + workListLink + '">';
-            workList += item.LABEL;
-            workList += '</a>';
-            workList += '</li>';
-        })
+        if(data && data.docs) {
+	        data.docs.forEach(item => {
+	            workListLink = config.appUrl + 'image/' + item.PI_TOPSTRUCT + '/' + item.THUMBPAGENO + '/' + item.LOGID + '/';
+	            
+	            workList += '<li>';
+	            workList += '<a href="' + workListLink + '">';
+	            workList += item.LABEL;
+	            workList += '</a>';
+	            workList += '</li>';
+	        })
+        } else {
+        	console.error("Unexpected json data: ", data);
+        }
         
         workList += '</ul>';
         
