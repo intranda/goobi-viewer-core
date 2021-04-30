@@ -132,7 +132,15 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
     crowdsourcing.Annotation.prototype.setColor = function(color) {
         this.color = color;
-    }
+    }  
+    
+    // USE ESCAPE TO GO BACK TO THUMBNAIL OVERVIEW
+    $(document).keydown(function(event){ 
+        var keyCode = (event.keyCode ? event.keyCode : event.which);   
+        if (keyCode == 27) {
+            $('.image-controls__action.thumbs').trigger('click');
+        }
+    });
     
     return crowdsourcing;
     
