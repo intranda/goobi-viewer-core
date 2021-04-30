@@ -48,7 +48,7 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.modules.IModule;
 
 /**
@@ -181,7 +181,7 @@ public class IndexerTools {
 
         // Export annotations (only those that belong to a campaign for which the statistic for this record is marked as finished)
         List<CampaignRecordStatistic> statistics =
-                DataManager.getInstance().getDao().getCampaignStatisticsForRecord(pi, CampaignRecordStatus.FINISHED);
+                DataManager.getInstance().getDao().getCampaignStatisticsForRecord(pi, CrowdsourcingStatus.FINISHED);
         if (!statistics.isEmpty()) {
             AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
             AnnotationsResourceBuilder annoBuilder = new AnnotationsResourceBuilder(urls, null);

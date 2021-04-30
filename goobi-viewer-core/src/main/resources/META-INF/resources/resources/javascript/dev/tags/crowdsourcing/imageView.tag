@@ -18,7 +18,7 @@
 			actionlistener="{this.actionListener}" 
 			showthumbs="{this.showThumbs}"></imageControls>
 		
-		<thumbnails class="image_thumbnails" style="display: {this.showThumbs ? 'grid' : 'none'}" 
+		<thumbnails class="image_thumbnails {this.opts.item.reviewMode ? 'review' : ''}" style="display: {this.showThumbs ? 'grid' : 'none'}" 
 			source="{{items: this.opts.item.canvases}}"  
 			actionlistener="{this.actionListener}" 
 			imagesize=",200"
@@ -34,9 +34,9 @@
 
 	<script>
 	
-	this.showThumbs = this.opts.item.canvases.length > 1;
 	
 	this.on("mount", function() {
+		this.showThumbs = this.isShowThumbs();
 		//console.log("mount image view ", this.opts.item);
 		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{		    
@@ -63,7 +63,6 @@
 		
 		this.actionListener = new rxjs.Subject();
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
-		this.opts.item.statusMapUpdates.subscribe( statusMap => this.update());
 	})
 	
 	
@@ -107,6 +106,21 @@
 			}
 			console.log("got PageStatusMap ", this.opts.item.pageStatusMap)
 			return map;
+		}
+	}
+	
+	isShowThumbs() {
+		if(this.opts.item.reviewMode) {
+			//cound canvases in REVIEW status
+			let count = 0;
+			for(let status of this.opts.item.pageStatusMap.values()) {
+				if(status == "REVIEW") {
+					count++;
+				}
+			}
+			return count > 1;
+		} else {			
+			return this.opts.item.canvases.length > 1
 		}
 	}
 	

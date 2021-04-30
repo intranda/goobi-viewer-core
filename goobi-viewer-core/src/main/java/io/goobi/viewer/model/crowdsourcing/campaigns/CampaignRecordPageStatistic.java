@@ -48,40 +48,6 @@ import io.goobi.viewer.model.security.user.User;
 @JsonInclude(Include.NON_EMPTY)
 public class CampaignRecordPageStatistic implements Serializable {
 
-    /**
-     * The status of a specific resource (iiif manifest or similar) within a campaign
-     * 
-     * @author florian
-     *
-     */
-    public enum CampaignRecordPageStatus {
-        /**
-         * Annotations may be made to this resource
-         */
-        ANNOTATE,
-        /**
-         * Annotations are ready to be reviewed
-         */
-        REVIEW,
-        /**
-         * All annotations for this resource are accepted by the review process. The resource is not available for further annotating within this
-         * campaign; all annotations for this resource and campaign may be visible in iiif manifests and the viewer
-         */
-        FINISHED;
-
-        public String getName() {
-            return this.name();
-        }
-
-        public static CampaignRecordPageStatus forName(String name) {
-            for (CampaignRecordPageStatus status : CampaignRecordPageStatus.values()) {
-                if (status.getName().equalsIgnoreCase(name)) {
-                    return status;
-                }
-            }
-            return null;
-        }
-    }
 
     private static final long serialVersionUID = -5449329014162706484L;
 
@@ -116,7 +82,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     @JsonIgnore
-    private CampaignRecordPageStatus status;
+    private CrowdsourcingStatus status;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cs_campaign_record_page_statistic_annotators", joinColumns = @JoinColumn(name = "campaign_record_page_statistic_id"),
@@ -312,7 +278,7 @@ public class CampaignRecordPageStatistic implements Serializable {
      *
      * @return the status
      */
-    public CampaignRecordPageStatus getStatus() {
+    public CrowdsourcingStatus getStatus() {
         return status;
     }
 
@@ -323,7 +289,7 @@ public class CampaignRecordPageStatistic implements Serializable {
      *
      * @param status the status to set
      */
-    public void setStatus(CampaignRecordPageStatus status) {
+    public void setStatus(CrowdsourcingStatus status) {
         this.status = status;
     }
 

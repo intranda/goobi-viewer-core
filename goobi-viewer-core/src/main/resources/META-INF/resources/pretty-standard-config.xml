@@ -1082,11 +1082,13 @@
         <pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/annotate/#{pi:crowdsourcingBean.targetIdentifierForUrl}/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{crowdsourcingBean.setTargetStatus('ANNOTATE')}</action>
     </url-mapping>
     <url-mapping id="crowdCampaignAnnotate3">
 		<pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/annotate/#{pi:crowdsourcingBean.targetIdentifierForUrl}/#{page:crowdsourcingBean.targetPage}/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{crowdsourcingBean.setTargetStatus('ANNOTATE')}</action>
 	</url-mapping>
 	<url-mapping id="crowdCampaignReview1">
 		<pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/review/"/>
@@ -1099,11 +1101,13 @@
         <pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/review/#{pi:crowdsourcingBean.targetIdentifierForUrl}/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{crowdsourcingBean.setTargetStatus('REVIEW')}</action>
     </url-mapping>
     <url-mapping id="crowdCampaignReview3">
 		<pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/review/#{pi:crowdsourcingBean.targetIdentifierForUrl}/#{page:crowdsourcingBean.targetPage}/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{crowdsourcingBean.setTargetStatus('REVIEW')}</action>
 	</url-mapping>
     <!-- SITELINKS -->
     <url-mapping id="sitelinks">

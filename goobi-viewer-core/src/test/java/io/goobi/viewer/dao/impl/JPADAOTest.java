@@ -65,7 +65,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
 import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
@@ -2373,12 +2373,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getCampaignStatisticsForRecord(String,CampaignRecordStatus)
+     * @see JPADAO#getCampaignStatisticsForRecord(String,CrowdsourcingStatus)
      * @verifies return correct rows
      */
     @Test
     public void getCampaignStatisticsForRecord_shouldReturnCorrectRows() throws Exception {
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", CampaignRecordStatus.FINISHED).size());
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", CrowdsourcingStatus.FINISHED).size());
     }
 
     /**

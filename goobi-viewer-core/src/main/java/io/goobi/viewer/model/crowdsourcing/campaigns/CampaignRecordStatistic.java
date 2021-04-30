@@ -53,40 +53,6 @@ import io.goobi.viewer.model.security.user.User;
 @JsonInclude(Include.NON_EMPTY)
 public class CampaignRecordStatistic implements Serializable {
 
-    /**
-     * The status of a specific resource (iiif manifest or similar) within a campaign
-     * 
-     * @author florian
-     *
-     */
-    public enum CampaignRecordStatus {
-        /**
-         * Annotations may be made to this resource
-         */
-        ANNOTATE,
-        /**
-         * Annotations are ready to be reviewed
-         */
-        REVIEW,
-        /**
-         * All annotations for this resource are accepted by the review process. The resource is not available for further annotating within this
-         * campaign; all annotations for this resource and campaign may be visible in iiif manifests and the viewer
-         */
-        FINISHED;
-
-        public String getName() {
-            return this.name();
-        }
-
-        public static CampaignRecordStatus forName(String name) {
-            for (CampaignRecordStatus status : CampaignRecordStatus.values()) {
-                if (status.getName().equalsIgnoreCase(name)) {
-                    return status;
-                }
-            }
-            return null;
-        }
-    }
 
     private static final long serialVersionUID = 8902904205183851565L;
 
@@ -114,7 +80,7 @@ public class CampaignRecordStatistic implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     @JsonIgnore
-    private CampaignRecordStatus status;
+    private CrowdsourcingStatus status;
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
     @MapKeyColumn(name = "pi_page_key", insertable = false, updatable = false)
@@ -301,7 +267,7 @@ public class CampaignRecordStatistic implements Serializable {
      *
      * @return the status
      */
-    public CampaignRecordStatus getStatus() {
+    public CrowdsourcingStatus getStatus() {
         return status;
     }
 
@@ -312,7 +278,7 @@ public class CampaignRecordStatistic implements Serializable {
      *
      * @param status the status to set
      */
-    public void setStatus(CampaignRecordStatus status) {
+    public void setStatus(CrowdsourcingStatus status) {
         this.status = status;
     }
 
@@ -383,6 +349,24 @@ public class CampaignRecordStatistic implements Serializable {
     public void addReviewer(User user) {
         if (user != null && !getReviewers().contains(user)) {
             getReviewers().add(user);
+        }
+    }
+    
+    
+    /**
+     * Check both record status and all page status to check if any matches the given status
+     * 
+     * @param status
+     * @return false if status is null, otherwise true exactly if {@link #getStatus()} equals status or if any 
+     * {@link CampaignRecordPageStatistic#getStatus()} of {@link #pageStatistics} returns true 
+     */
+    public boolean containsStatus(CrowdsourcingStatus status) {
+        if(status == null) {
+            return false;
+        } else if(status.equals(getStatus())) {
+            return true;
+        } else {
+            return this.pageStatistics.values().stream().anyMatch(pageStatistic -> status.equals(pageStatistic.getStatus()));
         }
     }
 }

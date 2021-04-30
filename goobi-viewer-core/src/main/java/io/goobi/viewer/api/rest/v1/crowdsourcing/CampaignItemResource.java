@@ -23,13 +23,11 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -66,8 +64,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic.CampaignRecordPageStatus;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.security.user.User;
@@ -182,7 +179,7 @@ public class CampaignItemResource {
     }
 
     /**
-     * Sets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} for the given campaign and work and
+     * Sets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} for the given campaign and work and
      * records the {@link io.goobi.viewer.model.security.user.User} who made the change
      *
      * @param item a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} object.
@@ -199,7 +196,7 @@ public class CampaignItemResource {
         if (item == null) {
             throw new IllegalArgumentException("item may not be null");
         }
-        CampaignRecordStatus status = item.getRecordStatus();
+        CrowdsourcingStatus status = item.getRecordStatus();
         if (status == null) {
             logger.error("Status not found: {}", item.getRecordStatus());
             return;
@@ -221,7 +218,7 @@ public class CampaignItemResource {
                 campaign.setRecordStatus(pi, status, Optional.ofNullable(user));
                 break;
             case PAGE:
-                CampaignRecordPageStatus pageStatus = CampaignRecordPageStatus.forName(status.getName());
+                CrowdsourcingStatus pageStatus = CrowdsourcingStatus.forName(status.getName());
                 campaign.setRecordPageStatus(pi, page, pageStatus, Optional.ofNullable(user));
                 break;
             default:
@@ -232,7 +229,7 @@ public class CampaignItemResource {
 
         DataManager.getInstance().getDao().updateCampaign(campaign);
         // Re-index finished record to have its annotations indexed
-        if (status.equals(CampaignRecordStatus.FINISHED)) {
+        if (status.equals(CrowdsourcingStatus.FINISHED)) {
             IndexerTools.triggerReIndexRecord(pi);
         }
     }
