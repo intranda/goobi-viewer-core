@@ -1020,6 +1020,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
 	    }
 	    this.item.nextItemUrl = this.opts.nextitemurl;
+	    console.log("next item url = " + this.item.nextItemUrl);
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
 		this.item.onImageRotated( () => this.update());
 		return fetch(this.item.imageSource)
@@ -1027,7 +1028,8 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 		.then( imageSource => this.item.initViewer(imageSource))
 		.then( () => this.loading = false)
 		.then( () => this.update())
-		.then( () => this.item.onImageOpen( () => this.update()));
+		.then( () => this.item.onImageOpen( () => this.update()))
+		.then( () => this.item.statusMapUpdates.subscribe( statusMap => this.update()))
 
 	}.bind(this)
 
@@ -1613,11 +1615,11 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" item="{this.opts.item}" riot-style="display: {this.showThumbs ? \'none\' : \'block\'}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}"></imageControls><thumbnails class="image_thumbnails" riot-style="display: {this.showThumbs ? \'grid\' : \'none\'}" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails><div class="image_container" riot-style="display: {this.showThumbs ? \'none\' : \'block\'}"><div id="image_{opts.id}" class="image"></div></div><canvaspaginator if="{!this.showThumbs}" items="{this.opts.item.canvases}" index="{this.opts.item.currentCanvasIndex}" actionlistener="{this.actionListener}"></canvasPaginator></div>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" item="{this.opts.item}" riot-style="display: {this.showThumbs ? \'none\' : \'block\'}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}"></imageControls><thumbnails class="image_thumbnails {this.opts.item.reviewMode ? \'review\' : \'\'}" riot-style="display: {this.showThumbs ? \'grid\' : \'none\'}" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails><div class="image_container" riot-style="display: {this.showThumbs ? \'none\' : \'block\'}"><div id="image_{opts.id}" class="image"></div></div><canvaspaginator if="{!this.showThumbs}" items="{this.opts.item.canvases}" index="{this.opts.item.currentCanvasIndex}" actionlistener="{this.actionListener}"></canvasPaginator></div>', '', '', function(opts) {
 
-	this.showThumbs = this.opts.item.canvases.length > 1;
 
 	this.on("mount", function() {
+		this.showThumbs = this.isShowThumbs();
 
 		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{
@@ -1644,7 +1646,6 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 
 		this.actionListener = new rxjs.Subject();
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
-		this.opts.item.statusMapUpdates.subscribe( statusMap => this.update());
 	})
 
 	this.getPosition = function() {
@@ -1686,6 +1687,21 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 			}
 			console.log("got PageStatusMap ", this.opts.item.pageStatusMap)
 			return map;
+		}
+	}.bind(this)
+
+	this.isShowThumbs = function() {
+		if(this.opts.item.reviewMode) {
+
+			let count = 0;
+			for(let status of this.opts.item.pageStatusMap.values()) {
+				if(status == "REVIEW") {
+					count++;
+				}
+			}
+			return count > 1;
+		} else {
+			return this.opts.item.canvases.length > 1
 		}
 	}.bind(this)
 

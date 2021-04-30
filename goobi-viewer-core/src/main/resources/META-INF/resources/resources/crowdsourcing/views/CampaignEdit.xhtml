@@ -29,8 +29,8 @@
                         campaign="#{crowdsourcingBean.targetCampaignId}"
                         pi="#{crowdsourcingBean.targetIdentifier}"
                         loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"
-                        nextitemurl="#{crowdsourcingBean.getNextItemUrl(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetRecordStatus)}"
-                        itemstatus="#{crowdsourcingBean.targetRecordStatus}"
+                        nextitemurl="#{crowdsourcingBean.getNextItemUrl(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetStatus)}"
+                        itemstatus="#{crowdsourcingBean.targetStatus}"
                         currentuserid="#{userBean.user.id}"
                         currentusername="#{userBean.user.displayName}"
                         currentuseravatar="#{userBean.user.avatarUrl}"/>

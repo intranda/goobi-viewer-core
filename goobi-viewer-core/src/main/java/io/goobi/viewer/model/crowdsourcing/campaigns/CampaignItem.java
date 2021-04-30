@@ -28,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.log.LogMessage;
 
@@ -44,7 +43,7 @@ public class CampaignItem {
     private URI source;
     private String recordIdentifier;
     private Campaign campaign;
-    private CampaignRecordStatus recordStatus = null;
+    private CrowdsourcingStatus recordStatus = null;
     private List<LogMessage> log = null;
     private Map<String, List<String>> metadata = new LinkedHashMap<>();
     private boolean pageStatisticMode = false;
@@ -105,11 +104,11 @@ public class CampaignItem {
     }
 
     /**
-     * The {@link CampaignRecordStatus status} of the resource within the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
+     * The {@link CrowdsourcingStatus status} of the resource within the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
      *
      * @return the recordStatus
      */
-    public CampaignRecordStatus getRecordStatus() {
+    public CrowdsourcingStatus getRecordStatus() {
         return recordStatus;
     }
 
@@ -120,7 +119,7 @@ public class CampaignItem {
      *
      * @param recordStatus the recordStatus to set
      */
-    public void setRecordStatus(CampaignRecordStatus recordStatus) {
+    public void setRecordStatus(CrowdsourcingStatus recordStatus) {
         this.recordStatus = recordStatus;
     }
 
@@ -130,10 +129,10 @@ public class CampaignItem {
      * </p>
      *
      * @return true exactly if {@link #getRecordStatus()} is
-     *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus.FINISHED FINISHED}
+     *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus.FINISHED FINISHED}
      */
     public boolean isFinished() {
-        return CampaignRecordStatus.FINISHED.equals(getRecordStatus());
+        return CrowdsourcingStatus.FINISHED.equals(getRecordStatus());
     }
 
     /**
@@ -142,10 +141,10 @@ public class CampaignItem {
      * </p>
      *
      * @return true exactly if {@link #getRecordStatus()} is
-     *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus.REVIEW REVIEW}
+     *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus.REVIEW REVIEW}
      */
     public boolean isInReview() {
-        return CampaignRecordStatus.REVIEW.equals(getRecordStatus());
+        return CrowdsourcingStatus.REVIEW.equals(getRecordStatus());
     }
 
     /**
