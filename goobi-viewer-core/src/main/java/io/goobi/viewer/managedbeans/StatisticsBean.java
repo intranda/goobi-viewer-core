@@ -287,7 +287,6 @@ public class StatisticsBean implements Serializable {
      * @return goobi-viewer-connector version
      */
     public String getConnectorVersion() {
-        String version;
         try {
             String json = NetTools.getWebContentGET(DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
             return JsonTools.shortFormatVersionString(json);
