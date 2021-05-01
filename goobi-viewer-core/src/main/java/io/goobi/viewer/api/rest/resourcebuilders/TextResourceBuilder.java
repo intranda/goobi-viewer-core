@@ -353,7 +353,6 @@ public class TextResourceBuilder {
 
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder(),
                 DataManager.getInstance().getConfiguration().getFulltextFolder(), fileName);
-        logger.error(file.toAbsolutePath().toString());
         if (file != null && Files.isRegularFile(file)) {
             try {
                 return FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
