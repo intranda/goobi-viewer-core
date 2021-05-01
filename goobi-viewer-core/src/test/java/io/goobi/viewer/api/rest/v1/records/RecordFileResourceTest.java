@@ -29,7 +29,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -103,6 +102,7 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
     @Test
     public void testGetPlaintext() throws JDOMException, IOException {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(PI, FILENAME + ".txt").build();
+        System.out.println(url);
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.TEXT_PLAIN)

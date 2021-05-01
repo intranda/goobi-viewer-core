@@ -125,24 +125,24 @@ public class AccessConditionUtils {
 
     /**
      * 
-     * @param fileName
      * @param identifier
-     * @return
+     * @param fileName
+     * @return Constructed query
      * @should use correct field name for AV files
      * @should use correct file name for text files
      * @should escape file name for wildcard search correctly
      * @should work correctly with urls
      */
-    static String[] generateAccessCheckQuery(String identifier, String fileName) {
+    static String generateAccessCheckQuery(String identifier, String fileName) {
         if (StringUtils.isEmpty(fileName)) {
-            return new String[2];
+            return null;
         }
 
-        String[] ret = new String[2];
         StringBuilder sbQuery = new StringBuilder();
         String useFileField = SolrConstants.FILENAME;
-        String useFileName = FileTools.getPathFromUrlString(fileName).getFileName().toString();
-        boolean wildcard = false;
+        String simpleFileName = FileTools.getPathFromUrlString(fileName).getFileName().toString();
+        String baseFileName = FilenameUtils.getBaseName(simpleFileName);
+        sbQuery.append('+').append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier);
         // Different media types have the file name in different fields
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         switch (extension) {
@@ -151,36 +151,43 @@ public class AccessConditionUtils {
             case "mp3":
             case "ogg":
             case "ogv":
-                useFileName = useFileName.replace("." + extension, "");
-                wildcard = true;
+                sbQuery.append(" +").append(useFileField).append(':');
+                // Escape whitespaces etc. for wildcard searches
+                sbQuery.append(ClientUtils.escapeQueryChars(baseFileName)).append(".*");
                 break;
             case "txt":
-                useFileField = SolrConstants.FILENAME_FULLTEXT;
-                useFileName = fileName;
+                sbQuery.append(" +(")
+                        .append(SolrConstants.FILENAME_FULLTEXT)
+                        .append(':')
+                        .append("\"")
+                        .append(fileName)
+                        .append("\" ")
+                        .append("FILENAME_PLAIN:\"")
+                        .append(simpleFileName)
+                        .append("\")");
                 break;
             case "xml":
-                useFileField = SolrConstants.FILENAME_ALTO;
-                useFileName = fileName;
+                sbQuery.append(" +(")
+                        .append(SolrConstants.FILENAME_ALTO)
+                        .append(':')
+                        .append("\"")
+                        .append(fileName)
+                        .append("\" ")
+                        .append("FILENAME_XML:\"")
+                        .append(simpleFileName)
+                        .append("\")");
                 break;
             case "":
-                wildcard = true;
-            default:
+                // Escape whitespaces etc. for wildcard searches
+                sbQuery.append(" +").append(useFileField).append(':').append(ClientUtils.escapeQueryChars(baseFileName)).append(".*");
                 break;
-        }
-        sbQuery.append('+').append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier).append(" +").append(useFileField).append(':');
-        if (wildcard) {
-            // Escape whitespaces etc. for wildcard searches
-            useFileName = ClientUtils.escapeQueryChars(useFileName) + ".*";
-            sbQuery.append(useFileName);
-        } else {
-            sbQuery.append('"').append(useFileName).append('"');
+            default:
+                sbQuery.append(" +").append(useFileField).append(":\"").append(simpleFileName).append('"');
+                break;
         }
 
         // logger.trace(sbQuery.toString());
-        ret[0] = sbQuery.toString();
-        ret[1] = useFileField;
-
-        return ret;
+        return sbQuery.toString();
     }
 
     /**
@@ -201,15 +208,15 @@ public class AccessConditionUtils {
             return Collections.emptyMap();
         }
 
-        String[] query = generateAccessCheckQuery(identifier, fileName);
-        logger.trace("query: {}", query[0]);
+        String query = generateAccessCheckQuery(identifier, fileName);
+        logger.trace("query: {}", query);
         try {
             // Collect access conditions required by the page
             Map<String, Set<String>> requiredAccessConditions = new HashMap<>();
             SolrDocumentList results = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(query[0], "*".equals(fileName) ? SolrSearchIndex.MAX_HITS : 1, null,
-                            Arrays.asList(new String[] { query[1], SolrConstants.ACCESSCONDITION }));
+                    .search(query, "*".equals(fileName) ? SolrSearchIndex.MAX_HITS : 1, null,
+                            Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
             if (results != null) {
                 for (SolrDocument doc : results) {
                     Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
@@ -235,7 +242,7 @@ public class AccessConditionUtils {
             for (String pageFileName : requiredAccessConditions.keySet()) {
                 Set<String> pageAccessConditions = requiredAccessConditions.get(pageFileName);
                 boolean access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
-                        privilegeName, user, NetTools.getIpAddress(request), query[0]);
+                        privilegeName, user, NetTools.getIpAddress(request), query);
                 ret.put(pageFileName, access);
             }
             return ret;
