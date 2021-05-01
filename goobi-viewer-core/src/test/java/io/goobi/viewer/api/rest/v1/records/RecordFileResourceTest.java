@@ -102,7 +102,6 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
     @Test
     public void testGetPlaintext() throws JDOMException, IOException {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(PI, FILENAME + ".txt").build();
-        System.out.println(url);
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.TEXT_PLAIN)

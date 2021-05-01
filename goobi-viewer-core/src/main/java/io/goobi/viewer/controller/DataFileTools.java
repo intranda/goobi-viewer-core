@@ -440,14 +440,15 @@ public class DataFileTools {
      */
     public static String loadAlto(String altoFilePath)
             throws ContentNotFoundException, IndexUnreachableException, PresentationException, FileNotFoundException {
-        TextResourceBuilder builder = new TextResourceBuilder();
-        if (altoFilePath != null) {
+        if (altoFilePath == null) {
             return null;
         }
+
         String filename = FileTools.getFilenameFromPathString(altoFilePath);
         String pi = FileTools.getBottomFolderFromPathString(altoFilePath);
         // ALTO file
         try {
+            TextResourceBuilder builder = new TextResourceBuilder();
             String alto = builder.getAltoDocument(pi, filename);
             return alto;
         } catch (ContentNotFoundException e) {
