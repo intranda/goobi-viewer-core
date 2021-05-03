@@ -14,17 +14,22 @@ For ambigious sources, the additional opts.type property determines how the sour
 -->
 
 <thumbnails>
-
-	<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? 'selected' : ''} {getPageStatus(index)}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}">
-		<a class="thumbnails-image-link" href="{getLink(canvas)}">
-			<img class="thumbnails-image" alt="{getValue(canvas.label)}" src="{getImage(canvas)}" loading="lazy" />
-		<div class="thumbnails-image-overlay">
-			<div class="thumbnails-label">{getValue(canvas.label)}</div>
-		</div>
-		</a>
+	<div class="thumbnails-filters">
+		<button class="thumbnails-filter-annotated btn btn--clean"></button>
+		<button class="thumbnails-filter-finished btn btn--clean"></button>
+		<button class="thumbnails-filter-unfinished btn btn--clean"></button>
+		<button class="thumbnails-filter-reset btn btn--clean"></button>
 	</div>
-
-
+	<div class="image_thumbnails">
+		<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? 'selected' : ''} {getPageStatus(index)}" each="{canvas, index in thumbnails}">
+			<a class="thumbnails-image-link" href="{getLink(canvas)}"  onclick="{handleClickOnImage}">
+				<img class="thumbnails-image" alt="{getValue(canvas.label)}" src="{getImage(canvas)}" loading="lazy" />
+			<div class="thumbnails-image-overlay">
+				<div class="thumbnails-label">{getValue(canvas.label)}</div>
+			</div>
+			</a>
+		</div>
+	</div>
 
 <script>
 
@@ -196,6 +201,30 @@ getPageStatus(index) {
 	}
 }
 
+// FILTERING
+$( document ).ready(function() {
+	$('.thumbnails-filter-unfinished').click(function() {
+		$('.thumbnails-image-wrapper').show();
+		$('.thumbnails-image-wrapper.review').hide();
+		$('.thumbnails-image-wrapper.annotate').hide();
+		
+	});
+	
+	$('.thumbnails-filter-finished').click(function() {
+		$('.thumbnails-image-wrapper').hide();
+		$('.thumbnails-image-wrapper.review').show();
+	});
+	
+	$('.thumbnails-filter-reset').click(function() {
+		$('.thumbnails-image-wrapper').show();
+	});
+	
+	$('.thumbnails-filter-annotated').click(function() {
+		$('.thumbnails-image-wrapper').hide();
+		$('.thumbnails-image-wrapper.annotate').show();
+	});
+
+});
 </script>
 
 </thumbnails>

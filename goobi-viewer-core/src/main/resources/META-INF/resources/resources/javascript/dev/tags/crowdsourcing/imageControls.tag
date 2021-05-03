@@ -56,6 +56,16 @@
     		});
     	}
     }
+    
+    // TOOLTIP FOR BACK TO OVERVIEW BUTTON
+	$( document ).ready(function() {
+	    $('.image-controls__action.thumbs').tooltip({
+	        placement: 'top',
+	      title: 'Back to thumbnail overview',
+	      trigger: 'hover'
+	    });
+	});
+    
 </script> 
 
 </imageControls>

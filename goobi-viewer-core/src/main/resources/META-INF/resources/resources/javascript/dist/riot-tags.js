@@ -1607,6 +1607,15 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
     		});
     	}
     }.bind(this)
+
+	$( document ).ready(function() {
+	    $('.image-controls__action.thumbs').tooltip({
+	        placement: 'top',
+	      title: 'Back to thumbnail overview',
+	      trigger: 'hover'
+	    });
+	});
+
 });
 /**
  * Takes a IIIF canvas object in opts.source. 
@@ -1615,7 +1624,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" item="{this.opts.item}" riot-style="display: {this.showThumbs ? \'none\' : \'block\'}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}"></imageControls><thumbnails class="image_thumbnails {this.opts.item.reviewMode ? \'review\' : \'\'}" riot-style="display: {this.showThumbs ? \'grid\' : \'none\'}" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails><div class="image_container" riot-style="display: {this.showThumbs ? \'none\' : \'block\'}"><div id="image_{opts.id}" class="image"></div></div><canvaspaginator if="{!this.showThumbs}" items="{this.opts.item.canvases}" index="{this.opts.item.currentCanvasIndex}" actionlistener="{this.actionListener}"></canvasPaginator></div>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" item="{this.opts.item}" riot-style="display: {this.showThumbs ? \'none\' : \'block\'}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}"></imageControls><thumbnails class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'}" riot-style="display: {this.showThumbs ? \'block\' : \'none\'}" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails><div class="image_container" riot-style="display: {this.showThumbs ? \'none\' : \'block\'}"><div id="image_{opts.id}" class="image"></div></div></div>', '', '', function(opts) {
 
 
 	this.on("mount", function() {
@@ -1729,6 +1738,69 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}
 
 	const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
+
+	$( document ).ready(function() {
+	    $('.thumbnails-image-wrapper.review').tooltip({
+	        placement: 'top',
+	      title: 'This page was sent to review',
+	      trigger: 'hover'
+	    });
+
+	    $('.thumbnails-image-wrapper.annotate').tooltip({
+	        placement: 'top',
+	      title: 'There are already annotations for this page',
+	      trigger: 'hover'
+	    });
+
+	    function updateLockedTooltip() {
+	    	$('.thumbnails-image-wrapper.locked').tooltip('dispose');
+		    $('.thumbnails-image-wrapper.locked').tooltip({
+		        placement: 'top',
+		      title: 'Page is locked - other user is editing',
+		      trigger: 'hover'
+		    });
+
+		    $(".thumbnails-image-wrapper.locked").each(function() {
+				if ($(this).is(":hover")) {
+    		$(this).tooltip('show');
+			  }
+			})
+
+		    setTimeout(updateLockedTooltip, 4000);
+	    }
+	    updateLockedTooltip();
+
+	    $('.thumbnails-filter-unfinished').tooltip({
+	        placement: 'top',
+	      title: 'Show unfinished pages',
+	      trigger: 'hover'
+	    });
+
+	    $('.thumbnails-filter-finished').tooltip({
+	        placement: 'top',
+	      title: 'Show finished pages',
+	      trigger: 'hover'
+	    });
+
+	    $('.thumbnails-filter-reset').tooltip({
+	        placement: 'top',
+	      title: 'Show all pages',
+	      trigger: 'hover'
+	    });
+
+	    $('.thumbnails-filter-annotated').tooltip({
+	        placement: 'top',
+	      title: 'Show annotated pages',
+	      trigger: 'hover'
+	    });
+
+	    $('.thumbnails-filter-reset').addClass('-activeFilter');
+	    $('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').click(function() {
+	    	$('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').removeClass('-activeFilter');
+	    	$(this).addClass('-activeFilter');
+	    });
+
+	});
 
 });
 
@@ -2972,7 +3044,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
 });
 
 
-riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'} {getPageStatus(index)}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"><a class="thumbnails-image-link" href="{getLink(canvas)}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}" loading="lazy"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
+riot.tag2('thumbnails', '<div class="thumbnails-filters"><button class="thumbnails-filter-annotated btn btn--clean"></button><button class="thumbnails-filter-finished btn btn--clean"></button><button class="thumbnails-filter-unfinished btn btn--clean"></button><button class="thumbnails-filter-reset btn btn--clean"></button></div><div class="image_thumbnails"><div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'} {getPageStatus(index)}" each="{canvas, index in thumbnails}"><a class="thumbnails-image-link" href="{getLink(canvas)}" onclick="{handleClickOnImage}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}" loading="lazy"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div></div>', '', '', function(opts) {
 
 this.thumbnails = [];
 
@@ -3141,6 +3213,29 @@ this.getPageStatus = function(index) {
 	}
 }.bind(this)
 
+$( document ).ready(function() {
+	$('.thumbnails-filter-unfinished').click(function() {
+		$('.thumbnails-image-wrapper').show();
+		$('.thumbnails-image-wrapper.review').hide();
+		$('.thumbnails-image-wrapper.annotate').hide();
+
+	});
+
+	$('.thumbnails-filter-finished').click(function() {
+		$('.thumbnails-image-wrapper').hide();
+		$('.thumbnails-image-wrapper.review').show();
+	});
+
+	$('.thumbnails-filter-reset').click(function() {
+		$('.thumbnails-image-wrapper').show();
+	});
+
+	$('.thumbnails-filter-annotated').click(function() {
+		$('.thumbnails-image-wrapper').hide();
+		$('.thumbnails-image-wrapper.annotate').show();
+	});
+
+});
 });
 riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
 	    this.on( 'mount', function() {
