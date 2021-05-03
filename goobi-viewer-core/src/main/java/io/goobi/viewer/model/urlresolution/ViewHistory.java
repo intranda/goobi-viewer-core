@@ -64,12 +64,13 @@ public class ViewHistory {
                     String hostUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest);
                     String applicationName = httpRequest.getContextPath();
                     String serviceUrl = ((HttpServletRequest) request).getRequestURI();
+                    String queryString = httpRequest.getQueryString();
                     PrettyContext context = PrettyContext.getCurrentInstance(httpRequest);
                     if (context != null && context.getRequestURL() != null) {
                         serviceUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + context.getRequestURL().toURL();
                     }
 
-                    Optional<ViewerPath> oCurrentPath = ViewerPathBuilder.createPath(hostUrl, applicationName, serviceUrl);
+                    Optional<ViewerPath> oCurrentPath = ViewerPathBuilder.createPath(hostUrl, applicationName, serviceUrl, queryString);
                     if (oCurrentPath.isPresent()) {
                         //viewer page url
                         setCurrentView(oCurrentPath.get(), session);
