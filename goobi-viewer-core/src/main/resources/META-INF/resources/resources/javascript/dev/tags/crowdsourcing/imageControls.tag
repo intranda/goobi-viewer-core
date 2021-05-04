@@ -2,8 +2,8 @@
 
 <div class="image_controls">
 	<div class="image-controls__actions">
-		<div class="image-controls__action thumbs {this.opts.showthumbs ? 'in' : ''}">
-			<a onclick="{toggleThumbs}">
+		<div onclick="{toggleThumbs}" class="image-controls__action thumbs {this.opts.showthumbs ? 'in' : ''}">
+			<a>
 				<i class="image-thumbs"></i>
 			</a>
 		</div>
@@ -56,6 +56,16 @@
     		});
     	}
     }
+    
+    // TOOLTIP FOR BACK TO OVERVIEW BUTTON
+	$( document ).ready(function() {
+	    $('.image-controls__action.thumbs').tooltip({
+	        placement: 'top',
+	      title: 'Back to thumbnail overview',
+	      trigger: 'hover'
+	    });
+	});
+    
 </script> 
 
 </imageControls>
