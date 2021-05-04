@@ -55,7 +55,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.imageSource = item.source;
         this.metadata = item.metadata;
         this.pageStatisticMode = item.pageStatisticMode;
-        //maps page numbers (1-based!) to one of the following status: LOCKED, REVIEW, FINISHED
+        //maps page numbers (1-based!) to one of the following status: blank, annotate, locked, review, finished
         this.pageStatusMap = viewerJS.parseMap(item.pageStatusMap);
         this.reviewActive = item.campaign.reviewMode != "NO_REVIEW";
         this.currentUser = {};
@@ -74,6 +74,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
         
         this.initWebSocket();
         this.initKeyboardEvents();
+        
+        console.log("initialized crowdsourcing item ", this);
         
     };
     
@@ -100,7 +102,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Item.prototype.initWebSocket = function() {
  		this.socket = new viewerJS.WebSocket(window.location.host, window.currentPath, viewerJS.WebSocket.PATH_CAMPAIGN_SOCKET);
     	this.socket.onMessage.subscribe((event) => {
-    		console.log("received message ", event.data);
+    		//console.log("received message ", event.data);
     		try {
     			let locks = JSON.parse(event.data);
 	    		this.handleLocks(locks);
@@ -110,7 +112,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     		
     	});
     	this.onImageOpen((image) => {
-    		console.log("Call websocket on image open " + this.currentCanvasIndex);
+    		//console.log("Call websocket on image open " + this.currentCanvasIndex);
     		let message = {
     			campaign : this.campaignId,
     			record : this.recordIdentifier,
@@ -128,10 +130,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
     		let targetIndex = this.getNextAccessibleIndex(this.currentCanvasIndex);
     		if(targetIndex == undefined) {
     			//no accessible page
-    			console.log("load next item");
+    			//console.log("load next item");
     			window.location.href = this.nextitemurl;
     		} else {
-    			console.log("load next image: " + targetIndex);
+    			//console.log("load next image: " + targetIndex);
 	    		this.loadImage(targetIndex);
 	    	}
     	}

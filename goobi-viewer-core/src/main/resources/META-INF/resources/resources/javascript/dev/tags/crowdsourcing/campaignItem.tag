@@ -27,7 +27,9 @@
 				</div>
 			</div>
 			<campaignItemLog if="{item.showLog}" item="{item}"></campaignItemLog>
-			<div if="{!item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate">
+			
+			<!-- RECORD STATISTIC MODE -->
+			<div if="{!item.pageStatisticMode && !item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate">
 				<button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate("button__save")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button if="{item.isReviewActive()}" onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
@@ -35,13 +37,31 @@
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
-			<div if="{item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review">
+			<div if="{!item.pageStatisticMode && item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review">
 				<button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate("action__accept_review")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate("action__reject_review")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
+			
+			<!-- PAGE STATISTIC MODE -->
+			<div if="{item.pageStatisticMode && !item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate">
+				<button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate("button__save")}</button>
+				<div>{Crowdsourcing.translate("label__or")}</div>
+				<button if="{item.isReviewActive()}" onclick="{submitPageForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
+				<button if="{!item.isReviewActive()}" onclick="{saveAndAcceptReviewForPage}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__accept_review")}</button>
+				<div>{Crowdsourcing.translate("label__or")}</div>
+				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
+			</div>
+			<div if="{item.pageStatisticMode && item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review">
+				<button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate("action__accept_review")}</button>
+				<div>{Crowdsourcing.translate("label__or")}</div>
+				<button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate("action__reject_review")}</button>
+				<div>{Crowdsourcing.translate("label__or")}</div>
+				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
+			</div>
+			
 		</div>
 	 </div>
 
@@ -83,7 +103,7 @@
 		.then( imageSource => this.item.initViewer(imageSource))
 		.then( () => this.loading = false)
 		.then( () => this.update())
-		.then( () => this.item.onImageOpen( () => this.update()))
+		.then( () => this.item.onImageOpen( () => {this.loading = false; this.update()}))
 		.then( () => this.item.statusMapUpdates.subscribe( statusMap => this.update()))
 
 	}
@@ -161,11 +181,24 @@
 	    .then(() => this.skipItem());
 	            
 	}
+	
+	submitPageForReview() {
+	    this.saveToServer()
+	    .then(() => this.setStatus("REVIEW"))
+	    .then(() => this.skipPage());
+	            
+	}
 
 	saveAndAcceptReview() {
 	    this.saveToServer()
 	    .then(() => this.setStatus("FINISHED"))
 	    .then(() => this.skipItem());
+	}
+	
+	saveAndAcceptReview() {
+	    this.saveToServer()
+	    .then(() => this.setStatus("FINISHED"))
+	    .then(() => this.skipPage());
 	}
 	
 	acceptReview() {
@@ -180,6 +213,15 @@
 	
 	skipItem() {
 	    window.location.href = this.opts.nextitemurl;
+	}
+	
+	skipPage() {
+	    let index = this.item.getNextAccessibleIndex(this.item.currentCanvasIndex);
+	    if(index == undefined) {
+	        this.skipItem();
+	    } else {
+	        this.item.loadImage(index);
+	    }
 	}
 	
 	setStatus(status) {
