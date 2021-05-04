@@ -78,7 +78,6 @@
 	})
 	
 	initFilters() {
-	    console.log("refs ", this.refs);
     	this.refs.filter_unfinished.onclick = event => {
     		$('.thumbnails-image-wrapper').show();
     		$('.thumbnails-image-wrapper.review').hide();
