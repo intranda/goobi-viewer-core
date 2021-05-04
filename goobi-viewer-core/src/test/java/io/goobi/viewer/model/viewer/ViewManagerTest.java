@@ -244,10 +244,10 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(docstructType, viewManager.getTopStructElement().getDocStructType());
         Assert.assertEquals(pi, viewManager.getPi());
         Assert.assertEquals(1, viewManager.getCurrentImageOrder());
-//        Assert.assertEquals("1-2", viewManager.getCurrentPageOrderRange());
+        //        Assert.assertEquals("1-2", viewManager.getCurrentPageOrderRange());
 
         String purl = viewManager.getPersistentUrl(null);
-        Assert.assertEquals("/toc/PPN123/1-2/", purl);
+        Assert.assertEquals("/toc/PPN123/1/", purl);
     }
 
     /**

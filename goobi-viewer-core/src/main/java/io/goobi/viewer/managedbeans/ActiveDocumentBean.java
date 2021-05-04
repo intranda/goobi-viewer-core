@@ -961,8 +961,8 @@ public class ActiveDocumentBean implements Serializable {
 
         int page;
         int page2 = Integer.MAX_VALUE;
-        logger.trace("range: {}", pageOrderRange);
-        if (pageOrderRange.contains("-")) {
+        logger.trace("given range: {}", pageOrderRange);
+        if (pageOrderRange.contains("-") && pageOrderRange.charAt(0) != '-') {
             boolean firstMinus = false;
             boolean secondMinus = false;
             if (pageOrderRange.startsWith("-")) {
@@ -993,6 +993,9 @@ public class ActiveDocumentBean implements Serializable {
                 page2 = Math.max(page2, viewManager.getPageLoader().getFirstPageOrder());
                 page2 = Math.min(page2, viewManager.getPageLoader().getLastPageOrder());
             }
+        }
+        if (page == page2) {
+            page2 = Integer.MAX_VALUE;
         }
         String range = page + (page2 != Integer.MAX_VALUE ? "-" + page2 : "");
         logger.trace("final range: {}", range);
@@ -1104,39 +1107,49 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      */
     public String getPageUrl(int step) throws IndexUnreachableException, DAOException {
-        if (viewManager != null && viewManager.isDoublePageMode()) {
-            // Current image contains two pages
-            int number;
-            if (viewManager.getCurrentPage().isDoubleImage()) {
-                logger.trace("{} is double page", viewManager.getCurrentPage().getOrder());
-                if (step < 0) {
-                    number = viewManager.getCurrentImageOrder() + 2 * step;
-                } else {
-                    number = viewManager.getCurrentImageOrder() + step;
-                }
-                return getPageUrl(number + "-" + (number + 1));
-            }
+        logger.trace("getPageUrl: {}", step);
+        if (viewManager == null) {
+            return getPageUrl(imageToShow);
+        }
 
-            number = viewManager.getCurrentImageOrder() + step;
-            //            Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
-            //            Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
-            //            if (currentLeftPage.isPresent() && currentLeftPage.get().getOrder() == number) {
-            //                logger.trace("{} is left page", number);
-            //                number += step;
-            //            }
-            //            if (currentRightPage.isPresent() && currentRightPage.get().getOrder() == number) {
-            //                logger.trace("{} is right page", number);
-            //                number += step;
-            //            }
-            Optional<PhysicalElement> nextPage = viewManager.getPage(number);
-            if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
-                return getPageUrl(String.valueOf(number));
+        if (!viewManager.isDoublePageMode()) {
+            int number = viewManager.getCurrentImageOrder() + step;
+            return getPageUrl(String.valueOf(number));
+        }
+
+        int number;
+
+        // Current image contains two pages
+        if (viewManager.getCurrentPage().isDoubleImage()) {
+            logger.trace("{} is double page", viewManager.getCurrentPage().getOrder());
+            if (step < 0) {
+                number = viewManager.getCurrentImageOrder() + 2 * step;
+            } else {
+                number = viewManager.getCurrentImageOrder() + step;
             }
             return getPageUrl(number + "-" + (number + 1));
         }
 
-        int number = viewManager.getCurrentImageOrder() + step;
-        return getPageUrl(String.valueOf(number));
+        // Use current left/right page as a point of reference, if available
+        Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
+        Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
+        if (currentLeftPage.isPresent()) {
+            logger.trace("{} is left page", currentLeftPage.get().getOrder());
+            number = currentLeftPage.get().getOrder() + step * 2;
+        } else if (currentRightPage.isPresent()) {
+            logger.trace("{} is right page", currentRightPage.get().getOrder());
+            number = currentLeftPage.get().getOrder() + step * 2;
+        } else {
+            number = viewManager.getCurrentImageOrder() + step * 2;
+        }
+
+        // Target image candidate contains two pages
+        Optional<PhysicalElement> nextPage = viewManager.getPage(number);
+        if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
+            return getPageUrl(String.valueOf(number));
+        }
+
+        return getPageUrl(number + "-" + (number + 1));
     }
 
     /**
