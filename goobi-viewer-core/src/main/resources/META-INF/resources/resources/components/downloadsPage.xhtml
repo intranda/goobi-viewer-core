@@ -11,13 +11,13 @@
     <composite:interface />
 
     <composite:implementation>
-                   
+
                     <!-- PAGE -->
 					<ui:fragment
 						rendered="#{!activeDocumentBean.viewManager.bornDigital 
 						and activeDocumentBean.viewManager.currentPage.displayImage 
 						and (activeDocumentBean.viewManager.currentPage.accessPermissionPdf 
-							or activeDocumentBean.viewManager.currentPage.accessPermissionImage 
+							or activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload 
 							or activeDocumentBean.viewManager.currentPage.altoAvailable 
 							or activeDocumentBean.viewManager.currentPage.teiAvailable 
 							or activeDocumentBean.viewManager.currentPage.displayFulltext)}">
