@@ -1020,7 +1020,6 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
 	    }
 	    this.item.nextItemUrl = this.opts.nextitemurl;
-	    console.log("next item url = " + this.item.nextItemUrl);
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
 		this.item.onImageRotated( () => this.update());
 		return fetch(this.item.imageSource)
@@ -1688,15 +1687,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	this.getPageStatusMap = function() {
-		console.log("getPageStatusMap ", this.opts.item.pageStatusMap)
-		if(this.opts.item.pageStatusMap) {
-			let map = new Map();
-			for(let key of this.opts.item.pageStatusMap.keys()) {
-				map.set(key-1, this.opts.item.pageStatusMap.get(key).toLowerCase());
-			}
-			console.log("got PageStatusMap ", this.opts.item.pageStatusMap)
-			return map;
-		}
+		return this.opts.item.pageStatusMap;
 	}.bind(this)
 
 	this.isShowThumbs = function() {

@@ -98,15 +98,7 @@
 	}
 	
 	getPageStatusMap() {
-		console.log("getPageStatusMap ", this.opts.item.pageStatusMap)
-		if(this.opts.item.pageStatusMap) {
-			let map = new Map();
-			for(let key of this.opts.item.pageStatusMap.keys()) {
-				map.set(key-1, this.opts.item.pageStatusMap.get(key).toLowerCase());				
-			}
-			console.log("got PageStatusMap ", this.opts.item.pageStatusMap)
-			return map;
-		}
+		return this.opts.item.pageStatusMap;
 	}
 	
 	isShowThumbs() {

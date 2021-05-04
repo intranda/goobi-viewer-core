@@ -76,7 +76,6 @@
 	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
 	    }
 	    this.item.nextItemUrl = this.opts.nextitemurl;
-	    console.log("next item url = " + this.item.nextItemUrl);
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
 		this.item.onImageRotated( () => this.update());
 		return fetch(this.item.imageSource)
@@ -88,8 +87,6 @@
 		.then( () => this.item.statusMapUpdates.subscribe( statusMap => this.update()))
 
 	}
-
-
 	
 	resolveCanvas(source) {
 	    if(Crowdsourcing.isString(source)) {
