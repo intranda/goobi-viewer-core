@@ -313,6 +313,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
             return save;
     }
     
+    /**
+    * From the given save, remove all annotations. If pageId and/or questionId are given
+    * only delete from that page and/or question
+    */
     crowdsourcing.Item.prototype.deleteAnnotations = function(save, pageId, questionId) {
         let questions = save.questions;
         if(questionId) {
@@ -330,6 +334,9 @@ var Crowdsourcing = ( function(crowdsourcing) {
         return save;
     }
     
+    /**
+    * Return list of annotations, optionally filtered by pageId and questionId
+    */
     crowdsourcing.Item.prototype.loadAnnotations = function(pageId, questionId) {
         let save = this.getFromLocalStorage();
         let annotations = [];
@@ -349,7 +356,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
         return annotations;
     }
     
-    crowdsourcing.Item.prototype.loadAnnotationPages = function(questionId) {
+    /**
+    * Return a list of pages consisting of a pageId and an array of all annotations on that page; optionally filter by questionId 
+    */
+    crowdsourcing.Item.prototype.loadAnnotationPages = function(questionId, pageId) {
         let save = this.getFromLocalStorage();
         let pages = [];
         let questions = save.questions;
@@ -357,7 +367,11 @@ var Crowdsourcing = ( function(crowdsourcing) {
             questions = questions.filter(q => q.id == questionId);
         }
         questions.forEach(function(question) {
-            question.pages.forEach(function(page) {
+            let questionPages = question.pages
+            if(pageId) {
+            	questionPages = questionPages.filter(page => pageId == page.id)
+            }
+            questionPages.forEach(function(page) {
                let pageToLoad = pages.find(p => p.id == page.id);
                if(!pageToLoad) {
                    pageToLoad = {
@@ -372,13 +386,17 @@ var Crowdsourcing = ( function(crowdsourcing) {
         return pages;
     }
     
+    
+    /**
+    * Remove all annotations for the given pageId and questionId (all if pageId/questionId is not given) from local storage
+    * and add the given annotations to local storage
+    */
     crowdsourcing.Item.prototype.saveAnnotations = function(pageId, questionId, annotations) {
         let save = this.getFromLocalStorage();
         this.deleteAnnotations(save, pageId, questionId);
         this.addAnnotations(annotations, save);
         this.saveToLocalStorage(save);
     }
-
         
     crowdsourcing.Item.prototype.addAnnotations = function(annotations, save) {
         annotations.forEach(function(annotation) {
@@ -427,7 +445,14 @@ var Crowdsourcing = ( function(crowdsourcing) {
         return this.reviewActive;
     }
 
-    
+    crowdsourcing.Item.prototype.getCurrentPageId = function() {
+		let canvas = this.canvases[this.currentCanvasIndex];
+		if(canvas) {
+			return viewerJS.iiif.getId(canvas);
+		} else {
+			return undefined;
+		}
+    }
     
     /**
         get a list containing all canvas json items or canvas urls contained in the source object

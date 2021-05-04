@@ -47,7 +47,7 @@
 			
 			<!-- PAGE STATISTIC MODE -->
 			<div if="{item.pageStatisticMode && !item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate">
-				<button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate("button__save")}</button>
+				<button onclick="{savePageAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate("button__save")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button if="{item.isReviewActive()}" onclick="{submitPageForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
 				<button if="{!item.isReviewActive()}" onclick="{saveAndAcceptReviewForPage}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__accept_review")}</button>
@@ -55,9 +55,9 @@
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
 			<div if="{item.pageStatisticMode && item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review">
-				<button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate("action__accept_review")}</button>
+				<button onclick="{acceptReviewForPage}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate("action__accept_review")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
-				<button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate("action__reject_review")}</button>
+				<button onclick="{rejectReviewForPage}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate("action__reject_review")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
@@ -117,20 +117,6 @@
 	    }
 	}
 	
-	initAnnotations(annotations) {
-	    let save = this.item.createAnnotationMap(annotations);
-	    this.item.saveToLocalStorage(save);
-	}
-	
-	resetItems() {
-	    fetch(this.annotationSource)
-	    .then( response => response.json() )
-	    .then( annotations => this.initAnnotations(annotations))
-	    .then( () => this.resetQuestions())
-	    .then( () => this.item.notifyAnnotationsReload())
-	    .then( () => this.update())
-		.catch( error => console.error("ERROR ", error));  
-	}
 	
 	resetQuestions() {
 	    this.item.questions.forEach(question => {
@@ -145,9 +131,74 @@
 		    event.item.question.active = true;
 	    }
 	}
+	
+	/**
+	* Write all given annotations to local storage
+	*/
+	initAnnotations(annotations) {
+	    let save = this.item.createAnnotationMap(annotations);
+	    console.log("init annotations ", save)
+	    this.item.saveToLocalStorage(save);
+	}
+	
+	/**
+	*	Replace the annnotations for the given pageId in localStorage with the given annotations
+	*/
+	initAnnotationsForPage(annotations, pageId) {
+	    console.log("init annotations ", annotations, pageId);
+	    annotations = annotations.filter( (anno) => pageId == Crowdsourcing.getResourceId(anno.target) );
+	    console.log("updateAnnotations ", annotations)
+	    let save = this.item.getFromLocalStorage();
+	    this.item.deleteAnnotations(save, pageId);
+        this.item.addAnnotations(annotations, save);
+	    //let save = this.item.createAnnotationMap(annotations);
+	    console.log("init annotations ", save)
+	    this.item.saveToLocalStorage(save);
+	}
+	
+	/**
+	* Load all annotations from REST endpoint
+	*/
+	resetItems() {
+	    fetch(this.annotationSource)
+	    .then( response => response.json() )
+	    .then( annotations => this.initAnnotations(annotations))
+	    .then( () => this.resetQuestions())
+	    .then( () => this.item.notifyAnnotationsReload())
+	    .then( () => this.update())
+		.catch( error => console.error("ERROR ", error));  
+	}
+	
+	resetItemsForPage() {
+	    fetch(this.annotationSource)
+	    .then( response => response.json() )
+	    .then( annotations => this.initAnnotationsForPage(annotations, this.item.getCurrentPageId()))
+	    .then( () => this.resetQuestions())
+	    .then( () => this.item.notifyAnnotationsReload())
+	    .then( () => this.update())
+		.catch( error => console.error("ERROR ", error));  
+	}
+	
+
  	
 	saveToServer() {
 	    let pages = this.item.loadAnnotationPages();
+	    this.loading = true;
+	    this.update();
+	    return fetch(this.annotationSource, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            cache: "no-cache",
+            mode: 'cors',
+            body: JSON.stringify(pages)
+	    })
+	}
+	
+	savePageToServer() {
+	    let pages = this.item.loadAnnotationPages(undefined, this.item.getCurrentPageId());
+	    console.log("save pages to server ", pages);
 	    this.loading = true;
 	    this.update();
 	    return fetch(this.annotationSource, {
@@ -175,19 +226,32 @@
 	    });
 	}
 	
+	savePageAnnotations() {
+	    this.savePageToServer()
+	    .then(() => this.resetItemsForPage())
+	    .then(() => this.setStatus("ANNOTATE"))
+	    .catch((error) => {
+	        console.error(error);
+	    })
+	    .then(() => {
+	        this.loading = false;
+	        viewerJS.notifications.success(Crowdsourcing.translate("crowdsourcing__save_annotations__success"));
+		    this.update();
+	    });
+	}
+	
 	submitForReview() {
 	    this.saveToServer()
 	    .then(() => this.setStatus("REVIEW"))
 	    .then(() => this.skipItem());
-	            
 	}
 	
 	submitPageForReview() {
-	    this.saveToServer()
-	    .then(() => this.setStatus("REVIEW"))
+	    this.savePageToServer()
+	    .then(() => this.setPageStatus("REVIEW"))
 	    .then(() => this.skipPage());
-	            
 	}
+
 
 	saveAndAcceptReview() {
 	    this.saveToServer()
@@ -195,9 +259,9 @@
 	    .then(() => this.skipItem());
 	}
 	
-	saveAndAcceptReview() {
-	    this.saveToServer()
-	    .then(() => this.setStatus("FINISHED"))
+	saveAndAcceptReviewForPage() {
+	    this.savePageToServer()
+	    .then(() => this.setPageStatus("FINISHED"))
 	    .then(() => this.skipPage());
 	}
 	
@@ -205,10 +269,20 @@
 	    this.setStatus("FINISHED")
 	    .then(() => this.skipItem());
 	}
+	
+	acceptReviewForPage() {
+	    this.setPageStatus("FINISHED")
+	    .then(() => this.skipPage());
+	}
 
 	rejectReview() {
 	    this.setStatus("ANNOTATE")
 	    .then(() => this.skipItem());
+	}
+	
+	rejectReviewForPage() {
+	    this.setPageStatus("ANNOTATE")
+	    .then(() => this.skipPage());
 	}
 	
 	skipItem() {
@@ -224,6 +298,16 @@
 	    }
 	}
 	
+	/**
+	* The same as setStatus since the server decides if status of record or page should be updated
+	*/
+	setPageStatus(status) {
+	    return this.setStatus(status);
+	}
+	
+	/**
+	* Set the status of the current page or record (depending on pageStatisticMode) to the given status
+	*/
 	setStatus(status) {
 	    let body = {
 	            recordStatus: status,
