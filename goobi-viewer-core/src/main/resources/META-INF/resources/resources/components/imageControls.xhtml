@@ -15,7 +15,7 @@
     <!-- IMPLEMENTATION -->
     <composite:implementation>
         	
-    	<ui:param name="currentPageOrder" value="#{activeDocumentBean.viewManager.currentImageNo}"></ui:param>
+    	<ui:param name="currentPageOrder" value="#{activeDocumentBean.viewManager.currentImageOrder}"></ui:param>
         <ui:param name="firstPageOrder" value="#{activeDocumentBean.viewManager.firstPageOrder}"></ui:param>
         <ui:param name="lastPageOrder" value="#{activeDocumentBean.viewManager.lastPageOrder}"></ui:param>
         <ui:param name="pageCount" value="#{activeDocumentBean.viewManager.imagesCount}"></ui:param>
@@ -372,12 +372,12 @@
                         <ui:fragment rendered="#{configurationBean.displayCrowdsourcingModuleLinks}">
                             <ui:fragment rendered="#{navigationHelper.currentPage == 'object'}">
                                 <li class="image-controls__option -ltr">
-                                    <a href="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">#{msg.action__crowdsourcing_participate}!</a>
+                                    <a href="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}">#{msg.action__crowdsourcing_participate}!</a>
                                 </li>
                             </ui:fragment>
                             <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext'}">
                                 <li class="image-controls__option">
-                                    <a href="#{navigationHelper.applicationUrl}crowd/editOcr/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">#{msg.action__edit_text}</a>
+                                    <a href="#{navigationHelper.applicationUrl}crowd/editOcr/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}">#{msg.action__edit_text}</a>
                                 </li>
                             </ui:fragment>
                         </ui:fragment>
@@ -448,7 +448,7 @@
                                 <button type="button" class="btn btn--icon"
                                     data-bookmark-list-type="add" 
                                     data-pi="#{activeDocumentBean.viewManager.pi}"
-                                    data-page="#{activeDocumentBean.viewManager.currentImageNo}"
+                                    data-page="#{activeDocumentBean.viewManager.currentImageOrder}"
                                     role="switch"
                                     aria-label="#{msg.bookmarkList_addToBookmarkList}">
                                     <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}">

@@ -151,7 +151,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("10");
         adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/13/", adb.getNextPageUrl(3));
+        Assert.assertEquals("/viewImage_value/PPN517154005/13/", adb.getPageUrl(3));
     }
 
     /**
@@ -165,7 +165,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("15");
         adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getLastPageOrder() + "/", adb.getNextPageUrl(3));
+        Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getLastPageOrder() + "/", adb.getPageUrl(3));
     }
 
     /**

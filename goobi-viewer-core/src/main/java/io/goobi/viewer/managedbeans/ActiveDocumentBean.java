@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -87,6 +88,7 @@ import io.goobi.viewer.model.toc.export.pdf.WriteTocException;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PageOrientation;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
@@ -463,18 +465,20 @@ public class ActiveDocumentBean implements Serializable {
                 }
 
                 // When not aggregating hits, a new page will also be a new search hit in the list
-                if (imageToShow.equals(viewManager.getCurrentPageOrderRange()) && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                // TODO check whether this still works
+                if (imageToShow.equals(String.valueOf(viewManager.getCurrentImageOrder()))
+                        && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
                     mayChangeHitIndex = true;
                 }
 
-                viewManager.setCurrentPageOrderRange(imageToShow);
+                viewManager.setCurrentImageOrderString(imageToShow);
                 viewManager.updateDropdownSelected();
 
                 // Search hit navigation
                 if (searchBean != null && searchBean.getCurrentSearch() != null) {
                     if (searchBean.getCurrentHitIndex() < 0) {
                         // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
-                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), viewManager.getCurrentPageOrder(),
+                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), viewManager.getCurrentImageOrder(),
                                 DataManager.getInstance().getConfiguration().isAggregateHits());
                     } else if (mayChangeHitIndex) {
                         // Modify the current hit index
@@ -947,22 +951,37 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getPageUrl(String pageType, String pageOrderRange) throws IndexUnreachableException {
         StringBuilder sbUrl = new StringBuilder();
-        //        if (StringUtils.isBlank(pageType)) {
-        //            pageType = navigationHelper.getPreferredView();
-        //            logger.trace("preferred view: {}", pageType);
-        //        }
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
             if (pageType == null) {
                 pageType = PageType.viewObject.name();
             }
-            logger.trace("current view: {}", pageType);
+            // logger.trace("current view: {}", pageType);
         }
 
         int page;
-        if (pageOrderRange.contains("-") && pageOrderRange.charAt(0) != '-') {
-            String[] split = pageOrderRange.split("-");
+        int page2 = Integer.MAX_VALUE;
+        logger.trace("range: {}", pageOrderRange);
+        if (pageOrderRange.contains("-")) {
+            boolean firstMinus = false;
+            boolean secondMinus = false;
+            if (pageOrderRange.startsWith("-")) {
+                firstMinus = true;
+                pageOrderRange = pageOrderRange.substring(1);
+            }
+            if (pageOrderRange.contains("--")) {
+                secondMinus = true;
+                pageOrderRange = pageOrderRange.replace("--", "-");
+            }
+            String[] split = pageOrderRange.split("[-]");
             page = Integer.valueOf(split[0]);
+            page2 = Integer.valueOf(split[1]);
+            if (firstMinus) {
+                page *= -1;
+            }
+            if (secondMinus) {
+                page2 *= -1;
+            }
         } else {
             page = Integer.valueOf(pageOrderRange);
         }
@@ -970,14 +989,20 @@ public class ActiveDocumentBean implements Serializable {
         if (viewManager != null) {
             page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
             page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
+            if (page2 != Integer.MAX_VALUE) {
+                page2 = Math.max(page2, viewManager.getPageLoader().getFirstPageOrder());
+                page2 = Math.min(page2, viewManager.getPageLoader().getLastPageOrder());
+            }
         }
+        String range = page + (page2 != Integer.MAX_VALUE ? "-" + page2 : "");
+        logger.trace("final range: {}", range);
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                 .append('/')
                 .append(PageType.getByName(pageType).getName())
                 .append('/')
                 .append(getPersistentIdentifier())
                 .append('/')
-                .append(page)
+                .append(range)
                 .append('/');
 
         return sbUrl.toString();
@@ -1070,19 +1095,62 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * <p>
-     * getPreviousPageUrl.
+     * getNextPageUrl.
      * </p>
      *
      * @param step a int.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws DAOException
      */
-    public String getPreviousPageUrl(int step) throws IndexUnreachableException {
+    public String getPageUrl(int step) throws IndexUnreachableException, DAOException {
         if (viewManager != null && viewManager.isDoublePageMode()) {
-            step *= 2;
+            // Current image contains two pages
+            int number;
+            if (viewManager.getCurrentPage().isDoubleImage()) {
+                logger.trace("{} is double page", viewManager.getCurrentPage().getOrder());
+                if (step < 0) {
+                    number = viewManager.getCurrentImageOrder() + 2 * step;
+                } else {
+                    number = viewManager.getCurrentImageOrder() + step;
+                }
+                return getPageUrl(number + "-" + (number + 1));
+            }
+
+            number = viewManager.getCurrentImageOrder() + step;
+            //            Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
+            //            Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
+            //            if (currentLeftPage.isPresent() && currentLeftPage.get().getOrder() == number) {
+            //                logger.trace("{} is left page", number);
+            //                number += step;
+            //            }
+            //            if (currentRightPage.isPresent() && currentRightPage.get().getOrder() == number) {
+            //                logger.trace("{} is right page", number);
+            //                number += step;
+            //            }
+            Optional<PhysicalElement> nextPage = viewManager.getPage(number);
+            if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
+                return getPageUrl(String.valueOf(number));
+            }
+            return getPageUrl(number + "-" + (number + 1));
         }
-        int number = viewManager.getCurrentPageOrder() - step;
+
+        int number = viewManager.getCurrentImageOrder() + step;
         return getPageUrl(String.valueOf(number));
+    }
+
+    /**
+     * <p>
+     * getPreviousPageUrl.
+     * </p>
+     *
+     * @param step
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws DAOException
+     */
+    public String getPreviousPageUrl(int step) throws IndexUnreachableException, DAOException {
+        return getPageUrl(step * -1);
     }
 
     /**
@@ -1090,16 +1158,13 @@ public class ActiveDocumentBean implements Serializable {
      * getNextPageUrl.
      * </p>
      *
-     * @param step a int.
+     * @param step
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws DAOException
      */
-    public String getNextPageUrl(int step) throws IndexUnreachableException {
-        if (viewManager != null && viewManager.isDoublePageMode()) {
-            step *= 2;
-        }
-        int number = viewManager.getCurrentPageOrder() + step;
-        return getPageUrl(String.valueOf(number));
+    public String getNextPageUrl(int step) throws IndexUnreachableException, DAOException {
+        return getPageUrl(step);
     }
 
     /**
@@ -1109,8 +1174,9 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws DAOException
      */
-    public String getPreviousPageUrl() throws IndexUnreachableException {
+    public String getPreviousPageUrl() throws IndexUnreachableException, DAOException {
         return getPreviousPageUrl(1);
     }
 
@@ -1121,8 +1187,9 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws DAOException
      */
-    public String getNextPageUrl() throws IndexUnreachableException {
+    public String getNextPageUrl() throws IndexUnreachableException, DAOException {
         return getNextPageUrl(1);
     }
 

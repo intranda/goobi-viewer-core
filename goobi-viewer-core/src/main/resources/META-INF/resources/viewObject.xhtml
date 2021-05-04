@@ -99,7 +99,7 @@
                 <!--  PAGINATOR -->
                 <viewerComponent:simplePaginator
                     itemCount="#{activeDocumentBean.viewManager.imagesCount}"
-                    itemActive="#{activeDocumentBean.viewManager.currentImageNoForPaginator}"
+                    itemActive="#{activeDocumentBean.viewManager.currentImageOrderForPaginator}"
                     firstItem="#{activeDocumentBean.viewManager.firstPageOrder}"
                     lastItem="#{activeDocumentBean.viewManager.lastPageOrder}"
                     urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/"

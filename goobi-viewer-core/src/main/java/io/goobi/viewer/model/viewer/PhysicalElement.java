@@ -695,7 +695,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @param doubleImage the doubleImage to set
      */
     public void setDoubleImage(boolean doubleImage) {
-        logger.trace("setDoubleImage: {}:{}", order, doubleImage);
         this.doubleImage = doubleImage;
     }
 
