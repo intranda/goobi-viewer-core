@@ -1780,14 +1780,6 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	    }
 	    updateLockedTooltip();
 
-	    $('.thumbnails-filter-reset').addClass('-activeFilter');
-	    $('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').click(function() {
-	    	$('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').removeClass('-activeFilter');
-	    	$(this).addClass('-activeFilter');
-	    });
-
-	    $('.image_thumbnails-wrapper.reviewmode .thumbnails-image-wrapper:not(".image_thumbnails-wrapper.reviewmode .thumbnails-image-wrapper.finished")').tooltip('dispose');
-
 	}.bind(this)
 
 	this.initFilters = function() {
@@ -1803,6 +1795,17 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
     	};
 
 	}.bind(this)
+
+	$( document ).ready(function() {
+
+	    $('.thumbnails-filter-reset').addClass('-activeFilter');
+	    $('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').click(function() {
+	    	$('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').removeClass('-activeFilter');
+	    	$(this).addClass('-activeFilter');
+	    });
+	});
+
+    $('.image_thumbnails-wrapper.reviewmode .thumbnails-image-wrapper:not(".image_thumbnails-wrapper.reviewmode .thumbnails-image-wrapper.finished")').tooltip('dispose');
 
 	this.getPosition = function() {
 		let pos_os = this.dataPoint.getPosition();

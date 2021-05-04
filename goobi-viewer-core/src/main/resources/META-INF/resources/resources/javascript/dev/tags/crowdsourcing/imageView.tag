@@ -147,15 +147,7 @@
 // 	      trigger: 'hover'
 // 	    });
 	    
-	    // FILTER ACTIVE STATE HIGHLIGHTING
-	    $('.thumbnails-filter-reset').addClass('-activeFilter');
-	    $('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').click(function() {
-	    	$('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').removeClass('-activeFilter');
-	    	$(this).addClass('-activeFilter');
-	    });
-
-	    $('.image_thumbnails-wrapper.reviewmode .thumbnails-image-wrapper:not(".image_thumbnails-wrapper.reviewmode .thumbnails-image-wrapper.finished")').tooltip('dispose');
-	    
+ 
 	}
 	
 	initFilters() {
@@ -180,6 +172,17 @@
 //     		$('.thumbnails-image-wrapper.annotate').show();
 //     	};
 	}
+	
+	$( document ).ready(function() {
+	    // FILTER ACTIVE STATE HIGHLIGHTING
+	    $('.thumbnails-filter-reset').addClass('-activeFilter');
+	    $('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').click(function() {
+	    	$('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').removeClass('-activeFilter');
+	    	$(this).addClass('-activeFilter');
+	    });
+	});
+
+    $('.image_thumbnails-wrapper.reviewmode .thumbnails-image-wrapper:not(".image_thumbnails-wrapper.reviewmode .thumbnails-image-wrapper.finished")').tooltip('dispose');
 	
 	getPosition() {
 		let pos_os = this.dataPoint.getPosition();
