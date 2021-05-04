@@ -14,20 +14,31 @@
 		<imageControls if="{this.image}" 
 			image="{this.image}" 
 			item="{this.opts.item}" 
-			style="display: {this.showThumbs ? 'none' : 'block'}"
 			actionlistener="{this.actionListener}" 
-			showthumbs="{this.showThumbs}"></imageControls>
+			showthumbs="{this.showThumbs}"
+			class="{this.showThumbs ? 'd-none' : ''}">
+		</imageControls>
 		
-		<thumbnails class="image_thumbnails-wrapper {this.opts.item.reviewMode ? 'reviewmode' : ''}" style="display: {this.showThumbs ? 'block' : 'none'}" 
-			source="{{items: this.opts.item.canvases}}"  
-			actionlistener="{this.actionListener}" 
-			imagesize=",200"
-			index="{this.opts.item.currentCanvasIndex}" 
-			statusmap="{getPageStatusMap()}"/>
-	
-		<div class="image_container" style="display: {this.showThumbs ? 'none' : 'block'}"  >
+		<div class="image_container {this.showThumbs ? 'd-none' : ''}">
 			<div id="image_{opts.id}" class="image"></div>
 		</div>
+		
+		<div class="image_thumbnails-wrapper  {this.opts.item.reviewMode ? 'reviewmode' : ''} {this.showThumbs ? '' : 'd-none'}">
+			<div class="thumbnails-filters">
+				<button ref="filter_annotated" class="thumbnails-filter-annotated btn btn--clean"></button>
+				<button ref="filter_finished" class="thumbnails-filter-finished btn btn--clean"></button>
+				<button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean"></button>
+				<button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean"></button>
+			</div>
+			
+			<thumbnails class="image_thumbnails" 
+				source="{{items: this.opts.item.canvases}}"  
+				actionlistener="{this.actionListener}" 
+				imagesize=",200"
+				index="{this.opts.item.currentCanvasIndex}" 
+				statusmap="{getPageStatusMap()}"/>
+		</div>
+		
 		<!-- <canvasPaginator if="{!this.showThumbs}" items="{this.opts.item.canvases}" index="{this.opts.item.currentCanvasIndex}" actionlistener="{this.actionListener}" ></canvasPaginator> -->
 	</div> 
 	
@@ -37,6 +48,7 @@
 	
 	this.on("mount", function() {
 		this.showThumbs = this.isShowThumbs();
+		this.initFilters();
 		//console.log("mount image view ", this.opts.item);
 		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{		    
@@ -65,6 +77,28 @@
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
 	})
 	
+	initFilters() {
+	    console.log("refs ", this.refs);
+    	this.refs.filter_unfinished.onclick = event => {
+    		$('.thumbnails-image-wrapper').show();
+    		$('.thumbnails-image-wrapper.review').hide();
+    		$('.thumbnails-image-wrapper.annotate').hide();
+    	};
+    	
+    	this.refs.filter_finished.onclick = event => {
+    		$('.thumbnails-image-wrapper').hide();
+    		$('.thumbnails-image-wrapper.review').show();
+    	};
+    	
+    	this.refs.filter_reset.onclick = event => {
+    		$('.thumbnails-image-wrapper').show();
+    	};
+    	
+    	this.refs.filter_annotated.onclick = event => {
+    		$('.thumbnails-image-wrapper').hide();
+    		$('.thumbnails-image-wrapper.annotate').show();
+    	};
+	}
 	
 	getPosition() {
 		let pos_os = this.dataPoint.getPosition();
