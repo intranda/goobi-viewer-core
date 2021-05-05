@@ -66,6 +66,9 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.itemInitializedSubject = new rxjs.Subject();
         this.statusMapUpdates = new rxjs.Subject();
 		this.showThumbs = false;
+		//signals that there are annotations which have not been saved to the server
+		//Is set on a per record or a per page basis depending on this.pageStatisticMode
+		this.dirty = false;
 
         let firstAreaQuestion = this.questions.find(q => q.isRegionTarget());
         if(firstAreaQuestion) {
@@ -92,7 +95,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     				break;
     		}
     		if(targetIndex != undefined) {
-    			this.loadImage(targetIndex);
+    			this.loadImage(targetIndex, true);
     		}
     				
     	});
@@ -131,7 +134,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     		if(targetIndex == undefined) {
     			//no accessible page
     			//console.log("load next item");
-    			window.location.href = this.nextitemurl;
+    			this.loadNextItem();
     		} else {
     			//console.log("load next image: " + targetIndex);
 	    		this.loadImage(targetIndex);
@@ -264,12 +267,31 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.currentCanvasIndex = Math.max(0, Math.min(this.currentCanvasIndex, this.canvases.length-1));
     }
     
-    crowdsourcing.Item.prototype.loadImage = function(index) {
-        if(index !== undefined) {            
-            this.currentCanvasIndex = index;
+    crowdsourcing.Item.prototype.loadImage = function(index, requireConfirmation) {
+        if(index == undefined) {
+        	return;
         }
-        if(this.setImageSource) {            
-            this.setImageSource(this.getCurrentCanvas());
+        //console.log("load image", this.dirty, requireConfirmation, index, this.currentCanvasIndex);
+        if(this.dirty && requireConfirmation && index != this.currentCanvasIndex) {
+        	viewerJS.notifications.confirm(Crowdsourcing.translate("crowdsourcing__confirm_skip_page"))
+        	.then( () => {
+        		if(this.pageStatisticMode) {
+        			this.dirty = false;
+        		}
+	            this.currentCanvasIndex = index;
+	        	if(this.setImageSource) {            
+		            this.setImageSource(this.getCurrentCanvas());
+	        	}
+        	})
+        	.catch(() => {});
+        } else {
+        	if(this.pageStatisticMode) {
+        		this.dirty = false;
+        	}
+            this.currentCanvasIndex = index;
+	        if(this.setImageSource) {            
+		    	this.setImageSource(this.getCurrentCanvas());
+	        }
         }
     }
     
@@ -396,6 +418,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.deleteAnnotations(save, pageId, questionId);
         this.addAnnotations(annotations, save);
         this.saveToLocalStorage(save);
+        this.dirty = true;
     }
         
     crowdsourcing.Item.prototype.addAnnotations = function(annotations, save) {
@@ -453,6 +476,18 @@ var Crowdsourcing = ( function(crowdsourcing) {
 			return undefined;
 		}
     }
+    
+    crowdsourcing.Item.prototype.loadNextItem = function(requireConfirmation) {
+	     let promise = Promise.resolve();
+	     if(this.dirty && requireConfirmation) {
+	     	promise = viewerJS.notifications.confirm(Crowdsourcing.translate("crowdsourcing__confirm_skip_page"))
+	     }
+	     promise.then( () => {
+	     	console.log("confirm skip item");
+		     window.location.href = this.nextItemUrl;
+	     })
+	     .catch((e) => {});
+	}
     
     /**
         get a list containing all canvas json items or canvas urls contained in the source object

@@ -122,7 +122,7 @@
 			case "clickImage":
 				this.showThumbs = false;
 			case "setImageIndex":
-				this.opts.item.loadImage(event.value);
+				this.opts.item.loadImage(event.value, true);
 		}
 	}
 	
