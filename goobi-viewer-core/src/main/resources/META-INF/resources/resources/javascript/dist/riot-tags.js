@@ -1713,8 +1713,12 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" item="{this.opts.item}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_annotated" class="thumbnails-filter-annotated btn btn--clean"></button><button ref="filter_finished" class="thumbnails-filter-finished btn btn--clean"></button><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean"></button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean"></button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" item="{this.opts.item}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">Show unfinished</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">Show all</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
 
+
+	this.on("updated", function() {
+		this.initTooltips();
+	});
 
 	this.on("mount", function() {
 		this.showThumbs = this.isShowThumbs();
@@ -1745,29 +1749,66 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 
 		this.actionListener = new rxjs.Subject();
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
+
 	})
+
+	this.initTooltips = function() {
+	    $('.thumbnails-image-wrapper.review').tooltip({
+	        placement: 'top',
+	      title: 'In review',
+	      trigger: 'hover'
+	    });
+
+	    $('.thumbnails-image-wrapper.finished').tooltip({
+	        placement: 'top',
+	      title: 'Completed',
+	      trigger: 'hover'
+	    });
+
+	    function updateLockedTooltip() {
+	    	$('.thumbnails-image-wrapper.locked').tooltip('dispose');
+		    $('.thumbnails-image-wrapper.locked').tooltip({
+		        placement: 'top',
+		      title: 'Locked by other user',
+		      trigger: 'hover'
+		    });
+
+		    $(".thumbnails-image-wrapper.locked").each(function() {
+				if ($(this).is(":hover")) {
+    		$(this).tooltip('show');
+			  }
+			})
+
+		    setTimeout(updateLockedTooltip, 4000);
+	    }
+	    updateLockedTooltip();
+
+	}.bind(this)
 
 	this.initFilters = function() {
     	this.refs.filter_unfinished.onclick = event => {
     		$('.thumbnails-image-wrapper').show();
     		$('.thumbnails-image-wrapper.review').hide();
     		$('.thumbnails-image-wrapper.annotate').hide();
-    	};
-
-    	this.refs.filter_finished.onclick = event => {
-    		$('.thumbnails-image-wrapper').hide();
-    		$('.thumbnails-image-wrapper.review').show();
+    		$('.thumbnails-image-wrapper.finished').hide();
     	};
 
     	this.refs.filter_reset.onclick = event => {
     		$('.thumbnails-image-wrapper').show();
     	};
 
-    	this.refs.filter_annotated.onclick = event => {
-    		$('.thumbnails-image-wrapper').hide();
-    		$('.thumbnails-image-wrapper.annotate').show();
-    	};
 	}.bind(this)
+
+	$( document ).ready(function() {
+
+	    $('.thumbnails-filter-reset').addClass('-activeFilter');
+	    $('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').click(function() {
+	    	$('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').removeClass('-activeFilter');
+	    	$(this).addClass('-activeFilter');
+	    });
+	});
+
+    $('.image_thumbnails-wrapper.reviewmode .thumbnails-image-wrapper:not(".image_thumbnails-wrapper.reviewmode .thumbnails-image-wrapper.finished")').tooltip('dispose');
 
 	this.getPosition = function() {
 		let pos_os = this.dataPoint.getPosition();
@@ -1842,69 +1883,6 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}
 
 	const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
-
-	$( document ).ready(function() {
-	    $('.thumbnails-image-wrapper.review').tooltip({
-	        placement: 'top',
-	      title: 'This page was sent to review',
-	      trigger: 'hover'
-	    });
-
-	    $('.thumbnails-image-wrapper.annotate').tooltip({
-	        placement: 'top',
-	      title: 'There are already annotations for this page',
-	      trigger: 'hover'
-	    });
-
-	    function updateLockedTooltip() {
-	    	$('.thumbnails-image-wrapper.locked').tooltip('dispose');
-		    $('.thumbnails-image-wrapper.locked').tooltip({
-		        placement: 'top',
-		      title: 'Page is locked - other user is editing',
-		      trigger: 'hover'
-		    });
-
-		    $(".thumbnails-image-wrapper.locked").each(function() {
-				if ($(this).is(":hover")) {
-    		$(this).tooltip('show');
-			  }
-			})
-
-		    setTimeout(updateLockedTooltip, 4000);
-	    }
-	    updateLockedTooltip();
-
-	    $('.thumbnails-filter-unfinished').tooltip({
-	        placement: 'top',
-	      title: 'Show unfinished pages',
-	      trigger: 'hover'
-	    });
-
-	    $('.thumbnails-filter-finished').tooltip({
-	        placement: 'top',
-	      title: 'Show finished pages',
-	      trigger: 'hover'
-	    });
-
-	    $('.thumbnails-filter-reset').tooltip({
-	        placement: 'top',
-	      title: 'Show all pages',
-	      trigger: 'hover'
-	    });
-
-	    $('.thumbnails-filter-annotated').tooltip({
-	        placement: 'top',
-	      title: 'Show annotated pages',
-	      trigger: 'hover'
-	    });
-
-	    $('.thumbnails-filter-reset').addClass('-activeFilter');
-	    $('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').click(function() {
-	    	$('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').removeClass('-activeFilter');
-	    	$(this).addClass('-activeFilter');
-	    });
-
-	});
 
 });
 

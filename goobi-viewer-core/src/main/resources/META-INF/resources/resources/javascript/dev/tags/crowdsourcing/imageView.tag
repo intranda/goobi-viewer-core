@@ -25,10 +25,10 @@
 		
 		<div class="image_thumbnails-wrapper  {this.opts.item.reviewMode ? 'reviewmode' : ''} {this.showThumbs ? '' : 'd-none'}">
 			<div class="thumbnails-filters">
-				<button ref="filter_annotated" class="thumbnails-filter-annotated btn btn--clean"></button>
-				<button ref="filter_finished" class="thumbnails-filter-finished btn btn--clean"></button>
-				<button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean"></button>
-				<button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean"></button>
+<!-- 				<button ref="filter_annotated" class="thumbnails-filter-annotated btn btn--clean"></button> -->
+<!-- 				<button ref="filter_finished" class="thumbnails-filter-finished btn btn--clean"></button> -->
+				<button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">Show unfinished</button>
+				<button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">Show all</button>
 			</div>
 			
 			<thumbnails class="image_thumbnails" 
@@ -45,7 +45,12 @@
 
 	<script>
 	
+	// INIT TOOLTIPS
+	this.on("updated", function() {
+		this.initTooltips();
+	});
 	
+	// MOUNT IMAGE VIEW
 	this.on("mount", function() {
 		this.showThumbs = this.isShowThumbs();
 		this.initFilters();
@@ -75,29 +80,109 @@
 		
 		this.actionListener = new rxjs.Subject();
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
+
 	})
+
+	// TOOLTIPS FOR PAGE STATUS	
+	initTooltips() {
+	    $('.thumbnails-image-wrapper.review').tooltip({
+	        placement: 'top',
+	      title: 'In review',
+	      trigger: 'hover'
+	    });
+	    
+// 	    $('.thumbnails-image-wrapper.annotate').tooltip({
+// 	        placement: 'top',
+// 	      title: 'There are already annotations for this page',
+// 	      trigger: 'hover'
+// 	    });
+	    
+	    $('.thumbnails-image-wrapper.finished').tooltip({
+	        placement: 'top',
+	      title: 'Completed',
+	      trigger: 'hover'
+	    });
+
+	    // UPDATE INTERVAL FOR TOOLTIP FOR LOCKED PAGES
+	    function updateLockedTooltip() {
+	    	$('.thumbnails-image-wrapper.locked').tooltip('dispose');
+		    $('.thumbnails-image-wrapper.locked').tooltip({
+		        placement: 'top',
+		      title: 'Locked by other user',
+		      trigger: 'hover'
+		    });
+		    
+		    $(".thumbnails-image-wrapper.locked").each(function() {
+				if ($(this).is(":hover")) {
+    		$(this).tooltip('show');
+			  }
+			})
+
+		    setTimeout(updateLockedTooltip, 4000);
+	    }
+	    updateLockedTooltip();
+	    
+	    // FILTERING TOOLTIPS
+// 	    $('.thumbnails-filter-unfinished').tooltip({
+// 	        placement: 'top',
+// 	      title: 'Show unfinished pages',
+// 	      trigger: 'hover'
+// 	    });
+	    
+// 	    $('.thumbnails-filter-finished').tooltip({
+// 	        placement: 'top',
+// 	      title: 'Show finished pages',
+// 	      trigger: 'hover'
+// 	    });
+	    
+// 	    $('.thumbnails-filter-reset').tooltip({
+// 	        placement: 'top',
+// 	      title: 'Show all',
+// 	      trigger: 'hover'
+// 	    });
+
+// 	    $('.thumbnails-filter-annotated').tooltip({
+// 	        placement: 'top',
+// 	      title: 'Show annotated pages',
+// 	      trigger: 'hover'
+// 	    });
+	    
+ 
+	}
 	
 	initFilters() {
     	this.refs.filter_unfinished.onclick = event => {
     		$('.thumbnails-image-wrapper').show();
     		$('.thumbnails-image-wrapper.review').hide();
     		$('.thumbnails-image-wrapper.annotate').hide();
+    		$('.thumbnails-image-wrapper.finished').hide();
     	};
     	
-    	this.refs.filter_finished.onclick = event => {
-    		$('.thumbnails-image-wrapper').hide();
-    		$('.thumbnails-image-wrapper.review').show();
-    	};
+//     	this.refs.filter_finished.onclick = event => {
+//     		$('.thumbnails-image-wrapper').hide();
+//     		$('.thumbnails-image-wrapper.review').show();
+//     	};
     	
     	this.refs.filter_reset.onclick = event => {
     		$('.thumbnails-image-wrapper').show();
     	};
     	
-    	this.refs.filter_annotated.onclick = event => {
-    		$('.thumbnails-image-wrapper').hide();
-    		$('.thumbnails-image-wrapper.annotate').show();
-    	};
+//     	this.refs.filter_annotated.onclick = event => {
+//     		$('.thumbnails-image-wrapper').hide();
+//     		$('.thumbnails-image-wrapper.annotate').show();
+//     	};
 	}
+	
+	$( document ).ready(function() {
+	    // FILTER ACTIVE STATE HIGHLIGHTING
+	    $('.thumbnails-filter-reset').addClass('-activeFilter');
+	    $('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').click(function() {
+	    	$('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').removeClass('-activeFilter');
+	    	$(this).addClass('-activeFilter');
+	    });
+	});
+
+    $('.image_thumbnails-wrapper.reviewmode .thumbnails-image-wrapper:not(".image_thumbnails-wrapper.reviewmode .thumbnails-image-wrapper.finished")').tooltip('dispose');
 	
 	getPosition() {
 		let pos_os = this.dataPoint.getPosition();
@@ -105,7 +190,6 @@
 		let pos_image_rot = ImageView.CoordinateConversion.convertPointFromImageToRotatedImage(pos_image, this.image.controls.getRotation(), this.image.getOriginalImageSize());
 		return pos_image_rot;
 	}
-	
 	
 	handleImageControlAction(event) {
 		//console.log("event", event);
@@ -174,75 +258,6 @@
 	
 	const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
 
-    // TOOLTIPS FOR PAGE STATUS
-	$( document ).ready(function() {
-	    $('.thumbnails-image-wrapper.review').tooltip({
-	        placement: 'top',
-	      title: 'This page was sent to review',
-	      trigger: 'hover'
-	    });
-	    
-	    $('.thumbnails-image-wrapper.annotate').tooltip({
-	        placement: 'top',
-	      title: 'There are already annotations for this page',
-	      trigger: 'hover'
-	    });
-	    
-	    
-	    // UPDATE INTERVAL FOR TOOLTIP FOR LOCKED PAGES
-	    function updateLockedTooltip() {
-	    	$('.thumbnails-image-wrapper.locked').tooltip('dispose');
-		    $('.thumbnails-image-wrapper.locked').tooltip({
-		        placement: 'top',
-		      title: 'Page is locked - other user is editing',
-		      trigger: 'hover'
-		    });
-		    
-		    $(".thumbnails-image-wrapper.locked").each(function() {
-				if ($(this).is(":hover")) {
-    		$(this).tooltip('show');
-			  }
-			})
-
-		    setTimeout(updateLockedTooltip, 4000);
-	    }
-	    updateLockedTooltip();
-	    
-	    
-	    // FILTERING TOOLTIPS
-	    $('.thumbnails-filter-unfinished').tooltip({
-	        placement: 'top',
-	      title: 'Show unfinished pages',
-	      trigger: 'hover'
-	    });
-	    
-	    $('.thumbnails-filter-finished').tooltip({
-	        placement: 'top',
-	      title: 'Show finished pages',
-	      trigger: 'hover'
-	    });
-	    
-	    $('.thumbnails-filter-reset').tooltip({
-	        placement: 'top',
-	      title: 'Show all pages',
-	      trigger: 'hover'
-	    });
-
-	    $('.thumbnails-filter-annotated').tooltip({
-	        placement: 'top',
-	      title: 'Show annotated pages',
-	      trigger: 'hover'
-	    });
-	    
-	    // FILTER ACTIVE STATE HIGHLIGHTING
-	    $('.thumbnails-filter-reset').addClass('-activeFilter');
-	    $('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').click(function() {
-	    	$('.thumbnails-filter-reset, .thumbnails-filter-finished, .thumbnails-filter-unfinished, .thumbnails-filter-annotated').removeClass('-activeFilter');
-	    	$(this).addClass('-activeFilter');
-	    });
-	    
-	});
-	
 	</script>
 
 </imageView>
