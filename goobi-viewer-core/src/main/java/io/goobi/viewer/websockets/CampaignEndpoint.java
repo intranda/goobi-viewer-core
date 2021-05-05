@@ -111,7 +111,7 @@ public class CampaignEndpoint {
             long campaignId = json.getLong("campaign");
 
             if (getLockedPages(httpSessionId, campaignId, pi).contains(pageNo)) {
-                send(campaignId, pi);
+                sendPageLocks(campaignId, pi);
             } else {
                 PageLock lock = new PageLock(session, campaignId, pi, pageNo);
                 pageLocks.put(httpSessionId, lock);
@@ -121,7 +121,7 @@ public class CampaignEndpoint {
 
     }
 
-    private void removePageLock(String sessionId) {
+    private static void removePageLock(String sessionId) {
         synchronized (pageLocks) {
             PageLock lock = pageLocks.remove(sessionId);
             broadcast(lock);
@@ -141,10 +141,17 @@ public class CampaignEndpoint {
         logger.warn(t.getMessage());
     }
 
-    private void send(Long campaignId, String recordIdentifier) throws IOException, DAOException {
+    private void sendPageLocks(Long campaignId, String recordIdentifier) throws IOException, DAOException {
         synchronized (pageLocks) {            
             this.session.getBasicRemote().sendText(getLockedPagesAsJson(httpSessionId, campaignId, recordIdentifier));
         }
+    }
+    
+    private void sendWarning(String text) throws IOException, DAOException {
+        JSONObject warning = new JSONObject();
+        warning.put("status", "warning");
+        warning.put("message", text);
+            this.session.getBasicRemote().sendText(warning.toString());
     }
 
     /**
@@ -154,9 +161,10 @@ public class CampaignEndpoint {
      * @throws IOException
      * @throws EncodeException
      */
-    private void broadcast(PageLock sessionLock) {
+    private static void broadcast(PageLock sessionLock) {
+
         synchronized (pageLocks) {
-            if (httpSessionId != null && sessionLock != null) {
+            if (sessionLock != null) {
                 pageLocks.entrySet().forEach(entry -> {
                     synchronized (entry) {
                         String httpSessionId = entry.getKey();
@@ -184,7 +192,7 @@ public class CampaignEndpoint {
      * @return
      * @throws DAOException
      */
-    private String getLockedPagesAsJson(String httpSessionId, long campaignId, String recordIdentifier) throws DAOException {
+    private static String getLockedPagesAsJson(String httpSessionId, long campaignId, String recordIdentifier) throws DAOException {
         JSONObject json = new JSONObject();
 
         //first add finished and inReview pages
@@ -209,7 +217,7 @@ public class CampaignEndpoint {
      * @return
      * @throws DAOException
      */
-    private Map<Integer, String> getPageStatus(long campaignId, String recordIdentifier) throws DAOException {
+    private static Map<Integer, String> getPageStatus(long campaignId, String recordIdentifier) throws DAOException {
         Map<Integer, String> map = new HashMap<>();
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (StatisticMode.PAGE.equals(campaign.getStatisticMode()) && campaign.getStatistics().get(recordIdentifier) != null) {
