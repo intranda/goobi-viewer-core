@@ -20,7 +20,7 @@
     "less-plugin-autoprefix": "^2.0.0",
     "michelangelo": "^0.8.0",
     "pdfjs-dist": "^2.7.570",
-    "webpack": "5.36.1"
+    "webpack": "5.36.2"
   },
   "dependencies": {
     "hc-sticky": "~2.2.6",
