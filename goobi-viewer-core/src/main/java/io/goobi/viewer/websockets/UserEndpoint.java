@@ -121,6 +121,7 @@ public class UserEndpoint {
                     if (sessionId.equals(AdminBean.getTranslationGroupsEditorSession())) {
                         AdminBean.setTranslationGroupsEditorSession(null);
                         logger.trace("Removed translation editing lock for session '{}'.", sessionId);
+                        CampaignEndpoint.removeSessionLock(sessionId);
                     }
                 } else {
                     // logger.trace("Session {} has been refreshed and won't be cleared", sessionId);

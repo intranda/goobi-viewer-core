@@ -95,8 +95,6 @@ public class CampaignEndpoint {
         this.session = session;
     }
 
-
-
     @OnMessage
     public void onMessage(String message) throws IOException, DAOException {
         logger.trace("onMessage from {}: {}", session.getId(), message);
@@ -106,24 +104,28 @@ public class CampaignEndpoint {
     }
 
     private void setPageLock(String httpSessionId, Session session, String message) throws IOException, DAOException {
-        JSONObject json = new JSONObject(message);
-        String pi = json.getString("record");
-        int pageNo = json.getInt("page");
-        long campaignId = json.getLong("campaign");
-        
-        if(getLockedPages(httpSessionId, campaignId, pi).contains(pageNo)) {
-            send(campaignId, pi);
-        } else {
-            PageLock lock = new PageLock(session, campaignId, pi, pageNo);
-            pageLocks.put(httpSessionId, lock);
-            broadcast(lock);
+        synchronized (pageLocks) {
+            JSONObject json = new JSONObject(message);
+            String pi = json.getString("record");
+            int pageNo = json.getInt("page");
+            long campaignId = json.getLong("campaign");
+
+            if (getLockedPages(httpSessionId, campaignId, pi).contains(pageNo)) {
+                send(campaignId, pi);
+            } else {
+                PageLock lock = new PageLock(session, campaignId, pi, pageNo);
+                pageLocks.put(httpSessionId, lock);
+                broadcast(lock);
+            }
         }
-        
+
     }
 
-    private void removePageLock(String sessionId)  {
-        PageLock lock = pageLocks.remove(sessionId);
-        broadcast(lock);
+    private void removePageLock(String sessionId) {
+        synchronized (pageLocks) {
+            PageLock lock = pageLocks.remove(sessionId);
+            broadcast(lock);
+        }
     }
 
     @OnClose
@@ -139,39 +141,37 @@ public class CampaignEndpoint {
         logger.warn(t.getMessage());
     }
 
-
     private void send(Long campaignId, String recordIdentifier) throws IOException, DAOException {
-        this.session.getBasicRemote().sendText(getLockedPagesAsJson(httpSessionId, campaignId, recordIdentifier));
+        synchronized (pageLocks) {            
+            this.session.getBasicRemote().sendText(getLockedPagesAsJson(httpSessionId, campaignId, recordIdentifier));
+        }
     }
-    
+
     /**
-     * Send a message about all locked pages to all sessions
-     * which have the same campaignId and recordIdentifier
+     * Send a message about all locked pages to all sessions which have the same campaignId and recordIdentifier
      * 
-     * @param sessionLock   The lock of the broadcasting session
+     * @param sessionLock The lock of the broadcasting session
      * @throws IOException
      * @throws EncodeException
      */
     private void broadcast(PageLock sessionLock) {
-
-        if(httpSessionId != null) {
-        if(sessionLock != null) {
-        pageLocks.entrySet().forEach(entry -> {
-            synchronized (entry) {
-                String httpSessionId = entry.getKey();
-                PageLock lock = entry.getValue();
-                if (
-                        sessionLock.campaignId == lock.campaignId &&
-                        sessionLock.recordIdentifier.equals(lock.recordIdentifier)) {
-                    try {
-                        lock.session.getBasicRemote().sendText(getLockedPagesAsJson(httpSessionId, lock.campaignId, lock.recordIdentifier));
-                    } catch (IOException | DAOException  e) {
-                        e.printStackTrace();
+        synchronized (pageLocks) {
+            if (httpSessionId != null && sessionLock != null) {
+                pageLocks.entrySet().forEach(entry -> {
+                    synchronized (entry) {
+                        String httpSessionId = entry.getKey();
+                        PageLock lock = entry.getValue();
+                        if (sessionLock.campaignId == lock.campaignId &&
+                                sessionLock.recordIdentifier.equals(lock.recordIdentifier)) {
+                            try {
+                                lock.session.getBasicRemote().sendText(getLockedPagesAsJson(httpSessionId, lock.campaignId, lock.recordIdentifier));
+                            } catch (IOException | DAOException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
-                }
+                });
             }
-        });
-        }
         }
     }
 
@@ -182,31 +182,32 @@ public class CampaignEndpoint {
      * @param campaignId
      * @param recordIdentifier
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     private String getLockedPagesAsJson(String httpSessionId, long campaignId, String recordIdentifier) throws DAOException {
         JSONObject json = new JSONObject();
-        
+
         //first add finished and inReview pages
         Map<Integer, String> statusMap = getPageStatus(campaignId, recordIdentifier);
         statusMap.entrySet().forEach(entry -> {
             json.put(Integer.toString(entry.getKey()), entry.getValue());
         });
-        
-        pageLocks.entrySet().stream()
-        .filter(entry -> !entry.getKey().equals(httpSessionId))
-        .filter(entry -> entry.getValue().campaignId == campaignId)
-        .filter(entry -> entry.getValue().recordIdentifier.equals(recordIdentifier))
-        .map(Entry::getValue)
-        .forEach(lock -> json.put(Integer.toString(lock.pageNumber), "LOCKED"));
+
+        pageLocks.entrySet()
+                .stream()
+                .filter(entry -> !entry.getKey().equals(httpSessionId))
+                .filter(entry -> entry.getValue().campaignId == campaignId)
+                .filter(entry -> entry.getValue().recordIdentifier.equals(recordIdentifier))
+                .map(Entry::getValue)
+                .forEach(lock -> json.put(Integer.toString(lock.pageNumber), "LOCKED"));
         return json.toString();
     }
-    
+
     /**
      * @param campaignId
      * @param recordIdentifier
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     private Map<Integer, String> getPageStatus(long campaignId, String recordIdentifier) throws DAOException {
         Map<Integer, String> map = new HashMap<>();
@@ -223,14 +224,13 @@ public class CampaignEndpoint {
         return map;
     }
 
-
-
     private List<Integer> getLockedPages(String httpSessionId, long campaignId, String recordIdentifier) {
-        return pageLocks.entrySet().stream()
-        .filter(entry -> !entry.getKey().equals(httpSessionId))
-        .map(Entry::getValue)
-        .map(lock -> lock.pageNumber)
-        .collect(Collectors.toList());
+        return pageLocks.entrySet()
+                .stream()
+                .filter(entry -> !entry.getKey().equals(httpSessionId))
+                .map(Entry::getValue)
+                .map(lock -> lock.pageNumber)
+                .collect(Collectors.toList());
     }
 
     public static void main(String[] args) {
@@ -242,4 +242,24 @@ public class CampaignEndpoint {
         System.out.println(p1.equals(p3));
 
     }
+
+    /**
+     * Remove a registered crowdsourcing session lock
+     * 
+     * @param sessionId
+     */
+    public static void removeSessionLock(String sessionId) {
+        pageLocks.remove(sessionId);
+    }
+
+    /**
+     * Checks if the given http session id has a registerd lock
+     * 
+     * @param sessionId
+     * @return
+     */
+    public static boolean hasLock(String sessionId) {
+        return pageLocks.containsKey(sessionId);
+    }
+
 }

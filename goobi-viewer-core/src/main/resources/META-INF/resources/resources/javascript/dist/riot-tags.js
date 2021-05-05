@@ -1106,12 +1106,12 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
             mode: 'cors',
             body: JSON.stringify(pages)
 	    })
+	    .then( res => res.ok ? res : Promise.reject(res) )
 	    .then(res => {this.item.dirty=false; return res});
 	}.bind(this)
 
 	this.savePageToServer = function() {
 	    let pages = this.item.loadAnnotationPages(undefined, this.item.getCurrentPageId());
-	    console.log("save pages to server ", pages);
 	    this.loading = true;
 	    this.update();
 	    return fetch(this.annotationSource, {
@@ -1123,6 +1123,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
             mode: 'cors',
             body: JSON.stringify(pages)
 	    })
+	    .then( res => res.ok ? res : Promise.reject(res) )
 	    .then(res => {this.item.dirty=false; return res});
 
 	}.bind(this)
@@ -1131,28 +1132,34 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	    this.saveToServer()
 	    .then(() => this.resetItems())
 	    .then(() => this.setStatus("ANNOTATE"))
-	    .catch((error) => {
-	        console.error(error);
-	    })
-	    .then(() => {
+	    .then((res) => {
 	        this.loading = false;
 	        viewerJS.notifications.success(Crowdsourcing.translate("crowdsourcing__save_annotations__success"));
 		    this.update();
-	    });
+	    })
+	    .catch((error) => {
+	        this.loading = false;
+	        console.log("Error saving page annotations ", error);
+	        viewerJS.notifications.error(Crowdsourcing.translate("crowdsourcing__save_annotations__error"));
+		    this.update();
+	    })
 	}.bind(this)
 
 	this.savePageAnnotations = function() {
 	    this.savePageToServer()
 	    .then(() => this.resetItemsForPage())
 	    .then(() => this.setStatus("ANNOTATE"))
-	    .catch((error) => {
-	        console.error(error);
-	    })
-	    .then(() => {
+	    .then((res) => {
 	        this.loading = false;
 	        viewerJS.notifications.success(Crowdsourcing.translate("crowdsourcing__save_annotations__success"));
 		    this.update();
-	    });
+	    })
+	    .catch((error) => {
+	        this.loading = false;
+	        console.log("Error saving page annotations ", error);
+	        viewerJS.notifications.error(Crowdsourcing.translate("crowdsourcing__save_annotations__error"));
+		    this.update();
+	    })
 	}.bind(this)
 
 	this.submitForReview = function() {

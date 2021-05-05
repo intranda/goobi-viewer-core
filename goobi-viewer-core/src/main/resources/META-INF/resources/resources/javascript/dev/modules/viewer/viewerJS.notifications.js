@@ -31,26 +31,30 @@ var viewerJS = ( function( viewer ) {
 		success : (message) => viewer.notifications.notify(message, "success"),		
 		error : (message) => viewer.notifications.notify(message, "error"),
 		confirm : (message, confirmText, denyText) => {
-			viewer.translator.addTranslations(["cancel", "ok"]);
-			confirmText = confirmText ? confirmText : viewer.translator.translate("ok");
-			denyText = denyText ? denyText : viewer.translator.translate("cancel");
-			if(Swal) {
-				return Swal.fire({
-					title: message,
-					showCancelButton: true,
-					confirmButtonText: confirmText,
-  					cancelButtonText: denyText,
-  					customClass: {
-					    confirmButton: 'btn btn--success',
-					    cancelButton: 'btn btn--default',
-					  }
-				})
-				.then(result => {
-					return result.isConfirmed ? Promise.resolve() : Promise.reject();
-				});
-			} else {
-				return confirm(message) ? Promise.resolve() : Promise.reject();
-			}		
+			return viewer.translator.addTranslations(["cancel", "ok"])
+			.then( () => {
+						
+				confirmText = confirmText ? confirmText : viewer.translator.translate("ok");
+				denyText = denyText ? denyText : viewer.translator.translate("cancel");
+				if(Swal) {
+					return Swal.fire({
+						title: message,
+						showCancelButton: true,
+						confirmButtonText: confirmText,
+	  					cancelButtonText: denyText,
+	  					customClass: {
+						    confirmButton: 'btn btn--success',
+						    cancelButton: 'btn btn--default',
+						  }
+					})
+					.then(result => {
+						return result.isConfirmed ? Promise.resolve() : Promise.reject();
+					});
+				} else {
+					return confirm(message) ? Promise.resolve() : Promise.reject();
+				}		
+				
+			});
 		},
 		notify : (message, type) => {
 			if(Swal) {

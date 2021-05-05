@@ -69,6 +69,7 @@ import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.websockets.CampaignEndpoint;
 
 /**
  * Rest resources to create a frontend-view for a campaign to annotate or review a work, and to process the created annotations and/or changes to the
@@ -94,6 +95,9 @@ public class CampaignItemResource {
     protected AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
 
     private final Long campaignId;
+    
+    @Context
+    private HttpServletRequest servletRequest;
 
     /**
      * <p>
@@ -235,6 +239,18 @@ public class CampaignItemResource {
     }
 
     /**
+     * @return
+     */
+    private boolean hasCampaignLock() {
+        if(servletRequest != null) {
+            String sessionId = servletRequest.getRequestedSessionId();
+            return CampaignEndpoint.hasLock(sessionId);
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Get all annotations for the given campaign and work, sorted by target
      *
      * @param campaignId a {@link java.lang.Long} object.
@@ -278,6 +294,7 @@ public class CampaignItemResource {
     public void setAnnotationsForManifest(List<AnnotationPage> pages, @PathParam("pi") String pi)
             throws URISyntaxException, DAOException {
         logger.debug("setAnnotationsForManifest: {}", pi);
+        
         IDAO dao = DataManager.getInstance().getDao();
         Campaign campaign = dao.getCampaign(campaignId);
 

@@ -194,12 +194,12 @@
             mode: 'cors',
             body: JSON.stringify(pages)
 	    })
+	    .then( res => res.ok ? res : Promise.reject(res) )
 	    .then(res => {this.item.dirty=false; return res});
 	}
 	
 	savePageToServer() {
 	    let pages = this.item.loadAnnotationPages(undefined, this.item.getCurrentPageId());
-	    console.log("save pages to server ", pages);
 	    this.loading = true;
 	    this.update();
 	    return fetch(this.annotationSource, {
@@ -211,6 +211,7 @@
             mode: 'cors',
             body: JSON.stringify(pages)
 	    })
+	    .then( res => res.ok ? res : Promise.reject(res) )
 	    .then(res => {this.item.dirty=false; return res});
 
 	}
@@ -219,28 +220,34 @@
 	    this.saveToServer()
 	    .then(() => this.resetItems())
 	    .then(() => this.setStatus("ANNOTATE"))
-	    .catch((error) => {
-	        console.error(error);
-	    })
-	    .then(() => {
+	    .then((res) => {
 	        this.loading = false;
 	        viewerJS.notifications.success(Crowdsourcing.translate("crowdsourcing__save_annotations__success"));
 		    this.update();
-	    });
+	    })
+	    .catch((error) => {
+	        this.loading = false;
+	        console.log("Error saving page annotations ", error);
+	        viewerJS.notifications.error(Crowdsourcing.translate("crowdsourcing__save_annotations__error"));
+		    this.update();
+	    })
 	}
 	
 	savePageAnnotations() {
 	    this.savePageToServer()
 	    .then(() => this.resetItemsForPage())
 	    .then(() => this.setStatus("ANNOTATE"))
-	    .catch((error) => {
-	        console.error(error);
-	    })
-	    .then(() => {
+	    .then((res) => {
 	        this.loading = false;
 	        viewerJS.notifications.success(Crowdsourcing.translate("crowdsourcing__save_annotations__success"));
 		    this.update();
-	    });
+	    })
+	    .catch((error) => {
+	        this.loading = false;
+	        console.log("Error saving page annotations ", error);
+	        viewerJS.notifications.error(Crowdsourcing.translate("crowdsourcing__save_annotations__error"));
+		    this.update();
+	    })
 	}
 	
 	submitForReview() {
