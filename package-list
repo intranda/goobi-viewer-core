@@ -28,9 +28,15 @@ io.goobi.viewer.api.rest.v1.records.media
 io.goobi.viewer.api.rest.v1.search
 io.goobi.viewer.api.rest.v1.services
 io.goobi.viewer.api.rest.v1.tasks
+io.goobi.viewer.api.rest.v2
+io.goobi.viewer.api.rest.v2.cms
+io.goobi.viewer.api.rest.v2.collections
+io.goobi.viewer.api.rest.v2.media
+io.goobi.viewer.api.rest.v2.records
+io.goobi.viewer.api.rest.v2.records.media
 io.goobi.viewer.controller
 io.goobi.viewer.controller.imaging
-io.goobi.viewer.controller.language
+io.goobi.viewer.controller.model
 io.goobi.viewer.dao
 io.goobi.viewer.dao.converter
 io.goobi.viewer.dao.impl
@@ -58,7 +64,8 @@ io.goobi.viewer.model.crowdsourcing.questions
 io.goobi.viewer.model.download
 io.goobi.viewer.model.glossary
 io.goobi.viewer.model.iiif.discovery
-io.goobi.viewer.model.iiif.presentation.builder
+io.goobi.viewer.model.iiif.presentation.v2.builder
+io.goobi.viewer.model.iiif.presentation.v3.builder
 io.goobi.viewer.model.iiif.search
 io.goobi.viewer.model.iiif.search.model
 io.goobi.viewer.model.iiif.search.parser
@@ -80,6 +87,9 @@ io.goobi.viewer.model.termbrowsing
 io.goobi.viewer.model.toc
 io.goobi.viewer.model.toc.export.pdf
 io.goobi.viewer.model.transkribus
+io.goobi.viewer.model.translations
+io.goobi.viewer.model.translations.admin
+io.goobi.viewer.model.translations.language
 io.goobi.viewer.model.urlresolution
 io.goobi.viewer.model.viewer
 io.goobi.viewer.model.viewer.object
