@@ -250,21 +250,5 @@ public class ImageHandler {
                 .anyMatch(regex -> Pattern.compile(regex).matcher(path).matches());
     }
 
-    /**
-     * <p>
-     * getImageType.
-     * </p>
-     *
-     * @param info a {@link de.intranda.api.iiif.image.ImageInformation} object.
-     * @return a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
-     */
-    protected static ImageType getImageType(ImageInformation info) {
-        String id = info.getId();
-        ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(id);
-        if (iff != null) {
-            return new ImageType(iff);
-        }
-        return null;
-    }
 
 }

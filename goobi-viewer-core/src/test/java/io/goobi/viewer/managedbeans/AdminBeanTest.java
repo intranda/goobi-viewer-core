@@ -30,7 +30,10 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
+import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.model.security.user.UserRole;
 
 public class AdminBeanTest extends AbstractDatabaseEnabledTest {
 
@@ -133,4 +136,28 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1, ((SelectItemGroup) items.get(0)).getSelectItems().length);
         Assert.assertEquals(5, ((SelectItemGroup) items.get(1)).getSelectItems().length);
     }
+
+	/**
+	 * @see AdminBean#addUserRoleAction()
+	 * @verifies add user if not yet in group
+	 */
+	@Test
+	public void addUserRoleAction_shouldAddUserIfNotYetInGroup() throws Exception {
+	    AdminBean bean = new AdminBean();
+        bean.init();
+        
+        UserGroup group = new UserGroup();
+        group.setName("group");
+        
+        User user = new User();
+        Role role = DataManager.getInstance().getDao().getRole("member");
+        UserRole userRole = new UserRole(group, user, role);
+        
+        bean.setCurrentUserGroup(group);
+        bean.setCurrentUserRole(userRole);
+        Assert.assertFalse(group.getMembers().contains(user));
+        
+        bean.addUserRoleAction();
+        Assert.assertTrue(group.getMembers().contains(user));
+	}
 }

@@ -282,7 +282,7 @@ public class MetadataBean {
      * @return Message key for the label
      */
     public String getDefaultMetadataLabel() {
-        if (activeDocumentBean != null && activeDocumentBean.getViewManager().getTopDocument().isLidoRecord()) {
+        if (activeDocumentBean != null && activeDocumentBean.getViewManager().getTopStructElement().isLidoRecord()) {
             return "metadata";
         }
 

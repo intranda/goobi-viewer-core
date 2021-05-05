@@ -224,9 +224,9 @@
     <cms_record_notes cms_record_note_id="2" record_pi="PI1" record_title="Titel 1" note_title="{&quot;en&quot;: &quot;Notes 2&quot;, &quot;de&quot;: &quot;Bemerkungen 2&quot;}" note_text="lorem ipsum" display_note="false"></cms_record_notes>
     <cms_record_notes cms_record_note_id="3" record_pi="PI2" record_title="Titel 2" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen 3&quot;}" note_text="loram ipsum" display_note="true"></cms_record_notes>
     
-    <download_jobs download_job_id="1" type="pdf" identifier="0afb73c418262beb2c88dc40c95831b7" pi="PI_1"
+    <download_jobs download_job_id="1" type="pdf" identifier="187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118a" pi="PI_1"
         status="WAITING" last_requested="2016-06-01 00:00:00" ttl="3600" />
-    <download_jobs download_job_id="2" type="epub" identifier="ae469e5e54cd18ce6f0a4fae0d6b6bcc" pi="PI_1" logid="LOG_0001"
+    <download_jobs download_job_id="2" type="epub" identifier="4b689c5bd24d94ef88bedfd39d8819f8ef3a3676c52dc4f6acb50c7e8f3aab04" pi="PI_1" logid="LOG_0001"
         status="READY" last_requested="2016-06-06 12:00:00" ttl="3600" />
     
     <download_job_observers download_job_id="1" observer="viewer@intranda.com" />

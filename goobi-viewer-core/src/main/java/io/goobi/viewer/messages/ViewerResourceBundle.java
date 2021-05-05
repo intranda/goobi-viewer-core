@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.messages;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,7 +34,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -42,10 +42,8 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
-import javax.faces.view.facelets.FaceletContext;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,13 +54,11 @@ import org.jdom2.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.iiif.presentation.Collection;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 
 /**
@@ -75,6 +71,9 @@ public class ViewerResourceBundle extends ResourceBundle {
     private static final Logger logger = LoggerFactory.getLogger(ViewerResourceBundle.class);
 
     private static final Object lock = new Object();
+
+    private static final String BUNDLE_NAME = "messages";
+
     private static final Map<Locale, ResourceBundle> defaultBundles = new ConcurrentHashMap<>();
     /** Constant <code>localBundles</code> */
     protected static final Map<Locale, ResourceBundle> localBundles = new ConcurrentHashMap<>();
@@ -186,7 +185,7 @@ public class ViewerResourceBundle extends ResourceBundle {
             synchronized (lock) {
                 // Bundle could have been initialized by a different thread in the meanwhile
                 if (!defaultBundles.containsKey(locale)) {
-                    defaultBundles.put(locale, ResourceBundle.getBundle("messages", locale));
+                    defaultBundles.put(locale, ResourceBundle.getBundle(BUNDLE_NAME, locale));
                 }
             }
         }
@@ -243,7 +242,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 URL resourceURL = file.getParentFile().toURI().toURL();
                 // logger.debug("URL: " + file.getParentFile().toURI().toURL());
                 URLClassLoader urlLoader = new URLClassLoader(new URL[] { resourceURL });
-                return ResourceBundle.getBundle("messages", locale, urlLoader);
+                return ResourceBundle.getBundle(BUNDLE_NAME, locale, urlLoader);
             } catch (Exception e) {
                 // some error while loading bundle from file system; use default bundle now ...
             }
@@ -272,7 +271,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @return a {@link java.lang.String} object.
      */
     public static String getTranslation(final String key, Locale locale) {
-        return getTranslation(key, locale, true);
+        return getTranslation(key, locale, true, true);
     }
 
     /**
@@ -318,18 +317,48 @@ public class ViewerResourceBundle extends ResourceBundle {
      * getTranslation.
      * </p>
      *
+     * @param key a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
      * @param useFallback If true, get default locale translation if there is none for the given locale
      * @return Translated message key
-     * @param key a {@link java.lang.String} object.
      */
     public static String getTranslation(final String key, Locale locale, boolean useFallback) {
+        return getTranslation(key, locale, useFallback, useFallback);
+    }
+
+    /**
+     * 
+     * @param key
+     * @param locale
+     * @param useFallback
+     * @param cleanup
+     * @return
+     */
+    public static String getTranslation(final String key, Locale locale, boolean useFallback, boolean cleanup) {
+        return getTranslation(key, locale, useFallback, false, cleanup);
+    }
+
+    /**
+     * <p>
+     * getTranslation.
+     * </p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @param useFallback If true, get default locale translation if there is none for the given locale
+     * @param reversePriority If true, the global bundle will be checked first, then the local
+     * @param cleanup If true, elements such as 'zzz' will be removed from the translation
+     * @return Translated message key
+     */
+    public static String getTranslation(final String key, Locale locale, boolean useFallback, boolean reversePriority, boolean cleanup) {
         //        logger.trace("Translation for: {}", key);
         locale = checkAndLoadResourceBundles(locale); // If locale is null, the return value will be the current locale
-        String value = getTranslation(key, defaultBundles.get(locale), localBundles.get(locale));
-        if (useFallback && StringUtils.isEmpty(value) && defaultLocale != null && defaultBundles.containsKey(defaultLocale)
+        Map<Locale, ResourceBundle> bundles1 = reversePriority ? localBundles : defaultBundles;
+        Map<Locale, ResourceBundle> bundles2 = reversePriority ? defaultBundles : localBundles;
+        String value = getTranslation(key, bundles1.get(locale), bundles2.get(locale), cleanup);
+        if (useFallback && StringUtils.isEmpty(value) && defaultLocale != null && bundles1.containsKey(defaultLocale)
                 && !defaultLocale.equals(locale)) {
-            value = getTranslation(key, defaultBundles.get(defaultLocale), localBundles.get(defaultLocale));
+            value = getTranslation(key, bundles1.get(defaultLocale), bundles2.get(defaultLocale), cleanup);
         }
         if (value == null) {
             value = key;
@@ -344,36 +373,39 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param key Message key
      * @param fallbackBundle Fallback bundle if no value is found in preferredBundle
      * @param preferredBundle Check for a translation in this bundle first
+     * @param cleanup If true, elements such as 'zzz' will be removed from the translation
      * @return Translated message key
      */
-    protected static String getTranslation(String key, ResourceBundle fallbackBundle, ResourceBundle preferredBundle) {
-        if (key != null) {
-            // Remove trailing asterisk
-            if (key.endsWith("*")) {
-                key = key.substring(0, key.length() - 1);
-            }
+    protected static String getTranslation(String key, ResourceBundle fallbackBundle, ResourceBundle preferredBundle, boolean cleanup) {
+        if (key == null) {
+            return null;
+        }
 
-            if (preferredBundle != null) {
-                String value = getTranslationFromBundle(key, preferredBundle);
-                if (value != null) {
-                    return cleanUpTranslation(value);
-                }
+        // Remove trailing asterisk
+        if (key.endsWith("*")) {
+            key = key.substring(0, key.length() - 1);
+        }
+
+        if (preferredBundle != null) {
+            String value = getTranslationFromBundle(key, preferredBundle);
+            if (value != null) {
+                return cleanup ? cleanUpTranslation(value) : value;
             }
-            if (fallbackBundle != null) {
-                String value = getTranslationFromBundle(key, fallbackBundle);
-                if (value != null) {
-                    return cleanUpTranslation(value);
+        }
+        if (fallbackBundle != null) {
+            String value = getTranslationFromBundle(key, fallbackBundle);
+            if (value != null) {
+                return cleanup ? cleanUpTranslation(value) : value;
+            }
+            try {
+                if (fallbackBundle.containsKey(key)) {
+                    return cleanup ? cleanUpTranslation(fallbackBundle.getString(key)) : fallbackBundle.getString(key);
                 }
-                try {
-                    if (fallbackBundle.containsKey(key)) {
-                        return cleanUpTranslation(fallbackBundle.getString(key));
-                    }
-                } catch (MissingResourceException e) {
-                    // There is a MissingResourceException when calling this from the RSS feed
-                }
+            } catch (MissingResourceException e) {
+                // There is a MissingResourceException when calling this from the RSS feed
             }
         } else {
-            logger.warn("globalBundle is null");
+            logger.error("Global resource bundle is null");
         }
 
         return null;
@@ -497,14 +529,16 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     public static List<String> getMessagesValues(Locale locale, String keyPrefix) {
         ResourceBundle rb = loadLocalResourceBundle(locale);
-        List<String> res = new ArrayList<>();
+        if (rb == null) {
+            return Collections.emptyList();
+        }
 
+        List<String> res = new ArrayList<>();
         for (String key : rb.keySet()) {
             if (key.startsWith(keyPrefix)) {
                 res.add(key);
             }
         }
-
         Collections.sort(res);
 
         return res;
@@ -573,7 +607,7 @@ public class ViewerResourceBundle extends ResourceBundle {
         Map<String, String> translations = new HashMap<>();
         if (locales != null) {
             for (Locale locale : locales) {
-                String translation = ViewerResourceBundle.getTranslation(key, locale, false);
+                String translation = ViewerResourceBundle.getTranslation(key, locale, false, true);
                 if (key != null && StringUtils.isNotBlank(translation)) {
                     if (allowKeyAsTranslation || !key.equals(translation)) {
                         translations.put(locale.getLanguage(), translation);
@@ -599,12 +633,49 @@ public class ViewerResourceBundle extends ResourceBundle {
             Path facesConfigPath = Paths.get(webContentRoot).resolve("faces-config.xml");
             if (Files.exists(facesConfigPath)) {
                 return getLocalesFromFile(facesConfigPath);
-            } else {
-                throw new FileNotFoundException("Unable to locate faces-config at " + facesConfigPath);
             }
+            throw new FileNotFoundException("Unable to locate faces-config at " + facesConfigPath);
         } catch (Throwable e) {
             logger.error("Error getting locales from faces-config", e);
             return getFacesLocales();
+        }
+    }
+
+    /**
+     * Creates a local messages_xx.properties file for every locale in the Faces context, if not already present.
+     */
+    public static void createLocalMessageFiles() {
+        createLocalMessageFiles(getAllLocales());
+    }
+
+    /**
+     * Creates a local messages_xx.properties file for every locale in the given list, if not already present.
+     * 
+     * @param locales
+     * @should create files correctly
+     */
+    static void createLocalMessageFiles(List<Locale> locales) {
+        if (locales == null) {
+            return;
+        }
+
+        for (Locale locale : getAllLocales()) {
+            Path path =
+                    Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath(), "messages_" + locale.getLanguage() + ".properties");
+            if (Files.exists(path)) {
+                logger.trace("Local message file already exists: {}", path.toAbsolutePath().toString());
+                continue;
+            }
+            try {
+                Files.createFile(path);
+                // BufferedWriter defaults to UTF-8
+                try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+                    writer.write("");
+                }
+                logger.info("Created local message file: {}", path.toAbsolutePath().toString());
+            } catch (IOException e) {
+                logger.error("Could not create local message file: {}", e.getMessage());
+            }
         }
     }
 
@@ -631,4 +702,16 @@ public class ViewerResourceBundle extends ResourceBundle {
         getAllLocales(servletContext);
     }
 
+    /**
+     * 
+     * @return All message keys in the bundle
+     */
+    public static Set<String> getAllKeys() {
+        ResourceBundle bundle = getBundle(BUNDLE_NAME);
+        if (bundle == null) {
+            logger.error("Reource bundle '{}' not found.", BUNDLE_NAME);
+            return Collections.emptySet();
+        }
+        return bundle.keySet();
+    }
 }

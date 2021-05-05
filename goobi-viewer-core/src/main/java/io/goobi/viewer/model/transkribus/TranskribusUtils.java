@@ -108,7 +108,11 @@ public class TranskribusUtils {
                 DataManager.getInstance().getConfiguration().getTranskribusPassword());
         logger.trace(DataManager.getInstance().getConfiguration().getTranskribusUserName() + " - "
                 + DataManager.getInstance().getConfiguration().getTranskribusPassword());
-
+        if (viewerSession == null) {
+            logger.error("No viewer session");
+            return null;
+        }
+        
         // Check and create the default viewer instance collection
         String viewerCollectionId =
                 getCollectionId(restApiUrl, viewerSession.getSessionId(),

@@ -60,20 +60,18 @@ import de.intranda.digiverso.ocr.xml.DocumentReader;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
-import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.UncheckedPresentationException;
+import io.goobi.viewer.model.translations.language.Language;
 
 /**
  * @author florian
@@ -136,22 +134,21 @@ public class TextResourceBuilder {
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder(),
                 DataManager.getInstance().getConfiguration().getAltoFolder(), fileName);
 
-        if (file != null && Files.isRegularFile(file)) {
-            try {
-                return FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
-                //                Document doc = XmlTools.readXmlFile(file);
-                //                return new XMLOutputter().outputString(doc);
-            } catch (FileNotFoundException e) {
-                logger.debug(e.getMessage());
-                throw new ContentNotFoundException("Resource not found");
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-                throw new PresentationException("Error reading resource");
-            }
-        }  else {
-            throw new ContentNotFoundException("Resource not found"); 
+        if (file == null || !Files.isRegularFile(file)) {
+            throw new ContentNotFoundException("Resource not found");
         }
-
+        
+        try {
+            return FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
+            //                Document doc = XmlTools.readXmlFile(file);
+            //                return new XMLOutputter().outputString(doc);
+        } catch (FileNotFoundException e) {
+            logger.debug(e.getMessage());
+            throw new ContentNotFoundException("Resource not found");
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+            throw new PresentationException("Error reading resource");
+        }
     }
 
     public String getFulltextAsTEI(String pi, String filename)

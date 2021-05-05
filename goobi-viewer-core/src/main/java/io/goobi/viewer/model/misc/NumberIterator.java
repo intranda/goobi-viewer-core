@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.misc;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * <p>
@@ -23,6 +24,8 @@ import java.util.Iterator;
  * </p>
  */
 public class NumberIterator implements Iterator<Integer> {
+
+    private final Object lock = new Object();
 
     private Integer counter = 0;
 
@@ -32,7 +35,7 @@ public class NumberIterator implements Iterator<Integer> {
     /** {@inheritDoc} */
     @Override
     public boolean hasNext() {
-        synchronized (counter) {
+        synchronized (lock) {
             return counter < Integer.MAX_VALUE;
         }
     }
@@ -43,7 +46,11 @@ public class NumberIterator implements Iterator<Integer> {
     /** {@inheritDoc} */
     @Override
     public Integer next() {
-        synchronized (counter) {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+        
+        synchronized (lock) {
             return counter++;
         }
     }

@@ -56,7 +56,7 @@
     
     this.on( 'updated', function() {
     	
-    	console.log("layout = ", this.getLayout());
+    	// console.log("layout = ", this.getLayout());
     	
     	
     	if(this.slides && this.slides.length > 0) {

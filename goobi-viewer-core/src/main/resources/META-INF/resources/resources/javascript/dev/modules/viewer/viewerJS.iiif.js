@@ -65,8 +65,23 @@ var viewerJS = ( function( viewer ) {
                            }
                        }
                         return fallback;
-                    } else {
+                    } else if (element['@value']) {
                         return element['@value'];                
+                    } else {
+                    	 if(element[locale]) {
+                    	 	return element[locale].join(", ");
+                    	 } else if(fallbackLanguage && element[fallbackLanguage]) {
+                    	 	return element[fallbackLanguage].join(", ");
+                    	 } else if(element.none) {
+                    	 	return element.none.join(", ");
+                    	 } else {
+                    	 	let keys = Object.keys(element);
+                    	 	if(keys && keys.length > 0) {
+                    	 		return element[keys[0]]
+                    	 	} else {
+                    	 		return undefined;
+                    	 	}
+                    	 }
                     }
                 }
             },
@@ -271,6 +286,8 @@ var viewerJS = ( function( viewer ) {
 		    getId(element) {
 			    if(element == undefined) {
 			    	return undefined;
+			    } else if(viewerJS.isString(element)) {
+			    	return element;
 			    } else if(element.id) {
 		    		return element.id;
 		    	} else {

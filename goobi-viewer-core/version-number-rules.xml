@@ -16,6 +16,7 @@
             <ignoreVersions>
                 <ignoreVersion>3.0.0</ignoreVersion>
                 <ignoreVersion>3.0.1</ignoreVersion>
+                <ignoreVersion>3.0.2</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="com.sun.xml.bind" artifactId="jaxb-*">
@@ -43,11 +44,13 @@
                 <ignoreVersion>10.0.0</ignoreVersion>
                 <ignoreVersion>10.0.2</ignoreVersion>
                 <ignoreVersion>10.0.4</ignoreVersion>
+                <ignoreVersion>10.0.5</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.eclipse.persistence" artifactId="org.eclipse.persistence.*">
             <ignoreVersions>
                 <ignoreVersion>3.0.0</ignoreVersion>
+                <ignoreVersion>3.0.1</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.jboss.weld.servlet" artifactId="weld-servlet-shaded">

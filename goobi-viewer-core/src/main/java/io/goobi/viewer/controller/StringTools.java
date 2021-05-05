@@ -472,17 +472,17 @@ public class StringTools {
     }
 
     /**
-     * Creates an MD5 hash of the given String.
+     * Creates an hash of the given String using SHA-256.
      *
      * @param myString a {@link java.lang.String} object.
-     * @return MD5 hash
+     * @return generated hash
      * @should hash string correctly
      */
-    public static String generateMD5(String myString) {
+    public static String generateHash(String myString) {
         String answer = "";
         try {
             byte[] defaultBytes = myString.getBytes("UTF-8");
-            MessageDigest algorithm = MessageDigest.getInstance("MD5");
+            MessageDigest algorithm = MessageDigest.getInstance("SHA-256");
             algorithm.reset();
             algorithm.update(defaultBytes);
             byte messageDigest[] = algorithm.digest();
@@ -533,5 +533,28 @@ public class StringTools {
         }
 
         return value.charAt(0) == 0x1;
+    }
+    
+    /**
+     * 
+     * @param values All values to check
+     * @return List of values that match <code>regex</code>
+     * @should return all matching values
+     */
+    public static List<String> filterStringsViaRegex(List<String> values, String regex) {
+        if (values == null || values.isEmpty() || StringUtils.isEmpty(regex)) {
+            return Collections.emptyList();
+        }
+
+        List<String> ret = new ArrayList<>();
+        Pattern p = Pattern.compile(regex);
+        for (String key : values) {
+            Matcher m = p.matcher(key);
+            if (m.find()) {
+                ret.add(key);
+            }
+        }
+
+        return ret;
     }
 }

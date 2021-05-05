@@ -181,7 +181,7 @@ public class Comment implements Comparable<Comment> {
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      */
     public boolean mayEdit(User user) {
-        return owner.getId() != null && user != null && owner.getId() == user.getId();
+        return owner.getId() != null && user != null && owner.getId().equals(user.getId());
     }
 
     /**

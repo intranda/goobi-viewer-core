@@ -46,6 +46,9 @@ import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
+import io.goobi.viewer.model.translations.admin.TranslationGroup;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
+import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 
@@ -1003,8 +1006,13 @@ public class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    public void getUnconditionalImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getUnconditionalImageAccessMaxWidth());
+    public void getThumbnailImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getThumbnailImageAccessMaxWidth());
+    }
+    
+    @Test
+    public void getUnzoomedImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth());
     }
 
     /**
@@ -2539,8 +2547,8 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     @Test
-    public void isDoublePageModeEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDoublePageModeEnabled());
+    public void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled());
     }
 
     /**
@@ -2915,7 +2923,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getPageSelectDropdownDisplayMinPages_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getPageSelectDropdownDisplayMinPages());
     }
-    
+
     @Test
     public void testGetConfiguredCollectionFields() {
         List<String> fields = DataManager.getInstance().getConfiguration().getConfiguredCollectionFields();
@@ -2924,4 +2932,63 @@ public class ConfigurationTest extends AbstractTest {
         assertTrue(fields.contains("MD_KNOWLEDGEFIELD"));
         assertTrue(fields.contains("MD_HIERARCHICALFIELD"));
     }
+
+    /**
+     * @see Configuration#isDocstructNavigationEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDocstructNavigationEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDocstructNavigationEnabled());
+    }
+
+    /**
+     * @see Configuration#getDocstructNavigationTypes()
+     * @verifies return all configured values
+     */
+    @Test
+    public void getDocstructNavigationTypes_shouldReturnAllConfiguredValues() throws Exception {
+        {
+            List<String> result = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes("_DEFAULT", true);
+            Assert.assertEquals(2, result.size());
+            Assert.assertEquals("prologue", result.get(0));
+            Assert.assertEquals("chapter", result.get(1));
+        }
+        {
+            List<String> result = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes("notfound", true);
+            Assert.assertEquals(2, result.size());
+            Assert.assertEquals("prologue", result.get(0));
+            Assert.assertEquals("chapter", result.get(1));
+        }
+    }
+
+    /**
+     * @see Configuration#getTranslationGroups()
+     * @verifies read config items correctly
+     */
+    @Test
+    public void getTranslationGroups_shouldReadConfigItemsCorrectly() throws Exception {
+        List<TranslationGroup> result = DataManager.getInstance().getConfiguration().getTranslationGroups();
+        Assert.assertNotNull(result);
+        Assert.assertEquals(3, result.size());
+        {
+            TranslationGroup group = result.get(0);
+            Assert.assertEquals(TranslationGroupType.SOLR_FIELD_NAMES, group.getType());
+            Assert.assertEquals("label__translation_group_1", group.getName());
+            Assert.assertEquals("desc__translation_group_1", group.getDescription());
+            Assert.assertEquals(5, group.getItems().size());
+
+            TranslationGroupItem item = group.getItems().get(4);
+            Assert.assertEquals("MD_.*", item.getKey());
+            Assert.assertTrue(item.isRegex());
+        }
+        {
+            TranslationGroup group = result.get(1);
+            Assert.assertEquals(TranslationGroupType.SOLR_FIELD_VALUES, group.getType());
+            Assert.assertEquals("label__translation_group_2", group.getName());
+            Assert.assertEquals("desc__translation_group_2", group.getDescription());
+            Assert.assertEquals(2, group.getItems().size());
+        }
+    }
+
 }

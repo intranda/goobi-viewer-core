@@ -18,6 +18,7 @@ package io.goobi.viewer.controller;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
@@ -171,12 +172,12 @@ public class StringToolsTest {
     }
 
     /**
-     * @see StringTools#generateMD5(String)
+     * @see StringTools#generateHash(String)
      * @verifies hash string correctly
      */
     @Test
-    public void generateMD5_shouldHashStringCorrectly() throws Exception {
-        Assert.assertEquals("098f6bcd4621d373cade4e832627b4f6", StringTools.generateMD5("test"));
+    public void generateHash_shouldHashStringCorrectly() throws Exception {
+        Assert.assertEquals("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", StringTools.generateHash("test"));
     }
 
     /**
@@ -205,5 +206,19 @@ public class StringToolsTest {
     @Test
     public void checkValueEmptyOrInverted_shouldReturnFalseOtherwise() throws Exception {
         Assert.assertFalse(StringTools.checkValueEmptyOrInverted("foo"));
+    }
+
+    /**
+     * @see StringTools#filterStringsViaRegex(List,String)
+     * @verifies return all matching keys
+     */
+    @Test
+    public void filterStringsViaRegex_shouldReturnAllMatchingKeys() throws Exception {
+        String[] keys = new String[] { "foo", "bar", "key0", "key1", "key2" };
+        List<String> result = StringTools.filterStringsViaRegex(Arrays.asList(keys), "key[0-9]+");
+        Assert.assertEquals(3, result.size());
+        Assert.assertEquals("key0", result.get(0));
+        Assert.assertEquals("key1", result.get(1));
+        Assert.assertEquals("key2", result.get(2));
     }
 }

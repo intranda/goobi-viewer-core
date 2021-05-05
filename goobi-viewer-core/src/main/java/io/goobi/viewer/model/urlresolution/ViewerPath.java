@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.urlresolution;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -46,7 +47,10 @@ import io.goobi.viewer.model.viewer.PageType;
  *
  * @author Florian Alpers
  */
-public class ViewerPath {
+public class ViewerPath implements Serializable {
+
+    private static final long serialVersionUID = 3200000636800001722L;
+
     /**
      * The absolute url of the web-application, e.g. {@code "http://localhost:8080/viewer"}. The {@link #applicationName} is always the last part of
      * this url
@@ -66,6 +70,10 @@ public class ViewerPath {
      * The entire url path after the {@link #pagePath}. This part contains search parameters and the like
      */
     private URI parameterPath;
+    /**
+     *  The entire query string of the URL, starting with the character after the '?'. An empty String no query exists
+     */
+    private String queryString = "";
     /**
      * The {@link PageType} referred to by the paths {@link #pagePath}. Is null if no matching PageType was found
      */
@@ -119,6 +127,7 @@ public class ViewerPath {
         this.parameterPath = blueprint.parameterPath;
         this.cmsPage = blueprint.cmsPage;
         this.pageType = blueprint.pageType;
+        this.queryString = blueprint.queryString;
     }
 
     /**
@@ -186,6 +195,21 @@ public class ViewerPath {
     public void setParameterPath(URI parameterPath) {
         this.parameterPath = parameterPath;
     }
+    
+    
+    /**
+     * @return the queryString
+     */
+    public String getQueryString() {
+        return queryString;
+    }
+    
+    /**
+     * @param queryString the queryString to set
+     */
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
 
     /**
      * <p>
@@ -225,7 +249,7 @@ public class ViewerPath {
      * @return the entire {@link #getPrettifiedPagePath() prettified} url <b>except</b> the application url
      */
     public URI getCombinedPrettyfiedPath() {
-        return ViewerPathBuilder.resolve(getPrettifiedPagePath(), getParameterPath());
+        return ViewerPathBuilder.resolve(getPrettifiedPagePath(), getParameterPath(), "", getQueryString());
     }
 
     /**
@@ -236,7 +260,7 @@ public class ViewerPath {
      * @return the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
      */
     public String getCombinedPrettyfiedUrl() {
-        String url = ("/" + getCombinedPrettyfiedPath().toString() + "/").replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
+        String url = ("/" + getCombinedPrettyfiedPath().toString()).replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
         return url;
     }
 
@@ -248,7 +272,7 @@ public class ViewerPath {
      * @return the entire request url as a path <b>except</b> the application url
      */
     public URI getCombinedPath() {
-        return ViewerPathBuilder.resolve(pagePath, parameterPath);
+        return ViewerPathBuilder.resolve(pagePath, parameterPath, "", queryString);
     }
 
     /**
@@ -260,7 +284,7 @@ public class ViewerPath {
      */
     public String getCombinedUrl() {
 
-        String url = ("/" + getCombinedPath().toString() + "/").replace("\\", "/").replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
+        String url = ("/" + getCombinedPath().toString()).replace("\\", "/").replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
         return url;
     }
 

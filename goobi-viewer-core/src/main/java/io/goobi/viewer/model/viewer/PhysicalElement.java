@@ -51,9 +51,11 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.ALTOTools;
@@ -740,18 +742,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public Boolean isFulltextAccessPermission() throws ViewerConfigurationException {
         if (fulltextAccessPermission == null) {
-            boolean access = false;
+            fulltextAccessPermission = false;
             try {
-                access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                        BeanUtils.getRequest());
+                fulltextAccessPermission =
+                        AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                                BeanUtils.getRequest());
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(String.format("Cannot check fulltext access for pi %s and pageNo %d: %s", pi, order, e.toString()));
             } catch (RecordNotFoundException e) {
                 logger.error("Record not found in index: {}", pi);
             }
-            return access;
         }
-        return fulltextAccessPermission != null ? fulltextAccessPermission : false;
+
+        return fulltextAccessPermission;
     }
 
     /**
@@ -774,18 +777,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean isAltoAvailable() throws IndexUnreachableException, DAOException {
+    public boolean isAltoAvailable() {
         String filename = null;
         try {
             filename = FileTools.getFilenameFromPathString(getAltoFileName());
-        } catch (FileNotFoundException e) {
-        }
-        if (StringUtils.isBlank(filename)) {
+            if (StringUtils.isBlank(filename)) {
+                return false;
+            }
+
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        } catch (FileNotFoundException | IndexUnreachableException | DAOException e) {
             return false;
         }
-
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
     }
 
     /**
@@ -1361,6 +1365,45 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         } else {
             logger.trace("FacesContext not found");
         }
+
+        return false;
+    }
+
+    /**
+     * checks if the user has the privilege {@link IPrivilegeHolder.PRIV_ZOOM_IMAGES}
+     * If the check fails and {@link Configuration#getUnzoomedImageAccessMaxWidth()} is greater than 0, false is returned
+     * @return true exactly if the user is allowed to zoom images. false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isAccessPermissionImageZoom() throws IndexUnreachableException, DAOException {
+        if (DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth() > 0) {
+            if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+                HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+                return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
+                        IPrivilegeHolder.PRIV_ZOOM_IMAGES);
+            }
+            logger.trace("FacesContext not found");
+
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isAccessPermissionImageDownload() throws IndexUnreachableException, DAOException {
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
+                    IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES);
+        }
+        logger.trace("FacesContext not found");
 
         return false;
     }

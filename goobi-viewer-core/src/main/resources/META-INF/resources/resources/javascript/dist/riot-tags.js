@@ -1097,6 +1097,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	    })
 	    .then(() => {
 	        this.loading = false;
+	        viewerJS.notifications.success(Crowdsourcing.translate("crowdsourcing__save_annotations__success"));
 		    this.update();
 	    });
 	}.bind(this)
@@ -2522,8 +2523,6 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
 
     this.on( 'updated', function() {
 
-    	console.log("layout = ", this.getLayout());
-
     	if(this.slides && this.slides.length > 0) {
     		if(this.slider) {
     			this.slider.destroy();
@@ -2869,6 +2868,170 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
             $target = $(event.target).closest("a");
             viewerJS.handleScrollPositionClick($target);
         }.bind(this)
+});
+
+
+riot.tag2('thumbnails', '<div class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"><a class="thumbnails-image-link" href="{getLink(canvas)}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
+
+this.thumbnails = [];
+
+this.on("mount", () => {
+	console.log("mount ", this.opts);
+	this.type = opts.type ? opts.type : "items";
+	this.language = opts.language ? opts.language : "en";
+	this.imageSize = opts.imagesize;
+
+	let source = opts.source;
+	if(viewerJS.isString(source)) {
+		fetch(source)
+		.then(response => response.json())
+		.then(json => this.loadThumbnails(json, this.type));
+	} else {
+		this.loadThumbnails(source, this.type);
+	}
+});
+
+this.on("updated", () => {
+	console.log("updated", this.opts);
+
+});
+
+this.loadThumbnails = function(source, type) {
+	console.log("Loading thumbnails from ", source);
+
+	switch(type) {
+		case "structures":
+			rxjs.from(source.structures)
+			.pipe(
+					rxjs.operators.map(range => this.getFirstCanvas(range, true)),
+					rxjs.operators.concatMap(canvas => this.loadCanvas(canvas))
+					)
+			.subscribe(item => this.addThumbnail(item));
+			break;
+		case "sequence":
+			this.createThumbnails(source.sequences[0].canvases);
+			break;
+		case "items":
+		case "default":
+			this.createThumbnails(source.items)
+	}
+
+}.bind(this)
+
+this.addThumbnail = function(item) {
+	console.log("add thumbnail from ", item);
+	this.thumbnails.push(item);
+	this.update();
+}.bind(this)
+
+this.createThumbnails = function(items) {
+	console.log("creating thumbnails from ", items)
+	this.thumbnails = items;
+	this.update();
+}.bind(this)
+
+this.getFirstCanvas = function(range, overwriteLabel) {
+
+	let canvas = undefined;
+	if(range.start) {
+		canvas = range.start;
+	} else if(range.items) {
+		canvas = range.items.find( item => item.type == "Canvas");
+	}
+	if(canvas && overwriteLabel) {
+		if(this.opts.label) {
+			let md = range.metadata.find(md => viewerJS.iiif.getValue(md.label, "none") == this.opts.label);
+			if(md) {
+				canvas.label = this.getValue(md.value);
+			} else {
+				canvas.label = range.label;
+			}
+		} else {
+			canvas.label = range.label;
+		}
+
+	}
+	return canvas;
+}.bind(this)
+
+this.loadCanvas = function(source) {
+	return fetch(viewerJS.iiif.getId(source))
+	.then(response => response.json())
+	.then(canvas => {
+
+		if(source.label) {
+			canvas.label = source.label;
+		}
+		return canvas;
+	})
+}.bind(this)
+
+this.getValue = function(value) {
+	return viewerJS.iiif.getValue(value, this.language, this.language == "en" ? "de" : "en");
+}.bind(this)
+
+this.getImage = function(canvas) {
+
+	if(canvas.items) {
+		return canvas.items
+		.filter(page => page.items != undefined)
+		.flatMap(page => page.items)
+		.filter(anno => anno.body != undefined)
+		.map(anno => anno.body)
+		.map(res => this.getImageUrl(res, this.imageSize))
+		.find(url => url != undefined)
+	} else if(canvas.images && canvas.images.length > 0) {
+		return this.getImageUrl(canvas.images[0].resource, this.imageSize);
+	} else {
+		return undefined;
+	}
+}.bind(this)
+
+this.getImageUrl = function(resource, size) {
+
+	if(size && resource.service && (!Array.isArray(resource.service) || resource.service.length > 0)) {
+		let url = viewerJS.iiif.getId(viewerJS.iiif.getId(resource.id) ? resource.service[0] : resource.service);
+		return url + "/full/" + size + "/0/default." + this.getExtension(resource.format);
+	} else {
+		return viewerJS.iiif.getId(resource);
+	}
+}.bind(this)
+
+this.getExtension = function(format) {
+	if(format && format == "image/png") {
+		return "png";
+	} else {
+		return "jpg";
+	}
+}.bind(this)
+
+this.getLink = function(canvas) {
+	if(this.opts.link) {
+		return this.opts.link(canvas);
+	} else {
+		return this.getHomepage(canvas);
+	}
+}.bind(this)
+
+this.getHomepage = function(canvas) {
+	if(canvas.homepage && canvas.homepage.length > 0) {
+		return canvas.homepage[0].id;
+	} else {
+		return undefined;
+	}
+}.bind(this)
+
+this.handleClickOnImage = function(event) {
+	if(this.opts.actionlistener) {
+		this.opts.actionlistener.next({
+			action: "clickImage",
+			value: event.item.index
+		})
+	}
+
+	event.preventUpdate = true;
+}.bind(this)
+
 });
 riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
 	    this.on( 'mount', function() {

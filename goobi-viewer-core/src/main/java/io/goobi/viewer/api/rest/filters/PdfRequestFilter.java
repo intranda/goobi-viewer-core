@@ -61,12 +61,12 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 
 /**
  * <p>
- * Request filter for PDF download requests. Checks whether the request has privileges to access the pdf and whether the 
- * download quote for the pdf is reached
+ * Request filter for PDF download requests. Checks whether the request has privileges to access the pdf and whether the download quote for the pdf is
+ * reached
  * </p>
  */
 @Provider
@@ -124,43 +124,45 @@ public class PdfRequestFilter implements ContainerRequestFilter {
      * @param divId
      * @param imageName
      * @param request
-     * @throws PresentationException 
-     * @throws IndexUnreachableException 
-     * @throws DAOException 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
      */
-    private void addRequestParameters(String pi, String divId, String imageName, ContainerRequestContext request) throws IndexUnreachableException, PresentationException, DAOException {
-        if(StringUtils.isNotBlank(pi)) {
+    private static void addRequestParameters(String pi, String divId, String imageName, ContainerRequestContext request)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        if (StringUtils.isNotBlank(pi)) {
             WatermarkHandler watermarkHandler = BeanUtils.getImageDeliveryBean().getPdf().getWatermarkHandler();
             StructElement topDocument = Optional.ofNullable(DataManager.getInstance().getSearchIndex().getDocumentByPI(pi))
-                .map(StructElement::create)
-                .orElse(null);
-            if(topDocument != null)  {
+                    .map(StructElement::create)
+                    .orElse(null);
+            if (topDocument != null) {
                 watermarkHandler
-                    .getFooterIdIfExists(topDocument)
-                    .ifPresent(footerId -> request.setProperty("param:watermarkId", footerId));
-                if(StringUtils.isNotBlank(imageName)) {
+                        .getFooterIdIfExists(topDocument)
+                        .ifPresent(footerId -> request.setProperty("param:watermarkId", footerId));
+                if (StringUtils.isNotBlank(imageName)) {
                     String actualImageName = getFirstImageName(imageName);
-                    Optional<PhysicalElement> page = Optional.ofNullable(new LeanPageLoader(topDocument, 1).getPageForFileName(actualImageName));
+                    Optional<PhysicalElement> page = Optional.ofNullable(AbstractPageLoader.create(topDocument).getPageForFileName(actualImageName));
                     page.flatMap(p -> watermarkHandler.getWatermarkTextIfExists(p))
-                        .ifPresent(text -> request.setProperty("param:watermarkText", text));
-                    
+                            .ifPresent(text -> request.setProperty("param:watermarkText", text));
+
                     page
-                    .ifPresent(p -> {
-                        
-                        Path indexedSourceFile = Paths.get(DataFileTools.getSourceFilePath(p.getPi() + ".xml", p.getDataRepository(),
-                                (actualImageName != null && topDocument.getSourceDocFormat() != null) ? topDocument.getSourceDocFormat() : SolrConstants._METS));
-                        if (Files.exists(indexedSourceFile)) {
-                            request.setProperty("param:metsFile", indexedSourceFile.toUri());                            
-                        }
-                        
-                    });
-                    
+                            .ifPresent(p -> {
+
+                                Path indexedSourceFile = Paths.get(DataFileTools.getSourceFilePath(p.getPi() + ".xml", p.getDataRepository(),
+                                        (actualImageName != null && topDocument.getSourceDocFormat() != null) ? topDocument.getSourceDocFormat()
+                                                : SolrConstants._METS));
+                                if (Files.exists(indexedSourceFile)) {
+                                    request.setProperty("param:metsFile", indexedSourceFile.toUri());
+                                }
+
+                            });
+
                 } else {
                     Optional.ofNullable(DataManager.getInstance().getSearchIndex().getDocumentByPIAndLogId(pi, divId))
-                        .map(StructElement::create)
-                        .flatMap(doc -> watermarkHandler.getWatermarkTextIfExists(doc))
-                        .ifPresent(text -> request.setProperty("param:watermarkText", text));
-                }           
+                            .map(StructElement::create)
+                            .flatMap(doc -> watermarkHandler.getWatermarkTextIfExists(doc))
+                            .ifPresent(text -> request.setProperty("param:watermarkText", text));
+                }
             }
         }
     }
@@ -171,12 +173,11 @@ public class PdfRequestFilter implements ContainerRequestFilter {
      * @param imageName
      * @return
      */
-    private String getFirstImageName(String imageName) {
-        if(imageName.contains("$")) {
+    private static String getFirstImageName(String imageName) {
+        if (imageName.contains("$")) {
             return imageName.split("$")[0];
-        } else {
-            return imageName;
         }
+        return imageName;
     }
 
     /**

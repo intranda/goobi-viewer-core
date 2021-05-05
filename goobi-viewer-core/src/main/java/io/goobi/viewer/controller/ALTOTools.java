@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -77,21 +76,18 @@ public class ALTOTools {
     private final static String LABEL = "LABEL";
 
     /** Constant <code>TAG_LABEL_IGNORE_REGEX="^\\W+|\\W+$"</code> */
-    public static final String TAG_LABEL_IGNORE_REGEX = "^\\W+|\\W+$";
+    public static final String TAG_LABEL_IGNORE_REGEX = "(^\\W+)|(\\W+$)";
 
     /**
      * Read the plain fulltext from an alto file. Don't merge linebreaks
      * 
-     * @param path
-     * @return
-     * @throws IOException 
-     * @throws  
+     * @param path @return @throws IOException @throws
      */
     public static String getFulltext(Path path, String encoding) throws IOException {
         String altoString = FileTools.getStringFromFile(path.toFile(), encoding);
         return getFullText(altoString, false, null);
     }
-    
+
     /**
      * <p>
      * getFullText.
@@ -215,9 +211,13 @@ public class ALTOTools {
         Map<String, String> neUriMap = new HashMap<>();
         Set<String> usedTags = new HashSet<>();
         StringBuilder strings = new StringBuilder(500);
+        XMLStreamReader parser = null;
         try (InputStream is = new ByteArrayInputStream(useAlto.getBytes(StandardCharsets.UTF_8))) {
             XMLInputFactory factory = XMLInputFactory.newInstance();
-            XMLStreamReader parser = factory.createXMLStreamReader(is);
+            // Disable access to external entities
+            factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+            parser = factory.createXMLStreamReader(is);
 
             String prevSubsContent = null;
             while (parser.hasNext()) {
@@ -265,7 +265,6 @@ public class ALTOTools {
                                         // with URI (skip if tag is already used so
                                         // that the tag link is not rendered for
                                         // every tagged word)
-                                        FacesContext context = FacesContext.getCurrentInstance();
                                         if (request != null) {
                                             String contextPath = request.getContextPath();
                                             strings.append("<span data-remotecontent=\"");
@@ -359,6 +358,10 @@ public class ALTOTools {
 
                 }
                 parser.next();
+            }
+        } finally {
+            if (parser != null) {
+                parser.close();
             }
         }
         if (strings.length() > 0) {
@@ -506,7 +509,7 @@ public class ALTOTools {
             tempList.add(coords);
             logger.trace("ALTO word found: {} ({})", eleWord.getAttributeValue("CONTENT"), coords);
         }
-        
+
         return coords;
     }
 

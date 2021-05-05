@@ -16,6 +16,9 @@
 package io.goobi.viewer.faces.converters;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.util.Arrays;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -31,14 +34,22 @@ import org.apache.commons.lang3.StringUtils;
 @FacesConverter("localDateConverter")
 public class LocalDateConverter implements Converter<LocalDate> {
 
+    
     /* (non-Javadoc)
      * @see javax.faces.convert.Converter#getAsObject(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.String)
      */
     @Override
     public LocalDate getAsObject(FacesContext context, UIComponent component, String value) {
         if (StringUtils.isNotBlank(value)) {
-            LocalDate date = LocalDate.parse(value);
-            return date;
+            if(component != null && component.getAttributes().get("data-format") != null) {
+                String format = (String) component.getAttributes().get("data-format");
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(format);
+                LocalDate date = LocalDate.parse(value, dateTimeFormatter);
+                return date;
+            } else {                
+                LocalDate date = LocalDate.parse(value);
+                return date;
+            }
         }
         return null;
     }

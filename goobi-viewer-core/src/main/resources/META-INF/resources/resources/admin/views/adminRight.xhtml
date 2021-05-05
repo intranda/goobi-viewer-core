@@ -526,7 +526,8 @@
                                                             </div>
                                                         </ui:repeat>
                                                         <ui:repeat var="priv" value="#{adminBean.currentLicense.getSortedPrivileges(adminBean.currentLicense.privilegesCopy)}">
-                                                            <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicense.removePrivilege(priv)}" title="#{msg.remove}">
+                                                            <h:commandLink styleClass="admin__license-action"
+                                                                action="#{adminBean.currentLicense.removePrivilege(priv)}" title="#{msg.remove}">
                                                                 <div class="badge badge-success">
                                                                     #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
                                                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
@@ -557,8 +558,9 @@
                                     </div>
                                 </ui:fragment>
                             </h:panelGroup>
-                            <div class="text-right">
-                                <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn" immediate="true" />
+                            <div
+								class="row no-gutters justify-content-end admin__final-actions">
+                                <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
                                 <h:commandLink action="#{adminBean.saveCurrentLicenseAction}" value="#{msg.save}" styleClass="btn btn--success" />
                             </div>
                         </div>

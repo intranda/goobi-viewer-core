@@ -21,8 +21,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
-import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 
 public class AbstractPageLoaderTest {
 
