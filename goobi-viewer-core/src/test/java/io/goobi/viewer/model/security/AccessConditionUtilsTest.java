@@ -284,29 +284,24 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     @Test
     public void generateAccessCheckQuery_shouldUseCorrectFieldNameForAVFiles() throws Exception {
         {
-            String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.tif");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.tif\"", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.tif");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.tif\"", result);
         }
         {
-            String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.webm");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.webm");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result);
         }
         {
-            String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.mp4");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.mp4");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result);
         }
         {
-            String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.mp3");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.mp3");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result);
         }
         {
-            String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.ogg");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.ogg");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result);
         }
     }
 
@@ -317,14 +312,18 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     @Test
     public void generateAccessCheckQuery_shouldUseCorrectFileNameForTextFiles() throws Exception {
         {
-            String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.txt");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "alto/PPN123456789/00000001.txt");
+            Assert.assertEquals(
+                    "+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME_FULLTEXT
+                            + ":\"alto/PPN123456789/00000001.txt\" FILENAME_PLAIN:\"00000001.txt\")",
+                    result);
         }
         {
-            String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.xml");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "alto/PPN123456789/00000001.xml");
+            Assert.assertEquals(
+                    "+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME_ALTO
+                            + ":\"alto/PPN123456789/00000001.xml\" FILENAME_XML:\"00000001.xml\")",
+                    result);
         }
     }
 
@@ -335,14 +334,8 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     @Test
     public void generateAccessCheckQuery_shouldEscapeFileNameForWildcardSearchCorrectly() throws Exception {
         {
-            String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001 (1).xml");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
-        }
-        {
-            String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001 (1)");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001 (1)");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result);
         }
     }
 
@@ -352,9 +345,8 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      */
     @Test
     public void generateAccessCheckQuery_shouldWorkCorrectlyWithUrls() throws Exception {
-        String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "file:///opt/digiverso/viewer/cms_media/bild4.png");
-        Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"bild4.png\"", result[0]);
-        Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+        String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "file:///opt/digiverso/viewer/cms_media/bild4.png");
+        Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"bild4.png\"", result);
     }
 
     /**

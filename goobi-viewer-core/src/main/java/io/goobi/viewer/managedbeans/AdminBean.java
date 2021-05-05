@@ -533,6 +533,7 @@ public class AdminBean implements Serializable {
      * Adds currentUserRole to the map of UserRoles to be processed, marked as to save.
      * 
      * @throws DAOException
+     * @should add user if not yet in group
      */
     public void addUserRoleAction() throws DAOException {
         logger.trace("addUserRoleAction: {}", currentUserRole);
@@ -547,7 +548,8 @@ public class AdminBean implements Serializable {
             return;
         }
 
-        if (currentUserGroup != null && currentUserGroup.getMemberships().contains(currentUserRole)) {
+        if (currentUserGroup != null && !currentUserGroup.getMemberships().contains(currentUserRole)) {
+            logger.trace("adding user");
             currentUserGroup.getMemberships().add(currentUserRole);
             dirtyUserRoles.put(currentUserRole, "save");
         }

@@ -15,14 +15,7 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT_ZIP;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI_LANG;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.awt.Dimension;
 import java.io.FileNotFoundException;
@@ -1749,7 +1742,7 @@ public class ViewManager implements Serializable {
         return DataManager.getInstance()
                 .getRestApiManager()
                 .getContentApiManager()
-                .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO).params(pi).build())
+                .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO_ZIP).params(pi).build())
                 .orElse("");
     }
 
