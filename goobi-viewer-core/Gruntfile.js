@@ -166,7 +166,9 @@ module.exports = function (grunt) {
                             "mirador/dist/mirador.min.js*" : "mirador/",
                             "swiper/swiper-bundle.min.js" : "swiper/",
                             "overhang/dist/overhang.min.js" : "overhang/",
-                            "sweetalert2/dist/sweetalert2.min.js" : "sweetalert/"
+                            "sweetalert2/dist/sweetalert2.min.js" : "sweetalert/",
+                            "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.min.js" : "mapbox/geocoder/",
+                            "mapbox-gl/dist/mapbox-gl.js" : "mapbox/"
                         },
                         css : {
                             "leaflet/dist/leaflet.css" : "leaflet/",
@@ -175,7 +177,9 @@ module.exports = function (grunt) {
                             "swagger-ui-dist/swagger-ui.css" : "swagger/",
                             "swiper/swiper-bundle.min.css" :  "swiper/",
                             "overhang/dist/overhang.min.css" : "overhang/",
-                            "sweetalert2/dist/sweetalert2.min.css" : "sweetalert/"
+                            "sweetalert2/dist/sweetalert2.min.css" : "sweetalert/",
+                            "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css" : "mapbox/geocoder/",
+                            "mapbox-gl/dist/mapbox-gl.css" : "mapbox/"
                         }
                     }
                 },

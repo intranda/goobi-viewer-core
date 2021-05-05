@@ -483,7 +483,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
 	     	promise = viewerJS.notifications.confirm(Crowdsourcing.translate("crowdsourcing__confirm_skip_page"))
 	     }
 	     promise.then( () => {
-	     	console.log("confirm skip item");
 		     window.location.href = this.nextItemUrl;
 	     })
 	     .catch((e) => {});

@@ -90,7 +90,6 @@
 
 	loadItem(itemConfig) {
 	    this.item = new Crowdsourcing.Item(itemConfig, 0);
-	    //console.log("load item ", this.item);
 	    this.item.logEndpoint = this.item.id + "/" + this.opts.pi + "/log/";
 	    if(this.opts.currentuserid) {
 	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
@@ -137,7 +136,6 @@
 	*/
 	initAnnotations(annotations) {
 	    let save = this.item.createAnnotationMap(annotations);
-	    console.log("init annotations ", save)
 	    this.item.saveToLocalStorage(save);
 	}
 	
@@ -145,14 +143,11 @@
 	*	Replace the annnotations for the given pageId in localStorage with the given annotations
 	*/
 	initAnnotationsForPage(annotations, pageId) {
-	    console.log("init annotations ", annotations, pageId);
 	    annotations = annotations.filter( (anno) => pageId == Crowdsourcing.getResourceId(anno.target) );
-	    console.log("updateAnnotations ", annotations)
 	    let save = this.item.getFromLocalStorage();
 	    this.item.deleteAnnotations(save, pageId);
         this.item.addAnnotations(annotations, save);
 	    //let save = this.item.createAnnotationMap(annotations);
-	    console.log("init annotations ", save)
 	    this.item.saveToLocalStorage(save);
 	}
 	

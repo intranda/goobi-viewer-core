@@ -10,6 +10,8 @@
 		<label>{Crowdsourcing.translate("crowdsourcing__help__make_active")}</label>
 	</div>
 	
+	<div ref="geocoder" class="geocoder"/>
+	
 	<div id="geoMap_{opts.index}" class="geo-map"></div>
 	
 	<div id="annotation_{index}" each="{anno, index in this.annotations}">
@@ -149,6 +151,7 @@ initMap() {
         svg: true
     })
     this.geoMap.init(initialView);
+    this.geoMap.initGeocoder(this.refs.geocoder);
     this.geoMap.onFeatureMove.subscribe(feature => this.moveFeature(feature));
     this.geoMap.onFeatureClick.subscribe(feature => this.removeFeature(feature));
     this.geoMap.onMapClick.subscribe(geoJson => {

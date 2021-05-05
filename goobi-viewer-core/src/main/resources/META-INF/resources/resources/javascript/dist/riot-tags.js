@@ -1014,7 +1014,6 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 
 	this.loadItem = function(itemConfig) {
 	    this.item = new Crowdsourcing.Item(itemConfig, 0);
-
 	    this.item.logEndpoint = this.item.id + "/" + this.opts.pi + "/log/";
 	    if(this.opts.currentuserid) {
 	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
@@ -1057,19 +1056,15 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 
 	this.initAnnotations = function(annotations) {
 	    let save = this.item.createAnnotationMap(annotations);
-	    console.log("init annotations ", save)
 	    this.item.saveToLocalStorage(save);
 	}.bind(this)
 
 	this.initAnnotationsForPage = function(annotations, pageId) {
-	    console.log("init annotations ", annotations, pageId);
 	    annotations = annotations.filter( (anno) => pageId == Crowdsourcing.getResourceId(anno.target) );
-	    console.log("updateAnnotations ", annotations)
 	    let save = this.item.getFromLocalStorage();
 	    this.item.deleteAnnotations(save, pageId);
         this.item.addAnnotations(annotations, save);
 
-	    console.log("init annotations ", save)
 	    this.item.saveToLocalStorage(save);
 	}.bind(this)
 
@@ -1487,7 +1482,7 @@ this.toPageNumber = function(e) {
 }.bind(this)
 
 });
-riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showAddMarkerInstructions()}" class="crowdsourcing-annotations__single-instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__add_marker_to_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div id="geoMap_{opts.index}" class="geo-map"></div><div id="annotation_{index}" each="{anno, index in this.annotations}"></div>', '', '', function(opts) {
+riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showAddMarkerInstructions()}" class="crowdsourcing-annotations__single-instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__add_marker_to_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div ref="geocoder" class="geocoder"></div><div id="geoMap_{opts.index}" class="geo-map"></div><div id="annotation_{index}" each="{anno, index in this.annotations}"></div>', '', '', function(opts) {
 
 
 this.question = this.opts.question;
@@ -1605,6 +1600,7 @@ this.initMap = function() {
         svg: true
     })
     this.geoMap.init(initialView);
+    this.geoMap.initGeocoder(this.refs.geocoder);
     this.geoMap.onFeatureMove.subscribe(feature => this.moveFeature(feature));
     this.geoMap.onFeatureClick.subscribe(feature => this.removeFeature(feature));
     this.geoMap.onMapClick.subscribe(geoJson => {
