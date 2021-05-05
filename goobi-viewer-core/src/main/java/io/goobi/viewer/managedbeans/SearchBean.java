@@ -519,6 +519,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         searchTerms.clear();
         StringBuilder sbCurrentCollection = new StringBuilder();
+        String currentFacetString = facets.getCurrentFacetStringPrefix(false);
 
         for (SearchQueryGroup queryGroup : advancedQueryGroups) {
             StringBuilder sbGroup = new StringBuilder();
@@ -554,7 +555,15 @@ public class SearchBean implements SearchInterface, Serializable {
                 // Generate the hierarchical facet parameter from query items
                 if (queryItem.isHierarchical()) {
                     logger.trace("{} is hierarchical", queryItem.getField());
-                    sbCurrentCollection.append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).append(";;").toString();
+                    String itemQuery =
+                            new StringBuilder().append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).append(";;").toString();
+                    logger.trace("item query: {}", itemQuery);
+                    // Skip duplicate collections, etc.
+                    if (currentFacetString.contains(itemQuery)) {
+                        logger.trace("{} skipped", itemQuery);
+                        continue;
+                    }
+                    sbCurrentCollection.append(itemQuery);
                     sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
                             .append(": \"")
                             .append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()))
@@ -680,12 +689,10 @@ public class SearchBean implements SearchInterface, Serializable {
                 sb.append('(').append(sbGroup).append(')');
             }
         }
-        if (sbCurrentCollection.length() > 0)
-
-        {
+        if (sbCurrentCollection.length() > 0) {
             facets.setCurrentFacetString(facets.getCurrentFacetStringPrefix() + sbCurrentCollection.toString());
         } else {
-            facets.setCurrentFacetString("-");
+            facets.setCurrentFacetString(facets.getCurrentFacetString());
         }
 
         advancedSearchQueryInfo = sbInfo.toString();
@@ -1226,22 +1233,27 @@ public class SearchBean implements SearchInterface, Serializable {
             SearchQueryGroup queryGroup = advancedQueryGroups.get(0);
             if (!queryGroup.getQueryItems().isEmpty()) {
                 int index = 0;
+                logger.trace("facets: {}", facets.getCurrentFacets().size());
                 for (FacetItem facetItem : facets.getCurrentFacets()) {
                     if (!facetItem.isHierarchial()) {
                         continue;
                     }
+                    logger.trace("facet item: {}", facetItem.toString());
                     if (index < queryGroup.getQueryItems().size()) {
                         // Fill existing search query items
                         SearchQueryItem item = queryGroup.getQueryItems().get(index);
-                        while (!item.isHierarchical() && StringUtils.isNotEmpty(item.getValue())
+                        logger.trace("query item: {}", item.toString());
+                        while (!item.isHierarchical() && (StringUtils.isNotEmpty(item.getValue()) || item.getField().equals(facetItem.getField()))
                                 && index + 1 < queryGroup.getQueryItems().size()) {
                             // Skip items that already have values
                             ++index;
                             item = queryGroup.getQueryItems().get(index);
+                            logger.trace("query item: {}", item.toString());
                         }
                         item.setField(facetItem.getField());
                         item.setOperator(SearchItemOperator.IS);
                         item.setValue(facetItem.getValue());
+                        logger.trace("updated item: {}", item.toString());
                     } else {
                         // If no search field is set up for collection search, add new field containing the currently selected collection
                         SearchQueryItem item = new SearchQueryItem(BeanUtils.getLocale());
@@ -1249,6 +1261,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         item.setOperator(SearchItemOperator.IS);
                         item.setValue(facetItem.getValue());
                         queryGroup.getQueryItems().add(item);
+                        logger.trace("added new item: {}", item);
                     }
                     ++index;
                 }
@@ -2145,7 +2158,7 @@ public class SearchBean implements SearchInterface, Serializable {
             throws InterruptedException, ViewerConfigurationException {
         try {
             HttpServletRequest request = BeanUtils.getRequest(facesContext);
-            if(request == null) {
+            if (request == null) {
                 request = BeanUtils.getRequest();
             }
             Map<String, String> params = SearchHelper.generateQueryParams();
