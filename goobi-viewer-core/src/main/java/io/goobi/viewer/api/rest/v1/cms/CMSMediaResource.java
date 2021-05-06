@@ -70,6 +70,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaItem;
 import io.goobi.viewer.controller.DataManager;
@@ -337,6 +338,7 @@ public class CMSMediaResource {
                     } else {
                         item.setFileName(mediaFile.getFileName().toString());
                         DataManager.getInstance().getDao().updateCMSMediaItem(item);
+                        removeFromImageCache(item);
                     }
                     MediaItem jsonItem = new MediaItem(item, servletRequest);
                     return Response.status(Status.OK).entity(jsonItem).build();
@@ -359,6 +361,14 @@ public class CMSMediaResource {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
             }
         }
+    }
+
+    /**
+     * @param item
+     */
+    private void removeFromImageCache(CMSMediaItem item) {
+        String identifier = DataManager.getInstance().getConfiguration().getCmsMediaFolder() + "_" + item.getFileName().replace(".", "-");
+        CacheUtils.deleteFromCache(identifier, true, true);
     }
 
     /**

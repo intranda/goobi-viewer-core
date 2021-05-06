@@ -68,8 +68,10 @@ public class CMSMediaImageResource extends ImageResource {
         request.setAttribute("filename", this.imageURI.toString());
         String requestUrl = request.getRequestURI();
         filename = URLEncoder.encode(filename, "utf-8");
-        String baseImageUrl = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
-        String imageRequestPath = requestUrl.replace(baseImageUrl, "");
+        String baseImageUrl = (ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE).replace("{filename}", filename);
+        int baseStartIndex = requestUrl.indexOf(baseImageUrl);
+        int baseEndIndex = baseStartIndex + baseImageUrl.length();
+        String imageRequestPath = requestUrl.substring(baseEndIndex);
         this.resourceURI = URI.create(baseImageUrl);
         
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
