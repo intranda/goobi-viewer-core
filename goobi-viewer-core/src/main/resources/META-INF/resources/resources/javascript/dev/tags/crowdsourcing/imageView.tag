@@ -44,8 +44,8 @@
 	
 
 	<script>
-	
-	// INIT TOOLTIPS
+
+	// INIT TOOLTIPS'TIPS
 	this.on("updated", function() {
 		this.initTooltips();
 	});
@@ -87,9 +87,11 @@
 	initTooltips() {
 	    $('.thumbnails-image-wrapper.review').tooltip({
 	        placement: 'top',
-	      title: 'In review',
+	      title: 'Crowdsourcing.translate("crowdsourcing__tooltip_in_review")',
 	      trigger: 'hover'
 	    });
+	    
+	    console.log('crowdsourcing__tooltip_in_review');
 	    
 // 	    $('.thumbnails-image-wrapper.annotate').tooltip({
 // 	        placement: 'top',
@@ -99,7 +101,7 @@
 	    
 	    $('.thumbnails-image-wrapper.finished').tooltip({
 	        placement: 'top',
-	      title: 'Completed',
+	      title: 'Crowdsourcing.translate("crowdsourcing__tooltip_in_completed")',
 	      trigger: 'hover'
 	    });
 
@@ -107,8 +109,8 @@
 	    function updateLockedTooltip() {
 	    	$('.thumbnails-image-wrapper.locked').tooltip('dispose');
 		    $('.thumbnails-image-wrapper.locked').tooltip({
-		        placement: 'top',
-		      title: 'Locked by other user',
+		      placement: 'top',
+		      title: 'Crowdsourcing.translate("crowdsourcing__tooltip_locked")',
 		      trigger: 'hover'
 		    });
 		    
