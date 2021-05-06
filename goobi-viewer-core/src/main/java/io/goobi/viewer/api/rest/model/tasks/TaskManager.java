@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -44,6 +45,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * Manages (possibly timeconsuming) {@link Task tasks} within the viewer which can be triggered and monitored via the {@link TasksResource}. The tasks
@@ -126,12 +128,19 @@ public class TaskManager {
                 };
             case UPDATE_SITEMAP:
                 return (request, job) -> {
+                    
                     SitemapRequestParameters params = Optional.ofNullable(job.params)
                             .filter(p -> p instanceof SitemapRequestParameters)
                             .map(p -> (SitemapRequestParameters) p)
                             .orElse(null);
+                    
+                    String viewerRootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
+                    String outputPath = params.getOutputPath();
+                    if(StringUtils.isBlank(outputPath)) {
+                        outputPath = request.getServletContext().getRealPath("/");
+                    }
                     try {
-                        new SitemapBuilder(request).updateSitemap(params);
+                        new SitemapBuilder(request).updateSitemap(outputPath, viewerRootUrl);
                     } catch (IllegalRequestException | AccessDeniedException | JSONException | PresentationException e) {
                         job.setError(e.getMessage());
                     }

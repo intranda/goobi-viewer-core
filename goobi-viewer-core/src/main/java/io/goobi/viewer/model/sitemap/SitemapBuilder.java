@@ -34,6 +34,7 @@ import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * Resource for sitemap generation.
@@ -52,22 +53,25 @@ public class SitemapBuilder {
     }
 
     public void updateSitemap(SitemapRequestParameters params) throws AccessDeniedException, IllegalRequestException, JSONException, PresentationException {
-
-        JSONObject ret = new JSONObject();
-
+        
         if (params == null) {
             throw new IllegalRequestException("Invalid JSON request object");
-//            ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
-//            ret.put("message", "Invalid JSON request object");
-//            return ret.toString();
         }
-
-        Sitemap sitemap = new Sitemap();
+        
         String outputPath = params.getOutputPath();
         if (outputPath == null) {
             outputPath = servletRequest.getServletContext().getRealPath("/");
         }
-        final String passOutputPath = outputPath;
+        String rootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(this.servletRequest);
+        updateSitemap(outputPath, rootUrl);
+    }
+        
+    public void updateSitemap(String outputPath, String viewerRootUrl) throws AccessDeniedException, IllegalRequestException, JSONException, PresentationException {
+
+        JSONObject ret = new JSONObject();
+        
+        Sitemap sitemap = new Sitemap();
+
 
         if (workerThread == null || !workerThread.isAlive()) {
             workerThread = new Thread(new Runnable() {
@@ -75,7 +79,7 @@ public class SitemapBuilder {
                 @Override
                 public void run() {
                     try {
-                        List<File> sitemapFiles = sitemap.generate(servletRequest, passOutputPath);
+                        List<File> sitemapFiles = sitemap.generate(viewerRootUrl, outputPath);
                         if (sitemapFiles != null) {
                             ret.put("status", HttpServletResponse.SC_OK);
                             ret.put("message", sitemapFiles.size() + " sitemap files created");

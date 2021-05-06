@@ -343,14 +343,32 @@ public class ViewerResourceBundle extends ResourceBundle {
      * getTranslation.
      * </p>
      *
-     * @param key a {@link java.lang.String} object.
-     * @param locale a {@link java.util.Locale} object.
+     * @param key Message key to translate
+     * @param locale Desired locale
      * @param useFallback If true, get default locale translation if there is none for the given locale
      * @param reversePriority If true, the global bundle will be checked first, then the local
      * @param cleanup If true, elements such as 'zzz' will be removed from the translation
      * @return Translated message key
      */
     public static String getTranslation(final String key, Locale locale, boolean useFallback, boolean reversePriority, boolean cleanup) {
+        return getTranslation(key, locale, useFallback, true, reversePriority, cleanup);
+    }
+
+    /**
+     * <p>
+     * getTranslation.
+     * </p>
+     * 
+     * @param key Message key to translate
+     * @param locale Desired locale
+     * @param useFallback If true, get default locale translation if there is none for the given locale
+     * @param returnKeyIfNoneFound If true, the key will be returned as translation value; null otherwise
+     * @param reversePriority If true, the global bundle will be checked first, then the local
+     * @param cleanup If true, elements such as 'zzz' will be removed from the translation
+     * @return Translated message key
+     */
+    public static String getTranslation(final String key, Locale locale, boolean useFallback, boolean returnKeyIfNoneFound, boolean reversePriority,
+            boolean cleanup) {
         //        logger.trace("Translation for: {}", key);
         locale = checkAndLoadResourceBundles(locale); // If locale is null, the return value will be the current locale
         Map<Locale, ResourceBundle> bundles1 = reversePriority ? localBundles : defaultBundles;
@@ -360,7 +378,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 && !defaultLocale.equals(locale)) {
             value = getTranslation(key, bundles1.get(defaultLocale), bundles2.get(defaultLocale), cleanup);
         }
-        if (value == null) {
+        if (value == null && returnKeyIfNoneFound) {
             value = key;
         }
 

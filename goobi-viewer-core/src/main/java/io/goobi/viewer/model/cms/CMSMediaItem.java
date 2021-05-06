@@ -133,7 +133,8 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         this.priority = orig.priority;
         this.displayOrder = orig.displayOrder;
         this.categories = new ArrayList<>(orig.getCategories());
-
+        this.lastModifiedTime = orig.lastModifiedTime;
+        
         for (CMSMediaItemMetadata origMetadata : orig.metadata) {
             CMSMediaItemMetadata copy = new CMSMediaItemMetadata(origMetadata);
             this.metadata.add(copy);
