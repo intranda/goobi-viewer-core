@@ -76,7 +76,6 @@ var viewerJS = ( function( viewer ) {
         if(this.map) {
             this.map.remove();
         }
-        
         //init mapBox config. If no config object is set in viewerJS, only get token from viewerJS
         //if that doesn't exists, don't create mapBox config
         if(!this.config.mapBox && viewerJS.getMapBoxToken()) {
@@ -206,28 +205,32 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.prototype.initGeocoder = function(element) {
-    	let config = {
-    		accessToken : this.config.mapBox.token,
-    		mapboxgl: mapboxgl,
-    	};
-    	this.geocoder = new MapboxGeocoder(config);
-    	this.geocoder.addTo(element);
-    	this.geocoder.on("result", (event) => {
-    		//console.log("geocoder result",  event.result, event.result.center, event.result.place_type, event.result.place_name);
-    		
-    		if(event.result.bbox) {
-    			let p1 = new L.latLng(event.result.bbox[1], event.result.bbox[0]);
-    			let p2 = new L.latLng(event.result.bbox[3], event.result.bbox[2]);
-    			let bounds = new L.latLngBounds(p1, p2);
-    			this.map.fitBounds(bounds);
-    		} else {
-	    		let view = {
-	                "zoom": this.config.maxZoom,
-	                "center": event.result.center
-	            }
-	            this.setView(view);
-    		}
-    	});
+    	if(this.config.mapBox && this.config.mapBox.token) {
+	    	let config = {
+	    		accessToken : this.config.mapBox.token,
+	    		mapboxgl: mapboxgl,
+	    	};
+	    	this.geocoder = new MapboxGeocoder(config);
+	    	this.geocoder.addTo(element);
+	    	this.geocoder.on("result", (event) => {
+	    		//console.log("geocoder result",  event.result, event.result.center, event.result.place_type, event.result.place_name);
+	    		
+	    		if(event.result.bbox) {
+	    			let p1 = new L.latLng(event.result.bbox[1], event.result.bbox[0]);
+	    			let p2 = new L.latLng(event.result.bbox[3], event.result.bbox[2]);
+	    			let bounds = new L.latLngBounds(p1, p2);
+	    			this.map.fitBounds(bounds);
+	    		} else {
+		    		let view = {
+		                "zoom": this.config.maxZoom,
+		                "center": event.result.center
+		            }
+		            this.setView(view);
+	    		}
+	    	});
+    	} else {
+    		console.warn("Cannot initialize geocoder: No mapbox token");
+    	}
     }
     
     
