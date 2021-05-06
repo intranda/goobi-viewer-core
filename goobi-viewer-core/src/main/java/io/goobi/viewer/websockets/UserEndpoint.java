@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.websockets;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -121,7 +122,11 @@ public class UserEndpoint {
                     if (sessionId.equals(AdminBean.getTranslationGroupsEditorSession())) {
                         AdminBean.setTranslationGroupsEditorSession(null);
                         logger.trace("Removed translation editing lock for session '{}'.", sessionId);
-                        CampaignEndpoint.removeSessionLock(sessionId);
+                        try {
+                            CampaignEndpoint.removeSessionLock(sessionId);
+                        } catch (IOException e) {
+                            logger.error("Error conntecting to webSocket of expired session to send notification", e);
+                        }
                     }
                 } else {
                     // logger.trace("Session {} has been refreshed and won't be cleared", sessionId);

@@ -33,12 +33,18 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import org.bouncycastle.i18n.MessageBundle;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
@@ -121,10 +127,11 @@ public class CampaignEndpoint {
 
     }
 
-    private static void removePageLock(String sessionId) {
+    private static PageLock removePageLock(String sessionId) {
         synchronized (pageLocks) {
             PageLock lock = pageLocks.remove(sessionId);
             broadcast(lock);
+            return lock;
         }
     }
 
@@ -147,11 +154,11 @@ public class CampaignEndpoint {
         }
     }
     
-    private void sendWarning(String text) throws IOException, DAOException {
+    private static void sendWarning(PageLock lock, String text) throws IOException {
         JSONObject warning = new JSONObject();
         warning.put("status", "warning");
         warning.put("message", text);
-            this.session.getBasicRemote().sendText(warning.toString());
+        lock.session.getBasicRemote().sendText(warning.toString());
     }
 
     /**
@@ -252,12 +259,15 @@ public class CampaignEndpoint {
     }
 
     /**
-     * Remove a registered crowdsourcing session lock
+     * Remove a registered crowdsourcing page lock after session end and notify the assiciated websocket session that the session has ended
      * 
      * @param sessionId
+     * @throws DAOException 
+     * @throws IOException 
      */
-    public static void removeSessionLock(String sessionId) {
-        pageLocks.remove(sessionId);
+    public static void removeSessionLock(String sessionId) throws IOException {
+        PageLock lock = removePageLock(sessionId);
+        sendWarning(lock, "notify__crowdsourcing_session_timed_out");
     }
 
     /**
