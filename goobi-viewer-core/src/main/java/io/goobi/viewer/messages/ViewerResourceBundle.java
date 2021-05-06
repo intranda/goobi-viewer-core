@@ -351,7 +351,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @return Translated message key
      */
     public static String getTranslation(final String key, Locale locale, boolean useFallback, boolean reversePriority, boolean cleanup) {
-        return getTranslation(key, locale, useFallback, false, reversePriority, cleanup);
+        return getTranslation(key, locale, useFallback, true, reversePriority, cleanup);
     }
 
     /**
