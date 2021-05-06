@@ -61,7 +61,7 @@
 	$( document ).ready(function() {
 	    $('.image-controls__action.thumbs').tooltip({
 	        placement: 'top',
-	      title: 'Back to thumbnail overview',
+	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_back_to_overview"),
 	      trigger: 'hover'
 	    });
 	});

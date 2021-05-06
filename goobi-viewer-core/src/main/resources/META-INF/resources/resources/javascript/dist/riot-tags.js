@@ -1703,7 +1703,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
 	$( document ).ready(function() {
 	    $('.image-controls__action.thumbs').tooltip({
 	        placement: 'top',
-	      title: 'Back to thumbnail overview',
+	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_back_to_overview"),
 	      trigger: 'hover'
 	    });
 	});
@@ -1716,7 +1716,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" item="{this.opts.item}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">Show unfinished</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">Show all</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" item="{this.opts.item}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_unfinished⁗)}</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_all⁗)}</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
 
 
 	this.on("updated", function() {
@@ -1755,18 +1755,18 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 
 	})
 
+	console.log(Crowdsourcing.translate("crowdsourcing__campaign_tooltip_in_review"))
+
 	this.initTooltips = function() {
 	    $('.thumbnails-image-wrapper.review').tooltip({
 	        placement: 'top',
-	      title: 'Crowdsourcing.translate("crowdsourcing__tooltip_in_review")',
+	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_in_review"),
 	      trigger: 'hover'
 	    });
 
-	    console.log('crowdsourcing__tooltip_in_review');
-
 	    $('.thumbnails-image-wrapper.finished').tooltip({
 	        placement: 'top',
-	      title: 'Crowdsourcing.translate("crowdsourcing__tooltip_in_completed")',
+	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_completed"),
 	      trigger: 'hover'
 	    });
 
@@ -1774,7 +1774,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	    	$('.thumbnails-image-wrapper.locked').tooltip('dispose');
 		    $('.thumbnails-image-wrapper.locked').tooltip({
 		      placement: 'top',
-		      title: 'Crowdsourcing.translate("crowdsourcing__tooltip_locked")',
+		      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_locked"),
 		      trigger: 'hover'
 		    });
 

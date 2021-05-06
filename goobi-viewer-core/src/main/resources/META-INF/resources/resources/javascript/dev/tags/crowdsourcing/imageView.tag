@@ -27,8 +27,8 @@
 			<div class="thumbnails-filters">
 <!-- 				<button ref="filter_annotated" class="thumbnails-filter-annotated btn btn--clean"></button> -->
 <!-- 				<button ref="filter_finished" class="thumbnails-filter-finished btn btn--clean"></button> -->
-				<button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">Show unfinished</button>
-				<button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">Show all</button>
+				<button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate("crowdsourcing__campaign_filter_show_unfinished")}</button>
+				<button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate("crowdsourcing__campaign_filter_show_all")}</button>
 			</div>
 			
 			<thumbnails class="image_thumbnails" 
@@ -82,16 +82,18 @@
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
 
 	})
+	
+	console.log(Crowdsourcing.translate("crowdsourcing__campaign_tooltip_in_review"))
 
 	// TOOLTIPS FOR PAGE STATUS	
 	initTooltips() {
 	    $('.thumbnails-image-wrapper.review').tooltip({
 	        placement: 'top',
-	      title: 'Crowdsourcing.translate("crowdsourcing__tooltip_in_review")',
+	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_in_review"),
 	      trigger: 'hover'
 	    });
 	    
-	    console.log('crowdsourcing__tooltip_in_review');
+	    // console.log('Crowdsourcing.translate("crowdsourcing__campaign_tooltip_in_review")');
 	    
 // 	    $('.thumbnails-image-wrapper.annotate').tooltip({
 // 	        placement: 'top',
@@ -101,7 +103,7 @@
 	    
 	    $('.thumbnails-image-wrapper.finished').tooltip({
 	        placement: 'top',
-	      title: 'Crowdsourcing.translate("crowdsourcing__tooltip_in_completed")',
+	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_completed"),
 	      trigger: 'hover'
 	    });
 
@@ -110,7 +112,7 @@
 	    	$('.thumbnails-image-wrapper.locked').tooltip('dispose');
 		    $('.thumbnails-image-wrapper.locked').tooltip({
 		      placement: 'top',
-		      title: 'Crowdsourcing.translate("crowdsourcing__tooltip_locked")',
+		      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_locked"),
 		      trigger: 'hover'
 		    });
 		    
