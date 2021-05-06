@@ -116,14 +116,8 @@ public abstract class TranslationGroupItem {
             List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
             List<MessageValue> values = new ArrayList<>(allLocales.size());
             for (Locale locale : allLocales) {
-                String translation = ViewerResourceBundle.getTranslation(k, locale, false, false, false);
-                if (translation.equals(k)) {
-                    translation = null;
-                }
-                String globalTranslation = ViewerResourceBundle.getTranslation(k, locale, false, true, false);
-                if (globalTranslation.equals(k)) {
-                    globalTranslation = null;
-                }
+                String translation = ViewerResourceBundle.getTranslation(k, locale, false, false, false, false);
+                String globalTranslation = ViewerResourceBundle.getTranslation(k, locale, false, false, true, false);
                 values.add(new MessageValue(locale.getLanguage(), translation, globalTranslation));
             }
             entries.add(new MessageEntry(k, values));
