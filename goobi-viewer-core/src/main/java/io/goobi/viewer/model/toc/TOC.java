@@ -18,6 +18,7 @@ package io.goobi.viewer.model.toc;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -32,6 +33,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -139,7 +141,8 @@ public class TOC implements Serializable {
             int visibleLevel = DataManager.getInstance().getConfiguration().getSidebarTocInitialCollapseLevel();
             int collapseThreshold = DataManager.getInstance().getConfiguration().getSidebarTocCollapseLengthThreshold();
             int lowestLevelToCollapse = DataManager.getInstance().getConfiguration().getSidebarTocLowestLevelToCollapseForLength();
-            buildTree(group, visibleLevel, collapseThreshold, lowestLevelToCollapse);
+            Long currentElementIdDoc = BeanUtils.getActiveDocumentBean().getViewManager().getCurrentStructElementIddoc();
+            buildTree(group, visibleLevel, collapseThreshold, lowestLevelToCollapse, currentElementIdDoc);
         }
         return getViewForGroup(group);
     }
@@ -186,8 +189,9 @@ public class TOC implements Serializable {
      * @param visibleLevel
      * @param collapseThreshold
      * @param lowestLevelToCollapse
+     * @param currentElementIdDoc 
      */
-    private void buildTree(String group, int visibleLevel, int collapseThreshold, int lowestLevelToCollapse) {
+    private void buildTree(String group, int visibleLevel, int collapseThreshold, int lowestLevelToCollapse, Long currentElementIdDoc) {
         logger.trace("buildTree");
         if (group == null) {
             throw new IllegalArgumentException("group may not be null");
@@ -236,6 +240,47 @@ public class TOC implements Serializable {
                 //                logger.trace("Time for initial collapse: {} ns", (end - start));
                 collapseTocForLength(collapseThreshold, lowestLevelToCollapse);
                 treeBuilt = true;
+            }
+        }
+        uncollapseCurrentElementAncestors(tocElementMap.get(group), currentElementIdDoc);
+    }
+
+    /**
+     * 
+     * 
+     * @param list
+     * @param currentElementIdDoc
+     */
+    private void uncollapseCurrentElementAncestors(List<TOCElement> list, Long currentElementIdDoc) {
+        if(currentElementIdDoc != null) {
+            TOCElement currentElement = list.stream().filter(ele -> ele.getIddoc().equals(currentElementIdDoc.toString())).findAny().orElse(null);
+            if(currentElement != null) {
+                int index = list.indexOf(currentElement);
+                currentElement.setVisible(true);
+                int parentId = currentElement.getParentId();
+                if(parentId != 0) {  
+                    //make visible all following elements with the same parent
+                    for (int i = index + 1; i < list.size(); i++) {
+                        TOCElement ele = list.get(i);
+                        if(ele.getParentId() == parentId) {
+                            ele.setVisible(true);
+                        } else {
+                            break;
+                        }
+                    }
+                    //make visible all previous elements with the same parent and 
+                    //make visible and expanded all ancestor elements
+                    for (int i = index - 1; i > 0; i--) {
+                        TOCElement ele = list.get(i); 
+                        if(ele.getID() == parentId) {
+                            ele.setVisible(true);
+                            ele.setExpanded(true);
+                            parentId = ele.getParentId();
+                        } else if(ele.getParentId() == parentId) {
+                            ele.setVisible(true);
+                        }
+                    }
+                }
             }
         }
     }
