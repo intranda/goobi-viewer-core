@@ -122,11 +122,6 @@ public class UserEndpoint {
                     if (sessionId.equals(AdminBean.getTranslationGroupsEditorSession())) {
                         AdminBean.setTranslationGroupsEditorSession(null);
                         logger.trace("Removed translation editing lock for session '{}'.", sessionId);
-                        try {
-                            CampaignEndpoint.removeSessionLock(sessionId);
-                        } catch (IOException e) {
-                            logger.error("Error conntecting to webSocket of expired session to send notification", e);
-                        }
                     }
                 } else {
                     // logger.trace("Session {} has been refreshed and won't be cleared", sessionId);
