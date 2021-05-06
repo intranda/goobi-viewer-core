@@ -1243,7 +1243,9 @@ public class SearchBean implements SearchInterface, Serializable {
                         // Fill existing search query items
                         SearchQueryItem item = queryGroup.getQueryItems().get(index);
                         logger.trace("query item: {}", item.toString());
-                        while (!item.isHierarchical() && (StringUtils.isNotEmpty(item.getValue()) || item.getField().equals(facetItem.getField()))
+                        while (!item.isHierarchical()
+                                && (StringUtils.isNotEmpty(item.getValue())
+                                        || (item.getField() != null && item.getField().equals(facetItem.getField())))
                                 && index + 1 < queryGroup.getQueryItems().size()) {
                             // Skip items that already have values
                             ++index;
