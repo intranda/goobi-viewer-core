@@ -720,14 +720,30 @@
 			float: right;
 			margin-right: 10px;
 			}
-		
+		.geo-map__wrapper {
+			position: relative;
+		}
 		.geo-map {
 			height: 600px;
 		}
 		.geocoder {
 			z-index: 2000;
-			position: relative;
+			position: absolute;
+			top: 10px;
+			right: 10px;
 		}
+		.mapboxgl-ctrl button:not(:disabled):hover {
+			background-color: transparent;
+		}
+//		.mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
+//			border: 2px solid rgba(0,0,0,0.2);
+//		}		
+		.mapboxgl-ctrl-geocoder--input:focus {
+			outline: none;
+		}
+//		.mapboxgl-ctrl-geocoder, .mapboxgl-ctrl-geocoder .suggestions {
+//			box-shadow: unset;
+//		}
 	&__delete-annotation {}
 	&__jump-to-gnd {
 		flex: 0 0 100%;
