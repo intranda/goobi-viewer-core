@@ -558,11 +558,38 @@ public class SearchBean implements SearchInterface, Serializable {
                     String itemQuery =
                             new StringBuilder().append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).append(";;").toString();
                     logger.trace("item query: {}", itemQuery);
-                    // Skip duplicate collections, etc.
-                    if (currentFacetString.contains(itemQuery)) {
-                        logger.trace("{} skipped", itemQuery);
+
+                    // Override existing items of the same field type instead of generating new ones
+                    logger.trace("facet item count: {}", facets.getCurrentFacets().size());
+                    boolean reuseExistingFacetItem = false;
+                    for (FacetItem facetItem : facets.getCurrentFacets()) {
+                        logger.trace("checking facet item: {}", facetItem);
+                        logger.trace("checking query item: {}", queryItem);
+                        if (facetItem.getField().equals(queryItem.getField())) {
+                            facetItem.setLink(queryItem.getField() + ":" + queryItem.getValue());
+                            reuseExistingFacetItem = true;
+                            logger.trace("reuse facet item: {}", facetItem);
+                            break;
+                        }
+                    }
+                    if (reuseExistingFacetItem) {
                         continue;
                     }
+
+                    // Skip duplicate collections, etc.
+                    //                    if (currentFacetString.contains(itemQuery)) {
+                    //                        logger.trace("{} skipped", itemQuery);
+                    //                        continue;
+                    //                    } else if (currentFacetString.contains(queryItem.getField() + ":")) {
+                    //                        
+                    //                        for (FacetItem facetItem : facets.getCurrentFacets()) {
+                    //                            if (facetItem.getField().equals(queryItem.getField())) {
+                    //                                facetItem.setValue(queryItem.getValue());
+                    //                                continue;
+                    //                            }
+                    //                        }
+                    //                    }
+
                     sbCurrentCollection.append(itemQuery);
                     sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
                             .append(": \"")
@@ -690,8 +717,10 @@ public class SearchBean implements SearchInterface, Serializable {
             }
         }
         if (sbCurrentCollection.length() > 0) {
+            logger.trace(facets.getCurrentFacetStringPrefix() + " + " + sbCurrentCollection.toString());
             facets.setCurrentFacetString(facets.getCurrentFacetStringPrefix() + sbCurrentCollection.toString());
         } else {
+            logger.trace(facets.getCurrentFacetString());
             facets.setCurrentFacetString(facets.getCurrentFacetString());
         }
 
@@ -1242,7 +1271,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     if (index < queryGroup.getQueryItems().size()) {
                         // Fill existing search query items
                         SearchQueryItem item = queryGroup.getQueryItems().get(index);
-                        logger.trace("query item: {}", item.toString());
+                        logger.trace("query item {}: {}", index, item.toString());
                         while (!item.isHierarchical()
                                 && (StringUtils.isNotEmpty(item.getValue())
                                         || (item.getField() != null && item.getField().equals(facetItem.getField())))
@@ -1250,12 +1279,12 @@ public class SearchBean implements SearchInterface, Serializable {
                             // Skip items that already have values
                             ++index;
                             item = queryGroup.getQueryItems().get(index);
-                            logger.trace("query item: {}", item.toString());
+                            logger.trace("query item {}: {}", index, item.toString());
                         }
                         item.setField(facetItem.getField());
                         item.setOperator(SearchItemOperator.IS);
                         item.setValue(facetItem.getValue());
-                        logger.trace("updated item: {}", item.toString());
+                        logger.trace("updated item {}: {}", index, item.toString());
                     } else {
                         // If no search field is set up for collection search, add new field containing the currently selected collection
                         SearchQueryItem item = new SearchQueryItem(BeanUtils.getLocale());
