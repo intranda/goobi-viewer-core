@@ -137,27 +137,60 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(5, ((SelectItemGroup) items.get(1)).getSelectItems().length);
     }
 
-	/**
-	 * @see AdminBean#addUserRoleAction()
-	 * @verifies add user if not yet in group
-	 */
-	@Test
-	public void addUserRoleAction_shouldAddUserIfNotYetInGroup() throws Exception {
-	    AdminBean bean = new AdminBean();
+    /**
+     * @see AdminBean#addUserRoleAction()
+     * @verifies add user if not yet in group
+     */
+    @Test
+    public void addUserRoleAction_shouldAddUserIfNotYetInGroup() throws Exception {
+        AdminBean bean = new AdminBean();
         bean.init();
-        
+
         UserGroup group = new UserGroup();
         group.setName("group");
-        
+
         User user = new User();
         Role role = DataManager.getInstance().getDao().getRole("member");
         UserRole userRole = new UserRole(group, user, role);
-        
+
         bean.setCurrentUserGroup(group);
         bean.setCurrentUserRole(userRole);
         Assert.assertFalse(group.getMembers().contains(user));
-        
+
         bean.addUserRoleAction();
         Assert.assertTrue(group.getMembers().contains(user));
-	}
+    }
+
+    /**
+     * @see AdminBean#updateUserRoles()
+     * @verifies persist UserRole correctly
+     */
+    @Test
+    public void updateUserRoles_shouldPersistUserRoleCorrectly() throws Exception {
+
+        UserGroup group = DataManager.getInstance().getDao().getUserGroup(1);
+        Assert.assertNotNull(group);
+
+        User user = DataManager.getInstance().getDao().getUser(3);
+        Assert.assertNotNull(user);
+
+        Assert.assertFalse(group.getMembers().contains(user));
+
+        Role role = DataManager.getInstance().getDao().getRole("member");
+        UserRole userRole = new UserRole(group, user, role);
+
+        AdminBean bean = new AdminBean();
+        bean.init();
+        bean.setCurrentUserGroup(group);
+        bean.setCurrentUserRole(userRole);
+
+        Assert.assertTrue(DataManager.getInstance().getDao().getUserRoles(group, user, role).isEmpty());
+
+        bean.addUserRoleAction();
+        Assert.assertTrue(group.getMembers().contains(user));
+
+        Assert.assertTrue(bean.dirtyUserRoles.containsKey(userRole));
+        bean.updateUserRoles();
+        Assert.assertFalse(DataManager.getInstance().getDao().getUserRoles(group, user, role).isEmpty());
+    }
 }

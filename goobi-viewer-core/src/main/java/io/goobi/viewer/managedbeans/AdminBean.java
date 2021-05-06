@@ -102,7 +102,7 @@ public class AdminBean implements Serializable {
     private UserGroup currentUserGroup = null;
     private Role currentRole = null;
     /** List of UserRoles to persist or delete */
-    private Map<UserRole, String> dirtyUserRoles = new HashMap<>();
+    Map<UserRole, String> dirtyUserRoles = new HashMap<>();
     private UserRole currentUserRole = null;
     private LicenseType currentLicenseType = null;
     private License currentLicense = null;
@@ -578,8 +578,10 @@ public class AdminBean implements Serializable {
      * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should persist UserRole correctly
      */
     public void updateUserRoles() throws DAOException {
+        logger.trace("updateUserRoles: {}", dirtyUserRoles.size());
         if (dirtyUserRoles.isEmpty()) {
             return;
         }
@@ -591,6 +593,7 @@ public class AdminBean implements Serializable {
                         logger.trace("Saving UserRole: {}", userRole);
                         // If this the user group is not yet persisted, add it to DB first
                         if (userRole.getUserGroup() != null && userRole.getUserGroup().getId() == null) {
+                            logger.trace("adding new user group: {}", userRole.getUserGroup());
                             if (!DataManager.getInstance().getDao().addUserGroup(userRole.getUserGroup())) {
                                 logger.error("Could not save UserRole: {}", userRole);
                                 Messages.info("errSave");
@@ -606,7 +609,7 @@ public class AdminBean implements Serializable {
                             }
                         } else {
                             // new
-                            if (DataManager.getInstance().getDao().addUserRole(currentUserRole)) {
+                            if (DataManager.getInstance().getDao().addUserRole(userRole)) {
                                 Messages.info("userGroup_memberAddSuccess");
                             } else {
                                 Messages.error("userGroup_memberAddFailure");
@@ -1956,7 +1959,7 @@ public class AdminBean implements Serializable {
         logger.trace("setTranslationGroupsEditorSession: {}", translationGroupsEditorSession);
         AdminBean.translationGroupsEditorSession = translationGroupsEditorSession;
     }
-    
+
     /**
      * 
      * @return
@@ -1964,7 +1967,7 @@ public class AdminBean implements Serializable {
     public int getHotfolderFileCount() {
         return DataManager.getInstance().getHotfolderFileCount();
     }
-    
+
     /**
      * @return {@link TranslationGroup#isHasFileAccess()}
      */
