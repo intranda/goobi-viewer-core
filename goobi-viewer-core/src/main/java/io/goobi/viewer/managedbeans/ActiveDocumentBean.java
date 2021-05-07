@@ -1538,7 +1538,9 @@ public class ActiveDocumentBean implements Serializable {
             PageType pageType = navigationHelper.getCurrentPageType();
             if (PageType.other.equals(pageType)) {
                 String pageLabel = navigationHelper.getCurrentPage();
-                return Messages.translate(pageLabel, Locale.forLanguageTag(language));
+                if(StringUtils.isNotBlank(pageLabel)) {                    
+                    return Messages.translate(pageLabel, Locale.forLanguageTag(language));
+                }
             }
             return Messages.translate(pageType.getLabel(), Locale.forLanguageTag(language));
         }
