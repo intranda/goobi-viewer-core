@@ -780,6 +780,15 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplayWidgetUsage() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage[@display]", true);
     }
+    
+    /**
+     * 
+     * @return Boolean value
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarWidgetUsageCitation() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.citation[@display]", true);
+    }
 
     /**
      * 
