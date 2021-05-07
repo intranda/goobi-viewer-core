@@ -610,14 +610,15 @@
 <!-- 	                                                             		<f:converter converterId = "localDateConverter" /> -->
 	                                                             	</h:inputText>
 	                                                             </div>
+	                                                             
 	                                                             <!-- TO DO: DATE FORMAT FOR LANGUAGES, localDateConverter NOT COMPATIBLE YET #{navigationHelper.datePatternjQueryDatePicker} -->
 	                                                             <script type="text/javascript">
 	                                                             	$( "[data-target='datePickerStart']" ).datepicker({
-	                                                             		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}" 
+	                                                             		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
+	                                                             		isRTL: #{navigationHelper.rtl}
 	                                                             	});
 																 </script>
 																 
-	                                                                    
 	                                                            </div>
 	                                                         </div>
                                                         	<div class="form-row">
@@ -640,9 +641,11 @@
 	                                                             <!-- TO DO: DATE FORMAT FOR LANGUAGES, localDateConverter NOT COMPATIBLE YET #{navigationHelper.datePatternjQueryDatePicker} -->
 	                                                             <script type="text/javascript">
 	                                                             	$( "[data-target='datePickerEnd']" ).datepicker({
-	                                                             		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}" 
+	                                                             		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
+	                                                             		isRTL: #{navigationHelper.rtl}
 	                                                             	});
 																 </script>
+																 
 	                                                           </div>
                                                         </ui:fragment>
                                                     </h:panelGroup>
