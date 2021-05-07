@@ -10,36 +10,35 @@
 
 	<composite:implementation>
 
-		<ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitation}">
-							
-            <h4 id="titleCiteLinks" class="widget-usage__subtitle">#{msg.citeLinks}</h4>
-		
-			<div class="widget-usage__citelinks">
-				<ui:fragment
-					rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
-					<a id="citeLinkWork"
-						class="badge badge-dark widget-usage__citelink-work"
-						data-copy="work-citelink"
-						data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkWork}"
-						data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
-						aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
-						#{msg.citeLinkWork} </a>
-				</ui:fragment>
-				<ui:fragment
-					rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage}">
-					<a id="citeLinkPage"
-						class="badge badge-dark widget-usage__citelink-page"
-						data-copy="page-citelink"
-						data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkPage}"
-						data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
-						aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
-						#{msg.citeLinkPage} </a>
-				</ui:fragment>
-			</div>
+		<h4 id="titleCiteLinks" class="widget-usage__subtitle">#{msg.citeLinks}</h4>
 
+		<div class="widget-usage__citelinks">
+			<ui:fragment
+				rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
+				<a id="citeLinkWork"
+					class="badge badge-dark widget-usage__citelink-work"
+					data-copy="work-citelink"
+					data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkWork}"
+					data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+					aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+					#{msg.citeLinkWork} </a>
+			</ui:fragment>
+			<ui:fragment
+				rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage}">
+				<a id="citeLinkPage"
+					class="badge badge-dark widget-usage__citelink-page"
+					data-copy="page-citelink"
+					data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkPage}"
+					data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+					aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
+					#{msg.citeLinkPage} </a>
+			</ui:fragment>
+		</div>
+		<ui:fragment
+			rendered="#{configurationBean.displaySidebarWidgetUsageCitation}">
 			<!-- CITATION RECOMMENDATION -->
 			<ui:fragment
-				rendered="#{fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0}">
+				rendered="#{configurationBean.displaySidebarWidgetUsageCitation and fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0}">
 				<h4 id="titleCiteRecommendation" class="widget-usage__subtitle">#{msg.citeRecommendation__title}</h4>
 
 				<div class="widget-usage__citerecommendation">
