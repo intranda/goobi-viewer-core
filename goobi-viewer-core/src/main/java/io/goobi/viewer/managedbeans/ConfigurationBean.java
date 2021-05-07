@@ -1111,8 +1111,12 @@ public class ConfigurationBean implements Serializable {
     public String getRestApiUrl() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl();
     }
-    
-    public String getRestApiUrlForIIIFPresention() throws ViewerConfigurationException {
+
+    /**
+     * 
+     * @return
+     */
+    public String getRestApiUrlForIIIFPresention() {
         return DataManager.getInstance().getRestApiManager().getIIIFDataApiUrl();
     }
 
@@ -1252,6 +1256,17 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isDisplaySidebarWidgetUsage() {
         return DataManager.getInstance().getConfiguration().isDisplayWidgetUsage();
+    }
+
+    /**
+     * <p>
+     * isDisplayWidgetUsage.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isDisplaySidebarWidgetUsageCitation() {
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitation();
     }
 
     /**
