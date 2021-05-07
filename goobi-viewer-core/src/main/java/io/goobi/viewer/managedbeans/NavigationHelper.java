@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.awt.ComponentOrientation;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -1909,5 +1910,18 @@ public class NavigationHelper implements Serializable {
         }
         return "";
     }
+
+    public boolean isRTL() {
+        return isRTL(getLocale());
+    }
+    
+    public boolean isRTL(String locale) {
+        return isRTL(new Locale(locale));
+    }
+    
+    public boolean isRTL(Locale locale) {
+        return !ComponentOrientation.getOrientation(locale).isLeftToRight();  
+    }
+    
 
 }
