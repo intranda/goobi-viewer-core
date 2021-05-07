@@ -1,75 +1,82 @@
-<ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-    
-    <composite:interface />
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
-    <composite:implementation>
-    
-                    <div class="widget-usage__citelinks">
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
-                            <a 
-                                id="citeLinkWork" 
-                                class="badge badge-dark widget-usage__citelink-work" 
-                                data-copy="work-citelink"
-                                data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkWork}" 
-                                data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
-                                aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
-                                #{msg.citeLinkWork}
-                            </a>
-                        </ui:fragment>
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage}">
-                            <a 
-                                id="citeLinkPage" 
-                                class="badge badge-dark widget-usage__citelink-page" 
-                                data-copy="page-citelink"
-                                data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkPage}" 
-                                data-copy-done="#{msg.copyUrlDone}" 
-                                title="#{msg.copyUrl}"
-                                aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
-                                #{msg.citeLinkPage}
-                           </a>
-                        </ui:fragment>
-                    </div>
-                    
-                    <!-- CITATION RECOMMENDATION -->
-                    <ui:fragment rendered="#{fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0}">
-                    <h4 id="titleCiteRecommendation" class="widget-usage__subtitle">#{msg.citeRecommendation__title}</h4>
+	<composite:interface />
 
-                    <div class="widget-usage__citerecommendation">
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
-                            <h:form>
-                            	<div class="custom-control custom-control--select widget-usage__citerecommendation-dropdown">
-	                                <h:selectOneMenu value="#{activeDocumentBean.viewManager.citationStyle}" immediate="true">
-	                                    <f:selectItems var="style" value="#{configurationBean.sidebarWidgetUsageCitationStyles}"
-	                                        itemLabel="#{msg['label__citation_style_'.concat(style)]}" />
-	                                    <f:ajax render="@form" />
-	                                </h:selectOneMenu>
-                                </div>
-                                <div class="widget-usage__citerecommendation-text-wrapper">
-                                	<i class="fa fa-quote-right" aria-hidden="true"></i>
-	                                <a
-		                                id="citeCopyText" 
-		                                class="widget-usage__citerecommendation-copy-text" 
-		                                data-copy="text-citelink"
-		                                data-clipboard-text="#{activeDocumentBean.viewManager.citationStringPlain}" 
-		                                data-copy-done="#{msg.copyUrlDone}" 
-		                                title="#{msg.citeRecommendation__copy_to_clipboard}"
-		                                aria-label="#{msg.citeRecommendation__copy_to_clipboard}">
-	                                	<h:outputText id="citationStringOutput" value="#{activeDocumentBean.viewManager.citationStringHtml}" escape="false"/>
-	                                </a>
-                                </div>
-                                <div class="widget-usage__citerecommendation-text-info">#{msg.citeRecommendation__text_info}</div>
-                            </h:form>
-                        </ui:fragment>
-                    </div>
-                    </ui:fragment>
-                    
-                    </composite:implementation>
-                    
-                    </ui:composition>
+	<composite:implementation>
+
+		<h4 id="titleCiteLinks" class="widget-usage__subtitle">#{msg.citeLinks}</h4>
+
+		<div class="widget-usage__citelinks">
+			<ui:fragment
+				rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
+				<a id="citeLinkWork"
+					class="badge badge-dark widget-usage__citelink-work"
+					data-copy="work-citelink"
+					data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkWork}"
+					data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+					aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+					#{msg.citeLinkWork} </a>
+			</ui:fragment>
+			<ui:fragment
+				rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage}">
+				<a id="citeLinkPage"
+					class="badge badge-dark widget-usage__citelink-page"
+					data-copy="page-citelink"
+					data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkPage}"
+					data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+					aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
+					#{msg.citeLinkPage} </a>
+			</ui:fragment>
+		</div>
+		<ui:fragment
+			rendered="#{configurationBean.displaySidebarWidgetUsageCitation}">
+			<!-- CITATION RECOMMENDATION -->
+			<ui:fragment
+				rendered="#{configurationBean.displaySidebarWidgetUsageCitation and fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0}">
+				<h4 id="titleCiteRecommendation" class="widget-usage__subtitle">#{msg.citeRecommendation__title}</h4>
+
+				<div class="widget-usage__citerecommendation">
+					<ui:fragment
+						rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
+						<h:form>
+							<div
+								class="custom-control custom-control--select widget-usage__citerecommendation-dropdown">
+								<h:selectOneMenu
+									value="#{activeDocumentBean.viewManager.citationStyle}"
+									immediate="true">
+									<f:selectItems var="style"
+										value="#{configurationBean.sidebarWidgetUsageCitationStyles}"
+										itemLabel="#{msg['label__citation_style_'.concat(style)]}" />
+									<f:ajax render="@form" />
+								</h:selectOneMenu>
+							</div>
+							<div class="widget-usage__citerecommendation-text-wrapper">
+								<i class="fa fa-quote-right" aria-hidden="true"></i> <a
+									id="citeCopyText"
+									class="widget-usage__citerecommendation-copy-text"
+									data-copy="text-citelink"
+									data-clipboard-text="#{activeDocumentBean.viewManager.citationStringPlain}"
+									data-copy-done="#{msg.copyUrlDone}"
+									title="#{msg.citeRecommendation__copy_to_clipboard}"
+									aria-label="#{msg.citeRecommendation__copy_to_clipboard}">
+									<h:outputText id="citationStringOutput"
+										value="#{activeDocumentBean.viewManager.citationStringHtml}"
+										escape="false" />
+								</a>
+							</div>
+							<div class="widget-usage__citerecommendation-text-info">#{msg.citeRecommendation__text_info}</div>
+						</h:form>
+					</ui:fragment>
+				</div>
+			</ui:fragment>
+		</ui:fragment>
+
+	</composite:implementation>
+
+</ui:composition>

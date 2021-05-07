@@ -2890,6 +2890,16 @@ public class ConfigurationTest extends AbstractTest {
     public void getSidebarWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText());
     }
+    
+
+    /**
+     * @see Configuration#isDisplaySidebarWidgetUsageCitation()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplaySidebarWidgetUsageCitation_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitation());
+    }
 
     /**
      * @see Configuration#getSidebarWidgetUsageCitationStyles()
@@ -2990,5 +3000,4 @@ public class ConfigurationTest extends AbstractTest {
             Assert.assertEquals(2, group.getItems().size());
         }
     }
-
 }
