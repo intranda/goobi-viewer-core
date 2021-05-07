@@ -1911,15 +1911,15 @@ public class NavigationHelper implements Serializable {
         return "";
     }
 
-    public boolean isRTL() {
-        return isRTL(getLocale());
+    public boolean isRtl() {
+        return isRtl(getLocale());
     }
     
-    public boolean isRTL(String locale) {
-        return isRTL(new Locale(locale));
+    public boolean isRtl(String locale) {
+        return isRtl(new Locale(locale));
     }
     
-    public boolean isRTL(Locale locale) {
+    public boolean isRtl(Locale locale) {
         return !ComponentOrientation.getOrientation(locale).isLeftToRight();  
     }
     
