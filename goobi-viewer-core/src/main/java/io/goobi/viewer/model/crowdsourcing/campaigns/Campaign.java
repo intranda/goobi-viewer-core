@@ -1424,15 +1424,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public String getNextTarget(CrowdsourcingStatus status, String currentPi) throws PresentationException, IndexUnreachableException {
         User user = BeanUtils.getUserBean().getUser();
-        List<String> pis = getSolrQueryResults().stream()
+        List<String> piList = getSolrQueryResults();
+        int currentIndex = piList.indexOf(currentPi);
+        return piList.stream()
                 .filter(result -> isRecordStatus(result, status))
                 .filter(result -> isEligibleToEdit(result, status, user))
-                .collect(Collectors.toList());
-        if (pis.isEmpty()) {
-            return "";
-        }
-        String pi = pis.get(random.nextInt(pis.size()));
-        return pi;
+                .skip(currentIndex+1)
+                .findFirst().orElse(piList.isEmpty() ? "" : piList.get(0));
     }
 
 
