@@ -89,7 +89,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     private String fileName;
 
     @Column(name = "link_url", nullable = true)
-    private URI link;
+    private String link;
 
     @Column(name = "priority", nullable = true)
     private Priority priority = Priority.DEFAULT;
@@ -521,10 +521,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * @return the entered link url
      */
     public String getLink() {
-        if (this.link != null) {
-            return this.link.toString();
-        }
-        return null;
+        return this.link;
     }
 
     /**
@@ -533,12 +530,8 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * @param linkUrl a {@link java.lang.String} object.
      * @throws java.net.URISyntaxException if any.
      */
-    public void setLink(String linkUrl) throws URISyntaxException {
-        if (StringUtils.isBlank(linkUrl)) {
-            this.link = null;
-        } else {
-            this.link = new URI(linkUrl);
-        }
+    public void setLink(String linkUrl) {
+        this.link = linkUrl;
     }
 
     /*
