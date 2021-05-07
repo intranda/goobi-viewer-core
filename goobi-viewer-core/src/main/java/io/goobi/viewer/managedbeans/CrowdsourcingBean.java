@@ -647,7 +647,7 @@ public class CrowdsourcingBean implements Serializable {
     
     public void setNextIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
-            String pi = getTargetCampaign().getRandomizedTarget(CrowdsourcingStatus.ANNOTATE, getTargetIdentifier());
+            String pi = getTargetCampaign().getNextTarget(CrowdsourcingStatus.ANNOTATE, getTargetIdentifier());
             setTargetIdentifier(pi);
         }
     }
@@ -663,6 +663,13 @@ public class CrowdsourcingBean implements Serializable {
             String pi = getTargetCampaign().getRandomizedTarget(CrowdsourcingStatus.REVIEW, getTargetIdentifier());
             setTargetIdentifier(pi);
 
+        }
+    }
+    
+    public void setNextIdentifierForReview() throws PresentationException, IndexUnreachableException {
+        if (getTargetCampaign() != null) {
+            String pi = getTargetCampaign().getNextTarget(CrowdsourcingStatus.REVIEW, getTargetIdentifier());
+            setTargetIdentifier(pi);
         }
     }
 
