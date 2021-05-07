@@ -191,7 +191,7 @@ public class TOC implements Serializable {
      * @param lowestLevelToCollapse
      * @param currentElementIdDoc 
      */
-    private void buildTree(String group, int visibleLevel, int collapseThreshold, int lowestLevelToCollapse, Long currentElementIdDoc) {
+    protected void buildTree(String group, int visibleLevel, int collapseThreshold, int lowestLevelToCollapse, Long currentElementIdDoc) {
         logger.trace("buildTree");
         if (group == null) {
             throw new IllegalArgumentException("group may not be null");
