@@ -17,12 +17,18 @@ package io.goobi.viewer.api.rest.v1.cms;
 
 import static org.junit.Assert.*;
 
+import java.io.UnsupportedEncodingException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -61,6 +67,20 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
             //since no file image4.JPG exists, 404 is returned. But that is ok as long as the method was called (otherwise 405 would be thrown)
             assertEquals("Should return status 404; answer; " + entity, 404, response.getStatus());
         }
+    }
+    
+    @Test
+    public void testCallImageUrlForGif() throws UnsupportedEncodingException {
+        
+        String filename = "lorelai.gif";
+        String url = "https://viewer.goobi.io/api/v1/cms/media/files/" + filename;
+        ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getRequestURI()).thenReturn(url);
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename);
+        String resourceURI = resource.getResourceURI().toString();
+        assertEquals(url, resourceURI);
     }
 
 }
