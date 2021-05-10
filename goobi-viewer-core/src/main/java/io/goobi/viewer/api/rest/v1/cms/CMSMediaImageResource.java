@@ -72,17 +72,17 @@ public class CMSMediaImageResource extends ImageResource {
         int baseStartIndex = requestUrl.indexOf(baseImageUrl);
         int baseEndIndex = baseStartIndex + baseImageUrl.length();
         String imageRequestPath = requestUrl.substring(baseEndIndex);
-        this.resourceURI = URI.create(baseImageUrl);
+        this.resourceURI = URI.create(requestUrl.substring(0, baseEndIndex));
         
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        if(parts.size() == 4) {
+        if(parts.size() == 4 ) {
             //image request
             request.setAttribute("iiif-info", false);
             request.setAttribute("iiif-region", parts.get(0));
             request.setAttribute("iiif-size", parts.get(1));
             request.setAttribute("iiif-rotation", parts.get(2));
             request.setAttribute("iiif-format", parts.get(3));
-        } else {
+        } else if(imageRequestPath.endsWith("info.json")) {
             //image info request
             request.setAttribute("iiif-info", true);
         }

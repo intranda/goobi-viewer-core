@@ -79,7 +79,9 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     public static final String CONTENT_TYPE_SVG = "image/svg+xml";
     /** Constant <code>CONTENT_TYPE_PDF="application/pdf"</code> */
     public static final String CONTENT_TYPE_PDF = "application/pdf";
-
+    /** Constant <code>CONTENT_TYPE_GIF="application/gif"</code> */
+    public static final String CONTENT_TYPE_GIF = "image/gif";
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_media_item_id")
@@ -208,6 +210,8 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                 return CONTENT_TYPE_SVG;
             case "pdf":
                 return CONTENT_TYPE_PDF;
+            case "gif":
+                return CONTENT_TYPE_GIF;
             default:
                 return "";
         }
