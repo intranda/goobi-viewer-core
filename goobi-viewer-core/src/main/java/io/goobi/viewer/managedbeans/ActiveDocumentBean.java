@@ -268,8 +268,10 @@ public class ActiveDocumentBean implements Serializable {
                 }
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
-            } catch (RecordNotFoundException | RecordDeletedException | IndexUnreachableException | DAOException | ViewerConfigurationException
-                    | RecordLimitExceededException e) {
+            } catch (RecordNotFoundException | RecordDeletedException | RecordLimitExceededException e) {
+                logger.error(e.getMessage());
+            } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
+                logger.error(e.getMessage(), e);
             }
         }
 
@@ -1628,7 +1630,9 @@ public class ActiveDocumentBean implements Serializable {
             PageType pageType = navigationHelper.getCurrentPageType();
             if (PageType.other.equals(pageType)) {
                 String pageLabel = navigationHelper.getCurrentPage();
-                return Messages.translate(pageLabel, Locale.forLanguageTag(language));
+                if(StringUtils.isNotBlank(pageLabel)) {                    
+                    return Messages.translate(pageLabel, Locale.forLanguageTag(language));
+                }
             }
             return Messages.translate(pageType.getLabel(), Locale.forLanguageTag(language));
         }
@@ -1780,7 +1784,7 @@ public class ActiveDocumentBean implements Serializable {
                 DataManager.getInstance().getConfiguration().getWebApiToken());
         try {
             try {
-                String result = NetTools.getWebContentDELETE(url, null, null, null, null);
+                NetTools.getWebContentDELETE(url, null, null, null, null);
                 Messages.info("cache_clear__success");
             } catch (ClientProtocolException e) {
                 logger.error(e.getMessage());
@@ -2028,7 +2032,7 @@ public class ActiveDocumentBean implements Serializable {
             return null;
         }
 
-        List<String> relatedItemIdentifiers = viewManager.getTopStructElement().getMetadataValues(identifierField);
+        // List<String> relatedItemIdentifiers = viewManager.getTopStructElement().getMetadataValues(identifierField);
         List<SearchHit> ret = SearchHelper.searchWithFulltext(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null,
                 navigationHelper.getLocale(), BeanUtils.getRequest());
 

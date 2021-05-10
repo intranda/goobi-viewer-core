@@ -88,9 +88,9 @@ public class Sitemap {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<File> generate(HttpServletRequest request, String outputPath)
+    public List<File> generate(String viewerRootUrl, String outputPath)
             throws IOException, PresentationException, IndexUnreachableException, DAOException {
-        this.viewerRootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
+        this.viewerRootUrl = viewerRootUrl;
         // Sitemap index root
         docIndex.setRootElement(new Element("sitemapindex", nsSitemap));
 
@@ -127,7 +127,7 @@ public class Sitemap {
                 .append(":* AND NOT(")
                 .append(SolrConstants.DATEDELETED)
                 .append(":*)")
-                .append(SearchHelper.getAllSuffixes(request, true, true));
+                .append(SearchHelper.getAllSuffixes(null, true, true));
         logger.debug("Sitemap: sitemap query: {}", sbQuery.toString());
         String[] fields = { SolrConstants.PI, SolrConstants.DATECREATED, SolrConstants.DATEUPDATED, SolrConstants.FULLTEXTAVAILABLE,
                 SolrConstants.DOCTYPE, SolrConstants.ISANCHOR, SolrConstants.THUMBPAGENO };

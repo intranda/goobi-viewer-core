@@ -613,11 +613,10 @@
 	                                                             <!-- TO DO: DATE FORMAT FOR LANGUAGES, localDateConverter NOT COMPATIBLE YET #{navigationHelper.datePatternjQueryDatePicker} -->
 	                                                             <script type="text/javascript">
 	                                                             	$( "[data-target='datePickerStart']" ).datepicker({
-	                                                             		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}" 
+	                                                             		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}"
 	                                                             	});
 																 </script>
-																 
-	                                                                    
+
 	                                                            </div>
 	                                                         </div>
                                                         	<div class="form-row">
@@ -630,7 +629,8 @@
 		                                                             		id="pickerDateEnd" 
 		                                                             		name="pickerDateEnd" 
 		                                                             		value="#{crowdsourcingBean.selectedCampaign.dateOnlyEnd}"
-		                                                             		converter="localDateConverter">
+		                                                             		converter="localDateConverter"
+		                                                             		data-format="#{navigationHelper.datePattern}">
 		                                                             		<f:passThroughAttribute name="data-target" value="datePickerEnd" />
 	<!-- 	                                                             		<f:converter converterId = "localDateConverter" /> -->
 		                                                             	</h:inputText>
@@ -640,7 +640,7 @@
 	                                                             <!-- TO DO: DATE FORMAT FOR LANGUAGES, localDateConverter NOT COMPATIBLE YET #{navigationHelper.datePatternjQueryDatePicker} -->
 	                                                             <script type="text/javascript">
 	                                                             	$( "[data-target='datePickerEnd']" ).datepicker({
-	                                                             		dateFormat: "yy-mm-dd" 
+	                                                             		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}"
 	                                                             	});
 																 </script>
 	                                                           </div>

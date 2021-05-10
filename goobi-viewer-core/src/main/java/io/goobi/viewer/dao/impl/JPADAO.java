@@ -1149,6 +1149,7 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public boolean addUserRole(UserRole userRole) throws DAOException {
+        logger.trace("addUserRole: {}", userRole);
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {

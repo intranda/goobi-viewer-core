@@ -473,18 +473,6 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
-     * getCurrentCollection.
-     * </p>
-     *
-     * @return the currentCollection
-     */
-    @Deprecated
-    public String getCurrentCollection() {
-        return "-";
-    }
-
-    /**
      * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for currentFacets.
      *
      * @param currentFacetString a {@link java.lang.String} object.
@@ -506,18 +494,6 @@ public class SearchFacets implements Serializable {
      */
     @Deprecated
     public void setCurrentHierarchicalFacetString(String currentHierarchicalFacetString) {
-    }
-
-    /**
-     * <p>
-     * setCurrentCollection.
-     * </p>
-     *
-     * @param currentCollection the currentCollection to set
-     */
-    @Deprecated
-    public void setCurrentCollection(String currentCollection) {
-        setCurrentHierarchicalFacetString(currentCollection);
     }
 
     /**
@@ -570,8 +546,8 @@ public class SearchFacets implements Serializable {
      * @return true if field is hierarchical; false otherwise
      */
     static boolean isFieldHierarchical(String field) {
-        logger.trace("isFieldHierarchical: {} ? {}", field,
-                DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().contains(field));
+        //        logger.trace("isFieldHierarchical: {} ? {}", field,
+        //                DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().contains(field));
         return DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().contains(field);
     }
 
@@ -822,26 +798,31 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * Returns a URL encoded value returned by generateFacetPrefix() for regular facets.
+     * Returns a URL encoded value returned by generateFacetPrefix() for regular facets. Returns an empty string instead a hyphen if empty.
      *
      * @return a {@link java.lang.String} object.
+     * 
      */
     public String getCurrentFacetStringPrefix() {
-        try {
-            return URLEncoder.encode(generateFacetPrefix(currentFacets, true), SearchBean.URL_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            return generateFacetPrefix(currentFacets, true);
-        }
+        return getCurrentFacetStringPrefix(true);
     }
 
     /**
-     * Returns a URL encoded value returned by generateFacetPrefix() for hierarchical facets.
-     *
-     * @return a {@link java.lang.String} object.
+     * Returns the value returned by generateFacetPrefix() for regular facets. Returns an empty string instead a hyphen if empty.
+     * 
+     * @param urlEncode
+     * @return
      */
-    @Deprecated
-    public String getCurrentHierarchicalFacetPrefix() {
-        return "";
+    public String getCurrentFacetStringPrefix(boolean urlEncode) {
+        if (urlEncode) {
+            try {
+                return URLEncoder.encode(generateFacetPrefix(currentFacets, true), SearchBean.URL_ENCODING);
+            } catch (UnsupportedEncodingException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return generateFacetPrefix(currentFacets, true);
     }
 
     /**
