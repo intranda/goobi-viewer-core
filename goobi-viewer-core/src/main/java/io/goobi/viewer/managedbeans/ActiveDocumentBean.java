@@ -971,18 +971,25 @@ public class ActiveDocumentBean implements Serializable {
                 firstMinus = true;
                 pageOrderRange = pageOrderRange.substring(1);
             }
-            if (pageOrderRange.contains("--")) {
-                secondMinus = true;
-                pageOrderRange = pageOrderRange.replace("--", "-");
-            }
-            String[] split = pageOrderRange.split("[-]");
-            page = Integer.valueOf(split[0]);
-            page2 = Integer.valueOf(split[1]);
-            if (firstMinus) {
-                page *= -1;
-            }
-            if (secondMinus) {
-                page2 *= -1;
+            if (pageOrderRange.contains("-")) {
+                if (pageOrderRange.contains("--")) {
+                    secondMinus = true;
+                    pageOrderRange = pageOrderRange.replace("--", "-");
+                }
+                String[] split = pageOrderRange.split("[-]");
+                page = Integer.valueOf(split[0]);
+                page2 = Integer.valueOf(split[1]);
+                if (firstMinus) {
+                    page *= -1;
+                }
+                if (secondMinus) {
+                    page2 *= -1;
+                }
+            } else {
+                page = Integer.valueOf(pageOrderRange);
+                if (firstMinus) {
+                    page *= -1;
+                }
             }
         } else {
             page = Integer.valueOf(pageOrderRange);
@@ -1630,7 +1637,7 @@ public class ActiveDocumentBean implements Serializable {
             PageType pageType = navigationHelper.getCurrentPageType();
             if (PageType.other.equals(pageType)) {
                 String pageLabel = navigationHelper.getCurrentPage();
-                if(StringUtils.isNotBlank(pageLabel)) {                    
+                if (StringUtils.isNotBlank(pageLabel)) {
                     return Messages.translate(pageLabel, Locale.forLanguageTag(language));
                 }
             }

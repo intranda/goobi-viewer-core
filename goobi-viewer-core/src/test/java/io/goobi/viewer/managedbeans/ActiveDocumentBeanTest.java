@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
@@ -51,7 +50,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         FacesContext facesContext = ContextMocker.mockFacesContext();
         ExternalContext externalContext = Mockito.mock(ExternalContext.class);
         //        ServletContext servletContext = Mockito.mock(ServletContext.class);
-        UIViewRoot viewRoot = Mockito.mock(UIViewRoot.class);
+        //        UIViewRoot viewRoot = Mockito.mock(UIViewRoot.class);
 
         Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
         //        Mockito.when(externalContext.getContext()).thenReturn(servletContext);
