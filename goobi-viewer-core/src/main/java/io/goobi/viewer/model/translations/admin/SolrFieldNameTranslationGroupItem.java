@@ -44,15 +44,10 @@ public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
      * @see io.goobi.viewer.model.translations.TranslationGroupKey#loadValues()
      */
     @Override
-    protected void loadEntries() {
+    protected void loadEntries() throws DAOException {
         List<String> keys;
         if (regex) {
-            try {
                 keys = StringTools.filterStringsViaRegex(DataManager.getInstance().getSearchIndex().getAllFieldNames(), key);
-            } catch (DAOException e) {
-                logger.error(e.getMessage());
-                keys = Collections.emptyList();
-            }
         } else {
             keys = Collections.singletonList(key);
         }

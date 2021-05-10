@@ -173,7 +173,7 @@
 		                                            </div>
 		                                            
 		                                            <ui:repeat var="group" value="#{adminBean.configuredTranslationGroups}">
-			                                            <ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
+			                                            <ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount and !group.loadError}">
 			                                            	<a href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
 			                                                	class="row admin__translations-not-translated-entry"
 			                                                    aria-label="#{msg.edit}: #{msg[group.name]}">
@@ -184,10 +184,15 @@
 			                                                        <span>#{msg.admin__translations_translate}</span>
 			                                                    </div>
 			                                                </a>
-				                                        <div class="admin__dashboard-translations-progress">
-															<div class="admin__dashboard-translations-progress-complete" style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
-															<div class="admin__dashboard-translations-progress-partially" style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
-														</div>
+				                                        	<div class="admin__dashboard-translations-progress">
+																<div class="admin__dashboard-translations-progress-complete"
+																	style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
+																<div class="admin__dashboard-translations-progress-partially"
+																	style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
+															</div>
+			                                            </ui:fragment>
+			                                            <ui:fragment rendered="#{group.loadError}">
+			                                            	#{msg[group.name]}: #{msg.errIndexUnreachableTitle}
 			                                            </ui:fragment>
 		                                            </ui:repeat>
 		                                        </div>

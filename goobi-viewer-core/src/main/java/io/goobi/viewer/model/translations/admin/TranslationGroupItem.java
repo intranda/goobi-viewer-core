@@ -85,8 +85,9 @@ public abstract class TranslationGroupItem {
 
     /**
      * @return the messageKeys
+     * @throws Exception 
      */
-    public List<MessageEntry> getEntries() {
+    public List<MessageEntry> getEntries() throws Exception {
         if (entries == null) {
             loadEntries();
         }
@@ -98,7 +99,7 @@ public abstract class TranslationGroupItem {
      * Populates the message key map by first loading the appropriate keys and then calling <code>createMessageKeyStatusMap</code>. Each subclass will
      * have its specific data source, so each subclass must implement this method.
      */
-    protected abstract void loadEntries();
+    protected abstract void loadEntries() throws Exception;
 
     /**
      * Checks the translation status for each of the given keys and populates <code>messageKeys</code> accordingly.
