@@ -706,18 +706,18 @@ public class NavigationHelper implements Serializable {
      */
     public String getDatePatternjQueryDatePicker() {
         if (locale == null) {
-            return "yy-MM-dd";
+            return "yy-mm-dd";
         }
 
         switch (locale.getLanguage()) {
             case "de":
                 return "dd.mm.yy";
             case "en":
-                return "MM/dd/yy";
+                return "mm/dd/yy";
             case "es":
-                return "dd/MM/yy";
+                return "dd/mm/yy";
             default:
-                return "yy-MM-dd";
+                return "yy-mm-dd";
         }
     }
 

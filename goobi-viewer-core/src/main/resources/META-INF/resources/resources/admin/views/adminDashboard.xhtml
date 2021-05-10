@@ -158,7 +158,7 @@
                             </ui:fragment>
                             
                             <!-- TRANSLATIONS -->
-							<ui:fragment rendered="#{adminBean.displayTranslationsDashboardWidget}">
+							<ui:fragment rendered="#{userBean.admin and adminBean.displayTranslationsDashboardWidget}">
                             	<c:choose>
 									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles()}">
                                 		<h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -warning">
