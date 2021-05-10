@@ -964,7 +964,7 @@ public class ActiveDocumentBean implements Serializable {
         int page;
         int page2 = Integer.MAX_VALUE;
         logger.trace("given range: {}", pageOrderRange);
-        if (pageOrderRange.contains("-") && pageOrderRange.charAt(0) != '-') {
+        if (pageOrderRange.contains("-")) {
             boolean firstMinus = false;
             boolean secondMinus = false;
             if (pageOrderRange.startsWith("-")) {
@@ -1140,7 +1140,7 @@ public class ActiveDocumentBean implements Serializable {
             number = currentLeftPage.get().getOrder() + step * 2;
         } else if (currentRightPage.isPresent()) {
             logger.trace("{} is right page", currentRightPage.get().getOrder());
-            number = currentLeftPage.get().getOrder() + step * 2;
+            number = currentRightPage.get().getOrder() + step * 2;
         } else {
             number = viewManager.getCurrentImageOrder() + step * 2;
         }
