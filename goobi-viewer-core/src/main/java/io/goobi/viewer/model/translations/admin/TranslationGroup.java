@@ -83,6 +83,7 @@ public class TranslationGroup {
     private Integer untranslatedEntryCount;
     private Integer fullyTranslatedEntryCount = null;
     private String filterString;
+    private boolean loadError = false;
 
     /**
      * Factory method.
@@ -189,7 +190,14 @@ public class TranslationGroup {
     public int getEntryCount() {
         Set<MessageEntry> returnSet = new HashSet<>();
         for (TranslationGroupItem item : items) {
-            returnSet.addAll(item.getEntries());
+            try {
+                if (item.getEntries() != null) {
+                    returnSet.addAll(item.getEntries());
+                }
+            } catch (Exception e) {
+                loadError = true;
+                break;
+            }
         }
 
         return returnSet.size();
@@ -333,7 +341,15 @@ public class TranslationGroup {
             logger.trace("Loading entries...");
             Set<MessageEntry> retSet = new HashSet<>();
             for (TranslationGroupItem item : items) {
-                retSet.addAll(item.getEntries());
+                try {
+                    if (item.getEntries() != null) {
+                        retSet.addAll(item.getEntries());
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                    loadError = true;
+                    break;
+                }
             }
 
             allEntries = new ArrayList<>(retSet);
@@ -393,6 +409,20 @@ public class TranslationGroup {
     public void setFilterString(String filterString) {
         logger.trace("setFilterString: {}", filterString);
         this.filterString = filterString;
+    }
+
+    /**
+     * @return the loadError
+     */
+    public boolean isLoadError() {
+        return loadError;
+    }
+
+    /**
+     * @param loadError the loadError to set
+     */
+    public void setLoadError(boolean loadError) {
+        this.loadError = loadError;
     }
 
     /**
@@ -524,11 +554,10 @@ public class TranslationGroup {
         return new File(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
                 "messages_" + language + ".properties");
     }
-    
+
     /**
-     * Check whether the application has write access to all local messages files 
-     * as well as the containing folder if any languages have no local message file.
-     * The tested languages are taken from {@link ViewerResourceBundle#getAllLocales()}
+     * Check whether the application has write access to all local messages files as well as the containing folder if any languages have no local
+     * message file. The tested languages are taken from {@link ViewerResourceBundle#getAllLocales()}
      * 
      * @return true if all required access rights to edit messages are present. false otherwise
      */
@@ -538,19 +567,18 @@ public class TranslationGroup {
          */
         for (Locale locale : ViewerResourceBundle.getAllLocales()) {
             Path path = getLocalTranslationFile(locale.getLanguage()).toPath();
-            if( Files.exists(path) ) {
-                if( Files.isWritable(path) ) {
+            if (Files.exists(path)) {
+                if (Files.isWritable(path)) {
                     continue;
-                } else {
-                    return false;
                 }
-            } else if( Files.isWritable(path.getParent()) ){
+                return false;
+            } else if (Files.isWritable(path.getParent())) {
                 continue;
             } else {
                 return false;
             }
-        } 
+        }
         return true;
     }
-    
+
 }

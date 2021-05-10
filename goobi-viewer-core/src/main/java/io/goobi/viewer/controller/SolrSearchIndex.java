@@ -1226,7 +1226,7 @@ public final class SolrSearchIndex {
                 SolrPingResponse ping = client.ping();
                 return ping.getStatus() < 400;
             } catch (SolrException | SolrServerException | IOException e) {
-                logger.trace("Ping to solr failed " + e.toString());
+                logger.trace("Ping to solr failed: {}", e.getMessage());
                 return false;
             }
         }
@@ -1443,7 +1443,7 @@ public final class SolrSearchIndex {
                 }
                 this.solrFields = list;
             }
-        } catch (IllegalStateException | SolrServerException | IOException e) {
+        } catch (IllegalStateException | SolrServerException | RemoteSolrException | IOException e) {
             throw new DAOException("Failed to load SOLR field names: " + e.toString());
         }
 

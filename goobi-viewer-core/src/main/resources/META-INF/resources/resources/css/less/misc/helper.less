@@ -98,10 +98,36 @@
 }
 #ui-datepicker-div {
 	background: @white;
+	box-shadow: rgba(34, 34, 34, 0.2) 0px 0px 3px;
+}
+.ui-datepicker td span, .ui-datepicker td a {
+	text-align: center;
+}
+.ui-datepicker {
+	.ui-datepicker-prev-hover
+	{}
+	.ui-datepicker-next-hover {}
+}
+.ui-datepicker-prev, 
+.ui-datepicker-next {
+	&:hover {
+		text-decoration: none;
+	}
+}
+
+.ui-datepicker-prev::before {
+    content: '<';
+    display: flex;
+    justify-content: center;
+}
+.ui-datepicker-next::before {
+    content: '>';
+    display: flex;
+    justify-content: center;
 }
 .ui-shadow {
     box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    }
+}
 
 /* HORIZONTAL LIST */
 /* BLOCK */
