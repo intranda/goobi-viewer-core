@@ -233,7 +233,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "statistic_mode")
-    private StatisticMode statisticMode;
+    private StatisticMode statisticMode = StatisticMode.RECORD;
 
     @ManyToOne
     @JoinColumn(name = "revewier_user_group_id")
@@ -290,6 +290,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @Transient
     @JsonIgnore
     private List<String> solrQueryResults = null;
+    
+    @Transient
+    @JsonIgnore
+    private Integer pageCount = 0;
 
     /**
      * Empty constructor.
@@ -321,6 +325,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         this.selectedLocale = orig.selectedLocale;
         this.solrQuery = orig.solrQuery;
         this.solrQueryResults = orig.solrQueryResults;
+        this.pageCount = orig.pageCount;
         this.visibility = orig.visibility;
         this.statistics = orig.statistics; //no need for deep copy since it can't be changed in campaign editor
         this.showLog = orig.showLog;
@@ -409,11 +414,43 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public long getNumRecords() throws IndexUnreachableException {
         try {
-            return getSolrQueryResults().size();
+            if(StatisticMode.RECORD.equals(getStatisticMode())) {                
+                return getSolrQueryResults().size();
+            } else {
+                return getTotalPageCount();
+            }
         } catch (PresentationException e) {
             logger.warn("Error getting number of records for campaign:" + e.toString());
             return 0;
         }
+    }
+
+    /**
+     * @return the total number of pages within the records found by {@link #solrQuery}
+     */
+    private long getTotalPageCount() {
+        if(this.pageCount == null) {
+            String query = "+" + SolrConstants.ISWORK + ":true +" + SolrConstants.BOOL_IMAGEAVAILABLE + ":true";
+            // Validate campaign query before adding it
+            try {
+                query += " +(" + solrQuery + ")";
+                int pages = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(query, Collections.singletonList(SolrConstants.NUMPAGES))
+                        .stream()
+                        .filter(doc -> doc.getFieldValue(SolrConstants.NUMPAGES) != null)
+                        .mapToInt(doc -> (Integer)doc.getFieldValue(SolrConstants.NUMPAGES))
+                        .sum();
+                this.pageCount = pages;
+            } catch (RemoteSolrException e) {
+                logger.error(e.getMessage());
+            } catch (PresentationException e) {
+                logger.error(e.getMessage());
+            } catch (IndexUnreachableException e) {
+                logger.error(e.getMessage());
+            }
+        }
+        return this.pageCount;
     }
 
     /**
@@ -439,15 +476,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
             }
             if (StatisticMode.PAGE.equals(statisticMode)) {
                 // Page-based count
-                boolean match = !statistic.getPageStatistics().isEmpty();
                 for (String key : statistic.getPageStatistics().keySet()) {
-                    if (!statistic.getPageStatistics().get(key).getStatus().name().equals(status)) {
-                        match = false;
-                        break;
+                    if (statistic.getPageStatistics().get(key).getStatus().name().equals(status)) {
+                        count++;
                     }
-                }
-                if (match) {
-                    count++;
                 }
             } else if (statistic.getStatus() != null && statistic.getStatus().name().equals(status)) {
                 // Record-based count
@@ -1211,6 +1243,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
         this.solrQueryResults = null;
+        this.pageCount = null;
     }
 
     /**
@@ -1441,7 +1474,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     private List<String> getSolrQueryResults() throws PresentationException, IndexUnreachableException {
         if (this.solrQueryResults == null) {
-            String query = "+" + SolrConstants.ISWORK + ":true";
+            String query = "+" + SolrConstants.ISWORK + ":true +" + SolrConstants.BOOL_IMAGEAVAILABLE + ":true";
             // Validate campaign query before adding it
             try {
                 SolrQueryValidator.getHitCount(solrQuery);

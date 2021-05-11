@@ -33,6 +33,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.exceptions.DAOException;
 
 
@@ -40,7 +41,7 @@ import io.goobi.viewer.exceptions.DAOException;
  * @author florian
  *
  */
-public class CampaignEndpointTest {
+public class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
 
     private final Session session1 = Mockito.mock(Session.class);
     private final Session session2 = Mockito.mock(Session.class);
@@ -63,7 +64,8 @@ public class CampaignEndpointTest {
     private final CampaignEndpoint endpoint3 = new CampaignEndpoint();
     
      @Before
-     public void setup() {
+     public void setup() throws Exception {
+         super.setUp();
          Mockito.when(httpSession1.getId()).thenReturn("http1");
          Mockito.when(httpSession2.getId()).thenReturn("http2");
          Mockito.when(httpSession3.getId()).thenReturn("http3");

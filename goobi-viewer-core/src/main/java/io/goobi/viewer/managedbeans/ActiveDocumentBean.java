@@ -265,7 +265,9 @@ public class ActiveDocumentBean implements Serializable {
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             } catch (RecordNotFoundException | RecordDeletedException | RecordLimitExceededException e) {
-                logger.error(e.getMessage());
+                if (e.getMessage() != null && !"null".equals(e.getMessage())) {
+                    logger.warn(e.getMessage());
+                }
             } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
                 logger.error(e.getMessage(), e);
             }
@@ -1540,7 +1542,7 @@ public class ActiveDocumentBean implements Serializable {
             PageType pageType = navigationHelper.getCurrentPageType();
             if (PageType.other.equals(pageType)) {
                 String pageLabel = navigationHelper.getCurrentPage();
-                if(StringUtils.isNotBlank(pageLabel)) {                    
+                if (StringUtils.isNotBlank(pageLabel)) {
                     return Messages.translate(pageLabel, Locale.forLanguageTag(language));
                 }
             }

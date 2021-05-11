@@ -161,7 +161,7 @@
 							<ui:fragment rendered="#{userBean.admin and adminBean.displayTranslationsDashboardWidget}">
                             	<c:choose>
 									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles()}">
-                                		<h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -warning">
+                                		<h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 #{adminBean.configuredTranslationGroups.stream().anyMatch(g -> g.loadError).get() ? '-warning':'-danger'}">
 		                                    <div class="row">
 		                                        <h3 class="col-9">#{msg.admin__translations}</h3>
 		                                    </div>
@@ -192,7 +192,18 @@
 															</div>
 			                                            </ui:fragment>
 			                                            <ui:fragment rendered="#{group.loadError}">
-			                                            	#{msg[group.name]}: #{msg.errIndexUnreachableTitle}
+			                                            	<div class="row admin__translations-not-translated-entry"
+			                                                    aria-label="#{msg.edit}: #{msg[group.name]}">
+			                                                    <div class="col-8 pl-5">
+			                                                       #{msg[group.name]}: #{msg.errIndexUnreachableTitle}
+			                                                    </div>
+			                                                    <div class="col-4 d-flex justify-content-end align-items-center">
+			                                                        <i class="fa fa-exclamation-circle" aria-hidden="true"></i> 
+			                                                    </div>
+			                                                </div>
+				                                        	<div class="admin__dashboard-translations-progress">
+																<div class="admin__dashboard-translations-progress-error"></div>
+															</div>
 			                                            </ui:fragment>
 		                                            </ui:repeat>
 		                                        </div>

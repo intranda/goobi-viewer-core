@@ -4,6 +4,18 @@
 /* ADMIN LAYOUT */
 
 .admin {
+	/* BACKEND FONT + FALLBACK FONTS */
+	font-family: 'Inter', 'Roboto', 'Helvetica Neue', 'Helvectia', 'Lato', 'Arial', sans-serif;
+
+	/* BASIC ELEMENTS */
+	h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+		font-weight: 600;
+	}
+	
+	dt {
+		font-weight: 600;
+	}
+
 	/* LAYOUT GENERAL */
 	&__content {
 		min-height: 100vh;
@@ -45,12 +57,10 @@
 	}
 	&__content-inner-content {
 		padding: 15px;
-		
 		h3.admin__h3 {
 			margin-bottom: 1rem;
 			font-size: 1.8rem;
 		}
-
 	}
 	&__title-bar {
 		display: flex;
@@ -344,6 +354,11 @@
 		width: 100%;
 		display: flex;
 	}
+	&__license-unconfigured-entry {
+		&:hover {
+			color: #212529;
+		}
+	}
 	&__dashboard-translations-progress {
 		background: #eeeeee;
 		height: 8px;
@@ -360,9 +375,17 @@
 	&__dashboard-translations-progress-partially {
 		background: rgba(243,208,70,0.4);
 	}
+	&__dashboard-translations-progress-error {
+		background: rgb(255, 178, 178);
+		flex: 0 0 100%;
+		max-width: 100%;
+	}
 	&__translations-not-translated-entry {
 		margin-top: 2rem;
 		margin-bottom: 0.5rem;
+		&:hover {
+			color: #212529;
+		}
 	}
 	&__translations-global-key-wrapper {
 		font-size: 12px;
@@ -483,7 +506,7 @@
 		}
 		a {
 			color: @blue;
-			font-weight: 700;
+			font-weight: 600;
 		}
 		&:before {
 			position: absolute;
@@ -560,7 +583,7 @@
 	}
 	&__table-title {
 		margin-bottom: 0rem;
-		font-weight: 700;
+		font-weight: 600;
 		border-bottom: 1px solid @gray;
 		padding: 1rem 0;
         font-size: 1.6rem;
@@ -731,7 +754,7 @@
 			margin-bottom: 0.7rem;
 			font-size: 2.5rem;
 			color: @white;
-			font-weight: 700;
+			font-weight: 600;
 			padding: 1.7rem 0 0.2rem 0;
 			a {
 				display: flex;
@@ -1093,6 +1116,7 @@
 	
 	// ADMIN TOPBAR FRONTEND
 	&__topbar-frontend {
+		font-family: 'Inter', sans-serif;
 		position: relative;
 		display: flex;
 		width: 100vw;

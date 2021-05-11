@@ -748,13 +748,14 @@
                                                             itemValue="#{mode}">
                                                         </f:selectItems>
                                                         <f:passThroughAttribute name="aria-label" value="#{msg.label__crowdsourcing_campaign_statistic_mode}"/>
+                                                    	<f:ajax render="statisticsArea"></f:ajax>
                                                     </h:selectOneMenu>                                              
                                                 </div>
                                             </h:panelGroup>
 
 										<!-- STATISTICS SIDEBAR WIDGET -->
 										<h:panelGroup id="statisticsArea">
-											<c:if test="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
+											<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
 												<div class="admin__default-block mb-0">
 													<h3>#{msg.admin__crowdsourcing_campaign_statistics}</h3>
 													<!-- METADATA WRAPPER -->
@@ -766,7 +767,7 @@
 															value="#{crowdsourcingBean.selectedCampaign}"></ui:param>
 													</ui:include>
 												</div>
-											</c:if>
+											</ui:fragment>
 											<script>        		
 									        	riot.mount("progressBar");
 											</script>	
