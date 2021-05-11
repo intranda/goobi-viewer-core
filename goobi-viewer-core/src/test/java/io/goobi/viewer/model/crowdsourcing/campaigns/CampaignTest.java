@@ -473,6 +473,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
             }
             campaign.getStatistics().put("PI3", statistic);
         }
-        Assert.assertEquals(2, campaign.getNumRecordsForStatus(CrowdsourcingStatus.FINISHED.name()));
+        Assert.assertEquals(4, campaign.getNumRecordsForStatus(CrowdsourcingStatus.FINISHED.name()));
+        Assert.assertEquals(1, campaign.getNumRecordsForStatus(CrowdsourcingStatus.REVIEW.name()));
     }
 }
