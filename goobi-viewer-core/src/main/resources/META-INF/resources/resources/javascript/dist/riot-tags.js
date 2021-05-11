@@ -2338,6 +2338,75 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	    }
     	}.bind(this)
 });
+riot.tag2('geomapsearch', '<div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div id="geoMapSearch" class="geo-map"></div></div>', '', '', function(opts) {
+
+this.on("mount", function() {
+	this.initMap();
+});
+
+this.initMap = function() {
+    console.log("initializing geomap for search", viewerJS);
+    this.geoMap = new viewerJS.GeoMap({
+        mapId : "geoMapSearch",
+        allowMovingFeatures: false,
+        language: viewerJS.translator.language,
+        popover: undefined,
+        emptyMarkerMessage: undefined,
+        popoverOnHover: false,
+    })
+    let initialView = {
+        zoom: 5,
+        center: [11.073397, 49.451993]
+    };
+    this.geoMap.setMarkerIcon({
+        shape: "circle",
+        prefix: "fa",
+        markerColor: "blue",
+        iconColor: "white",
+        icon: "fa-circle",
+        svg: true
+    })
+    this.geoMap.init(initialView);
+    this.geoMap.initGeocoder(this.refs.geocoder);
+    this.initMapDraw();
+
+}.bind(this)
+
+this.initMapDraw = function() {
+    console.log("init map draw");
+    this.drawnItems = new L.FeatureGroup();
+    this.geoMap.map.addLayer(this.drawnItems);
+    this.drawControl = new L.Control.Draw({
+        edit: {
+            featureGroup: this.drawnItems,
+            edit: false,
+            remove: false
+        },
+        draw: {
+            polyline: false,
+            marker: false,
+            circlemarker: false
+        }
+    });
+    this.geoMap.map.addControl(this.drawControl);
+    console.log("initialized map draw", this.drawControl);
+
+    this.geoMap.map.on(L.Draw.Event.DRAWSTART, (e) => {
+        if(this.searchLayer) {
+            this.drawnItems.removeLayer(this.searchLayer);
+            this.searchLayer = undefined;
+        }
+    });
+
+    this.geoMap.map.on(L.Draw.Event.CREATED, (e) => {
+        console.log("draw event ", e);
+        let type = e.layerType;
+        this.searchLayer = e.layer;
+    	this.drawnItems.addLayer(e.layer);
+    });
+}.bind(this)
+
+});
 riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="imagefilters__filter" each="{filter in filters}"><span class="imagefilters__label {filter.config.slider ? \'\' : \'imagefilters__label-long\'}">{filter.config.label}</span><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__checkbox" if="{filter.config.checkbox}" type="checkbox" onchange="{apply}" checked="{filter.isActive() ? \'checked\' : \'\'}" aria-label="{filter.config.label}"><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__slider" title="{filter.getValue()}" if="{filter.config.slider}" type="range" oninput="{apply}" riot-value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal" aria-label="{filter.config.label}: {filter.getValue()}"></div></div><div class="imagefilters__options"><button type="button" class="btn btn--full" onclick="{resetAll}">{this.config.messages.clearAll}</button></div>', '', '', function(opts) {
 
 		if(!this.opts.image) {

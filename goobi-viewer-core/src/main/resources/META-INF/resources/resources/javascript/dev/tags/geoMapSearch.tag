@@ -36,7 +36,42 @@ initMap() {
     })
     this.geoMap.init(initialView);
     this.geoMap.initGeocoder(this.refs.geocoder);
+    this.initMapDraw();
 
+} 
+
+initMapDraw() {
+    console.log("init map draw");
+    this.drawnItems = new L.FeatureGroup();
+    this.geoMap.map.addLayer(this.drawnItems);
+    this.drawControl = new L.Control.Draw({
+        edit: {
+            featureGroup: this.drawnItems,
+            edit: false,
+            remove: false
+        },
+        draw: {
+            polyline: false,
+            marker: false,
+            circlemarker: false
+        }
+    });
+    this.geoMap.map.addControl(this.drawControl);
+    console.log("initialized map draw", this.drawControl);
+    
+    this.geoMap.map.on(L.Draw.Event.DRAWSTART, (e) => {
+        if(this.searchLayer) {
+            this.drawnItems.removeLayer(this.searchLayer);
+            this.searchLayer = undefined;
+        }
+    });
+    
+    this.geoMap.map.on(L.Draw.Event.CREATED, (e) => {
+        console.log("draw event ", e);
+        let type = e.layerType;
+        this.searchLayer = e.layer;
+    	this.drawnItems.addLayer(e.layer);
+    });
 }
 
 </script>
