@@ -13,7 +13,8 @@
 		
 		<imageControls if="{this.image}" 
 			image="{this.image}" 
-			item="{this.opts.item}" 
+			imageindex="{this.opts.item.currentCanvasIndex}"
+			imagecount="{this.opts.item.canvases.length}"
 			actionlistener="{this.actionListener}" 
 			showthumbs="{this.showThumbs}"
 			class="{this.showThumbs ? 'd-none' : ''}">
@@ -82,8 +83,6 @@
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
 
 	})
-	
-	console.log(Crowdsourcing.translate("crowdsourcing__campaign_tooltip_in_review"))
 
 	// TOOLTIPS FOR PAGE STATUS	
 	initTooltips() {
@@ -206,7 +205,7 @@
 		        if(this.opts.item) {
 		            this.opts.item.notifyImageRotated(event.value);
 		        }
-		        break;
+		        break;	
 			case "clickImage":
 				this.showThumbs = false;
 			case "setImageIndex":

@@ -42,9 +42,10 @@ var viewerJS = ( function( viewer ) {
 						showCancelButton: true,
 						confirmButtonText: confirmText,
 	  					cancelButtonText: denyText,
+					    buttonsStyling: false,
 	  					customClass: {
-						    confirmButton: 'btn btn--success',
-						    cancelButton: 'btn btn--default',
+						    confirmButton: 'btn btn--full',
+						    cancelButton: 'btn btn--default'
 						  }
 					})
 					.then(result => {

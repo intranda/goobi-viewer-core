@@ -180,6 +180,15 @@
 					height:100%;
 				}
 			}
+			.image-conntrols_action {
+				&.forward,
+				&.back {
+					&.-inactive {
+						opacity: 0.3;
+						cursor: default;
+					}
+				}
+			}
 			.image-controls__action.thumbs {
 				position: absolute;
 				right: 9px;
@@ -191,9 +200,7 @@
 				}
 				&:after {
 					content: 'X';
-					background: #444;
-					color: white;
-					border-radius: 39px;
+					color: #6f6f6f;
 					width: 35px;
 					height: 35px;
 					position: absolute;
@@ -204,6 +211,12 @@
 					top: 0;
 					font-weight: 700;
 					line-height: 1;
+					border: 1px solid #6f6f6f;
+				}
+				&:hover {
+					&::after {
+						background-color: #eee;
+					}
 				}
 			}
 			.image_thumbnails-wrapper {
@@ -720,6 +733,8 @@
 			float: right;
 			margin-right: 10px;
 			}
+
+		// MAPS + GEOCODING STYLING
 		.geo-map__wrapper {
 			position: relative;
 		}
@@ -727,13 +742,20 @@
 			height: 600px;
 		}
 		.geocoder {
-			z-index: 2000;
+			z-index: 750;
 			position: absolute;
 			top: 10px;
 			right: 10px;
+			width: 270px;
+		}
+		.mapboxgl-ctrl {
+		width: 100%;
 		}
 		.mapboxgl-ctrl button:not(:disabled):hover {
 			background-color: transparent;
+		}
+		.leaflet-marker-icon i:not([number]) {
+		    margin-left: 0;
 		}
 //		.mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
 //			border: 2px solid rgba(0,0,0,0.2);

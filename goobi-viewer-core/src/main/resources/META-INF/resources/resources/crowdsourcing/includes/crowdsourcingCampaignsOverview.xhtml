@@ -31,7 +31,7 @@
 					    <ui:fragment rendered="#{campaign.hasStarted and !campaign.hasEnded}">
 						    <h:commandLink rendered="#{campaign.hasRecordsToAnnotate(userBean.user) and campaign.isUserAllowedAction(userBean.user, 'ANNOTATE')}"
 						        action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign)}"
-						        styleClass="btn btn--default">#{msg.action__crowdsourcing_participate}</h:commandLink>
+						        styleClass="btn btn--full">#{msg.action__crowdsourcing_participate}</h:commandLink>
 						    <h:commandLink rendered="#{campaign.reviewModeActive and campaign.hasRecordsToReview(userBean.user) and campaign.isUserAllowedAction(userBean.user, 'REVIEW')}"
 						        action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"
 						        styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>

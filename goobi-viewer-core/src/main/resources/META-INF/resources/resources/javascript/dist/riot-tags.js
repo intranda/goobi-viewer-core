@@ -1667,8 +1667,7 @@ this.removeFeature = function(feature) {
 });
 
 
-riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-controls__actions"><div onclick="{toggleThumbs}" class="image-controls__action thumbs {this.opts.showthumbs ? \'in\' : \'\'}"><a><i class="image-thumbs"></i></a></div><div if="{this.opts.image}" class="image-controls__action rotate-left"><a onclick="{rotateLeft}"><i class="image-rotate_left"></i></a></div><div if="{this.opts.image}" class="image-controls__action rotate-right"><a onclick="{rotateRight}"><i class="image-rotate_right"></i></a></div><div if="{this.opts.image}" class="image-controls__action zoom-slider-wrapper"><input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"></div></div></div>', '', '', function(opts) {
-
+riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-controls__actions"><div onclick="{toggleThumbs}" class="image-controls__action thumbs {this.opts.showthumbs ? \'in\' : \'\'}"><a></a></div><div if="{this.opts.image}" class="image-controls__action back {this.opts.imageindex === 0 ? \'-inactive\' : \'\'}"><a onclick="{previousItem}"><i class="image-back"></i></a></div><div if="{this.opts.image}" class="image-controls__action forward {this.opts.imageindex === this.opts.imagecount -1 ? \'-inactive\' : \'\'}"><a onclick="{nextItem}"><i class="image-forward"></i></a></div><div if="{this.opts.image}" class="image-controls__action rotate-left"><a onclick="{rotateLeft}"><i class="image-rotate_left"></i></a></div><div if="{this.opts.image}" class="image-controls__action rotate-right"><a onclick="{rotateRight}"><i class="image-rotate_right"></i></a></div><div if="{this.opts.image}" class="image-controls__action zoom-slider-wrapper"><input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"></div></div></div>', '', '', function(opts) {
 
     this.rotateRight = function()
     {
@@ -1684,6 +1683,20 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
             this.opts.image.controls.rotateLeft();
         }
     	this.handleAction("rotate", -90)
+    }.bind(this)
+
+    this.previousItem = function()
+    {
+    	if (this.opts.imageindex > 0) {
+    		this.handleAction("setImageIndex", this.opts.imageindex - 1)
+    	}
+    }.bind(this)
+
+    this.nextItem = function()
+    {
+    	if (this.opts.imageindex < this.opts.imagecount -1) {
+    		this.handleAction("setImageIndex", this.opts.imageindex + 1)
+    	}
     }.bind(this)
 
     this.toggleThumbs = function() {
@@ -1702,8 +1715,28 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
 
 	$( document ).ready(function() {
 	    $('.image-controls__action.thumbs').tooltip({
-	        placement: 'top',
+	      placement: 'top',
 	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_back_to_overview"),
+	      trigger: 'hover'
+	    });
+	    $('.image-controls__action.back').tooltip({
+	        placement: 'top',
+	      title: Crowdsourcing.translate("prevImage"),
+	      trigger: 'hover'
+	    });
+	    $('.image-controls__action.forward').tooltip({
+	      placement: 'top',
+	      title: Crowdsourcing.translate("nextImage"),
+	      trigger: 'hover'
+	    });
+	    $('.image-controls__action.rotate-left').tooltip({
+	      placement: 'top',
+	      title: Crowdsourcing.translate("rotateLeft"),
+	      trigger: 'hover'
+	    });
+	    $('.image-controls__action.rotate-right').tooltip({
+	      placement: 'top',
+	      title: Crowdsourcing.translate("rotateRight"),
 	      trigger: 'hover'
 	    });
 	});
@@ -1716,7 +1749,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" item="{this.opts.item}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_unfinished⁗)}</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_all⁗)}</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" imageindex="{this.opts.item.currentCanvasIndex}" imagecount="{this.opts.item.canvases.length}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_unfinished⁗)}</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_all⁗)}</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
 
 
 	this.on("updated", function() {
@@ -1754,8 +1787,6 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
 
 	})
-
-	console.log(Crowdsourcing.translate("crowdsourcing__campaign_tooltip_in_review"))
 
 	this.initTooltips = function() {
 	    $('.thumbnails-image-wrapper.review').tooltip({

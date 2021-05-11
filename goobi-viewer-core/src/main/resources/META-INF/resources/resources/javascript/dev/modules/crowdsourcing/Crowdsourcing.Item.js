@@ -78,7 +78,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.initWebSocket();
         this.initKeyboardEvents();
         
-        console.log("initialized crowdsourcing item ", this);
+        // console.log("initialized crowdsourcing item ", this);
         
     };
     
@@ -105,7 +105,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Item.prototype.initWebSocket = function() {
  		this.socket = new viewerJS.WebSocket(window.location.host, window.currentPath, viewerJS.WebSocket.PATH_CAMPAIGN_SOCKET);
     	this.socket.onMessage.subscribe((event) => {
-    		console.log("received message ", event.data);
+    		// console.log("received message ", event.data);
     		let data = JSON.parse(event.data);
     		if(data.status) {
     			this.handleMessage(data);
