@@ -232,7 +232,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     private ReviewMode reviewMode = ReviewMode.REQUIRE_REVIEW;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "statistic_mode", nullable = false)
+    @Column(name = "statistic_mode")
     private StatisticMode statisticMode = StatisticMode.RECORD;
 
     @ManyToOne
