@@ -79,7 +79,9 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     public static final String CONTENT_TYPE_SVG = "image/svg+xml";
     /** Constant <code>CONTENT_TYPE_PDF="application/pdf"</code> */
     public static final String CONTENT_TYPE_PDF = "application/pdf";
-
+    /** Constant <code>CONTENT_TYPE_GIF="application/gif"</code> */
+    public static final String CONTENT_TYPE_GIF = "image/gif";
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_media_item_id")
@@ -89,7 +91,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     private String fileName;
 
     @Column(name = "link_url", nullable = true)
-    private URI link;
+    private String link;
 
     @Column(name = "priority", nullable = true)
     private Priority priority = Priority.DEFAULT;
@@ -133,7 +135,8 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         this.priority = orig.priority;
         this.displayOrder = orig.displayOrder;
         this.categories = new ArrayList<>(orig.getCategories());
-
+        this.lastModifiedTime = orig.lastModifiedTime;
+        
         for (CMSMediaItemMetadata origMetadata : orig.metadata) {
             CMSMediaItemMetadata copy = new CMSMediaItemMetadata(origMetadata);
             this.metadata.add(copy);
@@ -207,6 +210,8 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                 return CONTENT_TYPE_SVG;
             case "pdf":
                 return CONTENT_TYPE_PDF;
+            case "gif":
+                return CONTENT_TYPE_GIF;
             default:
                 return "";
         }
@@ -520,10 +525,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * @return the entered link url
      */
     public String getLink() {
-        if (this.link != null) {
-            return this.link.toString();
-        }
-        return null;
+        return this.link;
     }
 
     /**
@@ -532,12 +534,8 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * @param linkUrl a {@link java.lang.String} object.
      * @throws java.net.URISyntaxException if any.
      */
-    public void setLink(String linkUrl) throws URISyntaxException {
-        if (StringUtils.isBlank(linkUrl)) {
-            this.link = null;
-        } else {
-            this.link = new URI(linkUrl);
-        }
+    public void setLink(String linkUrl) {
+        this.link = linkUrl;
     }
 
     /*

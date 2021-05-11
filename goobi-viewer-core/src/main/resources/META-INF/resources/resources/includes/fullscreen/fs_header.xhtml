@@ -36,14 +36,14 @@
         
         <!-- DOCSTRUCT NAVIGATION -->
         <c:if test="#{configurationBean.isDisplayDocstructNavigation(activeDocumentBean.viewManager.topStructElement.docStructType, true) and (activeDocumentBean.previousDocstructUrl != '' or activeDocumentBean.nextDocstructUrl != '')}">
-            <div class="fullscreen__header-docsctruct-navigation">
-                <h:outputLink styleClass="fullscreen__header-docsctruct-navigation-back"
+            <div class="fullscreen__header-docstruct-navigation">
+                <h:outputLink styleClass="fullscreen__header-docstruct-navigation-back"
                     value="#{activeDocumentBean.previousDocstructUrl}" disabled="#{activeDocumentBean.previousDocstructUrl == ''}">
-					<i class="fa fa-angle-double-left" aria-hidden="true"></i> Vorheriges Dokument
+					<i class="fa fa-angle-double-left" aria-hidden="true"></i> #{msg.docstruct__previous}
                 </h:outputLink>
-                <h:outputLink styleClass="fullscreen__header-docsctruct-navigation-next"
+                <h:outputLink styleClass="fullscreen__header-docstruct-navigation-next"
                     value="#{activeDocumentBean.nextDocstructUrl}" disabled="#{activeDocumentBean.nextDocstructUrl == ''}">
-                    Nächstes Dokument <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                    #{msg.docstruct__next} <i class="fa fa-angle-double-right" aria-hidden="true"></i>
                 </h:outputLink>
             </div>
         </c:if>

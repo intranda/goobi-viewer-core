@@ -107,7 +107,7 @@ public class RecordFileResource {
     public String getAlto(
             @Parameter(description = "Filename of the alto document") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, ContentNotFoundException,
-            ServiceNotAllowedException, DAOException {
+            ServiceNotAllowedException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
@@ -121,7 +121,7 @@ public class RecordFileResource {
     @Operation(tags = { "records" }, summary = "Get plaintext for a single page")
     public String getPlaintext(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
-            throws ContentNotFoundException, PresentationException, IndexUnreachableException, DAOException, ServiceNotAllowedException {
+            throws ContentNotFoundException, PresentationException, IndexUnreachableException, ServiceNotAllowedException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
@@ -135,7 +135,7 @@ public class RecordFileResource {
     @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format")
     public String getTEI(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
-            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, ContentLibException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
@@ -151,7 +151,7 @@ public class RecordFileResource {
     @javax.ws.rs.Path(RECORDS_FILES_PDF)
     @Produces({ "application/pdf" })
     @Operation(tags = { "records" }, summary = "Non-canonical URL to PDF file",
-    description="This redirects to " + RECORDS_FILES_IMAGE + RECORDS_FILES_IMAGE_PDF + ", which should be used instead")
+            description = "This redirects to " + RECORDS_FILES_IMAGE + RECORDS_FILES_IMAGE_PDF + ", which should be used instead")
     public Response getPDF(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws ContentLibException {
@@ -211,7 +211,7 @@ public class RecordFileResource {
     public String getCMDI(
             @Parameter(description = "Image file name for cmdi") @PathParam("filename") String filename,
             @Parameter(description = "Language for CMDI") @QueryParam("lang") String lang)
-            throws ContentLibException, PresentationException, IndexUnreachableException, DAOException, IOException {
+            throws ContentLibException, PresentationException, IndexUnreachableException, IOException {
         checkFulltextAccessConditions(pi, filename);
 
         if (lang == null) {

@@ -40,8 +40,8 @@
                         <h:panelGroup rendered="#{activeDocumentBean.anchor}">
                             <div class="search-calendar__input">
                                 <div class="form-horizontal">
-                                    <div class="form-group">
-                                        <label for="selectyear" class="col-sm-4 control-label">#{msg.selectYear}</label>
+                                    <div class="form-group form-row align-items-center">
+                                        <label for="selectyear" class="col-sm-4 mb-1 mb-md-0">#{msg.selectYear}:</label>
                                         <div class="col-sm-8">
                                             <div class="custom-control custom-control--select">
                                                 <h:selectOneMenu id="selectyear" styleClass="form-control" value="#{activeDocumentBean.viewManager.calendarView.year}"

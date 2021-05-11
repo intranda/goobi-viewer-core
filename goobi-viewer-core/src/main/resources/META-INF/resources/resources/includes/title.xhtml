@@ -135,14 +135,11 @@
 								<dd>
 									<div class="title__body-metadata-breadcrumbs">
 										<ui:repeat
-											value="#{activeDocumentBean.viewManager.currentStructElementHierarchy}"
+											value="#{activeDocumentBean.viewManager.currentDocumentHierarchy}"
 											var="docStruct" 
 											varStatus="status">
 											<ui:fragment rendered="#{!status.last}">
 												<a href="#{docStruct.url}" title="#{msg[docStruct.label]}">#{msg[docStruct.label]}</a>
-											</ui:fragment>
-											<ui:fragment rendered="#{!status.last and status.last != ''}">
-												<a href="#{breadcrumb.url}" title="#{msg[breadcrumb.name]}">#{msg[breadcrumb.name]}</a>
 											</ui:fragment>
 											<ui:fragment rendered="#{!status.last}">
 												<i class="fa fa-angle-right" aria-hidden="true"></i>

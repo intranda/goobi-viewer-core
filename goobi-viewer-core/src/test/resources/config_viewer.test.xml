@@ -991,7 +991,7 @@
                     <option label="label__download_option_large_4096" format="jpg" boxSizeInPixel="4096" />
                 </downloadOptions>
             </page>
-            <citation>
+            <citation display="false">
                 <!-- Available citation styles (supported by citeproc) -->
                 <styles>
                     <style>modern-language-association</style>

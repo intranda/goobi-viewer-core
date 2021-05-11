@@ -44,12 +44,12 @@ var viewerJS = ( function( viewer ) {
             jQuery(document).ready(($) => {
 				
 				this.initImageDisplay();
-				viewerJS.jsfAjax.success.subscribe(() => this.initImageDisplay());
 				
                 if(this.config.initHcSticky) {                    
                     this.initHcStickyWithChromeHack();
                 }
                 viewerJS.jsfAjax.success
+                .pipe(rxjs.operators.filter(e => $(e.source).attr("data-select-entry") != undefined))
                 .subscribe(e => {
                     $(".archives__object-image").hide();
                 	this.initImageDisplay()
@@ -76,10 +76,10 @@ var viewerJS = ( function( viewer ) {
         
         initImageDisplay() {
         	let $recordPiInput = $('[data-name="recordPi"]');
-        	console.log("record pi", $recordPiInput, $recordPiInput.val());
+        	//console.log("record pi", $recordPiInput, $recordPiInput.val());
         	if($recordPiInput.length > 0) {
         		let recordPi = $recordPiInput.val();
-        		console.log("record pi is " + recordPi);
+        		//console.log("record pi is " + recordPi);
         		if(recordPi != this.recordPi) {
         			this.recordPi = recordPi;
         			let manifestUrl = rootURL + "/api/v2/records/" + recordPi + "/manifest/";
@@ -225,6 +225,9 @@ var viewerJS = ( function( viewer ) {
             }
             if(_debug)console.log("set url ", url);
             window.history.pushState({}, '', url);
+            //Call the commandscript "updateUrl" in archivesTreeView.xhtml to trigger an ajax call 
+            //and update the page url to show the selected record 
+            updateUrl();
         }
     };
 

@@ -56,7 +56,7 @@ var viewerJS = ( function( viewer ) {
             // show popover for current day
             $( _defaults.popoverTriggerSelector ).on( 'click', function() {
                 _this = $( this );
-                
+
                 let query = _this.attr("data-query");
                 let fields = _this.attr("data-fields").split(",");
                 let requestBody = JSON.stringify({
@@ -88,10 +88,10 @@ var viewerJS = ( function( viewer ) {
                     _this.popover( _popoverConfig );
                     _this.popover( 'show' );
                 })
-                
-                viewerJS.helper.getRemoteData( _currApiCall ).done( function( _json ) {
+                .catch(error => {
+                	console.log("Error calling " + _defaults.indexResourceUrl + " :" + error);
+                });
 
-                } );
             } );
             
             // remove all popovers by clicking on body

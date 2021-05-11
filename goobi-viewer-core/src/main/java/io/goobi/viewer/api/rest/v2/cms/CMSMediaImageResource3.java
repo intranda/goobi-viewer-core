@@ -72,7 +72,9 @@ public class CMSMediaImageResource3 extends ImageResource {
         filename = URLEncoder.encode(filename, "utf-8");
         String baseImageUrl = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
         String imageRequestPath = requestUrl.replace(baseImageUrl, "");
-        this.resourceURI = URI.create(baseImageUrl);
+        int baseStartIndex = requestUrl.indexOf(baseImageUrl);
+        int baseEndIndex = baseStartIndex + baseImageUrl.length();
+        this.resourceURI = URI.create(requestUrl.substring(0, baseEndIndex));
         
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         if(parts.size() == 4) {
@@ -82,7 +84,7 @@ public class CMSMediaImageResource3 extends ImageResource {
             request.setAttribute("iiif-size", parts.get(1));
             request.setAttribute("iiif-rotation", parts.get(2));
             request.setAttribute("iiif-format", parts.get(3));
-        } else {
+        } else if(imageRequestPath.endsWith("info.json")) {
             //image info request
             request.setAttribute("iiif-info", true);
         }

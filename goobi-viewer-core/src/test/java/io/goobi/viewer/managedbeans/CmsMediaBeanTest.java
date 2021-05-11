@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import org.junit.After;
@@ -25,9 +27,9 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.managedbeans.CmsMediaBean;
-import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.CMSMediaItem;
 
 public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
 
@@ -96,4 +98,11 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
         Assert.assertFalse(file3.matches(bean.getImageFilter()));
     }
 
+    @Test
+    public void testGetMediaUrlForGif() throws NumberFormatException, ViewerConfigurationException {
+        CMSMediaItem item = new CMSMediaItem();
+        item.setFileName("lorelai.gif");
+        String url = bean.getMediaUrl(item);
+        assertTrue(url.endsWith("lorelai.gif/full.gif"));
+    }
 }
