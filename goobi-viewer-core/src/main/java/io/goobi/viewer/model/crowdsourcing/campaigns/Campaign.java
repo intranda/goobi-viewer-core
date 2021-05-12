@@ -1786,7 +1786,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @return the statisticMode
      */
     public StatisticMode getStatisticMode() {
-        return statisticMode;
+        return statisticMode != null ? statisticMode : StatisticMode.RECORD;
     }
 
     /**
