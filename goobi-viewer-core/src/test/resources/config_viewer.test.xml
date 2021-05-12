@@ -640,6 +640,9 @@
 				<metadata label="DOCSTRCT" value="">
 					<param type="field" key="DOCSTRCT" />
 				</metadata>
+				<metadata label="MD_RELATED" value="">
+					<param type="field" key="MD_RELATED" condition="PI:{0}" />
+				</metadata>
 			</template>
 			<template name="Chapter">
 				<metadata label="DC" value="">
