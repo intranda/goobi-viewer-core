@@ -61,8 +61,9 @@ var viewerJS = ( function( viewer ) {
 			if(Swal) {
 				Swal.fire({
 					title: message,
-					type: type,
+					icon: type,
 				    buttonsStyling: false,
+				    text: '',
 					customClass: {
 					    confirmButton: 'btn btn--full',
 					    cancelButton: 'btn btn--default'
