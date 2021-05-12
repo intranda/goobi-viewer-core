@@ -169,7 +169,7 @@
             <compressionEnabled>false</compressionEnabled>
             <!-- backwardsCompatible: If true, an XML response parser instead of binary will be used
                 to enabled Solr 4 compatibility. Default is false. -->
-            <backwardsCompatible>false</backwardsCompatible>
+            <backwardsCompatible>true</backwardsCompatible>
         </solr>
 	</performance>
 
