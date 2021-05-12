@@ -59,7 +59,15 @@ var viewerJS = ( function( viewer ) {
 		},
 		notify : (message, type) => {
 			if(Swal) {
-				Swal.fire(message, "", type);
+				Swal.fire({
+					title: message,
+					type: type,
+				    buttonsStyling: false,
+					customClass: {
+					    confirmButton: 'btn btn--full',
+					    cancelButton: 'btn btn--default'
+					  }
+				});
 			} else if(sweetAlert) {
 				swal(message, "", type);
 			} else if(jQuery().overhang) {

@@ -181,12 +181,16 @@
 					height:100%;
 				}
 			}
-			.image-conntrols_action {
+			.image-controls__action {
 				&.forward,
 				&.back {
 					&.-inactive {
 						opacity: 0.3;
-						cursor: default;
+						a {
+							&:hover {
+							cursor: default;
+							}
+						}
 					}
 				}
 			}

@@ -369,11 +369,16 @@ button {
 		font-size: 1.5rem;
 	}
 }
-
+.swal2-container {
+	z-index: 2220;
+}
 .swal2-actions {
 	.btn--default {
 		margin-left: 1rem;
 	}
+}
+.swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+    background: rgba(0,0,0,.8);
 }
 
 /* add a focus ring for better accessibility */
