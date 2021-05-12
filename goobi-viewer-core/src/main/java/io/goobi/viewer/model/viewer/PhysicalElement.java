@@ -131,6 +131,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private boolean hasImage = false;
     /** Whether or not this page contains an image that spans two pages. */
     private boolean doubleImage = false;
+    /** If this page comes after an uneven number of double image pages, this should be set to true. */
+    private boolean flipRectoVerso = false;
     /** Whether or not full-text is available for this page. */
     private boolean fulltextAvailable = false;
 
@@ -696,6 +698,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public void setDoubleImage(boolean doubleImage) {
         this.doubleImage = doubleImage;
+    }
+
+    /**
+     * @return the flipRectoVerso
+     */
+    public boolean isFlipRectoVerso() {
+        return flipRectoVerso;
+    }
+
+    /**
+     * @param flipRectoVerso the flipRectoVerso to set
+     */
+    public void setFlipRectoVerso(boolean flipRectoVerso) {
+        this.flipRectoVerso = flipRectoVerso;
     }
 
     /**

@@ -277,6 +277,8 @@ public class ViewManager implements Serializable {
         if (isDoublePageMode() && !getCurrentPage().isDoubleImage()) {
             Optional<PhysicalElement> leftPage = getCurrentLeftPage();
             Optional<PhysicalElement> rightPage = getCurrentRightPage();
+            logger.trace("left page: {}", leftPage.isPresent() ? leftPage.get().getOrder() : "-");
+            logger.trace("right page: {}", rightPage.isPresent() ? rightPage.get().getOrder() : "-");
             urlBuilder.append("[");
             String imageInfoLeft =
                     (leftPage.isPresent() && leftPage.get().isDoubleImage()) ? null : leftPage.map(page -> getImageInfo(page, pageType)).orElse(null);
@@ -306,7 +308,7 @@ public class ViewManager implements Serializable {
      */
     public Optional<PhysicalElement> getCurrentLeftPage() throws IndexUnreachableException, DAOException {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
-        PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
+        PageOrientation actualPageOrientation = actualPageOrderEven ? getFirstPageOrientation().opposite() : getFirstPageOrientation();
         if (topStructElement != null && topStructElement.isRtl()) {
             actualPageOrientation = actualPageOrientation.opposite();
         }
@@ -328,7 +330,7 @@ public class ViewManager implements Serializable {
      */
     public Optional<PhysicalElement> getCurrentRightPage() throws IndexUnreachableException, DAOException {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
-        PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
+        PageOrientation actualPageOrientation = actualPageOrderEven ? getFirstPageOrientation().opposite() : getFirstPageOrientation();
         if (topStructElement != null && topStructElement.isRtl()) {
             actualPageOrientation = actualPageOrientation.opposite();
         }
@@ -1240,8 +1242,9 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * Main method for setting the current page(s) in this ViewManager.
      * 
-     * @param currentImageOrderString
+     * @param currentImageOrderString A string containing a single page number or a range of two pages
      * @throws NumberFormatException
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -1253,12 +1256,15 @@ public class ViewManager implements Serializable {
             return;
         }
 
+        int newImageOrder = 1;
         if (currentImageOrderString.contains("-")) {
             String[] orderSplit = currentImageOrderString.split("[-]");
-            setCurrentImageOrder(Integer.valueOf(orderSplit[0]));
+            newImageOrder = Integer.valueOf(orderSplit[0]);
         } else {
-            setCurrentImageOrder(Integer.valueOf(currentImageOrderString));
+            newImageOrder = Integer.valueOf(currentImageOrderString);
         }
+
+        setCurrentImageOrder(newImageOrder);
     }
 
     /**
@@ -3474,6 +3480,10 @@ public class ViewManager implements Serializable {
      * @return the firstPageOrientation
      */
     public PageOrientation getFirstPageOrientation() {
+        if (getCurrentPage().isFlipRectoVerso()) {
+            logger.trace("page {} is flipped", getCurrentPage().getOrder());
+            return firstPageOrientation.opposite();
+        }
         return firstPageOrientation;
     }
 

@@ -379,8 +379,7 @@ public class ActiveDocumentBean implements Serializable {
                 }
 
                 viewManager = new ViewManager(topStructElement, AbstractPageLoader.create(topStructElement), topDocumentIddoc,
-                        logid,
-                        topStructElement.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
+                        logid, topStructElement.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 viewManager.setToc(createTOC());
 
                 HttpSession session = BeanUtils.getSession();

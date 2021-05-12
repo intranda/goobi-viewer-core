@@ -141,9 +141,9 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
         for (int key : keys) {
             PhysicalElement page = pages.get(key);
             PhysicalElement nextPage = null;
-//            if (page.isDoubleImage() && pages.get(key + 1) != null) {
-//                nextPage = pages.get(key++); // Skip next page since it's displayed together with the current page
-//            }
+            //            if (page.isDoubleImage() && pages.get(key + 1) != null) {
+            //                nextPage = pages.get(key++); // Skip next page since it's displayed together with the current page
+            //            }
             SelectItem si = buildPageSelectItem(labelTemplate, page.getOrder(), page.getOrderLabel(), nextPage != null ? nextPage.getOrder() : null,
                     nextPage != null ? nextPage.getOrderLabel() : null);
             dropdownPages.add(si);
@@ -213,9 +213,17 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
             return ret;
         }
 
+        boolean flipRectoVerso = false;
         for (SolrDocument doc : result) {
             PhysicalElement pe = loadPageFromDoc(doc, pi, topElement, pageOwnerIddocMap);
             ret.put(pe.getOrder(), pe);
+            if (!pe.isDoubleImage()) {
+                pe.setFlipRectoVerso(flipRectoVerso);
+                logger.trace("page {} flipped: {}", pe.getOrder(), pe.isFlipRectoVerso());
+            }
+            if (pe.isDoubleImage()) {
+                flipRectoVerso = !flipRectoVerso;
+            }
         }
 
         logger.debug("Loaded {} pages for '{}'.", ret.size(), pi);
