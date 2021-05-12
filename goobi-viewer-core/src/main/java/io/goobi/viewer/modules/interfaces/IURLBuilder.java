@@ -40,11 +40,16 @@ public interface IURLBuilder {
      * buildPageUrl.
      * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param imageNo a int.
-     * @param logId a {@link java.lang.String} object.
-     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @return a {@link java.lang.String} object.
+     * @param pi The record persistent identifier
+     * @param imageNo the page number  (1-based)
+     * @param logId The METS identifier of the logical struct element
+     * @param pageType the type of viewer page the url should open 
+     * @param topStruct if false, the url should point to a page or struct element within the record, so imageNo and logId must be considered
+     * @return A URL to the object in the view given by pageType
      */
-    public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType);
+    public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType, boolean topStruct);
+    
+    public default String buildPageUrl(String pi, int imageNo, String logId, PageType pageType) {
+        return buildPageUrl(pi, imageNo, logId, pageType, true);
+    }
 }
