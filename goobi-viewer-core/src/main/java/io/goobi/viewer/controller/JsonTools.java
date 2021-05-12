@@ -232,7 +232,7 @@ public class JsonTools {
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param rootUrl a {@link java.lang.String} object.
      * @param thumbs
-     * @return a {@link org.json.simple.JSONObject} object.
+     * @return a {@link org.json.JSONObject} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should add all metadata
      */
@@ -247,7 +247,7 @@ public class JsonTools {
      * @param rootUrl a {@link java.lang.String} object.
      * @param language a {@link java.lang.String} object.
      * @param thumbs
-     * @return a {@link org.json.simple.JSONObject} object.
+     * @return a {@link org.json.JSONObject} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should add all metadata
      */

@@ -92,6 +92,7 @@ public class MetadataParameter implements Serializable {
     private String defaultValue;
     private String prefix;
     private String suffix;
+    private String condition = "";
     private boolean addUrl = false;
     private boolean topstructValueFallback = false;
     private boolean topstructOnly = false;
@@ -316,6 +317,22 @@ public class MetadataParameter implements Serializable {
      */
     public MetadataParameter setSuffix(String suffix) {
         this.suffix = suffix;
+        return this;
+    }
+
+    /**
+     * @return the condition
+     */
+    public String getCondition() {
+        return condition;
+    }
+
+    /**
+     * @param condition the condition to set
+     * @return this
+     */
+    public MetadataParameter setCondition(String condition) {
+        this.condition = condition;
         return this;
     }
 
