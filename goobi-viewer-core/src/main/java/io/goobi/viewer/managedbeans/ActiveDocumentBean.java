@@ -1143,14 +1143,15 @@ public class ActiveDocumentBean implements Serializable {
         // Use current left/right page as a point of reference, if available
         Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
         Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
+        // Only go back one step unit at first
         if (currentLeftPage.isPresent()) {
             logger.trace("{} is left page", currentLeftPage.get().getOrder());
-            number = currentLeftPage.get().getOrder() + step * 2;
+            number = currentLeftPage.get().getOrder() + step;
         } else if (currentRightPage.isPresent()) {
             logger.trace("{} is right page", currentRightPage.get().getOrder());
-            number = currentRightPage.get().getOrder() + step * 2;
+            number = currentRightPage.get().getOrder() + step;
         } else {
-            number = viewManager.getCurrentImageOrder() + step * 2;
+            number = viewManager.getCurrentImageOrder() + step;
         }
 
         // Target image candidate contains two pages
@@ -1158,6 +1159,8 @@ public class ActiveDocumentBean implements Serializable {
         if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
             return getPageUrl(String.valueOf(number));
         }
+        // If the immediate neighbor is not a double image, add another step
+        number += step;
 
         return getPageUrl(number + "-" + (number + 1));
     }
