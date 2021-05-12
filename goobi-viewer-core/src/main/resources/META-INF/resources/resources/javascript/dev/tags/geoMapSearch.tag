@@ -71,7 +71,25 @@ initMapDraw() {
         let type = e.layerType;
         this.searchLayer = e.layer;
     	this.drawnItems.addLayer(e.layer);
+    	switch(type) {
+    	    case "circle":
+    	        let bounds = this.searchLayer.getBounds();
+    	        let center = bounds.getCenter();
+    	        let diameter = bounds.getSouthWest().distanceTo(bounds.getSouthEast());
+    	        this.notifyFeatureSet({
+    	            type : "circle",
+    	            center : center,
+    	            radius : diameter/2.0
+    	        })
+    	        break;
+    	    case "rectangle":
+    	    case "polygon":
+    	}
     });
+}
+
+notifyFeatureSet(feature) {
+    console.log("Set feature ", feature);
 }
 
 </script>

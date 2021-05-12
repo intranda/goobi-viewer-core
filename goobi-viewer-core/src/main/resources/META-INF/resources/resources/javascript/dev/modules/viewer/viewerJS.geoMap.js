@@ -481,6 +481,10 @@ var viewerJS = ( function( viewer ) {
     viewer.GeoMap.prototype.getMarkerCount = function() {
         return this.markers.length;
     }
+    
+    viewer.GeoMap.prototype.convertPixelToMeter = function(px) {
+    	
+    }
 
     
     viewer.GeoMap.prototype.close = function() {
