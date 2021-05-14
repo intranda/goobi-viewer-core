@@ -39,6 +39,7 @@ var viewerJS = ( function( viewer ) {
 				if(Swal) {
 					return Swal.fire({
 						title: message,
+						icon: 'warning',
 						showCancelButton: true,
 						confirmButtonText: confirmText,
 	  					cancelButtonText: denyText,
