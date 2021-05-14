@@ -79,7 +79,6 @@ var viewerJS = ( function( viewer ) {
  	                    if(this.config.initHcSticky) {                        
  	                        this.refreshStickyWithChromeHack();
  	                    }
- 	                    this.setLocation(e.source);
                  	});
                  });
             });            
