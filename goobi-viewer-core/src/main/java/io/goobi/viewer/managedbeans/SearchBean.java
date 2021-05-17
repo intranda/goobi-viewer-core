@@ -165,6 +165,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
     private Search currentSearch;
 
+    
+    
     private volatile FutureTask<Boolean> downloadReady;
     private volatile FutureTask<Boolean> downloadComplete;
 
@@ -223,6 +225,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public String search(String subtheme) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         return search();
     }
+
 
     /**
      * Executes the search using already set parameters. Usually called from Pretty URLs.

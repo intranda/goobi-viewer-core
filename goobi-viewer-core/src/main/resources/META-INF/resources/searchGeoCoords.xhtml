@@ -27,13 +27,22 @@
 								<h:outputText value="#{msg.searchGeoCoords}" />
 							</h2>
 						</div>
-
+						<h:inputHidden id="searchInput" value="#{searchBean.exactSearchString}"></h:inputHidden>
+						<h:commandButton id="submitSearch" type="submit" styleClass="btn btn--full" action="#{searchBean.searchDirect}" value="#{msg.search}">
+		                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
+		                </h:commandButton>
 						<geoMapSearch></geoMapSearch>
 						
 						<script>
 							
 							function initMapSearch() {
-								riot.mount("geoMapSearch");    
+								riot.mount("geoMapSearch", {
+								    onFeatureSelect: (searchString) => setSearchString(searchString)
+								});    
+							}
+							
+							function setSearchString(searchString) {
+							    $("#searchInput").val(searchString);
 							}
 							
 							viewerJS.initialized.subscribe(() => {							    
