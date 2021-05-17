@@ -18,11 +18,8 @@ package io.goobi.viewer.model.crowdsourcing.campaigns;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -35,8 +32,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -46,19 +41,19 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * Annotation status of a record in the context of a particular campaign.
+ * Annotation status of a single page in a record in the context of a particular campaign.
  */
 @Entity
-@Table(name = "cs_campaign_record_statistics")
+@Table(name = "cs_campaign_record_page_statistics")
 @JsonInclude(Include.NON_EMPTY)
-public class CampaignRecordStatistic implements Serializable {
+public class CampaignRecordPageStatistic implements Serializable {
 
 
-    private static final long serialVersionUID = 8902904205183851565L;
+    private static final long serialVersionUID = -5449329014162706484L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "campaign_record_statistic_id")
+    @Column(name = "campaign_record_page_statistic_id")
     private Long id;
 
     @Column(name = "date_created", nullable = false)
@@ -72,28 +67,30 @@ public class CampaignRecordStatistic implements Serializable {
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     @JsonIgnore
-    private Campaign owner;
+    private CampaignRecordStatistic owner;
 
     @Column(name = "pi", nullable = false)
     private String pi;
+
+    @Column(name = "page", nullable = false)
+    private Integer page;
+
+    /** Key composed of pi and page values. */
+    @Column(name = "pi_page_key", nullable = false)
+    private String key;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     @JsonIgnore
     private CrowdsourcingStatus status;
 
-    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-    @MapKeyColumn(name = "pi_page_key", insertable = false, updatable = false)
-    @JsonIgnore
-    private Map<String, CampaignRecordPageStatistic> pageStatistics = new HashMap<>();
-
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "cs_campaign_record_statistic_annotators", joinColumns = @JoinColumn(name = "campaign_record_statistic_id"),
+    @JoinTable(name = "cs_campaign_record_page_statistic_annotators", joinColumns = @JoinColumn(name = "campaign_record_page_statistic_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> annotators = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "cs_campaign_record_statistic_reviewers", joinColumns = @JoinColumn(name = "campaign_record_statistic_id"),
+    @JoinTable(name = "cs_campaign_record_page_statistic_reviewers", joinColumns = @JoinColumn(name = "campaign_record_page_statistic_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> reviewers = new ArrayList<>();
 
@@ -122,7 +119,7 @@ public class CampaignRecordStatistic implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CampaignRecordStatistic other = (CampaignRecordStatistic) obj;
+        CampaignRecordPageStatistic other = (CampaignRecordPageStatistic) obj;
         if (owner == null) {
             if (other.owner != null)
                 return false;
@@ -209,7 +206,7 @@ public class CampaignRecordStatistic implements Serializable {
      *
      * @return the owner
      */
-    public Campaign getOwner() {
+    public CampaignRecordStatistic getOwner() {
         return owner;
     }
 
@@ -220,7 +217,7 @@ public class CampaignRecordStatistic implements Serializable {
      *
      * @param owner the owner to set
      */
-    public void setOwner(Campaign owner) {
+    public void setOwner(CampaignRecordStatistic owner) {
         this.owner = owner;
     }
 
@@ -247,17 +244,31 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * @return the pageStatistics
+     * @return the page
      */
-    public Map<String, CampaignRecordPageStatistic> getPageStatistics() {
-        return pageStatistics;
+    public Integer getPage() {
+        return page;
     }
 
     /**
-     * @param pageStatistics the pageStatistics to set
+     * @param page the page to set
      */
-    public void setPageStatistics(Map<String, CampaignRecordPageStatistic> pageStatistics) {
-        this.pageStatistics = pageStatistics;
+    public void setPage(Integer page) {
+        this.page = page;
+    }
+
+    /**
+     * @return the key
+     */
+    public String getKey() {
+        return key;
+    }
+
+    /**
+     * @param key the key to set
+     */
+    public void setKey(String key) {
+        this.key = key;
     }
 
     /**
@@ -349,24 +360,6 @@ public class CampaignRecordStatistic implements Serializable {
     public void addReviewer(User user) {
         if (user != null && !getReviewers().contains(user)) {
             getReviewers().add(user);
-        }
-    }
-    
-    
-    /**
-     * Check both record status and all page status to check if any matches the given status
-     * 
-     * @param status
-     * @return false if status is null, otherwise true exactly if {@link #getStatus()} equals status or if any 
-     * {@link CampaignRecordPageStatistic#getStatus()} of {@link #pageStatistics} returns true 
-     */
-    public boolean containsStatus(CrowdsourcingStatus status) {
-        if(status == null) {
-            return false;
-        } else if(status.equals(getStatus())) {
-            return true;
-        } else {
-            return this.pageStatistics.values().stream().anyMatch(pageStatistic -> status.equals(pageStatistic.getStatus()));
         }
     }
 }

@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.websockets;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;

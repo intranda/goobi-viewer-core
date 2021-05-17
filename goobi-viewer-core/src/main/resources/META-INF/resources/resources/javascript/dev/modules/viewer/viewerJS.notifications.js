@@ -26,15 +26,53 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false; 
-
-    
+	
     viewer.notifications = {
 		success : (message) => viewer.notifications.notify(message, "success"),
 		error : (message) => viewer.notifications.notify(message, "error"),
 		warn : (message) => viewer.notifications.notify(message, "warn"),
+		confirm : (message, confirmText, denyText) => {
+			return viewer.translator.addTranslations(["cancel", "ok"])
+			.then( () => {
+						
+				confirmText = confirmText ? confirmText : viewer.translator.translate("ok");
+				denyText = denyText ? denyText : viewer.translator.translate("cancel");
+				if(Swal) {
+					return Swal.fire({
+						title: message,
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonText: confirmText,
+	  					cancelButtonText: denyText,
+					    buttonsStyling: false,
+	  					customClass: {
+						    confirmButton: 'btn btn--full',
+						    cancelButton: 'btn btn--default'
+						  }
+					})
+					.then(result => {
+						return result.isConfirmed ? Promise.resolve() : Promise.reject();
+					});
+				} else {
+					return confirm(message) ? Promise.resolve() : Promise.reject();
+				}		
+				
+			});
+		},
 		notify : (message, type) => {
-			if (typeof sweetAlert !== 'undefined') {
-				swal("", message, type);
+			if(typeof Swal !== 'undefined') {
+				Swal.fire({
+					title: message,
+					icon: type,
+				    buttonsStyling: false,
+				    text: '',
+					customClass: {
+					    confirmButton: 'btn btn--full',
+					    cancelButton: 'btn btn--default'
+					  }
+				});
+			} else if(typeof sweetAlert !== 'undefined') {
+				swal(message, "", type);
 			} else if(jQuery().overhang) {
 				$("body").overhang({
 				  type: type,
