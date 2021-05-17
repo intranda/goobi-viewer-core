@@ -237,7 +237,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     private static ResourceBundle loadLocalResourceBundle(final Locale locale) {
         File file = new File(DataManager.getInstance().getConfiguration().getLocalRessourceBundleFile());
-        if (file.exists()) {
+        if (file.isFile()) {
             try {
                 URL resourceURL = file.getParentFile().toURI().toURL();
                 // logger.debug("URL: " + file.getParentFile().toURI().toURL());
@@ -246,6 +246,8 @@ public class ViewerResourceBundle extends ResourceBundle {
             } catch (Exception e) {
                 // some error while loading bundle from file system; use default bundle now ...
             }
+        } else {
+            logger.debug("Local messages file not found: {}", file.getAbsolutePath());
         }
 
         return null;

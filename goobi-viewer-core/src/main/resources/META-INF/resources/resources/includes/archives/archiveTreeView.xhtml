@@ -72,14 +72,18 @@
 														<i class="fa fa-plus-square-o" aria-hidden="true"></i>
 														<f:passThroughAttribute name="aria-label"
 															value="#{msg.allOpen}" />
-														<f:ajax render="#{render}" />
+														<f:passThroughAttribute name="data-expand-entry"
+															value="expanded" />
+														<f:ajax render="archivesForm" />
 													</h:commandLink>
 													<h:commandLink rendered="#{entry.expanded}"
 														action="#{archiveBean.collapseEntry(entry)}">
 														<i class="fa fa-minus-square-o" aria-hidden="true"></i>
 														<f:passThroughAttribute name="aria-label"
 															value="#{msg.all}" />
-														<f:ajax render="#{render}" />
+														<f:passThroughAttribute name="data-expand-entry"
+															value="collapsed" />	
+														<f:ajax render="archivesForm" />
 													</h:commandLink>
 										</div>
 									</ui:fragment>

@@ -1,8 +1,11 @@
 /* ==============================================================
-   Crowdsourcing 
-   global style declarations for crowdsourcing_layout.xhtml
+   Archives Layout
    ==============================================================*/
-/* ADMIN LAYOUT */
+
+#archivesWrapper {
+	background: #f2f3f4;
+}
+
 .archives {
 	width: 100vw;
 	&__top-wrapper {
@@ -312,7 +315,11 @@
 		grid-template-columns: auto auto auto auto auto auto auto;
 		max-width: 100%;
 		padding: 2rem;
-	}	
+	}
+	&__object-ajax-loader {
+		padding: 0 2rem;
+		background: @white;
+	}
 	.thumbnails-image-wrapper {
 		overflow: hidden;
 		&:hover {

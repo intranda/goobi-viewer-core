@@ -362,6 +362,25 @@ button {
 	z-index: 1250;
 }
 
+// SWEET ALERT 2 OVERRIDES
+
+.swal2-header {
+	h2 {
+		font-size: 1.5rem;
+	}
+}
+.swal2-container {
+	z-index: 2220;
+}
+.swal2-actions {
+	.btn--default {
+		margin-left: 1rem;
+	}
+}
+.swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+    background: rgba(0,0,0,.8);
+}
+
 /* add a focus ring for better accessibility */
 /* set to important, because of styles in bootstrap.custom.css */
 /* focus ring on form elements can be switched off (-no-outline), instead a blue border can be added

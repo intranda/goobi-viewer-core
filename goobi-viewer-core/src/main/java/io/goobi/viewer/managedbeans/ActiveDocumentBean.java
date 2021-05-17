@@ -1251,7 +1251,7 @@ public class ActiveDocumentBean implements Serializable {
             for (int i = currentElementIndex - 1; i >= 0; --i) {
                 TOCElement tocElement = viewManager.getToc().getTocElements().get(i);
                 String docstructType = tocElement.getMetadataValue(SolrConstants.DOCSTRCT);
-                if (docstructType != null && docstructTypes.contains(docstructType)) {
+                if (docstructType != null && docstructTypes.contains(docstructType) && StringUtils.isNotBlank(tocElement.getPageNo())) {
                     logger.trace("Found previous {}: {}", docstructType, tocElement.getLogId());
                     // Add LOGID to the URL because ViewManager.currentStructElementIddoc (IDDOC_OWNER) can be incorrect in the index sometimes,
                     // resulting in the URL pointing at the current element

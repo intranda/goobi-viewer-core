@@ -602,7 +602,7 @@ public final class Configuration extends AbstractConfiguration {
                     replaceRules = new ArrayList<>(replaceRuleElements.size());
                     for (Iterator<HierarchicalConfiguration> it3 = replaceRuleElements.iterator(); it3.hasNext();) {
                         HierarchicalConfiguration sub3 = it3.next();
-                        String conditions = sub3.getString("[@conditions]");
+                        String replaceCondition = sub3.getString("[@condition]");
                         Character character = null;
                         try {
                             int charIndex = sub3.getInt("[@char]");
@@ -624,11 +624,11 @@ public final class Configuration extends AbstractConfiguration {
                             replaceWith = "";
                         }
                         if (character != null) {
-                            replaceRules.add(new MetadataReplaceRule(character, replaceWith, conditions, MetadataReplaceRuleType.CHAR));
+                            replaceRules.add(new MetadataReplaceRule(character, replaceWith, replaceCondition, MetadataReplaceRuleType.CHAR));
                         } else if (string != null) {
-                            replaceRules.add(new MetadataReplaceRule(string, replaceWith, conditions, MetadataReplaceRuleType.STRING));
+                            replaceRules.add(new MetadataReplaceRule(string, replaceWith, replaceCondition, MetadataReplaceRuleType.STRING));
                         } else if (regex != null) {
-                            replaceRules.add(new MetadataReplaceRule(regex, replaceWith, conditions, MetadataReplaceRuleType.REGEX));
+                            replaceRules.add(new MetadataReplaceRule(regex, replaceWith, replaceCondition, MetadataReplaceRuleType.REGEX));
                         }
                     }
                 }

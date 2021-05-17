@@ -1,44 +1,46 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:p="http://primefaces.org/ui"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" 
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-    template="/resources/themes/#{navigationHelper.theme}/templateCrowdsourcing.html">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateCrowdsourcing.html">
 
-    <ui:define name="metadata">
-        <f:metadata>
-        	<f:viewAction action="#{crowdsourcingBean.handleInvalidTarget}"/>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCrowdsourcingAnnotationPage(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetIdentifier, crowdsourcingBean.targetRecordStatus)}" />
-        </f:metadata>
-    </ui:define>
-    
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewAction action="#{crowdsourcingBean.handleInvalidTarget}" />
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCrowdsourcingAnnotationPage(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetIdentifier, crowdsourcingBean.targetRecordStatus)}" />
+		</f:metadata>
+	</ui:define>
 
-    <ui:define name="content">
-    
-        <f:view contentType="text/html" encoding="utf-8">
-                <ui:fragment
-                    rendered="#{crowdsourcingBean.targetCampaign.isUserAllowedAction(userBean.user, crowdsourcingBean.targetRecordStatus)}">
-                    <campaignItem restapiurl="#{request.contextPath}/api/v1/" 
-                        campaign="#{crowdsourcingBean.targetCampaignId}"
-                        pi="#{crowdsourcingBean.targetIdentifier}"
-                        loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"
-                        nextitemurl="#{crowdsourcingBean.getRandomItemUrl(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetRecordStatus)}"
-                        itemstatus="#{crowdsourcingBean.targetRecordStatus}"
-                        currentuserid="#{userBean.user.id}"
-                        currentusername="#{userBean.user.displayName}"
-                        currentuseravatar="#{userBean.user.avatarUrl}"/>
-                 </ui:fragment>
-        </f:view>
-        
-        <script>
-	    	var messageKeys = ["crowdsourcing__help__make_active", "label__or", "action__add_annotation", "action__reject_review", "action__accept_review", "action__skip_item", "action__new_crowdsourcing_item", "button__save", "action__restart", "action__submit_for_review", "action__delete_annotation", "title__question", "title__questions", "option__no_action_required", "crowdsourcing__help__create_rect_on_image", "cms_menu_create_item_new_tab", "log", "action__send", "label__enter_message_here","crowdsourcing__save_annotations__success"];
+	<ui:define name="breadcrumbs">
+		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
+	</ui:define>
+
+	<ui:define name="content">
+
+		<f:view contentType="text/html" encoding="utf-8">
+			<ui:fragment
+				rendered="#{crowdsourcingBean.targetCampaign.isUserAllowedAction(userBean.user, crowdsourcingBean.targetRecordStatus)}">
+				<campaignItem restapiurl="#{request.contextPath}/api/v1/"
+					campaign="#{crowdsourcingBean.targetCampaignId}"
+					pi="#{crowdsourcingBean.targetIdentifier}"
+					loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"
+					nextitemurl="#{crowdsourcingBean.getNextItemUrl(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetStatus)}"
+					itemstatus="#{crowdsourcingBean.targetStatus}"
+					currentuserid="#{userBean.user.id}"
+					currentusername="#{userBean.user.displayName}"
+					currentuseravatar="#{userBean.user.avatarUrl}" />
+			</ui:fragment>
+		</f:view>
+
+		<script>
+	    	var messageKeys = ["crowdsourcing__help__make_active", "label__or", "action__add_annotation", "action__reject_review", "action__accept_review", "action__skip_item", 
+	    	    "action__new_crowdsourcing_item", "button__save", "action__restart", "action__submit_for_review", "action__delete_annotation", "title__question", "title__questions", "option__no_action_required", "crowdsourcing__help__create_rect_on_image", "cms_menu_create_item_new_tab", "log", "action__send", "label__enter_message_here",
+	    	    "crowdsourcing__save_annotations__success", "crowdsourcing__save_annotations__error", "crowdsourcing__confirm_skip_page", "crowdsourcing__campaign_tooltip_in_review", "crowdsourcing__campaign_tooltip_locked", "crowdsourcing__campaign_tooltip_completed", "crowdsourcing__campaign_filter_show_all", "crowdsourcing__campaign_filter_show_unfinished", "crowdsourcing__campaign_tooltip_back_to_overview", "button__save_page", "action__submit_page_for_review", "action__accept_page_review", "action__reject_page_review", "prevImage", "nextImage", "rotateLeft", "rotateRight", ];
 	        var user = {
 	                id : "#{userBean.user.idAsURI}",
 	                name : "#{userBean.user.displayName}"
@@ -50,12 +52,12 @@
 	    	.then(() => riot.mount("campaignItem"));
         	
         </script>
-        
-    </ui:define>
 
-    <!-- SIDEBAR -->
-    <ui:define name="sidebar">
-        <adminWidget:widget_admin />
-        <adminWidget:widget_cms />
-    </ui:define>
+	</ui:define>
+
+	<!-- SIDEBAR -->
+	<ui:define name="sidebar">
+		<adminWidget:widget_admin />
+		<adminWidget:widget_cms />
+	</ui:define>
 </ui:composition>

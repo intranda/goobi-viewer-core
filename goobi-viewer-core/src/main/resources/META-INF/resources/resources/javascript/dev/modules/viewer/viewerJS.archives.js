@@ -68,8 +68,19 @@ var viewerJS = ( function( viewer ) {
             	 if(this.config.initTextTree) {
             	     this.initTextTree();
             	 }
-            	 
-            	
+
+            	 // execute when expanding or collapsing entries after ajax success
+                 viewerJS.jsfAjax.success
+                 .pipe(rxjs.operators.filter(e => $(e.source).attr("data-expand-entry") != undefined))
+                 .subscribe(e => {
+                     $(".archives__object-image").hide();
+                 	this.initImageDisplay()
+                 	.then(() => {
+ 	                    if(this.config.initHcSticky) {                        
+ 	                        this.refreshStickyWithChromeHack();
+ 	                    }
+                 	});
+                 });
             });            
             
         },
@@ -77,15 +88,21 @@ var viewerJS = ( function( viewer ) {
         initImageDisplay() {
         	let $recordPiInput = $('[data-name="recordPi"]');
         	//console.log("record pi", $recordPiInput, $recordPiInput.val());
+        	this.hideLoader("load_record_image");
         	if($recordPiInput.length > 0) {
         		let recordPi = $recordPiInput.val();
-        		//console.log("record pi is " + recordPi);
-        		if(recordPi != this.recordPi) {
+        		let oldPi = this.recordPi;
+        		this.recordPi = recordPi;
+        		//console.log("record pi is " + recordPi + " old pi is " + oldPi);
+        		if(recordPi && recordPi != oldPi) {
         			this.recordPi = recordPi;
         			let manifestUrl = rootURL + "/api/v2/records/" + recordPi + "/manifest/";
+        			this.showLoader("load_record_image");
+        			//console.log("load ", manifestUrl);
         			return fetch(manifestUrl)
-        			.then(response => response.json())
+        			.then(response => {if(response.ok) return response.json(); else throw(response.json());})
         			.then(manifest => {
+        				//console.log("loaded manifest ", manifest);
         				//if the manifest contains struct elements, show them as thumbnail gallery
         				if(manifest.structures && manifest.structures.length > 1) {
 				        	riot.mount(".archives__object-thumbnails", "thumbnails", {
@@ -94,6 +111,10 @@ var viewerJS = ( function( viewer ) {
 					        	source: manifest,
 					        	imagesize: ",250",
 					        	label: "MD_SHELFMARK",
+					        	onload: () => {
+					        		this.hideLoader("load_record_image");
+					        		this.refreshStickyWithChromeHack();
+					        	},
 					        	link: (canvas) => {
 					        		if(canvas.homepage && canvas.homepage.length > 0) {
 										return canvas.homepage[0].id.replace("/image/", "/fullscreen/");
@@ -103,12 +124,34 @@ var viewerJS = ( function( viewer ) {
 					        	} 
 				        	});
         				} else {
+        					this.showLoader("load_record_image");
         					$(".archives__object-image").show();
         				}
+        			})
+        			.catch(error => {
+        				error.then( (e) => {
+	        				console.log("error loading record '" + recordPi + "'", e);
+	        				this.hideLoader("load_record_image");
+	        				//viewer.notifications.error(e.message);
+        				});
         			});
         		}
         	}
         	return Promise.resolve();
+        },
+        
+        showLoader: function(loader) {
+        	let $loader = $("[data-loader='"+loader+"']");
+        	if($loader.length > 0) {
+        		$loader.show();
+        	}
+        },
+        
+        hideLoader: function(loader) {
+        	let $loader = $("[data-loader='"+loader+"']");
+        	if($loader.length > 0) {
+        		$loader.hide();
+        	}
         },
         
         initTextTree: function() {
@@ -175,7 +218,7 @@ var viewerJS = ( function( viewer ) {
         
         /**
          * In chome with small window size (1440x900) hcSticky breaks on page load if the view was previously scrolled
-         * all the way to the button. To prevent this we scroll 5 px up before refreshing hcSticky.
+         * all the way to the bottom. To prevent this we scroll 5 px up before refreshing hcSticky.
          * The scolling appears to be invisible to the user, probably because it is reset before actually being carried out
          */
         initHcStickyWithChromeHack: function() {
