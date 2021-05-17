@@ -90,7 +90,11 @@ public class CanvasBuilder extends AbstractBuilder {
             throws PresentationException, IndexUnreachableException, IllegalPathSyntaxException, ContentLibException, URISyntaxException {
         StructElement topStruct = this.dataRetriever.getDocument(pi);
         PhysicalElement page = AbstractPageLoader.loadPage(topStruct, order);
-        return build(page);
+        if(page != null) {            
+            return build(page);
+        } else {
+            throw new ContentNotFoundException(String.format("Not canvas found at order %d in record %s", order, pi));
+        }
     }
 
     public AnnotationPage buildFulltextAnnotations(String pi, int order) throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
@@ -263,7 +267,7 @@ public class CanvasBuilder extends AbstractBuilder {
             canvas.addRendering(pdf.getResource(uri));
         }
 
-        if(page.isAltoAvailable() &&  DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto()) {
+        if(StringUtils.isNotBlank(page.getAltoFileName()) &&  DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto()) {
             URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(page.getPi(), getFilename(page.getAltoFileName())).buildURI();
             LinkingProperty alto = new LinkingProperty(LinkingTarget.ALTO, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto()));            
             canvas.addSeeAlso(alto.getResource(uri));
