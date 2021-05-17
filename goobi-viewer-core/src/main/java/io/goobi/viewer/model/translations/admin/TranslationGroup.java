@@ -83,7 +83,7 @@ public class TranslationGroup {
     private Integer untranslatedEntryCount;
     private Integer fullyTranslatedEntryCount = null;
     private String filterString;
-    private boolean loadError = false;
+    private Boolean loadError = null;
 
     /**
      * Factory method.
@@ -348,12 +348,14 @@ public class TranslationGroup {
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     loadError = true;
-                    break;
+                    allEntries = Collections.emptyList();
+                    return allEntries;
                 }
             }
 
             allEntries = new ArrayList<>(retSet);
             Collections.sort(allEntries);
+            loadError = false;
         }
 
         return allEntries;
@@ -407,7 +409,6 @@ public class TranslationGroup {
      * @param filterString the filterString to set
      */
     public void setFilterString(String filterString) {
-        logger.trace("setFilterString: {}", filterString);
         this.filterString = filterString;
     }
 
@@ -415,6 +416,9 @@ public class TranslationGroup {
      * @return the loadError
      */
     public boolean isLoadError() {
+        if (loadError == null) {
+            getAllEntries();
+        }
         return loadError;
     }
 
@@ -449,7 +453,7 @@ public class TranslationGroup {
      * 
      */
     void selectEntry(int step) {
-        logger.trace("selectEntry: {}", step);
+        // logger.trace("selectEntry: {}", step);
         if (getFilteredEntries() == null || getFilteredEntries().isEmpty()) {
             return;
         }
