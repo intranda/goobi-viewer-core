@@ -2405,34 +2405,89 @@ this.initMapDraw = function() {
     	this.drawnItems.addLayer(e.layer);
     	switch(type) {
     	    case "circle":
-    	        let bounds = this.searchLayer.getBounds();
-    	        let center = bounds.getCenter();
-    	        let diameter = Math.abs(bounds.getSouthWest().lat - bounds.getSouthEast().lat);
-    	        let circumgon = this.createCircumgon(center, diameter/2.0, 12);
-    	        this.drawPolygon(circumgon);
+    	        {
+	    	        let bounds = this.searchLayer.getBounds();
+
+	    	        let circumgon = this.createCircumgon(bounds.getCenter(), bounds.getSouthWest(), bounds.getSouthWest(), 16);
+
+	    	        let diameterM = bounds.getSouthWest().distanceTo(bounds.getNorthWest());
+	    	        this.notifyFeatureSet({
+	    	            type : "polygon",
+	    	            vertices: circumgon.map(p => [p.lat, p.lng]),
+	    	        })
+	    	        break;
+    	        }
+    	    case "rectangle":
+    	        {
+	    	        let bounds = this.searchLayer.getBounds();
+	    	        let vertices = [bounds.getNorthWest(), bounds.getNorthEast(), bounds.getSouthEast(), bounds.getSouthWest(), bounds.getNorthWest()];
+	    	        this.notifyFeatureSet({
+	    	            type : "polygon",
+	    	            vertices: vertices.map(p => [p.lat, p.lng])
+	    	        })
+	    	        break;
+    	        }
+    	    case "polygon":
+    	    {
+    	        let vertices = this.searchLayer.getLatLngs()[0];
+    	        vertices.push(vertices[0]);
+    	        console.log("vertices", vertices);
     	        this.notifyFeatureSet({
-    	            type : "circle",
-    	            center : center,
-    	            radius : diameter/2.0
+    	            type : "polygon",
+    	            vertices: vertices.map(p => [p.lat, p.lng])
     	        })
     	        break;
-    	    case "rectangle":
-    	    case "polygon":
+	        }
     	}
     });
 }.bind(this)
 
-this.createCircumgon = function(center, radius, numVertices) {
-    console.log("create circumgon ", center, radius, numVertices);
+this.createCircumgon = function(center, sw, ne, numVertices) {
+
+    let lSW = this.geoMap.map.latLngToLayerPoint(sw);
+    let lNE = this.geoMap.map.latLngToLayerPoint(ne);
+    let lCenter = this.geoMap.map.latLngToLayerPoint(center);
+
+    let radius = Math.abs(lCenter.x - lSW.x);
+
     let points = [];
     for(let i = 0; i < numVertices; i++) {
-        let x = center.lng + radius *  Math.cos(2*Math.PI*i/numVertices)
-        let y = center.lng + radius *  Math.cos(2*Math.PI*i/numVertices)
+        let x = lCenter.x + radius *  Math.cos(2*Math.PI*i/numVertices);
+        let y = lCenter.y + radius *  Math.sin(2*Math.PI*i/numVertices);
+        points.push([x,y]);
     }
+    points.push(points[0]);
+    let geoPoints = points.map(p => this.geoMap.map.layerPointToLatLng(p));
+    return geoPoints;
+}.bind(this)
+
+this.drawPolygon = function(points) {
+    console.log("draw polygon", points, "in");
+    let conf =  {color: 'red'};
+    let poly = L.polygon(points, conf).addTo(this.geoMap.map);
+    console.log("poly ", poly)
 }.bind(this)
 
 this.notifyFeatureSet = function(feature) {
     console.log("Set feature ", feature);
+    switch(feature.type) {
+        case "polygon":
+            let searchString = this.buildSearchString(feature.vertices);
+            console.log("search string = ", searchString);
+            if(this.opts.onFeatureSelect) {
+                this.opts.onFeatureSelect(searchString);
+            }
+            break;
+        default:
+           logger.error("Feature type not implemented", feature);
+    }
+}.bind(this)
+
+this.buildSearchString = function(vertices) {
+    let string = "WKT_COORDS:\"IsWithin(POLYGON((";
+    string += vertices.map(v => v[1] + " " + v[0]).join(", ");
+    string += "))) distErrPct=0\"";
+    return string;
 }.bind(this)
 
 });
