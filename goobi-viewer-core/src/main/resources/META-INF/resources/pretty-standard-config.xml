@@ -827,6 +827,12 @@
         <action onPostback="false">#{adminBean.lockTranslation}</action>
     </url-mapping>
 
+    <!-- ADMIN STYLES FOR DEVS -->
+    <url-mapping id="adminEditTranslations">
+        <pattern value="/admin/styles/" />
+        <view-id value="/resources/admin/admin_styles.xhtml" />
+    </url-mapping>
+
 	<!-- CMS ADMIN -->
 	<url-mapping id="adminCms">
 		<pattern value="/admin/cms/" />

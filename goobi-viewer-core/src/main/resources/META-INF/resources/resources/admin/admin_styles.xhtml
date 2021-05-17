@@ -1,0 +1,268 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+
+    <ui:define name="content">
+    <div class="admin">
+    	<div class="backend-styles">
+    		<div class="backend-styles__wrapper">
+    		
+    			<div class="backend-styles__row">
+    				
+    				<h2 class="backend-styles__title">Default block with colored indicator and clickable entry rows</h2>
+					<div class="backend-styles__show-output">
+						<div class="admin__default-block mb-2 -danger">
+							<div class="row">
+								<h3 class="col-12">Not configured access licenses</h3>
+							</div>
+							<a href="#"
+								onclick=""
+								class="row admin__license-unconfigured-entry">
+								<div class="col-10 -textlink">Löcher finden (Records: 1)</div>
+								<div class="col-2 d-flex justify-content-end">
+									<span>Configure now!</span>
+								</div>
+							</a>
+						</div>
+					</div>
+    				<p class="backend-styles__description">Indicator color CSS classes: <b>-danger</b> (red) <b>-warning</b> (yellow) </p>
+
+					<div class="backend-styles__code">
+						<div class="backend-styles__copy"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
+						<div class="backend-styles__expander">
+							<i class="fa fa-caret-down" aria-hidden="true"></i>
+						</div>
+<pre>
+&lt;!-- COMMENT --&gt;
+&lt;ui:fragment rendered="true"&gt;
+    &lt;div class="admin__default-block mb-5 -danger"&gt;
+        &lt;div class="row"&gt;
+            &lt;h3 class="col-12"&gt;#{msg.admin__licenses_not_configured_licenses}&lt;/h3&gt;
+        &lt;/div&gt;
+        &lt;ui:repeat var="accessCondition" value="value"&gt;
+            &lt;h:commandLink 
+            	action="pretty:adminLicenseNew"
+                actionListener="actionListener"
+                styleClass="row admin__license-unconfigured-entry"&gt;
+                &lt;div class="col-10 -textlink"&gt;
+                    accessCondition (#{msg.admin__licenses_record_number}: #{adminBean.getNumRecordsWithAccessCondition(accessCondition)})
+                &lt;/div&gt;
+                &lt;div class="col-2 d-flex justify-content-end"&gt;
+                    &lt;span&gt;#{msg.admin__licenses_configure_license_now}&lt;/span&gt;
+                &lt;/div&gt;
+            &lt;/h:commandLink&gt;
+        &lt;/ui:repeat&gt;
+    &lt;/div&gt;
+&lt;/ui:fragment&gt;
+</pre>
+					</div>
+
+    				</div>
+
+
+    			<div class="backend-styles__row">
+    				
+    				<h2 class="backend-styles__title">Grid display with boxes</h2>
+					<div class="backend-styles__show-output">
+					
+					
+					
+					<div class="admin__entry-list -w33">
+   						<div class="admin__boxed-entry -w33">
+                                        
+                                        <div class="row">
+                                            <h3 class="col-12">CMS</h3>
+                                        </div>
+                                        
+                                        <div class="row">
+                                                <p class="col-12 admin__boxed-entry-description">These users have general CMS privileges except editing menu and static pages.</p>
+                                        </div>
+                                        
+                                        <dl class="row">
+                                            <dt class="col-sm-4">Members:</dt>
+                                            <dd class="col-sm-8">4</dd>
+                                            <dt class="col-sm-4">Owner:</dt>
+                                            <dd class="col-sm-8">Jan</dd>
+                                        </dl>
+                                        
+                                        <div class="row admin__boxed-entry-actions">
+                                            <div class="col-3 d-flex">
+                                                
+                                                <a href="#" class="admin__boxed-entry-actions-edit" aria-label="Edit: CMS">Edit</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="admin__boxed-entry -w33">
+                                        
+                                        <div class="row">
+                                            <h3 class="col-12">restricted Periodicals</h3>
+                                        </div>
+                                        
+                                        <div class="row">
+                                                <p class="col-12 admin__boxed-entry-description">These users have access to restricted periodicals after authentication.</p>
+                                        </div>
+                                        
+                                        <dl class="row">
+                                            <dt class="col-sm-4">Members:</dt>
+                                            <dd class="col-sm-8">2</dd>
+                                            <dt class="col-sm-4">Owner:</dt>
+                                            <dd class="col-sm-8">Steffen</dd>
+                                        </dl>
+                                        
+                                        <div class="row admin__boxed-entry-actions">
+                                            <div class="col-3 d-flex">
+                                                
+                                                <a href="#" class="admin__boxed-entry-actions-edit" aria-label="Edit: restricted Periodicals">Edit</a>
+                                            </div>
+                                        </div>
+                                    </div>
+									<div class="admin__boxed-entry -w33">
+                                        
+                                        <div class="row">
+                                            <h3 class="col-12">Testgroup</h3>
+                                        </div>
+                                        
+                                        <div class="row">
+                                                <p class="col-12 admin__boxed-entry-description">Description text here</p>
+                                        </div>
+                                        
+                                        <dl class="row">
+                                            <dt class="col-sm-4">Members:</dt>
+                                            <dd class="col-sm-8">0</dd>
+                                            <dt class="col-sm-4">Owner:</dt>
+                                            <dd class="col-sm-8">Jan</dd>
+                                        </dl>
+                                        
+                                        <div class="row admin__boxed-entry-actions">
+                                            <div class="col-3 d-flex">
+                                                
+                                                <a href="#" class="admin__boxed-entry-actions-edit" aria-label="Edit: Testgroup">Edit</a><a href="#" onclick="" class="admin__boxed-entry-actions-delete -redlink" aria-label="Delete: Testgroup">
+                                                    Delete
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                    
+                                    </div>
+					</div>
+    				<p class="backend-styles__description">Change width of boxes with CSS classes: <b>-w33</b> (33%) <b>-w50</b> (50%) </p>
+
+					<div class="backend-styles__code">
+						<div class="backend-styles__copy"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
+						<div class="backend-styles__expander">
+							<i class="fa fa-caret-down" aria-hidden="true"></i>
+						</div>
+	
+<pre>
+&lt;div class=&quot;admin__entry-list&quot;&gt;
+    &lt;!-- INDIVIDUAL GROUPS --&gt;
+    &lt;ui:repeat var=&quot;userGroup&quot; value=&quot;\#{adminBean.allUserGroups}&quot;&gt;
+        &lt;div class=&quot;admin__boxed-entry -w33&quot;&gt;
+            &lt;!-- NAME --&gt;
+            &lt;div class=&quot;row&quot;&gt;
+                &lt;h3 class=&quot;col-12&quot;&gt;\#{userGroup.name}&lt;/h3&gt;
+            &lt;/div&gt;
+            &lt;!-- DESCRIPTION --&gt;
+            &lt;div class=&quot;row&quot;&gt;
+                &lt;ui:fragment rendered=&quot;\#{userGroup.description ne ''}&quot;&gt;
+                    &lt;p class=&quot;col-12 admin__boxed-entry-description&quot;&gt;\#{userGroup.description}&lt;/p&gt;
+                &lt;/ui:fragment&gt;
+                &lt;ui:fragment rendered=&quot;\#{userGroup.description eq ''}&quot;&gt;
+                    &lt;p class=&quot;col-12 admin__boxed-entry-description-empty&quot; aria-disabled=&quot;true&quot;&gt;(\#{msg.admin__label__no_description_available})&lt;/p&gt;
+                &lt;/ui:fragment&gt;
+            &lt;/div&gt;
+            &lt;!-- DATA --&gt;
+            &lt;dl class=&quot;row&quot;&gt;
+                &lt;dt class=&quot;col-sm-4&quot;&gt;\#{msg.userGroup_members}:&lt;/dt&gt;
+                &lt;dd class=&quot;col-sm-8&quot;&gt;\#{userGroup.memberCount}&lt;/dd&gt;
+                &lt;dt class=&quot;col-sm-4&quot;&gt;\#{msg.owner}:&lt;/dt&gt;
+                &lt;dd class=&quot;col-sm-8&quot;&gt;\#{userGroup.owner.displayName}&lt;/dd&gt;
+            &lt;/dl&gt;
+            &lt;!-- ACTIONS --&gt;
+            &lt;div class=&quot;row admin__boxed-entry-actions&quot;&gt;
+                &lt;div class=&quot;col-3 d-flex&quot;&gt;
+                    &lt;!-- EDIT--&gt;
+                    &lt;a href=&quot;\#{navigationHelper.applicationUrl}admin/groups/edit/\#{userGroup.id}/&quot; class=&quot;admin__boxed-entry-actions-edit&quot; aria-label=&quot;\#{msg.edit}: \#{userGroup.name}&quot;&gt;\#{msg.edit}&lt;/a&gt;
+
+                    &lt;!-- DELETE --&gt;
+                    &lt;h:commandLink rendered=&quot;\#{!userGroup.hasMembers}&quot;
+                        onclick=&quot;if ( !confirm( &amp;quot;\#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&amp;quot; ) ) { return false };&quot;
+                        action=&quot;adminAllUserGroups&quot;
+                        actionListener=&quot;\#{adminBean.deleteUserGroupAction(userGroup)}&quot;
+                        styleClass=&quot;admin__boxed-entry-actions-delete -redlink&quot;&gt;
+                        &lt;f:passThroughAttribute name=&quot;aria-label&quot; value=&quot;\#{msg.delete}: \#{userGroup.name}&quot; /&gt;
+                        \#{msg.delete}
+                    &lt;/h:commandLink&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/ui:repeat&gt;
+&lt;/div&gt;
+</pre>
+					</div>
+
+    				</div>
+
+
+
+
+
+
+
+    		</div>
+    	</div>
+    </div>
+    
+    
+    
+    
+    <script>
+	//<![CDATA[   
+    $('.backend-styles__copy').on('click', function() {
+    	  value = $(this).closest('.backend-styles__code').find("pre").text();
+    	console.log(value); 
+    	  var $temp = $("<textarea>");
+    	  $("body").append($temp);
+    	  $temp.val(value).select();
+    	  document.execCommand("copy");
+    	  $temp.remove();
+    	})
+    	
+	    $('.backend-styles__copy').tooltip({
+	      placement: 'left',
+	      title: "Click to copy to clipboard",
+	      trigger: 'hover'
+	    });
+    
+	    $('.backend-styles__expander').tooltip({
+		      placement: 'top',
+		      title: "Click to expand",
+		      trigger: 'hover'
+		    });
+    
+		$('.backend-styles__code').each(function()  {  
+			if ($(this).height() > 200) {
+				$(this).addClass('-collapsed');
+				$(this).find('.backend-styles__expander').show();
+			}
+		});
+    
+    	$('.backend-styles__expander').on('click', function() {
+    		$(this).closest('.backend-styles__code').addClass('-expanded');
+    		$(this).hide();
+	    });
+              //]]>
+    </script>
+    </ui:define>
+
+</ui:composition>
