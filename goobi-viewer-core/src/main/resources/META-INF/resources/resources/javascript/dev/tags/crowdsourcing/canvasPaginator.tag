@@ -34,7 +34,7 @@
 <script>
 
 this.on( "mount", function() {
-    
+	
     var paginatorConfig = {
 	        previous: () => this.load(this.getCurrentIndex()-1),
 	        next: () => this.load(this.getCurrentIndex()+1),
@@ -43,7 +43,9 @@ this.on( "mount", function() {
 	}
 	viewerJS.paginator.init(paginatorConfig);
     
-})
+});
+
+
 
 loadFromEvent(e) {
     let index = parseInt(e.target.attributes["index"].value);
@@ -52,8 +54,12 @@ loadFromEvent(e) {
     
 load(index) {
     if(index != this.getCurrentIndex() && index >= 0 && index < this.getTotalImageCount()) {        
-		this.opts.item.loadImage(index);
-		this.update();
+		if(this.opts.actionlistener) {
+			this.opts.actionlistener.next({
+				action: "setImageIndex",
+				value: index
+			})
+		}
     }
 }
 
@@ -69,11 +75,11 @@ loadNext() {
 
 
 getCurrentIndex() {
-    return this.opts.item.currentCanvasIndex;
+    return this.opts.index
 }
 
 getIndex(canvas) {
-    return this.opts.item.canvases.indexOf(canvas);
+    return this.opts.items.indexOf(canvas);
 }
 
 getOrder(canvas) {
@@ -81,7 +87,7 @@ getOrder(canvas) {
 }
 
 getTotalImageCount() {
-    return this.opts.item.canvases.length;
+    return this.opts.items.length;
 }
 
 useMiddleButtons() {
@@ -94,11 +100,11 @@ useLastButtons() {
 
 firstCanvases() {
     if(this.getTotalImageCount() < 10) {
-        return this.opts.item.canvases;
+        return this.opts.items;
     } else if(this.getCurrentIndex() < 5) {
-        return this.opts.item.canvases.slice(0, this.getCurrentIndex()+3);
+        return this.opts.items.slice(0, this.getCurrentIndex()+3);
     } else {
-        return this.opts.item.canvases.slice(0, 2);
+        return this.opts.items.slice(0, 2);
     }
 }
 
@@ -106,7 +112,7 @@ middleCanvases() {
     if(this.getTotalImageCount() < 10) {
         return [];
     } else if(this.getCurrentIndex() < this.getTotalImageCount()-5 && this.getCurrentIndex() > 4) {
-        return this.opts.item.canvases.slice(this.getCurrentIndex()-2, this.getCurrentIndex()+3);
+        return this.opts.items.slice(this.getCurrentIndex()-2, this.getCurrentIndex()+3);
     } else {
         return [];
     }
@@ -116,9 +122,9 @@ lastCanvases() {
     if(this.getTotalImageCount() < 10) {
         return [];
     } else if(this.getCurrentIndex() < this.getTotalImageCount()-5) {
-        return this.opts.item.canvases.slice(this.getTotalImageCount()-2);
+        return this.opts.items.slice(this.getTotalImageCount()-2);
     } else {
-        return this.opts.item.canvases.slice(this.getCurrentIndex()-2);
+        return this.opts.items.slice(this.getCurrentIndex()-2);
     }
 }
 

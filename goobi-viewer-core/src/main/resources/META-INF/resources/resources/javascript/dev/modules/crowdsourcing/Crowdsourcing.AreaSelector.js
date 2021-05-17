@@ -40,6 +40,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.AreaSelector.prototype.init = function() {
         this.crowdsourcingItem.onImageOpen( (imageView) => {
+        	//console.log("init drawer", imageView, this);
             if(!this.drawer) {
                 this.createDrawer(imageView);
                 this.createTransformer(imageView);

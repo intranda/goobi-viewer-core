@@ -10,6 +10,7 @@
 
 /* USER LOGIN MODAL */
 .user-login-modal {
+	font-family: @fontBackend;
 	&.active {
 		position: fixed;
 		display: flex;		
@@ -107,6 +108,11 @@
 		.form-group.lastname {
 			display: none;
 		}
+	}
+	&__lost-password {
+		button {
+			font-size: 1.3rem;
+			}
 	}
 	&__body-action {
 		padding-top: .5rem;

@@ -5,6 +5,11 @@
 /* WIDGET USER INTERACTIONS */
 #widgetUserInteractions {
 		background: @blue;
+		h3, h4 {
+			color: @white;
+			font-weight: 700;
+			margin-bottom: 1rem;
+		}
 		ul {
 			background: @blue;
 			border: none;
@@ -39,9 +44,9 @@
 }
 
 .widget-user-interactions {
-	background: @blue;
+	font-family: @fontBackend;
 	padding: 2rem;
-
+	background-color: @blue;
 	&__info-text {
 		font-size: 1.2rem;
 		font-style: italic;
@@ -68,6 +73,7 @@
 		.btn {
 			display: block;
 			padding: 8px 12px;
+			color: #555;
 		}
 		padding: 5px 0 10px 0;
 		&.has-no-urn {
@@ -86,11 +92,6 @@
 				display: block;
 			}			
 		}
-	}
-	h3, h4 {
-		color: @white;
-		font-weight: 700;
-		margin-bottom: 1rem;
 	}
 	.custom-control--select {
 		font-size: 1.3rem;

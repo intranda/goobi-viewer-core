@@ -23,14 +23,16 @@
     "webpack": "5.37.0"
   },
   "dependencies": {
+    "@mapbox/mapbox-gl-geocoder": "*",
     "hc-sticky": "~2.2.6",
     "leaflet": "*",
     "leaflet.markercluster": "*",
+    "mapbox-gl": "*",
     "mirador": "~3.1.1",
     "overhang": "*",
     "pixl-xml": "^1.0.13",
     "swagger-ui-dist": "*",
-    "sweetalert": "*",
+    "sweetalert2": "*",
     "swiper": "*",
     "tinymce": "~5.8.0"
   }
