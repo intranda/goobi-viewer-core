@@ -61,7 +61,7 @@ public class RangeBuilder extends AbstractBuilder {
         structures.sort((s1,s2) -> Integer.compare(getFirstPageNo(s1), getFirstPageNo(s2)));
         StructElement structElement = logId == null ? topElement : structures.stream().filter(s -> s.getLogid().equals(logId)).findAny().orElseThrow(() -> new ContentNotFoundException("Range not found"));
         
-        if(structElement.getImageNumber() < topElement.getImageNumber() || structElement.getNumPages() < 1) {
+        if(structElement.getImageNumber() < 1 ||  structElement.getNumPages() < 1) {
             throw new PresentationException(String.format("Illegal page count for struct element %s: First page = %d; num pages = %d", logId, structElement.getImageNumber(), structElement.getNumPages()));
         }
         
