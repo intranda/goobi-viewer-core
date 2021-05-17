@@ -201,6 +201,14 @@
 		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
 	</url-mapping>
+		<url-mapping id="searchgeomap">
+		<pattern value="/searchgeomap/" />
+		<view-id value="/searchGeoCoords.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
+<!-- 		<action onPostback="false">#{searchBean.setActiveSearchType(3)}</action> -->
+	</url-mapping>
+	
 	<url-mapping id="searchList">
 		<pattern value="/searchList/" />
 		<view-id value="/searchList.xhtml" />
