@@ -139,8 +139,9 @@ public class ManifestBuilder extends AbstractBuilder {
      * @param childDocuments
      * @param manifest
      * @throws ContentNotFoundException 
+     * @throws PresentationException 
      */
-    private void addStructures(StructElement mainDocument, List<StructElement> childDocuments, Manifest3 manifest) throws ContentNotFoundException {
+    private void addStructures(StructElement mainDocument, List<StructElement> childDocuments, Manifest3 manifest) throws ContentNotFoundException, PresentationException {
         RangeBuilder rangeBuilder = new RangeBuilder(urls);
         Range3 topRange = rangeBuilder.build(mainDocument, childDocuments, null);
         topRange.getItems().stream()

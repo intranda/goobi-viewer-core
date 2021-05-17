@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.presentation.v3.Range3;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
@@ -83,9 +85,13 @@ public class RecordSectionsResource {
     @Operation(tags = { "records", "iiif" }, summary = "IIIF 3.0 range of the section")
     @IIIFPresentationBinding
     public Range3 getRange()
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
+            throws  IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalPathSyntaxException, ContentLibException {
-        return new RangeBuilder(urls).build(pi, divId);
+        try {
+            return new RangeBuilder(urls).build(pi, divId);
+        } catch (PresentationException e) {
+            throw new WebApplicationException(e);
+        }
     }
 
 }
