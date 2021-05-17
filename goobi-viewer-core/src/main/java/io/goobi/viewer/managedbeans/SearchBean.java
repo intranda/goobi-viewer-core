@@ -595,7 +595,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
                     // Check whether this combination already exists and skip, if that's the case
                     if (usedFieldValuePairs.contains(itemQuery)) {
-                        logger.error("facet item already exists: {}", itemQuery);
+                        // logger.trace("facet item already exists: {}", itemQuery);
                         continue;
                     }
                     usedFieldValuePairs.add(itemQuery);
