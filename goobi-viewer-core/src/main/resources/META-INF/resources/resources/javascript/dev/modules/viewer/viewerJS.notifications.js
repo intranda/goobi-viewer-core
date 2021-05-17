@@ -30,8 +30,10 @@ var viewerJS = ( function( viewer ) {
     
     viewer.notifications = {
 		success : (message) => viewer.notifications.notify(message, "success"),
+		error : (message) => viewer.notifications.notify(message, "error"),
+		warn : (message) => viewer.notifications.notify(message, "warn"),
 		notify : (message, type) => {
-			if(sweetAlert) {
+			if (typeof sweetAlert !== 'undefined') {
 				swal("", message, type);
 			} else if(jQuery().overhang) {
 				$("body").overhang({

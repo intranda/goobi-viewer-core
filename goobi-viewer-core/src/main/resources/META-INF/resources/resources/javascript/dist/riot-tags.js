@@ -2874,9 +2874,10 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
 riot.tag2('thumbnails', '<div class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"><a class="thumbnails-image-link" href="{getLink(canvas)}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
 
 this.thumbnails = [];
+this._debug = false;
 
 this.on("mount", () => {
-	console.log("mount ", this.opts);
+
 	this.type = opts.type ? opts.type : "items";
 	this.language = opts.language ? opts.language : "en";
 	this.imageSize = opts.imagesize;
@@ -2892,14 +2893,14 @@ this.on("mount", () => {
 });
 
 this.on("updated", () => {
-	console.log("updated", this.opts);
+	if(this._debug)console.log("updated", this.opts);
 	if(this.opts.onload) {
 	    this.opts.onload();
 	}
 });
 
 this.loadThumbnails = function(source, type) {
-	console.log("Loading thumbnails from ", source);
+    if(this._debug)console.log("Loading thumbnails from ", source);
 
 	switch(type) {
 		case "structures":
@@ -2921,13 +2922,13 @@ this.loadThumbnails = function(source, type) {
 }.bind(this)
 
 this.addThumbnail = function(item) {
-	console.log("add thumbnail from ", item);
+    if(this._debug)console.log("add thumbnail from ", item);
 	this.thumbnails.push(item);
 	this.update();
 }.bind(this)
 
 this.createThumbnails = function(items) {
-	console.log("creating thumbnails from ", items)
+    if(this._debug)console.log("creating thumbnails from ", items);
 	this.thumbnails = items;
 	this.update();
 }.bind(this)

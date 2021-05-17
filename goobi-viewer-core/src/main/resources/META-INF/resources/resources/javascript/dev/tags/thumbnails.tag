@@ -29,9 +29,10 @@ For ambigious sources, the additional opts.type property determines how the sour
 <script>
 
 this.thumbnails = [];
+this._debug = false;
 
 this.on("mount", () => {
-	console.log("mount ", this.opts);
+	//console.log("mount ", this.opts);
 	this.type = opts.type ? opts.type : "items";
 	this.language = opts.language ? opts.language : "en";
 	this.imageSize = opts.imagesize;
@@ -47,14 +48,14 @@ this.on("mount", () => {
 });
 
 this.on("updated", () => {
-	console.log("updated", this.opts);
+	if(this._debug)console.log("updated", this.opts);
 	if(this.opts.onload) {
 	    this.opts.onload();
 	}
 });
 
 loadThumbnails(source, type) {
-	console.log("Loading thumbnails from ", source);
+    if(this._debug)console.log("Loading thumbnails from ", source);
 
 	switch(type) {
 		case "structures":
@@ -76,13 +77,13 @@ loadThumbnails(source, type) {
 }
 
 addThumbnail(item) {
-	console.log("add thumbnail from ", item);
+    if(this._debug)console.log("add thumbnail from ", item);
 	this.thumbnails.push(item);
 	this.update();
 }
 
 createThumbnails(items) {
-	console.log("creating thumbnails from ", items)
+    if(this._debug)console.log("creating thumbnails from ", items);
 	this.thumbnails = items;
 	this.update();
 }

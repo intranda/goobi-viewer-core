@@ -77,16 +77,21 @@ var viewerJS = ( function( viewer ) {
         initImageDisplay() {
         	let $recordPiInput = $('[data-name="recordPi"]');
         	//console.log("record pi", $recordPiInput, $recordPiInput.val());
+        	this.hideLoader("load_record_image");
         	if($recordPiInput.length > 0) {
         		let recordPi = $recordPiInput.val();
-        		//console.log("record pi is " + recordPi);
-        		if(recordPi != this.recordPi) {
+        		let oldPi = this.recordPi;
+        		this.recordPi = recordPi;
+        		//console.log("record pi is " + recordPi + " old pi is " + oldPi);
+        		if(recordPi && recordPi != oldPi) {
         			this.recordPi = recordPi;
         			let manifestUrl = rootURL + "/api/v2/records/" + recordPi + "/manifest/";
         			this.showLoader("load_record_image");
+        			//console.log("load ", manifestUrl);
         			return fetch(manifestUrl)
-        			.then(response => response.json())
+        			.then(response => {if(response.ok) return response.json(); else throw(response.json());})
         			.then(manifest => {
+        				//console.log("loaded manifest ", manifest);
         				//if the manifest contains struct elements, show them as thumbnail gallery
         				if(manifest.structures && manifest.structures.length > 1) {
 				        	riot.mount(".archives__object-thumbnails", "thumbnails", {
@@ -108,6 +113,13 @@ var viewerJS = ( function( viewer ) {
         					this.showLoader("load_record_image");
         					$(".archives__object-image").show();
         				}
+        			})
+        			.catch(error => {
+        				error.then( (e) => {
+	        				console.log("error loading record '" + recordPi + "'", e);
+	        				this.hideLoader("load_record_image");
+	        				//viewer.notifications.error(e.message);
+        				});
         			});
         		}
         	}
