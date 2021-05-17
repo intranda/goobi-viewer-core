@@ -256,7 +256,7 @@ public class CanvasBuilder extends AbstractBuilder {
             if(page.isHasImage() || page.getMimeType().equalsIgnoreCase("video") || page.getMimeType().equalsIgnoreCase("audio")) {
                 pageType = PageType.viewImage;
             }
-            URI recordURI = UriBuilder.fromPath(urls.getApplicationUrl()).path("{pageType}").path("{pi}").path("{pageNo}").build(pageType.getName(), page.getPi(), page.getOrder());
+            URI recordURI = UriBuilder.fromPath(urls.getApplicationUrl()).path("{pageType}").path("{pi}").path("{pageNo}").path("/").build(pageType.getName(), page.getPi(), page.getOrder());
             LinkingProperty homepage = new LinkingProperty(LinkingTarget.VIEWER, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingViewer()));            
             canvas.addHomepage(homepage.getResource(recordURI));
         }
