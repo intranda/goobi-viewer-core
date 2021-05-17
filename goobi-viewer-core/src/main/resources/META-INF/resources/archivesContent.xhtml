@@ -146,6 +146,9 @@
 	                     </h:inputHidden>
 	                     
 	                      <!-- ASSOCIATED RECORD -->
+	                      <span class="ajax_loader" data-loader="load_record_image">
+								<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." />
+						  </span>
 	                      <div class="archives__object-image">
 		                      <h:outputLink
 		                      	styleClass="archives__object-image-link" rendered="#{archiveBean.displayEntry != null and archiveBean.displayEntry.associatedRecordPi != ''}" 
