@@ -58,6 +58,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.PdfHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -894,12 +895,26 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (StringUtils.isNotEmpty(altoText)) {
             wordCoordsFormat = CoordsFormat.ALTO;
             String text = ALTOTools.getFullText(altoText, false, null);
+            if (StringUtils.isNotEmpty(text)) {
+                String cleanText = StringTools.stripJS(fullText);
+                if (cleanText.length() < text.length()) {
+                    text = cleanText;
+                    logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, getOrder());
+                }
+            }
             return text;
         }
         wordCoordsFormat = CoordsFormat.NONE;
         if (fullText == null) {
             try {
                 fullText = loadFullText();
+                if (StringUtils.isNotEmpty(fullText)) {
+                    String cleanText = StringTools.stripJS(fullText);
+                    if (cleanText.length() < fullText.length()) {
+                        fullText = cleanText;
+                        logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, getOrder());
+                    }
+                }
                 fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
                 fulltextAccessPermission = false;

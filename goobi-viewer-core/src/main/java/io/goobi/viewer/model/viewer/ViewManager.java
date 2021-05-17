@@ -2671,17 +2671,33 @@ public class ViewManager implements Serializable {
         String currentFulltext = null;
 
         // Current page fulltext
-        PhysicalElement currentImg = getCurrentPage();
-        if (currentImg == null || StringUtils.isEmpty(currentImg.getFullText())) {
-            return currentFulltext;
+
+        if (isDoublePageMode()) {
+            // Double page view
+            StringBuilder sb = new StringBuilder();
+            Optional<PhysicalElement> leftPage = getCurrentLeftPage();
+            if (leftPage.isPresent() && StringUtils.isNotEmpty(leftPage.get().getFullText())) {
+                sb.append(leftPage.get().getFullText());
+            }
+            Optional<PhysicalElement> rightPage = getCurrentRightPage();
+            if (rightPage.isPresent() && StringUtils.isNotEmpty(rightPage.get().getFullText())) {
+                if (sb.length() > 0) {
+                    sb.append("<hr />");
+                }
+                sb.append(rightPage.get().getFullText());
+            }
+            currentFulltext = sb.toString();
+        } else {
+            // Single page view
+            PhysicalElement currentPage = getCurrentPage();
+            if (currentPage == null || StringUtils.isEmpty(currentPage.getFullText())) {
+                return currentFulltext;
+            }
+            currentFulltext = currentPage.getFullText();
         }
 
-        currentFulltext = StringTools.stripJS(currentImg.getFullText());
-        if (currentFulltext.length() < currentImg.getFullText().length()) {
-            logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, currentImg.getOrder());
-        }
         if (escapeHtml) {
-            currentFulltext = StringTools.escapeHtmlChars(currentImg.getFullText());
+            currentFulltext = StringTools.escapeHtmlChars(currentFulltext);
         }
 
         // logger.trace(currentFulltext);
