@@ -2893,7 +2893,9 @@ this.on("mount", () => {
 
 this.on("updated", () => {
 	console.log("updated", this.opts);
-
+	if(this.opts.onload) {
+	    this.opts.onload();
+	}
 });
 
 this.loadThumbnails = function(source, type) {

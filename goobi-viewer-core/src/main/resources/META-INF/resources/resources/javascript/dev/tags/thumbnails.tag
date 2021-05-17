@@ -48,7 +48,9 @@ this.on("mount", () => {
 
 this.on("updated", () => {
 	console.log("updated", this.opts);
-	//TODO scroll to .thumbnails-image-wrapper[this.opts.index]
+	if(this.opts.onload) {
+	    this.opts.onload();
+	}
 });
 
 loadThumbnails(source, type) {
