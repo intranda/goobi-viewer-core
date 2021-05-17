@@ -2407,7 +2407,9 @@ this.initMapDraw = function() {
     	    case "circle":
     	        let bounds = this.searchLayer.getBounds();
     	        let center = bounds.getCenter();
-    	        let diameter = bounds.getSouthWest().distanceTo(bounds.getSouthEast());
+    	        let diameter = Math.abs(bounds.getSouthWest().lat - bounds.getSouthEast().lat);
+    	        let circumgon = this.createCircumgon(center, diameter/2.0, 12);
+    	        this.drawPolygon(circumgon);
     	        this.notifyFeatureSet({
     	            type : "circle",
     	            center : center,
@@ -2418,6 +2420,15 @@ this.initMapDraw = function() {
     	    case "polygon":
     	}
     });
+}.bind(this)
+
+this.createCircumgon = function(center, radius, numVertices) {
+    console.log("create circumgon ", center, radius, numVertices);
+    let points = [];
+    for(let i = 0; i < numVertices; i++) {
+        let x = center.lng + radius *  Math.cos(2*Math.PI*i/numVertices)
+        let y = center.lng + radius *  Math.cos(2*Math.PI*i/numVertices)
+    }
 }.bind(this)
 
 this.notifyFeatureSet = function(feature) {
