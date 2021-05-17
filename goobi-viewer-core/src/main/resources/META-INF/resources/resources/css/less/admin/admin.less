@@ -210,10 +210,10 @@
 			margin-bottom: 0;
 		}
 		&.-danger {
-			border-top: 5px solid rgba(255, 2, 2, 0.3);
+			border-top: 5px solid @redBar;
 		}
 		&.-warning {
-			border-top: 5px solid rgba(243, 208, 70, 0.85);
+			border-top: 5px solid @yellowBar;
 		}
 		&.-success-box {
 		border: 1px solid #ABD9B5;
@@ -306,10 +306,10 @@
 			padding-bottom: 2rem;
 		}
 		&.-danger {
-			border-top: 5px solid rgba(255, 2, 2, 0.3);
+			border-top: 5px solid @redBar;
 		}
 		&.-warning {
-			border-top: 5px solid rgba(243, 208, 70, 0.85);
+			border-top: 5px solid @yellowBar;
 		}
 		&-actions {
 			opacity: 0.0;
@@ -334,7 +334,7 @@
 	    }
 	}
 	&__boxed-entry-progress {
-		background: #eeeeee;
+		background: @grayBar;
 		height: 10px;
 		width: 100%;
 		position: absolute;
@@ -343,13 +343,13 @@
 		display: flex;
 	}
 	&__boxed-entry-progress-complete {
-		background: #d4edda;
+		background: @greenBar;
 	}
 	&__boxed-entry-progress-partially {
-		background: rgba(243,208,70,0.4);
+		background: @yellowBar;
 	}
 	&__sidebar-progressbar {
-		background: #C3C4C7;
+		background: @grayBar;
 		height: 10px;
 		width: 100%;
 		display: flex;
@@ -360,7 +360,7 @@
 		}
 	}
 	&__dashboard-translations-progress {
-		background: #eeeeee;
+		background: @grayBar;
 		height: 8px;
 		width: auto;
 		position: relative;
@@ -370,13 +370,13 @@
 		margin-left: 3.3rem;
 	}
 	&__dashboard-translations-progress-complete {
-		background: #d4edda;
+		background: @greenBar;
 	}
 	&__dashboard-translations-progress-partially {
-		background: rgba(243,208,70,0.4);
+		background: @yellowBar;
 	}
 	&__dashboard-translations-progress-error {
-		background: rgb(255, 178, 178);
+		background: @redBar;
 		flex: 0 0 100%;
 		max-width: 100%;
 	}
@@ -445,10 +445,10 @@
 		justify-content: center;
 	}
 	&__sidebar-progressbar-complete {
-		background: #008A2A;
+		background: @greenBar;
 	}
 	&__sidebar-progressbar-partially {
-		background: #F4C14A;
+		background: @yellowBar;
 	}
 	&__sidebar-progress-header {
 		display: flex;
@@ -1572,6 +1572,16 @@
 }
 input[type="radio"]:checked+label {
     font-weight: bold;
+}
+
+
+// BACKEND STYLES FOR DEVS
+.backend-styles {
+	padding: 2rem;
+	pre {
+		background: #333;
+		color: @white;
+	}
 }
 
 // language specific positioning for fancy toggle
