@@ -4,39 +4,44 @@
    ==============================================================*/
 /* WIDGET USER INTERACTIONS */
 #widgetUserInteractions {
-		background: @blue;
-		h3, h4 {
-			color: @white;
-			font-weight: 700;
-			margin-bottom: 1rem;
-		}
-		ul {
-			background: @blue;
-			border: none;
-			margin-bottom: 2rem;
-		li {
-			a {
-				padding: 0.3rem 0;
-				color: @white;
-				&:hover,
-				&:focus,
-				&:active {
-					color: @white;
-				}
-			}
-			&:first-of-type {
-				a {
-		    		padding-top: 0;
-				}
-			}
-		}
-		&:last-of-type {}
+	background: @blue;
+	.modal-title {
+		color: @black;
+	}
+	h3, h4 {
+		color: @white;
+		font-weight: 700;
+		margin-bottom: 1rem;
+		font-family: @fontBackend;
 	}
 	h3 {
 		background: transparent;
 		font-weight: 700;
 		font-size: 2.2rem;
 		border: none;
+	}
+	h4 {}
+	ul {
+		background: @blue;
+		border: none;
+		margin-bottom: 2rem;
+	li {
+		a {
+			padding: 0.3rem 0;
+			color: @white;
+			&:hover,
+			&:focus,
+			&:active {
+				color: @white;
+			}
+		}
+		&:first-of-type {
+			a {
+	    		padding-top: 0;
+			}
+		}
+	}
+	&:last-of-type {}
 	}
 	.widget-user-interactions__delete-record-wrapper {
 		margin-bottom: 0;
