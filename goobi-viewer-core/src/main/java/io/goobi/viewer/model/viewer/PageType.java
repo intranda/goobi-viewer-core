@@ -45,6 +45,7 @@ public enum PageType {
     viewCalendar("calendar"),
     searchlist("searchlist", "search"),
     searchCalendar("searchcalendar", "searchCalendar"),
+    searchGeoMap("searchgeomap", "title__search_geomap"),
     term("term", "searchTermList"),
     expandCollection("expandCollection"),
     firstWorkInCollection("rest/redirect/toFirstWork"),

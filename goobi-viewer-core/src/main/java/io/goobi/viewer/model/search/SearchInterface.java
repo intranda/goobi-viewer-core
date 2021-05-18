@@ -15,8 +15,14 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.SearchBean;
 
@@ -183,4 +189,19 @@ public interface SearchInterface {
      * @return the base url of the current search page, without any search parameters
      */
     public String getCurrentSearchUrlRoot();
+
+    /**
+     * @return
+     */
+    public default List<List<Double>> getGeoCoordinateQuery() {
+        if(StringUtils.isNotBlank(getExactSearchString())) {
+            String searchString = StringTools.decodeUrl(getExactSearchString());
+            return Arrays.asList(StringTools.getGeoSearchPoints(searchString)).stream()
+                    //reverse order of point coordinates because of long/lat switch
+                    .map(p -> Arrays.asList(p[1], p[0]))
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
 }

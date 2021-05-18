@@ -60,6 +60,7 @@ var viewerJS = ( function( viewer ) {
         
         this.markerIdCounter = 1;
         this.markers = [];
+        this.areas = [];
         this.highlighted = []; //list of currently highlighted colors
         
         
@@ -233,6 +234,24 @@ var viewerJS = ( function( viewer ) {
     	}
     }
     
+    viewer.GeoMap.prototype.drawPolygon = function(points, borderColor, fillColor, centerView) {
+    	let config = {
+    		interactive: false
+    	};
+    	if(borderColor) {
+    		config.color = borderColor;
+    	}
+    	if(fillColor) {
+    		config.fillColor = fillColor;
+    	}
+    	let polygon = new L.Polygon(points, config);
+    	polygon.addTo(this.map);
+    	this.areas.push(polygon);
+    	if(centerView) {
+    		this.map.fitBounds(polygon.getBounds());
+    	}
+    }
+
     
     viewer.GeoMap.prototype.createMarkerCluster = function() {
         let cluster = L.markerClusterGroup({
