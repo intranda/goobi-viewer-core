@@ -43,6 +43,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -964,21 +965,21 @@ public class AccessConditionUtils {
                     // Make sure the condition query is not optional (starts with + or -)
                     sbQuery.append(" +(").append(conditions).append(')');
                 }
-                logger.trace("License relevance query: {}", sbQuery.toString());
+                logger.trace("License relevance query: {}", StringTools.stripPatternBreakingChars(sbQuery.toString()));
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
                     // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to configured the license subquery.", licenseType.getName(), query);
                     if (licenseType.isMovingWall()) {
                         // Moving wall license type allow everything if the condition query doesn't match
                         logger.trace(
                                 "License type '{}' is a moving wall type and its condition query doesn't match the record query '{}'. All restrictions lifted.",
-                                licenseType.getName(), query);
+                                licenseType.getName(), StringTools.stripPatternBreakingChars(query));
                         licenseType.getRestrictionsExpired().put(query, true);
                     } else {
                         continue;
                     }
                 }
                 logger.trace("LicenseType '{}' applies to resource described by '{}' due to configured license subquery.", licenseType.getName(),
-                        query);
+                        StringTools.stripPatternBreakingChars(query));
             }
 
             //no individual file conditions. Write same licenseTypes for all files
