@@ -60,6 +60,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -101,13 +102,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 @ViewerRestServiceBinding
 public class CMSMediaResource {
 
-    
     private static final Logger logger = LoggerFactory.getLogger(CMSMediaResource.class);
     @Context
     protected HttpServletRequest servletRequest;
     @Context
     protected HttpServletResponse servletResponse;
-
 
     /**
      * <p>
@@ -121,16 +120,20 @@ public class CMSMediaResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
-            tags= {"media"}, 
+            tags = { "media" },
             summary = "Get a list of CMS-Media Items")
 
     public MediaList getAllMedia(
-            @Parameter(description="Comma separated list of tags. Only media items with any of these tags will be included")@QueryParam("tags") String tags,
-            @Parameter(description="Maximum number of items to return")@QueryParam("max") Integer maxItems,
-            @Parameter(description="Number of media items marks as 'important' that must be included in the result")@QueryParam("prioritySlots") Integer prioritySlots,
-            @Parameter(description="Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date")@QueryParam("random") Boolean random) throws DAOException {
+            @Parameter(
+                    description = "Comma separated list of tags. Only media items with any of these tags will be included") @QueryParam("tags") String tags,
+            @Parameter(description = "Maximum number of items to return") @QueryParam("max") Integer maxItems,
+            @Parameter(
+                    description = "Number of media items marks as 'important' that must be included in the result") @QueryParam("prioritySlots") Integer prioritySlots,
+            @Parameter(
+                    description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date") @QueryParam("random") Boolean random)
+            throws DAOException {
         List<String> tagList = new ArrayList<>();
-        if(StringUtils.isNotBlank(tags)) {
+        if (StringUtils.isNotBlank(tags)) {
             tagList.addAll(Arrays.stream(StringUtils.split(tags, ",")).map(String::toLowerCase).collect(Collectors.toList()));
         }
         List<CMSMediaItem> items = DataManager.getInstance()
@@ -138,19 +141,19 @@ public class CMSMediaResource {
                 .getAllCMSMediaItems()
                 .stream()
                 .filter(
-                        item -> tagList.isEmpty() || 
-                        item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(c -> tagList.contains(c)))
+                        item -> tagList.isEmpty() ||
+                                item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(c -> tagList.contains(c)))
                 .sorted(new PriorityComparator(prioritySlots, Boolean.TRUE.equals(random)))
                 .limit(maxItems != null ? maxItems : Integer.MAX_VALUE)
                 .sorted(new PriorityComparator(0, Boolean.TRUE.equals(random)))
                 .collect(Collectors.toList());
         return new MediaList(items);
     }
-    
+
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_ITEM_BY_ID)
     @Produces({ MediaType.APPLICATION_JSON })
-    public MediaItem getMediaItem(@PathParam("id")Long id) throws DAOException {
+    public MediaItem getMediaItem(@PathParam("id") Long id) throws DAOException {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
         return new MediaItem(item, servletRequest);
     }
@@ -174,21 +177,21 @@ public class CMSMediaResource {
             throws ContentNotFoundException, DAOException {
         String decFilename = StringTools.decodeUrl(filename);
         Path path = Paths.get(
-                DataManager.getInstance().getConfiguration().getViewerHome(), 
+                DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
                 decFilename);
-            if (Files.exists(path)) {
-                return new StreamingOutput() {
+        if (Files.exists(path)) {
+            return new StreamingOutput() {
 
-                    @Override
-                    public void write(OutputStream out) throws IOException, WebApplicationException {
-                        try (InputStream in = Files.newInputStream(path)) {
-                            IOUtils.copy(in, out);
-                        }
+                @Override
+                public void write(OutputStream out) throws IOException, WebApplicationException {
+                    try (InputStream in = Files.newInputStream(path)) {
+                        IOUtils.copy(in, out);
                     }
-                };
-            }
-            throw new ContentNotFoundException("File " + path + " not found in file system");
+                }
+            };
+        }
+        throw new ContentNotFoundException("File " + path + " not found in file system");
     }
 
     /**
@@ -205,23 +208,24 @@ public class CMSMediaResource {
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_HTML)
     @Produces({ MediaType.TEXT_HTML })
     public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException, DAOException {
-        
+
         String decFilename = StringTools.decodeUrl(filename);
-        Path path = Paths.get(
-                DataManager.getInstance().getConfiguration().getViewerHome(), 
-                DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
-                decFilename);
-        if (Files.isRegularFile(path)) {
-                try {
-                    String encoding = "windows-1252";
-                    String ret = FileTools.getStringFromFile(path.toFile(), encoding, StringTools.DEFAULT_ENCODING);
-                    return StringTools.renameIncompatibleCSSClasses(ret);
-                } catch (FileNotFoundException e) {
-                    logger.debug(e.getMessage());
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                }                
+        Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder());
+        Path path = Paths.get(cmsMediaFolder.toAbsolutePath().toString(), decFilename);
+        try {
+            // Malicious filename check
+            if (FileUtils.directoryContains(cmsMediaFolder.toFile(), path.toFile()) && Files.isRegularFile(path)) {
+                String encoding = "windows-1252";
+                String ret = FileTools.getStringFromFile(path.toFile(), encoding, StringTools.DEFAULT_ENCODING);
+                return StringTools.renameIncompatibleCSSClasses(ret);
+
             }
+        } catch (FileNotFoundException e) {
+            logger.debug(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
         throw new ContentNotFoundException("Resource not found");
     }
 
@@ -246,35 +250,36 @@ public class CMSMediaResource {
         }
         return Response.status(Status.NOT_FOUND).entity("{}").build();
     }
-    
+
     /**
      * List all uplodaed media files
-     * @throws PresentationException 
+     * 
+     * @throws PresentationException
      * 
      */
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
-    @Produces(MediaType.APPLICATION_JSON) 
+    @Produces(MediaType.APPLICATION_JSON)
     public List<String> getAllFiles() throws PresentationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        try(Stream<Path> files = Files.list(cmsMediaFolder)) {
+        try (Stream<Path> files = Files.list(cmsMediaFolder)) {
             return files.filter(Files::isRegularFile).map(Path::getFileName).map(Path::toString).collect(Collectors.toList());
         } catch (IOException e) {
             throw new PresentationException("Failed to read uploaded files: " + e.toString());
         }
     }
-    
+
     @DELETE
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
-    @Produces(MediaType.APPLICATION_JSON) 
+    @Produces(MediaType.APPLICATION_JSON)
     public void deleteAllFiles() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
-    
+
     @DELETE
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE)
-    @Produces(MediaType.APPLICATION_JSON) 
+    @Produces(MediaType.APPLICATION_JSON)
     public void deleteFile() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
@@ -438,7 +443,7 @@ public class CMSMediaResource {
         private final List<MediaItem> mediaItems;
 
         public MediaList(List<CMSMediaItem> items) {
-            this.mediaItems = items.stream().map( item -> new MediaItem(item, servletRequest)).collect(Collectors.toList());
+            this.mediaItems = items.stream().map(item -> new MediaItem(item, servletRequest)).collect(Collectors.toList());
         }
 
         /**
@@ -451,8 +456,8 @@ public class CMSMediaResource {
     }
 
     /**
-     * Comparator that sorts as many items marked as high priority to the beginning of the list as are given in the constructor
-     * The remaining items will be sorted randomly if the random parameter is true or else by the {@link CMSMediaItem#compareTo(CMSMediaItem)} 
+     * Comparator that sorts as many items marked as high priority to the beginning of the list as are given in the constructor The remaining items
+     * will be sorted randomly if the random parameter is true or else by the {@link CMSMediaItem#compareTo(CMSMediaItem)}
      * 
      * @author florian
      *
@@ -463,13 +468,12 @@ public class CMSMediaResource {
         private final boolean random;
         private final Random randomizer = new SecureRandom();
         private final List<CMSMediaItem> priorityList = new ArrayList<>();
-        
-        
+
         public PriorityComparator(Integer prioritySlots, boolean random) {
             this.prioritySlots = prioritySlots == null ? 0 : prioritySlots;
             this.random = random;
         }
-        
+
         /* (non-Javadoc)
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
@@ -477,28 +481,28 @@ public class CMSMediaResource {
         public int compare(CMSMediaItem a, CMSMediaItem b) {
             maybeAddToPriorityList(a);
             maybeAddToPriorityList(b);
-                if(priorityList.contains(a) && !priorityList.contains(b)) {
-                    return -1;
-                } else if(priorityList.contains(b) && !priorityList.contains(a)) {
-                    return 1;
-                } else if(a.getDisplayOrder() != 0 && b.getDisplayOrder() != 0) {
-                    return Integer.compare(a.getDisplayOrder(), b.getDisplayOrder());
-                } else if(a.getDisplayOrder() != 0) {
-                    return -1;
-                } else if(b.getDisplayOrder() != 0) {
-                    return 1;
-                } else if(random) {
-                    return getRandomOrder();
-                } else {
-                    return a.compareTo(b);
-                }
+            if (priorityList.contains(a) && !priorityList.contains(b)) {
+                return -1;
+            } else if (priorityList.contains(b) && !priorityList.contains(a)) {
+                return 1;
+            } else if (a.getDisplayOrder() != 0 && b.getDisplayOrder() != 0) {
+                return Integer.compare(a.getDisplayOrder(), b.getDisplayOrder());
+            } else if (a.getDisplayOrder() != 0) {
+                return -1;
+            } else if (b.getDisplayOrder() != 0) {
+                return 1;
+            } else if (random) {
+                return getRandomOrder();
+            } else {
+                return a.compareTo(b);
+            }
         }
 
         /**
          * @param b
          */
         private void maybeAddToPriorityList(CMSMediaItem item) {
-            if(item.isImportant() && priorityList.size() < prioritySlots && !priorityList.contains(item)) {
+            if (item.isImportant() && priorityList.size() < prioritySlots && !priorityList.contains(item)) {
                 priorityList.add(item);
             }
         }
@@ -509,7 +513,7 @@ public class CMSMediaResource {
         private int getRandomOrder() {
             return randomizer.nextBoolean() ? 1 : -1;
         }
-        
+
     }
-    
+
 }
