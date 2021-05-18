@@ -64,7 +64,14 @@
 	</ui:define>
 
 	<ui:define name="sidebar">             
-        <widgetComponent:widget_browsing />
+        
+		<div id="widgetGeoMapSearch" class="widget">
+			<h3>#{msg.help__geomap_search__title}</h3>
+			<div class="widget__body">
+				<h:outputText escape="false" value="#{msg.help__geomap_search__text}"></h:outputText>
+			</div>
+		</div>
+
         
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
@@ -73,9 +80,6 @@
         </c:forEach>
     </ui:define>
 
-    <ui:define name="rssFeed">
-        <ui:include src="/resources/includes/rssFeed.xhtml" />
-    </ui:define>
 
     <ui:define name="breadcrumbs">
         <ui:include src="/resources/includes/breadcrumbs.xhtml" />
