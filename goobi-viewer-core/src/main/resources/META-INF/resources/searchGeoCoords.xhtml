@@ -30,6 +30,7 @@
 						<h:inputHidden id="searchInput" value="#{searchBean.exactSearchString}"></h:inputHidden>
 						<h:commandButton id="submitSearch" type="submit" styleClass="btn btn--full" action="#{searchBean.searchDirect}" value="#{msg.search}">
 		                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
+		                    <f:passThroughAttribute name="disabled" value="disabled"></f:passThroughAttribute>
 		                </h:commandButton>
 						<geoMapSearch></geoMapSearch>
 						
@@ -42,7 +43,13 @@
 							}
 							
 							function setSearchString(searchString) {
+							    console.log("set search string ", searchString);
 							    $("#searchInput").val(searchString);
+							    if(!searchString) {
+							        $("#submitSearch").attr("disabled", "disabled");
+							    } else {
+							        $("#submitSearch").removeAttr("disabled");
+							    }
 							}
 							
 							viewerJS.initialized.subscribe(() => {							    
