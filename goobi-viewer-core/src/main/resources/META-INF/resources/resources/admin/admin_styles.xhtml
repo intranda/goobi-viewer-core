@@ -64,8 +64,8 @@
 &lt;/ui:fragment&gt;
 </pre>
 					</div>
-
     				</div>
+    				<!-- END OF ONE ROW -->
 
 
     			<div class="backend-styles__row">
@@ -210,11 +210,123 @@
 &lt;/div&gt;
 </pre>
 					</div>
+    			</div>
+    			<!-- END OF ONE ROW -->
 
-    				</div>
+    			<div class="backend-styles__row">
+    				<!-- TITLE -->
+    				<h2 class="backend-styles__title">Default structure for forms</h2>
+    				<!-- SHOW OUTPUT -->
+					<div class="backend-styles__show-output">
+						<div class="admin__default-block">
+                                <div class="form-group form-row">
+                                    <div class="col-2 control-label admin__form-label">
+                                        <label for="ipRangeName">Name:</label>
+                                        <span class="admin__label-required-field">(Required)</span>
+                                    </div>
+                                    <div class="col-9 admin__form-input"><input id="ipRangeName" type="text" name="ipRangeName" value="Reading room" class="form-control" />
+                                        <span class="admin__form-help-text">The name of the IP range is required for identification.</span>
+                                    </div>
+                                    <div class="col-1 admin__form-help-icon">
+                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-group form-row">
+                                    <div class="col-2 control-label">
+                                        <label for="ipRangeDescription">Description:</label>
+                                    </div>
+                                    <div class="col-9 admin__form-input"><textarea id="ipRangeDescription" name="ipRangeDescription" class="form-control">Everybodys very own personal reading room</textarea>
+                                        <span class="admin__form-help-text">The description text is optional and can be used to further describe the IP range.</span>
+                                    </div>
+                                    <div class="col-1 admin__form-help-icon">
+                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+							</div>
+					</div>
+					<!-- DESCRIPTION OR ADDITIONAL INFO -->
+    				<p class="backend-styles__description">Default structure for forms</p>
 
+					<div class="backend-styles__code">
+						<div class="backend-styles__copy"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
+						<div class="backend-styles__expander">
+							<i class="fa fa-caret-down" aria-hidden="true"></i>
 
-
+						</div>
+<!-- ESCAPED XHTML CODE -->						
+<pre>
+&lt;div class=&quot;admin__default-block&quot;&gt;
+	&lt;div class=&quot;form-group form-row&quot;&gt;
+		&lt;div class=&quot;col-2 control-label admin__form-label&quot;&gt;
+			&lt;label for=&quot;ipRangeName&quot;&gt;\#{msg.name}:&lt;/label&gt;
+			&lt;span class=&quot;admin__label-required-field&quot;&gt;(\#{msg.form__required_field})&lt;/span&gt;
+		&lt;/div&gt;
+		&lt;div class=&quot;col-9 admin__form-input&quot;&gt;
+			&lt;h:inputText value=&quot;\#{adminBean.currentIpRange.name}&quot; id=&quot;ipRangeName&quot; required=&quot;true&quot; styleClass=&quot;form-control&quot; /&gt;
+			&lt;span class=&quot;admin__form-help-text&quot;&gt;\#{msg.admin__ip_range_name__help}&lt;/span&gt;
+		&lt;/div&gt;
+		&lt;div class=&quot;col-1 admin__form-help-icon&quot;&gt;
+			&lt;button type=&quot;button&quot; class=&quot;btn btn--clean&quot; data-toggle=&quot;helptext&quot; aria-label=&quot;inline help icon&quot;&gt;
+				&lt;i class=&quot;fa fa-question-circle&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+			&lt;/button&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+	&lt;div class=&quot;form-group form-row&quot;&gt;
+		&lt;div class=&quot;col-2 control-label&quot;&gt;
+			&lt;label for=&quot;ipRangeDescription&quot;&gt;\#{msg.description}:&lt;/label&gt;
+		&lt;/div&gt;
+		&lt;div class=&quot;col-9 admin__form-input&quot;&gt;
+			&lt;h:inputTextarea value=&quot;\#{adminBean.currentIpRange.description}&quot; id=&quot;ipRangeDescription&quot; styleClass=&quot;form-control&quot; /&gt;
+			&lt;span class=&quot;admin__form-help-text&quot;&gt;\#{msg.admin__ip_range_description__help}&lt;/span&gt;
+		&lt;/div&gt;
+		&lt;div class=&quot;col-1 admin__form-help-icon&quot;&gt;
+			&lt;button type=&quot;button&quot; class=&quot;btn btn--clean&quot; data-toggle=&quot;helptext&quot; aria-label=&quot;inline help icon&quot;&gt;
+				&lt;i class=&quot;fa fa-question-circle&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+			&lt;/button&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+&lt;/div&gt;
+</pre>
+					</div>
+    			</div>
+    			<!-- END OF ONE ROW -->
+    			
+    			
+<div class="admin__default-block">
+	<div class="form-group form-row">
+		<div class="col-2 control-label admin__form-label">
+			<label for="ipRangeName">#{msg.name}:</label>
+			<span class="admin__label-required-field">(#{msg.form__required_field})</span>
+		</div>
+		<div class="col-9 admin__form-input">
+			<h:inputText value="#{adminBean.currentIpRange.name}" id="ipRangeName" required="true" styleClass="form-control" />
+			<span class="admin__form-help-text">#{msg.admin__ip_range_name__help}</span>
+		</div>
+		<div class="col-1 admin__form-help-icon">
+			<button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+				<i class="fa fa-question-circle" aria-hidden="true"></i>
+			</button>
+		</div>
+	</div>
+	<div class="form-group form-row">
+		<div class="col-2 control-label">
+			<label for="ipRangeDescription">#{msg.description}:</label>
+		</div>
+		<div class="col-9 admin__form-input">
+			<h:inputTextarea value="#{adminBean.currentIpRange.description}" id="ipRangeDescription" styleClass="form-control" />
+			<span class="admin__form-help-text">#{msg.admin__ip_range_description__help}</span>
+		</div>
+		<div class="col-1 admin__form-help-icon">
+			<button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+				<i class="fa fa-question-circle" aria-hidden="true"></i>
+			</button>
+		</div>
+	</div>
+</div>
 
 
 
