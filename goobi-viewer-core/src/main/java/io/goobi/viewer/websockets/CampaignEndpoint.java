@@ -188,7 +188,7 @@ public class CampaignEndpoint {
                             try {
                                 lock.session.getBasicRemote().sendText(getLockedPagesAsJson(httpSessionId, lock.campaignId, lock.recordIdentifier));
                             } catch (IOException | DAOException e) {
-                                e.printStackTrace();
+                                logger.error(e.getMessage(), e);
                             }
                         }
                     }
