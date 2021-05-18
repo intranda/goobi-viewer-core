@@ -15,15 +15,43 @@
                 
         <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextMimeType == 'text/plain'}">        
 	        <pre>
-	            <h:outputText value="#{activeDocumentBean.viewManager.getFulltext(false, null)}" escape="false" rendered="#{activeDocumentBean.viewManager.fulltext != null}" />
-	            <h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.fulltext == null}" />
+	        	<!-- Single page mode -->
+	        	<ui:fragment rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
+	            	<h:outputText rendered="#{activeDocumentBean.viewManager.currentPage.fullText != null}"
+	                	value="#{activeDocumentBean.viewManager.currentPage.fullText}" escape="false" />
+	            	<h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentPage.fullText == null}" />
+	            </ui:fragment>
+	            <!-- Double page mode -->
+	        	<ui:fragment rendered="#{activeDocumentBean.viewManager.doublePageMode}">
+	            	<h:outputText rendered="#{activeDocumentBean.viewManager.currentLeftPage.get().fullText != null}"
+	                	value="#{activeDocumentBean.viewManager.currentLeftPage.fullText}" escape="false" />
+	            	<h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentLeftPage.get().fullText == null}" />
+	            	<hr />
+	            	<h:outputText rendered="#{activeDocumentBean.viewManager.currentRightPage.get().fullText != null}"
+	                	value="#{activeDocumentBean.viewManager.currentRightPage.fullText}" escape="false" />
+	            	<h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentRightPage.get().fullText == null}" />
+	            </ui:fragment>
 	        </pre>
         </ui:fragment>
         
         <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextMimeType != 'text/plain'}">        
 	        <div class="view-fulltext__content">
-	            <h:outputText value="#{activeDocumentBean.viewManager.getFulltext(false, null)}" escape="false" rendered="#{activeDocumentBean.viewManager.fulltext != null}" />
-	            <h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.fulltext == null}" />
+	        	<!-- Single page mode -->
+	        	<ui:fragment rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
+	            	<h:outputText rendered="#{activeDocumentBean.viewManager.currentPage.fullText != null}"
+	                	value="#{activeDocumentBean.viewManager.currentPage.fullText}" escape="false" />
+	            	<h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentPage.fullText == null}" />
+	            </ui:fragment>
+	            <!-- Double page mode -->
+	        	<ui:fragment rendered="#{activeDocumentBean.viewManager.doublePageMode}">
+	            	<h:outputText rendered="#{activeDocumentBean.viewManager.currentLeftPage.get().fullText != null}"
+	                	value="#{activeDocumentBean.viewManager.currentLeftPage.get().fullText}" escape="false" />
+	            	<h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentLeftPage.get().fullText == null}" />
+	            	<hr />
+	            	<h:outputText rendered="#{activeDocumentBean.viewManager.currentRightPage.get().fullText != null}"
+	                	value="#{activeDocumentBean.viewManager.currentRightPage.get().fullText}" escape="false" />
+	            	<h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentRightPage.get().fullText == null}" />
+	            </ui:fragment>
 	        </div>
         </ui:fragment>
 

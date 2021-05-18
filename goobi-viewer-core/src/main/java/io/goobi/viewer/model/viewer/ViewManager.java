@@ -2652,7 +2652,9 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @deprecated Use <code>PhysicalElement.getFullText()</code>
      */
+    @Deprecated
     public String getFulltext() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return getFulltext(true, null);
     }
@@ -2666,7 +2668,9 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @deprecated Use <code>PhysicalElement.getFullText()</code>
      */
+    @Deprecated
     public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         String currentFulltext = null;
 
