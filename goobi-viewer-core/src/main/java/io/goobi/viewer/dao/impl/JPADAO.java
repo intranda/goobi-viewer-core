@@ -72,7 +72,7 @@ import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
@@ -1149,6 +1149,7 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public boolean addUserRole(UserRole userRole) throws DAOException {
+        logger.trace("addUserRole: {}", userRole);
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
@@ -3573,7 +3574,7 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<CampaignRecordStatistic> getCampaignStatisticsForRecord(String pi, CampaignRecordStatus status) throws DAOException {
+    public List<CampaignRecordStatistic> getCampaignStatisticsForRecord(String pi, CrowdsourcingStatus status) throws DAOException {
         synchronized (crowdsourcingRequestLock) {
             preQuery();
             try {
@@ -3682,7 +3683,17 @@ public class JPADAO implements IDAO {
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_page_statistic_annotators WHERE user_id=?")
+                    .setParameter(1, user.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
                             "DELETE FROM cs_campaign_record_statistic_reviewers WHERE user_id=?")
+                    .setParameter(1, user.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_page_statistic_reviewers WHERE user_id=?")
                     .setParameter(1, user.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
@@ -3718,7 +3729,19 @@ public class JPADAO implements IDAO {
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
+                            "UPDATE cs_campaign_record_page_statistic_annotators SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
                             "UPDATE cs_campaign_record_statistic_reviewers SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
+                            "UPDATE cs_campaign_record_page_statistic_reviewers SET user_id=? WHERE user_id=?")
                     .setParameter(1, toUser.getId())
                     .setParameter(2, fromUser.getId())
                     .executeUpdate();

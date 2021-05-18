@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.6.2 (2020-12-08)
+ * Version: 5.8.0 (2021-05-06)
  */
 (function () {
     'use strict';
@@ -36,6 +36,19 @@
         setDir(editor, 'rtl');
       });
     };
+
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var isNullable = function (a) {
+      return a === null || a === undefined;
+    };
+    var isNonNullable = function (a) {
+      return !isNullable(a);
+    };
+    var isFunction = isSimpleType('function');
 
     var noop = function () {
     };
@@ -158,13 +171,6 @@
       from: from
     };
 
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var isFunction = isSimpleType('function');
-
     var isSupported = function (dom) {
       return dom.style !== undefined && isFunction(dom.style.getPropertyValue);
     };
@@ -232,7 +238,7 @@
     };
 
     var isShadowRoot = function (dos) {
-      return isDocumentFragment(dos);
+      return isDocumentFragment(dos) && isNonNullable(dos.dom.host);
     };
     var supported = isFunction(Element.prototype.attachShadow) && isFunction(Node.prototype.getRootNode);
     var getRootNode = supported ? function (e) {

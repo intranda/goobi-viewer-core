@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.messages;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -236,7 +237,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     private static ResourceBundle loadLocalResourceBundle(final Locale locale) {
         File file = new File(DataManager.getInstance().getConfiguration().getLocalRessourceBundleFile());
-        if (file.exists()) {
+        if (file.isFile()) {
             try {
                 URL resourceURL = file.getParentFile().toURI().toURL();
                 // logger.debug("URL: " + file.getParentFile().toURI().toURL());
@@ -245,6 +246,8 @@ public class ViewerResourceBundle extends ResourceBundle {
             } catch (Exception e) {
                 // some error while loading bundle from file system; use default bundle now ...
             }
+        } else {
+            logger.debug("Local messages file not found: {}", file.getAbsolutePath());
         }
 
         return null;
@@ -342,14 +345,32 @@ public class ViewerResourceBundle extends ResourceBundle {
      * getTranslation.
      * </p>
      *
-     * @param key a {@link java.lang.String} object.
-     * @param locale a {@link java.util.Locale} object.
+     * @param key Message key to translate
+     * @param locale Desired locale
      * @param useFallback If true, get default locale translation if there is none for the given locale
      * @param reversePriority If true, the global bundle will be checked first, then the local
      * @param cleanup If true, elements such as 'zzz' will be removed from the translation
      * @return Translated message key
      */
     public static String getTranslation(final String key, Locale locale, boolean useFallback, boolean reversePriority, boolean cleanup) {
+        return getTranslation(key, locale, useFallback, true, reversePriority, cleanup);
+    }
+
+    /**
+     * <p>
+     * getTranslation.
+     * </p>
+     * 
+     * @param key Message key to translate
+     * @param locale Desired locale
+     * @param useFallback If true, get default locale translation if there is none for the given locale
+     * @param returnKeyIfNoneFound If true, the key will be returned as translation value; null otherwise
+     * @param reversePriority If true, the global bundle will be checked first, then the local
+     * @param cleanup If true, elements such as 'zzz' will be removed from the translation
+     * @return Translated message key
+     */
+    public static String getTranslation(final String key, Locale locale, boolean useFallback, boolean returnKeyIfNoneFound, boolean reversePriority,
+            boolean cleanup) {
         //        logger.trace("Translation for: {}", key);
         locale = checkAndLoadResourceBundles(locale); // If locale is null, the return value will be the current locale
         Map<Locale, ResourceBundle> bundles1 = reversePriority ? localBundles : defaultBundles;
@@ -359,7 +380,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 && !defaultLocale.equals(locale)) {
             value = getTranslation(key, bundles1.get(defaultLocale), bundles2.get(defaultLocale), cleanup);
         }
-        if (value == null) {
+        if (value == null && returnKeyIfNoneFound) {
             value = key;
         }
 
@@ -637,6 +658,44 @@ public class ViewerResourceBundle extends ResourceBundle {
         } catch (Throwable e) {
             logger.error("Error getting locales from faces-config", e);
             return getFacesLocales();
+        }
+    }
+
+    /**
+     * Creates a local messages_xx.properties file for every locale in the Faces context, if not already present.
+     */
+    public static void createLocalMessageFiles() {
+        createLocalMessageFiles(getAllLocales());
+    }
+
+    /**
+     * Creates a local messages_xx.properties file for every locale in the given list, if not already present.
+     * 
+     * @param locales
+     * @should create files correctly
+     */
+    static void createLocalMessageFiles(List<Locale> locales) {
+        if (locales == null) {
+            return;
+        }
+
+        for (Locale locale : getAllLocales()) {
+            Path path =
+                    Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath(), "messages_" + locale.getLanguage() + ".properties");
+            if (Files.exists(path)) {
+                logger.trace("Local message file already exists: {}", path.toAbsolutePath().toString());
+                continue;
+            }
+            try {
+                Files.createFile(path);
+                // BufferedWriter defaults to UTF-8
+                try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+                    writer.write("");
+                }
+                logger.info("Created local message file: {}", path.toAbsolutePath().toString());
+            } catch (IOException e) {
+                logger.error("Could not create local message file: {}", e.getMessage());
+            }
         }
     }
 

@@ -48,22 +48,16 @@ public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
      * @see io.goobi.viewer.model.translations.TranslationGroupKey#loadValues()
      */
     @Override
-    protected void loadEntries() {
-        try {
-            QueryResponse qr = DataManager.getInstance()
-                    .getSearchIndex()
-                    .searchFacetsAndStatistics("*:*", null, Collections.singletonList(key), 0, false);
-            FacetField ff = qr.getFacetField(key);
-            List<String> keys = new ArrayList<>(ff.getValueCount());
-            for (Count value : ff.getValues()) {
-                keys.add(value.getName());
-            }
-            Collections.sort(keys);
-            createMessageKeyStatusMap(keys);
-        } catch (PresentationException e) {
-            logger.error(e.getMessage());
-        } catch (IndexUnreachableException e) {
-            logger.error(e.getMessage());
+    protected void loadEntries() throws PresentationException, IndexUnreachableException {
+        QueryResponse qr = DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics("*:*", null, Collections.singletonList(key), 0, false);
+        FacetField ff = qr.getFacetField(key);
+        List<String> keys = new ArrayList<>(ff.getValueCount());
+        for (Count value : ff.getValues()) {
+            keys.add(value.getName());
         }
+        Collections.sort(keys);
+        createMessageKeyStatusMap(keys);
     }
 }

@@ -511,6 +511,12 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws IndexUnreachableException
      * @should construct query correctly
      * @should construct query info correctly
+     * @should add multiple facets for the same field correctly
+     * @should add multiple facets for the same field correctly if field already in current facets
+     * @should only add identical facets once
+     * @should not add more facets if field value combo already in current facets
+     * @should not replace obsolete facets with duplicates
+     * @should remove facets that are not matched among query items
      */
     String generateAdvancedSearchString(boolean aggregateHits) {
         logger.trace("generateAdvancedSearchString");
@@ -519,6 +525,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         searchTerms.clear();
         StringBuilder sbCurrentCollection = new StringBuilder();
+        //        String currentFacetString = facets.getCurrentFacetStringPrefix(false);
 
         for (SearchQueryGroup queryGroup : advancedQueryGroups) {
             StringBuilder sbGroup = new StringBuilder();
@@ -541,6 +548,8 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             sbInfo.append('(');
 
+            Set<String> usedHierarchicalFields = new HashSet<>();
+            Set<String> usedFieldValuePairs = new HashSet<>();
             for (SearchQueryItem queryItem : queryGroup.getQueryItems()) {
                 // logger.trace("Query item: {}", queryItem.toString());
                 if (StringUtils.isEmpty(queryItem.getField()) || StringUtils.isBlank(queryItem.getValue())) {
@@ -553,8 +562,47 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
                 // Generate the hierarchical facet parameter from query items
                 if (queryItem.isHierarchical()) {
-                    logger.trace("{} is hierarchical", queryItem.getField());
-                    sbCurrentCollection.append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).append(";;").toString();
+                    // logger.trace("{} is hierarchical", queryItem.getField());
+                    // Skip identical hierarchical items
+
+                    // Find existing facet items that can be repurposed for the existing facets
+                    boolean skipQueryItem = false;
+                    for (FacetItem facetItem : facets.getCurrentFacets()) {
+                        // logger.trace("checking facet item: {}", facetItem.getLink());
+                        if (!facetItem.getField().equals(queryItem.getField())) {
+                            continue;
+                        }
+                        if (usedFieldValuePairs.contains(facetItem.getLink())) {
+                            // logger.trace("facet item already handled: {}", facetItem.getLink());
+                            continue;
+                        }
+                        if (!usedFieldValuePairs.contains(queryItem.getField() + ":" + queryItem.getValue())) {
+                            facetItem.setLink(queryItem.getField() + ":" + queryItem.getValue());
+                            usedFieldValuePairs.add(facetItem.getLink());
+                            usedHierarchicalFields.add(queryItem.getField());
+                            // logger.trace("reuse facet item: {}", facetItem);
+                            skipQueryItem = true;
+                            break;
+                        }
+                    }
+                    if (skipQueryItem) {
+                        continue;
+                    }
+
+                    String itemQuery =
+                            new StringBuilder().append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).toString();
+                    // logger.trace("item query: {}", itemQuery);
+
+                    // Check whether this combination already exists and skip, if that's the case
+                    if (usedFieldValuePairs.contains(itemQuery)) {
+                        // logger.trace("facet item already exists: {}", itemQuery);
+                        continue;
+                    }
+                    usedFieldValuePairs.add(itemQuery);
+                    usedHierarchicalFields.add(queryItem.getField());
+
+                    sbCurrentCollection.append(itemQuery + ";;");
+
                     sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
                             .append(": \"")
                             .append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()))
@@ -660,6 +708,19 @@ public class SearchBean implements SearchInterface, Serializable {
                     sbGroup.append('(').append(itemQuery).append(')');
                 }
             }
+
+            // Clean up hierarchical facet items whose field has been matched to existing query items but not its value (obsolete facets)
+            Set<FacetItem> toRemove = new HashSet<>();
+            for (FacetItem facetItem : facets.getCurrentFacets()) {
+                if (facetItem.isHierarchial() && usedHierarchicalFields.contains(facetItem.getField())
+                        && !usedFieldValuePairs.contains(facetItem.getLink())) {
+                    toRemove.add(facetItem);
+                }
+            }
+            if (!toRemove.isEmpty()) {
+                facets.getCurrentFacets().removeAll(toRemove);
+            }
+
             // Add this group's query part to the main query
             if (sbGroup.length() > 0) {
                 sbInfo.append(')');
@@ -680,12 +741,12 @@ public class SearchBean implements SearchInterface, Serializable {
                 sb.append('(').append(sbGroup).append(')');
             }
         }
-        if (sbCurrentCollection.length() > 0)
-
-        {
+        if (sbCurrentCollection.length() > 0) {
+            logger.trace(facets.getCurrentFacetStringPrefix() + " + " + sbCurrentCollection.toString());
             facets.setCurrentFacetString(facets.getCurrentFacetStringPrefix() + sbCurrentCollection.toString());
         } else {
-            facets.setCurrentFacetString("-");
+            logger.trace(facets.getCurrentFacetString());
+            facets.setCurrentFacetString(facets.getCurrentFacetString());
         }
 
         advancedSearchQueryInfo = sbInfo.toString();
@@ -1215,67 +1276,74 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should remove facet items from search query items correctly
      * @should add extra search query item if all items full
      * @should not replace query items already in use
+     * @should not add identical hierarchical query items
      */
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
         if (advancedQueryGroups.isEmpty()) {
             return;
         }
-
-        if (!facets.getCurrentFacets().isEmpty()) {
-            SearchQueryGroup queryGroup = advancedQueryGroups.get(0);
-            if (!queryGroup.getQueryItems().isEmpty()) {
-                int index = 0;
-                for (FacetItem facetItem : facets.getCurrentFacets()) {
-                    if (!facetItem.isHierarchial()) {
-                        continue;
-                    }
-                    if (index < queryGroup.getQueryItems().size()) {
-                        // Fill existing search query items
-                        SearchQueryItem item = queryGroup.getQueryItems().get(index);
-                        while (!item.isHierarchical() && StringUtils.isNotEmpty(item.getValue())
-                                && index + 1 < queryGroup.getQueryItems().size()) {
-                            // Skip items that already have values
-                            ++index;
-                            item = queryGroup.getQueryItems().get(index);
-                        }
-                        item.setField(facetItem.getField());
-                        item.setOperator(SearchItemOperator.IS);
-                        item.setValue(facetItem.getValue());
-                    } else {
-                        // If no search field is set up for collection search, add new field containing the currently selected collection
-                        SearchQueryItem item = new SearchQueryItem(BeanUtils.getLocale());
-                        item.setField(facetItem.getField());
-                        item.setOperator(SearchItemOperator.IS);
-                        item.setValue(facetItem.getValue());
-                        queryGroup.getQueryItems().add(item);
-                    }
-                    ++index;
-                }
-                // If additional query items are configured for collections but are no longer in use, reset them
-                if (index < queryGroup.getQueryItems().size()) {
-                    for (int i = index; i < queryGroup.getQueryItems().size(); ++i) {
-                        SearchQueryItem item = queryGroup.getQueryItems().get(i);
-                        if (item.isHierarchical()) {
-                            item.reset();
-                            logger.trace("Reset advanced query item {}", i);
-                        }
-                    }
-                }
-                // If all items are full, add a new one for user query
-                // if (currentHierarchicalFacets.size() ==
-                // queryGroup.getQueryItems().size()) {
-                // queryGroup.getQueryItems().add(new
-                // SearchQueryItem(BeanUtils.getLocale()));
-                // }
-            }
-        } else {
+        if (facets.getCurrentFacets().isEmpty()) {
             SearchQueryGroup queryGroup = advancedQueryGroups.get(0);
             for (SearchQueryItem item : queryGroup.getQueryItems()) {
                 if (item.isHierarchical()) {
                     logger.trace("resetting current field in advanced search: {}", item.getField());
                     item.reset();
                 }
+            }
+            return;
+        }
+
+        SearchQueryGroup queryGroup = advancedQueryGroups.get(0);
+        Set<SearchQueryItem> populatedQueryItems = new HashSet<>();
+        for (FacetItem facetItem : facets.getCurrentFacets()) {
+            if (!facetItem.isHierarchial()) {
+                continue;
+            }
+            // logger.trace("facet item: {}", facetItem.toString());
+            // Look up and re-purpose existing query items with the same field first
+            boolean matched = false;
+            for (SearchQueryItem queryItem : queryGroup.getQueryItems()) {
+                // field:value pair already exists
+                if (populatedQueryItems.contains(queryItem)) {
+                    // logger.trace("query item already populated: {}", queryItem);
+                    continue;
+                }
+                // Ignore items for other fields
+                if (queryItem.getField() != null && !queryItem.getField().equals(facetItem.getField())) {
+                    // logger.trace("query item field mismatch: {}", queryItem);
+                    continue;
+                }
+                // Override existing items without a field or with the same field with current facet value
+                // logger.trace("updating query item: {}", queryItem);
+                if (queryItem.getField() == null) {
+                    queryItem.setField(facetItem.getField());
+                }
+                queryItem.setOperator(SearchItemOperator.IS);
+                queryItem.setValue(facetItem.getValue());
+                // logger.trace("updated query item: {}", queryItem);
+                populatedQueryItems.add(queryItem);
+                matched = true;
+                break;
+            }
+            if (!matched) {
+                // If no search field is set up for collection search, add new field containing the currently selected collection
+                SearchQueryItem item = new SearchQueryItem(BeanUtils.getLocale());
+                item.setField(facetItem.getField());
+                item.setOperator(SearchItemOperator.IS);
+                item.setValue(facetItem.getValue());
+                // ...but only if there is no exact field:value pair already among the query items
+                if (!populatedQueryItems.contains(item)) {
+                    queryGroup.getQueryItems().add(item);
+                    // logger.trace("added new item: {}", item);
+                }
+            }
+        }
+        // Reset any hierarchical query items that could not be used for existing facets
+        for (SearchQueryItem queryItem : queryGroup.getQueryItems()) {
+            if (queryItem.isHierarchical() && !populatedQueryItems.contains(queryItem)) {
+                logger.trace("Resetting advanced query item {}", queryItem);
+                queryItem.reset();
             }
         }
     }
@@ -2145,7 +2213,7 @@ public class SearchBean implements SearchInterface, Serializable {
             throws InterruptedException, ViewerConfigurationException {
         try {
             HttpServletRequest request = BeanUtils.getRequest(facesContext);
-            if(request == null) {
+            if (request == null) {
                 request = BeanUtils.getRequest();
             }
             Map<String, String> params = SearchHelper.generateQueryParams();

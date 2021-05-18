@@ -17,11 +17,14 @@ package io.goobi.viewer.model.translations.admin;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 
 /**
@@ -79,6 +83,7 @@ public class TranslationGroup {
     private Integer untranslatedEntryCount;
     private Integer fullyTranslatedEntryCount = null;
     private String filterString;
+    private Boolean loadError = null;
 
     /**
      * Factory method.
@@ -185,7 +190,14 @@ public class TranslationGroup {
     public int getEntryCount() {
         Set<MessageEntry> returnSet = new HashSet<>();
         for (TranslationGroupItem item : items) {
-            returnSet.addAll(item.getEntries());
+            try {
+                if (item.getEntries() != null) {
+                    returnSet.addAll(item.getEntries());
+                }
+            } catch (Exception e) {
+                loadError = true;
+                break;
+            }
         }
 
         return returnSet.size();
@@ -329,11 +341,21 @@ public class TranslationGroup {
             logger.trace("Loading entries...");
             Set<MessageEntry> retSet = new HashSet<>();
             for (TranslationGroupItem item : items) {
-                retSet.addAll(item.getEntries());
+                try {
+                    if (item.getEntries() != null) {
+                        retSet.addAll(item.getEntries());
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                    loadError = true;
+                    allEntries = Collections.emptyList();
+                    return allEntries;
+                }
             }
 
             allEntries = new ArrayList<>(retSet);
             Collections.sort(allEntries);
+            loadError = false;
         }
 
         return allEntries;
@@ -387,8 +409,24 @@ public class TranslationGroup {
      * @param filterString the filterString to set
      */
     public void setFilterString(String filterString) {
-        logger.trace("setFilterString: {}", filterString);
         this.filterString = filterString;
+    }
+
+    /**
+     * @return the loadError
+     */
+    public boolean isLoadError() {
+        if (loadError == null) {
+            getAllEntries();
+        }
+        return loadError;
+    }
+
+    /**
+     * @param loadError the loadError to set
+     */
+    public void setLoadError(boolean loadError) {
+        this.loadError = loadError;
     }
 
     /**
@@ -415,7 +453,7 @@ public class TranslationGroup {
      * 
      */
     void selectEntry(int step) {
-        logger.trace("selectEntry: {}", step);
+        // logger.trace("selectEntry: {}", step);
         if (getFilteredEntries() == null || getFilteredEntries().isEmpty()) {
             return;
         }
@@ -478,8 +516,7 @@ public class TranslationGroup {
 
             // Load config
             if (config == null) {
-                File file = new File(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
-                        "messages_" + value.getLanguage() + ".properties");
+                File file = getLocalTranslationFile(value.getLanguage());
                 if (!file.exists()) {
                     try {
                         file.createNewFile();
@@ -508,8 +545,7 @@ public class TranslationGroup {
         for (String key : configMap.keySet()) {
             try {
                 configMap.get(key)
-                        .setFile(new File(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
-                                "messages_" + key + ".properties"));
+                        .setFile(getLocalTranslationFile(key));
                 configMap.get(key).save();
                 logger.trace("File written: {}", configMap.get(key).getFile().getAbsolutePath());
             } catch (ConfigurationException e) {
@@ -517,4 +553,36 @@ public class TranslationGroup {
             }
         }
     }
+
+    private static File getLocalTranslationFile(String language) {
+        return new File(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
+                "messages_" + language + ".properties");
+    }
+
+    /**
+     * Check whether the application has write access to all local messages files as well as the containing folder if any languages have no local
+     * message file. The tested languages are taken from {@link ViewerResourceBundle#getAllLocales()}
+     * 
+     * @return true if all required access rights to edit messages are present. false otherwise
+     */
+    public static boolean isHasFileAccess() {
+        /* Using Files#isWritable(Path path) because it's supposedly more reliable for Unix systems with network folders 
+         * Reports vary, though...
+         */
+        for (Locale locale : ViewerResourceBundle.getAllLocales()) {
+            Path path = getLocalTranslationFile(locale.getLanguage()).toPath();
+            if (Files.exists(path)) {
+                if (Files.isWritable(path)) {
+                    continue;
+                }
+                return false;
+            } else if (Files.isWritable(path.getParent())) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

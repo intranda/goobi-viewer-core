@@ -71,6 +71,10 @@ public class ViewerPath implements Serializable {
      */
     private URI parameterPath;
     /**
+     *  The entire query string of the URL, starting with the character after the '?'. An empty String no query exists
+     */
+    private String queryString = "";
+    /**
      * The {@link PageType} referred to by the paths {@link #pagePath}. Is null if no matching PageType was found
      */
     private PageType pageType = null;
@@ -123,6 +127,7 @@ public class ViewerPath implements Serializable {
         this.parameterPath = blueprint.parameterPath;
         this.cmsPage = blueprint.cmsPage;
         this.pageType = blueprint.pageType;
+        this.queryString = blueprint.queryString;
     }
 
     /**
@@ -190,6 +195,21 @@ public class ViewerPath implements Serializable {
     public void setParameterPath(URI parameterPath) {
         this.parameterPath = parameterPath;
     }
+    
+    
+    /**
+     * @return the queryString
+     */
+    public String getQueryString() {
+        return queryString;
+    }
+    
+    /**
+     * @param queryString the queryString to set
+     */
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
 
     /**
      * <p>
@@ -229,7 +249,7 @@ public class ViewerPath implements Serializable {
      * @return the entire {@link #getPrettifiedPagePath() prettified} url <b>except</b> the application url
      */
     public URI getCombinedPrettyfiedPath() {
-        return ViewerPathBuilder.resolve(getPrettifiedPagePath(), getParameterPath());
+        return ViewerPathBuilder.resolve(getPrettifiedPagePath(), getParameterPath(), "", getQueryString());
     }
 
     /**
@@ -240,7 +260,7 @@ public class ViewerPath implements Serializable {
      * @return the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
      */
     public String getCombinedPrettyfiedUrl() {
-        String url = ("/" + getCombinedPrettyfiedPath().toString() + "/").replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
+        String url = ("/" + getCombinedPrettyfiedPath().toString()).replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
         return url;
     }
 
@@ -252,7 +272,7 @@ public class ViewerPath implements Serializable {
      * @return the entire request url as a path <b>except</b> the application url
      */
     public URI getCombinedPath() {
-        return ViewerPathBuilder.resolve(pagePath, parameterPath);
+        return ViewerPathBuilder.resolve(pagePath, parameterPath, "", queryString);
     }
 
     /**
@@ -264,7 +284,7 @@ public class ViewerPath implements Serializable {
      */
     public String getCombinedUrl() {
 
-        String url = ("/" + getCombinedPath().toString() + "/").replace("\\", "/").replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
+        String url = ("/" + getCombinedPath().toString()).replace("\\", "/").replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
         return url;
     }
 

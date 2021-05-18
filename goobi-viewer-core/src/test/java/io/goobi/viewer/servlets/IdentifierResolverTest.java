@@ -159,7 +159,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "AC11442160";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.IMAGEURN + ":" + urn, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
-        Assert.assertEquals("/object/" + pi + "/2/-/", IdentifierResolver.constructUrl(qr.getResults().get(0), true));
+        Assert.assertEquals("/object/" + pi + "/2/LOG_0002/", IdentifierResolver.constructUrl(qr.getResults().get(0), true));
     }
 
     /**

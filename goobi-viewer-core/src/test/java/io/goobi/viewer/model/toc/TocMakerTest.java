@@ -46,7 +46,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         // Initialize the instance with a custom config file
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
-    
+
     /**
      * @see TocMaker#getSolrFieldsToFetch()
      * @verifies return both static and configured fields
@@ -122,8 +122,8 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, MimeType.IMAGE.getName(), 1, -1);
         Assert.assertNotNull(tocElements);
         Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
-        Assert.assertEquals(7, tocElements.get(TOC.DEFAULT_GROUP).size());
-        Assert.assertEquals(6, toc.getTotalTocSize()); // 7 volumes
+        Assert.assertEquals(8, tocElements.get(TOC.DEFAULT_GROUP).size());
+        Assert.assertEquals(7, toc.getTotalTocSize()); // 7 volumes
         Assert.assertEquals("306653648", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
         for (int i = 1; i < tocElements.get(TOC.DEFAULT_GROUP).size(); ++i) {
             Assert.assertTrue(tocElements.get(TOC.DEFAULT_GROUP).get(i).getTopStructPi().startsWith("306653648_189"));
@@ -146,7 +146,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertNotNull(tocElements);
             Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
             Assert.assertEquals(4, tocElements.get(TOC.DEFAULT_GROUP).size());
-            Assert.assertEquals(6, toc.getTotalTocSize());
+            Assert.assertEquals(7, toc.getTotalTocSize());
             Assert.assertEquals("306653648", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
             Assert.assertEquals("306653648_1891", tocElements.get(TOC.DEFAULT_GROUP).get(1).getTopStructPi());
             Assert.assertEquals("306653648_1892", tocElements.get(TOC.DEFAULT_GROUP).get(2).getTopStructPi());
@@ -158,21 +158,21 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertNotNull(tocElements);
             Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
             Assert.assertEquals(4, tocElements.get(TOC.DEFAULT_GROUP).size());
-            Assert.assertEquals(6, toc.getTotalTocSize());
+            Assert.assertEquals(7, toc.getTotalTocSize());
             Assert.assertEquals("306653648", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
             Assert.assertEquals("306653648_1894", tocElements.get(TOC.DEFAULT_GROUP).get(1).getTopStructPi());
             Assert.assertEquals("306653648_1897", tocElements.get(TOC.DEFAULT_GROUP).get(2).getTopStructPi());
-            Assert.assertEquals("306653648_1899", tocElements.get(TOC.DEFAULT_GROUP).get(3).getTopStructPi());
+            Assert.assertEquals("306653648_1898", tocElements.get(TOC.DEFAULT_GROUP).get(3).getTopStructPi());
         }
         {
             // Page 3
             Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, MimeType.IMAGE.getName(), 3, 3);
             Assert.assertNotNull(tocElements);
             Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
-            Assert.assertEquals(1, tocElements.get(TOC.DEFAULT_GROUP).size());
-            Assert.assertEquals(6, toc.getTotalTocSize());
+            Assert.assertEquals(2, tocElements.get(TOC.DEFAULT_GROUP).size());
+            Assert.assertEquals(7, toc.getTotalTocSize());
             Assert.assertEquals("306653648", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
-            //            Assert.assertEquals("306653648_1899", tocElements.get(TOC.DEFAULT_GROUP).get(1).getTopStructPi());
+            Assert.assertEquals("306653648_1899", tocElements.get(TOC.DEFAULT_GROUP).get(1).getTopStructPi());
         }
     }
 
@@ -224,7 +224,6 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void buildLabel_shouldFillRemainingParametersCorrectlyIfDocstructFallbackUsed() throws Exception {
 
-        
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.CURRENTNO, "1");
         doc.setField(SolrConstants.DOCSTRCT, "PeriodicalVolume");

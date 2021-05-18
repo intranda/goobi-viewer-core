@@ -132,6 +132,9 @@ public class ContextListener implements ServletContextListener {
 
         //set contentServerConfig
         ContentServerConfiguration.getInstance("contentServerConfig.xml");
+        
+        // Create local message files
+        ViewerResourceBundle.createLocalMessageFiles();
     }
 
     /** {@inheritDoc} */

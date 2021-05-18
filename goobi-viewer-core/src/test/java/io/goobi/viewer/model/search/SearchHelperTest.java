@@ -947,22 +947,22 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
-    /**
-     * @see SearchHelper#getBrowseElement(String,int,List,Map,Set,Locale,boolean)
-     * @verifies return correct hit for non-aggregated search
-     */
-    @Test
-    public void getBrowseElement_shouldReturnCorrectHitForNonaggregatedSearch() throws Exception {
-        String rawQuery = SolrConstants.IDDOC + ":*";
-        List<SearchHit> hits = SearchHelper.searchWithFulltext(SearchHelper.buildFinalQuery(rawQuery, false), 0, 10, null, null, null, null, null,
-                null, Locale.ENGLISH, null);
-        Assert.assertNotNull(hits);
-        Assert.assertEquals(10, hits.size());
-        for (int i = 0; i < 10; ++i) {
-            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, false, null);
-            Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
-        }
-    }
+//    /**
+//     * @see SearchHelper#getBrowseElement(String,int,List,Map,Set,Locale,boolean)
+//     * @verifies return correct hit for non-aggregated search
+//     */
+//    @Test
+//    public void getBrowseElement_shouldReturnCorrectHitForNonaggregatedSearch() throws Exception {
+//        String rawQuery = SolrConstants.IDDOC + ":*";
+//        List<SearchHit> hits = SearchHelper.searchWithFulltext(SearchHelper.buildFinalQuery(rawQuery, false), 0, 10, null, null, null, null, null,
+//                null, Locale.ENGLISH, null);
+//        Assert.assertNotNull(hits);
+//        Assert.assertEquals(10, hits.size());
+//        for (int i = 0; i < 10; ++i) {
+//            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, false, null);
+//            Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
+//        }
+//    }
 
     /**
      * @see SearchHelper#getBrowseElement(String,int,List,Map,Set,Locale,boolean)

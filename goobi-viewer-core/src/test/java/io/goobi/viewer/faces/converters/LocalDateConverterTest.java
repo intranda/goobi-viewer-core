@@ -39,6 +39,7 @@ public class LocalDateConverterTest {
     
     private static final String PATTERN_GERMAN = "dd.MM.yyyy";
     private static final String PATTERN_ENGLISH = "MM/dd/yyyy";
+    private static final String PATTERN_GENERIC = "yyyy-MM-dd";
 
     
     @Test
@@ -59,7 +60,9 @@ public class LocalDateConverterTest {
     
     @Test
     public void testGeneric() {
-        LocalDate date = new LocalDateConverter().getAsObject(null, null, DATE_GENERIC);
+        UIComponent component = Mockito.mock(UIComponent.class);
+        Mockito.when(component.getAttributes()).thenReturn(Collections.singletonMap("data-format", PATTERN_GENERIC));
+        LocalDate date = new LocalDateConverter().getAsObject(null, component, DATE_GENERIC);
         assertEquals(DATE, date);
     }
 

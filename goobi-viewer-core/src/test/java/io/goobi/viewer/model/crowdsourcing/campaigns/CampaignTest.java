@@ -8,7 +8,7 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -186,7 +186,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see Campaign#isUserAllowedAction(User,CampaignRecordStatus)
+     * @see Campaign#isUserAllowedAction(User,CrowdsourcingStatus)
      * @verifies return true if campaign public
      */
     @Test
@@ -194,11 +194,11 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         User user = new User();
         Campaign campaign = new Campaign();
         campaign.setVisibility(CampaignVisibility.PUBLIC);
-        Assert.assertTrue(campaign.isUserAllowedAction(null, CampaignRecordStatus.ANNOTATE));
+        Assert.assertTrue(campaign.isUserAllowedAction(null, CrowdsourcingStatus.ANNOTATE));
     }
 
     /**
-     * @see Campaign#isUserAllowedAction(User,CampaignRecordStatus)
+     * @see Campaign#isUserAllowedAction(User,CrowdsourcingStatus)
      * @verifies return false if outside time period
      */
     @Test
@@ -211,11 +211,11 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         campaign.setTimePeriodEnabled(true);
         campaign.setDateStart(LocalDateTime.of(2000, 01, 01, 0, 0));
         campaign.setDateEnd(LocalDateTime.of(2001, 01, 01, 0, 0));
-        Assert.assertFalse(campaign.isUserAllowedAction(user, CampaignRecordStatus.ANNOTATE));
+        Assert.assertFalse(campaign.isUserAllowedAction(user, CrowdsourcingStatus.ANNOTATE));
     }
 
     /**
-     * @see Campaign#isUserAllowedAction(User,CampaignRecordStatus)
+     * @see Campaign#isUserAllowedAction(User,CrowdsourcingStatus)
      * @verifies return true if user owner of group
      */
     @Test
@@ -225,11 +225,11 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         campaign.setLimitToGroup(true);
         campaign.setUserGroup(new UserGroup());
         campaign.getUserGroup().setOwner(user);
-        Assert.assertTrue(campaign.isUserAllowedAction(user, CampaignRecordStatus.ANNOTATE));
+        Assert.assertTrue(campaign.isUserAllowedAction(user, CrowdsourcingStatus.ANNOTATE));
     }
 
     /**
-     * @see Campaign#isUserAllowedAction(User,CampaignRecordStatus)
+     * @see Campaign#isUserAllowedAction(User,CrowdsourcingStatus)
      * @verifies return true if user member of group
      */
     @Test
@@ -245,11 +245,11 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         campaign.setLimitToGroup(true);
         campaign.setUserGroup(userGroup);
         campaign.getUserGroup().addMember(user, role);
-        Assert.assertTrue(campaign.isUserAllowedAction(user, CampaignRecordStatus.ANNOTATE));
+        Assert.assertTrue(campaign.isUserAllowedAction(user, CrowdsourcingStatus.ANNOTATE));
     }
 
     /**
-     * @see Campaign#isUserAllowedAction(User,CampaignRecordStatus)
+     * @see Campaign#isUserAllowedAction(User,CrowdsourcingStatus)
      * @verifies return false if user not in group
      */
     @Test
@@ -396,5 +396,84 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = new Campaign();
         campaign.setLimitToGroup(true);
         Assert.assertFalse(campaign.isGroupLimitActive());
+    }
+
+    /**
+     * @see Campaign#getNumRecordsForStatus(String)
+     * @verifies do record-based count correctly
+     */
+    @Test
+    public void getNumRecordsForStatus_shouldDoRecordbasedCountCorrectly() throws Exception {
+        Campaign campaign = new Campaign();
+        {
+            CampaignRecordStatistic statistic = new CampaignRecordStatistic();
+            statistic.setStatus(CrowdsourcingStatus.FINISHED);
+            campaign.getStatistics().put("PI1", statistic);
+        }
+        {
+            CampaignRecordStatistic statistic = new CampaignRecordStatistic();
+            statistic.setStatus(CrowdsourcingStatus.FINISHED);
+            campaign.getStatistics().put("PI2", statistic);
+        }
+        {
+            CampaignRecordStatistic statistic = new CampaignRecordStatistic();
+            statistic.setStatus(CrowdsourcingStatus.REVIEW);
+            campaign.getStatistics().put("PI3", statistic);
+        }
+        Assert.assertEquals(2, campaign.getNumRecordsForStatus(CrowdsourcingStatus.FINISHED.name()));
+    }
+
+    /**
+     * @see Campaign#getNumRecordsForStatus(String)
+     * @verifies do page-based count correctly
+     */
+    @Test
+    public void getNumRecordsForStatus_shouldDoPagebasedCountCorrectly() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setStatisticMode(StatisticMode.PAGE);
+        {
+            CampaignRecordStatistic statistic = new CampaignRecordStatistic();
+            {
+                CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
+                pageStatistic.setPage(1);
+                pageStatistic.setStatus(CrowdsourcingStatus.FINISHED);
+                statistic.getPageStatistics().put("PI1_1", pageStatistic);
+            }
+            {
+                CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
+                pageStatistic.setPage(2);
+                pageStatistic.setStatus(CrowdsourcingStatus.FINISHED);
+                statistic.getPageStatistics().put("PI1_2", pageStatistic);
+            }
+            campaign.getStatistics().put("PI1", statistic);
+        }
+        {
+            CampaignRecordStatistic statistic = new CampaignRecordStatistic();
+            {
+                CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
+                pageStatistic.setPage(1);
+                pageStatistic.setStatus(CrowdsourcingStatus.FINISHED);
+                statistic.getPageStatistics().put("PI2_1", pageStatistic);
+            }
+            campaign.getStatistics().put("PI2", statistic);
+        }
+        {
+            CampaignRecordStatistic statistic = new CampaignRecordStatistic();
+            {
+                CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
+                pageStatistic.setPage(1);
+                pageStatistic.setStatus(CrowdsourcingStatus.FINISHED);
+                statistic.getPageStatistics().put("PI3_1", pageStatistic);
+            }
+            {
+                CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
+                pageStatistic.setPage(2);
+                pageStatistic.setStatus(CrowdsourcingStatus.REVIEW);
+                statistic.getPageStatistics().put("PI3_2", pageStatistic);
+            }
+            campaign.getStatistics().put("PI3", statistic);
+        }
+        Assert.assertEquals(4, campaign.getNumRecordsForStatus(CrowdsourcingStatus.FINISHED.name()));
+        Assert.assertEquals(1, campaign.getNumRecordsForStatus(CrowdsourcingStatus.REVIEW.name()));
     }
 }

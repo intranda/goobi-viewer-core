@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.awt.ComponentOrientation;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -66,7 +67,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
@@ -422,13 +423,13 @@ public class NavigationHelper implements Serializable {
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @param pi a {@link java.lang.String} object.
-     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
      */
-    public void setCrowdsourcingAnnotationPage(Campaign campaign, String pi, CampaignRecordStatus status) {
+    public void setCrowdsourcingAnnotationPage(Campaign campaign, String pi, CrowdsourcingStatus status) {
         if (campaign == null) {
             return;
         }
-        String urlActionParam = CampaignRecordStatus.REVIEW.equals(status) ? "review" : "annotate";
+        String urlActionParam = CrowdsourcingStatus.REVIEW.equals(status) ? "review" : "annotate";
         setCurrentPage("crowdsourcingAnnotation", false, true);
         breadcrumbBean.updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(getLocaleString(), true),
                 BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/",
@@ -705,18 +706,18 @@ public class NavigationHelper implements Serializable {
      */
     public String getDatePatternjQueryDatePicker() {
         if (locale == null) {
-            return "yy-MM-dd";
+            return "yy-mm-dd";
         }
 
         switch (locale.getLanguage()) {
             case "de":
                 return "dd.mm.yy";
             case "en":
-                return "MM/dd/yy";
+                return "mm/dd/yy";
             case "es":
-                return "dd/MM/yy";
+                return "dd/mm/yy";
             default:
-                return "yy-MM-dd";
+                return "yy-mm-dd";
         }
     }
 
@@ -1909,5 +1910,18 @@ public class NavigationHelper implements Serializable {
         }
         return "";
     }
+
+    public boolean isRtl() {
+        return isRtl(getLocale());
+    }
+    
+    public boolean isRtl(String locale) {
+        return isRtl(new Locale(locale));
+    }
+    
+    public boolean isRtl(Locale locale) {
+        return !ComponentOrientation.getOrientation(locale).isLeftToRight();  
+    }
+    
 
 }

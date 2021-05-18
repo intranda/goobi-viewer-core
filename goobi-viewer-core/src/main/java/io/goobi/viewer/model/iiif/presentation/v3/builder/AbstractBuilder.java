@@ -132,8 +132,12 @@ public abstract class AbstractBuilder {
      * @param labelIIIFRenderingPDF
      * @return
      */
-    protected IMetadataValue getLabel(String value) {
-        return ViewerResourceBundle.getTranslations(value, this.translationLocales, false);
+    protected IMetadataValue getLabel(String key) {
+        IMetadataValue value = ViewerResourceBundle.getTranslations(key, this.translationLocales, false);
+        if(!value.getValue(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).isPresent()) {
+            value.setValue(key, MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+        }
+        return value;
     }
 
     /**
@@ -266,8 +270,8 @@ public abstract class AbstractBuilder {
                 SolrSearchIndex.getTranslations(field, ele, this.translationLocales, (s1, s2) -> s1 + "; " + s2)
                         .map(value -> new Metadata(getLabel(label), value))
                         .ifPresent(md -> {
-                            md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
-                            md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+//                            md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+//                            md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
                             manifest.addMetadata(md);
                         });
             }

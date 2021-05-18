@@ -610,14 +610,15 @@
 <!-- 	                                                             		<f:converter converterId = "localDateConverter" /> -->
 	                                                             	</h:inputText>
 	                                                             </div>
+	                                                             
 	                                                             <!-- TO DO: DATE FORMAT FOR LANGUAGES, localDateConverter NOT COMPATIBLE YET #{navigationHelper.datePatternjQueryDatePicker} -->
 	                                                             <script type="text/javascript">
 	                                                             	$( "[data-target='datePickerStart']" ).datepicker({
-	                                                             		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}" 
+	                                                             		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
+	                                                             		isRTL: #{navigationHelper.rtl}
 	                                                             	});
 																 </script>
-																 
-	                                                                    
+
 	                                                            </div>
 	                                                         </div>
                                                         	<div class="form-row">
@@ -630,7 +631,8 @@
 		                                                             		id="pickerDateEnd" 
 		                                                             		name="pickerDateEnd" 
 		                                                             		value="#{crowdsourcingBean.selectedCampaign.dateOnlyEnd}"
-		                                                             		converter="localDateConverter">
+		                                                             		converter="localDateConverter"
+		                                                             		data-format="#{navigationHelper.datePattern}">
 		                                                             		<f:passThroughAttribute name="data-target" value="datePickerEnd" />
 	<!-- 	                                                             		<f:converter converterId = "localDateConverter" /> -->
 		                                                             	</h:inputText>
@@ -640,9 +642,11 @@
 	                                                             <!-- TO DO: DATE FORMAT FOR LANGUAGES, localDateConverter NOT COMPATIBLE YET #{navigationHelper.datePatternjQueryDatePicker} -->
 	                                                             <script type="text/javascript">
 	                                                             	$( "[data-target='datePickerEnd']" ).datepicker({
-	                                                             		dateFormat: "yy-mm-dd" 
+	                                                             		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
+	                                                             		isRTL: #{navigationHelper.rtl}
 	                                                             	});
 																 </script>
+																 
 	                                                           </div>
                                                         </ui:fragment>
                                                     </h:panelGroup>
@@ -699,8 +703,6 @@
                                                 </div>
 												</c:if>
 											</h:panelGroup>
-										
-
 					                   	
 					                   	<!-- ACCESS LICENCE WIDGET -->
 										<div class="admin__default-block crowdsourcing-annotations__access-licence">
@@ -729,10 +731,31 @@
 												</div>
 											</div>
 										</div>
+										
+                                            <!-- STATISTIC MODE -->
+                                            <h:panelGroup id="statisticModeGroup" layout="block"
+                                                styleClass="admin__default-block crowdsourcing-annotations__sidebar-statistic-settings">
+                                                <h3>#{msg.label__crowdsourcing_campaign_statistic_mode}</h3>
+                                                <div class="admin__form-help-text in mb-2">
+                                                    #{msg.admin__crowdsourcing_campaign_statistic_mode__help}
+                                                </div>
+                                                <div class="d-flex justify-content-between crowdsourcing-annotations__sidebar-statistic-dropdown">
+                                                    <h:selectOneMenu
+                                                        value="#{crowdsourcingBean.selectedCampaign.statisticMode}"
+                                                        styleClass="form-control mt-2">
+                                                        <f:selectItems var="mode" value="#{crowdsourcingBean.availableStatisticModes}"
+                                                            itemLabel="#{msg[mode.label]}"
+                                                            itemValue="#{mode}">
+                                                        </f:selectItems>
+                                                        <f:passThroughAttribute name="aria-label" value="#{msg.label__crowdsourcing_campaign_statistic_mode}"/>
+                                                    	<f:ajax render="statisticsArea"></f:ajax>
+                                                    </h:selectOneMenu>                                              
+                                                </div>
+                                            </h:panelGroup>
 
 										<!-- STATISTICS SIDEBAR WIDGET -->
 										<h:panelGroup id="statisticsArea">
-											<c:if test="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
+											<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
 												<div class="admin__default-block mb-0">
 													<h3>#{msg.admin__crowdsourcing_campaign_statistics}</h3>
 													<!-- METADATA WRAPPER -->
@@ -744,7 +767,7 @@
 															value="#{crowdsourcingBean.selectedCampaign}"></ui:param>
 													</ui:include>
 												</div>
-											</c:if>
+											</ui:fragment>
 											<script>        		
 									        	riot.mount("progressBar");
 											</script>	

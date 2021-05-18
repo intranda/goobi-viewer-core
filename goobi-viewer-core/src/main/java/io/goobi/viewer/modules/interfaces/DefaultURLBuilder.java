@@ -76,7 +76,7 @@ public class DefaultURLBuilder implements IURLBuilder {
 
     /** {@inheritDoc} */
     @Override
-    public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType) {
+    public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType, boolean topStruct) {
         StringBuilder sb = new StringBuilder();
         sb.append(pageType.getName())
                 .append('/')

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.6.2 (2020-12-08)
+ * Version: 5.8.0 (2021-05-06)
  */
 (function () {
     'use strict';
@@ -45,6 +45,27 @@
           r[k] = a[j];
       return r;
     }
+
+    var typeOf = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isString = isType('string');
+    var isObject = isType('object');
+    var isArray = isType('array');
 
     var noop = function () {
     };
@@ -170,27 +191,6 @@
       from: from
     };
 
-    var typeOf = function (x) {
-      var t = typeof x;
-      if (x === null) {
-        return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
-      }
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isString = isType('string');
-    var isObject = isType('object');
-    var isArray = isType('array');
-
     var nativeSlice = Array.prototype.slice;
     var nativeIndexOf = Array.prototype.indexOf;
     var rawIndexOf = function (ts, t) {
@@ -308,13 +308,13 @@
         }
         constructors.push(key);
         adt[key] = function () {
-          var argLength = arguments.length;
+          var args = [];
+          for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+          }
+          var argLength = args.length;
           if (argLength !== value.length) {
             throw new Error('Wrong number of arguments to case ' + key + '. Expected ' + value.length + ' (' + value + '), got ' + argLength);
-          }
-          var args = new Array(argLength);
-          for (var i = 0; i < args.length; i++) {
-            args[i] = arguments[i];
           }
           var match = function (branches) {
             var branchKeys = keys(branches);
@@ -331,10 +331,14 @@
           };
           return {
             fold: function () {
-              if (arguments.length !== cases.length) {
-                throw new Error('Wrong number of arguments to fold. Expected ' + cases.length + ', got ' + arguments.length);
+              var foldArgs = [];
+              for (var _i = 0; _i < arguments.length; _i++) {
+                foldArgs[_i] = arguments[_i];
               }
-              var target = arguments[count];
+              if (foldArgs.length !== cases.length) {
+                throw new Error('Wrong number of arguments to fold. Expected ' + cases.length + ', got ' + foldArgs.length);
+              }
+              var target = foldArgs[count];
               return target.apply(null, args);
             },
             match: match,

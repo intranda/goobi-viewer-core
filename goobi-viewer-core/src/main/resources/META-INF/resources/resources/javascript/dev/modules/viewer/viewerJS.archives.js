@@ -29,6 +29,7 @@ var viewerJS = ( function( viewer ) {
     };
  
     viewer.archives = { 
+    	recordPi : "", //pi of the current record. Read from [data-name="recordPi"] and used to create image display and record links
         init: function( config ) {
             if ( _debug ) {
                 console.log( '##############################' );
@@ -37,18 +38,27 @@ var viewerJS = ( function( viewer ) {
                 console.log( 'viewer.archivesSeparate.init: config - ', config );
             }
             this.config = $.extend( true, {}, _defaults, config );
+			$(".archives__object-image").hide();
+            
             
             jQuery(document).ready(($) => {
-
+				
+				this.initImageDisplay();
+				
                 if(this.config.initHcSticky) {                    
                     this.initHcStickyWithChromeHack();
                 }
                 viewerJS.jsfAjax.success
+                .pipe(rxjs.operators.filter(e => $(e.source).attr("data-select-entry") != undefined))
                 .subscribe(e => {
-                    if(this.config.initHcSticky) {                        
-                        this.refreshStickyWithChromeHack();
-                    }
-                    this.setLocation(e.source);
+                    $(".archives__object-image").hide();
+                	this.initImageDisplay()
+                	.then(() => {
+	                    if(this.config.initHcSticky) {                        
+	                        this.refreshStickyWithChromeHack();
+	                    }
+	                    this.setLocation(e.source);
+                	});
                 });
                 
                 if(this.config.initSearch) {
@@ -58,10 +68,90 @@ var viewerJS = ( function( viewer ) {
             	 if(this.config.initTextTree) {
             	     this.initTextTree();
             	 }
-            	 
-            	
+
+            	 // execute when expanding or collapsing entries after ajax success
+                 viewerJS.jsfAjax.success
+                 .pipe(rxjs.operators.filter(e => $(e.source).attr("data-expand-entry") != undefined))
+                 .subscribe(e => {
+                     $(".archives__object-image").hide();
+                 	this.initImageDisplay()
+                 	.then(() => {
+ 	                    if(this.config.initHcSticky) {                        
+ 	                        this.refreshStickyWithChromeHack();
+ 	                    }
+                 	});
+                 });
             });            
             
+        },
+        
+        initImageDisplay() {
+        	let $recordPiInput = $('[data-name="recordPi"]');
+        	//console.log("record pi", $recordPiInput, $recordPiInput.val());
+        	this.hideLoader("load_record_image");
+        	if($recordPiInput.length > 0) {
+        		let recordPi = $recordPiInput.val();
+        		let oldPi = this.recordPi;
+        		this.recordPi = recordPi;
+        		//console.log("record pi is " + recordPi + " old pi is " + oldPi);
+        		if(recordPi && recordPi != oldPi) {
+        			this.recordPi = recordPi;
+        			let manifestUrl = rootURL + "/api/v2/records/" + recordPi + "/manifest/";
+        			this.showLoader("load_record_image");
+        			//console.log("load ", manifestUrl);
+        			return fetch(manifestUrl)
+        			.then(response => {if(response.ok) return response.json(); else throw(response.json());})
+        			.then(manifest => {
+        				//console.log("loaded manifest ", manifest);
+        				//if the manifest contains struct elements, show them as thumbnail gallery
+        				if(manifest.structures && manifest.structures.length > 1) {
+				        	riot.mount(".archives__object-thumbnails", "thumbnails", {
+					        	language : currentLang, 
+					        	type: "structures",
+					        	source: manifest,
+					        	imagesize: ",250",
+					        	label: "MD_SHELFMARK",
+					        	onload: () => {
+					        		this.hideLoader("load_record_image");
+					        		this.refreshStickyWithChromeHack();
+					        	},
+					        	link: (canvas) => {
+					        		if(canvas.homepage && canvas.homepage.length > 0) {
+										return canvas.homepage[0].id.replace("/image/", "/fullscreen/");
+									} else {
+										return undefined;
+									}
+					        	} 
+				        	});
+        				} else {
+        					this.showLoader("load_record_image");
+        					$(".archives__object-image").show();
+        				}
+        			})
+        			.catch(error => {
+        				error.then( (e) => {
+	        				console.log("error loading record '" + recordPi + "'", e);
+	        				this.hideLoader("load_record_image");
+	        				//viewer.notifications.error(e.message);
+        				});
+        			});
+        		}
+        	}
+        	return Promise.resolve();
+        },
+        
+        showLoader: function(loader) {
+        	let $loader = $("[data-loader='"+loader+"']");
+        	if($loader.length > 0) {
+        		$loader.show();
+        	}
+        },
+        
+        hideLoader: function(loader) {
+        	let $loader = $("[data-loader='"+loader+"']");
+        	if($loader.length > 0) {
+        		$loader.hide();
+        	}
         },
         
         initTextTree: function() {
@@ -128,7 +218,7 @@ var viewerJS = ( function( viewer ) {
         
         /**
          * In chome with small window size (1440x900) hcSticky breaks on page load if the view was previously scrolled
-         * all the way to the button. To prevent this we scroll 5 px up before refreshing hcSticky.
+         * all the way to the bottom. To prevent this we scroll 5 px up before refreshing hcSticky.
          * The scolling appears to be invisible to the user, probably because it is reset before actually being carried out
          */
         initHcStickyWithChromeHack: function() {
@@ -178,6 +268,9 @@ var viewerJS = ( function( viewer ) {
             }
             if(_debug)console.log("set url ", url);
             window.history.pushState({}, '', url);
+            //Call the commandscript "updateUrl" in archivesTreeView.xhtml to trigger an ajax call 
+            //and update the page url to show the selected record 
+            updateUrl();
         }
     };
 

@@ -432,6 +432,8 @@ public class CmsMediaBean implements Serializable {
             case CMSMediaItem.CONTENT_TYPE_PDF:
             case CMSMediaItem.CONTENT_TYPE_XML:
                 return ThumbnailHandler.getCMSMediaImageApiUrl(item.getFileName());
+            case CMSMediaItem.CONTENT_TYPE_GIF:
+                return ThumbnailHandler.getCMSMediaImageApiUrl(item.getFileName()) + "/full.gif";
             case CMSMediaItem.CONTENT_TYPE_SVG:
             default:
                 return BeanUtils.getImageDeliveryBean()

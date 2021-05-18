@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
@@ -689,6 +690,13 @@ public class Metadata implements Serializable {
                         if (!param.getReplaceRules().isEmpty()) {
                             value = MetadataTools.applyReplaceRules(value, param.getReplaceRules(), se.getPi());
                         }
+                        // If a conditional query is configured, check for match first
+                        if (StringUtils.isNotEmpty(param.getCondition())) {
+                            String query = param.getCondition().replace("{0}", value);
+                            if (DataManager.getInstance().getSearchIndex().getHitCount(query) == 0) {
+                                continue;
+                            }
+                        }
                         setParamValue(count, indexOfParam, Collections.singletonList(value), param.getKey(), null, null, null, locale);
                         count++;
                     }
@@ -779,15 +787,19 @@ public class Metadata implements Serializable {
                     if (groupFieldMap.get(param.getKey()) != null) {
                         found = true;
                         Map<String, String> options = new HashMap<>();
-                        StringBuilder sbValue = new StringBuilder();
                         List<String> values = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
                         for (String value : groupFieldMap.get(param.getKey())) {
-                            if (sbValue.length() == 0) {
-                                sbValue.append(value);
+                            // If a conditional query is configured, check for match first
+                            if (StringUtils.isNotEmpty(param.getCondition())) {
+                                String query = param.getCondition().replace("{0}", value);
+                                if (DataManager.getInstance().getSearchIndex().getHitCount(query) == 0) {
+                                    continue;
+                                }
+                                logger.trace("conditional value added: {}", value);
                             }
                             values.add(value);
                         }
-                        String paramValue = sbValue.toString();
+                        //                        String paramValue = sbValue.toString();
                         if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
                             if (doc.getFieldValue("NORM_TYPE") != null) {
                                 options.put("NORM_TYPE", SolrSearchIndex.getSingleFieldStringValue(doc, "NORM_TYPE"));

@@ -561,6 +561,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
             throw new IllegalArgumentException(new StringBuilder().append("Field and value are not colon-separated: ").append(link).toString());
         }
         this.link = link;
+        if (this.link.endsWith(";;")) {
+            this.link = this.link.substring(0, this.link.length() - 2);
+        }
         parseLink();
     }
 
@@ -643,6 +646,10 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      */
     public boolean isHierarchial() {
         return hierarchial;
+    }
+
+    public String toString() {
+        return field + ":" + value + " - " + value2;
     }
 
     public static class AlphabeticComparator implements Comparator<FacetItem> {
