@@ -45,6 +45,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.XMLOutputter;
+import org.primefaces.shaded.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +101,7 @@ public class RecordFilesResource {
     public String getAlto(
             @Parameter(description = "Filename of the alto document") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, ContentNotFoundException,
-            ServiceNotAllowedException, DAOException {
+            ServiceNotAllowedException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
@@ -114,7 +115,7 @@ public class RecordFilesResource {
     @Operation(tags = { "records" }, summary = "Get plaintext for a single page")
     public String getPlaintext(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
-            throws ContentNotFoundException, PresentationException, IndexUnreachableException, DAOException, ServiceNotAllowedException {
+            throws ContentNotFoundException, PresentationException, IndexUnreachableException, ServiceNotAllowedException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
@@ -128,7 +129,7 @@ public class RecordFilesResource {
     @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format")
     public String getTEI(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
-            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, ContentLibException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
@@ -143,6 +144,7 @@ public class RecordFilesResource {
     public StreamingOutput getSourceFile(
             @Parameter(description = "Source file name") @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
+        filename = FilenameUtils.getName(filename); // Make sure filename doesn't inject a path traversal
         Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, filename);
         if (!Files.isRegularFile(path)) {
             throw new ContentNotFoundException("Source file " + filename + " not found");
@@ -152,7 +154,7 @@ public class RecordFilesResource {
         if (!access) {
             throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
         }
-        
+
         try {
             String contentType = Files.probeContentType(path);
             logger.trace("content type: {}", contentType);
@@ -171,7 +173,7 @@ public class RecordFilesResource {
             }
         };
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_CMDI)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
@@ -179,13 +181,13 @@ public class RecordFilesResource {
     public String getCMDI(
             @Parameter(description = "Image file name for cmdi") @PathParam("filename") String filename,
             @Parameter(description = "Language for CMDI") @QueryParam("lang") String lang)
-            throws ContentLibException, PresentationException, IndexUnreachableException, DAOException, IOException {
+            throws ContentLibException, PresentationException, IndexUnreachableException, IOException {
         checkFulltextAccessConditions(pi, filename);
 
-        if(lang == null) {
+        if (lang == null) {
             lang = BeanUtils.getLocale().getLanguage();
         }
-        
+
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(lang);
         Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         Path filePath = getDocumentLanguageVersion(cmdiPath, language);
@@ -223,7 +225,7 @@ public class RecordFilesResource {
             throw new ServiceNotAllowedException("Access to fulltext file " + pi + "/" + filename + " not allowed");
         }
     }
-    
+
     /**
      * Returns the first file on the given folder path that contains the requested language code in its name. ISO-3 files are preferred, with a
      * fallback to ISO-2.
