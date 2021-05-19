@@ -213,6 +213,11 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                                 identifier + "_cmspage_" + (fromDate != null ? DateTools.getMillisFromLocalDateTime(fromDate, true) : "-") + "-"
                                         + (toDate != null ? DateTools.getMillisFromLocalDateTime(toDate, true) : "-") + ".zip";
                         Path zipFile = Paths.get(localTempFolder.toAbsolutePath().toString(), fileName);
+                        if (!FileUtils.directoryContains(localTempFolder.toFile(), zipFile.toFile())) {
+                            logger.error("Illegal zip file path: {}", zipFile.toAbsolutePath().toString());
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Illegal identifier");
+                            return;
+                        }
                         List<File> tempFiles = new ArrayList<>(pages.size() * 2);
                         for (CMSPage page : pages) {
                             tempFiles.addAll(page.exportTexts(localTempFolder.toAbsolutePath().toString(), fileName));
