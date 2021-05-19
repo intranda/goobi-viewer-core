@@ -11,6 +11,7 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminTranslations')}" />
+            <f:event type="preRenderView" listener="#{adminBean.currentTranslationGroup.resetStatusCount()}" />
         </f:metadata>
     </ui:define>
 
