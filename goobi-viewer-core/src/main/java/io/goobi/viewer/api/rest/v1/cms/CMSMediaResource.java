@@ -65,6 +65,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.primefaces.shaded.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -210,6 +211,7 @@ public class CMSMediaResource {
     public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException, DAOException {
 
         String decFilename = StringTools.decodeUrl(filename);
+        decFilename = FilenameUtils.getName(decFilename);
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         Path path = Paths.get(cmsMediaFolder.toAbsolutePath().toString(), decFilename);
