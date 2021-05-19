@@ -211,13 +211,12 @@ public class CMSMediaResource {
     public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException, DAOException {
 
         String decFilename = StringTools.decodeUrl(filename);
-        decFilename = FilenameUtils.getName(decFilename);
+        decFilename = FilenameUtils.getName(decFilename); // Make sure filename doesn't inject a path traversal
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         Path path = Paths.get(cmsMediaFolder.toAbsolutePath().toString(), decFilename);
         try {
-            // Malicious filename check
-            if (FileUtils.directoryContains(cmsMediaFolder.toFile(), path.toFile()) && Files.isRegularFile(path)) {
+            if (Files.isRegularFile(path)) {
                 String encoding = "windows-1252";
                 String ret = FileTools.getStringFromFile(path.toFile(), encoding, StringTools.DEFAULT_ENCODING);
                 return StringTools.renameIncompatibleCSSClasses(ret);
