@@ -44,7 +44,18 @@ public class MediaResourceTest extends AbstractRestApiTest {
                 .get()) {
             assertEquals("Should return status 200", 200, response.getStatus());   
         }
-    }                
+    }       
+    
+    @Test
+    public void testLoadMissingAudio() {
+        String url = urls.path(RECORDS_FILES, RECORDS_FILES_AUDIO).params(PI, MIMETYPE, FILENAME + ".mp4").build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals("Should return status 404", 404, response.getStatus());   
+        }
+    }  
 
     @Test
     public void testLoadAudioRange() {
