@@ -2666,7 +2666,7 @@ public class SearchBean implements SearchInterface, Serializable {
             List<FacetItem> facets = this.facets.getAvailableFacets().get("WKT_COORDS");
             FacetItem facet;
             if(facets == null || facets.isEmpty()) {
-                facet = new FacetItem(feature, phraseSearch)
+                facet = new FacetItem(feature, phraseSearch);
             }
             System.out.println(facets);
         } else {
