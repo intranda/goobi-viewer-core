@@ -65,6 +65,8 @@ public class SearchFacets implements Serializable {
     /** Map storing labels from separate label fields that were already retrieved from the index. */
     private final Map<String, String> labelMap = new HashMap<>();
 
+    private String geoFacetRegion = "{\"type\":\"circle\", \"center\": [51.0, 9.5], \"radius\": 400000}";
+    
     private String tempValue;
 
     /**
@@ -1097,5 +1099,19 @@ public class SearchFacets implements Serializable {
      */
     public Map<String, String> getLabelMap() {
         return labelMap;
+    }
+    
+    /**
+     * @return the geoFacetRegion
+     */
+    public String getGeoFacetRegion() {
+        return geoFacetRegion;
+    }
+    
+    /**
+     * @param geoFacetRegion the geoFacetRegion to set
+     */
+    public void setGeoFacetRegion(String geoFacetRegion) {
+        this.geoFacetRegion = geoFacetRegion;
     }
 }

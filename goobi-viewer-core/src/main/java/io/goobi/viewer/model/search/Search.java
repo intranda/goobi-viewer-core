@@ -375,6 +375,7 @@ public class Search implements Serializable {
                     .getSearchIndex()
                     .search(finalQuery, 0, 0, null, allFacetFields, Collections.singletonList(SolrConstants.IDDOC), activeFacetFilterQueries, params);
             if (resp.getResults() != null) {
+                Map expanded = resp.getExpandedResults();
                 hitsCount = resp.getResults().getNumFound();
                 logger.trace("Pre-grouping search hits: {}", hitsCount);
                 // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.

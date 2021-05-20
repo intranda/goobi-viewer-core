@@ -27,7 +27,7 @@
 								<h:outputText value="#{msg.searchGeoCoords}" />
 							</h2>
 						</div>
-						<h:inputHidden id="searchInput" value="#{searchBean.exactSearchString}"></h:inputHidden>
+						<h:inputText id="searchInput" value="#{searchBean.currentGeoFacettingFeature}"/>
 						<h:commandButton id="submitSearch" type="submit" styleClass="btn btn--full" action="#{searchBean.searchDirect}" value="#{msg.search}">
 		                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
 		                    <f:passThroughAttribute name="disabled" value="disabled"></f:passThroughAttribute>
@@ -38,14 +38,14 @@
 							
 							function initMapSearch() {
 								riot.mount("geoMapSearch", {
-								    onFeatureSelect: (searchString) => setSearchString(searchString)
+								    onFeatureSelect: (feature) => setSearchString(JSON.stringify(feature))
 								});    
 							}
 							
-							function setSearchString(searchString) {
-							    console.log("set search string ", searchString);
-							    $("#searchInput").val(searchString);
-							    if(!searchString) {
+							function setSearchString(feature) {
+							    console.log("set search feature ", feature);
+							    $("#searchInput").val(feature);
+							    if(!feature) {
 							        $("#submitSearch").attr("disabled", "disabled");
 							    } else {
 							        $("#submitSearch").removeAttr("disabled");

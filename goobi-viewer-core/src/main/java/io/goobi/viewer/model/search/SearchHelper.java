@@ -1900,7 +1900,7 @@ public final class SearchHelper {
     public static String facetifyField(String fieldName) {
         if (fieldName != null && fieldName.startsWith("BOOL_")) {
             return fieldName;
-        }
+        } 
         return adaptField(fieldName, "FACET_");
     }
 

@@ -85,6 +85,7 @@ import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
+import io.goobi.viewer.model.search.GeoCoordinateSearchItem;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
@@ -166,6 +167,8 @@ public class SearchBean implements SearchInterface, Serializable {
     private String searchInCurrentItemString;
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
     private Search currentSearch;
+    
+    private GeoCoordinateSearchItem currentGeoFacettingFeature = null;
 
     
     
@@ -2653,4 +2656,30 @@ public class SearchBean implements SearchInterface, Serializable {
         return DataManager.getInstance().getSearchIndex().pingSolrIndex();
     }
 
+    public String getCurrentGeoFacettingFeature() {
+        return currentGeoFacettingFeature == null ? "" : currentGeoFacettingFeature.getFeatureAsString();
+    }
+
+    public void setCurrentGeoFacettingFeature(String feature) {
+        if(StringUtils.isNotBlank(feature)) {            
+            this.currentGeoFacettingFeature = new GeoCoordinateSearchItem(feature);
+            List<FacetItem> facets = this.facets.getAvailableFacets().get("WKT_COORDS");
+            FacetItem facet;
+            if(facets == null || facets.isEmpty()) {
+                facet = new FacetItem(feature, phraseSearch)
+            }
+            System.out.println(facets);
+        } else {
+            this.currentGeoFacettingFeature = null;
+        }
+    }
+    
+    public void setCurrentGeoFacettingFeatureFromContext() {
+        Map<String, String> params = FacesContext.getCurrentInstance().
+                getExternalContext().getRequestParameterMap();
+        
+        String feature = params.get("currentGeoFacettingFeature");
+        setCurrentGeoFacettingFeature(feature);
+    }
+     
 }

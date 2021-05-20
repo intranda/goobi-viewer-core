@@ -61,7 +61,7 @@ var viewerJS = ( function( viewer ) {
             }
     }
     
-    viewer.overlay.openModal = function(node, closable) {
+    viewer.overlay.openModal = function(node, closable, onClose) {
         
         let defer = Q.defer()
 
@@ -102,10 +102,15 @@ var viewerJS = ( function( viewer ) {
             $modal.on("hide.bs.modal", event =>  {
                 return closable;
             })
+            $modal.on("shown.bs.modal", event => {
+            	defer.resolve(node);
+            });
             $modal.on("hidden.bs.modal", event => {
                 $modal.modal("dispose");
                 $overlay.removeClass("modal-container");
-                defer.resolve(node);
+                if(onClose) {
+                	onClose(node);
+                }
                 $("body").off("click", ".close-modal");
             });
             let $dismissButtons = $overlay.find("[data-overlay-action='dismiss']")
@@ -125,7 +130,7 @@ var viewerJS = ( function( viewer ) {
         
     }
     
-    viewer.overlay.open = function(node, closable, fullscreen) {
+    viewer.overlay.open = function(node, closable, fullscreen, onClose) {
         
         let defer = Q.defer()
         
@@ -149,7 +154,9 @@ var viewerJS = ( function( viewer ) {
                     $overlay.removeClass("active");
                     $overlay.removeClass("fullscreen");
                     $( 'html' ).removeClass( 'no-overflow' );
-                    defer.resolve(node);
+                    if(onClose) {
+                    	onClose(node);
+                    }
                     $("body").off("click.close-modal");
                 });
                 //close on click outside content
@@ -160,7 +167,9 @@ var viewerJS = ( function( viewer ) {
                         $overlay.removeClass("active");
                         $overlay.removeClass("fullscreen");
                         $( 'html' ).removeClass( 'no-overflow' );
-                        defer.resolve(node);
+                        if(onClose) {
+	                    	onClose(node);
+	                    }
                         $("body").off("click.close-modal");
                     }
                 });
@@ -171,6 +180,7 @@ var viewerJS = ( function( viewer ) {
             if(fullscreen) {
                 $overlay.addClass("fullscreen");
             }
+            defer.resolve(node);
         } else {
             defer.reject("No overlay element found");
         }

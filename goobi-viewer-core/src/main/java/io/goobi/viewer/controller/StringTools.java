@@ -69,10 +69,7 @@ public class StringTools {
     /** Constant <code>DEFAULT_ENCODING="UTF-8"</code> */
     public static final String DEFAULT_ENCODING = "UTF-8";
 
-    public static final String REGEX_GEOCOORDS_SEARCH_STRING = "WKT_COORDS:\"(IsWithin|Intersects|IsDisjointTo)\\((\\w+)\\(\\(((?:[\\d.]+ [\\d.]+,?\\s?)+)\\)\\)\\)";
-    public static final int REGEX_GEOCOORDS_SEARCH_GROUP_RELATION = 1;
-    public static final int REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE = 2;
-    public static final int REGEX_GEOCOORDS_SEARCH_GROUP_POINTS = 3;
+
 
     /**
      * <p>
@@ -565,28 +562,5 @@ public class StringTools {
         return ret;
     }
     
-    public static double[][] getGeoSearchPoints(String searchString) {
-     
-        Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING).matcher(searchString);
-        
-        if(matcher.find()) {
-            String relation = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_RELATION);
-            String shape = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE);
-            String allPoints = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_POINTS);
-            String[] strPoints = allPoints.split(", ");
-            double[][] points = new double[strPoints.length][2];
-            for (int i = 0; i < strPoints.length; i++) {
-                try {                    
-                    String[] strPoint = strPoints[i].split(" ");
-                    points[i] = new double[]{Double.parseDouble(strPoint[0]), Double.parseDouble(strPoint[1])};
-                } catch(NumberFormatException e) {
-                    logger.warn("Unable to parse {} as double array", strPoints[i]);
-                }
-            }
-            return points;
-        } else {
-            return new double[0][2];
-        }
-        
-    }
+
 }

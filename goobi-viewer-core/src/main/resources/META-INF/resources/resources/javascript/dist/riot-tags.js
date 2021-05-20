@@ -2338,7 +2338,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	    }
     	}.bind(this)
 });
-riot.tag2('geomapsearch', '<div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div id="geoMapSearch" class="geo-map"></div></div>', '', '', function(opts) {
+riot.tag2('geomapsearch', '<div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
 
 this.on("mount", function() {
 	this.initMap();
@@ -2347,12 +2347,13 @@ this.on("mount", function() {
 this.initMap = function() {
 
     this.geoMap = new viewerJS.GeoMap({
-        mapId : "geoMapSearch",
+        element : this.refs.map,
         allowMovingFeatures: false,
         language: viewerJS.translator.language,
         popover: undefined,
         emptyMarkerMessage: undefined,
         popoverOnHover: false,
+        fixed: this.opts.inactive ? true : false
     })
     let initialView = {
         zoom: 5,
@@ -2367,8 +2368,39 @@ this.initMap = function() {
         svg: true
     })
     this.geoMap.init(initialView);
-    this.geoMap.initGeocoder(this.refs.geocoder);
-    this.initMapDraw();
+
+    if(!this.opts.inactive) {
+	    this.geoMap.initGeocoder(this.refs.geocoder);
+	    this.initMapDraw();
+    }
+
+    if(this.opts.area) {
+        let shape = this.opts.area;
+        if(viewerJS.isString(shape)) {
+            try {
+            	shape = JSON.parse(shape);
+            } catch(e) {
+                console.error("Unable to draw geomap area ", this.opts.area, ": cannot parse json");
+            }
+        }
+
+        let layer;
+        switch(shape.type) {
+            case "polygon":
+                layer = this.geoMap.drawPolygon(shape.vertices, {color: "blue"}, true);
+                this.onLayerDrawn({layer: layer});
+                break;
+            case "circle":
+                layer = this.geoMap.drawCircle(shape.center, shape.radius, {color: "blue"}, true);
+                this.onLayerDrawn({layer: layer});
+                break;
+            case "rectangle":
+                layer = this.geoMap.drawRectangle([shape.vertices[0], shape.vertices[2]], {color: "blue"}, true);
+                this.onLayerDrawn({layer: layer});
+                break;
+        }
+
+    }
 
 }.bind(this)
 
@@ -2437,23 +2469,30 @@ this.onLayerDrawn = function(e) {
 
 this.setSearchArea = function(layer) {
 
-    if(layer.getLatLngs) {
-
-        let vertices = layer.getLatLngs()[0];
-	        vertices.push(vertices[0]);
+    let type = this.getType(layer);
+    switch(type) {
+        case "polygon":
+        case "rectangle":
+	        let vertices = [...layer.getLatLngs()[0]];
+	        if(vertices[0] != vertices[vertices.length-1]) {
+	        	vertices.push(vertices[0]);
+	        }
 	        this.notifyFeatureSet({
-	            type : "polygon",
-	            vertices: vertices.map(p => [p.lat, p.lng])
+	           type : type,
+	           vertices: vertices.map(p => [p.lat, p.lng])
 	        })
-    } else if(layer.getRadius){
-
-        let bounds = layer.getBounds();
-        let circumgon = this.createCircumgon(bounds.getCenter(), bounds.getSouthWest(), bounds.getSouthWest(), 16);
-        let diameterM = bounds.getSouthWest().distanceTo(bounds.getNorthWest());
-        this.notifyFeatureSet({
-            type : "polygon",
-            vertices: circumgon.map(p => [p.lat, p.lng]),
-        })
+	        break;
+        case "circle":
+            let bounds = layer.getBounds();
+            let circumgon = this.createCircumgon(bounds.getCenter(), bounds.getSouthWest(), bounds.getSouthWest(), 16);
+            let diameterM = bounds.getSouthWest().distanceTo(bounds.getNorthWest());
+            this.notifyFeatureSet({
+                type : "circle",
+                vertices: circumgon.map(p => [p.lat, p.lng]),
+                center: layer.getLatLng(),
+            	radius: layer.getRadius()
+            })
+            break;
     }
 }.bind(this)
 
@@ -2476,30 +2515,12 @@ this.createCircumgon = function(center, sw, ne, numVertices) {
     return geoPoints;
 }.bind(this)
 
-this.drawPolygon = function(points) {
-    let conf =  {color: 'red'};
-    let poly = L.polygon(points, conf).addTo(this.geoMap.map);
-}.bind(this)
-
 this.notifyFeatureSet = function(feature) {
 
-    if(feature) {
-	    switch(feature.type) {
-	        case "polygon":
-	            let searchString = this.buildSearchString(feature.vertices);
-
-	            if(this.opts.onFeatureSelect) {
-	                this.opts.onFeatureSelect(searchString);
-	            }
-	            break;
-	        default:
-	           logger.error("Feature type not implemented", feature);
-	    }
-    } else {
-        if(this.opts.onFeatureSelect) {
-            this.opts.onFeatureSelect(undefined);
-        }
+    if(this.opts.onFeatureSelect) {
+        this.opts.onFeatureSelect(feature);
     }
+
 }.bind(this)
 
 this.buildSearchString = function(vertices) {
@@ -2507,6 +2528,18 @@ this.buildSearchString = function(vertices) {
     string += vertices.map(v => v[1] + " " + v[0]).join(", ");
     string += "))) distErrPct=0\"";
     return string;
+}.bind(this)
+
+this.getType = function(layer) {
+    if(layer.getRadius) {
+        return "circle";
+    } else if(layer.setBounds) {
+        return "rectangle";
+    } else if(layer.getLatLngs) {
+        return "polygon"
+    } else {
+        throw "Unknown layer type: " + layer;
+    }
 }.bind(this)
 
 });
