@@ -238,7 +238,7 @@ public class MediaDeliveryService {
         String range = request.getHeader("Range");
         if (range != null) {
 
-            // Range header should match format "bytes=n-n,n-n,n-n..." or "bytes=n". If not, then return 416.
+            // Range header should match format "bytes=n-n,n-n,n-n..." or "bytes=n-". If not, then return 416.
             if (!range.matches("^bytes=(,?\\d+(?:-\\d{0,9})?)+$")) {
                 throw new IllegalRequestException("Range has wrong syntax: " + range);
             }
