@@ -101,6 +101,7 @@ import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.PageType;
+import net.sf.saxon.om.ItemConsumer;
 
 /**
  * CMS functions.
@@ -1773,7 +1774,6 @@ public class CmsBean implements Serializable {
             logger.error("Cannot search: SearchBean is null");
             return "";
         }
-        boolean aggregateHits = DataManager.getInstance().getConfiguration().isAggregateHits();
         if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
             ((SearchFunctionality) item.getFunctionality()).search(item.getOwnerPageLanguageVersion().getOwnerPage().getSubThemeDiscriminatorValue());
         } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
@@ -1792,7 +1792,7 @@ public class CmsBean implements Serializable {
             SearchFacets facets = searchBean.getFacets();
             search.setPage(searchBean.getCurrentPage());
             searchBean.setHitsPerPage(item.getElementsPerPage());
-            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, aggregateHits, item.isGroupBySelected());
+            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, !item.isNoSearchAggregation(), item.isGroupBySelected());
             searchBean.setCurrentSearch(search);
             return null;
         } else if (item == null) {
