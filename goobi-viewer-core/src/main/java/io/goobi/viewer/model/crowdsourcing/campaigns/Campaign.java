@@ -175,7 +175,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     private static final String URI_ID_TEMPLATE =
             DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1") + "crowdsourcing/campaigns/{id}";
     private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/?$";
-    
+
     private static final Random random = new SecureRandom();
 
     @Id
@@ -290,7 +290,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @Transient
     @JsonIgnore
     private List<String> solrQueryResults = null;
-    
+
     @Transient
     @JsonIgnore
     private Integer pageCount = 0;
@@ -414,11 +414,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public long getNumRecords() throws IndexUnreachableException {
         try {
-            if(StatisticMode.RECORD.equals(getStatisticMode())) {                
+            if (StatisticMode.RECORD.equals(getStatisticMode())) {
                 return getSolrQueryResults().size();
-            } else {
-                return getTotalPageCount();
             }
+            return getTotalPageCount();
         } catch (PresentationException e) {
             logger.warn("Error getting number of records for campaign:" + e.toString());
             return 0;
@@ -429,7 +428,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @return the total number of pages within the records found by {@link #solrQuery}
      */
     private long getTotalPageCount() {
-        if(this.pageCount == null) {
+        if (this.pageCount == null) {
             String query = "+" + SolrConstants.ISWORK + ":true +" + SolrConstants.BOOL_IMAGEAVAILABLE + ":true";
             // Validate campaign query before adding it
             try {
@@ -439,7 +438,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
                         .search(query, Collections.singletonList(SolrConstants.NUMPAGES))
                         .stream()
                         .filter(doc -> doc.getFieldValue(SolrConstants.NUMPAGES) != null)
-                        .mapToInt(doc -> (Integer)doc.getFieldValue(SolrConstants.NUMPAGES))
+                        .mapToInt(doc -> (Integer) doc.getFieldValue(SolrConstants.NUMPAGES))
                         .sum();
                 this.pageCount = pages;
             } catch (RemoteSolrException e) {
@@ -1445,7 +1444,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         String pi = pis.get(random.nextInt(pis.size()));
         return pi;
     }
-    
+
     /**
      * Get the targetIdentifier to a random PI from the Solr query result list.
      *
@@ -1462,10 +1461,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         return piList.stream()
                 .filter(result -> isRecordStatus(result, status))
                 .filter(result -> isEligibleToEdit(result, status, user))
-                .skip(currentIndex+1)
-                .findFirst().orElse(piList.isEmpty() ? "" : piList.get(0));
+                .skip(currentIndex + 1L)
+                .findFirst()
+                .orElse(piList.isEmpty() ? "" : piList.get(0));
     }
-
 
     /**
      * @return
@@ -1593,12 +1592,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     /**
      * @param result
-     * @return true if record status for the given pi equals status; false otherwise. If no record 
+     * @return true if record status for the given pi equals status; false otherwise. If no record
      */
     private boolean isRecordStatus(String pi, CrowdsourcingStatus status) {
         // TODO page-based
-        
-        boolean ret = Optional.ofNullable(statistics.get(pi)).map(stat -> stat.containsStatus(status)).orElse(CrowdsourcingStatus.ANNOTATE.equals(status));
+
+        boolean ret =
+                Optional.ofNullable(statistics.get(pi)).map(stat -> stat.containsStatus(status)).orElse(CrowdsourcingStatus.ANNOTATE.equals(status));
         return ret;
     }
 
@@ -1668,7 +1668,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @param user
      */
     public void setRecordPageStatus(String pi, int page, CrowdsourcingStatus status, Optional<User> user) {
-        logger.debug("setRecordPageStatus: {}/{}", pi, page);
+        // logger.trace("setRecordPageStatus: {}/{}", pi, page); // Sonar considers this log msg a security issue, so leave it commented out when not needed
         LocalDateTime now = LocalDateTime.now();
         CampaignRecordStatistic statistic = statistics.get(pi);
         if (statistic == null) {

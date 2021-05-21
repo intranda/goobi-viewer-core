@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +89,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
             switch (action) {
                 case "emptyCache":
                     int deleted = CacheUtils.deleteFromCache(identifier, fromContentCache, fromThumbnailCache, fromPdfCache);
-                    response.getWriter().write(deleted + " cache elements belonging to '" + identifier + "' deleted.");
+                    response.getWriter().write(deleted + " cache elements belonging to '" + StringEscapeUtils.escapeHtml4(identifier) + "' deleted.");
                     break;
                 case "fillCache":
                     //                    String answer = performCacheFillerAction(request.getParameterMap());
