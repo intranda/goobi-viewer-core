@@ -265,7 +265,7 @@ public class ActiveDocumentBean implements Serializable {
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             } catch (RecordNotFoundException | RecordDeletedException | RecordLimitExceededException e) {
-                logger.error(e.getMessage());
+                logger.error(e.toString());
             } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
                 logger.error(e.getMessage(), e);
             }

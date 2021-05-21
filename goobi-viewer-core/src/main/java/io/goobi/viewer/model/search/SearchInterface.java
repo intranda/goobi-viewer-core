@@ -190,18 +190,4 @@ public interface SearchInterface {
      */
     public String getCurrentSearchUrlRoot();
 
-    /**
-     * @return
-     */
-    public default List<List<Double>> getGeoCoordinateQuery() {
-        if(StringUtils.isNotBlank(getExactSearchString())) {
-            String searchString = StringTools.decodeUrl(getExactSearchString());
-            return Arrays.asList(GeoCoordinateSearchItem.getGeoSearchPoints(searchString)).stream()
-                    //reverse order of point coordinates because of long/lat switch
-                    .map(p -> Arrays.asList(p[1], p[0]))
-                    .collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
-        }
-    }
 }

@@ -40,6 +40,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
+import net.sf.saxon.functions.IndexOf;
 
 /**
  * Current faceting settings for a search.
@@ -64,10 +65,10 @@ public class SearchFacets implements Serializable {
     private final Map<String, List<Integer>> valueRanges = new HashMap<>();
     /** Map storing labels from separate label fields that were already retrieved from the index. */
     private final Map<String, String> labelMap = new HashMap<>();
-
-    private String geoFacetRegion = "{\"type\":\"circle\", \"center\": [51.0, 9.5], \"radius\": 400000}";
     
     private String tempValue;
+    
+    private final GeoFacetItem geoFacetting = new GeoFacetItem(DataManager.getInstance().getConfiguration().getGeoDrillDownField());
 
     /**
      * <p>
@@ -108,7 +109,7 @@ public class SearchFacets implements Serializable {
      * @param includeRangeFacets a boolean.
      * @return a {@link java.util.List} object.
      */
-    public List<String> generateFacetFilterQueries(int advancedSearchGroupOperator, boolean includeRangeFacets) {
+    public List<String> generateFacetFilterQueries(int advancedSearchGroupOperator, boolean includeRangeFacets, boolean includeGeoFacet) {
         List<String> ret = new ArrayList<>(2);
 
         // Add hierarchical facets
@@ -118,7 +119,7 @@ public class SearchFacets implements Serializable {
         }
 
         // Add regular facets
-        String regularQuery = generateFacetFilterQuery(includeRangeFacets);
+        String regularQuery = generateFacetFilterQuery(includeRangeFacets, includeGeoFacet);
         if (StringUtils.isNotEmpty(regularQuery)) {
             ret.add(regularQuery);
         }
@@ -178,8 +179,8 @@ public class SearchFacets implements Serializable {
      * @should skip range facet fields if so requested
      * @should skip subelement fields
      */
-    String generateFacetFilterQuery(boolean includeRangeFacets) {
-        if (currentFacets.isEmpty()) {
+    String generateFacetFilterQuery(boolean includeRangeFacets, boolean includeGeoFacet) {
+        if (currentFacets.isEmpty() && !this.geoFacetting.isActive()) {
             return null;
         }
 
@@ -199,6 +200,14 @@ public class SearchFacets implements Serializable {
             }
             sbQuery.append(facetItem.getQueryEscapedLink());
             logger.trace("Added facet: {}", facetItem.getQueryEscapedLink());
+        }
+        
+        if(includeGeoFacet && this.geoFacetting.isActive()) {
+            if (sbQuery.length() > 0) {
+                sbQuery.append(" AND ");
+            }
+            sbQuery.append(this.geoFacetting.getEscapedFacetQuery());
+            logger.trace("Added facet: {}", this.geoFacetting.getEscapedFacetQuery());
         }
 
         return sbQuery.toString();
@@ -431,7 +440,7 @@ public class SearchFacets implements Serializable {
      * @should return hyphen if currentFacets empty
      */
     public String getCurrentFacetString() {
-        String ret = generateFacetPrefix(currentFacets, true);
+        String ret = generateFacetPrefix(currentFacets, geoFacetting, true);
         if (StringUtils.isEmpty(ret)) {
             ret = "-";
         }
@@ -451,7 +460,7 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getCurrentFacetString(boolean urlEncode) {
-        String ret = generateFacetPrefix(currentFacets, true);
+        String ret = generateFacetPrefix(currentFacets, geoFacetting, true);
         if (StringUtils.isEmpty(ret)) {
             ret = "-";
         }
@@ -485,7 +494,7 @@ public class SearchFacets implements Serializable {
      */
     public void setCurrentFacetString(String currentFacetString) {
         logger.trace("setCurrentFacetString: {}", currentFacetString);
-        parseFacetString(currentFacetString, currentFacets, labelMap);
+        parseFacetString(currentFacetString, currentFacets, this.geoFacetting, labelMap);
     }
 
     /**
@@ -510,12 +519,18 @@ public class SearchFacets implements Serializable {
      * @should set hierarchical status correctly
      * @should use label from labelMap if available
      */
-    static void parseFacetString(String facetString, List<FacetItem> facetItems, Map<String, String> labelMap) {
+    static void parseFacetString(String facetString, List<FacetItem> facetItems, GeoFacetItem geoFacetItem, Map<String, String> labelMap) {
         if (facetItems == null) {
             facetItems = new ArrayList<>();
         } else {
             facetItems.clear();
         }
+        
+        //clear geoFacetItem and keep data in temp variable. If the facet string does not contain a geo-coord field, it remains cleared. Otherwise
+        //it get restored
+        GeoFacetItem tempGeoFacetItem = new GeoFacetItem(geoFacetItem);
+        geoFacetItem.clear();
+
         if (StringUtils.isEmpty(facetString) || "-".equals(facetString)) {
             return;
         }
@@ -534,10 +549,26 @@ public class SearchFacets implements Serializable {
                 if (!facetLink.contains(":")) {
                     facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
                 }
-                // If there is a cached pre-generated label for this facet link (separate label field), use it so that there's no empty label
-                String label = labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
-                facetItems.add(
-                        new FacetItem(facetLink, label, isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
+                
+                //check if geo facetting is active and the facetlink starts with WKT_COORDS. If so, restore geoFacetItem
+                if(tempGeoFacetItem.isActive() && tempGeoFacetItem.getSolrField().equals(facetLink.substring(0, facetLink.indexOf(":")))) {
+                    String tempFacetQuery = tempGeoFacetItem.getFacetQuery();
+                    if(StringUtils.isNotBlank(tempGeoFacetItem.getFeature())) {
+                        //the stored geoFacetItem already contains a geo query. Just restore it to keep the geoMap shape
+                        geoFacetItem.setFeature(tempGeoFacetItem.getFeature());
+                    } else {
+                        double[][] vertices = GeoCoordinateFeature.getGeoSearchPoints(facetLink);
+                        geoFacetItem.setVertices(vertices);
+                    }
+                    
+                } else {
+                    
+                    // If there is a cached pre-generated label for this facet link (separate label field), use it so that there's no empty label
+                    String label = labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
+                    facetItems.add(
+                            new FacetItem(facetLink, label, isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
+                }
+                    
             }
         }
     }
@@ -818,13 +849,13 @@ public class SearchFacets implements Serializable {
     public String getCurrentFacetStringPrefix(boolean urlEncode) {
         if (urlEncode) {
             try {
-                return URLEncoder.encode(generateFacetPrefix(currentFacets, true), SearchBean.URL_ENCODING);
+                return URLEncoder.encode(generateFacetPrefix(currentFacets, geoFacetting, true), SearchBean.URL_ENCODING);
             } catch (UnsupportedEncodingException e) {
                 logger.error(e.getMessage());
             }
         }
 
-        return generateFacetPrefix(currentFacets, true);
+        return generateFacetPrefix(currentFacets, geoFacetting, true);
     }
 
     /**
@@ -835,7 +866,7 @@ public class SearchFacets implements Serializable {
      * @return
      * @should encode slashed and backslashes
      */
-    static String generateFacetPrefix(List<FacetItem> facetItems, boolean escapeSlashes) {
+    static String generateFacetPrefix(List<FacetItem> facetItems, GeoFacetItem geoFacetItem, boolean escapeSlashes) {
         if (facetItems == null) {
             throw new IllegalArgumentException("facetItems may not be null");
         }
@@ -845,6 +876,14 @@ public class SearchFacets implements Serializable {
                 sb.append(BeanUtils.escapeCriticalUrlChracters(facetItem.getLink()));
             } else {
                 sb.append(facetItem.getLink());
+            }
+            sb.append(";;");
+        }
+        if(geoFacetItem != null && geoFacetItem.isActive()) {
+            if (escapeSlashes) {
+                sb.append(BeanUtils.escapeCriticalUrlChracters(geoFacetItem.getFacetQuery()));
+            } else {
+                sb.append(geoFacetItem.getFacetQuery());
             }
             sb.append(";;");
         }
@@ -865,7 +904,7 @@ public class SearchFacets implements Serializable {
      */
     public String removeFacetAction(final String facetQuery, final String ret) {
         logger.trace("removeFacetAction: {}", facetQuery);
-        String currentFacetString = generateFacetPrefix(currentFacets, false);
+        String currentFacetString = generateFacetPrefix(currentFacets, geoFacetting, false);
         if (currentFacetString.contains(facetQuery)) {
             currentFacetString = currentFacetString.replaceAll("(" + Pattern.quote(facetQuery) + ")(?=;|(?=/))", "").replace(";;;;", ";;");
             setCurrentFacetString(currentFacetString);
@@ -1102,16 +1141,10 @@ public class SearchFacets implements Serializable {
     }
     
     /**
-     * @return the geoFacetRegion
+     * @return the geoFacetting
      */
-    public String getGeoFacetRegion() {
-        return geoFacetRegion;
+    public GeoFacetItem getGeoFacetting() {
+        return geoFacetting;
     }
-    
-    /**
-     * @param geoFacetRegion the geoFacetRegion to set
-     */
-    public void setGeoFacetRegion(String geoFacetRegion) {
-        this.geoFacetRegion = geoFacetRegion;
-    }
+
 }

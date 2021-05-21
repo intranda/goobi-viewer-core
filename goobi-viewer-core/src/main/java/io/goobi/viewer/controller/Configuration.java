@@ -2565,6 +2565,10 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getHierarchicalDrillDownFields() {
         return getLocalList("search.drillDown.hierarchicalField");
     }
+    
+    public String getGeoDrillDownField() {
+        return getLocalString("search.drillDown.geoField");
+    }
 
     /**
      * <p>

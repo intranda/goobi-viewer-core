@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.search;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,22 +32,38 @@ import org.slf4j.LoggerFactory;
  * @author florian
  *
  */
-public class GeoCoordinateSearchItem {
+public class GeoCoordinateFeature {
 
-    private static final Logger logger = LoggerFactory.getLogger(GeoCoordinateSearchItem.class);
+    private static final Logger logger = LoggerFactory.getLogger(GeoCoordinateFeature.class);
 
-    
-    private static final String REGEX_GEOCOORDS_SEARCH_STRING = "WKT_COORDS:\"(IsWithin|Intersects|IsDisjointTo)\\((\\w+)\\(\\(((?:[\\d.]+ [\\d.]+,?\\s?)+)\\)\\)\\)";
+    private static final String REGEX_GEOCOORDS_SEARCH_STRING = "(IsWithin|Intersects|IsDisjointTo)\\((\\w+)\\(\\(((?:[\\d.]+ [\\d.]+,?\\s?)+)\\)\\)\\)";
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_RELATION = 1;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE = 2;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_POINTS = 3;
     
     private final JSONObject feature;
     
-    public GeoCoordinateSearchItem(String featureString) throws JSONException {
+    public GeoCoordinateFeature(String featureString) throws JSONException {
         this.feature = new JSONObject(featureString);
     }
     
+    /**
+     * Initialize as a polygon feature with the given points as vertices
+     * @param vertices
+     */
+    public GeoCoordinateFeature(double[][] points) {
+        JSONObject json = new JSONObject();
+        json.put("type", "polygon");
+        JSONArray vertices = new JSONArray();
+        for (int i = 0; i < points.length; i++) {
+            List<Double> pointList = Arrays.asList(points[i][1], points[i][0]);
+            JSONArray point = new JSONArray(pointList);
+            vertices.put(point);
+        }
+        json.put("vertices", vertices);
+        this.feature = json;
+    }
+
     public String getFeatureAsString() {
         return this.feature.toString();
     }
@@ -69,11 +86,11 @@ public class GeoCoordinateSearchItem {
         
         StringBuilder sb = new StringBuilder();
         
-        sb.append("WKT_COORDS:\"IsWithin(POLYGON((");
+        sb.append("IsWithin(POLYGON((");
         double[][] points = getVertices();
         String pointString = Arrays.stream(points).map(p -> Double.toString(p[1]) + " " + Double.toString(p[0])).collect(Collectors.joining(", "));
         sb.append(pointString);
-        sb.append("))) distErrPct=0\"");
+        sb.append(")))");
         return sb.toString();
         
     }

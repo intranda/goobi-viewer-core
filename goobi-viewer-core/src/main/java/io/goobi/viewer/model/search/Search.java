@@ -290,7 +290,7 @@ public class Search implements Serializable {
         String query = SearchHelper.buildFinalQuery(currentQuery, aggregateHits);
 
         // Apply current facets
-        List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true);
+        List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true);
         String subElementQueryFilterSuffix = facets.generateSubElementFacetFilterQuery();
         if (StringUtils.isNotEmpty(subElementQueryFilterSuffix)) {
             subElementQueryFilterSuffix = " +(" + subElementQueryFilterSuffix + ")";
@@ -308,7 +308,7 @@ public class Search implements Serializable {
 
             // Search without range facet queries to determine absolute slider range
             List<String> rangeFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
-            List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, false);
+            List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, false, true);
 
             // Add custom filter query
             if (StringUtils.isNotEmpty(customFilterQuery)) {

@@ -21,7 +21,7 @@
     <!-- SEARCH LIST HITS -->
     <div class="search-list__hits">
     
-        <h:form rendered="#{not empty search.getGeoCoordinateQuery()}">
+        <h:form rendered="#{searchBean.facets.geoFacetting.active}">
    			<div id="searchMapLocations" class="search-list__geomap">
                  <h:commandLink action="pretty:searchgeomap">
 	                 <div id="searchMapLocationsMap" class="geomap" />
@@ -41,9 +41,7 @@
                        	});
 
                        	$(document).ready(() => {                  		    
-                        	let area = #{search.getGeoCoordinateQuery()};
                         	geoMap.init();
-                        	geoMap.drawPolygon(area, {color: "blue", fillOpacity: .2}, true);
 
                         })
             		    

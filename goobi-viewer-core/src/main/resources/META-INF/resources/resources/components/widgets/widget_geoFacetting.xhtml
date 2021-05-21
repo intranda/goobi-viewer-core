@@ -12,78 +12,86 @@
     <composite:implementation>
         
         <!--  WIDGET Geo facetting -->
-        <ui:fragment rendered="#{(fn:length(searchBean.facets.getLimitedFacetListForField('BOOL_WKT_COORDS')) >= 0) and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
-        <div class="widget widget-geofacetting">
-			<div class="widget-geofacetting__topbar">
-				<div class="widget-geofacetting__item geofacetting-label">
-					<h3>#{msg.widget_geofacetting__label}
-					<button id="expandFacetMap" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="widget-geofacetting__expand" aria-label="#{msg.fullscreen_enter}">
-	                        	<i class="fa fa-expand"/>
-	                        </button>
-					</h3>
+        <ui:fragment rendered="#{searchBean.facets.geoFacetting.active and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
+        <h:form>
+	        <div class="widget widget-geofacetting">
+				<div class="widget-geofacetting__topbar">
+					<div class="widget-geofacetting__item geofacetting-label">
+						<h3>#{msg.widget_geofacetting__label}
+						<button type="button" id="expandFacetMap" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="widget-geofacetting__expand" aria-label="#{msg.fullscreen_enter}">
+		                        	<i class="fa fa-expand"/>
+		                </button>
+						</h3>
+					</div>
+	
 				</div>
-
+				<div class="widget__body">
+					<div id="geoFacettingMap" class="geo-map"></div>
+				</div>
+				
+				<div id="widgetGeoFacettingOverlay" class="widget-geofacetting__overlay">
+					<div id="geoFacettingOverlayMap" class="widget-geofacetting__overlay__geo-map"></div>
+				</div>
+	
 			</div>
-			<div class="widget__body">
-				<div id="geoFacettingMap" class="geo-map"></div>
-			</div>
-			
-			<div id="widgetGeoFacettingOverlay" class="widget-geofacetting__overlay">
-				<div id="geoFacettingOverlayMap" class="widget-geofacetting__overlay__geo-map"></div>
-			</div>
-
-        </div>
-        
-          <script type="text/javascript">	  
-          //<![CDATA[
-	            function initFacetWidgetMap() {
-	                
-	                let geoMap = new viewerJS.GeoMap({
-                	    mapId: "geoFacettingMap",
-                   		allowMovingFeatures: false,
-                   		language: "#{navigationHelper.localeString}",
-                   		popoverOnHover: false,
-                   		clusterMarkers: false,
-                   		fixed: true
-                   	});
-
-                    	let area = #{searchBean.facets.geoFacetRegion};
-                    	geoMap.init({
-                            zoom: 1,
-                            center: [0,0] //long, lat
-                        });
-                    	console.log("draw area" , area);
-                        switch(area.type) {
-                            case "polygon":
-                                geoMap.drawPolygon(area.vertices, {color: "blue"}, true);
-                                break;
-                            case "circle":
-                                geoMap.drawCircle(area.center, area.radius, {color: "blue"}, true);
-                                break;
-                            case "rectangle":
-                                geoMap.drawRectangle([area.vertices[0], area.vertices[2]], {color: "blue"}, true);
-                                break;
-                        }
-
-					$("#expandFacetMap").on("click", e => {
-                       	viewerJS.overlay.open($('<div id="geoFacettingOverlayMap" class="overlay__geomap"/>'), true, true, $node => $node.remove())
-                       	.then($node => {
-                       	    console.log("mount overlay map", $node.get(0));
-	                       	 riot.mount($node.get(0), "geomapsearch", {
-	     					    inactive: false,
-	     					    area : #{searchBean.facets.geoFacetRegion},
-	     					    onFeatureSelect: area => {
-	     					        console.log("Set facetting area ", area);
-	     					    }
-	     					}); 
-                       	});                       	
-	                })
-				}
-				viewerJS.initialized.subscribe(() => {							    
-				    initFacetWidgetMap();
-				})
-            //]]>
-	        </script>
+			<h:commandScript name="setGeoFacetFeature" render="@form" action="#{searchBean.facets.geoFacetting.setFeatureFromContext()}">
+			</h:commandScript>
+	          <script type="text/javascript">	  
+	          //<![CDATA[
+		            function initFacetWidgetMap() {
+		                this.area = #{searchBean.facets.geoFacetting.feature};
+		                let geoMap = new viewerJS.GeoMap({
+	                	    mapId: "geoFacettingMap",
+	                   		allowMovingFeatures: false,
+	                   		language: "#{navigationHelper.localeString}",
+	                   		popoverOnHover: false,
+	                   		clusterMarkers: false,
+	                   		fixed: true
+	                   	});
+	
+	                    	geoMap.init({
+	                            zoom: 1,
+	                            center: [0,0] //long, lat
+	                        });
+	                    	console.log("draw area" , this.area);
+	                        switch(this.area.type) {
+	                            case "polygon":
+	                                geoMap.drawPolygon(this.area.vertices, {color: "blue"}, true);
+	                                break;
+	                            case "circle":
+	                                geoMap.drawCircle(this.area.center, this.area.radius, {color: "blue"}, true);
+	                                break;
+	                            case "rectangle":
+	                                geoMap.drawRectangle([this.area.vertices[0], this.area.vertices[2]], {color: "blue"}, true);
+	                                break;
+	                        }
+	
+						$("#expandFacetMap").on("click", e => {
+						    console.log("open overlay ", this);
+	                       	viewerJS.overlay.open($('<div id="geoFacettingOverlayMap" class="overlay__geomap"/>'), true, true, $node => {
+	                       	    $node.remove();
+	                       	    console.log("submit area ", this.area);
+	                       	 	setGeoFacetFeature({feature : JSON.stringify(this.area)})
+	                       	})
+	                       	.then($node => {
+	                       	    console.log("mount overlay map", $node.get(0));
+		                       	 riot.mount($node.get(0), "geomapsearch", {
+		     					    inactive: false,
+		     					    area : this.area,
+		     					    onFeatureSelect: area => {
+		     					        console.log("Set facetting area", area);
+		     					        this.area = area;
+		     					    }
+		     					}); 
+	                       	});                       	
+		                })
+					}
+					$(document).ready(e => {					    
+					    let facetWidgetMap = new initFacetWidgetMap();
+					})				    
+	            //]]>
+		        </script>
+        </h:form>
         
         </ui:fragment>
     </composite:implementation>

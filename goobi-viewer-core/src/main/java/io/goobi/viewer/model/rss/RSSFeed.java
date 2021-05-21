@@ -751,7 +751,7 @@ public class RSSFeed {
             if (StringUtils.isNotBlank(facets)) {
                 SearchFacets searchFacets = new SearchFacets();
                 searchFacets.setCurrentFacetString(facets);
-                filterQueries = searchFacets.generateFacetFilterQueries(facetQueryOperator != null ? facetQueryOperator : 0, true);
+                filterQueries = searchFacets.generateFacetFilterQueries(facetQueryOperator != null ? facetQueryOperator : 0, true, false);
             }
             
             Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
@@ -781,7 +781,7 @@ public class RSSFeed {
             if (StringUtils.isNotBlank(facets)) {
                 SearchFacets searchFacets = new SearchFacets();
                 searchFacets.setCurrentFacetString(facets);
-                filterQueries = searchFacets.generateFacetFilterQueries(facetQueryOperator != null ? facetQueryOperator : 0, true);
+                filterQueries = searchFacets.generateFacetFilterQueries(facetQueryOperator != null ? facetQueryOperator : 0, true, false);
             }
             
             SyndFeedOutput output = new SyndFeedOutput();

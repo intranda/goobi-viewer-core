@@ -61,8 +61,6 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.net.UrlEscapers;
-
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.tasks.Task;
@@ -85,7 +83,6 @@ import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
-import io.goobi.viewer.model.search.GeoCoordinateSearchItem;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
@@ -168,7 +165,6 @@ public class SearchBean implements SearchInterface, Serializable {
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
     private Search currentSearch;
     
-    private GeoCoordinateSearchItem currentGeoFacettingFeature = null;
 
     
     
@@ -1576,12 +1572,12 @@ public class SearchBean implements SearchInterface, Serializable {
         if (currentHitIndex < currentSearch.getHitsCount() - 1) {
             //            return currentSearch.getHits().get(currentHitIndex + 1).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex + 1, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
         //        return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
         return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(),
-                facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
+                facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
                 BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
     }
 
@@ -1603,12 +1599,12 @@ public class SearchBean implements SearchInterface, Serializable {
         if (currentHitIndex > 0) {
             //            return currentSearch.getHits().get(currentHitIndex - 1).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex - 1, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         } else if (currentSearch.getHitsCount() > 0) {
             //            return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
 
@@ -2226,7 +2222,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             Map<String, String> params = SearchHelper.generateQueryParams();
             final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(finalQuery, exportQuery, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), params, searchTerms, locale,
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), params, searchTerms, locale,
                     DataManager.getInstance().getConfiguration().isAggregateHits(), request);
             if (Thread.interrupted()) {
                 throw new InterruptedException();
@@ -2656,30 +2652,6 @@ public class SearchBean implements SearchInterface, Serializable {
         return DataManager.getInstance().getSearchIndex().pingSolrIndex();
     }
 
-    public String getCurrentGeoFacettingFeature() {
-        return currentGeoFacettingFeature == null ? "" : currentGeoFacettingFeature.getFeatureAsString();
-    }
 
-    public void setCurrentGeoFacettingFeature(String feature) {
-        if(StringUtils.isNotBlank(feature)) {            
-            this.currentGeoFacettingFeature = new GeoCoordinateSearchItem(feature);
-            List<FacetItem> facets = this.facets.getAvailableFacets().get("WKT_COORDS");
-            FacetItem facet;
-            if(facets == null || facets.isEmpty()) {
-                facet = new FacetItem(feature, phraseSearch);
-            }
-            System.out.println(facets);
-        } else {
-            this.currentGeoFacettingFeature = null;
-        }
-    }
-    
-    public void setCurrentGeoFacettingFeatureFromContext() {
-        Map<String, String> params = FacesContext.getCurrentInstance().
-                getExternalContext().getRequestParameterMap();
-        
-        String feature = params.get("currentGeoFacettingFeature");
-        setCurrentGeoFacettingFeature(feature);
-    }
      
 }
