@@ -1100,7 +1100,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getLastPageUrl() throws IndexUnreachableException {
         if (viewManager != null) {
-            return getPageUrl(String.valueOf(viewManager.getPageLoader().getFirstPageOrder()));
+            return getPageUrl(String.valueOf(viewManager.getPageLoader().getLastPageOrder()));
         }
 
         return null;
@@ -1348,8 +1348,17 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws DAOException
      */
-    public String getFullscreenImageUrl() throws IndexUnreachableException {
+    public String getFullscreenImageUrl() throws IndexUnreachableException, DAOException {
+        if (viewManager.isDoublePageMode() && !viewManager.getCurrentPage().isDoubleImage()) {
+            Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
+            Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
+            if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
+                return getPageUrl(PageType.viewFullscreen.getName(), currentLeftPage.get().getOrder() + "-" + currentRightPage.get().getOrder());
+            }
+        }
+
         return getPageUrl(PageType.viewFullscreen.getName(), imageToShow);
     }
 
@@ -1361,8 +1370,9 @@ public class ActiveDocumentBean implements Serializable {
      * @deprecated renamed to fullscreen
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws DAOException
      */
-    public String getReadingModeUrl() throws IndexUnreachableException {
+    public String getReadingModeUrl() throws IndexUnreachableException, DAOException {
         return getFullscreenImageUrl();
     }
 
