@@ -85,6 +85,15 @@ public class StringToolsTest {
         Assert.assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT src=\"http://dangerousscript.js\"/> bar"));
     }
 
+    /**
+     * @see StringTools#stripPatternBreakingChars(String)
+     * @verifies remove chars correctly
+     */
+    @Test
+    public void stripPatternBreakingChars_shouldRemoveCharsCorrectly() throws Exception {
+        Assert.assertEquals("foo_bar__", StringTools.stripPatternBreakingChars("foo\tbar\r\n"));
+    }
+
     @Test
     public void testEscapeQuotes() {
         String original = "Das ist ein 'String' mit \"Quotes\".";

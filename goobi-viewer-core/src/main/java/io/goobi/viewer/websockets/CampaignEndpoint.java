@@ -68,19 +68,32 @@ public class CampaignEndpoint {
         public final String recordIdentifier;
         public final int pageNumber;
 
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + (int) (campaignId ^ (campaignId >>> 32));
+            result = prime * result + pageNumber;
+            result = prime * result + ((recordIdentifier == null) ? 0 : recordIdentifier.hashCode());
+            return result;
+        }
+
         /**
          * @return true if both locks have the same campaignId, recordIdentifier and pageNumber. Session is disregarded for comparison
          */
         @Override
         public boolean equals(Object obj) {
-            if (obj.getClass().equals(this.getClass())) {
+            if (obj != null && obj.getClass().equals(this.getClass())) {
                 PageLock other = (PageLock) obj;
                 return this.campaignId == other.campaignId &&
                         this.recordIdentifier.equals(other.recordIdentifier) &&
                         this.pageNumber == other.pageNumber;
-            } else {
-                return false;
             }
+
+            return false;
         }
     }
 
@@ -143,11 +156,11 @@ public class CampaignEndpoint {
     }
 
     private void sendPageLocks(Long campaignId, String recordIdentifier) throws IOException, DAOException {
-        synchronized (pageLocks) {            
+        synchronized (pageLocks) {
             this.session.getBasicRemote().sendText(getLockedPagesAsJson(httpSessionId, campaignId, recordIdentifier));
         }
     }
-    
+
     private static void sendWarning(PageLock lock, String text) throws IOException {
         JSONObject warning = new JSONObject();
         warning.put("status", "warning");
@@ -175,7 +188,7 @@ public class CampaignEndpoint {
                             try {
                                 lock.session.getBasicRemote().sendText(getLockedPagesAsJson(httpSessionId, lock.campaignId, lock.recordIdentifier));
                             } catch (IOException | DAOException e) {
-                                e.printStackTrace();
+                                logger.error(e.getMessage(), e);
                             }
                         }
                     }
@@ -233,7 +246,7 @@ public class CampaignEndpoint {
         return map;
     }
 
-    private List<Integer> getLockedPages(String httpSessionId, long campaignId, String recordIdentifier) {
+    private static List<Integer> getLockedPages(String httpSessionId, long campaignId, String recordIdentifier) {
         return pageLocks.entrySet()
                 .stream()
                 .filter(entry -> !entry.getKey().equals(httpSessionId))
@@ -256,8 +269,8 @@ public class CampaignEndpoint {
      * Remove a registered crowdsourcing page lock after session end and notify the assiciated websocket session that the session has ended
      * 
      * @param sessionId
-     * @throws DAOException 
-     * @throws IOException 
+     * @throws DAOException
+     * @throws IOException
      */
     public static void removeSessionLock(String sessionId) throws IOException {
         PageLock lock = removePageLock(sessionId);

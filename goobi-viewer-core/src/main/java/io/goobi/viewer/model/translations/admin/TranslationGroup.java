@@ -584,5 +584,13 @@ public class TranslationGroup {
         }
         return true;
     }
+    
+    /**
+     * Resets the counts for fully translated and untranslated entries to update the translation process
+     */
+    public void resetStatusCount() {
+        this.fullyTranslatedEntryCount = null;
+        this.untranslatedEntryCount = null;
+    }
 
 }

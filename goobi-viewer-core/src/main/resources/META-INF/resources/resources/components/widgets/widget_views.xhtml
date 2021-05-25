@@ -78,8 +78,7 @@
                                 <li class="#{navigationHelper.currentPage == 'metadata'.concat(metadataView.url) ? 'active' : ''}">
                                     <h:outputLink value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}#{activeDocumentBean.logPart}">
                                         <h:outputText rendered="#{metadataView.label != null}" value="#{msg[metadataView.label]}" />
-                                        <h:outputText rendered="#{metadataView.label == null and !activeDocumentBean.viewManager.topDocument.lidoRecord}"
-                                            value="#{msg[metadataBean.defaultMetadataLabel]}" />
+                                        <h:outputText rendered="#{metadataView.label == null}" value="#{msg[metadataBean.defaultMetadataLabel]}" />
                                         <f:passThroughAttribute name="aria-label"
                                             value="#{msg.view}: #{metadataView.label != null ? msg[metadataView.label] : msg[metadataBean.defaultMetadataLabel]}"/>
                                     </h:outputLink>
