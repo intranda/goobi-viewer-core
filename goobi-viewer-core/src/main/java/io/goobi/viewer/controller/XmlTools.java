@@ -317,13 +317,16 @@ public class XmlTools {
             throw new IllegalArgumentException("stylesheetPath may not be null");
         }
 
+        // Set TransformerFactory to something other than org.apache.xalan.processor.TransformerFactoryImpl due to incompatibilities with XMLConstants values
+        System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
+
         try {
             JDOMSource docFrom = new JDOMSource(doc);
             JDOMResult docTo = new JDOMResult();
 
             TransformerFactory transformerFactory = javax.xml.transform.TransformerFactory.newInstance();
-            //            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            //            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            // transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
             Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheetPath));
             if (params != null && !params.isEmpty()) {
                 for (String param : params.keySet()) {
