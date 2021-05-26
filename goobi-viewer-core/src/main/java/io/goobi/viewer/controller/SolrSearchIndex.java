@@ -134,6 +134,7 @@ public final class SolrSearchIndex {
             // Re-init Solr client if the configured Solr URL has been changed
             logger.info("Solr URL has changed, re-initializing Solr client...");
             synchronized (this) {
+                solrFields = null; // Reset available Solr field name list
                 try {
                     httpSolrClient.close();
                 } catch (IOException e) {
@@ -151,6 +152,7 @@ public final class SolrSearchIndex {
                     try {
                         httpSolrClient.close();
                     } catch (IOException e1) {
+                        logger.error(e1.getMessage());
                     }
                     client = getNewHttpSolrClient();
                 }
