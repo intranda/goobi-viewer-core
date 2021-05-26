@@ -14,6 +14,7 @@
 	/* NOT LOGGED IN */
 	[data-login="false"] {
 		button[data-toggle="login-dropdown"] {
+			font-size: @fontMedium;
 			span {}
 			.fa {
 				margin-left: 5px;
@@ -23,10 +24,12 @@
 	/* LOGGED IN */
 	[data-login="true"] {
 		button[data-toggle="user-dropdown"] {
+			font-size: @fontMedium;
+			span {}
 			display: flex;
-		    align-items: center;
-		    justify-content: center;
-		    max-width: 150px;
+		  align-items: center;
+		  justify-content: center;
+		  max-width: 150px;
 		}
 		.login-navigation {
 			/* TOGGLE USER DROPDOWN */
@@ -49,13 +52,13 @@
 			&__user-dropdown {
 				display: none;
 				position: absolute;
-				top: 100%;
+				top: ~"calc(100% + 4px)";
 				right: 0;
 				width: 240px;
 				padding-bottom: 0;
 				padding-top: 0;
-				font-size: @fontNormal;
-				background-color: @white;
+				font-size: @fontMedium;
+				background-color: @loginNavBG;
 				overflow: hidden;
 				z-index: 999;
 				li {
@@ -65,14 +68,23 @@
 			&__user-dropdown-item {
 				display: flex;
 				align-items: center;
-				font-size: @fontNormal;
+				font-size: @fontMedium;
+
+        &:hover {
+          background-color: @loginNavBGHover;
+          a, button, .fa {
+            color: @loginNavFGHover;
+          }
+        }
+
 			}
 			&__user-dropdown-item-icon {
 				min-width: 30px;
 				padding-left: 1.5rem;
 				text-align: center;
 				.fa {
-					color: @blue;
+					color: @loginNavFG;
+          font-size: @fontMedium;
 				}
 			}
 			&__user-dropdown-item-string {
@@ -81,8 +93,9 @@
 			    flex-grow: 1;
 				a {
 					display: block;
+					color: @loginNavFG;
 					padding: 0.7rem 1.2rem;
-					color: @black;
+				  white-space: nowrap;
 					&:hover,
 					&:active,
 					&:focus {
@@ -90,6 +103,11 @@
 					}
 				}
 			}
+
+			&__bookmarks-trigger {
+				white-space: nowrap;
+        color: @loginNavFG;
+      }
 			/* USER DROPDOWN ACTION */
 			&__user-dropdown-action {
 				padding-top: 10px;
@@ -116,7 +134,7 @@
 			&__bookmarks-small-list {
 				display: none;
 				padding: 0.5rem 1rem 0.5rem 1.5rem;
-				background: #3a3a3a;
+				background-color: @loginNavBookmarksBG;
 			}
 			&__bookmarks-entry {
 				display: flex;
@@ -137,11 +155,13 @@
 			&__bookmarks-name a, 
 			&__bookmarks-icon-list .fa, 
 			&__bookmarks-icon-list {
+				color: @loginNavBookmarksFG;
 				a {
 					margin-right: 0.7rem;
+					color: @loginNavBookmarksFG;
 				}
 				&:hover {
-					color: #ffd65b;
+					color: @loginNavBookmarksFGHover;
 				}
 			}
 			&__bookmarks-icon-list,
@@ -155,13 +175,14 @@
 				font-size: 1.2rem;
 				color: #fff;
 				border-radius: 2px;
-				background-color: @blue;
+				background-color: @loginNavBookmarksCounterBG;
 				align-self: center;
 			}
 			&__bookmarks-overview-link {
 				margin-left: auto;
+				color: @loginNavBookmarksFG;
 				&:hover {
-					color: #ffd65b;
+					color: @loginNavBookmarksFGHover;
 				}
 			}
 			&__bookmarks-trigger {
@@ -213,4 +234,14 @@
 @media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {} 
+@media screen and (max-width: @xSmallBreakpoint) {
+	.login-navigation {
+		[data-login="true"] {
+			.login-navigation {
+				&__user-icon {
+					display: none;
+				}
+			}
+		}
+	}
+} 
