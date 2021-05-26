@@ -896,7 +896,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             wordCoordsFormat = CoordsFormat.ALTO;
             String text = ALTOTools.getFullText(altoText, false, null);
             if (StringUtils.isNotEmpty(text)) {
-                String cleanText = StringTools.stripJS(fullText);
+                String cleanText = StringTools.stripJS(text);
                 if (cleanText.length() < text.length()) {
                     text = cleanText;
                     logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, getOrder());
