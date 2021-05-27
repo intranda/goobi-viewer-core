@@ -284,7 +284,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         if(index == undefined) {
         	return;
         }
-        console.log("load image", this.dirty, requireConfirmation, index, this.currentCanvasIndex);
+        //console.log("load image", this.dirty, requireConfirmation, index, this.currentCanvasIndex);
         if(this.pageStatisticMode && this.dirty && requireConfirmation && index != this.currentCanvasIndex) {
         	viewerJS.notifications.confirm(Crowdsourcing.translate("crowdsourcing__confirm_skip_page"))
         	.then( () => {
@@ -427,7 +427,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     * and add the given annotations to local storage
     */
     crowdsourcing.Item.prototype.saveAnnotations = function(pageId, questionId, annotations) {
-    	console.log("saving annotations", pageId, questionId, annotations);
         let save = this.getFromLocalStorage();
         this.deleteAnnotations(save, pageId, questionId);
         this.addAnnotations(annotations, save);

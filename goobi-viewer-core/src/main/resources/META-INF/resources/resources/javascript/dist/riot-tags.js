@@ -929,6 +929,8 @@ riot.tag2('authorityresourcequestion', '<div if="{this.showInstructions()}" clas
 	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
 	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
 	                    this.question.addAnnotation();
+
+	                    this.opts.item.dirty = false;
 	                }
 	        }
 	        this.update()
@@ -1951,6 +1953,8 @@ riot.tag2('metadataquestion', '<div if="{this.showInstructions()}" class="crowds
 		            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
 		                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
 		                    this.question.addAnnotation();
+
+		                    this.opts.item.dirty = false;
 		                }
 		        }
 		        this.update();
@@ -2049,6 +2053,8 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="crowd
 	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
 	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
 	                    this.question.addAnnotation();
+
+	                    this.opts.item.dirty = false;
 	                }
 	        }
 	        this.update()
@@ -2190,6 +2196,8 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
 	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
 	                    this.question.addAnnotation();
+
+	                    this.opts.item.dirty = false;
 	                }
 	        }
 	        this.update();

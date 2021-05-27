@@ -35,6 +35,9 @@
 	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
 	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {                    
 	                    this.question.addAnnotation();
+	                    //reset dirty flag of item  set by addAnnotation(). 
+	                    //Automatic creation of annotation should not set status to dirty
+	                    this.opts.item.dirty = false; 
 	                }
 	        }
 	        this.update()
@@ -66,7 +69,6 @@
 	}
 	
     setTextFromEvent(event) {
-        console.log("set text");
         event.preventUpdate = true;
         if(event.item.anno) {            
             event.item.anno.setText(event.target.value);
