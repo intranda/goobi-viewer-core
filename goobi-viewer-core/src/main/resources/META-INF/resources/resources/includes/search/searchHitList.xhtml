@@ -36,12 +36,12 @@
                        		allowMovingFeatures: false,
                        		language: "#{navigationHelper.localeString}",
                        		popoverOnHover: false,
-                       		clusterMarkers: false,
+                       		clusterMarkers: true,
                        		fixed: true
                        	});
 
                        	$(document).ready(() => {                  		    
-                        	geoMap.init();
+                        	geoMap.init(undefined, #{searchBean.});
 
                         })
             		    

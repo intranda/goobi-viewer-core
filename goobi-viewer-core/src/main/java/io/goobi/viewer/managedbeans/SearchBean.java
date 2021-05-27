@@ -80,6 +80,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
@@ -2652,6 +2653,8 @@ public class SearchBean implements SearchInterface, Serializable {
         return DataManager.getInstance().getSearchIndex().pingSolrIndex();
     }
 
-
+    public GeoMap getHitsMap() {
+     if(cur)   
+    }
      
 }
