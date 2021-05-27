@@ -66,6 +66,7 @@
 	}
 	
     setTextFromEvent(event) {
+        console.log("set text");
         event.preventUpdate = true;
         if(event.item.anno) {            
             event.item.anno.setText(event.target.value);

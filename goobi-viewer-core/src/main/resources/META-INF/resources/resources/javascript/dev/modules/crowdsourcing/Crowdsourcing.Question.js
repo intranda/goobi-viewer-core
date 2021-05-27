@@ -265,6 +265,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
             this.targetSelector == Crowdsourcing.Question.Selector.WHOLE_SOURCE) {
             annotationsToSave = annotationsToSave.filter(anno => !anno.isEmpty());
         }
+        console.log("save to local storage");
         this.item.saveAnnotations(this.getTargetId(), this.id, annotationsToSave);
     }
     
