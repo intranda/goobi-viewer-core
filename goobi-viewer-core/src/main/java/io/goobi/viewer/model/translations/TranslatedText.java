@@ -106,7 +106,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
     
     public void setText(String text, Locale locale) {
-        if(locale != null) {            
+        if(locale != null && StringUtils.isNotBlank(locale.getLanguage())) {            
             super.setValue(text, locale);
         } else {
             super.setValue(text);
