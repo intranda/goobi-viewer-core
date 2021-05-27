@@ -67,8 +67,6 @@ import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
 import io.goobi.viewer.api.rest.model.index.SolrFieldInfo;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.JsonTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -76,6 +74,9 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -173,7 +174,7 @@ public class IndexResource {
         }
         if (params.randomize) {
             sortFieldList.clear();
-            sortFieldList.add(new StringPair(SolrSearchIndex.generateRandomSortField(), ("desc".equals(params.sortOrder) ? "desc" : "asc")));
+            sortFieldList.add(new StringPair(SolrTools.generateRandomSortField(), ("desc".equals(params.sortOrder) ? "desc" : "asc")));
         }
         try {
             List<String> fieldList = params.resultFields;

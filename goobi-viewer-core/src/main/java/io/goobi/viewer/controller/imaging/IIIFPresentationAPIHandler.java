@@ -22,8 +22,8 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Creates urls to IIIF Presentation api calls to get manifests, canvases, annotationLists or layers

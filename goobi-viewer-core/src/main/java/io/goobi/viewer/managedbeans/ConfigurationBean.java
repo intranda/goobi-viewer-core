@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -42,6 +41,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.modules.IModule;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * This is a wrapper class for the <code>Configuration</code> class for access from HTML.

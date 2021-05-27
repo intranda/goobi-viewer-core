@@ -44,12 +44,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
@@ -258,7 +258,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
         // Remove file name conditions
         conditions = getQueryConditions(conditions);
         // Convert "NOW/YEAR"
-        conditions = SolrSearchIndex.getProcessedConditions(conditions);
+        conditions = SolrTools.getProcessedConditions(conditions);
 
         return conditions.trim();
     }

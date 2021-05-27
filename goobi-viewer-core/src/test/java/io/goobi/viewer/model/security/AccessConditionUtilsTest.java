@@ -30,10 +30,10 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 

@@ -15,18 +15,30 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v3.builder;
 
-import static io.goobi.viewer.api.rest.v2.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.ANNOTATIONS_COMMENT;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS_COLLECTION;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_IMAGE;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_MANIFEST_SEARCH;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_COMMENTS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_TEXT;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_SECTIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_SECTIONS_RANGE;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -40,7 +52,6 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.wa.ImageResource;
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.v3.ImageInformation3;
@@ -48,7 +59,6 @@ import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.api.iiif.presentation.v3.AbstractPresentationModelElement3;
-import de.intranda.api.iiif.presentation.v3.Canvas3;
 import de.intranda.api.iiif.presentation.v3.Collection3;
 import de.intranda.api.iiif.presentation.v3.IIIFAgent;
 import de.intranda.api.iiif.presentation.v3.LabeledResource;
@@ -64,8 +74,6 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -77,11 +85,11 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingTarget;
-import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * <p>
@@ -134,7 +142,7 @@ public abstract class AbstractBuilder {
      */
     protected IMetadataValue getLabel(String key) {
         IMetadataValue value = ViewerResourceBundle.getTranslations(key, this.translationLocales, false);
-        if(!value.getValue(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).isPresent()) {
+        if (!value.getValue(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).isPresent()) {
             value.setValue(key, MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
         }
         return value;
@@ -267,11 +275,11 @@ public abstract class AbstractBuilder {
                 String configuredLabel = DataManager.getInstance().getConfiguration().getIIIFMetadataLabel(field);
                 String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel
                         : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);
-                SolrSearchIndex.getTranslations(field, ele, this.translationLocales, (s1, s2) -> s1 + "; " + s2)
+                SolrTools.getTranslations(field, ele, this.translationLocales, (s1, s2) -> s1 + "; " + s2)
                         .map(value -> new Metadata(getLabel(label), value))
                         .ifPresent(md -> {
-//                            md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
-//                            md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+                            //                            md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+                            //                            md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
                             manifest.addMetadata(md);
                         });
             }
@@ -287,9 +295,8 @@ public abstract class AbstractBuilder {
         if (StringUtils.isNotBlank(fieldName)) {
             String value = ele.getMetadataValue(fieldName);
             return Optional.ofNullable(value);
-        } else {
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 
     protected Optional<URI> getRightsStatement(StructElement ele) {
@@ -354,7 +361,7 @@ public abstract class AbstractBuilder {
     protected Optional<IMetadataValue> getDescription(StructElement ele) {
         List<String> fields = DataManager.getInstance().getConfiguration().getIIIFDescriptionFields();
         for (String field : fields) {
-            Optional<IMetadataValue> optional = SolrSearchIndex.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
+            Optional<IMetadataValue> optional = SolrTools.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
                 md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
                 return md;
             });
@@ -719,17 +726,15 @@ public abstract class AbstractBuilder {
     protected IMetadataValue createLabel(String text) {
         if (StringUtils.isBlank(text)) {
             return null;
-        } else {
-            return new SimpleMetadataValue(text);
         }
+        return new SimpleMetadataValue(text);
     }
 
     protected String getFilename(String path) {
         if (StringUtils.isBlank(path)) {
             return null;
-        } else {
-            return StringTools.encodeUrl(Paths.get(path).getFileName().toString());
         }
+        return StringTools.encodeUrl(Paths.get(path).getFileName().toString());
     }
 
 }
