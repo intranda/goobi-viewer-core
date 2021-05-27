@@ -36,15 +36,15 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
 /**
  * @author Florian Alpers
@@ -155,7 +155,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
 
     /**
      * TODO: Calling the thumbnailUrl for the anchor should yield an url with the pi of the first child This is implemented, but I don't know how to
-     * set up the test data ({@link io.goobi.viewer.controller.SolrSearchIndex#getFirstDoc(String, List, List) SolrSearchIndex#getFirstDoc} is used)
+     * set up the test data ({@link io.goobi.viewer.solr.SolrSearchIndex#getFirstDoc(String, List, List) SolrSearchIndex#getFirstDoc} is used)
      */
     //    @Test
     public void testAnchorLocal() throws IndexUnreachableException {

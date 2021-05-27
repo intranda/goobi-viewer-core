@@ -42,9 +42,6 @@ import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -57,6 +54,9 @@ import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Metadata field configuration.
@@ -767,7 +767,7 @@ public class Metadata implements Serializable {
                         String value = (String) doc.getFieldValue(fieldName);
                         values.add(value);
                     } else if (doc.getFieldValue(fieldName) instanceof Collection) {
-                        values.addAll(SolrSearchIndex.getMetadataValues(doc, fieldName));
+                        values.addAll(SolrTools.getMetadataValues(doc, fieldName));
 
                     }
                 }
@@ -802,7 +802,7 @@ public class Metadata implements Serializable {
                         //                        String paramValue = sbValue.toString();
                         if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
                             if (doc.getFieldValue("NORM_TYPE") != null) {
-                                options.put("NORM_TYPE", SolrSearchIndex.getSingleFieldStringValue(doc, "NORM_TYPE"));
+                                options.put("NORM_TYPE", SolrTools.getSingleFieldStringValue(doc, "NORM_TYPE"));
                             }
                         }
                         setParamValue(count, i, values, param.getKey(), null, options, groupType, locale);

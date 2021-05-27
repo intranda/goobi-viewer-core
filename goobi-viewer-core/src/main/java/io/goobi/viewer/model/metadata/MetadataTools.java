@@ -26,16 +26,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * <p>
@@ -496,7 +496,7 @@ public class MetadataTools {
         for (MetadataReplaceRule replaceRule : replaceRules) {
             // Skip rules that have non-matching conditions
             if (StringUtils.isNotEmpty(replaceRule.getConditions()) && StringUtils.isNotEmpty(pi)) {
-                String conditions = SolrSearchIndex.getProcessedConditions(replaceRule.getConditions());
+                String conditions = SolrTools.getProcessedConditions(replaceRule.getConditions());
                 String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +(" + conditions + ")";
                 long count = DataManager.getInstance().getSearchIndex().getHitCount(query);
                 if (count == 0) {

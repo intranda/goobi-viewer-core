@@ -31,11 +31,11 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.managedbeans.ContextMocker;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
 

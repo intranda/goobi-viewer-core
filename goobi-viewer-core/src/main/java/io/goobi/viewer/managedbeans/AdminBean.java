@@ -49,7 +49,6 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -76,6 +75,7 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.security.user.UserTools;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Administration backend functions.

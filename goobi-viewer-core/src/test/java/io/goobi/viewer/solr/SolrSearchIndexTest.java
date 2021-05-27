@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.controller;
+package io.goobi.viewer.solr;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,9 +30,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.viewer.StringPair;
 
 public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
@@ -115,31 +114,6 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrSearchIndex#getMetadataValues(SolrDocument,String)
-     * @verifies return all values for the given field
-     */
-    @Test
-    public void getMetadataValues_shouldReturnAllValuesForTheGivenField() throws Exception {
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + PI_KLEIUNIV, null);
-        Assert.assertNotNull(doc);
-        List<String> values = SolrSearchIndex.getMetadataValues(doc, SolrConstants.DATEUPDATED);
-        Assert.assertTrue(values.size() >= 2);
-    }
-
-    /**
-     * @see SolrSearchIndex#getFieldValueMap(SolrDocument)
-     * @verifies return all fields in the given doc except page urns
-     */
-    @Test
-    public void getFieldValueMap_shouldReturnAllFieldsInTheGivenDocExceptPageUrns() throws Exception {
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + PI_KLEIUNIV, null);
-        Assert.assertNotNull(doc);
-        Map<String, List<String>> fieldValueMap = SolrSearchIndex.getFieldValueMap(doc);
-        Assert.assertFalse(fieldValueMap.containsKey(SolrConstants.IMAGEURN_OAI));
-        Assert.assertFalse(fieldValueMap.containsKey("PAGEURNS"));
-    }
-
-    /**
      * @see SolrSearchIndex#searchFacetsAndStatistics(String,List,boolean)
      * @verifies generate facets correctly
      */
@@ -189,63 +163,6 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     public void getImageOwnerIddoc_shouldRetrieveCorrectIDDOC() throws Exception {
         long iddoc = DataManager.getInstance().getSearchIndex().getImageOwnerIddoc(PI_KLEIUNIV, 1);
         Assert.assertNotEquals(-1, iddoc);
-    }
-
-    /**
-     * @see SolrSearchIndex#getSolrSortFieldsAsList(String,String)
-     * @verifies split fields correctly
-     */
-    @Test
-    public void getSolrSortFieldsAsList_shouldSplitFieldsCorrectly() throws Exception {
-        List<StringPair> result = SolrSearchIndex.getSolrSortFieldsAsList("SORT_A; SORT_B, desc;SORT_C,asc", ";", ",");
-        Assert.assertNotNull(result);
-        Assert.assertEquals(3, result.size());
-        Assert.assertEquals("SORT_A", result.get(0).getOne());
-        Assert.assertEquals("asc", result.get(0).getTwo());
-        Assert.assertEquals("SORT_B", result.get(1).getOne());
-        Assert.assertEquals("desc", result.get(1).getTwo());
-        Assert.assertEquals("SORT_C", result.get(2).getOne());
-        Assert.assertEquals("asc", result.get(2).getTwo());
-    }
-
-    /**
-     * @see SolrSearchIndex#getSolrSortFieldsAsList(String,String)
-     * @verifies split single field correctly
-     */
-    @Test
-    public void getSolrSortFieldsAsList_shouldSplitSingleFieldCorrectly() throws Exception {
-        List<StringPair> result = SolrSearchIndex.getSolrSortFieldsAsList("SORT_A , desc ", ";", ",");
-        Assert.assertNotNull(result);
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals("SORT_A", result.get(0).getOne());
-        Assert.assertEquals("desc", result.get(0).getTwo());
-    }
-
-    /**
-     * @see SolrSearchIndex#getSolrSortFieldsAsList(String,String)
-     * @verifies throw IllegalArgumentException if solrSortFields is null
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSolrSortFieldsIsNull() throws Exception {
-        SolrSearchIndex.getSolrSortFieldsAsList(null, ";", ",");
-    }
-
-    /**
-     * @see SolrSearchIndex#getSolrSortFieldsAsList(String,String,String)
-     * @verifies throw IllegalArgumentException if splitFieldsBy is null
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSplitFieldsByIsNull() throws Exception {
-        SolrSearchIndex.getSolrSortFieldsAsList("bla,blup", null, ",");
-    }
-
-    /**
-     * @see SolrSearchIndex#getSolrSortFieldsAsList(String,String,String)
-     * @verifies throw IllegalArgumentException if splitNameOrderBy is null
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSplitNameOrderByIsNull() throws Exception {
-        SolrSearchIndex.getSolrSortFieldsAsList("bla,blup", ";", null);
     }
 
     /**
@@ -304,71 +221,6 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         Assert.assertNotEquals(-1, DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0001"));
     }
 
-    @Test
-    public void testGetMetadataValuesForLanguage() {
-        SolrDocument doc = new SolrDocument();
-        doc.addField("field_A", "value_A");
-        doc.addField("field_B_LANG_EN", "field_B_en");
-        doc.addField("field_B_LANG_DE", "field_B_de");
-        doc.addField("field_B_LANG_EN", "field_B_en_2");
-
-        Map<String, List<String>> mapA = SolrSearchIndex.getMetadataValuesForLanguage(doc, "field_A");
-        Assert.assertEquals(1, mapA.size());
-        Assert.assertEquals(1, mapA.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).size());
-        Assert.assertEquals("value_A", mapA.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).get(0));
-
-        Map<String, List<String>> mapB = SolrSearchIndex.getMetadataValuesForLanguage(doc, "field_B");
-        Assert.assertEquals(2, mapB.size());
-        Assert.assertEquals(mapB.get("en").size(), 2);
-        Assert.assertEquals(mapB.get("de").size(), 1);
-        Assert.assertEquals("field_B_de", mapB.get("de").get(0));
-        Assert.assertEquals("field_B_en", mapB.get("en").get(0));
-        Assert.assertEquals("field_B_en_2", mapB.get("en").get(1));
-
-    }
-
-    @Test
-    public void testGetMultiLanguageFieldValueMap() {
-        SolrDocument doc = new SolrDocument();
-        doc.addField("field_A", "value_A");
-        doc.addField("field_B", "value_B");
-        doc.addField("field_B_LANG_EN", "field_B_en");
-        doc.addField("field_B_LANG_DE", "field_B_de");
-        doc.addField("field_B_LANG_EN", "field_B_en_2");
-
-        Map<String, List<IMetadataValue>> map = SolrSearchIndex.getMultiLanguageFieldValueMap(doc);
-        Assert.assertEquals(2, map.keySet().size());
-        Assert.assertEquals("value_A", map.get("field_A").get(0).getValue().get());
-        Assert.assertEquals("value_B", map.get("field_B").get(0).getValue().get());
-        Assert.assertEquals("field_B_de", map.get("field_B").get(0).getValue("de").get());
-        Assert.assertEquals("field_B_en", map.get("field_B").get(0).getValue("en").get());
-        Assert.assertEquals("field_B_en_2", map.get("field_B").get(1).getValue("en").get());
-
-        Assert.assertEquals("value_B", map.get("field_B").get(0).getValue("fr").orElse(map.get("field_B").get(0).getValue().orElse("")));
-
-    }
-
-    /**
-     * @see SolrSearchIndex#getSingleFieldStringValue(SolrDocument,String)
-     * @verifies return value as string correctly
-     */
-    @Test
-    public void getSingleFieldStringValue_shouldReturnValueAsStringCorrectly() throws Exception {
-        SolrDocument doc = new SolrDocument();
-        doc.addField("NUM", 1337);
-        Assert.assertEquals("1337", SolrSearchIndex.getSingleFieldStringValue(doc, "NUM"));
-    }
-
-    /**
-     * @see SolrSearchIndex#getSingleFieldStringValue(SolrDocument,String)
-     * @verifies not return null as string if value is null
-     */
-    @Test
-    public void getSingleFieldStringValue_shouldNotReturnNullAsStringIfValueIsNull() throws Exception {
-        SolrDocument doc = new SolrDocument();
-        Assert.assertNull(SolrSearchIndex.getSingleFieldStringValue(doc, "MD_NOSUCHFIELD"));
-    }
-
     /**
      * @see SolrSearchIndex#findDataRepositoryName(String)
      * @verifies return value from map if available
@@ -377,30 +229,6 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     public void findDataRepositoryName_shouldReturnValueFromMapIfAvailable() throws Exception {
         DataManager.getInstance().getSearchIndex().dataRepositoryNames.put("PPN123", "superrepo");
         Assert.assertEquals("superrepo", DataManager.getInstance().getSearchIndex().findDataRepositoryName("PPN123"));
-    }
-
-    /**
-     * @see SolrSearchIndex#isHasImages(SolrDocument)
-     * @verifies return correct value for page docs
-     */
-    @Test
-    public void isHasImages_shouldReturnCorrectValueForPageDocs() throws Exception {
-        SolrDocument doc = new SolrDocument();
-        doc.setField(SolrConstants.FILENAME, "foo.jpg");
-        Assert.assertTrue(SolrSearchIndex.isHasImages(doc));
-        doc.setField(SolrConstants.FILENAME, "foo.txt");
-        Assert.assertFalse(SolrSearchIndex.isHasImages(doc));
-    }
-
-    /**
-     * @see SolrSearchIndex#isHasImages(SolrDocument)
-     * @verifies return correct value for docsctrct docs
-     */
-    @Test
-    public void isHasImages_shouldReturnCorrectValueForDocsctrctDocs() throws Exception {
-        SolrDocument doc = new SolrDocument();
-        doc.setField(SolrConstants.THUMBNAIL, "foo.jpg");
-        Assert.assertTrue(SolrSearchIndex.isHasImages(doc));
     }
 
     /**

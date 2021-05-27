@@ -41,13 +41,13 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * @author florian
@@ -108,7 +108,7 @@ public class NERBuilder {
         if (solrDocuments != null && !solrDocuments.isEmpty()) {
             String topStructPi = null;
             if (solrDocuments.get(0).containsKey(SolrConstants.PI_TOPSTRUCT)) {
-                topStructPi = SolrSearchIndex.getAsString(solrDocuments.get(0).getFieldValue(SolrConstants.PI_TOPSTRUCT));
+                topStructPi = SolrTools.getAsString(solrDocuments.get(0).getFieldValue(SolrConstants.PI_TOPSTRUCT));
             }
             DocumentReference doc = new DocumentReference(topStructPi);
 
@@ -165,7 +165,7 @@ public class NERBuilder {
         return order;
     }
 
-    private TagGroup createPageReference(List<SolrDocument> solrDocs) {
+    private static TagGroup createPageReference(List<SolrDocument> solrDocs) {
         Integer firstPage = null;
         Integer lastPage = null;
         for (SolrDocument solrDocument : solrDocs) {
@@ -190,9 +190,9 @@ public class NERBuilder {
      * @param solrDocument
      * @return
      */
-    private Integer getPageOrderFromSolrDoc(SolrDocument solrDoc) {
+    private static Integer getPageOrderFromSolrDoc(SolrDocument solrDoc) {
         if (solrDoc != null && solrDoc.containsKey(SolrConstants.ORDER)) {
-            String orderString = SolrSearchIndex.getAsString(solrDoc.getFieldValue(SolrConstants.ORDER));
+            String orderString = SolrTools.getAsString(solrDoc.getFieldValue(SolrConstants.ORDER));
             try {
                 //                Integer.parseInt(orderString);
                 return Integer.parseInt(orderString);

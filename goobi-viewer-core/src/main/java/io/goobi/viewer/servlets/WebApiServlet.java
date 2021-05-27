@@ -37,8 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.JsonTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -49,6 +47,8 @@ import io.goobi.viewer.model.metadata.CompareYearSolrDocWrapper;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Web API servlet.
@@ -161,7 +161,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
 
                     JSONArray jsonArray = new JSONArray();
                     try {
-                        String sortfield = SolrSearchIndex.generateRandomSortField();
+                        String sortfield = SolrTools.generateRandomSortField();
                         SolrDocumentList result = DataManager.getInstance()
                                 .getSearchIndex()
                                 .search(query, 0, count, Collections.singletonList(new StringPair(sortfield, "asc")), null, null)
@@ -261,7 +261,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
 
                     if (randomize) {
                         sortFields.clear();
-                        sortFields.add(new StringPair(SolrSearchIndex.generateRandomSortField(), sortOrderString));
+                        sortFields.add(new StringPair(SolrTools.generateRandomSortField(), sortOrderString));
                         logger.trace("sortFields: {}", sortFields);
                     }
 

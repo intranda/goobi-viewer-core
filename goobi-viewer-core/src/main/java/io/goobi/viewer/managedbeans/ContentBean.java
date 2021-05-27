@@ -34,9 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.ITypedResource;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -46,6 +44,8 @@ import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentTy
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
  * Supplies additional content for records (such contents produced by the crowdsourcing module).

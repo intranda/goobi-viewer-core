@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -48,6 +47,9 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * <p>
@@ -287,7 +289,7 @@ public class JsonTools {
         }
 
         String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
-        boolean isAnchor = SolrSearchIndex.isAnchor(doc);
+        boolean isAnchor = SolrTools.isAnchor(doc);
         PageType pageType = PageType.determinePageType(docStructType, (String) doc.getFieldValue(SolrConstants.MIMETYPE),
                 isAnchor || DocType.GROUP.name().equals(docType), StringUtils.isNotEmpty(fileName), false);
 
