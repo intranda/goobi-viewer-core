@@ -34,12 +34,29 @@
 				</div>
 	
 			</div>
-			<h:commandScript name="setGeoFacetFeature" render="@form" action="#{searchBean.facets.geoFacetting.setFeatureFromContext()}">
+<!-- 			<h:inputHidden id="inputGeoFacetting" value="#{searchBean.facets.geoFacetting.feature}"> -->
+<!-- 				<f:passThroughAttribute name="data-drilldown" value="geoCoords"/> -->
+<!-- 			</h:inputHidden>	 -->
+			<h:commandScript name="setGeoFacetFeature" render="@form" action="#{searchBean.facets.geoFacetting.setFeatureFromContext()}"
+			 onevent="applyDrilldown">
 			</h:commandScript>
 	          <script type="text/javascript">	  
 	          //<![CDATA[
+	              
+	              function applyDrilldown(data) {
+	                  console.log("apply drilldown, ", data.status);
+	                  if(data && data.status=="success") {	                      
+	                  	let $searchButton = $("#submitSearch");
+                 	 	if($searchButton.length > 0) {
+                 	 	    $searchButton.click();
+                 	 	}
+	                  }
+	              }
+	              
 		            function initFacetWidgetMap() {
-		                this.area = #{searchBean.facets.geoFacetting.feature};
+		                let areaString = '#{searchBean.facets.geoFacetting.feature}';
+		                this.area = areaString.length > 0 ? JSON.parse(areaString) : undefined;
+		                console.log("area is ", areaString, this.area, setGeoFacetFeature);
 		                let geoMap = new viewerJS.GeoMap({
 	                	    mapId: "geoFacettingMap",
 	                   		allowMovingFeatures: false,
@@ -53,25 +70,29 @@
 	                            zoom: 1,
 	                            center: [0,0] //long, lat
 	                        });
-	                    	console.log("draw area" , this.area);
-	                        switch(this.area.type) {
-	                            case "polygon":
-	                                geoMap.drawPolygon(this.area.vertices, {color: "blue"}, true);
-	                                break;
-	                            case "circle":
-	                                geoMap.drawCircle(this.area.center, this.area.radius, {color: "blue"}, true);
-	                                break;
-	                            case "rectangle":
-	                                geoMap.drawRectangle([this.area.vertices[0], this.area.vertices[2]], {color: "blue"}, true);
-	                                break;
-	                        }
+	                    	if(this.area) {	                    	    
+		                    	console.log("draw area" , this.area);
+		                        switch(this.area.type) {
+		                            case "polygon":
+		                                geoMap.drawPolygon(this.area.vertices, {color: "blue"}, true);
+		                                break;
+		                            case "circle":
+		                                geoMap.drawCircle(this.area.center, this.area.radius, {color: "blue"}, true);
+		                                break;
+		                            case "rectangle":
+		                                geoMap.drawRectangle([this.area.vertices[0], this.area.vertices[2]], {color: "blue"}, true);
+		                                break;
+		                        }
+	                    	}
 	
 						$("#expandFacetMap").on("click", e => {
 						    console.log("open overlay ", this);
 	                       	viewerJS.overlay.open($('<div id="geoFacettingOverlayMap" class="overlay__geomap"/>'), true, true, $node => {
 	                       	    $node.remove();
 	                       	    console.log("submit area ", this.area);
-	                       	 	setGeoFacetFeature({feature : JSON.stringify(this.area)})
+	                       	    //$("[data-drilldown='geoCoords']").val(JSON.stringify(this.area));
+	                       	 	setGeoFacetFeature({feature : this.area ? JSON.stringify(this.area) : ""});
+	                       	 	
 	                       	})
 	                       	.then($node => {
 	                       	    console.log("mount overlay map", $node.get(0));

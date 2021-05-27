@@ -2373,8 +2373,8 @@ this.initMap = function() {
 	    this.geoMap.initGeocoder(this.refs.geocoder);
 	    this.initMapDraw();
     }
-
     if(this.opts.area) {
+    console.log("area ", this.opts)
         let shape = this.opts.area;
         if(viewerJS.isString(shape)) {
             try {

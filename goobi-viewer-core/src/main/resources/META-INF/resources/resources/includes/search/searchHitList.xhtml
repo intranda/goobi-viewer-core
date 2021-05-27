@@ -20,36 +20,11 @@
 
     <!-- SEARCH LIST HITS -->
     <div class="search-list__hits">
-    
-        <h:form rendered="#{searchBean.facets.geoFacetting.active}">
-   			<div id="searchMapLocations" class="search-list__geomap">
-                 <h:commandLink action="pretty:searchgeomap">
-	                 <div id="searchMapLocationsMap" class="geomap" />
-                 </h:commandLink>           
+    	
+		<ui:fragment rendered="#{searchBean.facets.geoFacetting.hasArea()}">
+	    	<viewerComponent:geoMap geoMap="#{searchBean.hitsMap}" mapId="searchHitsGeoMap" linkToSearch="false"/>
+		</ui:fragment>
 
-                 <script>
-                 	
-             		(() => {
-
-                    	let geoMap = new viewerJS.GeoMap({
-                    	    mapId: "searchMapLocationsMap",
-                       		allowMovingFeatures: false,
-                       		language: "#{navigationHelper.localeString}",
-                       		popoverOnHover: false,
-                       		clusterMarkers: true,
-                       		fixed: true
-                       	});
-
-                       	$(document).ready(() => {                  		    
-                        	geoMap.init(undefined, #{searchBean.});
-
-                        })
-            		    
-            		})();
-                 
-                 </script>
-       		</div>
-       	</h:form>                 
        	
     
         <!-- SEARCH LIST SORTING -->

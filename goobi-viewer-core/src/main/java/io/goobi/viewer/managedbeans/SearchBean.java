@@ -58,6 +58,8 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +83,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.maps.GeoMap;
+import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
@@ -2654,7 +2657,23 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public GeoMap getHitsMap() {
-     if(cur)   
+       GeoMap map = new GeoMap();
+       map.setType(GeoMapType.MANUAL);
+       map.setShowPopover(false);
+       List<String> features = new ArrayList<>();
+       if(this.currentSearch != null) {
+           for (String coordsString : this.currentSearch.getHitGeoCoordinateList()) {
+               JSONObject feature = new JSONObject();
+               JSONObject geometry = new JSONObject();
+               geometry.put("coordinates", new JSONArray("[" + coordsString.replace(" ", ",") + "]"));
+               geometry.put("type", "Point");
+               feature.put("geometry", geometry);
+               feature.put("type", "Feature");
+               features.add(feature.toString());
+        }
+           map.setFeatures(features);
+       }
+       return map;
     }
      
 }

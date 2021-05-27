@@ -20,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,6 +143,9 @@ public class Search implements Serializable {
     /** BrowseElement list for the current search result page. */
     @Transient
     private final List<SearchHit> hits = new ArrayList<>();
+    
+    @Transient
+    private final List<String> hitGeoCoordinateList = new ArrayList<>();
 
     /**
      * Empty constructor for JPA.
@@ -370,10 +375,18 @@ public class Search implements Serializable {
 
             }
 
+            List<String> fieldList = Arrays.asList(SolrConstants.IDDOC);
+            int maxResults = 0;
+            if(facets.getGeoFacetting().isActive()) {
+                fieldList = Arrays.asList(SolrConstants.IDDOC, SolrConstants.WKT_COORDS);
+                maxResults = Integer.MAX_VALUE;
+            }
+            
+            
             // Actual search
             resp = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(finalQuery, 0, 0, null, allFacetFields, Collections.singletonList(SolrConstants.IDDOC), activeFacetFilterQueries, params);
+                    .search(finalQuery, 0, maxResults, null, allFacetFields, fieldList, activeFacetFilterQueries, params);
             if (resp.getResults() != null) {
                 Map expanded = resp.getExpandedResults();
                 hitsCount = resp.getResults().getNumFound();
@@ -385,6 +398,15 @@ public class Search implements Serializable {
                             if (count.getCount() > 1) {
                                 setHitsCount(hitsCount - (count.getCount() - 1));
                             }
+                        }
+                    }
+                }
+                this.hitGeoCoordinateList.clear();
+                if(facets.getGeoFacetting().isActive()) {
+                    for (SolrDocument doc : resp.getResults()) {
+                        String coords = (String) doc.getFieldValue(SolrConstants.WKT_COORDS);
+                        if(StringUtils.isNotBlank(coords)) {                            
+                            this.hitGeoCoordinateList.add(coords);
                         }
                     }
                 }
@@ -912,5 +934,12 @@ public class Search implements Serializable {
     public void toggleNotifications() throws DAOException {
         this.newHitsNotification = !this.newHitsNotification;
         DataManager.getInstance().getDao().updateSearch(this);
+    }
+    
+    /**
+     * @return the hitGeoCoordinateList
+     */
+    public List<String> getHitGeoCoordinateList() {
+        return hitGeoCoordinateList;
     }
 }

@@ -529,7 +529,7 @@ public class SearchFacets implements Serializable {
         //clear geoFacetItem and keep data in temp variable. If the facet string does not contain a geo-coord field, it remains cleared. Otherwise
         //it get restored
         GeoFacetItem tempGeoFacetItem = new GeoFacetItem(geoFacetItem);
-        geoFacetItem.clear();
+//        geoFacetItem.clear();
 
         if (StringUtils.isEmpty(facetString) || "-".equals(facetString)) {
             return;
@@ -553,7 +553,7 @@ public class SearchFacets implements Serializable {
                 //check if geo facetting is active and the facetlink starts with WKT_COORDS. If so, restore geoFacetItem
                 if(tempGeoFacetItem.isActive() && tempGeoFacetItem.getSolrField().equals(facetLink.substring(0, facetLink.indexOf(":")))) {
                     String tempFacetQuery = tempGeoFacetItem.getFacetQuery();
-                    if(StringUtils.isNotBlank(tempGeoFacetItem.getFeature())) {
+                    if(tempGeoFacetItem.hasFeature()) {
                         //the stored geoFacetItem already contains a geo query. Just restore it to keep the geoMap shape
                         geoFacetItem.setFeature(tempGeoFacetItem.getFeature());
                     } else {
@@ -879,7 +879,7 @@ public class SearchFacets implements Serializable {
             }
             sb.append(";;");
         }
-        if(geoFacetItem != null && geoFacetItem.isActive()) {
+        if(geoFacetItem != null && geoFacetItem.isActive() && geoFacetItem.hasArea()) {
             if (escapeSlashes) {
                 sb.append(BeanUtils.escapeCriticalUrlChracters(geoFacetItem.getFacetQuery()));
             } else {

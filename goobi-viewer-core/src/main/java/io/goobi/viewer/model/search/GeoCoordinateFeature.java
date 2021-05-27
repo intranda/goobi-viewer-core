@@ -119,4 +119,11 @@ public class GeoCoordinateFeature {
         }
         
     }
+
+    /**
+     * @return
+     */
+    public boolean hasVertices() {
+        return getVertices().length > 0;
+    }
 }

@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 public class GeoFacetItem {
     
     private static final Logger logger = LoggerFactory.getLogger(GeoFacetItem.class);
+    public static final GeoCoordinateFeature NO_AREA = new GeoCoordinateFeature(new double[0][2]);
+    
     
     private GeoCoordinateFeature feature = null;
     private final String solrField;
@@ -43,15 +45,26 @@ public class GeoFacetItem {
         this.solrField = orig.solrField;
         if(StringUtils.isBlank(orig.getFeature())) {
             this.feature = null;
+        } else if(!orig.feature.hasVertices()) {
+            this.feature = NO_AREA;
         } else {            
             this.feature = new GeoCoordinateFeature(orig.getFeature());
         }
     }
     
     public String getFeature() {
-        return feature == null ? "" : feature.getFeatureAsString();
+        return hasArea() ? feature.getFeatureAsString() : "";
     }
-
+    
+    public boolean hasFeature() {
+        return feature != null;
+    }
+    
+    public boolean hasArea() {
+        return feature != null && feature.hasVertices();
+    }
+    
+    
     /**
      * Sets {@link #currentGeoFacettingFeature} and sets the matching search string to the WKT_COORDS facet if available
      * 
@@ -62,7 +75,7 @@ public class GeoFacetItem {
                 if(StringUtils.isNotBlank(feature)) {            
                     this.feature = new GeoCoordinateFeature(feature);
                 } else {
-                    this.feature = null;
+                    this.feature = NO_AREA;
                 }
             } catch(JSONException e) {
                 logger.error("Faild to parse JSON object {}", feature);
@@ -78,7 +91,7 @@ public class GeoFacetItem {
     }
     
     public String getFacetQuery() {
-        if(isActive() && feature != null) {
+        if(isActive() && feature != null && feature.hasVertices()) {
             return solrField + ":" + getValue();
         } else {
             return "";
@@ -97,7 +110,7 @@ public class GeoFacetItem {
      * @return
      */
     public Object getEscapedFacetQuery() {
-        if(isActive() && feature != null) {
+        if(isActive() && feature != null && feature.hasVertices()) {
             return solrField + ":" + FacetItem.getEscapedValue(getValue());
         } else {
             return "";
@@ -121,6 +134,10 @@ public class GeoFacetItem {
      * @param vertices
      */
     public void setVertices(double[][] vertices) {
-        this.feature = new GeoCoordinateFeature(vertices);
+        if(vertices == null || vertices.length == 0) {
+            this.feature = NO_AREA;
+        } else {            
+            this.feature = new GeoCoordinateFeature(vertices);
+        }
     }
 }
