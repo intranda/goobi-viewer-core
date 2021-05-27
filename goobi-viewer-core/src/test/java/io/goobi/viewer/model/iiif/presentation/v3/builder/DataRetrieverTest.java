@@ -32,11 +32,11 @@ import de.intranda.monitoring.timer.TimerOutput;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * @author florian

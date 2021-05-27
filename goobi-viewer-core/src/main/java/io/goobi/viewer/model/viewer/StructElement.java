@@ -37,10 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -52,6 +48,11 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Each instance of this class represents a structure element. This class extends <code>StructElementStub</code> and contains additional
@@ -197,7 +198,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             if (doc == null) {
                 doc = getDocument();
             }
-            metadataFields = SolrSearchIndex.getFieldValueMap(doc);
+            metadataFields = SolrTools.getFieldValueMap(doc);
             work = Boolean.valueOf(getMetadataValue(SolrConstants.ISWORK));
             anchor = Boolean.valueOf(getMetadataValue(SolrConstants.ISANCHOR));
             // Only load PI if for topstruct/anchor documents to avoid non-resolvable URLs
@@ -269,8 +270,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     this.shapeMetadata = new ArrayList<>(shapeDocs.size());
                     for (SolrDocument shapeDoc : shapeDocs) {
                         String label = getLabel();// (String) shapeDoc.getFieldValue(SolrConstants.LABEL);
-                        String shape = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_SHAPE");
-                        String coords = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
+                        String shape = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_SHAPE");
+                        String coords = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
                         this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, getPi(), getImageNumber(), this.logid));
                     }
                 }
@@ -324,13 +325,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public boolean isHasParent() {
         return getMetadataValue(SolrConstants.IDDOC_PARENT) != null;
     }
-    
+
     public int getNumPages() {
         String numPages = getMetadataValue(SolrConstants.NUMPAGES);
-        if(StringUtils.isNotBlank(numPages)) {
+        if (StringUtils.isNotBlank(numPages)) {
             try {
                 return Integer.parseInt(numPages);
-            } catch(NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 logger.error("Invalid NUMPAGES value: " + numPages);
             }
         }
@@ -364,21 +365,24 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
         return parent;
     }
-    
+
+    /**
+     * 
+     * @return
+     */
     public Long getParentLuceneId() {
         String parentIddoc = getMetadataValue(SolrConstants.IDDOC_PARENT);
-        if(StringUtils.isNotBlank(parentIddoc)) {            
-            try {
+        if (StringUtils.isBlank(parentIddoc)) {
+            return null;
+        }
+
+        try {
             return Long.valueOf(parentIddoc);
-            } catch (NumberFormatException e) {
-                logger.error("Malformed number with get the parent element for Lucene IDDOC: {}", luceneId);
-                return null;
-            }
-        } else {
+        } catch (NumberFormatException e) {
+            logger.error("Malformed number with get the parent element for Lucene IDDOC: {}", luceneId);
             return null;
         }
     }
-
 
     /**
      * Checks whether the Solr document represented by this StructElement has child elements in the index.
@@ -849,7 +853,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             if (docParent == null) {
                 logger.warn("Anchor (PI: {}) has no child element: Cannot determine appropriate value", pi);
             } else {
-                return SolrSearchIndex.getSingleFieldStringValue(docParent, field);
+                return SolrTools.getSingleFieldStringValue(docParent, field);
             }
         }
 
@@ -880,7 +884,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             if (docVolume == null) {
                 logger.warn("Anchor has no child element: Cannot determine appropriate value");
             } else {
-                String iddoc = SolrSearchIndex.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
+                String iddoc = SolrTools.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
                 if (StringUtils.isNotBlank(iddoc)) {
                     StructElement volume = new StructElement(Long.parseLong(iddoc), docVolume);
                     return volume;
@@ -910,7 +914,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             List<StringPair> sortFields = Collections.singletonList(new StringPair("ORDER", ORDER.asc.name()));
             SolrDocumentList pages = DataManager.getInstance().getSearchIndex().search(query, 1, sortFields, null);
             if (!pages.isEmpty()) {
-                return SolrSearchIndex.getSingleFieldStringValue(pages.get(0), field);
+                return SolrTools.getSingleFieldStringValue(pages.get(0), field);
             }
         } else {
             try {
@@ -931,9 +935,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                         .toString();
                 SolrDocumentList pages = DataManager.getInstance().getSearchIndex().search(query, 1, null, null);
                 if (!pages.isEmpty()) {
-                    return SolrSearchIndex.getSingleFieldStringValue(pages.get(0), field);
+                    return SolrTools.getSingleFieldStringValue(pages.get(0), field);
                 }
             } catch (NullPointerException | NumberFormatException e) {
+                logger.trace(e.getMessage());
             }
         }
 

@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -32,16 +31,16 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * @author florian
@@ -91,7 +90,7 @@ public class AbstractAnnotationBuilder {
      * 
      * @return sort fields for PI_TOPSTRUCT, ORDER and IDDOC
      */
-    private List<StringPair> getDefaultSortFields() {
+    private static List<StringPair> getDefaultSortFields() {
         StringPair sortField1 = new StringPair(SolrConstants.PI_TOPSTRUCT, "asc");
         StringPair sortField2 = new StringPair(SolrConstants.ORDER, "asc");
         StringPair sortField3 = new StringPair(SolrConstants.IDDOC, "asc");
@@ -109,9 +108,8 @@ public class AbstractAnnotationBuilder {
         SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, Arrays.asList(UGC_SOLR_FIELDS)).getResults();
         if (hits.isEmpty()) {
             return Collections.emptyList();
-        } else {
-            return hits.stream().filter(hit -> isAccessGranted(hit, query, request)).collect(Collectors.toList());
         }
+        return hits.stream().filter(hit -> isAccessGranted(hit, query, request)).collect(Collectors.toList());
     }
     
     public Optional<SolrDocument> getAnnotationDocument(long id, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
@@ -120,9 +118,8 @@ public class AbstractAnnotationBuilder {
     }
 
     
-    private boolean isAccessGranted(SolrDocument doc, String query, HttpServletRequest request) {
-        
-        String accessCondition = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.ACCESSCONDITION);
+    private static boolean isAccessGranted(SolrDocument doc, String query, HttpServletRequest request) {
+        String accessCondition = SolrTools.getSingleFieldStringValue(doc, SolrConstants.ACCESSCONDITION);
         if(StringUtils.isBlank(accessCondition) || "OPENACCESS".equalsIgnoreCase(accessCondition)) {
             return true;
         } else if(request != null){
@@ -142,9 +139,8 @@ public class AbstractAnnotationBuilder {
         SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(getAnnotationQuery(), SolrSearchIndex.MAX_HITS, null, Arrays.asList(SolrConstants.ACCESSCONDITION));
         if (hits.isEmpty()) {
             return 0;
-        } else {
-            return hits.stream().filter(hit -> isAccessGranted(hit, getAnnotationQuery(), request)).count();
         }
+        return hits.stream().filter(hit -> isAccessGranted(hit, getAnnotationQuery(), request)).count();
     }
     
     protected AbstractBuilder getRestBuilder() {

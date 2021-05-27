@@ -51,8 +51,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.IndexerTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -101,7 +99,8 @@ import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.PageType;
-import net.sf.saxon.om.ItemConsumer;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * CMS functions.
@@ -1751,7 +1750,7 @@ public class CmsBean implements Serializable {
         if (doc != null) {
             Collection<Object> values = doc.getFieldValues(solrField);
             if (values != null) {
-                return values.stream().map(SolrSearchIndex::getAsString).collect(Collectors.toList());
+                return values.stream().map(SolrTools::getAsString).collect(Collectors.toList());
             }
         }
         return null;

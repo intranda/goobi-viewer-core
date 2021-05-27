@@ -65,9 +65,6 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
@@ -89,6 +86,10 @@ import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.translations.language.LocaleComparator;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Search utility class. Static methods only.
@@ -527,7 +528,7 @@ public final class SearchHelper {
                 throw new RecordNotFoundException(pi);
             }
 
-            boolean anchorOrGroup = SolrSearchIndex.isAnchor(doc) || SolrSearchIndex.isGroup(doc);
+            boolean anchorOrGroup = SolrTools.isAnchor(doc) || SolrTools.isGroup(doc);
             PageType pageType =
                     PageType.determinePageType((String) doc.get(SolrConstants.DOCSTRCT), (String) doc.get(SolrConstants.MIMETYPE), anchorOrGroup,
                             doc.containsKey(SolrConstants.THUMBNAIL), false);
@@ -2436,8 +2437,6 @@ public final class SearchHelper {
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
             throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         SXSSFWorkbook wb = new SXSSFWorkbook(25);
-        List<SXSSFSheet> sheets = new ArrayList<>();
-        int currentSheetIndex = 0;
         SXSSFSheet currentSheet = wb.createSheet("intranda_viewer_search");
 
         CellStyle styleBold = wb.createCellStyle();

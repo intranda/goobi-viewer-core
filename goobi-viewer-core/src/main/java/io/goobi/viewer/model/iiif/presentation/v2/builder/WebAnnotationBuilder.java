@@ -36,7 +36,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.intranda.api.annotation.IAnnotation;
-import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.JSONResource;
 import de.intranda.api.annotation.SimpleResource;
@@ -46,14 +45,13 @@ import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.annotation.wa.SpecificResourceURI;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
-import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * @author florian
@@ -67,7 +65,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     public WebAnnotationBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
     }
-    
+
     /**
      * Get all annotations for the given PI from the SOLR index, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
      * converted to WebAnnotations here
@@ -142,15 +140,15 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
         Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
         String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse(null);
         URI annoURI = getRestBuilder().getAnnotationURI(iddoc);
-        
+
         WebAnnotation anno = new WebAnnotation(annoURI);
 
         IResource body = createAnnnotationBodyFromUGCDocument(doc);
         anno.setBody(body);
 
-        if(pageOrder != null && coordString != null) {
+        if (pageOrder != null && coordString != null) {
             anno.setTarget(createFragmentTarget(pi, pageOrder, coordString, urlOnlyTarget));
-        } else if(pageOrder != null) {
+        } else if (pageOrder != null) {
             anno.setTarget(new SimpleResource(getRestBuilder().getCanvasURI(pi, pageOrder)));
         } else {
             anno.setTarget(new SimpleResource(getRestBuilder().getManifestURI(pi)));
@@ -167,14 +165,13 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * @param coordString
      * @param pageOrder
      */
-    public IResource createFragmentTarget(String pi, int pageOrder, String coordString,  boolean urlOnlyTarget) {
+    public IResource createFragmentTarget(String pi, int pageOrder, String coordString, boolean urlOnlyTarget) {
         try {
             FragmentSelector selector = new FragmentSelector(coordString);
             if (urlOnlyTarget) {
                 return new SpecificResourceURI(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
-            } else {
-                return new SpecificResource(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
             }
+            return new SpecificResource(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
         } catch (IllegalArgumentException e) {
             //old UGC coords format
             String regex = "([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+)";
@@ -187,13 +184,11 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
                 FragmentSelector selector = new FragmentSelector(new Rectangle(x1, y1, x2 - x1, y2 - y1));
                 if (urlOnlyTarget) {
                     return new SpecificResourceURI(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
-                } else {
-                    return new SpecificResource(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
                 }
-            } else {
-                //failed to decipher selector
-                return new SimpleResource(getRestBuilder().getCanvasURI(pi, pageOrder));
+                return new SpecificResource(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
             }
+            //failed to decipher selector
+            return new SimpleResource(getRestBuilder().getCanvasURI(pi, pageOrder));
         }
     }
 
@@ -204,15 +199,15 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     public IResource createAnnnotationBodyFromUGCDocument(SolrDocument doc) {
         IResource body = null;
         if (doc.containsKey(SolrConstants.MD_BODY)) {
-            String bodyString = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.MD_BODY);
-            try {                
+            String bodyString = SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_BODY);
+            try {
                 JSONObject json = new JSONObject(bodyString);
                 body = new JSONResource(json);
-            } catch(JSONException e)  {
+            } catch (JSONException e) {
                 body = new TextualResource(bodyString);
             }
         } else if (doc.containsKey(SolrConstants.MD_TEXT)) {
-            String text = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.MD_TEXT);
+            String text = SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_TEXT);
             body = new TextualResource(text);
         }
         return body;
@@ -220,31 +215,33 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
 
     /**
      * @param pi
-     * @param uri 
+     * @param uri
      * @param b
      * @return
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public AnnotationPage getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
-        List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly, request).values().stream().flatMap(List::stream).collect(Collectors.toList());
-        AnnotationPage page = new AnnotationPage(uri);
-        page.setItems(annos);
-        return page;
-    }
-    
-    public AnnotationPage getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer pageNo, boolean urlsOnly, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
-        List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly, request).entrySet().stream()
-        .filter(entry -> ObjectUtils.equals(pageNo, entry.getKey()))
-        .map(Entry::getValue)
-        .flatMap(List::stream)
-        .collect(Collectors.toList());
+    public AnnotationPage getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly, HttpServletRequest request)
+            throws PresentationException, IndexUnreachableException {
+        List<IAnnotation> annos =
+                getCrowdsourcingAnnotations(pi, urlsOnly, request).values().stream().flatMap(List::stream).collect(Collectors.toList());
         AnnotationPage page = new AnnotationPage(uri);
         page.setItems(annos);
         return page;
     }
 
-
-
+    public AnnotationPage getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer pageNo, boolean urlsOnly, HttpServletRequest request)
+            throws PresentationException, IndexUnreachableException {
+        List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly, request).entrySet()
+                .stream()
+                // TODO Use Objects.equals()
+                .filter(entry -> ObjectUtils.equals(pageNo, entry.getKey()))
+                .map(Entry::getValue)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+        AnnotationPage page = new AnnotationPage(uri);
+        page.setItems(annos);
+        return page;
+    }
 
 }

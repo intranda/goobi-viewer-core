@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.XMLConstants;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -62,7 +61,7 @@ public class XmlTools {
 
     private static final Logger logger = LoggerFactory.getLogger(XmlTools.class);
 
-    static SAXBuilder getSAXBuilder() {
+    public static SAXBuilder getSAXBuilder() {
         SAXBuilder builder = new SAXBuilder();
         // Disable access to external entities
         builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);

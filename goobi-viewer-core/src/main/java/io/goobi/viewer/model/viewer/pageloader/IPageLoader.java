@@ -20,11 +20,11 @@ import java.util.Locale;
 
 import javax.faces.model.SelectItem;
 
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>

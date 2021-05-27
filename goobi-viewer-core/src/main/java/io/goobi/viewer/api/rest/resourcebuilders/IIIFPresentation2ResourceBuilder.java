@@ -53,8 +53,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -73,6 +71,8 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * @author florian
@@ -350,7 +350,7 @@ public class IIIFPresentation2ResourceBuilder {
 
         String finalQuery = query + " " + SearchHelper.ALL_RECORDS_QUERY;
 
-        List<StringPair> sortFieldList = SolrSearchIndex.getSolrSortFieldsAsList(sortFields == null ? "" : sortFields, ",", " ");
+        List<StringPair> sortFieldList = SolrTools.getSolrSortFieldsAsList(sortFields == null ? "" : sortFields, ",", " ");
         SolrDocumentList queryResults = DataManager.getInstance()
                 .getSearchIndex()
                 .search(finalQuery, first, rows, sortFieldList, null, Arrays.asList(CollectionBuilder.CONTAINED_WORKS_QUERY_FIELDS))
