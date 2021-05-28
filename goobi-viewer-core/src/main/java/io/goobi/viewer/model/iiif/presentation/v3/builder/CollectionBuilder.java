@@ -41,7 +41,6 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -51,6 +50,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>

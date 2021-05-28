@@ -42,8 +42,8 @@ import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 

@@ -44,9 +44,6 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
@@ -63,6 +60,10 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * <p>
@@ -237,7 +238,7 @@ public class TocMaker {
             ancestorFields.add(0, SolrConstants.PI_PARENT);
         }
 
-        int mainRecordLevel = 0; // currently not in use
+        // int mainRecordLevel = 0; // currently not in use
         for (String ancestorField : ancestorFields) {
             logger.trace("ancestor field: {}", ancestorField);
             // Collect ancestor hierarchy in a list
@@ -261,7 +262,7 @@ public class TocMaker {
             String footerId = getFooterId(structElement, DataManager.getInstance().getConfiguration().getWatermarkIdField());
             if (!ancestorList.isEmpty()) {
                 // Add ancestors, if found
-                mainRecordLevel += ancestorList.size();
+                // mainRecordLevel += ancestorList.size();
                 for (SolrDocument ancestor : ancestorList) {
                     mainDocumentChain.add((String) ancestor.getFieldValue(SolrConstants.IDDOC));
                 }
@@ -358,7 +359,6 @@ public class TocMaker {
             String logId = (String) doc.getFieldValue(SolrConstants.LOGID);
             String topStructPi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
             String thumbnailFile = (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
-            String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
             String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
 
             if (label.isEmpty()) {
@@ -520,16 +520,11 @@ public class TocMaker {
                     ret.put(groupName, groupList);
                 }
 
-                String numberSort = volumeDoc.getFieldValue(SolrConstants.CURRENTNOSORT) != null
-                        ? String.valueOf(volumeDoc.getFieldValue(SolrConstants.CURRENTNOSORT)) : null;
-                String numberText = volumeDoc.getFieldValue(SolrConstants.CURRENTNO) != null
-                        ? (String) volumeDoc.getFieldValue(SolrConstants.CURRENTNO) : numberSort;
                 String volumeIddoc = (String) volumeDoc.getFieldValue(SolrConstants.IDDOC);
                 String volumeLogId = (String) volumeDoc.getFieldValue(SolrConstants.LOGID);
                 String thumbnailUrl = (String) volumeDoc.getFieldValue(SolrConstants.THUMBNAIL);
                 String volumeMimeType = (String) volumeDoc.getFieldValue(SolrConstants.MIMETYPE);
                 logger.trace("volume mime type: {}", volumeMimeType);
-                String dataRepository = (String) volumeDoc.getFieldValue(SolrConstants.DATAREPOSITORY);
 
                 int thumbWidth = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailWidth();
                 int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
@@ -646,7 +641,6 @@ public class TocMaker {
                     .append(')')
                     .toString();
             // logger.trace("Child doc query: {}", query);
-            String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
             // TODO determine child docstruct type before fetching the child docs to determine the required fields
             SolrDocumentList docs = DataManager.getInstance()
                     .getSearchIndex()
@@ -682,18 +676,15 @@ public class TocMaker {
             } else {
                 queryValue = pi;
             }
-            String query = new StringBuilder(ancestorField).append(':').append(queryValue).toString();
-            // logger.trace("Loose children query: {}", query);
             // logger.trace("sort {} by {}", SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT), DataManager.getInstance()
             //                    .getConfiguration().getTocVolumeSortFieldsForTemplate(SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT)));
-            String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
             // TODO determine child docstruct type before fetching the child docs to determine the required fields
             SolrDocumentList childDocs = DataManager.getInstance()
                     .getSearchIndex()
                     .search(new StringBuilder(ancestorField).append(':').append(queryValue).toString(), SolrSearchIndex.MAX_HITS,
                             DataManager.getInstance()
                                     .getConfiguration()
-                                    .getTocVolumeSortFieldsForTemplate(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT)),
+                                    .getTocVolumeSortFieldsForTemplate(SolrTools.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT)),
                             null);
             boolean addSiblings = addAllSiblings && mainDocumentChain.contains(iddoc);
             logger.trace("Loose children of {}: {}; add siblings: {}", queryValue, childDocs.size(), addSiblings);
@@ -815,11 +806,11 @@ public class TocMaker {
 
         // Fallback if no template found
         if (labelConfigList == null || labelConfigList.isEmpty()) {
-            label.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.LABEL));
+            label.setValue(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
             if (StringUtils.isEmpty(label.toString())) {
-                label.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE));
+                label.setValue(SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE));
                 if (StringUtils.isEmpty(label.toString())) {
-                    label.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT));
+                    label.setValue(SolrTools.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT));
                 }
             }
             return label;
@@ -848,7 +839,7 @@ public class TocMaker {
                     break;
                 default:
                     value = new SimpleMetadataValue();
-                    value.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, param.getKey()));
+                    value.setValue(SolrTools.getSingleFieldStringValue(doc, param.getKey()));
                     // logger.trace("value: {}:{}", param.getKey(), value.getValue());
                     break;
             }
@@ -857,7 +848,7 @@ public class TocMaker {
             if (StringUtils.isEmpty(value.toString())
                     && (SolrConstants.LABEL.equals(param.getKey()) || SolrConstants.LABEL.equals(param.getAltKey()))) {
                 // Docstruct fallback should always be translated
-                String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
+                String docstruct = SolrTools.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
                 value = ViewerResourceBundle.getTranslations(docstruct);
             }
 
@@ -907,9 +898,9 @@ public class TocMaker {
     public static IMetadataValue createMultiLanguageValue(SolrDocument doc, String field, String altField) {
         IMetadataValue value;
         value = new MultiLanguageMetadataValue();
-        Map<String, List<String>> valueMap = SolrSearchIndex.getMetadataValuesForLanguage(doc, field);
+        Map<String, List<String>> valueMap = SolrTools.getMetadataValuesForLanguage(doc, field);
         if (valueMap.isEmpty() && StringUtils.isNotEmpty(altField)) {
-            valueMap = SolrSearchIndex.getMetadataValuesForLanguage(doc, altField);
+            valueMap = SolrTools.getMetadataValuesForLanguage(doc, altField);
         }
         valueMap.entrySet().stream().forEach(entry -> {
             String language = entry.getKey();
@@ -951,7 +942,7 @@ public class TocMaker {
     static String getFooterId(SolrDocument doc, List<String> fields) {
         String ret = null;
         for (String field : fields) {
-            List<String> footerIdValues = SolrSearchIndex.getMetadataValues(doc, field);
+            List<String> footerIdValues = SolrTools.getMetadataValues(doc, field);
             if (footerIdValues != null && !footerIdValues.isEmpty()) {
                 ret = footerIdValues.get(0);
                 break;

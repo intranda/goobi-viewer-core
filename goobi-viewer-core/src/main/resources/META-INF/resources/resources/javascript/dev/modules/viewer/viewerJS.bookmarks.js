@@ -204,6 +204,28 @@ var viewerJS = ( function( viewer ) {
 //                $dropdown.on("click", (event) => event.stopPropagation());
             },
             calcDropDownWidth: function(dropdown, button) {
+              if (dropdown.style.display === 'none') {
+                console.log(1)
+                dropdown.style.display = 'block';
+                var dropDownRect = dropdown.getBoundingClientRect();
+                var overflowRight = 
+                  (dropDownRect.x + dropDownRect.width) - document.documentElement.clientWidth;
+                dropdown.style.display = 'none';
+              } else {
+                console.log(2)
+                var dropDownRect = dropdown.getBoundingClientRect();
+                var overflowRight = 
+                  (dropDownRect.x + dropDownRect.width) - document.documentElement.clientWidth;
+              }
+              console.log(3)
+
+              if(dropDownRect.x < 0) dropdown.style.right = dropDownRect.x +'px';
+              if (overflowRight > 0) dropdown.style.left = - overflowRight + 'px';
+
+
+
+
+
               // get the current dropdown width
               var dropDownStyles = getComputedStyle(dropdown);
               var dropDownWidth = parseInt(dropDownStyles.width);
@@ -242,7 +264,7 @@ var viewerJS = ( function( viewer ) {
                     // show/hide dropdown + and set it's width 
                     $(event.currentTarget).next('.bookmark-navigation__dropdown')
                       .fadeToggle('fast')
-                      .css("width", maxWidth);
+                      //.css("width", maxWidth);
                 })
                 $button.after($dropdown);
                 this.sessionBookmarkDropdown = riot.mount('bookmarklistsession', {

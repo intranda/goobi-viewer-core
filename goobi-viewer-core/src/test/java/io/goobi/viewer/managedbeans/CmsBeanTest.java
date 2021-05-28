@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -44,6 +43,7 @@ import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 

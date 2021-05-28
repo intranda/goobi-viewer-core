@@ -13,6 +13,7 @@
 	<composite:implementation>
 		<h:panelGroup rendered="#{metadataBean.getBottomMetadataElement(0).hasSidebarMetadata and not (activeDocumentBean.anchor or activeDocumentBean.group)}">
 
+				<!-- METS and other non-LIDO formats -->
 				<ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.lidoRecord}">
 				<div id="widgetMetadata" class="widget widget-metadata">
 					<h3>#{msg.sidebarBibData}</h3>
@@ -62,6 +63,7 @@
 				</div>
 				</ui:fragment>
 				
+				<!-- LIDO event sidebar metadata (event metadata explicitly configured in the sidebar metadata list) -->
 				<h:panelGroup rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0}">
 					<dl>
 						<c:forEach items="#{metadataBean.events}" var="event">
@@ -92,7 +94,10 @@
 					</dl>
 				</h:panelGroup>
 				
+				<!-- LIDO -->
 				<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}">
+				
+					<!-- LIDO main metadata -->
                     <div class="widget widget-metadata__lido">
                     <ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement">
                         <h:panelGroup rendered="#{fn:length(metadataElement.metadataList) > 0}">
@@ -127,29 +132,30 @@
                 	</ui:repeat>
                 	</div>
                 	
+                	<!-- LIDO event metadata (configured in the main metadata list) -->
                 	<ui:repeat value="#{metadataBean.events}" var="event" varStatus="status">
                 		<div class="widget widget-metadata__events">
-                		<h3>#{event.label}</h3>
-                        <ui:repeat value="#{event.metadata}" var="metadata">
-                            <h:panelGroup rendered="#{!metadata.blank}">
-                                <dl>
-                                    <dt>#{msg[metadata.label]}:</dt>
-                                    <h:panelGroup>
-                                        <dd>
-                                            <ui:repeat value="#{metadata.values}" var="val">
-                                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                    <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
-                                                        <f:param value="#{val.getComboValueShort(ind)}" />
-                                                    </c:forEach>
-                                                </h:outputFormat>
-                                                <br />
-                                            </ui:repeat>
-                                        </dd>
-                                    </h:panelGroup>
-                                </dl>
-                            </h:panelGroup>
-                        </ui:repeat>
-                	</div>
+                			<h3>#{event.label}</h3>
+                			<dl>
+                        		<ui:repeat value="#{event.metadata}" var="metadata">
+                            		<h:panelGroup rendered="#{!metadata.blank}">
+                                    	<dt>#{msg[metadata.label]}:</dt>
+                                    	<h:panelGroup>
+                                        	<dd>
+                                            	<ui:repeat value="#{metadata.values}" var="val">
+                                                	<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+                                                    	<c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                        	<f:param value="#{val.getComboValueShort(ind)}" />
+                                                    	</c:forEach>
+                                                	</h:outputFormat>
+                                                	<br />
+                                            	</ui:repeat>
+                                        	</dd>
+                                    	</h:panelGroup>
+                            		</h:panelGroup>
+                        		</ui:repeat>
+                        	</dl>
+                		</div>
                     </ui:repeat>
                 </ui:fragment>
             

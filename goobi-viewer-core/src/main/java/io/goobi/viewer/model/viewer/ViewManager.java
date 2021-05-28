@@ -15,7 +15,14 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO_ZIP;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT_ZIP;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI_LANG;
 
 import java.awt.Dimension;
 import java.io.FileNotFoundException;
@@ -57,8 +64,6 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -91,6 +96,8 @@ import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -1379,13 +1386,20 @@ public class ViewManager implements Serializable {
         return pageLoader.getNumPages();
     }
 
-    public int getLastPageOrder() {
+    /**
+     * 
+     * @return Last page number
+     */    public int getLastPageOrder() {
         if (pageLoader == null) {
             return -1;
         }
         return pageLoader.getLastPageOrder();
     }
 
+     /**
+      * 
+      * @return First page number
+      */
     public int getFirstPageOrder() {
         if (pageLoader == null) {
             return -1;
@@ -3150,7 +3164,7 @@ public class ViewManager implements Serializable {
                         if (doc != null) {
                             JSONObject jsonObj = new JSONObject();
                             String versionLabel =
-                                    versionLabelField != null ? SolrSearchIndex.getSingleFieldStringValue(doc, versionLabelField) : null;
+                                    versionLabelField != null ? SolrTools.getSingleFieldStringValue(doc, versionLabelField) : null;
                             if (StringUtils.isNotEmpty(versionLabel)) {
                                 jsonObj.put("label", versionLabel);
                             }
@@ -3195,7 +3209,7 @@ public class ViewManager implements Serializable {
                         if (doc != null) {
                             JSONObject jsonObj = new JSONObject();
                             String versionLabel =
-                                    versionLabelField != null ? SolrSearchIndex.getSingleFieldStringValue(doc, versionLabelField) : null;
+                                    versionLabelField != null ? SolrTools.getSingleFieldStringValue(doc, versionLabelField) : null;
                             if (StringUtils.isNotEmpty(versionLabel)) {
                                 jsonObj.put("label", versionLabel);
                             }

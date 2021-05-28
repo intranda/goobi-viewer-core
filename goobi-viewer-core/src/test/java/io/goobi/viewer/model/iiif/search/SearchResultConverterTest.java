@@ -35,10 +35,10 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
+import io.goobi.viewer.solr.SolrConstants;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 

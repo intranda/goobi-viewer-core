@@ -47,8 +47,6 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapp
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.WatermarkHandler;
 import io.goobi.viewer.exceptions.DAOException;
@@ -62,6 +60,8 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * <p>

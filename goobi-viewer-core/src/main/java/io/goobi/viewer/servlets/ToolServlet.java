@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.Version;
-import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Servlet for deleting cache elements. Should not be accessible to unauthorized persons. This is a temporary solutions which will probably be
@@ -101,7 +101,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
                     //                }
                     break;
                 case "checkSolrSchemaName":
-                    String[] result = SolrSearchIndex.checkSolrSchemaName();
+                    String[] result = SolrTools.checkSolrSchemaName();
                     int status = Integer.valueOf(result[0]);
                     if (status == 200) {
                         response.setStatus(200);

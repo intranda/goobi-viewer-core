@@ -21,8 +21,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.managedbeans.SitelinkBean;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class SitelinkBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 

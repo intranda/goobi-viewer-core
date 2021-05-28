@@ -9,7 +9,7 @@
   },
   "license": "GPL-2.0-or-later",
   "devDependencies": {
-    "grunt": "^1.4.0",
+    "grunt": "^1.4.1",
     "grunt-concurrent": "^3.0.0",
     "grunt-contrib-concat": "*",
     "grunt-contrib-less": "^3.0.0",
@@ -20,7 +20,7 @@
     "less-plugin-autoprefix": "^2.0.0",
     "michelangelo": "^0.8.0",
     "pdfjs-dist": "^2.7.570",
-    "webpack": "5.37.0"
+    "webpack": "5.37.1"
   },
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "*",
@@ -34,6 +34,6 @@
     "swagger-ui-dist": "*",
     "sweetalert2": "*",
     "swiper": "*",
-    "tinymce": "~5.8.0"
+    "tinymce": "~5.8.1"
   }
 }

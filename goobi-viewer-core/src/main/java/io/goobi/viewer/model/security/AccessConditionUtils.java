@@ -40,9 +40,6 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -53,6 +50,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * <p>
@@ -905,7 +906,7 @@ public class AccessConditionUtils {
     }
 
     /**
-     * Check whether the requiredAccessConditions consist only of the {@link io.goobi.viewer.controller.SolrConstants#OPEN_ACCESS_VALUE OPENACCESS}
+     * Check whether the requiredAccessConditions consist only of the {@link io.goobi.viewer.solr.SolrConstants#OPEN_ACCESS_VALUE OPENACCESS}
      * condition and OPENACCESS is not contained in allLicenseTypes. In this and only this case can we savely assume that everything is permitted. If
      * OPENACCESS is in the database then it likely contains some access restrictions which need to be checked
      *
@@ -1028,7 +1029,7 @@ public class AccessConditionUtils {
             return 100;
         }
 
-        List<String> requiredAccessConditions = SolrSearchIndex.getMetadataValues(doc, SolrConstants.ACCESSCONDITION);
+        List<String> requiredAccessConditions = SolrTools.getMetadataValues(doc, SolrConstants.ACCESSCONDITION);
         // No relevant access condition values
         if (requiredAccessConditions == null || requiredAccessConditions.isEmpty()
                 || requiredAccessConditions.get(0).equals(SolrConstants.OPEN_ACCESS_VALUE)) {

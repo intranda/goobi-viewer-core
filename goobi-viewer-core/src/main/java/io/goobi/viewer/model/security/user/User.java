@@ -60,7 +60,6 @@ import com.timgroup.jgravatar.GravatarRating;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -77,6 +76,7 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>

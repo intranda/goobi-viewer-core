@@ -62,7 +62,7 @@ public class XmlTools {
 
     private static final Logger logger = LoggerFactory.getLogger(XmlTools.class);
 
-    static SAXBuilder getSAXBuilder() {
+    public static SAXBuilder getSAXBuilder() {
         SAXBuilder builder = new SAXBuilder();
         // Disable access to external entities
         builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
