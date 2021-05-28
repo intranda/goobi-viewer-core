@@ -38,8 +38,10 @@
 		        	</h:inputHidden>
 		        	
 				<div id="widgetGeoFacettingOverlay" class="widget-geofacetting__overlay">
-					<button class="btn btn--default geo-map__reset-search" data-geofacet="reset">#{msg.reset}</button>
-					<button class="btn btn--full geo-map__submit-search" data-geofacet="trigger-execute">#{msg.search}</button>
+				<div class="widget-geofacetting__overlay-buttons-wrapper">
+					<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="reset">#{msg.reset}</button>
+					<button class="btn btn--full widget-geofacetting__overlay-submit-search" data-geofacet="trigger-execute">#{msg.search}</button>
+				</div>	
 		        	<div id="geoFacettingOverlayMap" class="overlay__geomap"></div>
 				</div>
 	
