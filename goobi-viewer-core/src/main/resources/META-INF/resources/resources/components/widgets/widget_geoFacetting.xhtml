@@ -28,15 +28,19 @@
 				<div class="widget__body">
 					<div id="geoFacettingMap" class="geo-map"></div>
 				</div>
-				
-				<div id="geoFacettingOverlayMap" class="overlay__geomap" >
-					<h:commandButton id="submitSearch" styleClass="btn btn--full" action="pretty:newSearch5" value="#{msg.search}">
+
+					<h:commandButton  styleClass="d-none" action="pretty:newSearch5" value="#{msg.search}">
 		                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
+		                    <f:passThroughAttribute name="data-geofacet" value="execute"/>
 		        	</h:commandButton>
-				</div>
-				
+		        	<h:inputHidden  value="#{searchBean.facets.geoFacetting.feature}">
+		        		<f:passThroughAttribute name="data-geofacet" value="feature"/>
+		        	</h:inputHidden>
+		        	
 				<div id="widgetGeoFacettingOverlay" class="widget-geofacetting__overlay">
-					<div id="geoFacettingOverlayMap" class="widget-geofacetting__overlay__geo-map"></div>
+					<button class="btn btn--default geo-map__reset-search" data-geofacet="reset">#{msg.reset}</button>
+					<button class="btn btn--full geo-map__submit-search" data-geofacet="trigger-execute">#{msg.search}</button>
+		        	<div id="geoFacettingOverlayMap" class="overlay__geomap"></div>
 				</div>
 	
 			</div>
@@ -47,7 +51,7 @@
 	          //<![CDATA[
 	              
 	              function applyDrilldown(data) {
-	                  console.log("apply drilldown, ", data.status);
+	                  //console.log("apply drilldown, ", data.status);
 	                  if(data && data.status=="success") {	                      
 	                  	let $searchButton = $("#submitSearch");
                  	 	if($searchButton.length > 0) {
@@ -59,7 +63,7 @@
 		            function initFacetWidgetMap() {
 		                let areaString = '#{searchBean.facets.geoFacetting.feature}';
 		                this.area = areaString.length > 0 ? JSON.parse(areaString) : undefined;
-		                console.log("area is ", areaString, this.area, setGeoFacetFeature);
+		                //console.log("area is ", areaString, this.area, setGeoFacetFeature);
 		                let geoMap = new viewerJS.GeoMap({
 	                	    mapId: "geoFacettingMap",
 	                   		allowMovingFeatures: false,
@@ -87,24 +91,36 @@
 		                                break;
 		                        }
 	                    	}
-	
+						
+	                    	
+			                 	let $facetSearch = $("[data-geofacet='execute']");  
+			                 	let $facetTriggerSearch = $("[data-geofacet='trigger-execute']");  
+			                 	let $facetReset = $("[data-geofacet='reset']");  
+			                 	let $facetInput = $("[data-geofacet='feature']");  
 						$("#expandFacetMap").on("click", e => {
-						    console.log("open overlay ", this);
-	                       	viewerJS.overlay.open($('#geoFacettingOverlayMap'), true, false, $node => {
-	                       	    $node.remove();
-	                       	    console.log("submit area ", this.area);
-	                       	    //$("[data-drilldown='geoCoords']").val(JSON.stringify(this.area));
-	                       	 	setGeoFacetFeature({feature : this.area ? JSON.stringify(this.area) : ""});
-	                       	 	
+						    //console.log("open overlay ", this);
+	                       	viewerJS.overlay.open($('#widgetGeoFacettingOverlay'), false, true, $node => {
+	                       	    $node.hide();
 	                       	})
-	                       	.then($node => {
-	                       	    console.log("mount overlay map", $node.get(0));
-		                       	 riot.mount($node.get(0), "geomapsearch", {
+	                       	.then(overlay => {
+	                       	    overlay.node.show();
+			                 	$facetTriggerSearch.off().on("click", () => {
+			                 	   //console.log("trigger search");
+			                 	   $facetSearch.click();
+			                 	});
+			                 	$facetReset.off().on("click", () => {
+			                 	    this.area = undefined;
+			                 	    overlay.close();
+			                 	})
+	                       	    //console.log("mount overlay map", overlay.node.get(0));
+		                       	 riot.mount($("#geoFacettingOverlayMap"), "geomapsearch", {
 		     					    inactive: false,
 		     					    area : this.area,
 		     					    onFeatureSelect: area => {
-		     					        console.log("Set facetting area", area);
-		     					        this.area = area;
+		     					        //console.log("Set facetting area", area);
+		     					       console.log("submit area ", area);
+		     					      	$facetInput.val(area ? JSON.stringify(area) : "");
+			                       	    this.area = area;
 		     					    }
 		     					}); 
 	                       	});                       	

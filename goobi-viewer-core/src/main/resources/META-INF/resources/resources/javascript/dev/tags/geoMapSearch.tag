@@ -5,9 +5,6 @@
 <div class="geo-map__wrapper">
 	<div ref="geocoder" class="geocoder"/>
 	<div class="geo-map__buttons-wrapper">
-		<!-- FILL THIS WITH FUNCTIONS and message keys -->
-		<button class="btn btn--default geo-map__reset-search">#{msg.reset}</button>
-		<button class="btn btn--full geo-map__submit-search">#{msg.search}</button>
 	</div>
 	<div ref="map" class="geo-map"></div>
 </div>
@@ -53,7 +50,7 @@ initMap() {
 	    this.initMapDraw();
     }
     if(this.opts.area) {
-    console.log("area ", this.opts)
+    	//console.log("area ", this.opts)
         let shape = this.opts.area;
         if(viewerJS.isString(shape)) {
             try {                

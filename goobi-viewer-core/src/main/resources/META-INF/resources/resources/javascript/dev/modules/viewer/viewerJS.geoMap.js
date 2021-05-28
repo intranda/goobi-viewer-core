@@ -109,7 +109,6 @@ var viewerJS = ( function( viewer ) {
         
         let defer = Q.defer();
         this.map.whenReady(e => {
-        	console.log("map loaded", e);
         	defer.resolve(this);
         });
         
@@ -219,7 +218,7 @@ var viewerJS = ( function( viewer ) {
 	    		accessToken : this.config.mapBox.token,
 	    		mapboxgl: mapboxgl
 	    	});
-	    	console.log("init geocoder with config" , config);
+	    	if(_debug)console.log("init geocoder with config" , config);
 	    	this.geocoder = new MapboxGeocoder(config);
 	    	this.geocoder.addTo(element);
 	    	this.geocoder.on("result", (event) => {
