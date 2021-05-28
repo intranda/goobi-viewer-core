@@ -1148,8 +1148,9 @@ public class ActiveDocumentBean implements Serializable {
             logger.trace("{} is left page", currentLeftPage.get().getOrder());
             number = currentLeftPage.get().getOrder() + step;
         } else if (currentRightPage.isPresent()) {
+            // If only the right page is present, it's probably the first page - do not add step at this point
             logger.trace("{} is right page", currentRightPage.get().getOrder());
-            number = currentRightPage.get().getOrder() + step;
+            number = currentRightPage.get().getOrder();
         } else {
             number = viewManager.getCurrentImageOrder() + step;
         }
@@ -1161,6 +1162,9 @@ public class ActiveDocumentBean implements Serializable {
         }
         // If the immediate neighbor is not a double image, add another step
         number += step;
+
+        // logger.trace("step: {}", step);
+        // logger.trace("Number: {}", number);
 
         return getPageUrl(number + "-" + (number + 1));
     }
