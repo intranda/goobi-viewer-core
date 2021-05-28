@@ -2338,7 +2338,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	    }
     	}.bind(this)
 });
-riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
+riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"><button class="btn btn--default geo-map__reset-search">#{msg.reset}</button><button class="btn btn--full geo-map__submit-search">#{msg.search}</button></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
 
 this.on("mount", function() {
 	this.initMap();

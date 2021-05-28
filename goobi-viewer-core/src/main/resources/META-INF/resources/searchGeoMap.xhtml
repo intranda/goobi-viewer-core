@@ -21,18 +21,26 @@
 			<div id="searchGeoCoords">
 				<h:form id="searchGeoCoordsForm" prependId="false">
 					<div class="search-geo-coords">
-						<!-- SEARCH CALENDAR TITLE -->
+						<!-- SEARCH GEO MAPS TITLE -->
 						<div class="search-geo-coords__title">
 							<h2>
 								<h:outputText value="#{msg.searchGeoCoords}" />
 							</h2>
 						</div>
-						<h:inputHidden id="searchInput" value="#{searchBean.facets.geoFacetting.feature}"/>
-						<h:commandButton id="submitSearch" styleClass="btn btn--full" action="pretty:newSearch5" value="#{msg.search}">
-		                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
-		                    <f:passThroughAttribute name="disabled" value="disabled"></f:passThroughAttribute>
-		                </h:commandButton>
-						<geoMapSearch></geoMapSearch>
+						<div class="search-geo-coords__content-container">
+							<div class="search-geo-coords__buttons-wrapper">
+								<h:inputHidden id="searchInput" value="#{searchBean.facets.geoFacetting.feature}"/>
+								
+								<!-- TO DO ACTION FOR RESET -->
+								<h:commandLink styleClass="btn btn--default search-geo-coords__reset-search" value="#{msg.reset}" action="#{search.resetSearch}" />
+								
+								<h:commandButton id="submitSearch" styleClass="btn btn--full search-geo-coords__submit-search" action="pretty:newSearch5" value="#{msg.search}">
+				                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
+				                    <f:passThroughAttribute name="disabled" value="disabled"></f:passThroughAttribute>
+				                </h:commandButton>
+			                </div>
+							<geoMapSearch></geoMapSearch>
+						</div>
 						
 						<script>
 							

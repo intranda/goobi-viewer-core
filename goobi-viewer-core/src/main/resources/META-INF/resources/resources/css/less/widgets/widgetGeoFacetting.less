@@ -127,7 +127,31 @@
 			width: 100%;
 			height: 100%;
 		}
+		&__buttons-wrapper {
+			position: absolute;
+			right: 20px;
+			bottom: 40px;
+			z-index: 401;
+		}
+		&__reset-search {
+			margin-right: 0.5rem;
+		}
+		&__submit-search {
+		}
 	}
+
+	.geocoder {
+		position: absolute;
+		right: 30px;
+		top: 30px;
+		z-index: 401;
+	}
+	.mapboxgl-ctrl-geocoder--input {
+		&:focus {
+			outline: none;
+		}
+	}
+	
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
