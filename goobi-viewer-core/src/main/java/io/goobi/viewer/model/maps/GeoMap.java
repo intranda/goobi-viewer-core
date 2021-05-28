@@ -301,6 +301,7 @@ public class GeoMap {
      */
     public void setType(GeoMapType type) {
         this.type = type;
+        this.featuresAsString = null;
     }
 
     /**
