@@ -495,7 +495,7 @@ public class Search implements Serializable {
             }
             return locs;
         } else if(o instanceof String) {
-            Matcher matcher = Pattern.compile("([\\d\\.]+)\\s([\\d\\.]+)").matcher((String)o);
+            Matcher matcher = Pattern.compile("([\\d\\.\\-]+)\\s([\\d\\.\\-]+)").matcher((String)o);
             while(matcher.find() && matcher.groupCount() == 2) {
                 locs.add(parsePoint(matcher.group(1), matcher.group(2)));                
             } 
