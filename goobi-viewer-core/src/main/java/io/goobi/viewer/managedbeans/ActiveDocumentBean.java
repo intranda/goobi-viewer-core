@@ -955,8 +955,13 @@ public class ActiveDocumentBean implements Serializable {
     public String getPageUrl(String pageType, String pageOrderRange) throws IndexUnreachableException {
         StringBuilder sbUrl = new StringBuilder();
         if (StringUtils.isBlank(pageType)) {
-            pageType = navigationHelper.getCurrentView();
-            if (pageType == null) {
+            if (navigationHelper != null) {
+                pageType = navigationHelper.getCurrentView();
+                if (pageType == null) {
+                    pageType = PageType.viewObject.name();
+                }
+            }
+            if (StringUtils.isBlank(pageType)) {
                 pageType = PageType.viewObject.name();
             }
             // logger.trace("current view: {}", pageType);
@@ -1115,6 +1120,10 @@ public class ActiveDocumentBean implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws DAOException
+     * @should return correct page in single page mode
+     * @should return correct range in double page mode if current page double image
+     * @should return correct range in double page mode if currently showing two pages
+     * @should return correct range in double page mode if currently showing one page
      */
     public String getPageUrl(int step) throws IndexUnreachableException, DAOException {
         logger.trace("getPageUrl: {}", step);

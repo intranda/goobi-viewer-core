@@ -26,10 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -251,6 +253,87 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         adb.update();
         Assert.fail();
+    }
+
+    /**
+     * @see ActiveDocumentBean#getPageUrl(int)
+     * @verifies return correct page in single page mode
+     */
+    @Test
+    public void getPageUrl_shouldReturnCorrectPageInSinglePageMode() throws Exception {
+        ActiveDocumentBean adb = new ActiveDocumentBean();
+        adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
+        adb.setImageToShow("2");
+        adb.update();
+        Assert.assertTrue(adb.isRecordLoaded());
+
+        // Next page (2 -> 3)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/3/", adb.getPageUrl(1));
+        // Previous page (2 -> 1)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1/", adb.getPageUrl(-1));
+    }
+
+    /**
+     * @see ActiveDocumentBean#getPageUrl(int)
+     * @verifies return correct range in double page mode if currently showing one page
+     */
+    @Test
+    public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingOnePage() throws Exception {
+        ActiveDocumentBean adb = new ActiveDocumentBean();
+        adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+        Assert.assertTrue(adb.isRecordLoaded());
+
+        adb.getViewManager().setDoublePageMode(true);
+
+        // Next page (1 -> 2-3)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrl(1));
+        // Previous page (16 -> 14-15)
+        adb.setImageToShow("16");
+        adb.update();
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/", adb.getPageUrl(-1));
+    }
+
+    /**
+     * @see ActiveDocumentBean#getPageUrl(int)
+     * @verifies return correct range in double page mode if currently showing two pages
+     */
+    @Test
+    public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingTwoPages() throws Exception {
+        ActiveDocumentBean adb = new ActiveDocumentBean();
+        adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
+        adb.setImageToShow("4-5");
+        adb.update();
+        Assert.assertTrue(adb.isRecordLoaded());
+
+        adb.getViewManager().setDoublePageMode(true);
+
+        // Next page (4-5 -> 6-7)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/6-7/", adb.getPageUrl(1));
+        // Previous page (4-5 -> 2-3)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrl(-1));
+    }
+
+    /**
+     * @see ActiveDocumentBean#getPageUrl(int)
+     * @verifies return correct range in double page mode if current page double image
+     */
+    @Test
+    public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentPageDoubleImage() throws Exception {
+        ActiveDocumentBean adb = new ActiveDocumentBean();
+        adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
+        adb.setImageToShow("3");
+        adb.update();
+        Assert.assertTrue(adb.isRecordLoaded());
+
+        adb.getViewManager().setDoublePageMode(true);
+        adb.getViewManager().getCurrentPage().setDoubleImage(true);
+
+        // Next page (3 -> 4-5)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/4-5/", adb.getPageUrl(1));
+        // Previous page (3 -> 1-2)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1-2/", adb.getPageUrl(-1));
     }
 
 }
