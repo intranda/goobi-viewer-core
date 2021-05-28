@@ -39,7 +39,8 @@
 							function initMapSearch() {
 								riot.mount("geoMapSearch", {
 								    onFeatureSelect: (feature) => setSearchString(JSON.stringify(feature)),
-								    area : '#{searchBean.facets.geoFacetting.feature}'
+								    area : '#{searchBean.facets.geoFacetting.feature}',
+								    search_placeholder: "#{msg.ADDRESS}"
 								});    
 							}
 							

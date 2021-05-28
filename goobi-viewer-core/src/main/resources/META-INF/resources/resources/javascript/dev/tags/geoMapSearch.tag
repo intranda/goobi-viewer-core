@@ -1,5 +1,7 @@
 <geoMapSearch>
 
+<yield>
+
 <div class="geo-map__wrapper">
 	<div ref="geocoder" class="geocoder"/>
 	<div ref="map" class="geo-map"></div>
@@ -38,7 +40,11 @@ initMap() {
     this.geoMap.init(initialView);
     //console.log("geomap ", this.geoMap);
     if(!this.opts.inactive) {        
-	    this.geoMap.initGeocoder(this.refs.geocoder);
+        let geocoderConfig = {};
+        if(this.opts.search_placeholder) {
+            geocoderConfig.placeholder = this.opts.search_placeholder
+        }
+	    this.geoMap.initGeocoder(this.refs.geocoder, geocoderConfig);
 	    this.initMapDraw();
     }
     if(this.opts.area) {

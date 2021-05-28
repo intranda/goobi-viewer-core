@@ -29,14 +29,17 @@
 					<div id="geoFacettingMap" class="geo-map"></div>
 				</div>
 				
+				<div id="geoFacettingOverlayMap" class="overlay__geomap" >
+					<h:commandButton id="submitSearch" styleClass="btn btn--full" action="pretty:newSearch5" value="#{msg.search}">
+		                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
+		        	</h:commandButton>
+				</div>
+				
 				<div id="widgetGeoFacettingOverlay" class="widget-geofacetting__overlay">
 					<div id="geoFacettingOverlayMap" class="widget-geofacetting__overlay__geo-map"></div>
 				</div>
 	
 			</div>
-<!-- 			<h:inputHidden id="inputGeoFacetting" value="#{searchBean.facets.geoFacetting.feature}"> -->
-<!-- 				<f:passThroughAttribute name="data-drilldown" value="geoCoords"/> -->
-<!-- 			</h:inputHidden>	 -->
 			<h:commandScript name="setGeoFacetFeature" render="@form" action="#{searchBean.facets.geoFacetting.setFeatureFromContext()}"
 			 onevent="applyDrilldown">
 			</h:commandScript>
@@ -87,7 +90,7 @@
 	
 						$("#expandFacetMap").on("click", e => {
 						    console.log("open overlay ", this);
-	                       	viewerJS.overlay.open($('<div id="geoFacettingOverlayMap" class="overlay__geomap"/>'), true, true, $node => {
+	                       	viewerJS.overlay.open($('#geoFacettingOverlayMap'), true, false, $node => {
 	                       	    $node.remove();
 	                       	    console.log("submit area ", this.area);
 	                       	    //$("[data-drilldown='geoCoords']").val(JSON.stringify(this.area));

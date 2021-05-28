@@ -2338,7 +2338,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	    }
     	}.bind(this)
 });
-riot.tag2('geomapsearch', '<div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
+riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
 
 this.on("mount", function() {
 	this.initMap();
@@ -2370,7 +2370,11 @@ this.initMap = function() {
     this.geoMap.init(initialView);
 
     if(!this.opts.inactive) {
-	    this.geoMap.initGeocoder(this.refs.geocoder);
+        let geocoderConfig = {};
+        if(this.opts.search_placeholder) {
+            geocoderConfig.placeholder = this.opts.search_placeholder
+        }
+	    this.geoMap.initGeocoder(this.refs.geocoder, geocoderConfig);
 	    this.initMapDraw();
     }
     if(this.opts.area) {
