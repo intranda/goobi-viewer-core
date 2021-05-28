@@ -53,13 +53,22 @@
 	            </ui:fragment>
 	            <!-- Double page mode -->
 	        	<ui:fragment rendered="#{activeDocumentBean.viewManager.doublePageMode}">
-	            	<h:outputText rendered="#{activeDocumentBean.viewManager.currentLeftPage.get().fullText != null}"
-	                	value="#{activeDocumentBean.viewManager.currentLeftPage.get().fullText}" escape="false" />
-	            	<h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentLeftPage.get().fullText == null}" />
-	            	<hr />
-	            	<h:outputText rendered="#{activeDocumentBean.viewManager.currentRightPage.get().fullText != null}"
-	                	value="#{activeDocumentBean.viewManager.currentRightPage.get().fullText}" escape="false" />
-	            	<h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentRightPage.get().fullText == null}" />
+	        		<!-- Left page text -->
+	        		<ui:fragment rendered="#{activeDocumentBean.viewManager.currentLeftPage.present}">
+	            		<h:outputText rendered="#{activeDocumentBean.viewManager.currentLeftPage.get().fullText != null}"
+	                		value="#{activeDocumentBean.viewManager.currentLeftPage.get().fullText}" escape="false" />
+	            		<h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentLeftPage.get().fullText == null}" />
+	            	</ui:fragment>
+	            	<!-- Separator -->
+	            	<ui:fragment rendered="#{activeDocumentBean.viewManager.currentLeftPage.present and activeDocumentBean.viewManager.currentRightPage.present}">
+	            		<hr />
+	            	</ui:fragment>
+	            	<!-- Right page text -->
+	            	<ui:fragment rendered="#{activeDocumentBean.viewManager.currentRightPage.present}">
+	            		<h:outputText rendered="#{activeDocumentBean.viewManager.currentRightPage.get().fullText != null}"
+	                		value="#{activeDocumentBean.viewManager.currentRightPage.get().fullText}" escape="false" />
+	            		<h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentRightPage.get().fullText == null}" />
+	            	</ui:fragment>
 	            </ui:fragment>
 	        </div>
         </ui:fragment>
