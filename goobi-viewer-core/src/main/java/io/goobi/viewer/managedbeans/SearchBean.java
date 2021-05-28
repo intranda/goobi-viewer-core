@@ -2662,10 +2662,10 @@ public class SearchBean implements SearchInterface, Serializable {
        map.setShowPopover(false);
        List<String> features = new ArrayList<>();
        if(this.currentSearch != null) {
-           for (String coordsString : this.currentSearch.getHitGeoCoordinateList()) {
+           for (double[] coords : this.currentSearch.getHitGeoCoordinateList()) {
                JSONObject feature = new JSONObject();
                JSONObject geometry = new JSONObject();
-               geometry.put("coordinates", new JSONArray("[" + coordsString.replace(" ", ",") + "]"));
+               geometry.put("coordinates", coords);
                geometry.put("type", "Point");
                feature.put("geometry", geometry);
                feature.put("type", "Feature");

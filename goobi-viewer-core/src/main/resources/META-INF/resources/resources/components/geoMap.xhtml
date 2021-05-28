@@ -10,6 +10,9 @@
     	<composite:attribute name="linkToSearch" required="false" default="true" />
     	<composite:attribute name="linkTarget" required="false" default="_self" />
     	<composite:attribute name="showAnnotations" type="java.lang.Boolean" required="false" default="false"/>
+    	<composite:attribute name="popoverOnHover" type="java.lang.Boolean" required="false" default="#{cc.attrs.geoMap.type == 'SOLR_QUERY'}"/>
+    	<composite:attribute name="clusterMarkers" type="java.lang.Boolean" required="false" default="#{cc.attrs.geoMap.type == 'SOLR_QUERY'}"/>
+    	
     </composite:interface>
     
 	<composite:implementation>
@@ -30,8 +33,8 @@
            		allowMovingFeatures: false,
            		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
            		language: "#{navigationHelper.localeString}",
-           		popoverOnHover: #{cc.attrs.geoMap.type == 'SOLR_QUERY'},
-           		clusterMarkers: #{cc.attrs.geoMap.type == 'SOLR_QUERY'},
+           		popoverOnHover: #{cc.attrs.popoverOnHover},
+           		clusterMarkers: #{cc.attrs.clusterMarkers},
            	});
         	if(#{cc.attrs.linkToSearch and cc.attrs.geoMap.type == 'SOLR_QUERY'}) {
                 let searchUrlTemplate = '#{geoMapBean.getCoordinateSearchQueryTemplate(cc.attrs.geoMap)}';

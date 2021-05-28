@@ -22,7 +22,7 @@
     <div class="search-list__hits">
     	
 		<ui:fragment rendered="#{searchBean.facets.geoFacetting.hasArea()}">
-	    	<viewerComponent:geoMap geoMap="#{searchBean.hitsMap}" mapId="searchHitsGeoMap" linkToSearch="false"/>
+	    	<viewerComponent:geoMap geoMap="#{searchBean.hitsMap}" mapId="searchHitsGeoMap" linkToSearch="false" clusterMarkers="true"/>
 		</ui:fragment>
 
        	

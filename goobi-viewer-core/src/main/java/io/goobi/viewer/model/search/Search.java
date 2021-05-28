@@ -28,6 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -145,7 +147,7 @@ public class Search implements Serializable {
     private final List<SearchHit> hits = new ArrayList<>();
     
     @Transient
-    private final List<String> hitGeoCoordinateList = new ArrayList<>();
+    private final List<double[]> hitGeoCoordinateList = new ArrayList<>();
 
     /**
      * Empty constructor for JPA.
@@ -404,10 +406,13 @@ public class Search implements Serializable {
                 this.hitGeoCoordinateList.clear();
                 if(facets.getGeoFacetting().isActive()) {
                     for (SolrDocument doc : resp.getResults()) {
-                        String coords = (String) doc.getFieldValue(SolrConstants.WKT_COORDS);
-                        if(StringUtils.isNotBlank(coords)) {                            
-                            this.hitGeoCoordinateList.add(coords);
-                        }
+                       try {                           
+                           this.hitGeoCoordinateList.addAll(getLocations(doc.getFieldValue(facets.getGeoFacetting().getSolrField())));
+                       } catch(IllegalArgumentException e) {
+                           System.out.println("\"" + doc.getFieldValue(facets.getGeoFacetting().getSolrField()) + "\"");
+                           logger.error("Error parsing field {} of document {}: {}", facets.getGeoFacetting().getSolrField(), doc.get("IDDOC"), e.getMessage());
+                           logger.error(e.toString(), e);
+                       }
                     }
                 }
                 logger.debug("Total search hits: {}", hitsCount);
@@ -477,6 +482,44 @@ public class Search implements Serializable {
                 : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc);
         this.hits.addAll(hits);
+    }
+
+    protected static List<double[]> getLocations(Object o) {
+        List<double[]> locs = new ArrayList<>();
+        if(o == null) {
+            return locs;
+        } else if (o instanceof List) {
+            for (int i = 0; i < ((List) o).size(); i++) {
+                locs.addAll(getLocations(((List) o).get(i)));
+                //locs.add(parsePoint(((List) o).get(i), ((List) o).get(i+1)));                
+            }
+            return locs;
+        } else if(o instanceof String) {
+            Matcher matcher = Pattern.compile("([\\d\\.]+)\\s([\\d\\.]+)").matcher((String)o);
+            while(matcher.find() && matcher.groupCount() == 2) {
+                locs.add(parsePoint(matcher.group(1), matcher.group(2)));                
+            } 
+            return locs;
+        }
+        throw new IllegalArgumentException(String.format("Unable to parse %s of type %s as location", o.toString(), o.getClass()));
+    }
+
+    protected static double[] parsePoint(Object x, Object y) {
+        if(x instanceof Number) {
+            double[] loc = new double[2];
+            loc[0] = ((Number) x).doubleValue();
+            loc[1] = ((Number) y).doubleValue();
+            return loc;
+        } else if(x instanceof String) {
+            try {           
+                double[] loc = new double[2];
+                loc[0] = Double.parseDouble((String)x);
+                loc[1] = Double.parseDouble((String)y);
+                return loc;
+            } catch(NumberFormatException e) {
+            }
+        }
+        throw new IllegalArgumentException(String.format("Unable to parse objects %s, %s to double array", x, y));
     }
 
     /**
@@ -939,7 +982,7 @@ public class Search implements Serializable {
     /**
      * @return the hitGeoCoordinateList
      */
-    public List<String> getHitGeoCoordinateList() {
+    public List<double[]> getHitGeoCoordinateList() {
         return hitGeoCoordinateList;
     }
 }
