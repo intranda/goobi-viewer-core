@@ -2341,6 +2341,11 @@ public class ActiveDocumentBean implements Serializable {
             viewManager.setDoublePageMode(doublePageMode);
         }
 
-        return "pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId();
+        // When not using PrettyContext, the updated URL will always be a click behind
+        if (PrettyContext.getCurrentInstance() != null && PrettyContext.getCurrentInstance().getCurrentMapping() != null) {
+            return "pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId();
+        }
+        
+        return "";
     }
 }
