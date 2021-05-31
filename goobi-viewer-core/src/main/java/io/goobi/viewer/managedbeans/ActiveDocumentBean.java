@@ -1149,9 +1149,12 @@ public class ActiveDocumentBean implements Serializable {
             return getPageUrl(number + "-" + (number + 1));
         }
 
-        // Use current left/right page as a point of reference, if available
-        Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
-        Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
+        // Use current left/right page as a point of reference, if available (opposite when in right-to-left navigation)
+        Optional<PhysicalElement> currentLeftPage =
+                viewManager.getTopStructElement().isRtl() ? viewManager.getCurrentRightPage() : viewManager.getCurrentLeftPage();
+        Optional<PhysicalElement> currentRightPage =
+                viewManager.getTopStructElement().isRtl() ? viewManager.getCurrentLeftPage() : viewManager.getCurrentRightPage();
+
         // Only go back one step unit at first
         if (currentLeftPage.isPresent()) {
             logger.trace("{} is left page", currentLeftPage.get().getOrder());

@@ -293,6 +293,18 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setImageToShow("16");
         adb.update();
         Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/", adb.getPageUrl(-1));
+        
+        // Same in right-to-left
+        adb.getViewManager().getTopStructElement().setRtl(true);
+        // Next page (1 -> 2-3)
+        adb.setImageToShow("1");
+        adb.update();
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrl(1));
+        // Previous page (16 -> 14-15)
+        adb.setImageToShow("16");
+        adb.update();
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/", adb.getPageUrl(-1));
+        
     }
 
     /**
