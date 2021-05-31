@@ -203,44 +203,28 @@ var viewerJS = ( function( viewer ) {
                    
 //                $dropdown.on("click", (event) => event.stopPropagation());
             },
-            calcDropDownWidth: function(dropdown, button) {
-              if (dropdown.style.display === 'none') {
-                console.log(1)
+            calcDropDownPos: function(dropdown, button) {
+              var dropDownRect = dropdown.getBoundingClientRect();
+
+              if (dropDownRect.width === 0) {
+                dropdown.style.transform = '';
+                // change display prop to get BoundingClientRect values 
                 dropdown.style.display = 'block';
-                var dropDownRect = dropdown.getBoundingClientRect();
-                var overflowRight = 
-                  (dropDownRect.x + dropDownRect.width) - document.documentElement.clientWidth;
+                dropDownRect = dropdown.getBoundingClientRect();
+                // change it back, so it will not appear visually
                 dropdown.style.display = 'none';
-              } else {
-                console.log(2)
-                var dropDownRect = dropdown.getBoundingClientRect();
-                var overflowRight = 
-                  (dropDownRect.x + dropDownRect.width) - document.documentElement.clientWidth;
+
+                // if negativ value: dropdown overflows left
+                if(dropDownRect.x < 0) {
+                  return Math.floor(-dropDownRect.x) +'px';
+                }
+                // if positiv value: dropdown overflows right
+                var overflowRight = (dropDownRect.x + dropDownRect.width) - document.documentElement.clientWidth;
+                if(overflowRight > 0) {
+                  return Math.ceil(-overflowRight) +'px';
+                }
+                return undefined;
               }
-              console.log(3)
-
-              if(dropDownRect.x < 0) dropdown.style.right = dropDownRect.x +'px';
-              if (overflowRight > 0) dropdown.style.left = - overflowRight + 'px';
-
-
-
-
-
-              // get the current dropdown width
-              var dropDownStyles = getComputedStyle(dropdown);
-              var dropDownWidth = parseInt(dropDownStyles.width);
-
-              // find max width without overflowing the viewport 
-              // account for css pushing the dropdown to the right
-              var dropDownRight = parseInt(dropDownStyles.right) - 1;
-              var btnRect = button.getBoundingClientRect();
-              var maxDropDownWidth = btnRect.x + btnRect.width - dropDownRight; 
-
-              maxDropDownWidth = 
-                (dropDownWidth > maxDropDownWidth) ? (maxDropDownWidth + 'px') : '';
-
-              return maxDropDownWidth;
-
             },
             renderSessionBookmarksDropdown: function() {
                 var $button = $('[data-bookmark-list-type="dropdown"]');
@@ -259,12 +243,12 @@ var viewerJS = ( function( viewer ) {
                 $button.on("click", (event) => {
 
                     // make sure the dropdown does not overflow the viewport  
-                    var maxWidth = this.calcDropDownWidth($dropdown[0], $button[0]);
+                    var transformVal = this.calcDropDownPos($dropdown[0]);
 
                     // show/hide dropdown + and set it's width 
                     $(event.currentTarget).next('.bookmark-navigation__dropdown')
                       .fadeToggle('fast')
-                      //.css("width", maxWidth);
+                      .css("transform", "translate(" + transformVal + ")");
                 })
                 $button.after($dropdown);
                 this.sessionBookmarkDropdown = riot.mount('bookmarklistsession', {
