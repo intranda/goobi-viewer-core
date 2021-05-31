@@ -2300,4 +2300,47 @@ public class ActiveDocumentBean implements Serializable {
 
     }
 
+    //    /**
+    //     * 
+    //     * @return ViewManager.doublePageMode; false if ViewManager is null
+    //     */
+    //    public boolean isDoublePageMode() {
+    //        if (viewManager == null) {
+    //            return false;
+    //        }
+    //
+    //        return viewManager.isDoublePageMode();
+    //    }
+
+    /**
+     * This method augments the setter <code>ViewManager.setDoublePageMode(boolean)</code> with URL modifications to reflect the mode.
+     * 
+     * @param doublePageMode The doublePageMode to set
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @should set imageToShow if value changes
+     */
+    public String setDoublePageModeAction(boolean doublePageMode) throws IndexUnreachableException, DAOException {
+        if (viewManager == null) {
+            return "";
+        }
+        try {
+            // Adapt URL page range when switching between single and double page modes
+            if (viewManager.isDoublePageMode() != doublePageMode) {
+                if (doublePageMode && !viewManager.getCurrentPage().isDoubleImage()) {
+                    Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
+                    Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
+                    if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
+                        imageToShow = currentLeftPage.get().getOrder() + "-" + currentRightPage.get().getOrder();
+                    }
+                } else {
+                    imageToShow = String.valueOf(viewManager.getCurrentPage().getOrder());
+                }
+            }
+        } finally {
+            viewManager.setDoublePageMode(doublePageMode);
+        }
+
+        return "pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId();
+    }
 }

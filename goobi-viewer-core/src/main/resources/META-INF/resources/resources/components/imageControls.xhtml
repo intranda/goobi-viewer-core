@@ -276,7 +276,7 @@
                             <ui:fragment
                                 rendered="#{configurationBean.doublePageNavigationEnabled and pageCount gt 1 and activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and !activeDocumentBean.viewManager.currentPage.doubleImage}">
                                 <li class="image-controls__action double-page-view">
-                                    <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(true)}" title="#{msg.doublePageView}">
+                                    <h:commandLink action="#{activeDocumentBean.setDoublePageModeAction(true)}" title="#{msg.doublePageView}">
                                         <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-double-page.svg')}"/>
                                         <span class="labeltext">#{msg.doublePageView}</span>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -288,7 +288,7 @@
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext'}">
                                 <!-- SINGLE PAGE VIEW -->
                                 <li class="image-controls__action single-page-view">
-                                    <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(false)}" title="#{msg.singlePageView}">
+                                    <h:commandLink action="#{activeDocumentBean.setDoublePageModeAction(false)}" title="#{msg.singlePageView}">
                                         <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-single-page.svg')}" />
                                         <span class="labeltext">#{msg.singlePageView}</span>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
