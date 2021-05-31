@@ -29,10 +29,10 @@
 						</div>
 						<div class="search-geo-coords__content-container">
 							<div class="search-geo-coords__buttons-wrapper">
-								<h:inputHidden id="searchInput" value="#{searchBean.facets.geoFacetting.feature}"/>
+								<h:inputHidden id="searchInput" value="#{searchBean.facets.geoFacetFeature}"/>
 								
 								<!-- TO DO ACTION FOR RESET -->
-								<h:commandLink styleClass="btn btn--default search-geo-coords__reset-search" value="#{msg.reset}" action="#{search.resetSearch}" />
+								<button type="button" class="btn btn--default search-geo-coords__reset-search" data-feature="reset">#{msg.reset}</button>
 								
 								<h:commandButton id="submitSearch" styleClass="btn btn--full search-geo-coords__submit-search" action="pretty:newSearch5" value="#{msg.search}">
 				                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
@@ -48,12 +48,14 @@
 								riot.mount("geoMapSearch", {
 								    onFeatureSelect: (feature) => setSearchString(JSON.stringify(feature)),
 								    area : '#{searchBean.facets.geoFacetting.feature}',
-								    search_placeholder: "#{msg.ADDRESS}"
+								    search_placeholder: "#{msg.ADDRESS}",
+								    reset_button: $("[data-feature='reset']")
 								});    
 							}
 							
 							function setSearchString(feature) {
 							    console.log("set search feature ", feature);
+							    sessionStorage.setItem("geoFacet", feature);
 							    $("#searchInput").val(feature);
 							    if(!feature) {
 							        $("#submitSearch").attr("disabled", "disabled");

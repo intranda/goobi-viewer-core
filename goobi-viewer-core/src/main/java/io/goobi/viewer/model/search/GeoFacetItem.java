@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
@@ -24,18 +26,21 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+
 /**
  * @author florian
  *
  */
-public class GeoFacetItem {
+public class GeoFacetItem implements IFacetItem {
     
     private static final Logger logger = LoggerFactory.getLogger(GeoFacetItem.class);
     public static final GeoCoordinateFeature NO_AREA = new GeoCoordinateFeature(new double[0][2]);
     
     
     private GeoCoordinateFeature feature = null;
-    private final String solrField;
+    private String solrField;
 
     public GeoFacetItem(String solrField) {
         this.solrField = solrField;
@@ -109,7 +114,7 @@ public class GeoFacetItem {
     /**
      * @return
      */
-    public Object getEscapedFacetQuery() {
+    public String getEscapedFacetQuery() {
         if(isActive() && feature != null && feature.hasVertices()) {
             return solrField + ":" + FacetItem.getEscapedValue(getValue());
         } else {
@@ -139,5 +144,160 @@ public class GeoFacetItem {
         } else {            
             this.feature = new GeoCoordinateFeature(vertices);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#getQueryEscapedLink()
+     */
+    @Override
+    public String getQueryEscapedLink() {
+        return getEscapedFacetQuery();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#getEscapedLink()
+     */
+    @Override
+    public String getEscapedLink() {
+        return BeanUtils.escapeCriticalUrlChracters(getFacetQuery());
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#getUrlEscapedLink()
+     */
+    @Override
+    public String getUrlEscapedLink() {
+        String ret = getEscapedLink();
+        try {
+            return URLEncoder.encode(ret, SearchBean.URL_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            return ret;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#getField()
+     */
+    @Override
+    public String getField() {
+        return getSolrField();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#setField(java.lang.String)
+     */
+    @Override
+    public void setField(String field) {
+        this.solrField = field;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#getFullValue()
+     */
+    @Override
+    public String getFullValue() {
+        return getValue();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#setValue(java.lang.String)
+     */
+    @Override
+    public void setValue(String value) {
+        this.feature = new GeoCoordinateFeature(GeoCoordinateFeature.getGeoSearchPoints(value));
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#getValue2()
+     */
+    @Override
+    public String getValue2() {
+        return "";
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#setValue2(java.lang.String)
+     */
+    @Override
+    public void setValue2(String value2) {
+        //NOOP
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#getLink()
+     */
+    @Override
+    public String getLink() {
+        return getFacetQuery();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#setLink(java.lang.String)
+     */
+    @Override
+    public void setLink(String link) {
+        int separatorIndex = link.indexOf(":");
+        if(separatorIndex > 0) {
+            this.solrField = link.substring(0, separatorIndex);
+            setValue(link.substring(separatorIndex+1));
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#getLabel()
+     */
+    @Override
+    public String getLabel() {
+        return "";
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#setLabel(java.lang.String)
+     */
+    @Override
+    public IFacetItem setLabel(String label) {
+        //NOOP
+        return this;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#getTranslatedLabel()
+     */
+    @Override
+    public String getTranslatedLabel() {
+        return getLabel();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#setTranslatedLabel(java.lang.String)
+     */
+    @Override
+    public void setTranslatedLabel(String translatedLabel) {
+        //NOOP
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#getCount()
+     */
+    @Override
+    public long getCount() {
+        return 0;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#setCount(long)
+     */
+    @Override
+    public IFacetItem setCount(long count) {
+        //NOOP
+        return this;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#isHierarchial()
+     */
+    @Override
+    public boolean isHierarchial() {
+        return false;
     }
 }

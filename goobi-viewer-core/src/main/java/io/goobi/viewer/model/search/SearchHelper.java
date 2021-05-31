@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -768,7 +769,7 @@ public final class SearchHelper {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static List<String> searchAutosuggestion(String suggest, List<FacetItem> currentFacets) throws IndexUnreachableException {
+    public static List<String> searchAutosuggestion(String suggest, List<IFacetItem> currentFacets) throws IndexUnreachableException {
         if (suggest.contains(" ")) {
             return Collections.emptyList();
         }
@@ -779,7 +780,7 @@ public final class SearchHelper {
             StringBuilder sbQuery = new StringBuilder();
             sbQuery.append(SolrConstants.DEFAULT).append(':').append(ClientUtils.escapeQueryChars(suggest)).append('*');
             if (currentFacets != null && !currentFacets.isEmpty()) {
-                for (FacetItem facetItem : currentFacets) {
+                for (IFacetItem facetItem : currentFacets) {
                     if (sbQuery.length() > 0) {
                         sbQuery.append(" AND ");
                     }
@@ -2513,11 +2514,12 @@ public final class SearchHelper {
      */
     public static List<String> getAllFacetFields(List<String> hierarchicalFacetFields) {
         List<String> facetFields = DataManager.getInstance().getConfiguration().getDrillDownFields();
-        List<String> allFacetFields = new ArrayList<>(hierarchicalFacetFields.size() + facetFields.size());
+        Optional<String> geoFacetField = Optional.ofNullable(DataManager.getInstance().getConfiguration().getGeoDrillDownField());
+        List<String> allFacetFields = new ArrayList<>(hierarchicalFacetFields.size() + facetFields.size() + (geoFacetField.isPresent() ? 1 : 0));
         allFacetFields.addAll(hierarchicalFacetFields);
         allFacetFields.addAll(facetFields);
-        allFacetFields = SearchHelper.facetifyList(allFacetFields);
-        return allFacetFields;
+        geoFacetField.ifPresent(field -> allFacetFields.add(field));
+        return SearchHelper.facetifyList(allFacetFields);
     }
 
     /**

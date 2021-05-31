@@ -123,7 +123,7 @@ public class GeoMap {
     @Column(name = "initial_view")
     private String initialView = "{" +
             "\"zoom\": 5," +
-            "\"center\": [11.073397, 49.451993]" +
+            "\"center\": [11.073397, -49.451993]" +
             "}";
 
     @Column(name = "marker")

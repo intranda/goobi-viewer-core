@@ -45,7 +45,7 @@ public class FacetItemTest extends AbstractTest {
      */
     @Test
     public void FacetItem_shouldSplitFieldAndValueCorrectly() throws Exception {
-        FacetItem item = new FacetItem("FIELD:value:1:2:3", false);
+        IFacetItem item = new FacetItem("FIELD:value:1:2:3", false);
         Assert.assertEquals("FIELD", item.getField());
         Assert.assertEquals("value:1:2:3", item.getValue());
     }
@@ -56,7 +56,7 @@ public class FacetItemTest extends AbstractTest {
      */
     @Test
     public void FacetItem_shouldSplitFieldAndValueRangeCorrectly() throws Exception {
-        FacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
+        IFacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
         Assert.assertEquals("FIELD", item.getField());
         Assert.assertEquals("foo", item.getValue());
         Assert.assertEquals("bar", item.getValue2());
@@ -68,7 +68,7 @@ public class FacetItemTest extends AbstractTest {
      */
     @Test
     public void getQueryEscapedLink_shouldConstructLinkCorrectly() throws Exception {
-        FacetItem item = new FacetItem("FIELD:value", false);
+        IFacetItem item = new FacetItem("FIELD:value", false);
         Assert.assertEquals("FIELD:value", item.getQueryEscapedLink());
     }
 
@@ -78,7 +78,7 @@ public class FacetItemTest extends AbstractTest {
      */
     @Test
     public void getQueryEscapedLink_shouldEscapeValuesContainingWhitespaces() throws Exception {
-        FacetItem item = new FacetItem("FIELD:foo bar", false);
+        IFacetItem item = new FacetItem("FIELD:foo bar", false);
         Assert.assertEquals("FIELD:\"foo\\ bar\"", item.getQueryEscapedLink());
     }
 
@@ -88,7 +88,7 @@ public class FacetItemTest extends AbstractTest {
      */
     @Test
     public void getQueryEscapedLink_shouldConstructHierarchicalLinkCorrectly() throws Exception {
-        FacetItem item = new FacetItem("FIELD:value", true);
+        IFacetItem item = new FacetItem("FIELD:value", true);
         Assert.assertEquals("(FIELD:value OR FIELD:value.*)", item.getQueryEscapedLink());
     }
 
@@ -98,7 +98,7 @@ public class FacetItemTest extends AbstractTest {
      */
     @Test
     public void getQueryEscapedLink_shouldConstructRangeLinkCorrectly() throws Exception {
-        FacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
+        IFacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
         Assert.assertEquals("FIELD:[foo TO bar]", item.getQueryEscapedLink());
     }
 
@@ -124,7 +124,7 @@ public class FacetItemTest extends AbstractTest {
         values.put("Volume", 3L);
         {
             // asc
-            List<FacetItem> items = FacetItem.generateFacetItems(SolrConstants.DOCSTRCT, values, true, false, false, null);
+            List<IFacetItem> items = FacetItem.generateFacetItems(SolrConstants.DOCSTRCT, values, true, false, false, null);
             Assert.assertEquals(3, items.size());
             Assert.assertEquals("Article", items.get(0).getLabel());
             Assert.assertEquals("Monograph", items.get(1).getLabel());
@@ -132,7 +132,7 @@ public class FacetItemTest extends AbstractTest {
         }
         {
             // desc
-            List<FacetItem> items = FacetItem.generateFacetItems(SolrConstants.DOCSTRCT, values, true, true, false, null);
+            List<IFacetItem> items = FacetItem.generateFacetItems(SolrConstants.DOCSTRCT, values, true, true, false, null);
             Assert.assertEquals(3, items.size());
             Assert.assertEquals("Article", items.get(2).getLabel());
             Assert.assertEquals("Monograph", items.get(1).getLabel());
@@ -146,7 +146,7 @@ public class FacetItemTest extends AbstractTest {
      */
     @Test
     public void getFullValue_shouldBuildFullValueCorrectly() throws Exception {
-        FacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
+        IFacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
         Assert.assertEquals("foo", item.getValue());
         Assert.assertEquals("bar", item.getValue2());
         Assert.assertEquals("foo - bar", item.getFullValue());
@@ -187,7 +187,7 @@ public class FacetItemTest extends AbstractTest {
     public void compareTo_shouldReturnPlusIfCountLessThanOtherCount() throws Exception {
         FacetItem facetItem1 = new FacetItem("field:foo", false).setCount(1);
         FacetItem facetItem2 = new FacetItem("field:foo", false).setCount(2);
-        Assert.assertEquals(1, facetItem1.compareTo(facetItem2));
+        Assert.assertEquals(1, new FacetItem.CountComparator().compare(facetItem1, facetItem2));
     }
 
     /**
@@ -198,7 +198,7 @@ public class FacetItemTest extends AbstractTest {
     public void compareTo_shouldReturnMinusIfCountMoreThanOtherCount() throws Exception {
         FacetItem facetItem1 = new FacetItem("field:foo", false).setCount(2);
         FacetItem facetItem2 = new FacetItem("field:foo", false).setCount(1);
-        Assert.assertEquals(-1, facetItem1.compareTo(facetItem2));
+        Assert.assertEquals(-1, new FacetItem.CountComparator().compare(facetItem1, facetItem2));
     }
 
     /**
@@ -210,17 +210,17 @@ public class FacetItemTest extends AbstractTest {
         {
             FacetItem facetItem1 = new FacetItem("field:foo", false).setLabel("foo").setCount(1);
             FacetItem facetItem2 = new FacetItem("field:bar", false).setLabel("bar").setCount(1);
-            Assert.assertTrue(facetItem1.compareTo(facetItem2) > 0);
+            Assert.assertTrue(new FacetItem.CountComparator().compare(facetItem1, facetItem2) > 0);
         }
         {
             FacetItem facetItem1 = new FacetItem("field:bar", false).setLabel("bar").setCount(1);
             FacetItem facetItem2 = new FacetItem("field:foo", false).setLabel("foo").setCount(1);
-            Assert.assertTrue(facetItem1.compareTo(facetItem2) < 0);
+            Assert.assertTrue(new FacetItem.CountComparator().compare(facetItem1, facetItem2) < 0);
         }
         {
             FacetItem facetItem1 = new FacetItem("field:foo", false).setLabel("foo").setCount(1);
             FacetItem facetItem2 = new FacetItem("field:foo", false).setLabel("foo").setCount(1);
-            Assert.assertEquals(0, facetItem1.compareTo(facetItem2));
+            Assert.assertEquals(0, new FacetItem.CountComparator().compare(facetItem1, facetItem2));
         }
     }
 
@@ -231,7 +231,7 @@ public class FacetItemTest extends AbstractTest {
     @Test
     public void generateFilterLinkList_shouldSetLabelFromSeparateFieldIfConfiguredAndFound() throws Exception {
         Map<String, String> labelMap = new HashMap<>(1);
-        List<FacetItem> facetItems =
+        List<IFacetItem> facetItems =
                 FacetItem.generateFilterLinkList("MD_CREATOR", Collections.singletonMap("Groos, Karl", 1L), false, null, labelMap);
         Assert.assertEquals(1, facetItems.size());
         Assert.assertEquals("Karl", facetItems.get(0).getLabel());

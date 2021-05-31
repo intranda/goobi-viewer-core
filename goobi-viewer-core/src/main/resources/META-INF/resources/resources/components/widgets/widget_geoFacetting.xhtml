@@ -33,11 +33,14 @@
 		                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
 		                    <f:passThroughAttribute name="data-geofacet" value="execute"/>
 		        	</h:commandButton>
-		        	<h:inputHidden  value="#{searchBean.facets.geoFacetting.feature}">
+					<h:inputHidden id="searchInput" value="#{searchBean.facets.geoFacetFeature}">
 		        		<f:passThroughAttribute name="data-geofacet" value="feature"/>
 		        	</h:inputHidden>
 		        	
 				<div id="widgetGeoFacettingOverlay" class="widget-geofacetting__overlay">
+<!-- 				<span data-loader="geoFacet" class="ajax_loader"> -->
+<!-- 					<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." /> -->
+<!-- 				</span> -->
 				<div class="widget-geofacetting__overlay-buttons-wrapper">
 					<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="reset">#{msg.reset}</button>
 					<button class="btn btn--full widget-geofacetting__overlay-submit-search" data-geofacet="trigger-execute">#{msg.search}</button>
@@ -63,8 +66,8 @@
 	              }
 	              
 		            function initFacetWidgetMap() {
-		                let areaString = '#{searchBean.facets.geoFacetting.feature}';
-		                this.area = areaString.length > 0 ? JSON.parse(areaString) : undefined;
+		                let areaString = '#{searchBean.facets.geoFacetFeature}';
+		                this.area = getArea(areaString);
 		                //console.log("area is ", areaString, this.area, setGeoFacetFeature);
 		                let geoMap = new viewerJS.GeoMap({
 	                	    mapId: "geoFacettingMap",
@@ -101,7 +104,9 @@
 			                 	let $facetInput = $("[data-geofacet='feature']");  
 						$("#expandFacetMap").on("click", e => {
 						    //console.log("open overlay ", this);
+						    
 	                       	viewerJS.overlay.open($('#widgetGeoFacettingOverlay'), false, true, $node => {
+	                       	    $("body").append($node);
 	                       	    $node.hide();
 	                       	})
 	                       	.then(overlay => {
@@ -115,12 +120,18 @@
 			                 	    overlay.close();
 			                 	})
 	                       	    //console.log("mount overlay map", overlay.node.get(0));
-		                       	 riot.mount($("#geoFacettingOverlayMap"), "geomapsearch", {
+			                 	if(this.mapTag) {
+			                 	    riot.unmount(geomapsearch, true)
+			                 	}
+		                       	this.mapTag = riot.mount("#geoFacettingOverlayMap", "geomapsearch", {
 		     					    inactive: false,
 		     					    area : this.area,
+		     					    reset_button: "[data-feature='reset']",
 		     					    onFeatureSelect: area => {
 		     					        //console.log("Set facetting area", area);
-		     					       console.log("submit area ", area);
+		     					        console.log("submit area ", area);
+		     					        $("[data-loader='geoFacet']").show();
+									    sessionStorage.setItem("geoFacet", JSON.stringify(area));
 		     					      	$facetInput.val(area ? JSON.stringify(area) : "");
 			                       	    this.area = area;
 		     					    }
@@ -128,6 +139,26 @@
 	                       	});                       	
 		                })
 					}
+		            
+		            function getArea(areaString) {
+		                let area = areaString.length > 0 ? JSON.parse(areaString) : undefined;
+		                if(area) {
+		                    let storedAreaString = sessionStorage.getItem("geoFacet");
+		                    if(storedAreaString) {
+		                        let storedArea = JSON.parse(storedAreaString);
+		                        for(v=0; v<area.vertices.length; v++) {
+		                            for(c=0; c<area.vertices[v].length; c++) {
+		                                if(area.vertices[v][c] != storedArea.vertices[v][c]) {
+		                                    return area;
+		                                }
+		                            }
+		                        }
+		                        return storedArea;
+		                    }
+		                }
+		                return area;
+		            }
+		            
 					$(document).ready(e => {					    
 					    let facetWidgetMap = new initFacetWidgetMap();
 					})				    

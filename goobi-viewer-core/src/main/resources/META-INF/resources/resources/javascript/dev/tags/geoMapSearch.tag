@@ -112,10 +112,13 @@ initMapDraw() {
     
     this.geoMap.map.on(L.Draw.Event.CREATED, (e) => this.onLayerDrawn(e));
 
+    if(this.opts.reset_button) {
+        $(this.opts.reset_button).on("click",  e => deleted.next(e));
+    }
 }
 
 onLayerDeleted(e) {
-    //console.log("layer deleted ", e);
+    console.log("layer deleted ", e); 
     if(this.searchLayer) {
         this.drawnItems.removeLayer(this.searchLayer);
         this.searchLayer = undefined;

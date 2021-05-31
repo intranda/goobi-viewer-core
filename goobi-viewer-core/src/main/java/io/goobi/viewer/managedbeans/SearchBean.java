@@ -87,6 +87,7 @@ import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
+import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
@@ -575,7 +576,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
                     // Find existing facet items that can be repurposed for the existing facets
                     boolean skipQueryItem = false;
-                    for (FacetItem facetItem : facets.getCurrentFacets()) {
+                    for (IFacetItem facetItem : facets.getCurrentFacets()) {
                         // logger.trace("checking facet item: {}", facetItem.getLink());
                         if (!facetItem.getField().equals(queryItem.getField())) {
                             continue;
@@ -718,8 +719,8 @@ public class SearchBean implements SearchInterface, Serializable {
             }
 
             // Clean up hierarchical facet items whose field has been matched to existing query items but not its value (obsolete facets)
-            Set<FacetItem> toRemove = new HashSet<>();
-            for (FacetItem facetItem : facets.getCurrentFacets()) {
+            Set<IFacetItem> toRemove = new HashSet<>();
+            for (IFacetItem facetItem : facets.getCurrentFacets()) {
                 if (facetItem.isHierarchial() && usedHierarchicalFields.contains(facetItem.getField())
                         && !usedFieldValuePairs.contains(facetItem.getLink())) {
                     toRemove.add(facetItem);
@@ -884,7 +885,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public boolean isSearchInDcFlag() {
-        for (FacetItem item : facets.getCurrentFacets()) {
+        for (IFacetItem item : facets.getCurrentFacets()) {
             if (item.getField().equals(SolrConstants.DC)) {
                 return true;
             }
@@ -1304,7 +1305,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         SearchQueryGroup queryGroup = advancedQueryGroups.get(0);
         Set<SearchQueryItem> populatedQueryItems = new HashSet<>();
-        for (FacetItem facetItem : facets.getCurrentFacets()) {
+        for (IFacetItem facetItem : facets.getCurrentFacets()) {
             if (!facetItem.isHierarchial()) {
                 continue;
             }
@@ -2466,7 +2467,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public List<FacetItem> getStaticDrillDown(String field, String subQuery, Integer resultLimit, final Boolean reverseOrder)
+    public List<IFacetItem> getStaticDrillDown(String field, String subQuery, Integer resultLimit, final Boolean reverseOrder)
             throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder(100);
         sbQuery.append(SearchHelper.ALL_RECORDS_QUERY)
@@ -2660,6 +2661,11 @@ public class SearchBean implements SearchInterface, Serializable {
        GeoMap map = new GeoMap();
        map.setType(GeoMapType.MANUAL);
        map.setShowPopover(false);
+       //set initial zoom to max zoom so map will be as zoomed in as possible
+       map.setInitialView("{" +
+            "\"zoom\": 12," +
+            "\"center\": [11.073397, -49.451993]" +
+            "}");
        List<String> features = new ArrayList<>();
        if(this.currentSearch != null) {
            for (double[] coords : this.currentSearch.getHitGeoCoordinateList()) {

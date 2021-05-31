@@ -2531,6 +2531,7 @@ public final class Configuration extends AbstractConfiguration {
                 switch (node.getName()) {
                     case "field":
                     case "hierarchicalField":
+                    case "geoField":
                         ret.add((String) node.getValue());
                         break;
                 }
