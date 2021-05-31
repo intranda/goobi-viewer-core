@@ -51,6 +51,7 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class ConfigurationTest extends AbstractTest {
 

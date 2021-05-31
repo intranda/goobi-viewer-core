@@ -15,7 +15,14 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO_ZIP;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT_ZIP;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI_LANG;
 
 import java.awt.Dimension;
 import java.io.FileNotFoundException;
@@ -57,8 +64,6 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -91,6 +96,8 @@ import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -600,21 +607,21 @@ public class ViewManager implements Serializable {
 
         for (DownloadOption option : configuredOptions) {
             try {
-            Dimension dim = option.getBoxSizeInPixel();
-            if (dim == DownloadOption.MAX) {
-                Scale scale = new Scale.ScaleToBox(maxSize);
-                Dimension size = scale.scale(origImageSize);
-                options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
-            } else if (dim.width * dim.height == 0) {
-                continue;
-            } else if ((maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
-                continue;
-            } else {
-                Scale scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
-                Dimension size = scale.scale(origImageSize);
-                options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
-            }
-            } catch(IllegalRequestException e) {
+                Dimension dim = option.getBoxSizeInPixel();
+                if (dim == DownloadOption.MAX) {
+                    Scale scale = new Scale.ScaleToBox(maxSize);
+                    Dimension size = scale.scale(origImageSize);
+                    options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
+                } else if (dim.width * dim.height == 0) {
+                    continue;
+                } else if ((maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
+                    continue;
+                } else {
+                    Scale scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
+                    Dimension size = scale.scale(origImageSize);
+                    options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
+                }
+            } catch (IllegalRequestException e) {
                 //attempting scale beyond original size. Ignore
             }
         }
@@ -627,7 +634,7 @@ public class ViewManager implements Serializable {
             List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
             String imageFilename = page.getFilename();
             Dimension maxSize = new Dimension(
-                    page.isAccessPermissionImageZoom() ?  DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
+                    page.isAccessPermissionImageZoom() ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
                             : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth(),
                     DataManager.getInstance().getConfiguration().getViewerMaxImageHeight());
             Dimension imageSize = new Dimension(page.getImageWidth(), page.getImageHeight());
@@ -1140,7 +1147,6 @@ public class ViewManager implements Serializable {
     public int getCurrentImageNo() {
         return currentImageOrder;
     }
-    
 
     /**
      * Getter for the paginator or the direct page number input field
@@ -1328,16 +1334,24 @@ public class ViewManager implements Serializable {
         }
         return pageLoader.getNumPages();
     }
-    
-    public int getLastPageOrder() throws IndexUnreachableException {
-        if(pageLoader == null) {
+
+    /**
+     * 
+     * @return First page number
+     */
+    public int getLastPageOrder() {
+        if (pageLoader == null) {
             return -1;
         }
         return pageLoader.getLastPageOrder();
     }
-    
-    public int getFirstPageOrder() throws IndexUnreachableException {
-        if(pageLoader == null) {
+
+    /**
+     * 
+     * @return Last page number
+     */
+    public int getFirstPageOrder() {
+        if (pageLoader == null) {
             return -1;
         }
         return pageLoader.getFirstPageOrder();
@@ -3080,7 +3094,7 @@ public class ViewManager implements Serializable {
                         if (doc != null) {
                             JSONObject jsonObj = new JSONObject();
                             String versionLabel =
-                                    versionLabelField != null ? SolrSearchIndex.getSingleFieldStringValue(doc, versionLabelField) : null;
+                                    versionLabelField != null ? SolrTools.getSingleFieldStringValue(doc, versionLabelField) : null;
                             if (StringUtils.isNotEmpty(versionLabel)) {
                                 jsonObj.put("label", versionLabel);
                             }
@@ -3125,7 +3139,7 @@ public class ViewManager implements Serializable {
                         if (doc != null) {
                             JSONObject jsonObj = new JSONObject();
                             String versionLabel =
-                                    versionLabelField != null ? SolrSearchIndex.getSingleFieldStringValue(doc, versionLabelField) : null;
+                                    versionLabelField != null ? SolrTools.getSingleFieldStringValue(doc, versionLabelField) : null;
                             if (StringUtils.isNotEmpty(versionLabel)) {
                                 jsonObj.put("label", versionLabel);
                             }

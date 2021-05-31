@@ -58,8 +58,8 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.XmlTools;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
@@ -150,8 +150,6 @@ public class ViewerResourceBundle extends ResourceBundle {
                         logger.error("Default locale not found. Is faces-config.xml missing in the theme?");
                     }
                     // logger.trace(defaultLocale.getLanguage());
-                } else {
-                    defaultLocale = Locale.ENGLISH;
                 }
                 checkAndLoadResourceBundles(defaultLocale);
             }
@@ -169,7 +167,7 @@ public class ViewerResourceBundle extends ResourceBundle {
         if (defaultLocale == null) {
             checkAndLoadDefaultResourceBundles();
         }
-        return defaultLocale;
+        return defaultLocale == null ? Locale.ENGLISH : defaultLocale;
     }
 
     /**

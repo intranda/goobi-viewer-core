@@ -18,9 +18,9 @@ package io.goobi.viewer.model.termbrowsing;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 public class BrowsingMenuFieldConfigTest {
 

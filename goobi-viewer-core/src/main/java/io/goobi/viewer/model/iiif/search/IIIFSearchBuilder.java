@@ -44,18 +44,18 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
 import io.goobi.viewer.model.iiif.search.model.SearchTermList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Creates a IIIF Search API v1.0 response as {@link de.intranda.api.iiif.search.SearchResult}
@@ -147,13 +147,12 @@ public class IIIFSearchBuilder {
     public List<String> getMotivation() {
         return motivation;
     }
-    
+
     public String getMotivationAsString() {
-        if(this.motivation.isEmpty()) {
+        if (this.motivation.isEmpty()) {
             return "";
-        } else {            
-            return StringUtils.join(this.motivation, "+");
         }
+        return StringUtils.join(this.motivation, "+");
     }
 
     /**
@@ -461,7 +460,7 @@ public class IIIFSearchBuilder {
                             converter.getPresentationBuilder().getSolrFieldList());
             long hitIndex = 0;
             for (SolrDocument doc : docList) {
-                Map<String, List<String>> fieldNames = SolrSearchIndex.getFieldValueMap(doc);
+                Map<String, List<String>> fieldNames = SolrTools.getFieldValueMap(doc);
                 for (String fieldName : fieldNames.keySet()) {
                     if (fieldNameMatches(fieldName, displayFields)) {
                         hitIndex++;
@@ -507,7 +506,7 @@ public class IIIFSearchBuilder {
                     .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getDocStructSortFields(),
                             converter.getPresentationBuilder().getSolrFieldList());
             for (SolrDocument doc : docList) {
-                Map<String, List<String>> fieldNames = SolrSearchIndex.getFieldValueMap(doc);
+                Map<String, List<String>> fieldNames = SolrTools.getFieldValueMap(doc);
                 for (String fieldName : fieldNames.keySet()) {
                     if (fieldNameMatches(fieldName, displayFields)) {
                         String fieldValue = fieldNames.get(fieldName).stream().collect(Collectors.joining(" "));
@@ -592,9 +591,9 @@ public class IIIFSearchBuilder {
                 .getSearchIndex()
                 .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getPageSortFields(), FULLTEXTFIELDLIST);
         for (SolrDocument doc : docList) {
-            Path altoFile = getPath(pi, SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.FILENAME_ALTO));
-            Path fulltextFile = getPath(pi, SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.FILENAME_FULLTEXT));
-            Integer pageNo = SolrSearchIndex.getAsInt(doc.getFieldValue(SolrConstants.ORDER));
+            Path altoFile = getPath(pi, SolrTools.getSingleFieldStringValue(doc, SolrConstants.FILENAME_ALTO));
+            Path fulltextFile = getPath(pi, SolrTools.getSingleFieldStringValue(doc, SolrConstants.FILENAME_FULLTEXT));
+            Integer pageNo = SolrTools.getAsInt(doc.getFieldValue(SolrConstants.ORDER));
             converter.setPageNo(pageNo);
             try {
                 if (altoFile != null && Files.exists(altoFile)) {
@@ -677,19 +676,19 @@ public class IIIFSearchBuilder {
      */
     private URI getURI(Integer page) {
         ApiPath path = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST_SEARCH).params(this.pi);
-        if(StringUtils.isNotBlank(getQuery())) {
+        if (StringUtils.isNotBlank(getQuery())) {
             path = path.query("q", getQuery());
         }
-        if(StringUtils.isNotBlank(getMotivationAsString())) {
+        if (StringUtils.isNotBlank(getMotivationAsString())) {
             path = path.query("motivation", getMotivationAsString());
         }
-        if(StringUtils.isNotBlank(getDate())) {
+        if (StringUtils.isNotBlank(getDate())) {
             path = path.query("date", getDate());
         }
-        if(StringUtils.isNotBlank(getUser())) {
+        if (StringUtils.isNotBlank(getUser())) {
             path = path.query("user", getUser());
         }
-        if(page != null) {            
+        if (page != null) {
             path = path.query("page", page);
         }
         return URI.create(path.build());

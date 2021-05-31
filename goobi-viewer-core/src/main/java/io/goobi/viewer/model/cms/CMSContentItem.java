@@ -242,6 +242,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Column(name = "glossary")
     private String glossaryName;
 
+    @Column(name = "no_search_aggregation")
+    private boolean noSearchAggregation = false;
+
     /**
      * Name of SOLR field by which to group results of a search or collection
      */
@@ -271,7 +274,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
     @JoinColumn(name = "slider_id")
     private CMSSlider slider = null;
-    
+
     /**
      * This object may contain item type specific functionality (methods and transient properties)
      * 
@@ -304,7 +307,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
     @Transient
     private int nestedPagesCount = 0;
-    
+
     @Transient
     private Map<String, CollectionResult> dcStrings = null;
 
@@ -919,7 +922,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         if (template != null) {
             return template.getOrder();
         }
-        
+
         return Integer.MAX_VALUE;
     }
 
@@ -1045,14 +1048,14 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<String> getPossibleBaseCollectionList() throws IndexUnreachableException {
-            if (StringUtils.isBlank(collectionField)) {
-                return Collections.singletonList("");
-            } 
-            Map<String, CollectionResult> dcStrings = getColletionMap();
-            List<String> list = new ArrayList<>(dcStrings.keySet());
-            list.add(0, "");
-            Collections.sort(list);
-            return list;
+        if (StringUtils.isBlank(collectionField)) {
+            return Collections.singletonList("");
+        }
+        Map<String, CollectionResult> dcStrings = getColletionMap();
+        List<String> list = new ArrayList<>(dcStrings.keySet());
+        list.add(0, "");
+        Collections.sort(list);
+        return list;
     }
 
     /**
@@ -1060,7 +1063,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @throws IndexUnreachableException
      */
     public Map<String, CollectionResult> getColletionMap() throws IndexUnreachableException {
-        if(dcStrings == null) {            
+        if (dcStrings == null) {
             dcStrings =
                     SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
                             DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
@@ -1095,7 +1098,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public CollectionView getCollection() throws PresentationException, IndexUnreachableException, IllegalRequestException {
         if (this.collection == null) {
@@ -1114,9 +1117,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
-    public CollectionView initializeCollection(String subThemeDiscriminatorValue) throws PresentationException, IndexUnreachableException, IllegalRequestException {
+    public CollectionView initializeCollection(String subThemeDiscriminatorValue)
+            throws PresentationException, IndexUnreachableException, IllegalRequestException {
         if (StringUtils.isBlank(getCollectionField())) {
             throw new PresentationException("No solr field provided to create collection view");
         }
@@ -1168,12 +1172,15 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
             }
         });
         String subtheme = getOwnerPageLanguageVersion().getOwnerPage().getSubThemeDiscriminatorValue();
-        if(StringUtils.isNotBlank(subtheme)) {
+        if (StringUtils.isNotBlank(subtheme)) {
             try {
-                Optional<CMSPage> searchPage = DataManager.getInstance().getDao().getCMSPagesForSubtheme(subtheme)
-                .stream()
-                .filter(p -> p.isPublished())
-                .filter(p -> p.hasSearchFunctionality()).findFirst();
+                Optional<CMSPage> searchPage = DataManager.getInstance()
+                        .getDao()
+                        .getCMSPagesForSubtheme(subtheme)
+                        .stream()
+                        .filter(p -> p.isPublished())
+                        .filter(p -> p.hasSearchFunctionality())
+                        .findFirst();
                 searchPage.ifPresent(p -> {
                     collection.setSearchUrl(p.getPageUrl());
                 });
@@ -1357,6 +1364,20 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      */
     public void setGlossaryName(String glossaryName) {
         this.glossaryName = glossaryName;
+    }
+
+    /**
+     * @return the noSearchAggregation
+     */
+    public boolean isNoSearchAggregation() {
+        return noSearchAggregation;
+    }
+
+    /**
+     * @param noSearchAggregation the noSearchAggregation to set
+     */
+    public void setNoSearchAggregation(boolean noSearchAggregation) {
+        this.noSearchAggregation = noSearchAggregation;
     }
 
     /**
@@ -1744,7 +1765,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         if (this.geoMap == null) {
             return null;
         }
-        
+
         return this.geoMap.getId();
     }
 
@@ -1755,30 +1776,30 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public boolean isPaginated() {
         return ContentItemMode.paginated.equals(getMode());
     }
-    
+
     /**
      * @param sliderId the sliderId to set
-     * @throws DAOException 
+     * @throws DAOException
      */
     public void setSliderId(Long sliderId) throws DAOException {
-            this.slider = DataManager.getInstance().getDao().getSlider(sliderId);
+        this.slider = DataManager.getInstance().getDao().getSlider(sliderId);
     }
-    
+
     /**
      * @return the sliderId
      */
     public Long getSliderId() {
         return this.slider != null ? this.slider.getId() : null;
     }
- 
+
     public boolean hasSlider() {
         return this.slider != null;
     }
-    
-    public CMSSlider getSlider(){
+
+    public CMSSlider getSlider() {
         return slider;
     }
-    
+
     public void setSlider(CMSSlider slider) {
         this.slider = slider;
     }

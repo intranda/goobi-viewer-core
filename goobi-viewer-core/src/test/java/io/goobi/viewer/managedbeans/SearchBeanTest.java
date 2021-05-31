@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.Search;
@@ -35,6 +34,7 @@ import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 

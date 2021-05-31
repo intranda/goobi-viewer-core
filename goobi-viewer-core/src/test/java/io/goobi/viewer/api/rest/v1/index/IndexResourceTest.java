@@ -44,7 +44,7 @@ import io.goobi.viewer.api.rest.model.ErrorMessage;
 import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
 import io.goobi.viewer.api.rest.model.index.SolrFieldInfo;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
-import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * @author florian

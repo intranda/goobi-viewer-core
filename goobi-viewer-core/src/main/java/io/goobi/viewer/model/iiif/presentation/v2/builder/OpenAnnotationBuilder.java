@@ -48,10 +48,10 @@ import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.iiif.presentation.v2.AnnotationList;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * @author florian
@@ -65,7 +65,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     public OpenAnnotationBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
     }
-    
+
     /**
      * Get all annotations for the given PI from the SOLR index, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
      * converted to OpenAnnotations here
@@ -140,15 +140,15 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
         Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
         String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse(null);
         URI annoURI = getRestBuilder().getAnnotationURI(iddoc);
-        
+
         OpenAnnotation anno = new OpenAnnotation(annoURI);
 
         IResource body = createAnnnotationBodyFromUGCDocument(doc);
         anno.setBody(body);
 
-        if(pageOrder != null && coordString != null) {
+        if (pageOrder != null && coordString != null) {
             anno.setTarget(createFragmentTarget(pi, pageOrder, coordString, urlOnlyTarget));
-        } else if(pageOrder != null) {
+        } else if (pageOrder != null) {
             anno.setTarget(new SimpleResource(getRestBuilder().getCanvasURI(pi, pageOrder)));
         } else {
             anno.setTarget(new SimpleResource(getRestBuilder().getManifestURI(pi)));
@@ -165,7 +165,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
      * @param coordString
      * @param pageOrder
      */
-    public IResource createFragmentTarget(String pi, int pageOrder, String coordString,  boolean urlOnlyTarget) {
+    public IResource createFragmentTarget(String pi, int pageOrder, String coordString, boolean urlOnlyTarget) {
         try {
             FragmentSelector selector = new FragmentSelector(coordString);
             if (urlOnlyTarget) {
@@ -185,13 +185,11 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
                 FragmentSelector selector = new FragmentSelector(new Rectangle(x1, y1, x2 - x1, y2 - y1));
                 if (urlOnlyTarget) {
                     return new SpecificResourceURI(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
-                } else {
-                    return new SpecificResource(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
                 }
-            } else {
-                //failed to decipher selector
-                return new SimpleResource(getRestBuilder().getCanvasURI(pi, pageOrder));
+                return new SpecificResource(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
             }
+            //failed to decipher selector
+            return new SimpleResource(getRestBuilder().getCanvasURI(pi, pageOrder));
         }
     }
 
@@ -202,15 +200,15 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     public IResource createAnnnotationBodyFromUGCDocument(SolrDocument doc) {
         IResource body = null;
         if (doc.containsKey(SolrConstants.MD_BODY)) {
-            String bodyString = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.MD_BODY);
-            try {                
+            String bodyString = SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_BODY);
+            try {
                 JSONObject json = new JSONObject(bodyString);
                 body = new JSONResource(json);
-            } catch(JSONException e)  {
+            } catch (JSONException e) {
                 body = new TextualResource(bodyString);
             }
         } else if (doc.containsKey(SolrConstants.MD_TEXT)) {
-            String text = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.MD_TEXT);
+            String text = SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_TEXT);
             body = new TextualResource(text);
         }
         return body;
@@ -218,29 +216,30 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
 
     /**
      * @param pi
-     * @param uri 
+     * @param uri
      * @param b
      * @return
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
+    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly, HttpServletRequest request)
+            throws PresentationException, IndexUnreachableException {
         AnnotationList list = new AnnotationList(uri);
         getCrowdsourcingAnnotations(pi, urlsOnly, request).values().stream().flatMap(List::stream).forEach(anno -> list.addResource(anno));
         return list;
     }
-    
-    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer page, boolean urlsOnly, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
+
+    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer page, boolean urlsOnly, HttpServletRequest request)
+            throws PresentationException, IndexUnreachableException {
         AnnotationList list = new AnnotationList(uri);
-        getCrowdsourcingAnnotations(pi, urlsOnly, request).entrySet().stream()
-        .filter(entry -> ObjectUtils.equals(page, entry.getKey()))
-        .map(Entry::getValue)
-        .flatMap(List::stream)
-        .forEach(anno -> list.addResource(anno));
+        getCrowdsourcingAnnotations(pi, urlsOnly, request).entrySet()
+                .stream()
+                // TODO use Objects.equals(Object, Object)
+                .filter(entry -> ObjectUtils.equals(page, entry.getKey()))
+                .map(Entry::getValue)
+                .flatMap(List::stream)
+                .forEach(anno -> list.addResource(anno));
         return list;
     }
-
-
-
 
 }

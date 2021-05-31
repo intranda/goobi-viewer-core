@@ -2918,6 +2918,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(note.getId());
         CMSRecordNote pNote = DataManager.getInstance().getDao().getRecordNote(note.getId());
         assertNotNull(pNote);
+        pNote.getRecordTitle().setSelectedLocale(Locale.GERMAN);
         assertEquals(title, pNote.getRecordTitle().getText());
         assertEquals(title, pNote.getRecordTitle().getText(Locale.GERMAN));
     }

@@ -71,7 +71,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -89,6 +88,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.Translation;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  *

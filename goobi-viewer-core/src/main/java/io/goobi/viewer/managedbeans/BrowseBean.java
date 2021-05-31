@@ -40,8 +40,6 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -61,6 +59,8 @@ import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 

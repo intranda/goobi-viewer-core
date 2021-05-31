@@ -64,8 +64,6 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.PdfHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -84,6 +82,8 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * Physical element (page) containing an image, video or audio.
