@@ -38,8 +38,9 @@
 		        	</h:inputHidden>
 		        	
 				<div id="widgetGeoFacettingOverlay" class="widget-geofacetting__overlay">
-				<span data-loader="geoFacet" class="ajax_loader">
-					<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." />
+				<span data-loader="geoFacet" class="ajax_loader widget-geofacetting__loader-wrapper">
+					<img src="#{request.contextPath}/resources/images/infinity_loader.svg" class="img-responsive widget-geofacetting__loader-animated-image" alt="Waiting..." />
+					<div class="modal-backdrop show"></div>
 				</span>
 				<div class="widget-geofacetting__overlay-buttons-wrapper">
 					<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="reset">#{msg.cancel}</button>
@@ -115,8 +116,8 @@
 	                       	    overlay.node.show();
 			                 	$facetTriggerSearch.off().on("click", () => {
 			                 	   //console.log("trigger search");
-			                 	   $loader.show();
 			                 	   $facetSearch.click();
+			                 	   $loader.show();
 			                 	});
 			                 	$facetReset.off().on("click", () => {
 			                 	    this.area = undefined;
