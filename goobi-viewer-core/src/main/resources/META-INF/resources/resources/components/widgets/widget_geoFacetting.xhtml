@@ -38,14 +38,15 @@
 		        	</h:inputHidden>
 		        	
 				<div id="widgetGeoFacettingOverlay" class="widget-geofacetting__overlay">
-<!-- 				<span data-loader="geoFacet" class="ajax_loader"> -->
-<!-- 					<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." /> -->
-<!-- 				</span> -->
+				<span data-loader="geoFacet" class="ajax_loader">
+					<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." />
+				</span>
 				<div class="widget-geofacetting__overlay-buttons-wrapper">
 					<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="reset">#{msg.reset}</button>
 					<button class="btn btn--full widget-geofacetting__overlay-submit-search" data-geofacet="trigger-execute">#{msg.search}</button>
 				</div>	
-		        	<div id="geoFacettingOverlayMap" class="overlay__geomap"></div>
+		        	<div id="geoFacettingOverlayMap" class="overlay__geomap">
+		        	</div>
 				</div>
 	
 			</div>
@@ -102,6 +103,7 @@
 			                 	let $facetTriggerSearch = $("[data-geofacet='trigger-execute']");  
 			                 	let $facetReset = $("[data-geofacet='reset']");  
 			                 	let $facetInput = $("[data-geofacet='feature']");  
+			                 	let $loader = $("[data-loader='geoFacet']");  
 						$("#expandFacetMap").on("click", e => {
 						    //console.log("open overlay ", this);
 						    
@@ -113,6 +115,7 @@
 	                       	    overlay.node.show();
 			                 	$facetTriggerSearch.off().on("click", () => {
 			                 	   //console.log("trigger search");
+			                 	   $loader.show();
 			                 	   $facetSearch.click();
 			                 	});
 			                 	$facetReset.off().on("click", () => {
@@ -130,7 +133,6 @@
 		     					    onFeatureSelect: area => {
 		     					        //console.log("Set facetting area", area);
 		     					        console.log("submit area ", area);
-		     					        $("[data-loader='geoFacet']").show();
 									    sessionStorage.setItem("geoFacet", JSON.stringify(area));
 		     					      	$facetInput.val(area ? JSON.stringify(area) : "");
 			                       	    this.area = area;
