@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
@@ -27,10 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -51,7 +52,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         FacesContext facesContext = ContextMocker.mockFacesContext();
         ExternalContext externalContext = Mockito.mock(ExternalContext.class);
         //        ServletContext servletContext = Mockito.mock(ServletContext.class);
-        UIViewRoot viewRoot = Mockito.mock(UIViewRoot.class);
+        //        UIViewRoot viewRoot = Mockito.mock(UIViewRoot.class);
 
         Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
         //        Mockito.when(externalContext.getContext()).thenReturn(servletContext);
@@ -72,7 +73,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void update_shouldCreateViewManagerCorrectly() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(1);
+        adb.setImageToShow("1");
         adb.update();
         Assert.assertNotNull(adb.getViewManager());
         Assert.assertEquals(PI_KLEIUNIV, adb.getPersistentIdentifier());
@@ -95,7 +96,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void update_shouldUpdateViewManagerCorrectlyIfLOGIDHasChanged() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(1);
+        adb.setImageToShow("1");
         adb.update();
         Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
         ViewManager oldViewManager = adb.getViewManager();
@@ -118,7 +119,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void update_shouldNotOverrideTopDocumentIddocIfLOGIDHasChanged() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(1);
+        adb.setImageToShow("1");
         adb.update();
 
         adb.setLogid("LOG_0005");
@@ -149,9 +150,9 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(10);
+        adb.setImageToShow("10");
         adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/13/", adb.getNextPageUrl(3));
+        Assert.assertEquals("/viewImage_value/PPN517154005/13/", adb.getPageUrl(3));
     }
 
     /**
@@ -163,9 +164,9 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(15);
+        adb.setImageToShow("15");
         adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getLastPageOrder() + "/", adb.getNextPageUrl(3));
+        Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getLastPageOrder() + "/", adb.getPageUrl(3));
     }
 
     /**
@@ -177,7 +178,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(10);
+        adb.setImageToShow("10");
         adb.update();
         Assert.assertEquals("/viewImage_value/PPN517154005/7/", adb.getPreviousPageUrl(3));
     }
@@ -191,7 +192,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(2);
+        adb.setImageToShow("2");
         try {
             adb.update();
         } catch (IDDOCNotFoundException e) {
@@ -209,9 +210,9 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(1);
+        adb.setImageToShow("1");
         adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/12/", adb.getPageUrl(12));
+        Assert.assertEquals("/viewImage_value/PPN517154005/12/", adb.getPageUrl("12"));
     }
 
     /**
@@ -226,7 +227,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         // The public release year metadata is only available in docstruct and page Solr docs. Here, it is important that none of the
         // record's docs match the conditional query of the license type anyway.
         adb.setPersistentIdentifier("1045513032");
-        adb.setImageToShow(1);
+        adb.setImageToShow("1");
 
         // Override config setting so that localhost doesn't get full access
         DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
@@ -245,13 +246,106 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Record will be released by a moving wall in 2041
         adb.setPersistentIdentifier("557335825");
-        adb.setImageToShow(1);
+        adb.setImageToShow("1");
 
         // Override config setting so that localhost doesn't get full access
         DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
 
         adb.update();
         Assert.fail();
+    }
+
+    /**
+     * @see ActiveDocumentBean#getPageUrl(int)
+     * @verifies return correct page in single page mode
+     */
+    @Test
+    public void getPageUrl_shouldReturnCorrectPageInSinglePageMode() throws Exception {
+        ActiveDocumentBean adb = new ActiveDocumentBean();
+        adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
+        adb.setImageToShow("2");
+        adb.update();
+        Assert.assertTrue(adb.isRecordLoaded());
+
+        // Next page (2 -> 3)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/3/", adb.getPageUrl(1));
+        // Previous page (2 -> 1)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1/", adb.getPageUrl(-1));
+    }
+
+    /**
+     * @see ActiveDocumentBean#getPageUrl(int)
+     * @verifies return correct range in double page mode if currently showing one page
+     */
+    @Test
+    public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingOnePage() throws Exception {
+        ActiveDocumentBean adb = new ActiveDocumentBean();
+        adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
+        adb.setImageToShow("1");
+        adb.update();
+        Assert.assertTrue(adb.isRecordLoaded());
+
+        adb.getViewManager().setDoublePageMode(true);
+
+        // Next page (1 -> 2-3)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrl(1));
+        // Previous page (16 -> 14-15)
+        adb.setImageToShow("16");
+        adb.update();
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/", adb.getPageUrl(-1));
+        
+        // Same in right-to-left
+        adb.getViewManager().getTopStructElement().setRtl(true);
+        // Next page (1 -> 2-3)
+        adb.setImageToShow("1");
+        adb.update();
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrl(1));
+        // Previous page (16 -> 14-15)
+        adb.setImageToShow("16");
+        adb.update();
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/", adb.getPageUrl(-1));
+        
+    }
+
+    /**
+     * @see ActiveDocumentBean#getPageUrl(int)
+     * @verifies return correct range in double page mode if currently showing two pages
+     */
+    @Test
+    public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingTwoPages() throws Exception {
+        ActiveDocumentBean adb = new ActiveDocumentBean();
+        adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
+        adb.setImageToShow("4-5");
+        adb.update();
+        Assert.assertTrue(adb.isRecordLoaded());
+
+        adb.getViewManager().setDoublePageMode(true);
+
+        // Next page (4-5 -> 6-7)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/6-7/", adb.getPageUrl(1));
+        // Previous page (4-5 -> 2-3)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrl(-1));
+    }
+
+    /**
+     * @see ActiveDocumentBean#getPageUrl(int)
+     * @verifies return correct range in double page mode if current page double image
+     */
+    @Test
+    public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentPageDoubleImage() throws Exception {
+        ActiveDocumentBean adb = new ActiveDocumentBean();
+        adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
+        adb.setImageToShow("3");
+        adb.update();
+        Assert.assertTrue(adb.isRecordLoaded());
+
+        adb.getViewManager().setDoublePageMode(true);
+        adb.getViewManager().getCurrentPage().setDoubleImage(true);
+
+        // Next page (3 -> 4-5)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/4-5/", adb.getPageUrl(1));
+        // Previous page (3 -> 1-2)
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1-2/", adb.getPageUrl(-1));
     }
 
 }

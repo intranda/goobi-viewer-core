@@ -50,21 +50,13 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
-import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
-import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.PdfHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -138,6 +130,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private int height = 0;
     /** Whether or not this page has image data. */
     private boolean hasImage = false;
+    /** Whether or not this page contains an image that spans two pages. */
+    private boolean doubleImage = false;
+    /** If this page comes after an uneven number of double image pages, this should be set to true. */
+    private boolean flipRectoVerso = false;
     /** Whether or not full-text is available for this page. */
     private boolean fulltextAvailable = false;
 
@@ -181,10 +177,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @param mimeType Page mime type
      * @param dataRepository Record date repository
      */
-    public PhysicalElement(String physId, String filePath, int order, String orderLabel, String urn, String purlPart, String pi, String mimeType,
+    PhysicalElement(String physId, String filePath, int order, String orderLabel, String urn, String purlPart, String pi, String mimeType,
             String dataRepository) {
-
-        super();
         this.physId = physId;
         this.filePath = filePath;
         this.order = order;
@@ -204,7 +198,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (watermarkTextConfiguration == null) {
             watermarkTextConfiguration = DataManager.getInstance().getConfiguration().getWatermarkTextConfiguration();
         }
-
     }
 
     /**
@@ -694,6 +687,35 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * @return the doubleImage
+     */
+    public boolean isDoubleImage() {
+        // logger.trace("isDoubleImage: {}", doubleImage);
+        return doubleImage;
+    }
+
+    /**
+     * @param doubleImage the doubleImage to set
+     */
+    public void setDoubleImage(boolean doubleImage) {
+        this.doubleImage = doubleImage;
+    }
+
+    /**
+     * @return the flipRectoVerso
+     */
+    public boolean isFlipRectoVerso() {
+        return flipRectoVerso;
+    }
+
+    /**
+     * @param flipRectoVerso the flipRectoVerso to set
+     */
+    public void setFlipRectoVerso(boolean flipRectoVerso) {
+        this.flipRectoVerso = flipRectoVerso;
+    }
+
+    /**
      * <p>
      * isFulltextAvailableForPage.
      * </p>
@@ -873,12 +895,26 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (StringUtils.isNotEmpty(altoText)) {
             wordCoordsFormat = CoordsFormat.ALTO;
             String text = ALTOTools.getFullText(altoText, false, null);
+            if (StringUtils.isNotEmpty(text)) {
+                String cleanText = StringTools.stripJS(text);
+                if (cleanText.length() < text.length()) {
+                    text = cleanText;
+                    logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, getOrder());
+                }
+            }
             return text;
         }
         wordCoordsFormat = CoordsFormat.NONE;
         if (fullText == null) {
             try {
                 fullText = loadFullText();
+                if (StringUtils.isNotEmpty(fullText)) {
+                    String cleanText = StringTools.stripJS(fullText);
+                    if (cleanText.length() < fullText.length()) {
+                        fullText = cleanText;
+                        logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, getOrder());
+                    }
+                }
                 fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
                 fulltextAccessPermission = false;
@@ -1370,8 +1406,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * checks if the user has the privilege {@link IPrivilegeHolder.PRIV_ZOOM_IMAGES}
-     * If the check fails and {@link Configuration#getUnzoomedImageAccessMaxWidth()} is greater than 0, false is returned
+     * checks if the user has the privilege {@link IPrivilegeHolder.PRIV_ZOOM_IMAGES} If the check fails and
+     * {@link Configuration#getUnzoomedImageAccessMaxWidth()} is greater than 0, false is returned
+     * 
      * @return true exactly if the user is allowed to zoom images. false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -1386,9 +1423,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             logger.trace("FacesContext not found");
 
             return false;
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     /**

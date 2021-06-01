@@ -142,7 +142,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
     @Override
     public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
             boolean recordBelowFulltextThreshold, Locale locale) throws IndexUnreachableException {
-        logger.debug("Generating drop-down page selector...");
+        logger.trace("Generating drop-down page selector...");
         try {
             String pi = topElement.getPi();
             StringBuilder sbQuery = new StringBuilder();
@@ -157,42 +157,75 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
                     .getSearchIndex()
                     .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")),
                             Arrays.asList(SELECT_ITEM_FIELDS));
-            if (result == null || result.isEmpty()) {
-                sbQuery = new StringBuilder();
-                sbQuery.append(SolrConstants.PI_TOPSTRUCT)
-                        .append(':')
-                        .append(topElement.getPi())
-                        .append(" AND ")
-                        .append(SolrConstants.FILENAME)
-                        .append(":*");
-                result = DataManager.getInstance()
-                        .getSearchIndex()
-                        .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")),
-                                Arrays.asList(SELECT_ITEM_FIELDS));
-            }
             String labelTemplate = buildPageLabelTemplate(DataManager.getInstance().getConfiguration().getPageSelectionFormat(), locale);
+            Integer previousOrder = null;
+            String previousOrderLabel = null;
             for (SolrDocument doc : result) {
                 int order = (Integer) doc.getFieldValue(SolrConstants.ORDER);
                 String orderLabel = (String) doc.getFieldValue(SolrConstants.ORDERLABEL);
                 boolean fulltextAvailable =
                         doc.containsKey(SolrConstants.FULLTEXTAVAILABLE) ? (boolean) doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE) : false;
+                //                boolean doubleImage =
+                //                        doc.containsKey(SolrConstants.BOOL_DOUBLE_IMAGE) ? (boolean) doc.getFieldValue(SolrConstants.BOOL_DOUBLE_IMAGE) : false;
                 StringBuilder sbPurlPart = new StringBuilder();
                 sbPurlPart.append('/').append(pi).append('/').append(order).append('/');
 
-                SelectItem si = new SelectItem();
-                si.setLabel(labelTemplate.replace("{order}", String.valueOf(order)).replace("{orderlabel}", orderLabel));
-                si.setValue(order);
-                dropdownPages.add(si);
+                SelectItem siPage;
+                //                if (doubleImage) {
+                //                    // Save page number for now and generate the item during the next iteration
+                //                    previousOrder = order;
+                //                    previousOrderLabel = orderLabel;
+                //                    continue;
+                //                } else if (previousOrder != null) {
+                //                    // Double page item
+                //                    siPage = buildPageSelectItem(labelTemplate, previousOrder, previousOrderLabel, order, orderLabel);
+                //                } else {
+                siPage = buildPageSelectItem(labelTemplate, order, orderLabel, null, null);
+                //                }
+                dropdownPages.add(siPage);
                 if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !fulltextAvailable)) {
-                    SelectItem full = new SelectItem();
-                    full.setLabel(order + ":" + orderLabel);
-                    full.setValue(order);//urlRoot + "/" + PageType.viewFulltext.getName() + sbPurlPart.toString());
-                    dropdownFulltext.add(full);
+                    SelectItem siFull;
+                    if (previousOrder != null) {
+                        // Double page item
+                        siFull = buildPageSelectItem(labelTemplate, previousOrder, previousOrderLabel, order, orderLabel);
+                    } else {
+                        siFull = buildPageSelectItem(labelTemplate, order, orderLabel, null, null);
+                    }
+                    dropdownFulltext.add(siFull);
                 }
+                previousOrder = null;
+                previousOrderLabel = null;
             }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
+    }
+
+    /**
+     * 
+     * @param labelTemplate
+     * @param pageNo
+     * @param nextPageNo
+     * @param orderLabel
+     * @param nextOderLabel
+     * @return
+     */
+    static SelectItem buildPageSelectItem(String labelTemplate, int pageNo, Integer nextPageNo, String orderLabel, String nextOderLabel) {
+        if (labelTemplate == null) {
+            throw new IllegalArgumentException("labelTemplate may not be null");
+        }
+
+        SelectItem si = new SelectItem();
+        if (nextPageNo != null && nextOderLabel != null) {
+            si.setLabel(labelTemplate.replace("{order}", pageNo + "-" + nextPageNo)
+                    .replace("{orderlabel}", orderLabel + " - " + nextOderLabel));
+            si.setValue(pageNo + "-" + nextPageNo);
+        } else {
+            si.setLabel(labelTemplate.replace("{order}", String.valueOf(pageNo)).replace("{orderlabel}", orderLabel));
+            si.setValue(pageNo);
+        }
+
+        return si;
     }
 
     /**

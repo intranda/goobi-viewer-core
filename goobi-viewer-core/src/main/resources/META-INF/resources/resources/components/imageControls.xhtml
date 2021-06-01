@@ -15,7 +15,7 @@
     <!-- IMPLEMENTATION -->
     <composite:implementation>
         	
-    	<ui:param name="currentPageOrder" value="#{activeDocumentBean.viewManager.currentImageNo}"></ui:param>
+    	<ui:param name="currentPageOrder" value="#{activeDocumentBean.viewManager.currentImageOrder}"></ui:param>
         <ui:param name="firstPageOrder" value="#{activeDocumentBean.viewManager.firstPageOrder}"></ui:param>
         <ui:param name="lastPageOrder" value="#{activeDocumentBean.viewManager.lastPageOrder}"></ui:param>
         <ui:param name="pageCount" value="#{activeDocumentBean.viewManager.imagesCount}"></ui:param>
@@ -148,14 +148,14 @@
 	                                <div class="custom-control custom-control--select">
 	                                        <!-- Image view select -->
 	                                        <h:selectOneMenu rendered="#{navigationHelper.currentPage != 'fulltext'}"
-	                                            onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
+	                                            onchange="location.href='#{activeDocumentBean.getPageUrlByType(navigationHelper.currentView)}' + $(this).val(); + '/';"
 	                                            value="#{activeDocumentBean.viewManager.dropdownSelected}">
                                                 <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
                                                 <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__select_page}"/>
 	                                        </h:selectOneMenu>
 	                                        <!-- Full-text view select -->
 	                                        <h:selectOneMenu rendered="#{navigationHelper.currentPage == 'fulltext'}"
-	                                            onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
+	                                            onchange="location.href='#{activeDocumentBean.getPageUrlByType(navigationHelper.currentView)}' + $(this).val(); + '/';"
 	                                            value="#{activeDocumentBean.viewManager.dropdownSelected}">
                                                 <f:selectItems value="#{activeDocumentBean.viewManager.dropdownFulltext}" />
                                                 <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__select_page}"/>
@@ -272,11 +272,11 @@
                         
                         </ui:fragment>
                             
-                            <!-- DOUBLEPAGEVIEW -->
+                            <!-- DOUBLE PAGE VIEW -->
                             <ui:fragment
-                                rendered="#{pageCount gt 1 and activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and configurationBean.doublePageNavigationEnabled}">
+                                rendered="#{configurationBean.doublePageNavigationEnabled and pageCount gt 1 and activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and !activeDocumentBean.viewManager.currentPage.doubleImage}">
                                 <li class="image-controls__action double-page-view">
-                                    <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(true)}" title="#{msg.doublePageView}">
+                                    <h:commandLink action="#{activeDocumentBean.setDoublePageModeAction(true)}" title="#{msg.doublePageView}">
                                         <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-double-page.svg')}"/>
                                         <span class="labeltext">#{msg.doublePageView}</span>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -286,8 +286,9 @@
                                 </li>
                             </ui:fragment>
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext'}">
+                                <!-- SINGLE PAGE VIEW -->
                                 <li class="image-controls__action single-page-view">
-                                    <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(false)}" title="#{msg.singlePageView}">
+                                    <h:commandLink action="#{activeDocumentBean.setDoublePageModeAction(false)}" title="#{msg.singlePageView}">
                                         <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-single-page.svg')}" />
                                         <span class="labeltext">#{msg.singlePageView}</span>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -295,6 +296,7 @@
                                         <f:passThroughAttribute name="aria-label" value="#{msg.singlePageView}" />
                                     </h:commandLink>
                                 </li>
+                                <!-- TOGGLE RECTO/VERSO -->
                                 <li class="image-controls__action switch-pages">
                                     <h:commandLink action="#{activeDocumentBean.viewManager.togglePageOrientation()}" title="#{msg.switchPages}">
                                         <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-switch-pages.svg')}" />
@@ -370,12 +372,12 @@
                         <ui:fragment rendered="#{configurationBean.displayCrowdsourcingModuleLinks}">
                             <ui:fragment rendered="#{navigationHelper.currentPage == 'object'}">
                                 <li class="image-controls__option -ltr">
-                                    <a href="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">#{msg.action__crowdsourcing_participate}!</a>
+                                    <a href="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}">#{msg.action__crowdsourcing_participate}!</a>
                                 </li>
                             </ui:fragment>
                             <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext'}">
                                 <li class="image-controls__option">
-                                    <a href="#{navigationHelper.applicationUrl}crowd/editOcr/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">#{msg.action__edit_text}</a>
+                                    <a href="#{navigationHelper.applicationUrl}crowd/editOcr/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}">#{msg.action__edit_text}</a>
                                 </li>
                             </ui:fragment>
                         </ui:fragment>
@@ -446,7 +448,7 @@
                                 <button type="button" class="btn btn--icon"
                                     data-bookmark-list-type="add" 
                                     data-pi="#{activeDocumentBean.viewManager.pi}"
-                                    data-page="#{activeDocumentBean.viewManager.currentImageNo}"
+                                    data-page="#{activeDocumentBean.viewManager.currentImageOrder}"
                                     role="switch"
                                     aria-label="#{msg.bookmarkList_addToBookmarkList}">
                                     <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}">

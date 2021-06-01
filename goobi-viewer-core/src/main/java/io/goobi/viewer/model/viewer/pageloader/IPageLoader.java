@@ -39,7 +39,7 @@ public interface IPageLoader {
             SolrConstants.FILENAME_FULLTEXT, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.FILENAME_MPEG, SolrConstants.FILENAME_MPEG3,
             SolrConstants.FILENAME_MP4, SolrConstants.FILENAME_OGG, SolrConstants.FILENAME_WEBM, SolrConstants.FULLTEXTAVAILABLE,
             SolrConstants.DATAREPOSITORY, SolrConstants.IMAGEURN, SolrConstants.WIDTH, SolrConstants.HEIGHT, SolrConstants.ACCESSCONDITION,
-            SolrConstants.MDNUM_FILESIZE, SolrConstants.BOOL_IMAGEAVAILABLE };
+            SolrConstants.MDNUM_FILESIZE, SolrConstants.BOOL_IMAGEAVAILABLE, SolrConstants.BOOL_DOUBLE_IMAGE };
 
     /**
      * <p>

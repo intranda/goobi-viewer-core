@@ -62,7 +62,7 @@ public class FilterTools {
      * @should throw exception if record not found
      */
     public static void filterForConcurrentViewLimit(String pi, HttpServletRequest request) throws ServiceNotAllowedException {
-        logger.trace("filterForConcurrentViewLimit: {}", request.getSession().getId());
+        // logger.trace("filterForConcurrentViewLimit: {}", request.getSession().getId());
         HttpSession session = request.getSession();
         // Release all locks for this session except the current record
         if (session != null) {

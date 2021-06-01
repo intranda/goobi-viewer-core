@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.faces.model.SelectItem;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -36,6 +38,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
@@ -204,7 +207,16 @@ public abstract class AbstractPageLoader implements IPageLoader {
         StringBuilder sbPurlPart = new StringBuilder();
         sbPurlPart.append('/').append(pi).append('/').append(order).append('/');
 
-        PhysicalElement pe = new PhysicalElement(physId, fileName, order, orderLabel, urn, sbPurlPart.toString(), pi, mimeType, dataRepository);
+        PhysicalElement pe = new PhysicalElementBuilder().setPi(pi)
+                .setPhysId(physId)
+                .setFilePath(fileName)
+                .setOrder(order)
+                .setOrderLabel(orderLabel)
+                .setUrn(urn)
+                .setPurlPart(sbPurlPart.toString())
+                .setMimeType(mimeType)
+                .setDataRepository(dataRepository)
+                .build();
 
         if (doc.getFieldValue(SolrConstants.WIDTH) != null) {
             pe.setWidth((Integer) doc.getFieldValue(SolrConstants.WIDTH));
@@ -259,6 +271,40 @@ public abstract class AbstractPageLoader implements IPageLoader {
             pe.setHasImage((boolean) doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE));
         }
 
+        // Double page view
+        if (doc.containsKey(SolrConstants.BOOL_DOUBLE_IMAGE)) {
+            pe.setDoubleImage((boolean) doc.getFieldValue(SolrConstants.BOOL_DOUBLE_IMAGE));
+        }
+
         return pe;
+    }
+
+    /**
+     * 
+     * @param labelTemplate Label template with placeholders
+     * @param pageNo Page number
+     * @param orderLabel Page label
+     * @param nextPageNo Optional next page number
+     * @param nextOderLabel Optional next page label
+     * @return {@link SelectItem}
+     * @should construct single page item correctly
+     * @should construct double page item correctly
+     */
+    protected static SelectItem buildPageSelectItem(String labelTemplate, int pageNo, String orderLabel, Integer nextPageNo, String nextOderLabel) {
+        if (labelTemplate == null) {
+            throw new IllegalArgumentException("labelTemplate may not be null");
+        }
+
+        SelectItem si = new SelectItem();
+        if (nextPageNo != null && nextOderLabel != null) {
+            si.setLabel(labelTemplate.replace("{order}", pageNo + "-" + nextPageNo)
+                    .replace("{orderlabel}", orderLabel + " - " + nextOderLabel));
+            si.setValue(pageNo + "-" + nextPageNo);
+        } else {
+            si.setLabel(labelTemplate.replace("{order}", String.valueOf(pageNo)).replace("{orderlabel}", orderLabel));
+            si.setValue(String.valueOf(pageNo));
+        }
+
+        return si;
     }
 }

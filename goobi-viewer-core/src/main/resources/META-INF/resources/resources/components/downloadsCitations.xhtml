@@ -24,7 +24,7 @@
 					#{msg.citeLinkWork} </a>
 			</ui:fragment>
 			<ui:fragment
-				rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage}">
+				rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage and !activeDocumentBean.viewManager.doublePageMode}">
 				<a id="citeLinkPage"
 					class="badge badge-dark widget-usage__citelink-page"
 					data-copy="page-citelink"

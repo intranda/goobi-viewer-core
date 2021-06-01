@@ -281,10 +281,16 @@ public class ViewManager implements Serializable {
      */
     public String getCurrentImageInfo(PageType pageType) throws IndexUnreachableException, DAOException {
         StringBuilder urlBuilder = new StringBuilder();
-        if (isDoublePageMode()) {
+        if (isDoublePageMode() && !getCurrentPage().isDoubleImage()) {
+            Optional<PhysicalElement> leftPage = getCurrentLeftPage();
+            Optional<PhysicalElement> rightPage = getCurrentRightPage();
+            logger.trace("left page: {}", leftPage.isPresent() ? leftPage.get().getOrder() : "-");
+            logger.trace("right page: {}", rightPage.isPresent() ? rightPage.get().getOrder() : "-");
             urlBuilder.append("[");
-            String imageInfoLeft = getCurrentLeftPage().map(page -> getImageInfo(page, pageType)).orElse(null);
-            String imageInfoRight = getCurrentRightPage().map(page -> getImageInfo(page, pageType)).orElse(null);
+            String imageInfoLeft =
+                    (leftPage.isPresent() && leftPage.get().isDoubleImage()) ? null : leftPage.map(page -> getImageInfo(page, pageType)).orElse(null);
+            String imageInfoRight = (rightPage.isPresent() && rightPage.get().isDoubleImage()) ? null
+                    : rightPage.map(page -> getImageInfo(page, pageType)).orElse(null);
             if (StringUtils.isNotBlank(imageInfoLeft)) {
                 urlBuilder.append("\"").append(imageInfoLeft).append("\"");
             }
@@ -307,9 +313,9 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      */
-    private Optional<PhysicalElement> getCurrentLeftPage() throws IndexUnreachableException, DAOException {
+    public Optional<PhysicalElement> getCurrentLeftPage() throws IndexUnreachableException, DAOException {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
-        PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
+        PageOrientation actualPageOrientation = actualPageOrderEven ? getFirstPageOrientation().opposite() : getFirstPageOrientation();
         if (topStructElement != null && topStructElement.isRtl()) {
             actualPageOrientation = actualPageOrientation.opposite();
         }
@@ -329,9 +335,9 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      */
-    private Optional<PhysicalElement> getCurrentRightPage() throws IndexUnreachableException, DAOException {
+    public Optional<PhysicalElement> getCurrentRightPage() throws IndexUnreachableException, DAOException {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
-        PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
+        PageOrientation actualPageOrientation = actualPageOrderEven ? getFirstPageOrientation().opposite() : getFirstPageOrientation();
         if (topStructElement != null && topStructElement.isRtl()) {
             actualPageOrientation = actualPageOrientation.opposite();
         }
@@ -345,6 +351,12 @@ public class ViewManager implements Serializable {
 
     }
 
+    /**
+     * 
+     * @param page
+     * @param pageType
+     * @return
+     */
     private String getImageInfo(PhysicalElement page, PageType pageType) {
         return imageDeliveryBean.getImages().getImageUrl(page, pageType);
     }
@@ -1073,6 +1085,19 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * @param step
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public PhysicalElement getNextPrevPage(int step) throws IndexUnreachableException {
+        int index = currentImageOrder + step;
+        if (index <= 0 || index >= pageLoader.getNumPages()) {
+            return null;
+        }
+        return getPage(index).orElse(null);
+    }
+
+    /**
      * Returns the page with the given order number from the page loader, if exists.
      *
      * @param order a int.
@@ -1085,7 +1110,6 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public Optional<PhysicalElement> getPage(int order) {
-
         try {
             if (pageLoader != null && pageLoader.getPage(order) != null) {
                 // logger.debug("page " + order + ": " + pageLoader.getPage(order).getFileName());
@@ -1138,73 +1162,74 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * <p>
-     * getCurrentImageNo.
-     * </p>
-     *
-     * @return the currentImageNo
-     */
-    public int getCurrentImageNo() {
-        return currentImageOrder;
-    }
-
-    /**
      * Getter for the paginator or the direct page number input field
      *
      * @return currentImageNo
      */
-    public int getCurrentImageNoForPaginator() {
-        return getCurrentImageNo();
+    public int getCurrentImageOrderForPaginator() {
+        return getCurrentImageOrder();
     }
 
     /**
      * Setter for the direct page number input field
      *
-     * @param currentImageNo a int.
+     * @param currentImageOrder a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws IDDOCNotFoundException
      */
-    public void setCurrentImageNoForPaginator(int currentImageNo) throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
-        logger.trace("setCurrentImageNoForPaginator({})", currentImageNo);
-        setCurrentImageNo(currentImageNo);
+    public void setCurrentImageOrderForPaginator(int currentImageOrder)
+            throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
+        logger.trace("setCurrentImmageNoForPaginator({})", currentImageOrder);
+        setCurrentImageOrder(currentImageOrder);
     }
 
     /**
      * <p>
-     * setCurrentImageNo.
+     * currentImageOrder.
      * </p>
      *
-     * @param currentImageNo the currentImageNo to set
+     * @return the currentImageOrder
+     */
+    public int getCurrentImageOrder() {
+        return currentImageOrder;
+    }
+
+    /**
+     * <p>
+     * currentPageOrder.
+     * </p>
+     *
+     * @param currentPageOrder the currentPageOrder to set
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws RecordNotFoundException
      * @throws PresentationException
      * @throws IDDOCNotFoundException
      */
-    public void setCurrentImageNo(int currentImageNo) throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
-        logger.trace("setCurrentImageNo: {}", currentImageNo);
+    public void setCurrentImageOrder(int currentImageOrder) throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
+        logger.trace("setCurrentImageNo: {}", currentImageOrder);
         if (pageLoader == null) {
             return;
         }
 
-        if (currentImageNo < pageLoader.getFirstPageOrder()) {
-            currentImageNo = pageLoader.getFirstPageOrder();
-        } else if (currentImageNo >= pageLoader.getLastPageOrder()) {
-            currentImageNo = pageLoader.getLastPageOrder();
+        if (currentImageOrder < pageLoader.getFirstPageOrder()) {
+            currentImageOrder = pageLoader.getFirstPageOrder();
+        } else if (currentImageOrder >= pageLoader.getLastPageOrder()) {
+            currentImageOrder = pageLoader.getLastPageOrder();
         }
-        this.currentImageOrder = currentImageNo;
+        this.currentImageOrder = currentImageOrder;
         persistentUrl = null;
 
         if (StringUtils.isEmpty(logId)) {
-            Long iddoc = pageLoader.getOwnerIddocForPage(currentImageNo);
+            Long iddoc = pageLoader.getOwnerIddocForPage(currentImageOrder);
             // Set the currentDocumentIddoc to the IDDOC of the image owner document, but only if no specific document LOGID has been requested
             if (iddoc != null && iddoc > -1) {
                 currentStructElementIddoc = iddoc;
                 logger.trace("currentDocumentIddoc: {} ({})", currentStructElementIddoc, pi);
             } else if (isHasPages()) {
-                logger.warn("currentDocumentIddoc not found for '{}', page {}", pi, currentImageNo);
-                throw new IDDOCNotFoundException("currentElementIddoc not found for '" + pi + "', page " + currentImageNo);
+                logger.warn("currentDocumentIddoc not found for '{}', page {}", pi, currentImageOrder);
+                throw new IDDOCNotFoundException("currentElementIddoc not found for '" + pi + "', page " + currentImageOrder);
             }
         } else {
             // If a specific LOGID has been requested, look up its IDDOC
@@ -1221,6 +1246,32 @@ public class ViewManager implements Serializable {
         if (currentStructElement == null || currentStructElement.getLuceneId() != currentStructElementIddoc) {
             setCurrentStructElement(new StructElement(currentStructElementIddoc));
         }
+    }
+
+    /**
+     * Main method for setting the current page(s) in this ViewManager.
+     * 
+     * @param currentImageOrderString A string containing a single page number or a range of two pages
+     * @throws NumberFormatException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws IDDOCNotFoundException
+     */
+    public void setCurrentImageOrderString(String currentImageOrderString)
+            throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException {
+        if (StringUtils.isEmpty(currentImageOrderString)) {
+            return;
+        }
+
+        int newImageOrder = 1;
+        if (currentImageOrderString.contains("-")) {
+            String[] orderSplit = currentImageOrderString.split("[-]");
+            newImageOrder = Integer.valueOf(orderSplit[0]);
+        } else {
+            newImageOrder = Integer.valueOf(currentImageOrderString);
+        }
+
+        setCurrentImageOrder(newImageOrder);
     }
 
     /**
@@ -1252,7 +1303,7 @@ public class ViewManager implements Serializable {
     public String nextImage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         //        logger.debug("currentImageNo: {}", currentImageOrder);
         if (currentImageOrder < pageLoader.getLastPageOrder()) {
-            setCurrentImageNo(currentImageOrder);
+            setCurrentImageOrder(currentImageOrder);
         }
         updateDropdownSelected();
         return null;
@@ -1270,7 +1321,7 @@ public class ViewManager implements Serializable {
      */
     public String prevImage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         if (currentImageOrder > 0) {
-            setCurrentImageNo(currentImageOrder);
+            setCurrentImageOrder(currentImageOrder);
         }
         updateDropdownSelected();
         return "";
@@ -1287,7 +1338,7 @@ public class ViewManager implements Serializable {
      * @throws IDDOCNotFoundException
      */
     public String firstImage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
-        setCurrentImageNo(pageLoader.getFirstPageOrder());
+        setCurrentImageOrder(pageLoader.getFirstPageOrder());
         updateDropdownSelected();
         return null;
     }
@@ -1303,7 +1354,7 @@ public class ViewManager implements Serializable {
      * @throws IDDOCNotFoundException
      */
     public String lastImage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
-        setCurrentImageNo(pageLoader.getLastPageOrder());
+        setCurrentImageOrder(pageLoader.getLastPageOrder());
         updateDropdownSelected();
         return null;
     }
@@ -1337,19 +1388,18 @@ public class ViewManager implements Serializable {
 
     /**
      * 
-     * @return First page number
-     */
-    public int getLastPageOrder() {
+     * @return Last page number
+     */    public int getLastPageOrder() {
         if (pageLoader == null) {
             return -1;
         }
         return pageLoader.getLastPageOrder();
     }
 
-    /**
-     * 
-     * @return Last page number
-     */
+     /**
+      * 
+      * @return First page number
+      */
     public int getFirstPageOrder() {
         if (pageLoader == null) {
             return -1;
@@ -1564,7 +1614,7 @@ public class ViewManager implements Serializable {
      */
     public void dropdownAction(ValueChangeEvent event)
             throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException {
-        setCurrentImageNo(Integer.valueOf((String) event.getNewValue()) - 1);
+        setCurrentImageOrder(Integer.valueOf((String) event.getNewValue()) - 1);
     }
 
     /**
@@ -2616,7 +2666,9 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @deprecated Use <code>PhysicalElement.getFullText()</code>
      */
+    @Deprecated
     public String getFulltext() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return getFulltext(true, null);
     }
@@ -2630,22 +2682,40 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @deprecated Use <code>PhysicalElement.getFullText()</code>
      */
+    @Deprecated
     public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         String currentFulltext = null;
 
         // Current page fulltext
-        PhysicalElement currentImg = getCurrentPage();
-        if (currentImg == null || StringUtils.isEmpty(currentImg.getFullText())) {
-            return currentFulltext;
+
+        if (isDoublePageMode()) {
+            // Double page view
+            StringBuilder sb = new StringBuilder();
+            Optional<PhysicalElement> leftPage = getCurrentLeftPage();
+            if (leftPage.isPresent() && StringUtils.isNotEmpty(leftPage.get().getFullText())) {
+                sb.append(leftPage.get().getFullText());
+            }
+            Optional<PhysicalElement> rightPage = getCurrentRightPage();
+            if (rightPage.isPresent() && StringUtils.isNotEmpty(rightPage.get().getFullText())) {
+                if (sb.length() > 0) {
+                    sb.append("<hr />");
+                }
+                sb.append(rightPage.get().getFullText());
+            }
+            currentFulltext = sb.toString();
+        } else {
+            // Single page view
+            PhysicalElement currentPage = getCurrentPage();
+            if (currentPage == null || StringUtils.isEmpty(currentPage.getFullText())) {
+                return currentFulltext;
+            }
+            currentFulltext = currentPage.getFullText();
         }
 
-        currentFulltext = StringTools.stripJS(currentImg.getFullText());
-        if (currentFulltext.length() < currentImg.getFullText().length()) {
-            logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, currentImg.getOrder());
-        }
         if (escapeHtml) {
-            currentFulltext = StringTools.escapeHtmlChars(currentImg.getFullText());
+            currentFulltext = StringTools.escapeHtmlChars(currentFulltext);
         }
 
         // logger.trace(currentFulltext);
@@ -3444,6 +3514,10 @@ public class ViewManager implements Serializable {
      * @return the firstPageOrientation
      */
     public PageOrientation getFirstPageOrientation() {
+        if (getCurrentPage().isFlipRectoVerso()) {
+            logger.trace("page {} is flipped", getCurrentPage().getOrder());
+            return firstPageOrientation.opposite();
+        }
         return firstPageOrientation;
     }
 
