@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,6 +46,7 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +59,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -146,8 +149,11 @@ public class Search implements Serializable {
     @Transient
     private final List<SearchHit> hits = new ArrayList<>();
     
+    /**
+     * List of geo-locations found by the last search
+     */
     @Transient
-    private final List<double[]> hitGeoCoordinateList = new ArrayList<>();
+    private List<Location> hitLocationList = new ArrayList<>();
 
     /**
      * Empty constructor for JPA.
@@ -380,7 +386,7 @@ public class Search implements Serializable {
             List<String> fieldList = Arrays.asList(SolrConstants.IDDOC);
             int maxResults = 0;
             if(facets.getGeoFacetting().isActive()) {
-                fieldList = Arrays.asList(SolrConstants.IDDOC, SolrConstants.WKT_COORDS);
+                fieldList = Arrays.asList(SolrConstants.IDDOC, SolrConstants.WKT_COORDS, SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT);
                 maxResults = Integer.MAX_VALUE;
             }
             
@@ -403,17 +409,8 @@ public class Search implements Serializable {
                         }
                     }
                 }
-                this.hitGeoCoordinateList.clear();
                 if(facets.getGeoFacetting().isActive()) {
-                    for (SolrDocument doc : resp.getResults()) {
-                       try {                           
-                           this.hitGeoCoordinateList.addAll(getLocations(doc.getFieldValue(facets.getGeoFacetting().getSolrField())));
-                       } catch(IllegalArgumentException e) {
-                           System.out.println("\"" + doc.getFieldValue(facets.getGeoFacetting().getSolrField()) + "\"");
-                           logger.error("Error parsing field {} of document {}: {}", facets.getGeoFacetting().getSolrField(), doc.get("IDDOC"), e.getMessage());
-                           logger.error(e.toString(), e);
-                       }
-                    }
+                this.hitLocationList = getLocations(facets.getGeoFacetting().getField(), resp.getResults());
                 }
                 logger.debug("Total search hits: {}", hitsCount);
             }
@@ -482,6 +479,25 @@ public class Search implements Serializable {
                 : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc);
         this.hits.addAll(hits);
+    }
+
+    private List<Location> getLocations(String solrField, SolrDocumentList results) {
+        List<Location> locations = new ArrayList<>();
+        for (SolrDocument doc : results) {
+           try {                         
+               String label = (String) doc.getFieldValue(SolrConstants.LABEL);
+               String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+               locations.addAll(getLocations(doc.getFieldValue(solrField))
+                       .stream()
+                       .map(p -> new Location(p[0], p[1], label, Location.getRecordURI(pi)))
+                       .collect(Collectors.toList()));
+           } catch(IllegalArgumentException e) {
+               System.out.println("\"" + doc.getFieldValue(solrField) + "\"");
+               logger.error("Error parsing field {} of document {}: {}", solrField, doc.get("IDDOC"), e.getMessage());
+               logger.error(e.toString(), e);
+           }
+        }
+        return locations;
     }
 
     protected static List<double[]> getLocations(Object o) {
@@ -982,7 +998,7 @@ public class Search implements Serializable {
     /**
      * @return the hitGeoCoordinateList
      */
-    public List<double[]> getHitGeoCoordinateList() {
-        return hitGeoCoordinateList;
+    public List<Location> getHitsLocationList() {
+        return hitLocationList;
     }
 }

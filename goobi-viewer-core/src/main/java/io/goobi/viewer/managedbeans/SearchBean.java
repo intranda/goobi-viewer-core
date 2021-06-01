@@ -84,6 +84,7 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
+import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
@@ -2657,10 +2658,14 @@ public class SearchBean implements SearchInterface, Serializable {
         return DataManager.getInstance().getSearchIndex().pingSolrIndex();
     }
 
+    public boolean hasGeoLocationHits() {
+        return this.currentSearch != null && !this.currentSearch.getHitsLocationList().isEmpty();
+    }
+    
     public GeoMap getHitsMap() {
        GeoMap map = new GeoMap();
        map.setType(GeoMapType.MANUAL);
-       map.setShowPopover(false);
+       map.setShowPopover(true);
        //set initial zoom to max zoom so map will be as zoomed in as possible
        map.setInitialView("{" +
             "\"zoom\": 12," +
@@ -2668,9 +2673,14 @@ public class SearchBean implements SearchInterface, Serializable {
             "}");
        List<String> features = new ArrayList<>();
        if(this.currentSearch != null) {
-           for (double[] coords : this.currentSearch.getHitGeoCoordinateList()) {
+           for (Location location : this.currentSearch.getHitsLocationList()) {
+               double[] coords = {location.getLng(), location.getLat()};
                JSONObject feature = new JSONObject();
                JSONObject geometry = new JSONObject();
+               JSONObject properties = new JSONObject();
+               properties.put("title", location.getLabel());
+               properties.put("link", location.getLink());
+               feature.put("properties", properties);
                geometry.put("coordinates", coords);
                geometry.put("type", "Point");
                feature.put("geometry", geometry);

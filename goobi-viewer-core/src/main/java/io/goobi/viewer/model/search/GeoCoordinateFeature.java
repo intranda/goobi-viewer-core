@@ -36,7 +36,7 @@ public class GeoCoordinateFeature {
 
     private static final Logger logger = LoggerFactory.getLogger(GeoCoordinateFeature.class);
 
-    private static final String REGEX_GEOCOORDS_SEARCH_STRING = "(IsWithin|Intersects|IsDisjointTo)\\((\\w+)\\(\\(((?:[\\d.]+ [\\d.]+,?\\s?)+)\\)\\)\\)";
+    private static final String REGEX_GEOCOORDS_SEARCH_STRING = "(IsWithin|Intersects|IsDisjointTo)\\((\\w+)\\(\\(((?:[\\d.-]+ [\\d.-]+,?\\s?)+)\\)\\)\\)";
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_RELATION = 1;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE = 2;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_POINTS = 3;

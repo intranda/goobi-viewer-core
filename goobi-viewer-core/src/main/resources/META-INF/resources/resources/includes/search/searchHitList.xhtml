@@ -21,9 +21,14 @@
     <!-- SEARCH LIST HITS -->
     <div class="search-list__hits">
     	
-		<ui:fragment rendered="#{searchBean.facets.geoFacetting.hasArea() and search.hitsCount > 1}">
+		<ui:fragment rendered="#{search.hasGeoLocationHits()}">
 			<div class="search-list__hits-geo-map-results-container">
-	    	<viewerComponent:geoMap geoMap="#{searchBean.hitsMap}" mapId="searchHitsGeoMap" linkToSearch="false" clusterMarkers="true"/>
+	    	<viewerComponent:geoMap 
+	    		geoMap="#{searchBean.hitsMap}" 
+		    	mapId="searchHitsGeoMap" 
+		    	linkToSearch="false" 
+		    	clusterMarkers="true"
+		    	popoverOnHover="true"/>
 	    	</div>
 		</ui:fragment>
 

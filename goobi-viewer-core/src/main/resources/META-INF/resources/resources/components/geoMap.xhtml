@@ -26,6 +26,7 @@
 		* put this code in anonymous function and execute it to limit the scope of declared variables to 
 		* this script only
 		**/
+		//<![CDATA[
 		(() => {
 
         	let geoMap = new viewerJS.GeoMap({
@@ -51,6 +52,15 @@
        			geoMap.setMarkerIcon(#{cc.attrs.geoMap.markerAsJSON});
             	geoMap.init(view, features);
             	
+            	if(#{cc.attrs.geoMap.showPopover}) {
+            	    geoMap.onFeatureClick.subscribe(feature => {
+            	       console.log("clicked on feature");
+            	       if(feature.properties && feature.properties.link) {
+            	           window.location.assign(feature.properties.link);
+            	       }
+            	    });
+            	}
+            	
             	if(#{cc.attrs.showAnnotations}) {            	    
             	 $("[data-geomap-feature]").each((index, ele) => {
                      let featureString = $(ele).attr("data-geomap-feature");
@@ -71,6 +81,7 @@
             })
 		    
 		})();
+		//]]>
 		</script>
 	</composite:implementation>
 </ui:composition>

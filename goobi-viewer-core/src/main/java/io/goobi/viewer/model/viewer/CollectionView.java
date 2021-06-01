@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,12 +24,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.primefaces.expression.SearchExpressionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.ocpsoft.pretty.PrettyContext;
-import com.ocpsoft.pretty.faces.url.URL;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;

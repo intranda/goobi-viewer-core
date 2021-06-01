@@ -1123,7 +1123,7 @@ public class SearchFacets implements Serializable {
                 .filter(f -> f instanceof GeoFacetItem)
                 .map(f -> (GeoFacetItem) f)
                 .findAny()
-                .orElse(new GeoFacetItem(""));
+                .orElse(new GeoFacetItem(DataManager.getInstance().getConfiguration().getGeoDrillDownField()));
     }
 
     /**

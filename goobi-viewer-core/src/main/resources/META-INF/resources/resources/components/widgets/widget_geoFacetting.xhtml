@@ -12,7 +12,7 @@
     <composite:implementation>
         
         <!--  WIDGET Geo facetting -->
-        <ui:fragment rendered="#{searchBean.facets.geoFacetting.active and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
+        <ui:fragment rendered="#{(searchBean.hasGeoLocationHits() or searchBean.facets.geoFacetting.hasArea()) and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
         <h:form>
 	        <div class="widget widget-geofacetting">
 				<div class="widget-geofacetting__topbar">
@@ -42,7 +42,7 @@
 					<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." />
 				</span>
 				<div class="widget-geofacetting__overlay-buttons-wrapper">
-					<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="reset">#{msg.reset}</button>
+					<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="reset">#{msg.cancel}</button>
 					<button class="btn btn--full widget-geofacetting__overlay-submit-search" data-geofacet="trigger-execute">#{msg.search}</button>
 				</div>	
 		        	<div id="geoFacettingOverlayMap" class="overlay__geomap">
