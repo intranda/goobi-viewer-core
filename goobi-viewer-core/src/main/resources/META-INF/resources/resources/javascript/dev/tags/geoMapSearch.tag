@@ -63,15 +63,24 @@ initMap() {
         let layer;
         switch(shape.type) {
             case "polygon":
-                layer = this.geoMap.drawPolygon(shape.vertices, {color: "blue"}, true);
+                layer = this.geoMap.drawPolygon(shape.vertices, {
+                	fillColor: '#3365a9',
+                    color: '#3365a9'
+                    }, true);
                 this.onLayerDrawn({layer: layer});
                 break;
             case "circle":
-                layer = this.geoMap.drawCircle(shape.center, shape.radius, {color: "blue"}, true);
+                layer = this.geoMap.drawCircle(shape.center, shape.radius, {
+                	fillColor: '#3365a9',
+                    color: '#3365a9'
+                	}, true);
                 this.onLayerDrawn({layer: layer});
                 break;
             case "rectangle":
-                layer = this.geoMap.drawRectangle([shape.vertices[0], shape.vertices[2]], {color: "blue"}, true);
+                layer = this.geoMap.drawRectangle([shape.vertices[0], shape.vertices[2]], {
+                	fillColor: '#3365a9',
+                    color: '#3365a9'
+                	}, true);
                 this.onLayerDrawn({layer: layer});
                 break;
         }
@@ -96,6 +105,24 @@ initMapDraw() {
             circlemarker: false
         }
     });
+    this.drawControl.setDrawingOptions({
+        rectangle: {
+        	shapeOptions: {
+            	color: '#3365a9'
+            }
+        },
+        circle: {
+        	shapeOptions: {
+            	color: '#3365a9'
+            }
+        },
+        polygon: {
+        	shapeOptions: {
+            	color: '#3365a9'
+            }
+        }
+    });
+    
     this.geoMap.map.addControl(this.drawControl);
     //console.log("initialized map draw", this.drawControl);
     

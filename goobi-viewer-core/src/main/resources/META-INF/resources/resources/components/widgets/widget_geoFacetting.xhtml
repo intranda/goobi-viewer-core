@@ -88,13 +88,22 @@
 		                    	console.log("draw area" , this.area);
 		                        switch(this.area.type) {
 		                            case "polygon":
-		                                geoMap.drawPolygon(this.area.vertices, {color: "blue"}, true);
+		                                geoMap.drawPolygon(this.area.vertices, {
+		                                	fillColor: '#3365a9',
+		                                    color: '#3365a9'
+		                                	}, true);
 		                                break;
 		                            case "circle":
-		                                geoMap.drawCircle(this.area.center, this.area.radius, {color: "blue"}, true);
+		                                geoMap.drawCircle(this.area.center, this.area.radius, {
+		                                	fillColor: '#3365a9',
+		                                    color: '#3365a9'
+		                                    }, true);
 		                                break;
 		                            case "rectangle":
-		                                geoMap.drawRectangle([this.area.vertices[0], this.area.vertices[2]], {color: "blue"}, true);
+		                                geoMap.drawRectangle([this.area.vertices[0], this.area.vertices[2]], {
+		                                	fillColor: '#3365a9',
+		                                    color: '#3365a9'
+		                                    }, true);
 		                                break;
 		                        }
 	                    	}
