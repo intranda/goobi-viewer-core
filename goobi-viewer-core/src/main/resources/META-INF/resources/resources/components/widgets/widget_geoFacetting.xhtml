@@ -18,24 +18,24 @@
         <h:form>
 	        <div class="widget widget-geofacetting">
 				<div class="widget-geofacetting__topbar">
-					<div class="widget-geofacetting__item geofacetting-label">
-						<h3>#{msg.widget_geofacetting__label}
-						<button type="button" id="resetFacetMap" data-toggle="tooltip" data-geofacet="reset" title="#{msg.removeFacet}" class="widget-geofacetting__reset" aria-label="#{msg.fullscreen_enter}">
-		                	<i class="fa fa-times"/>
-		                </button>
-						<button type="button" id="expandFacetMap" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="widget-geofacetting__expand" aria-label="#{msg.fullscreen_enter}">
+					<div class="widget-geofacetting__item widget-geofacetting__label">
+						<h3>#{msg.widget_geofacetting__label}</h3>
+					</div>
+					<div class="widget-geofacetting__item widget-geofacetting__actions">	
+						<button type="button" id="expandFacetMap" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="btn btn--icon widget-geofacetting__action-expand" aria-label="#{msg.fullscreen_enter}">
 		                	<i class="fa fa-expand"/>
 		                </button>
-						</h3>
-					</div>
-	
+						<button type="button" id="resetFacetMap" data-toggle="tooltip" data-geofacet="reset" title="#{msg.removeFacet}" class="btn btn--icon widget-geofacetting__action-reset" aria-label="#{msg.fullscreen_enter}">
+		                	<i class="fa fa-times"/>
+		                </button>
+		            </div>
 				</div>
 				<div class="widget__body">
 					<div id="geoFacettingMap" class="geo-map"></div>
 				</div>
 					<h:commandButton id="submitSearch" type="submit" styleClass="d-none" action="#{search.searchSimple}" value="#{msg.search}">
                     	<f:setPropertyActionListener target="#{search.activeSearchType}" value="0" />
-                    	<f:passThroughAttribute name="data-geofacet" value="execute"/> -->
+                    	<f:passThroughAttribute name="data-geofacet" value="execute"/>
                 	</h:commandButton>
 					<h:inputHidden id="searchInput" value="#{searchBean.facets.geoFacetFeature}">
 		        		<f:passThroughAttribute name="data-geofacet" value="feature"/>

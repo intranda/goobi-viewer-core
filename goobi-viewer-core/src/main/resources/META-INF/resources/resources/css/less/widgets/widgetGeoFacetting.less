@@ -1,9 +1,7 @@
 /* ==============================================================
-   Widget Chronology
-   style declarations for widget_chronology.xhtml
+   Widget geofacetting
+   style declarations for widget_geoFacetting.xhtml
    ==============================================================*/
-/* WIDGET CHRONOLOGY */
-/* BLOCK */ 
 // No padding for geomap widget
 .widget.widget-geofacetting {
 	padding: 0;
@@ -12,16 +10,30 @@
 
 .widget-geofacetting {
 	position: relative;
+	&__topbar {
+		display: flex;
+	}
+	&__item {}
+	&__label {}
+	&__actions {
+		display: flex;
+		margin-left: auto;
+		padding: 0 0.9rem;
+		.btn {
+		}
+	}
 	h3 {
 		display: flex;
 		justify-content: space-between;
 		padding: 2rem 2rem 0 2rem;
+		background-color: transparent;
 	}
-	&__expand {
+	&__action-expand {
 		color: inherit;
 		padding: 0;
 		background: transparent;
 		border: none;
+		margin-left: auto;
 		&:hover,
 		&:active,
 		&:focus {
@@ -30,14 +42,14 @@
 			background: none;
 			}	
 	}
-	&__reset {
+	&__action-reset {
+		display: none;
 		color: inherit;
-		padding: 0;
 		background: transparent;
 		border: none;
-		visibility: hidden;
+		margin-left: 0.7rem;
 		&.active {
-			visibility: visible;
+			display: block;
 		}
 		&:hover,
 		&:active,
