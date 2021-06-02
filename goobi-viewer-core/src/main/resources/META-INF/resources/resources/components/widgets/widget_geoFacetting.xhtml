@@ -164,6 +164,13 @@
 		     					}); 
 	                       	});                       	
 		                })
+		                
+		                // close map overlay with escape
+		                $(document).on('keyup', function(e) {
+							if ( $( "#geoFacettingOverlayMap" ).length ) {
+			                	if (e.key == "Escape") $('[data-geofacet="cancel"]').click();
+								}
+		                	});
 					}
 		            
 		            function getArea(areaString) {
