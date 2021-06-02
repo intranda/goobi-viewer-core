@@ -22,16 +22,21 @@
 						<h3>#{msg.widget_geofacetting__label}</h3>
 					</div>
 					<div class="widget-geofacetting__item widget-geofacetting__actions">	
-						<button type="button" id="expandFacetMap" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="btn btn--icon widget-geofacetting__action-expand" aria-label="#{msg.fullscreen_enter}">
-		                	<i class="fa fa-expand"/>
-		                </button>
 						<button type="button" id="resetFacetMap" data-toggle="tooltip" data-geofacet="reset" title="#{msg.removeFacet}" class="btn btn--icon widget-geofacetting__action-reset" aria-label="#{msg.fullscreen_enter}">
-		                	<i class="fa fa-times"/>
-		                </button>
+			            	<i class="fa fa-times"/>
+			            </button>
 		            </div>
 				</div>
-				<div class="widget__body">
-					<div id="geoFacettingMap" class="geo-map"></div>
+				<div class="widget__body widget-geofacetting__body">
+					<div id="geoFacettingMap" class="geo-map">
+					<!-- OVERLAY ON HOVER -->
+					<div id="expandFacetMap" class="widget-geofacetting__action-overlay">
+						<button type="button" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="btn btn--icon widget-geofacetting__action-expand" aria-label="#{msg.fullscreen_enter}">
+		                	<i class="fa fa-expand"/>
+		                </button>
+					</div>
+					</div>
+
 				</div>
 					<h:commandButton id="submitSearch" type="submit" styleClass="d-none" action="#{search.searchSimple}" value="#{msg.search}">
                     	<f:setPropertyActionListener target="#{search.activeSearchType}" value="0" />

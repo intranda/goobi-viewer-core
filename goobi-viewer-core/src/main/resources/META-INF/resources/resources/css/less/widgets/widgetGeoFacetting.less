@@ -28,12 +28,42 @@
 		padding: 2rem 2rem 0 2rem;
 		background-color: transparent;
 	}
+	&__action-overlay {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		background: rgba(0, 0, 0, 0);
+		transition: background 0.2s ease;
+		z-index: 1001;
+		cursor: pointer;
+		.widget-geofacetting__action-expand {
+			color: @white;
+			font-size: 4.5rem;
+			&:hover {
+				color: @white;
+			}
+		}
+		&:hover {
+			background: rgba(0, 0, 0, 0.2);
+			.widget-geofacetting__action-expand {
+				opacity: 1.0;
+				transform: translate(-50%, -50%) scale(1);
+			}
+		}
+	}
 	&__action-expand {
-		color: inherit;
+		opacity: 0;
+		transition: all 0.2s ease;
 		padding: 0;
 		background: transparent;
 		border: none;
 		margin-left: auto;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%) scale(.6);
 		&:hover,
 		&:active,
 		&:focus {
@@ -58,6 +88,9 @@
 			color: inherit;
 			background: none;
 		}
+	}
+	&__body {
+		position: relative;
 	}
 	&__overlay {
 		display: none;
