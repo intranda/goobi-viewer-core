@@ -1765,6 +1765,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 
 
 	this.on("updated", function() {
+	    console.log("updated");
 		this.initTooltips();
 	});
 
@@ -1801,12 +1802,14 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	})
 
 	this.initTooltips = function() {
+	    $('.thumbnails-image-wrapper.review').tooltip('dispose');
 	    $('.thumbnails-image-wrapper.review').tooltip({
 	        placement: 'top',
 	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_in_review"),
 	      trigger: 'hover'
 	    });
 
+	    $('.thumbnails-image-wrapper.finished').tooltip('dispose');
 	    $('.thumbnails-image-wrapper.finished').tooltip({
 	        placement: 'top',
 	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_completed"),
