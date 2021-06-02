@@ -168,6 +168,21 @@ public final class SolrSearchIndex {
 
         return client;
     }
+    
+    /**
+     * 
+     * @return true if test query executes without errors; false otherwise
+     * @should return true if solr online
+     * @should return false if solr offline
+     */
+    public boolean isSolrIndexOnline() {
+        try {
+            testQuery(SolrConstants.PI + ":*");
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     /**
      * <p>

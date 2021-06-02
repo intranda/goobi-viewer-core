@@ -1924,4 +1924,7 @@ public class NavigationHelper implements Serializable {
     }
     
 
+    public boolean isSolrIndexOnline() {
+        return DataManager.getInstance().getSearchIndex().isSolrIndexOnline();
+    }
 }
