@@ -20,6 +20,9 @@
 				<div class="widget-geofacetting__topbar">
 					<div class="widget-geofacetting__item geofacetting-label">
 						<h3>#{msg.widget_geofacetting__label}
+						<button type="button" id="resetFacetMap" data-toggle="tooltip" data-geofacet="reset" title="#{msg.removeFacet}" class="widget-geofacetting__reset" aria-label="#{msg.fullscreen_enter}">
+		                	<i class="fa fa-times"/>
+		                </button>
 						<button type="button" id="expandFacetMap" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="widget-geofacetting__expand" aria-label="#{msg.fullscreen_enter}">
 		                	<i class="fa fa-expand"/>
 		                </button>
@@ -34,10 +37,6 @@
                     	<f:setPropertyActionListener target="#{search.activeSearchType}" value="0" />
                     	<f:passThroughAttribute name="data-geofacet" value="execute"/> -->
                 	</h:commandButton>
-<!-- 					<h:commandButton  styleClass="d-none" action="pretty:newSearch5" value="#{msg.search}"> -->
-<!-- 		                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" /> -->
-<!-- 		                    <f:passThroughAttribute name="data-geofacet" value="execute"/> -->
-<!-- 		        	</h:commandButton> -->
 					<h:inputHidden id="searchInput" value="#{searchBean.facets.geoFacetFeature}">
 		        		<f:passThroughAttribute name="data-geofacet" value="feature"/>
 		        	</h:inputHidden>
@@ -48,7 +47,7 @@
 					<div class="modal-backdrop show"></div>
 				</span>
 				<div class="widget-geofacetting__overlay-buttons-wrapper">
-					<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="reset">#{msg.cancel}</button>
+					<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="cancel">#{msg.cancel}</button>
 					<button class="btn btn--full widget-geofacetting__overlay-submit-search" data-geofacet="trigger-execute">#{msg.search}</button>
 				</div>	
 		        	<div id="geoFacettingOverlayMap" class="overlay__geomap">
@@ -73,6 +72,14 @@
 	              }
 	              
 		            function initFacetWidgetMap() {
+		                
+	                 	let $facetSearch = $("[data-geofacet='execute']");  
+	                 	let $facetTriggerSearch = $("[data-geofacet='trigger-execute']");  
+	                 	let $facetReset = $("[data-geofacet='reset']");  
+	                 	let $facetCancel = $("[data-geofacet='cancel']"); 
+	                 	let $facetInput = $("[data-geofacet='feature']");  
+	                 	let $loader = $("[data-loader='geoFacet']"); 
+		                
 		                let areaString = '#{searchBean.facets.geoFacetFeature}';
 		                this.area = getArea(areaString);
 		                //console.log("area is ", areaString, this.area, setGeoFacetFeature);
@@ -94,32 +101,33 @@
 	                    	console.log("draw area" , this.area);
 	                        switch(this.area.type) {
 	                            case "polygon":
-	                                geoMap.drawPolygon(this.area.vertices, {
+	                                this.shape = geoMap.drawPolygon(this.area.vertices, {
 	                                	fillColor: '#3365a9',
 	                                    color: '#3365a9'
 	                                	}, true);
 	                                break;
 	                            case "circle":
-	                                geoMap.drawCircle(this.area.center, this.area.radius, {
+	                                this.shape = geoMap.drawCircle(this.area.center, this.area.radius, {
 	                                	fillColor: '#3365a9',
 	                                    color: '#3365a9'
 	                                    }, true);
 	                                break;
 	                            case "rectangle":
-	                                geoMap.drawRectangle([this.area.vertices[0], this.area.vertices[2]], {
+	                                this.shape = geoMap.drawRectangle([this.area.vertices[0], this.area.vertices[2]], {
 	                                	fillColor: '#3365a9',
 	                                    color: '#3365a9'
 	                                    }, true);
 	                                break;
 	                        }
+	                        $facetReset.addClass("active");
+	                        $facetReset.on("click", () => {
+	                           $facetInput.val("");
+	                           $facetSearch.click();
+	                        });
                     	}
 					
 	                    	
-	                 	let $facetSearch = $("[data-geofacet='execute']");  
-	                 	let $facetTriggerSearch = $("[data-geofacet='trigger-execute']");  
-	                 	let $facetReset = $("[data-geofacet='reset']");  
-	                 	let $facetInput = $("[data-geofacet='feature']");  
-	                 	let $loader = $("[data-loader='geoFacet']");  
+ 
 						$("#expandFacetMap").on("click", e => {
 						    //console.log("open overlay ", this);
 						    
@@ -134,7 +142,7 @@
 			                 	   $facetSearch.click();
 			                 	   $loader.show();
 			                 	});
-			                 	$facetReset.off().on("click", () => {
+			                 	$facetCancel.off().on("click", () => {
 			                 	    overlay.close();
 			                 	})
 			                 	if(this.mapTag) {
@@ -143,7 +151,6 @@
 		                       	this.mapTag = riot.mount("#geoFacettingOverlayMap", "geomapsearch", {
 		     					    inactive: false,
 		     					    area : this.area,
-		     					    reset_button: "[data-feature='reset']",
 		     					    onFeatureSelect: area => {
 		     					        //console.log("Set facetting area", area);
 									    sessionStorage.setItem("geoFacet", JSON.stringify(area));

@@ -30,6 +30,23 @@
 			background: none;
 			}	
 	}
+	&__reset {
+		color: inherit;
+		padding: 0;
+		background: transparent;
+		border: none;
+		visibility: hidden;
+		&.active {
+			visibility: visible;
+		}
+		&:hover,
+		&:active,
+		&:focus {
+			text-decoration: none;
+			color: inherit;
+			background: none;
+		}
+	}
 	&__overlay {
 		display: none;
 		&__geo-map {
