@@ -57,14 +57,14 @@
     previousItem()
     {
     	if (this.opts.imageindex > 0) {
-    		this.handleAction("setImageIndex", this.opts.imageindex - 1)
+    		this.handleAction("previousImage");
     	}
     }
 
     nextItem()
     {
     	if (this.opts.imageindex < this.opts.imagecount -1) {
-    		this.handleAction("setImageIndex", this.opts.imageindex + 1)
+    		this.handleAction("nextImage");
     	}
     }    
 

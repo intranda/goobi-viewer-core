@@ -111,7 +111,7 @@
 		    
 		    $(".thumbnails-image-wrapper.locked").each(function() {
 				if ($(this).is(":hover")) {
-    		$(this).tooltip('show');
+    				$(this).tooltip('show');
 			  }
 			})
 
@@ -168,8 +168,16 @@
 		        break;	
 			case "clickImage":
 				this.showThumbs = false;
-			case "setImageIndex":
-				this.opts.item.loadImage(event.value, true);
+			case "setImageIndex": 
+			    this.opts.item.loadImage(event.value, true);
+			    break;
+			case "previousImage":
+			    this.opts.item.loadImage(this.opts.item.getPreviousAccessibleIndex(this.opts.item.currentCanvasIndex), true);
+				break;
+			case "nextImage":
+			    this.opts.item.loadImage(this.opts.item.getNextAccessibleIndex(this.opts.item.currentCanvasIndex), true);
+			    break;
+
 		}
 	}
 	

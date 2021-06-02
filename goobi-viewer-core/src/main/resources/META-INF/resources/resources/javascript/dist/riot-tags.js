@@ -1700,14 +1700,14 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
     this.previousItem = function()
     {
     	if (this.opts.imageindex > 0) {
-    		this.handleAction("setImageIndex", this.opts.imageindex - 1)
+    		this.handleAction("previousImage");
     	}
     }.bind(this)
 
     this.nextItem = function()
     {
     	if (this.opts.imageindex < this.opts.imagecount -1) {
-    		this.handleAction("setImageIndex", this.opts.imageindex + 1)
+    		this.handleAction("nextImage");
     	}
     }.bind(this)
 
@@ -1825,7 +1825,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 
 		    $(".thumbnails-image-wrapper.locked").each(function() {
 				if ($(this).is(":hover")) {
-    		$(this).tooltip('show');
+    				$(this).tooltip('show');
 			  }
 			})
 
@@ -1882,7 +1882,15 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 			case "clickImage":
 				this.showThumbs = false;
 			case "setImageIndex":
-				this.opts.item.loadImage(event.value, true);
+			    this.opts.item.loadImage(event.value, true);
+			    break;
+			case "previousImage":
+			    this.opts.item.loadImage(this.opts.item.getPreviousAccessibleIndex(this.opts.item.currentCanvasIndex), true);
+				break;
+			case "nextImage":
+			    this.opts.item.loadImage(this.opts.item.getNextAccessibleIndex(this.opts.item.currentCanvasIndex), true);
+			    break;
+
 		}
 	}.bind(this)
 
