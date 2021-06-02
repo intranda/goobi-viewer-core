@@ -48,6 +48,7 @@
 
 	// INIT TOOLTIPS'TIPS
 	this.on("updated", function() {
+	    console.log("updated");
 		this.initTooltips();
 	});
 	
@@ -86,20 +87,14 @@
 
 	// TOOLTIPS FOR PAGE STATUS	
 	initTooltips() {
+	    $('.thumbnails-image-wrapper.review').tooltip('dispose');
 	    $('.thumbnails-image-wrapper.review').tooltip({
 	        placement: 'top',
 	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_in_review"),
 	      trigger: 'hover'
 	    });
 	    
-	    // console.log('Crowdsourcing.translate("crowdsourcing__campaign_tooltip_in_review")');
-	    
-// 	    $('.thumbnails-image-wrapper.annotate').tooltip({
-// 	        placement: 'top',
-// 	      title: 'There are already annotations for this page',
-// 	      trigger: 'hover'
-// 	    });
-	    
+	    $('.thumbnails-image-wrapper.finished').tooltip('dispose');
 	    $('.thumbnails-image-wrapper.finished').tooltip({
 	        placement: 'top',
 	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_completed"),
@@ -124,32 +119,7 @@
 		    setTimeout(updateLockedTooltip, 4000);
 	    }
 	    updateLockedTooltip();
-	    
-	    // FILTERING TOOLTIPS
-// 	    $('.thumbnails-filter-unfinished').tooltip({
-// 	        placement: 'top',
-// 	      title: 'Show unfinished pages',
-// 	      trigger: 'hover'
-// 	    });
-	    
-// 	    $('.thumbnails-filter-finished').tooltip({
-// 	        placement: 'top',
-// 	      title: 'Show finished pages',
-// 	      trigger: 'hover'
-// 	    });
-	    
-// 	    $('.thumbnails-filter-reset').tooltip({
-// 	        placement: 'top',
-// 	      title: 'Show all',
-// 	      trigger: 'hover'
-// 	    });
 
-// 	    $('.thumbnails-filter-annotated').tooltip({
-// 	        placement: 'top',
-// 	      title: 'Show annotated pages',
-// 	      trigger: 'hover'
-// 	    });
-	    
  
 	}
 	
