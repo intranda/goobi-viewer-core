@@ -48,7 +48,6 @@
 
 	// INIT TOOLTIPS'TIPS
 	this.on("updated", function() {
-	    console.log("updated");
 		this.initTooltips();
 	});
 	
@@ -130,20 +129,11 @@
     		$('.thumbnails-image-wrapper.annotate').hide();
     		$('.thumbnails-image-wrapper.finished').hide();
     	};
-    	
-//     	this.refs.filter_finished.onclick = event => {
-//     		$('.thumbnails-image-wrapper').hide();
-//     		$('.thumbnails-image-wrapper.review').show();
-//     	};
-    	
+
     	this.refs.filter_reset.onclick = event => {
     		$('.thumbnails-image-wrapper').show();
     	};
-    	
-//     	this.refs.filter_annotated.onclick = event => {
-//     		$('.thumbnails-image-wrapper').hide();
-//     		$('.thumbnails-image-wrapper.annotate').show();
-//     	};
+
 	}
 	
 	$( document ).ready(function() {

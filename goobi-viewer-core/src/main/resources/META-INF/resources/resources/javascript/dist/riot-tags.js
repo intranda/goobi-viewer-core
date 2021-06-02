@@ -1765,7 +1765,6 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 
 
 	this.on("updated", function() {
-	    console.log("updated");
 		this.initTooltips();
 	});
 

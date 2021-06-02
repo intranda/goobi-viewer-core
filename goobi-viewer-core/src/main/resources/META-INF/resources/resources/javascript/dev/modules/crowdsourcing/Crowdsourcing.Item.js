@@ -84,6 +84,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.Item.prototype.initKeyboardEvents = function() {
     	document.addEventListener('keyup', (event) => {
+    		//don't handle events if an input element is focused
+    		if($(event.target).closest("input").length > 0) {
+    			return;
+    		}
     		let keyName = event.key;
     		let targetIndex = undefined;
     		switch(keyName) {
