@@ -57,9 +57,10 @@ var viewerJS = ( function( viewer ) {
         if(_debug) {
             console.log("load GeoMap with config ", this.config);
         }
-        
+
         this.markerIdCounter = 1;
         this.markers = [];
+        this.areas = [];
         this.highlighted = []; //list of currently highlighted colors
         
         
@@ -98,12 +99,17 @@ var viewerJS = ( function( viewer ) {
             console.log("init GeoMap with config ", this.config);
         }
         
-        this.map = new L.Map(this.config.mapId, {
+        this.map = new L.Map(this.config.element ? this.config.element : this.config.mapId, {
             zoomControl: !this.config.fixed,
             doubleClickZoom: !this.config.fixed,
             scrollWheelZoom: !this.config.fixed,
             dragging: !this.config.fixed,    
             keyboard: !this.config.fixed
+        });
+        
+        let defer = Q.defer();
+        this.map.whenReady(e => {
+        	defer.resolve(this);
         });
         
         if(this.config.mapBox) {
@@ -201,15 +207,18 @@ var viewerJS = ( function( viewer ) {
         } else if(view){                                                    
             this.setView(view);
         }
+
+        return defer.promise;
         
     }
     
-    viewer.GeoMap.prototype.initGeocoder = function(element) {
+    viewer.GeoMap.prototype.initGeocoder = function(element, config) {
     	if(this.config.mapBox && this.config.mapBox.token) {
-	    	let config = {
+	    	config = $.extend(config ? config: {}, {
 	    		accessToken : this.config.mapBox.token,
-	    		mapboxgl: mapboxgl,
-	    	};
+	    		mapboxgl: mapboxgl
+	    	});
+	    	if(_debug)console.log("init geocoder with config" , config);
 	    	this.geocoder = new MapboxGeocoder(config);
 	    	this.geocoder.addTo(element);
 	    	this.geocoder.on("result", (event) => {
@@ -233,6 +242,41 @@ var viewerJS = ( function( viewer ) {
     	}
     }
     
+    viewer.GeoMap.prototype.drawPolygon = function(points, config, centerView) {
+    	config = $.extend({interactive: false}, config, true); 
+    	console.log("use config ", config);
+    	let polygon = new L.Polygon(points, config);
+    	polygon.addTo(this.map);
+    	this.areas.push(polygon);
+    	if(centerView) {
+    		this.map.fitBounds(polygon.getBounds());
+    	}
+    	return polygon;
+    }
+    
+   viewer.GeoMap.prototype.drawRectangle = function(points, config, centerView) {
+    	config = $.extend({interactive: false}, config, true); 
+    	let rect = new L.Rectangle(points, config);
+    	rect.addTo(this.map);
+    	this.areas.push(rect);
+    	if(centerView) {
+    		this.map.fitBounds(rect.getBounds());
+    	}
+    	return rect;
+    }
+    
+    viewer.GeoMap.prototype.drawCircle = function(center, radius, config, centerView) {
+    	config = $.extend({interactive: false}, config, true); 
+    	let circle = new L.Circle(center, radius, config);
+    	circle.addTo(this.map);
+    	this.areas.push(circle);
+    	console.log("added circle", circle);
+    	if(centerView) {
+    		this.map.fitBounds(circle.getBounds());
+    	}
+    	return circle;
+    }
+
     
     viewer.GeoMap.prototype.createMarkerCluster = function() {
         let cluster = L.markerClusterGroup({
@@ -480,6 +524,10 @@ var viewerJS = ( function( viewer ) {
 
     viewer.GeoMap.prototype.getMarkerCount = function() {
         return this.markers.length;
+    }
+    
+    viewer.GeoMap.prototype.convertPixelToMeter = function(px) {
+    	
     }
 
     

@@ -20,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,6 +45,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,11 +58,13 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Persistable search query.
@@ -141,6 +149,12 @@ public class Search implements Serializable {
     /** BrowseElement list for the current search result page. */
     @Transient
     private final List<SearchHit> hits = new ArrayList<>();
+    
+    /**
+     * List of geo-locations found by the last search
+     */
+    @Transient
+    private List<Location> hitLocationList = new ArrayList<>();
 
     /**
      * Empty constructor for JPA.
@@ -290,7 +304,7 @@ public class Search implements Serializable {
         String query = SearchHelper.buildFinalQuery(currentQuery, aggregateHits);
 
         // Apply current facets
-        List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true);
+        List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true);
         String subElementQueryFilterSuffix = facets.generateSubElementFacetFilterQuery();
         if (StringUtils.isNotEmpty(subElementQueryFilterSuffix)) {
             subElementQueryFilterSuffix = " +(" + subElementQueryFilterSuffix + ")";
@@ -308,7 +322,7 @@ public class Search implements Serializable {
 
             // Search without range facet queries to determine absolute slider range
             List<String> rangeFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
-            List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, false);
+            List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, false, true);
 
             // Add custom filter query
             if (StringUtils.isNotEmpty(customFilterQuery)) {
@@ -370,11 +384,20 @@ public class Search implements Serializable {
 
             }
 
+            List<String> fieldList = Arrays.asList(SolrConstants.IDDOC);
+            int maxResults = 0;
+            if(facets.getGeoFacetting().isActive()) {
+                fieldList = Arrays.asList(SolrConstants.IDDOC, SolrConstants.WKT_COORDS, SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT, SolrConstants.ISANCHOR, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.BOOL_IMAGEAVAILABLE, SolrConstants.MIMETYPE);
+                maxResults = Integer.MAX_VALUE;
+            }
+            
+            
             // Actual search
             resp = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(finalQuery, 0, 0, null, allFacetFields, Collections.singletonList(SolrConstants.IDDOC), activeFacetFilterQueries, params);
+                    .search(finalQuery, 0, maxResults, null, allFacetFields, fieldList, activeFacetFilterQueries, params);
             if (resp.getResults() != null) {
+                Map expanded = resp.getExpandedResults();
                 hitsCount = resp.getResults().getNumFound();
                 logger.trace("Pre-grouping search hits: {}", hitsCount);
                 // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
@@ -386,6 +409,9 @@ public class Search implements Serializable {
                             }
                         }
                     }
+                }
+                if(facets.getGeoFacetting().isActive()) {
+                    this.hitLocationList = getLocations(facets.getGeoFacetting().getField(), resp.getResults());
                 }
                 logger.debug("Total search hits: {}", hitsCount);
             }
@@ -454,6 +480,67 @@ public class Search implements Serializable {
                 : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc);
         this.hits.addAll(hits);
+    }
+
+    private List<Location> getLocations(String solrField, SolrDocumentList results) {
+        List<Location> locations = new ArrayList<>();
+        for (SolrDocument doc : results) {
+           try {                         
+               String label = (String) doc.getFieldValue(SolrConstants.LABEL);
+               String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+               String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
+               String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
+               boolean anchorOrGroup = SolrTools.isAnchor(doc) || SolrTools.isGroup(doc);
+               Boolean hasImages = (Boolean) doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE);
+               locations.addAll(getLocations(doc.getFieldValue(solrField))
+                       .stream()
+                       .map(p -> new Location(p[0], p[1], label, Location.getRecordURI(pi, PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false))))
+                       .collect(Collectors.toList()));
+           } catch(IllegalArgumentException e) {
+               System.out.println("\"" + doc.getFieldValue(solrField) + "\"");
+               logger.error("Error parsing field {} of document {}: {}", solrField, doc.get("IDDOC"), e.getMessage());
+               logger.error(e.toString(), e);
+           }
+        }
+        return locations;
+    }
+
+    protected static List<double[]> getLocations(Object o) {
+        List<double[]> locs = new ArrayList<>();
+        if(o == null) {
+            return locs;
+        } else if (o instanceof List) {
+            for (int i = 0; i < ((List) o).size(); i++) {
+                locs.addAll(getLocations(((List) o).get(i)));
+                //locs.add(parsePoint(((List) o).get(i), ((List) o).get(i+1)));                
+            }
+            return locs;
+        } else if(o instanceof String) {
+            Matcher matcher = Pattern.compile("([\\d\\.\\-]+)\\s([\\d\\.\\-]+)").matcher((String)o);
+            while(matcher.find() && matcher.groupCount() == 2) {
+                locs.add(parsePoint(matcher.group(1), matcher.group(2)));                
+            } 
+            return locs;
+        }
+        throw new IllegalArgumentException(String.format("Unable to parse %s of type %s as location", o.toString(), o.getClass()));
+    }
+
+    protected static double[] parsePoint(Object x, Object y) {
+        if(x instanceof Number) {
+            double[] loc = new double[2];
+            loc[0] = ((Number) x).doubleValue();
+            loc[1] = ((Number) y).doubleValue();
+            return loc;
+        } else if(x instanceof String) {
+            try {           
+                double[] loc = new double[2];
+                loc[0] = Double.parseDouble((String)x);
+                loc[1] = Double.parseDouble((String)y);
+                return loc;
+            } catch(NumberFormatException e) {
+            }
+        }
+        throw new IllegalArgumentException(String.format("Unable to parse objects %s, %s to double array", x, y));
     }
 
     /**
@@ -911,5 +998,12 @@ public class Search implements Serializable {
     public void toggleNotifications() throws DAOException {
         this.newHitsNotification = !this.newHitsNotification;
         DataManager.getInstance().getDao().updateSearch(this);
+    }
+    
+    /**
+     * @return the hitGeoCoordinateList
+     */
+    public List<Location> getHitsLocationList() {
+        return hitLocationList;
     }
 }

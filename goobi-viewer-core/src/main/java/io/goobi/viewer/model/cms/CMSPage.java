@@ -90,6 +90,7 @@ import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.misc.Harvestable;
+import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.viewer.CollectionView;
 
 /**
@@ -2152,6 +2153,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public void setUnusedSidebarElements(List<CMSSidebarElement> unusedSidebarElements2) {
         this.unusedSidebarElements = unusedSidebarElements2;
 
+    }
+    
+    public SearchInterface getSearchFunctionality() {
+        return (SearchInterface) this.getGlobalContentItems().stream().filter(item -> CMSContentItemType.SEARCH.equals(item.getType()))
+                .findAny().map(item -> item.getFunctionality()).orElse(null);
     }
 
 }

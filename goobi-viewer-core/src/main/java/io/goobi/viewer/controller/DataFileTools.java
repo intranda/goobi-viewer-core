@@ -460,6 +460,7 @@ public class DataFileTools {
                         return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build();
                     })
                     .map(url -> NetTools.callUrlGET(url))
+                    .filter(array -> Integer.parseInt(array[0]) < 400)
                     .map(array -> array[1])
                     .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
         }

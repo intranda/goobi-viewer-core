@@ -1595,10 +1595,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @return true if record status for the given pi equals status; false otherwise. If no record
      */
     private boolean isRecordStatus(String pi, CrowdsourcingStatus status) {
-        // TODO page-based
-
-        boolean ret =
-                Optional.ofNullable(statistics.get(pi)).map(stat -> stat.containsStatus(status)).orElse(CrowdsourcingStatus.ANNOTATE.equals(status));
+        boolean ret = Optional.ofNullable(statistics.get(pi)).map(stat -> StatisticMode.RECORD.equals(this.statisticMode) ?  status.equals(stat.getStatus()) : stat.containsPageStatus(status)).orElse(CrowdsourcingStatus.ANNOTATE.equals(status));
         return ret;
     }
 

@@ -2536,6 +2536,7 @@ public final class Configuration extends AbstractConfiguration {
                 switch (node.getName()) {
                     case "field":
                     case "hierarchicalField":
+                    case "geoField":
                         ret.add((String) node.getValue());
                         break;
                 }
@@ -2569,6 +2570,10 @@ public final class Configuration extends AbstractConfiguration {
      */
     public List<String> getHierarchicalDrillDownFields() {
         return getLocalList("search.drillDown.hierarchicalField");
+    }
+    
+    public String getGeoDrillDownField() {
+        return getLocalString("search.drillDown.geoField");
     }
 
     /**
