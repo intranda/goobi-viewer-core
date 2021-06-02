@@ -5,11 +5,14 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
+
+
     <!-- INTERFACE OPTIONS -->
     <composite:interface />
 
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
+    <ui:param name="search" value="#{cc.attrs.search != null ? cc.attrs.search : searchBean}"></ui:param>
         <!--  WIDGET Geo facetting -->
         <ui:fragment rendered="#{(searchBean.hasGeoLocationHits() or searchBean.facets.geoFacetting.hasArea()) and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
         <h:form>
@@ -27,18 +30,22 @@
 				<div class="widget__body">
 					<div id="geoFacettingMap" class="geo-map"></div>
 				</div>
-
-					<h:commandButton  styleClass="d-none" action="pretty:newSearch5" value="#{msg.search}">
-		                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
-		                    <f:passThroughAttribute name="data-geofacet" value="execute"/>
-		        	</h:commandButton>
+					<h:commandButton id="submitSearch" type="submit" styleClass="d-none" action="#{search.searchSimple}" value="#{msg.search}">
+                    	<f:setPropertyActionListener target="#{search.activeSearchType}" value="0" />
+                    	<f:passThroughAttribute name="data-geofacet" value="execute"/> -->
+                	</h:commandButton>
+<!-- 					<h:commandButton  styleClass="d-none" action="pretty:newSearch5" value="#{msg.search}"> -->
+<!-- 		                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" /> -->
+<!-- 		                    <f:passThroughAttribute name="data-geofacet" value="execute"/> -->
+<!-- 		        	</h:commandButton> -->
 					<h:inputHidden id="searchInput" value="#{searchBean.facets.geoFacetFeature}">
 		        		<f:passThroughAttribute name="data-geofacet" value="feature"/>
 		        	</h:inputHidden>
 		        	
 				<div id="widgetGeoFacettingOverlay" class="widget-geofacetting__overlay">
-				<span data-loader="geoFacet" class="ajax_loader">
-					<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." />
+				<span data-loader="geoFacet" class="ajax_loader widget-geofacetting__loader-wrapper">
+					<img src="#{request.contextPath}/resources/images/infinity_loader.svg" class="img-responsive widget-geofacetting__loader-animated-image" alt="Waiting..." />
+					<div class="modal-backdrop show"></div>
 				</span>
 				<div class="widget-geofacetting__overlay-buttons-wrapper">
 					<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="reset">#{msg.cancel}</button>
@@ -78,6 +85,7 @@
 	                   		fixed: true
 	                   	});
 
+	
                     	geoMap.init({
                             zoom: 1,
                             center: [0,0] //long, lat
@@ -86,13 +94,22 @@
 	                    	console.log("draw area" , this.area);
 	                        switch(this.area.type) {
 	                            case "polygon":
-	                                geoMap.drawPolygon(this.area.vertices, {color: "blue"}, true);
+	                                geoMap.drawPolygon(this.area.vertices, {
+	                                	fillColor: '#3365a9',
+	                                    color: '#3365a9'
+	                                	}, true);
 	                                break;
 	                            case "circle":
-	                                geoMap.drawCircle(this.area.center, this.area.radius, {color: "blue"}, true);
+	                                geoMap.drawCircle(this.area.center, this.area.radius, {
+	                                	fillColor: '#3365a9',
+	                                    color: '#3365a9'
+	                                    }, true);
 	                                break;
 	                            case "rectangle":
-	                                geoMap.drawRectangle([this.area.vertices[0], this.area.vertices[2]], {color: "blue"}, true);
+	                                geoMap.drawRectangle([this.area.vertices[0], this.area.vertices[2]], {
+	                                	fillColor: '#3365a9',
+	                                    color: '#3365a9'
+	                                    }, true);
 	                                break;
 	                        }
                     	}
@@ -114,8 +131,8 @@
 	                       	    overlay.node.show();
 			                 	$facetTriggerSearch.off().on("click", () => {
 			                 	   //console.log("trigger search");
-			                 	   $loader.show();
 			                 	   $facetSearch.click();
+			                 	   $loader.show();
 			                 	});
 			                 	$facetReset.off().on("click", () => {
 			                 	    overlay.close();

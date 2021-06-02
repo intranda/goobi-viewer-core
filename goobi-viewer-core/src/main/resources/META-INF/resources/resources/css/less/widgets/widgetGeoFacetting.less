@@ -38,14 +38,22 @@
 		}
 		.ajax_loader {
 			display: none;
-			position: absolute;
-			left: calc(50% - 50px);
-			top: calc(50% - 31px);
-			z-index: 500;
 			img { 
-				width: 100px;
+				width: 180px;
 			}
 		}
+	}
+	&__loader-wrapper {
+		display: block;
+		position: relative;
+		z-index: 5000;
+		left: 50%;
+		top: 50%;
+	}
+	&__loader-animated-image {
+		z-index: 5001;
+		position: absolute;
+		transform: translate(-50%, -50%);
 	}
 	.geo-map {
 		min-height: 350px;
