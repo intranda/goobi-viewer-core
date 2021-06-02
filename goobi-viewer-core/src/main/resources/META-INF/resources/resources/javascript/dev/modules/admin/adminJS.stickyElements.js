@@ -40,24 +40,29 @@ var adminJS = ( function( admin ) {
 
          // STICKY ELEMENTS TARGETS AND OPTIONS
          	// sticky admin main menu sidebar left side
-         	$('.admin__sidebar').hcSticky({
-         		stickTo: $('.admin__content')[0],
-         		innerTop: 0
-         	});
+            if ( $( ".admin__sidebar" ).length ) {
+	         	$(".admin__sidebar").hcSticky({
+	         		stickTo: $('.admin__content')[0],
+	         		innerTop: 0
+	         	});
+            }
          	
          	// general sticky element for admin backend - sticks to selector .admin__content-wrapper
-         	$('.-sticky').hcSticky({
-         		stickTo: $('.admin__content-wrapper')[0],
-         		innerTop: -50,
-         		bottom: 0
-         	});
-
+            if ( $( ".admin__sidebar" ).length ) {
+	         	$('.-sticky').hcSticky({
+	         		stickTo: $('.admin__content-wrapper')[0],
+	         		innerTop: -50,
+	         		bottom: 0
+	         	});
+            }
+            
          	// sticky content main area for create campaign
-         	$('#crowdAddCampaignView .admin__content-main').hcSticky({
-         		stickTo: $('.admin__content-wrapper')[0],
-         		innerTop: -50
-         	});
-   
+            if ( $( "#crowdAddCampaignView" ).length ) {
+	         	$('#crowdAddCampaignView .admin__content-main').hcSticky({
+	         		stickTo: $('.admin__content-wrapper')[0],
+	         		innerTop: -50
+	         	});
+            } 		
         }
     }
 	

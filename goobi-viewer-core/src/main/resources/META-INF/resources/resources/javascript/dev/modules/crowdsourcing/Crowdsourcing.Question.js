@@ -219,7 +219,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.addAnnotation = function(id, region, color) {
-
         let annotation = this.createAnnotation();
         annotation.setTarget(this.getTarget());
         if(id !== undefined) {            

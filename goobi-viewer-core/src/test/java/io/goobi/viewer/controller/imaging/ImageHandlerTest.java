@@ -32,6 +32,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
 
 /**
  * @author Florian Alpers
@@ -73,47 +74,76 @@ public class ImageHandlerTest {
 
     @Test
     public void testGetImageUrlLocal() {
-        PhysicalElement page =
-                new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
+        PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
+                .setPhysId("PHYS_0001")
+                .setFilePath("00000001.tif")
+                .setOrder(1)
+                .setOrderLabel("Seite 1")
+                .setUrn("urn:234235:3423")
+                .setPurlPart("http://purl")
+                .setMimeType("image/tiff")
+                .setDataRepository(null)
+                .build();
 
         String url = handler.getImageUrl(page);
         Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/1234/00000001.tif/info.json", url);
     }
-    
+
     @Test
     public void testGetImageUrlLocal_handleSpecialCharacters() {
-        PhysicalElement page =
-                new PhysicalElement("PHYS_0001", "ab 00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "PI 1234", "image/tiff", null);
+        PhysicalElement page = new PhysicalElementBuilder().setPi("PI 1234")
+                .setPhysId("PHYS_0001")
+                .setFilePath("ab 00000001.tif")
+                .setOrder(1)
+                .setOrderLabel("Seite 1")
+                .setUrn("urn:234235:3423")
+                .setPurlPart("http://purl")
+                .setMimeType("image/tiff")
+                .setDataRepository(null)
+                .build();
 
         String url = handler.getImageUrl(page);
         URI uri = URI.create(url);
         Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/PI+1234/ab+00000001.tif/info.json", url);
         Assert.assertEquals(url, uri.toString());
-        
 
     }
 
     @Test
     public void testGetImageUrlExternal() {
-        PhysicalElement page = new PhysicalElement("PHYS_0001", "http://otherServer/images/00000001.tif/info.json", 1, "Seite 1", "urn:234235:3423",
-                "http://purl", "1234", "image/tiff", null);
+        PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
+                .setPhysId("PHYS_0001")
+                .setFilePath("http://otherServer/images/00000001.tif/info.json")
+                .setOrder(1)
+                .setOrderLabel("Seite 1")
+                .setUrn("urn:234235:3423")
+                .setPurlPart("http://purl")
+                .setMimeType("image/tiff")
+                .setDataRepository(null)
+                .build();
 
         String url = handler.getImageUrl(page);
         Assert.assertEquals("http://otherServer/images/00000001.tif/info.json", url);
     }
 
-
     @Test
     public void testGetImageUrlInternal() {
-        PhysicalElement page = new PhysicalElement("PHYS_0001", "http://exteral/restricted/images/00000001.tif", 1, "Seite 1", "urn:234235:3423",
-                "http://purl", "1234", "image/tiff", null);
+        PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
+                .setPhysId("PHYS_0001")
+                .setFilePath("http://exteral/restricted/images/00000001.tif")
+                .setOrder(1)
+                .setOrderLabel("Seite 1")
+                .setUrn("urn:234235:3423")
+                .setPurlPart("http://purl")
+                .setMimeType("image/tiff")
+                .setDataRepository(null)
+                .build();
 
         String url = handler.getImageUrl(page);
         Assert.assertEquals(
                 ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/-/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json",
                 url);
     }
-
 
     @Test
     public void testResolveURIs() throws URISyntaxException {

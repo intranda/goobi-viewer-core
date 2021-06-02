@@ -39,6 +39,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchInterface;
@@ -627,6 +628,22 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     @Override
     public boolean isExplicitSearchPerformed() {
         return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.SearchInterface#hasGeoLocationHits()
+     */
+    @Override
+    public boolean hasGeoLocationHits() {
+        return getSearchBean().hasGeoLocationHits();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.SearchInterface#getHitsMap()
+     */
+    @Override
+    public GeoMap getHitsMap() {
+        return getSearchBean().getHitsMap();
     }
 
 }

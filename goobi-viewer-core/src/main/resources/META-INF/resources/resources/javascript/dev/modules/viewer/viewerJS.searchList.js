@@ -130,14 +130,14 @@ var viewerJS = ( function( viewer ) {
                 case 'default':
                     $( '.search-list__views button' ).removeClass( 'active' );
                     $( '[data-view="search-list-default"]' ).addClass( 'active' );
-                    $( '.search-list__hits' ).removeClass( 'grid' ).removeClass( 'list' ).fadeTo(300,1);
+                    $( '.search-list__hits' ).removeClass( 'grid' ).removeClass( 'list-view' ).fadeTo(300,1);
                     $( '[data-toggle="hit-content"]' ).show();
                     
                     break;
                 case 'grid':
                     $( '.search-list__views button' ).removeClass( 'active' );
                     $( '[data-view="search-list-grid"]' ).addClass( 'active' );
-                    $( '.search-list__hits' ).removeClass( 'list' ).addClass( 'grid' );
+                    $( '.search-list__hits' ).removeClass( 'list-view' ).addClass( 'grid' );
                     $( '[data-toggle="hit-content"]' ).hide();
                     
                     // hide thumbnail and set src to header background
@@ -160,11 +160,13 @@ var viewerJS = ( function( viewer ) {
                     $( '.search-list__hits' ).fadeTo(300,1);
                     
                     break;
-                case 'list':
+                case 'list-view':
                     $( '.search-list__views button' ).removeClass( 'active' );
                     $( '[data-view="search-list-list"]' ).addClass( 'active' );
-                    $( '.search-list__hits' ).removeClass( 'grid' ).addClass( 'list' ).fadeIn( 'fast' );
+                    $( '.search-list__hits' ).removeClass( 'grid' ).addClass( 'list-view' ).fadeIn( 'fast' );
                     $( '[data-toggle="hit-content"]' ).hide();
+                    
+                    $( '.search-list__hits' ).fadeTo(300,1);
                     
                     break;
             }
@@ -175,7 +177,7 @@ var viewerJS = ( function( viewer ) {
             	$( '.search-list__views button' ).removeClass( 'active' );
             	$( this ).addClass( 'active' );
             	$( '[data-toggle="hit-content"]' ).show();
-            	$( '.search-list__hits' ).css( "opacity", 0 ).removeClass( 'grid' ).removeClass( 'list' );
+            	$( '.search-list__hits' ).css( "opacity", 0 ).removeClass( 'grid' ).removeClass( 'list-view' );
             	
             	// set list style in local storage
             	sessionStorage.setItem( 'searchListStyle', 'default' );
@@ -190,7 +192,7 @@ var viewerJS = ( function( viewer ) {
                 $( '.search-list__views button' ).removeClass( 'active' );
                 $( this ).addClass( 'active' );
                 $( '[data-toggle="hit-content"]' ).hide();
-                $( '.search-list__hits' ).css( "opacity", 0 ).removeClass( 'list' ).addClass( 'grid' );
+                $( '.search-list__hits' ).css( "opacity", 0 ).removeClass( 'list-view' ).addClass( 'grid' );
                 
                 // set list style in local storage
                 sessionStorage.setItem( 'searchListStyle', 'grid' );
@@ -208,10 +210,10 @@ var viewerJS = ( function( viewer ) {
                 $( '.search-list__views button' ).removeClass( 'active' );
                 $( this ).addClass( 'active' );
                 $( '[data-toggle="hit-content"]' ).hide();
-                $( '.search-list__hits' ).css( "opacity", 0 ).removeClass( 'grid' ).addClass( 'list' );
+                $( '.search-list__hits' ).css( "opacity", 0 ).removeClass( 'grid' ).addClass( 'list-view' );
                 
                 // set list style in local storage
-                sessionStorage.setItem( 'searchListStyle', 'list' );
+                sessionStorage.setItem( 'searchListStyle', 'list-view' );
                 
                 $( '.search-list__hits' ).fadeTo(300,1);
             } );

@@ -45,6 +45,7 @@ import io.goobi.viewer.model.translations.language.LanguageHelper;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.DefaultURLBuilder;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * <p>
@@ -326,7 +327,7 @@ public final class DataManager {
     /**
      * Sets custom SolrSearchIndex object (used for unit testing).
      *
-     * @param searchIndex a {@link io.goobi.viewer.controller.SolrSearchIndex} object.
+     * @param searchIndex a {@link io.goobi.viewer.solr.SolrSearchIndex} object.
      */
     public void injectSearchIndex(SolrSearchIndex searchIndex) {
         if (searchIndex != null) {

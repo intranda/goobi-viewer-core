@@ -787,7 +787,7 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h4 class="card-title"><a if="{!hasChildren(collection)}" href="{collection.rendering[0][\'@id\']}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h4><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"> {getDescription(collection)} </p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><ul if="{collection.members && collection.members.length > 0}" class="list"><li each="{child in getChildren(collection)}"><a class="card-body__collection" href="{child.rendering[0][\'@id\']}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></li></ul></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
+riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h4 class="card-title"><a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h4><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"> {getDescription(collection)} </p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><ul if="{collection.members && collection.members.length > 0}" class="list"><li each="{child in getChildren(collection)}"><a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></li></ul></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
 
 this.collections = this.opts.collections;
 
@@ -833,6 +833,16 @@ this.hasDescription = function(element) {
 
 this.getDescription = function(element) {
     return this.getValue(element.description);
+}.bind(this)
+
+this.getId = function(element) {
+    if(!element) {
+        return undefined;
+    } else if (Array.isArray(element) && element.length > 0) {
+        return viewerJS.iiif.getId(element[0]);
+    } else {
+        return viewerJS.iiif.getId(element);
+    }
 }.bind(this)
 
 });
@@ -919,6 +929,8 @@ riot.tag2('authorityresourcequestion', '<div if="{this.showInstructions()}" clas
 	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
 	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
 	                    this.question.addAnnotation();
+
+	                    this.opts.item.dirty = false;
 	                }
 	        }
 	        this.update()
@@ -1789,12 +1801,14 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	})
 
 	this.initTooltips = function() {
+	    $('.thumbnails-image-wrapper.review').tooltip('dispose');
 	    $('.thumbnails-image-wrapper.review').tooltip({
 	        placement: 'top',
 	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_in_review"),
 	      trigger: 'hover'
 	    });
 
+	    $('.thumbnails-image-wrapper.finished').tooltip('dispose');
 	    $('.thumbnails-image-wrapper.finished').tooltip({
 	        placement: 'top',
 	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_completed"),
@@ -1941,6 +1955,8 @@ riot.tag2('metadataquestion', '<div if="{this.showInstructions()}" class="crowds
 		            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
 		                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
 		                    this.question.addAnnotation();
+
+		                    this.opts.item.dirty = false;
 		                }
 		        }
 		        this.update();
@@ -2039,6 +2055,8 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="crowd
 	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
 	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
 	                    this.question.addAnnotation();
+
+	                    this.opts.item.dirty = false;
 	                }
 	        }
 	        this.update()
@@ -2180,6 +2198,8 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
 	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
 	                    this.question.addAnnotation();
+
+	                    this.opts.item.dirty = false;
 	                }
 	        }
 	        this.update();
@@ -2368,6 +2388,245 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	        }
     	    }
     	}.bind(this)
+});
+riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
+
+this.on("mount", function() {
+	this.initMap();
+});
+
+this.initMap = function() {
+
+    this.geoMap = new viewerJS.GeoMap({
+        element : this.refs.map,
+        allowMovingFeatures: false,
+        language: viewerJS.translator.language,
+        popover: undefined,
+        emptyMarkerMessage: undefined,
+        popoverOnHover: false,
+        fixed: this.opts.inactive ? true : false
+    })
+    let initialView = {
+        zoom: 5,
+        center: [11.073397, 49.451993]
+    };
+    this.geoMap.setMarkerIcon({
+        shape: "circle",
+        prefix: "fa",
+        markerColor: "blue",
+        iconColor: "white",
+        icon: "fa-circle",
+        svg: true
+    })
+    this.geoMap.init(initialView);
+
+    if(!this.opts.inactive) {
+        let geocoderConfig = {};
+        if(this.opts.search_placeholder) {
+            geocoderConfig.placeholder = this.opts.search_placeholder
+        }
+	    this.geoMap.initGeocoder(this.refs.geocoder, geocoderConfig);
+	    this.initMapDraw();
+    }
+    if(this.opts.area) {
+
+        let shape = this.opts.area;
+        if(viewerJS.isString(shape)) {
+            try {
+            	shape = JSON.parse(shape);
+            } catch(e) {
+                console.error("Unable to draw geomap area ", this.opts.area, ": cannot parse json");
+            }
+        }
+
+        let layer;
+        switch(shape.type) {
+            case "polygon":
+                layer = this.geoMap.drawPolygon(shape.vertices, {
+                	fillColor: '#3365a9',
+                    color: '#3365a9'
+                    }, true);
+                this.onLayerDrawn({layer: layer});
+                break;
+            case "circle":
+                layer = this.geoMap.drawCircle(shape.center, shape.radius, {
+                	fillColor: '#3365a9',
+                    color: '#3365a9'
+                	}, true);
+                this.onLayerDrawn({layer: layer});
+                break;
+            case "rectangle":
+                layer = this.geoMap.drawRectangle([shape.vertices[0], shape.vertices[2]], {
+                	fillColor: '#3365a9',
+                    color: '#3365a9'
+                	}, true);
+                this.onLayerDrawn({layer: layer});
+                break;
+        }
+
+    }
+
+}.bind(this)
+
+this.initMapDraw = function() {
+
+    this.drawnItems = new L.FeatureGroup();
+    this.geoMap.map.addLayer(this.drawnItems);
+    this.drawControl = new L.Control.Draw({
+        edit: {
+            featureGroup: this.drawnItems,
+            edit: false,
+            remove: false
+        },
+        draw: {
+            polyline: false,
+            marker: false,
+            circlemarker: false
+        }
+    });
+    this.drawControl.setDrawingOptions({
+        rectangle: {
+        	shapeOptions: {
+            	color: '#3365a9'
+            }
+        },
+        circle: {
+        	shapeOptions: {
+            	color: '#3365a9'
+            }
+        },
+        polygon: {
+        	shapeOptions: {
+            	color: '#3365a9'
+            }
+        }
+    });
+
+    this.geoMap.map.addControl(this.drawControl);
+
+    let edited = new rxjs.Subject();
+    edited.pipe(rxjs.operators.debounceTime(300)).subscribe(e => this.onLayerEdited(e));
+    this.geoMap.map.on(L.Draw.Event.EDITMOVE, e => edited.next(e));
+    this.geoMap.map.on(L.Draw.Event.EDITRESIZE, e => edited.next(e));
+    this.geoMap.map.on(L.Draw.Event.EDITVERTEX, e => edited.next(e));
+
+    let deleted = new rxjs.Subject();
+    deleted.subscribe(e => this.onLayerDeleted(e));
+    this.geoMap.map.on(L.Draw.Event.DELETED, e => deleted.next(e));
+    this.geoMap.map.on(L.Draw.Event.DRAWSTART, e => deleted.next(e));
+
+    this.geoMap.map.on(L.Draw.Event.CREATED, (e) => this.onLayerDrawn(e));
+
+    if(this.opts.reset_button) {
+        $(this.opts.reset_button).on("click",  e => deleted.next(e));
+    }
+}.bind(this)
+
+this.onLayerDeleted = function(e) {
+    console.log("layer deleted ", e);
+    if(this.searchLayer) {
+        this.drawnItems.removeLayer(this.searchLayer);
+        this.searchLayer = undefined;
+    }
+    this.notifyFeatureSet(undefined);
+}.bind(this)
+
+this.onLayerEdited = function(e) {
+
+    if(e.layer) {
+    	this.searchLayer = e.layer;
+    } else if(e.poly) {
+        this.searchLayer = e.poly;
+    } else {
+        logger.warn("Called layer edited event with no given layer ", e);
+        return;
+    }
+	this.setSearchArea(this.searchLayer);
+}.bind(this)
+
+this.onLayerDrawn = function(e) {
+
+    this.searchLayer = e.layer;
+	this.drawnItems.addLayer(e.layer);
+	this.searchLayer.editing.enable();
+	this.setSearchArea(this.searchLayer);
+}.bind(this)
+
+this.setSearchArea = function(layer) {
+
+    let type = this.getType(layer);
+    switch(type) {
+        case "polygon":
+        case "rectangle":
+	        let vertices = [...layer.getLatLngs()[0]];
+	        if(vertices[0] != vertices[vertices.length-1]) {
+	        	vertices.push(vertices[0]);
+	        }
+	        this.notifyFeatureSet({
+	           type : type,
+	           vertices: vertices.map(p => [p.lat, p.lng])
+	        })
+	        break;
+        case "circle":
+            let bounds = layer.getBounds();
+            let circumgon = this.createCircumgon(bounds.getCenter(), bounds.getSouthWest(), bounds.getSouthWest(), 16);
+            let diameterM = bounds.getSouthWest().distanceTo(bounds.getNorthWest());
+            this.notifyFeatureSet({
+                type : "circle",
+                vertices: circumgon.map(p => [p.lat, p.lng]),
+                center: layer.getLatLng(),
+            	radius: layer.getRadius()
+            })
+            break;
+    }
+}.bind(this)
+
+this.createCircumgon = function(center, sw, ne, numVertices) {
+
+    let lSW = this.geoMap.map.latLngToLayerPoint(sw);
+    let lNE = this.geoMap.map.latLngToLayerPoint(ne);
+    let lCenter = this.geoMap.map.latLngToLayerPoint(center);
+
+    let radius = Math.abs(lCenter.x - lSW.x);
+
+    let points = [];
+    for(let i = 0; i < numVertices; i++) {
+        let x = lCenter.x + radius *  Math.cos(2*Math.PI*i/numVertices);
+        let y = lCenter.y + radius *  Math.sin(2*Math.PI*i/numVertices);
+        points.push([x,y]);
+    }
+    points.push(points[0]);
+    let geoPoints = points.map(p => this.geoMap.map.layerPointToLatLng(p));
+    return geoPoints;
+}.bind(this)
+
+this.notifyFeatureSet = function(feature) {
+
+    if(this.opts.onFeatureSelect) {
+        this.opts.onFeatureSelect(feature);
+    }
+
+}.bind(this)
+
+this.buildSearchString = function(vertices) {
+    let string = "WKT_COORDS:\"IsWithin(POLYGON((";
+    string += vertices.map(v => v[1] + " " + v[0]).join(", ");
+    string += "))) distErrPct=0\"";
+    return string;
+}.bind(this)
+
+this.getType = function(layer) {
+    if(layer.getRadius) {
+        return "circle";
+    } else if(layer.setBounds) {
+        return "rectangle";
+    } else if(layer.getLatLngs) {
+        return "polygon"
+    } else {
+        throw "Unknown layer type: " + layer;
+    }
+}.bind(this)
+
 });
 riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="imagefilters__filter" each="{filter in filters}"><span class="imagefilters__label {filter.config.slider ? \'\' : \'imagefilters__label-long\'}">{filter.config.label}</span><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__checkbox" if="{filter.config.checkbox}" type="checkbox" onchange="{apply}" checked="{filter.isActive() ? \'checked\' : \'\'}" aria-label="{filter.config.label}"><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__slider" title="{filter.getValue()}" if="{filter.config.slider}" type="range" oninput="{apply}" riot-value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal" aria-label="{filter.config.label}: {filter.getValue()}"></div></div><div class="imagefilters__options"><button type="button" class="btn btn--full" onclick="{resetAll}">{this.config.messages.clearAll}</button></div>', '', '', function(opts) {
 

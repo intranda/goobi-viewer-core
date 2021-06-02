@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.PrettyException;
 
 import io.goobi.viewer.controller.DateTools;
@@ -94,13 +95,15 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
             try {
                 if (t instanceof ViewExpiredException) {
-                    handleError(getSessionDetails(fc), "viewExpired");
+                    // handleError(getSessionDetails(fc), "viewExpired");
+                    redirect("pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId());
                 } else if (t instanceof RecordNotFoundException || isCausedByExceptionType(t, RecordNotFoundException.class.getName())
                         || (t instanceof PrettyException && t.getMessage().contains(RecordNotFoundException.class.getSimpleName()))) {
                     String pi =
                             t.getMessage().substring(t.getMessage().indexOf("RecordNotFoundException: ")).replace("RecordNotFoundException: ", "");
                     String msg = ViewerResourceBundle.getTranslation("errRecordNotFoundMsg", null).replace("{0}", pi);
                     handleError(msg, "recordNotFound");
+
                 } else if (t instanceof RecordDeletedException || isCausedByExceptionType(t, RecordDeletedException.class.getName())
                         || (t instanceof PrettyException && t.getMessage().contains(RecordDeletedException.class.getSimpleName()))) {
                     String pi = t.getMessage().substring(t.getMessage().indexOf("RecordDeletedException: ")).replace("RecordDeletedException: ", "");
@@ -169,10 +172,10 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
      * @param errorDetails
      * @param errorType
      */
-    public void handleError(String errorDetails, String errorType) {
+    private void handleError(String errorDetails, String errorType) {
         FacesContext fc = FacesContext.getCurrentInstance();
         Map<String, Object> requestMap = fc.getExternalContext().getRequestMap();
-        NavigationHandler nav = fc.getApplication().getNavigationHandler();
+
         Flash flash = fc.getExternalContext().getFlash();
         flash.setKeepMessages(true);
 
@@ -192,7 +195,18 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
         requestMap.put("errMsg", errorDetails);
         requestMap.put("errorType", errorType);
-        nav.handleNavigation(fc, null, "pretty:error");
+
+        redirect("pretty:error");
+    }
+
+    /**
+     * 
+     * @param target
+     */
+    private static void redirect(String target) {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        NavigationHandler nav = fc.getApplication().getNavigationHandler();
+        nav.handleNavigation(fc, null, target);
         fc.renderResponse();
     }
 

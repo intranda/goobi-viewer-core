@@ -103,19 +103,7 @@
 								</dd>
 							</dl>
 						</ui:fragment>
-
-						<!-- NUMBER OF VOLUMES -->
-						<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.anchor}">
-							<dl>
-								<dt>
-									<h:outputText value="#{msg.numVolumes}: " />
-								</dt>
-								<dd>
-									<h:outputText value="#{activeDocumentBean.viewManager.topDocument.numVolumes}" />
-								</dd>
-							</dl>
-						</ui:fragment>
-
+						
 						<!-- PURL -->
 						<ui:fragment rendered="#{purl and configurationBean.displayTitlePURL}">
 							<dl>

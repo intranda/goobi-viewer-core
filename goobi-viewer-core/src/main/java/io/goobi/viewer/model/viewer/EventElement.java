@@ -29,13 +29,13 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Event.
@@ -150,10 +150,10 @@ public class EventElement implements Comparable<EventElement>, Serializable {
             logger.trace("Metadata for event '{}'", type);
             for (Metadata md : metadata) {
                 StructElement se = new StructElement();
-                se.setMetadataFields(SolrSearchIndex.getFieldValueMap(doc));
+                se.setMetadataFields(SolrTools.getFieldValueMap(doc));
                 md.populate(se, locale);
                 if (md.getValues() != null && !md.getValues().isEmpty()) {
-                    logger.trace("{}: {}", md.getLabel(), SolrSearchIndex.getFieldValueMap(doc).toString());
+                    logger.trace("{}: {}", md.getLabel(), SolrTools.getFieldValueMap(doc).toString());
                 }
             }
         }

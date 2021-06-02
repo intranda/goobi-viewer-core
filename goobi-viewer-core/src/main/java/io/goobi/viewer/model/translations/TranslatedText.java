@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +40,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     private Locale selectedLocale;
     
     public TranslatedText() {
-        this(IPolyglott.getLocalesStatic(), null);
+        this(IPolyglott.getLocalesStatic());
     }
     
     public TranslatedText(Collection<Locale> locales) {
@@ -63,7 +64,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
     
     public TranslatedText(TranslatedText orig)  {
-        this(orig, IPolyglott.getLocalesStatic(), null);
+        this(orig, IPolyglott.getLocalesStatic(), IPolyglott.getDefaultLocale());
     }
     
     /**
@@ -105,7 +106,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
     
     public void setText(String text, Locale locale) {
-        if(locale != null) {            
+        if(locale != null && StringUtils.isNotBlank(locale.getLanguage())) {            
             super.setValue(text, locale);
         } else {
             super.setValue(text);
@@ -128,12 +129,17 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
 
     @Override
     public boolean isComplete(Locale locale) {
-        return isValid(locale) || (!IPolyglott.getDefaultLocale().equals(locale) && isEmpty(IPolyglott.getDefaultLocale()));
+        return isValid(locale);
     }
 
     @Override
     public boolean isValid(Locale locale) {
         return getValue(locale).filter(StringUtils::isNotBlank).isPresent();
+    }
+    
+    @Override
+    public Optional<String> getValue(Locale locale) {
+        return Optional.ofNullable(locale).map(l -> getValue(l.getLanguage()).orElse(null));
     }
 
     @Override

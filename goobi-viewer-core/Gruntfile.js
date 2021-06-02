@@ -168,7 +168,8 @@ module.exports = function (grunt) {
                             "overhang/dist/overhang.min.js" : "overhang/",
                             "sweetalert2/dist/sweetalert2.min.js" : "sweetalert/",
                             "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.min.js" : "mapbox/geocoder/",
-                            "mapbox-gl/dist/mapbox-gl.js" : "mapbox/"
+                            "mapbox-gl/dist/mapbox-gl.js" : "mapbox/",
+                            "leaflet-draw/dist/leaflet.draw.js" : "leaflet/draw"
                         },
                         css : {
                             "leaflet/dist/leaflet.css" : "leaflet/",
@@ -179,7 +180,9 @@ module.exports = function (grunt) {
                             "overhang/dist/overhang.min.css" : "overhang/",
                             "sweetalert2/dist/sweetalert2.min.css" : "sweetalert/",
                             "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css" : "mapbox/geocoder/",
-                            "mapbox-gl/dist/mapbox-gl.css" : "mapbox/"
+                            "mapbox-gl/dist/mapbox-gl.css" : "mapbox/",
+                            "leaflet-draw/dist/leaflet.draw.css" : "leaflet/draw",
+                            "leaflet-draw/dist/images" : "leaflet/draw",
                         }
                     }
                 },

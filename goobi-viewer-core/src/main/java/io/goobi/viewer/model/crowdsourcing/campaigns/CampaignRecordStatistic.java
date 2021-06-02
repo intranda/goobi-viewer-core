@@ -360,11 +360,9 @@ public class CampaignRecordStatistic implements Serializable {
      * @return false if status is null, otherwise true exactly if {@link #getStatus()} equals status or if any 
      * {@link CampaignRecordPageStatistic#getStatus()} of {@link #pageStatistics} returns true 
      */
-    public boolean containsStatus(CrowdsourcingStatus status) {
+    public boolean containsPageStatus(CrowdsourcingStatus status) {
         if(status == null) {
             return false;
-        } else if(status.equals(getStatus())) {
-            return true;
         } else {
             return this.pageStatistics.values().stream().anyMatch(pageStatistic -> status.equals(pageStatistic.getStatus()));
         }

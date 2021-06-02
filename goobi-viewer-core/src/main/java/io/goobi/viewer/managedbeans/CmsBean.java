@@ -51,8 +51,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.IndexerTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -101,6 +99,8 @@ import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * CMS functions.
@@ -1750,7 +1750,7 @@ public class CmsBean implements Serializable {
         if (doc != null) {
             Collection<Object> values = doc.getFieldValues(solrField);
             if (values != null) {
-                return values.stream().map(SolrSearchIndex::getAsString).collect(Collectors.toList());
+                return values.stream().map(SolrTools::getAsString).collect(Collectors.toList());
             }
         }
         return null;
@@ -1773,7 +1773,6 @@ public class CmsBean implements Serializable {
             logger.error("Cannot search: SearchBean is null");
             return "";
         }
-        boolean aggregateHits = DataManager.getInstance().getConfiguration().isAggregateHits();
         if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
             ((SearchFunctionality) item.getFunctionality()).search(item.getOwnerPageLanguageVersion().getOwnerPage().getSubThemeDiscriminatorValue());
         } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
@@ -1792,7 +1791,7 @@ public class CmsBean implements Serializable {
             SearchFacets facets = searchBean.getFacets();
             search.setPage(searchBean.getCurrentPage());
             searchBean.setHitsPerPage(item.getElementsPerPage());
-            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, aggregateHits, item.isGroupBySelected());
+            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, !item.isNoSearchAggregation(), item.isGroupBySelected());
             searchBean.setCurrentSearch(search);
             return null;
         } else if (item == null) {

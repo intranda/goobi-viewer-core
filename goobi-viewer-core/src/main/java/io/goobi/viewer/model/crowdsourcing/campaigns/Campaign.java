@@ -71,7 +71,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -89,6 +88,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.Translation;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  *
@@ -1595,10 +1595,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @return true if record status for the given pi equals status; false otherwise. If no record
      */
     private boolean isRecordStatus(String pi, CrowdsourcingStatus status) {
-        // TODO page-based
-
-        boolean ret =
-                Optional.ofNullable(statistics.get(pi)).map(stat -> stat.containsStatus(status)).orElse(CrowdsourcingStatus.ANNOTATE.equals(status));
+        boolean ret = Optional.ofNullable(statistics.get(pi)).map(stat -> StatisticMode.RECORD.equals(this.statisticMode) ?  status.equals(stat.getStatus()) : stat.containsPageStatus(status)).orElse(CrowdsourcingStatus.ANNOTATE.equals(status));
         return ret;
     }
 

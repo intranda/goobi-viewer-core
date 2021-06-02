@@ -45,8 +45,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -57,6 +55,8 @@ import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * <p>
@@ -672,7 +672,7 @@ public class Bookmark implements Serializable {
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc(getSolrQueryForDocument(), Arrays.asList(SolrConstants.THUMBNAIL, SolrConstants.FILENAME));
-        return SolrSearchIndex.isHasImages(doc);
+        return SolrTools.isHasImages(doc);
     }
 
 }

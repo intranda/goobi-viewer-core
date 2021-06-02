@@ -86,20 +86,14 @@
 
 	// TOOLTIPS FOR PAGE STATUS	
 	initTooltips() {
+	    $('.thumbnails-image-wrapper.review').tooltip('dispose');
 	    $('.thumbnails-image-wrapper.review').tooltip({
 	        placement: 'top',
 	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_in_review"),
 	      trigger: 'hover'
 	    });
 	    
-	    // console.log('Crowdsourcing.translate("crowdsourcing__campaign_tooltip_in_review")');
-	    
-// 	    $('.thumbnails-image-wrapper.annotate').tooltip({
-// 	        placement: 'top',
-// 	      title: 'There are already annotations for this page',
-// 	      trigger: 'hover'
-// 	    });
-	    
+	    $('.thumbnails-image-wrapper.finished').tooltip('dispose');
 	    $('.thumbnails-image-wrapper.finished').tooltip({
 	        placement: 'top',
 	      title: Crowdsourcing.translate("crowdsourcing__campaign_tooltip_completed"),
@@ -124,32 +118,7 @@
 		    setTimeout(updateLockedTooltip, 4000);
 	    }
 	    updateLockedTooltip();
-	    
-	    // FILTERING TOOLTIPS
-// 	    $('.thumbnails-filter-unfinished').tooltip({
-// 	        placement: 'top',
-// 	      title: 'Show unfinished pages',
-// 	      trigger: 'hover'
-// 	    });
-	    
-// 	    $('.thumbnails-filter-finished').tooltip({
-// 	        placement: 'top',
-// 	      title: 'Show finished pages',
-// 	      trigger: 'hover'
-// 	    });
-	    
-// 	    $('.thumbnails-filter-reset').tooltip({
-// 	        placement: 'top',
-// 	      title: 'Show all',
-// 	      trigger: 'hover'
-// 	    });
 
-// 	    $('.thumbnails-filter-annotated').tooltip({
-// 	        placement: 'top',
-// 	      title: 'Show annotated pages',
-// 	      trigger: 'hover'
-// 	    });
-	    
  
 	}
 	
@@ -160,20 +129,11 @@
     		$('.thumbnails-image-wrapper.annotate').hide();
     		$('.thumbnails-image-wrapper.finished').hide();
     	};
-    	
-//     	this.refs.filter_finished.onclick = event => {
-//     		$('.thumbnails-image-wrapper').hide();
-//     		$('.thumbnails-image-wrapper.review').show();
-//     	};
-    	
+
     	this.refs.filter_reset.onclick = event => {
     		$('.thumbnails-image-wrapper').show();
     	};
-    	
-//     	this.refs.filter_annotated.onclick = event => {
-//     		$('.thumbnails-image-wrapper').hide();
-//     		$('.thumbnails-image-wrapper.annotate').show();
-//     	};
+
 	}
 	
 	$( document ).ready(function() {

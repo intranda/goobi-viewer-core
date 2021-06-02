@@ -17,7 +17,7 @@
         </ui:fragment>
         <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'video'}">
             <meta name="twitter:card" content="player" />
-            <meta name="twitter:player" content="#{navigationHelper.applicationUrl}video/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}/" />
+            <meta name="twitter:player" content="#{navigationHelper.applicationUrl}video/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}/" />
             <meta name="twitter:player:width" content="300" />
             <meta name="twitter:player:height" content="200" />
             <meta name="twitter:image" content="#{activeDocumentBean.viewManager.currentPage.getImageUrl(300)}" />

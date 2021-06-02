@@ -142,18 +142,4 @@ public class XmlToolsTest {
     public void readXmlFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
         XmlTools.readXmlFile("notfound.xml");
     }
-
-    /**
-     * @see XmlTools#transformViaXSLT(Document,String,Map)
-     * @verifies transform xml correctly
-     */
-    @Test
-    public void transformViaXSLT_shouldTransformXmlCorrectly() throws Exception {
-        Document doc = XmlTools
-                .readXmlFile("src/test/resources/data/viewer/data/1/indexed_mets/PPN517154005.xml");
-        Assert.assertNotNull(doc);
-        Document transformed = XmlTools.transformViaXSLT(doc,
-                "src/test/resources/xsl/MODS2MARC21slim.xsl", null);
-        Assert.assertNotNull(transformed);
-    }
 }

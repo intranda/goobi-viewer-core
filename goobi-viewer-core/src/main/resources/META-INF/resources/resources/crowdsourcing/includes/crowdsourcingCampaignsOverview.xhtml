@@ -14,10 +14,14 @@
 				<div class="crowdsourcing-campaigns-overview__campaign">
 					<ui:fragment rendered="#{campaign.hasMediaItem()}"> 
 						<div class="crowdsourcing-campaigns-overview__campaign__image">
-							<h:graphicImage>
-								<f:passThroughAttribute name="src" value="#{campaign.mediaItem.iconURI}"/>
-								<f:passThroughAttribute name="alt" value="#{campaign.mediaItem.alternativeText != '' ? campaign.mediaItem.alternativeText : '' }"/>
-							</h:graphicImage>
+							<img srcset="#{campaign.mediaItem.getIconURI(1200,600)} 1200w,
+										 #{campaign.mediaItem.getIconURI(900,400)} 900w,
+						    			 #{campaign.mediaItem.getIconURI(600,450)} 600w,
+						    			 #{campaign.mediaItem.getIconURI(400,300)} 400w"
+						     sizes="(max-width: 1200px) 660px,
+						            300px"
+						     src="#{campaign.mediaItem.getIconURI(200,300)}"
+						     alt="#{campaign.mediaItem.alternativeText != '' ? campaign.mediaItem.alternativeText : '' }" />
 						</div>
 					</ui:fragment>
 					<div class="crowdsourcing-campaigns-overview__campaign__text">

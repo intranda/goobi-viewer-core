@@ -35,7 +35,6 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -45,6 +44,7 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 
 public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -238,12 +238,13 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
         try {
-            viewManager.setCurrentImageNo(1);
+            viewManager.setCurrentImageOrderString("1-2");
         } catch (IDDOCNotFoundException e) {
         }
         Assert.assertEquals(docstructType, viewManager.getTopStructElement().getDocStructType());
         Assert.assertEquals(pi, viewManager.getPi());
-        Assert.assertEquals(1, viewManager.getCurrentImageNo());
+        Assert.assertEquals(1, viewManager.getCurrentImageOrder());
+        //        Assert.assertEquals("1-2", viewManager.getCurrentPageOrderRange());
 
         String purl = viewManager.getPersistentUrl(null);
         Assert.assertEquals("/toc/PPN123/1/", purl);

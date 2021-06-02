@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.search;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 
 import org.junit.Assert;
@@ -42,5 +44,12 @@ public class SearchTest extends AbstractTest {
         List<StringPair> result = search.getAllSortFields();
         Assert.assertTrue(result.containsAll(search.getSortFields()));
         Assert.assertTrue(result.contains(new StringPair(staticFields.get(0), "asc")));
+    }
+    
+    @Test
+    public void testParseGeoCoords() {
+        String fieldValue ="[13.587443500000063 54.3766782, 13.568806999999993 54.364621, 13.57175570000004 54.38059639999999, 13.576777300000003 54.38823009999999, 13.632939999999962 54.35865]";
+        List<double[]> locs = Search.getLocations(fieldValue);
+        assertEquals(5, locs.size());
     }
 }

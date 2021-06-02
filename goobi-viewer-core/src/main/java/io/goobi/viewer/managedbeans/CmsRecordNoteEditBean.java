@@ -220,14 +220,24 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         return labelAsText;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isComplete(java.util.Locale)
+    /**
+     * Return true if text and title are both complete (not empty) for both title and text. If locale is not the default locale, text/title counts as complete if they are empty as long
+     * as the corresponding field in the default language is also empty
      */
     @Override
     public boolean isComplete(Locale locale) {
-        return this.note != null &&
-                this.note.getNoteTitle().isComplete(locale) &&
-                this.note.getNoteText().isComplete(locale);
+        
+        if(this.note != null) {
+            if(IPolyglott.getDefaultLocale().equals(locale)) {
+                return this.note.getNoteTitle().isComplete(locale) && this.note.getNoteText().isComplete(locale);
+            } else {
+                return (this.note.getNoteTitle().isComplete(locale) || !this.note.getNoteTitle().isComplete(IPolyglott.getDefaultLocale())) && 
+                       (this.note.getNoteText().isComplete(locale) || !this.note.getNoteText().isComplete(IPolyglott.getDefaultLocale()));
+            }
+        } else {
+            return false;
+        }
+
     }
 
     /* (non-Javadoc)

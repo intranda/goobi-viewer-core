@@ -79,6 +79,7 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
@@ -2535,6 +2536,7 @@ public final class Configuration extends AbstractConfiguration {
                 switch (node.getName()) {
                     case "field":
                     case "hierarchicalField":
+                    case "geoField":
                         ret.add((String) node.getValue());
                         break;
                 }
@@ -2568,6 +2570,10 @@ public final class Configuration extends AbstractConfiguration {
      */
     public List<String> getHierarchicalDrillDownFields() {
         return getLocalList("search.drillDown.hierarchicalField");
+    }
+    
+    public String getGeoDrillDownField() {
+        return getLocalString("search.drillDown.geoField");
     }
 
     /**

@@ -84,6 +84,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.Item.prototype.initKeyboardEvents = function() {
     	document.addEventListener('keyup', (event) => {
+    		//don't handle events if an input element is focused
+    		if($(event.target).closest("input").length > 0) {
+    			return;
+    		}
     		let keyName = event.key;
     		let targetIndex = undefined;
     		switch(keyName) {
@@ -285,12 +289,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
         	return;
         }
         //console.log("load image", this.dirty, requireConfirmation, index, this.currentCanvasIndex);
-        if(this.dirty && requireConfirmation && index != this.currentCanvasIndex) {
+        if(this.pageStatisticMode && this.dirty && requireConfirmation && index != this.currentCanvasIndex) {
         	viewerJS.notifications.confirm(Crowdsourcing.translate("crowdsourcing__confirm_skip_page"))
         	.then( () => {
-        		if(this.pageStatisticMode) {
-        			this.dirty = false;
-        		}
+        		this.dirty = false;
 	            this.currentCanvasIndex = index;
 	        	if(this.setImageSource) {            
 		            this.setImageSource(this.getCurrentCanvas());
@@ -373,21 +375,23 @@ var Crowdsourcing = ( function(crowdsourcing) {
     * Return list of annotations, optionally filtered by pageId and questionId
     */
     crowdsourcing.Item.prototype.loadAnnotations = function(pageId, questionId) {
-        let save = this.getFromLocalStorage();
         let annotations = [];
-        let questions = save.questions;
-        if(questionId) {
-            questions = questions.filter(q => q.id == questionId);
+        let save = this.getFromLocalStorage();
+		if(save) {
+	        let questions = save.questions;
+	        if(questionId) {
+	            questions = questions.filter(q => q.id == questionId);
+	        }
+	        questions.forEach(function(question) {
+	            let pages = question.pages;
+	            if(pageId) {
+	                pages = pages.filter(p => p.id ==pageId);
+	            }
+	            pages.forEach(function(page) {
+	               annotations = annotations.concat(page.annotations) 
+	            });
+	        })
         }
-        questions.forEach(function(question) {
-            let pages = question.pages;
-            if(pageId) {
-                pages = pages.filter(p => p.id ==pageId);
-            }
-            pages.forEach(function(page) {
-               annotations = annotations.concat(page.annotations) 
-            });
-        })
         return annotations;
     }
     
