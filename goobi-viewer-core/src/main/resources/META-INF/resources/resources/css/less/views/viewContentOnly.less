@@ -1,10 +1,27 @@
-// CAN BE DELETED?
+/* ==============================================================
+   Show content only styling
+   style declarations for blank page template 
+   ==============================================================*/
 
-.blank_page{
+.blank-page, .blank_page {
 	&__main  {
+		// GEO MAP (OEMBED)
 		.geomap {
 			width: 100vw;
 			height: 100vh; 
 		}
 	}
 }
+
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}
