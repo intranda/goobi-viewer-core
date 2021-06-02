@@ -214,19 +214,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                 String numVolumeString = getMetadataValue(SolrConstants.NUMVOLUMES);
                 if (numVolumeString != null) {
                     numVolumes = Long.valueOf(numVolumeString);
-                } else {
-                    logger.warn(
-                            "{} not found on anchor record '{}', retrieving the number of volumes by counting the indexed volume records. Re-index the record for faster loading.",
-                            SolrConstants.NUMVOLUMES, pi);
-                    numVolumes = DataManager.getInstance()
-                            .getSearchIndex()
-                            .getHitCount(new StringBuilder(SolrConstants.ISWORK).append(":true AND ")
-                                    .append(SolrConstants.PI_PARENT)
-                                    .append(':')
-                                    .append(getPi())
-                                    .toString());
                 }
-                // logger.debug("Volumes found for " + pi + ": " + numVolumes);
             }
             docStructType = getMetadataValue(SolrConstants.DOCSTRCT);
             if (docStructType != null) {
