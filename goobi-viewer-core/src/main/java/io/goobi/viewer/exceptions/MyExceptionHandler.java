@@ -43,6 +43,7 @@ import com.ocpsoft.pretty.PrettyException;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /*
@@ -96,6 +97,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             try {
                 if (t instanceof ViewExpiredException) {
                     // handleError(getSessionDetails(fc), "viewExpired");
+                    // Messages.error(ViewerResourceBundle.getTranslation("sessionExpired", null));
+                    // TODO visualize expiration error
                     redirect("pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId());
                 } else if (t instanceof RecordNotFoundException || isCausedByExceptionType(t, RecordNotFoundException.class.getName())
                         || (t instanceof PrettyException && t.getMessage().contains(RecordNotFoundException.class.getSimpleName()))) {
