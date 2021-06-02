@@ -147,11 +147,11 @@
                     </div>
                 </h:panelGroup>
                 
-                <h:panelGroup rendered="#{!navigationHelper.solrIndexOnline}">
+                <ui:fragment rendered="#{!navigationHelper.solrIndexOnline}">
                     <div class="alert alert-danger" role="alert">
                         <h:outputText rendered="#{errMsg == null}" value="#{msg.errIndexUnreachableMsg}" />
                     </div>
-                </h:panelGroup>
+                </ui:fragment>
             </div>
         </f:view>
     </ui:define>

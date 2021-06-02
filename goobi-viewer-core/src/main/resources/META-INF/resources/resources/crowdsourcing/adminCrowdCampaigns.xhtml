@@ -16,7 +16,8 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:panelGroup id="crowdCampaignOverview" rendered="#{userBean.user.superuser or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)}">
+        <h:panelGroup id="crowdCampaignOverview"
+            rendered="#{(userBean.user.superuser or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)) and navigationHelper.solrIndexOnline}">
             <div id="crowdCampaigns">
                 <h:form id="csCampaignsForm" prependId="false">
                     <div class="admin__title-bar">
@@ -137,5 +138,12 @@
                         riot.mount("progressBar");
             </script>
         </h:panelGroup>
+        
+        <ui:fragment rendered="#{!navigationHelper.solrIndexOnline}">
+            <div class="alert alert-danger" role="alert">
+                <h:outputText rendered="#{errMsg == null}" value="#{msg.errIndexUnreachableMsg}" />
+            </div>
+        </ui:fragment>
+        
     </ui:define>
 </ui:composition>

@@ -17,7 +17,7 @@
 
     <!-- CONTENT -->
     <ui:define name="content">
-        <ui:fragment id="cmsGeoMaps" rendered="#{userBean.user.isHasCmsPrivilege('CMS_GEOMAPS')}">
+        <ui:fragment id="cmsGeoMaps" rendered="#{userBean.user.isHasCmsPrivilege('CMS_GEOMAPS') and navigationHelper.solrIndexOnline}">
             <div id="cmsGeoMaps">
                 <div class="admin__title-bar">
                     <!-- HEADING -->
@@ -109,6 +109,13 @@
                 </div>
             </div>
         </ui:fragment>
+        
+        <ui:fragment rendered="#{!navigationHelper.solrIndexOnline}">
+        	<div class="alert alert-danger" role="alert">
+            	<h:outputText rendered="#{errMsg == null}" value="#{msg.errIndexUnreachableMsg}" />
+            </div>
+        </ui:fragment>
+        
         <script>
             viewerJS.clipboard.init();
         </script>
