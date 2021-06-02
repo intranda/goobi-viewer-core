@@ -10,7 +10,6 @@
 
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
-        
         <!--  WIDGET Geo facetting -->
         <ui:fragment rendered="#{(searchBean.hasGeoLocationHits() or searchBean.facets.geoFacetting.hasArea()) and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
         <h:form>
@@ -78,32 +77,32 @@
 	                   		clusterMarkers: false,
 	                   		fixed: true
 	                   	});
-	
-	                    	geoMap.init({
-	                            zoom: 1,
-	                            center: [0,0] //long, lat
-	                        });
-	                    	if(this.area) {	                    	    
-		                    	console.log("draw area" , this.area);
-		                        switch(this.area.type) {
-		                            case "polygon":
-		                                geoMap.drawPolygon(this.area.vertices, {color: "blue"}, true);
-		                                break;
-		                            case "circle":
-		                                geoMap.drawCircle(this.area.center, this.area.radius, {color: "blue"}, true);
-		                                break;
-		                            case "rectangle":
-		                                geoMap.drawRectangle([this.area.vertices[0], this.area.vertices[2]], {color: "blue"}, true);
-		                                break;
-		                        }
-	                    	}
-						
+
+                    	geoMap.init({
+                            zoom: 1,
+                            center: [0,0] //long, lat
+                        });
+                    	if(this.area) {	                    	    
+	                    	console.log("draw area" , this.area);
+	                        switch(this.area.type) {
+	                            case "polygon":
+	                                geoMap.drawPolygon(this.area.vertices, {color: "blue"}, true);
+	                                break;
+	                            case "circle":
+	                                geoMap.drawCircle(this.area.center, this.area.radius, {color: "blue"}, true);
+	                                break;
+	                            case "rectangle":
+	                                geoMap.drawRectangle([this.area.vertices[0], this.area.vertices[2]], {color: "blue"}, true);
+	                                break;
+	                        }
+                    	}
+					
 	                    	
-			                 	let $facetSearch = $("[data-geofacet='execute']");  
-			                 	let $facetTriggerSearch = $("[data-geofacet='trigger-execute']");  
-			                 	let $facetReset = $("[data-geofacet='reset']");  
-			                 	let $facetInput = $("[data-geofacet='feature']");  
-			                 	let $loader = $("[data-loader='geoFacet']");  
+	                 	let $facetSearch = $("[data-geofacet='execute']");  
+	                 	let $facetTriggerSearch = $("[data-geofacet='trigger-execute']");  
+	                 	let $facetReset = $("[data-geofacet='reset']");  
+	                 	let $facetInput = $("[data-geofacet='feature']");  
+	                 	let $loader = $("[data-loader='geoFacet']");  
 						$("#expandFacetMap").on("click", e => {
 						    //console.log("open overlay ", this);
 						    
@@ -119,12 +118,10 @@
 			                 	   $facetSearch.click();
 			                 	});
 			                 	$facetReset.off().on("click", () => {
-			                 	    this.area = undefined;
 			                 	    overlay.close();
 			                 	})
-	                       	    //console.log("mount overlay map", overlay.node.get(0));
 			                 	if(this.mapTag) {
-			                 	    riot.unmount(geomapsearch, true)
+			                 	   this.mapTag.forEach(tag => tag.unmount(true));
 			                 	}
 		                       	this.mapTag = riot.mount("#geoFacettingOverlayMap", "geomapsearch", {
 		     					    inactive: false,
@@ -132,10 +129,8 @@
 		     					    reset_button: "[data-feature='reset']",
 		     					    onFeatureSelect: area => {
 		     					        //console.log("Set facetting area", area);
-		     					        console.log("submit area ", area);
 									    sessionStorage.setItem("geoFacet", JSON.stringify(area));
 		     					      	$facetInput.val(area ? JSON.stringify(area) : "");
-			                       	    this.area = area;
 		     					    }
 		     					}); 
 	                       	});                       	

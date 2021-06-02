@@ -21,6 +21,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * A location on a map. Contains a long/lat points, a label and a link
@@ -42,8 +43,20 @@ public class Location {
         this.uri = uri;
     }
     
-    public static URI getRecordURI(String pi) {
-        String prettyId = "image1";
+    public static URI getRecordURI(String pi, PageType pageType) {
+        String prettyId = "";
+        switch(pageType) {
+            case viewMetadata:
+                prettyId = "metadata1";
+                break;
+            case viewToc:
+                prettyId = "toc1";
+                break;
+            case viewObject:
+            case viewImage:
+            default:
+                prettyId = "image1";
+        }
         
         URL mappedUrl =
                 PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getMappedURL(pi);

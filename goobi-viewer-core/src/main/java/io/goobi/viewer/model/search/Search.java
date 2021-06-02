@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -386,7 +387,7 @@ public class Search implements Serializable {
             List<String> fieldList = Arrays.asList(SolrConstants.IDDOC);
             int maxResults = 0;
             if(facets.getGeoFacetting().isActive()) {
-                fieldList = Arrays.asList(SolrConstants.IDDOC, SolrConstants.WKT_COORDS, SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT);
+                fieldList = Arrays.asList(SolrConstants.IDDOC, SolrConstants.WKT_COORDS, SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT, SolrConstants.ISANCHOR, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.BOOL_IMAGEAVAILABLE, SolrConstants.MIMETYPE);
                 maxResults = Integer.MAX_VALUE;
             }
             
@@ -410,7 +411,7 @@ public class Search implements Serializable {
                     }
                 }
                 if(facets.getGeoFacetting().isActive()) {
-                this.hitLocationList = getLocations(facets.getGeoFacetting().getField(), resp.getResults());
+                    this.hitLocationList = getLocations(facets.getGeoFacetting().getField(), resp.getResults());
                 }
                 logger.debug("Total search hits: {}", hitsCount);
             }
@@ -487,9 +488,13 @@ public class Search implements Serializable {
            try {                         
                String label = (String) doc.getFieldValue(SolrConstants.LABEL);
                String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+               String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
+               String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
+               boolean anchorOrGroup = SolrSearchIndex.isAnchor(doc) || SolrSearchIndex.isGroup(doc);
+               Boolean hasImages = (Boolean) doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE);
                locations.addAll(getLocations(doc.getFieldValue(solrField))
                        .stream()
-                       .map(p -> new Location(p[0], p[1], label, Location.getRecordURI(pi)))
+                       .map(p -> new Location(p[0], p[1], label, Location.getRecordURI(pi, PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false))))
                        .collect(Collectors.toList()));
            } catch(IllegalArgumentException e) {
                System.out.println("\"" + doc.getFieldValue(solrField) + "\"");

@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.model.maps.GeoMap;
 
 /**
  * Interface that all classes must implement that may be used in jsf search masks {@link io.goobi.viewer.managedbeans.SearchBean} is the default
@@ -189,5 +190,8 @@ public interface SearchInterface {
      * @return the base url of the current search page, without any search parameters
      */
     public String getCurrentSearchUrlRoot();
-
+    
+    public boolean hasGeoLocationHits();
+    
+    public GeoMap getHitsMap();
 }
