@@ -124,7 +124,7 @@ var viewerJS = ( function( viewer ) {
 					        	} 
 				        	});
         				} else {
-        					this.showLoader("load_record_image");
+        					this.hideLoader("load_record_image");
         					$(".archives__object-image").show();
         				}
         			})
