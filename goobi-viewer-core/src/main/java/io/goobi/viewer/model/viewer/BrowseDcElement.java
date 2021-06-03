@@ -149,7 +149,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
 
     /**
      * <p>
-     * Getter for the field <code>name</code>.
+     * Getter for the field <code>name</code>. If the <code>CMSCollection</code> translation is desired, use <code>getLabel()</code> instead.
      * </p>
      *
      * @return the name
@@ -163,7 +163,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * getLabel.
      * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return <code>CMSCollection</code> translation, if available; name otherwise
      */
     public String getLabel() {
         if (getInfo() != null) {
