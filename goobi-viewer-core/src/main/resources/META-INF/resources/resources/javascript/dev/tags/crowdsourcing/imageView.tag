@@ -51,10 +51,6 @@
 		this.initTooltips();
 	});
 	
-	this.on("update", function() {
-	    this.showThumbs = this.isShowThumbs();
-	});
-	
 	// MOUNT IMAGE VIEW
 	this.on("mount", function() {
 		this.showThumbs = this.isShowThumbs();
@@ -85,7 +81,12 @@
 		
 		this.actionListener = new rxjs.Subject();
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
-
+		if(this.opts.item.setShowThumbs) {
+		    this.opts.item.setShowThumbs.subscribe(show => {
+		        this.showThumbs = show;
+		        this.update();
+		    });
+		}
 	})
 
 	// TOOLTIPS FOR PAGE STATUS	
@@ -198,11 +199,10 @@
 			//cound canvases in REVIEW status
 			let count = 0;
 			for(let status of this.opts.item.pageStatusMap.values()) {
-				if(status == "REVIEW") {
+			    if(status.toUpperCase() == "REVIEW") {
 					count++;
 				}
 			}
-			console.log("num images in review ", count, this.opts.item.pageStatusMap);
 			return count !== 1; 
 		} else {			
 			return this.opts.item.canvases.length > 1

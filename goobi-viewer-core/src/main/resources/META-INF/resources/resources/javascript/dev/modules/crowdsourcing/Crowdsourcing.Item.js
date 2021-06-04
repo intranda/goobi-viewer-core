@@ -65,7 +65,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.annotationRelaodEvents = new rxjs.Subject();
         this.itemInitializedSubject = new rxjs.Subject();
         this.statusMapUpdates = new rxjs.Subject();
-		this.showThumbs = false;
+        //Used to manually force imageControls to show thumbnail view
+        this.setShowThumbs = new rxjs.Subject();
 		//signals that there are annotations which have not been saved to the server
 		//Is set on a per record or a per page basis depending on this.pageStatisticMode
 		this.dirty = false;
@@ -149,8 +150,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     	} else {
     		let targetIndex = this.getNextAccessibleIndex(this.currentCanvasIndex);
     		if(targetIndex == undefined) {
-    		console.log("No target index", this.pageStatusMap);
-    		this.statusMapUpdates.next(this.pageStatusMap);
+    		this.setShowThumbs.next(true);
     		//this.loadImage(0);
     			//no accessible page
     			//console.log("load next item");

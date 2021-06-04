@@ -1768,10 +1768,6 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 		this.initTooltips();
 	});
 
-	this.on("update", function() {
-	    this.showThumbs = this.isShowThumbs();
-	});
-
 	this.on("mount", function() {
 		this.showThumbs = this.isShowThumbs();
 		this.initFilters();
@@ -1801,7 +1797,12 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 
 		this.actionListener = new rxjs.Subject();
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
-
+		if(this.opts.item.setShowThumbs) {
+		    this.opts.item.setShowThumbs.subscribe(show => {
+		        this.showThumbs = show;
+		        this.update();
+		    });
+		}
 	})
 
 	this.initTooltips = function() {
@@ -1911,11 +1912,10 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 
 			let count = 0;
 			for(let status of this.opts.item.pageStatusMap.values()) {
-				if(status == "REVIEW") {
+			    if(status.toUpperCase() == "REVIEW") {
 					count++;
 				}
 			}
-			console.log("num images in review ", count, this.opts.item.pageStatusMap);
 			return count !== 1;
 		} else {
 			return this.opts.item.canvases.length > 1
