@@ -61,7 +61,7 @@ var viewerJS = ( function( viewer ) {
             }
     }
     
-    viewer.overlay.openModal = function(node, closable) {
+    viewer.overlay.openModal = function(node, closable, onClose) {
         
         let defer = Q.defer()
 
@@ -102,10 +102,15 @@ var viewerJS = ( function( viewer ) {
             $modal.on("hide.bs.modal", event =>  {
                 return closable;
             })
+            $modal.on("shown.bs.modal", event => {
+            	defer.resolve(node);
+            });
             $modal.on("hidden.bs.modal", event => {
                 $modal.modal("dispose");
                 $overlay.removeClass("modal-container");
-                defer.resolve(node);
+                if(onClose) {
+                	onClose(node);
+                }
                 $("body").off("click", ".close-modal");
             });
             let $dismissButtons = $overlay.find("[data-overlay-action='dismiss']")
@@ -125,8 +130,9 @@ var viewerJS = ( function( viewer ) {
         
     }
     
-    viewer.overlay.open = function(node, closable, fullscreen) {
+    viewer.overlay.open = function(node, closable, fullscreen, onClose) {
         
+
         let defer = Q.defer()
         
         let $overlay = $(".overlay");
@@ -141,27 +147,33 @@ var viewerJS = ( function( viewer ) {
             $overlay.addClass("active");
             $( 'html' ).addClass( 'no-overflow' );
             
+           let overlay = {
+        		node: $node,
+        		wrapper: $overlay,
+	        	close: function() {
+	        		($node).detach();
+	                $overlay.removeClass("active");
+	                $overlay.removeClass("fullscreen");
+	                $( 'html' ).removeClass( 'no-overflow' );
+	                if(onClose) {
+	                	onClose(node);
+	                }
+	                $("body").off("click.close-modal");
+	        	}
+	        
+	        }
+                    
+            
             let $dismissButtons = $overlay.find("[data-overlay-action='dismiss']")
             if(closable === true) {      
                 $dismissButtons.show();
                 $( 'body' ).one( 'click.close-modal', "[data-overlay-action='dismiss']", event => {
-                    ($node).detach();
-                    $overlay.removeClass("active");
-                    $overlay.removeClass("fullscreen");
-                    $( 'html' ).removeClass( 'no-overflow' );
-                    defer.resolve(node);
-                    $("body").off("click.close-modal");
+                    overlay.close();
                 });
                 //close on click outside content
                 $( 'body' ).one( 'click.close-modal', ".overlay", event => {
                     if($(event.target).hasClass("overlay")) {
-                        //click directly on modal
-                        ($node).detach();
-                        $overlay.removeClass("active");
-                        $overlay.removeClass("fullscreen");
-                        $( 'html' ).removeClass( 'no-overflow' );
-                        defer.resolve(node);
-                        $("body").off("click.close-modal");
+                        overlay.close();
                     }
                 });
             } else {
@@ -171,6 +183,7 @@ var viewerJS = ( function( viewer ) {
             if(fullscreen) {
                 $overlay.addClass("fullscreen");
             }
+            defer.resolve(overlay);
         } else {
             defer.reject("No overlay element found");
         }

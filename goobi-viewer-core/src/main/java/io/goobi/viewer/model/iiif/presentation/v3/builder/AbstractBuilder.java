@@ -15,18 +15,30 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v3.builder;
 
-import static io.goobi.viewer.api.rest.v2.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.ANNOTATIONS_COMMENT;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS_COLLECTION;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_IMAGE;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_MANIFEST_SEARCH;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_COMMENTS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_TEXT;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_SECTIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_SECTIONS_RANGE;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -40,7 +52,6 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.wa.ImageResource;
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.v3.ImageInformation3;
@@ -48,7 +59,6 @@ import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.api.iiif.presentation.v3.AbstractPresentationModelElement3;
-import de.intranda.api.iiif.presentation.v3.Canvas3;
 import de.intranda.api.iiif.presentation.v3.Collection3;
 import de.intranda.api.iiif.presentation.v3.IIIFAgent;
 import de.intranda.api.iiif.presentation.v3.LabeledResource;
@@ -64,8 +74,6 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -77,11 +85,11 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingTarget;
-import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * <p>
@@ -95,17 +103,17 @@ public abstract class AbstractBuilder {
     private static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
 
     protected final AbstractApiUrlManager urls;
-    
+
     private final List<Locale> translationLocales = DataManager.getInstance().getConfiguration().getIIIFTranslationLocales();
-    
+
     protected final DataRetriever dataRetriever = new DataRetriever();
-    
+
     private final ThumbnailHandler thumbs;
     protected final io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder v1Builder;
 
-
     protected final int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
     protected final int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
+
     /**
      * <p>
      * Constructor for AbstractBuilder.
@@ -118,11 +126,14 @@ public abstract class AbstractBuilder {
             apiUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         }
         this.urls = apiUrlManager;
-        
-        this.thumbs = new ThumbnailHandler(new IIIFUrlHandler(this.urls), DataManager.getInstance().getConfiguration(), ImageDeliveryBean.getStaticImagesPath(this.urls.getApplicationUrl(), DataManager.getInstance().getConfiguration().getTheme()));
-        
+
+        this.thumbs = new ThumbnailHandler(new IIIFUrlHandler(this.urls), DataManager.getInstance().getConfiguration(),
+                ImageDeliveryBean.getStaticImagesPath(this.urls != null ? this.urls.getApplicationUrl() : "",
+                        DataManager.getInstance().getConfiguration().getTheme()));
+
         AbstractApiUrlManager v1Urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
-        v1Builder = new io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder(v1Urls) {};
+        v1Builder = new io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder(v1Urls) {
+        };
     }
 
     /**
@@ -131,7 +142,7 @@ public abstract class AbstractBuilder {
      */
     protected IMetadataValue getLabel(String key) {
         IMetadataValue value = ViewerResourceBundle.getTranslations(key, this.translationLocales, false);
-        if(!value.getValue(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).isPresent()) {
+        if (!value.getValue(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).isPresent()) {
             value.setValue(key, MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
         }
         return value;
@@ -185,10 +196,9 @@ public abstract class AbstractBuilder {
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      */
     public URI getMetsResolverUrl(StructElement ele) {
-        
+
         return UriBuilder.fromPath(urls.getApplicationUrl()).path("metsresolver").queryParam("id", ele.getPi()).build();
     }
-
 
     /**
      * <p>
@@ -199,7 +209,7 @@ public abstract class AbstractBuilder {
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      */
     public URI getLidoResolverUrl(StructElement ele) {
-        
+
         return UriBuilder.fromPath(urls.getApplicationUrl()).path("lidoresolver").queryParam("id", ele.getPi()).build();
 
     }
@@ -265,17 +275,16 @@ public abstract class AbstractBuilder {
                 String configuredLabel = DataManager.getInstance().getConfiguration().getIIIFMetadataLabel(field);
                 String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel
                         : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);
-                SolrSearchIndex.getTranslations(field, ele, this.translationLocales,(s1, s2) -> s1 + "; " + s2)
+                SolrTools.getTranslations(field, ele, this.translationLocales, (s1, s2) -> s1 + "; " + s2)
                         .map(value -> new Metadata(getLabel(label), value))
                         .ifPresent(md -> {
-//                            md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
-//                            md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+                            //                            md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+                            //                            md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
                             manifest.addMetadata(md);
                         });
             }
         }
     }
-    
 
     /**
      * @param ele
@@ -283,26 +292,24 @@ public abstract class AbstractBuilder {
      * @return
      */
     protected Optional<String> getSolrFieldValue(StructElement ele, String fieldName) {
-        if(StringUtils.isNotBlank(fieldName)) {            
+        if (StringUtils.isNotBlank(fieldName)) {
             String value = ele.getMetadataValue(fieldName);
             return Optional.ofNullable(value);
-        } else {
-            return Optional.empty();
         }
+        return Optional.empty();
     }
-    
+
     protected Optional<URI> getRightsStatement(StructElement ele) {
         return getSolrFieldValue(ele, DataManager.getInstance().getConfiguration().getIIIFRightsField())
-        .map(value -> {
-            try {
-                return new URI(value);
-            } catch (URISyntaxException e) {
-                logger.error(e.toString());
-                return null;
-            }
-        });
+                .map(value -> {
+                    try {
+                        return new URI(value);
+                    } catch (URISyntaxException e) {
+                        logger.error(e.toString());
+                        return null;
+                    }
+                });
     }
-   
 
     /**
      * Return true if the field is contained in displayFields, accounting for wildcard characters
@@ -316,8 +323,6 @@ public abstract class AbstractBuilder {
         return displayFields.stream().map(displayField -> displayField.replace("*", "")).anyMatch(displayField -> field.startsWith(displayField));
     }
 
-
-
     /**
      * @param ele
      * @return
@@ -327,8 +332,6 @@ public abstract class AbstractBuilder {
         List<String> baseFields = fields.stream().map(field -> field.replaceAll("_LANG_\\w{2,3}$", "")).distinct().collect(Collectors.toList());
         return baseFields;
     }
-
-
 
     /**
      * Gets the attribution text configured in webapi.iiif.attribution and returns all translations if any are found, or the configured string itself
@@ -358,7 +361,7 @@ public abstract class AbstractBuilder {
     protected Optional<IMetadataValue> getDescription(StructElement ele) {
         List<String> fields = DataManager.getInstance().getConfiguration().getIIIFDescriptionFields();
         for (String field : fields) {
-            Optional<IMetadataValue> optional = SolrSearchIndex.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
+            Optional<IMetadataValue> optional = SolrTools.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
                 md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
                 return md;
             });
@@ -416,7 +419,6 @@ public abstract class AbstractBuilder {
         return URI.create(urlString);
     }
 
-
     /**
      * <p>
      * getCanvasURI.
@@ -460,7 +462,7 @@ public abstract class AbstractBuilder {
         if (matcher.find()) {
             return matcher.group(1);
         }
-        
+
         return null;
     }
 
@@ -476,7 +478,7 @@ public abstract class AbstractBuilder {
      */
     public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type, boolean openAnnotation) {
         ApiPath url;
-        switch(type) {
+        switch (type) {
             case COMMENT:
                 url = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS).params(pi, pageNo);
                 break;
@@ -488,8 +490,7 @@ public abstract class AbstractBuilder {
             default:
                 url = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(pi, pageNo);
         }
-        
-        
+
         if (openAnnotation) {
             url = url.query("format", "oa");
 
@@ -528,7 +529,6 @@ public abstract class AbstractBuilder {
 
         return URI.create(urlString);
     }
-
 
     /**
      * <p>
@@ -576,7 +576,6 @@ public abstract class AbstractBuilder {
         return URI.create(urlString);
     }
 
-
     /**
      * Get URL to search service from {@link ApiUrls}
      * 
@@ -586,7 +585,6 @@ public abstract class AbstractBuilder {
     public URI getSearchServiceURI(String pi) {
         return URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST_SEARCH).params(pi).build());
     }
-
 
     /**
      * Get URL to auto complete service from {@link ApiUrls}
@@ -649,7 +647,7 @@ public abstract class AbstractBuilder {
         manifest.setLabel(record.getMultiLanguageDisplayLabel());
         return manifest;
     }
-    
+
     protected Collection3 createAnchorLink(String collectionField, String collectionName, StructElement record) {
         URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(collectionField, collectionName).buildURI();
         Collection3 manifest = new Collection3(id, null);
@@ -661,10 +659,10 @@ public abstract class AbstractBuilder {
 
     protected Metadata getRequiredStatement() {
         Metadata requiredStatement = null;
-        
+
         String label = DataManager.getInstance().getConfiguration().getIIIFRequiredLabel();
         String value = DataManager.getInstance().getConfiguration().getIIIFRequiredValue();
-        if(StringUtils.isNoneBlank(label, value)) {
+        if (StringUtils.isNoneBlank(label, value)) {
             IMetadataValue attributionLabel = ViewerResourceBundle.getTranslations(label, false);
             IMetadataValue attributionValue = ViewerResourceBundle.getTranslations(value, false);
             requiredStatement = new Metadata(attributionLabel, attributionValue);
@@ -673,26 +671,26 @@ public abstract class AbstractBuilder {
 
         return requiredStatement;
     }
-    
+
     /**
      * @param providerConfig
      * @return
      */
     protected IIIFAgent getProvider(ProviderConfiguration providerConfig) {
         IIIFAgent provider = new IIIFAgent(providerConfig.uri, ViewerResourceBundle.getTranslations(providerConfig.label, false));
-       
+
         providerConfig.homepages.forEach(homepageConfig -> {
             IMetadataValue label = ViewerResourceBundle.getTranslations(homepageConfig.label, false);
             provider.addHomepage(new LabeledResource(homepageConfig.uri, "Text", Format.TEXT_HTML.getLabel(), label));
         });
-        
+
         providerConfig.logos.forEach(uri -> {
             provider.addLogo(new ImageResource(uri, ImageFileFormat.getImageFileFormatFromFileExtension(uri.toString()).getMimeType()));
         });
-        
+
         return provider;
     }
-    
+
     protected ImageResource getThumbnail(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ImageResource thumb;
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(null);
@@ -703,42 +701,40 @@ public abstract class AbstractBuilder {
         }
         return thumb;
     }
-    
+
     protected ImageResource getThumbnail(StructElement ele) {
-            try {
-                String thumbUrl = this.thumbs.getThumbnailUrl(ele);
-                if (StringUtils.isNotBlank(thumbUrl)) {
-                    ImageResource thumb = new ImageResource(new URI(thumbUrl));
-                    if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
-                        String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
-                        thumb.setService(new ImageInformation3(imageInfoURI));
-                    }
-                    return thumb;
+        try {
+            String thumbUrl = this.thumbs.getThumbnailUrl(ele);
+            if (StringUtils.isNotBlank(thumbUrl)) {
+                ImageResource thumb = new ImageResource(new URI(thumbUrl));
+                if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
+                    String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
+                    thumb.setService(new ImageInformation3(imageInfoURI));
                 }
-            } catch (URISyntaxException e) {
-                logger.warn("Unable to retrieve thumbnail url", e);
+                return thumb;
             }
-            return null;
+        } catch (URISyntaxException e) {
+            logger.warn("Unable to retrieve thumbnail url", e);
+        }
+        return null;
     }
-    
+
     /**
      * @param labelIIIFRenderingViewer
      * @return a simple metadata value with the given text, or null if text is blank
      */
     protected IMetadataValue createLabel(String text) {
-        if(StringUtils.isBlank(text)) {
+        if (StringUtils.isBlank(text)) {
             return null;
-        } else {
-            return new SimpleMetadataValue(text);
         }
+        return new SimpleMetadataValue(text);
     }
-    
+
     protected String getFilename(String path) {
-        if(StringUtils.isBlank(path)) {
+        if (StringUtils.isBlank(path)) {
             return null;
-        } else {            
-            return StringTools.encodeUrl(Paths.get(path).getFileName().toString());
         }
+        return StringTools.encodeUrl(Paths.get(path).getFileName().toString());
     }
 
 }

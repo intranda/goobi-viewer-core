@@ -33,13 +33,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Responsible for retrieving data from Index to build any IIIF resources
@@ -48,14 +48,15 @@ import io.goobi.viewer.model.viewer.StructElement;
  *
  */
 public class DataRetriever {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(DataRetriever.class);
-    
+
     /**
      * Required field to create manifest stubs for works in collection
      */
     public static final String[] CONTAINED_WORKS_QUERY_FIELDS =
-            { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.IDDOC };
+            { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
+                    SolrConstants.IDDOC };
 
     /**
      * Required fields to create manifests with structure
@@ -66,7 +67,7 @@ public class DataRetriever {
             SolrConstants.ISWORK, SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT,
             SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.NUMPAGES,
             SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT, SolrConstants.BOOL_IMAGEAVAILABLE };
-    
+
     /**
      * Queries all DocStructs which have the given PI as PI_TOPSTRUCT or anchor (or are the anchor themselves). Works are sorted by a
      * {@link io.goobi.viewer.model.iiif.presentation.v2.builder.StructElementComparator} If no hits are found, an empty list is returned
@@ -100,6 +101,9 @@ public class DataRetriever {
                     events.add(doc);
                 } else {
                     StructElement ele = createStructElement(doc);
+                    if (ele == null) {
+                        continue;
+                    }
                     eles.add(ele);
                     try {
                         Integer pageNo = (Integer) doc.getFieldValue(SolrConstants.THUMBPAGENO);
@@ -115,7 +119,7 @@ public class DataRetriever {
         addEventMetadataToWorkElement(eles, events);
         return eles;
     }
-    
+
     /**
      * Get all top level collections (i.e. those without splitting-char) along with the number of contained works and direct children
      * 
@@ -126,13 +130,14 @@ public class DataRetriever {
     public List<CollectionResult> getTopLevelCollections(String solrField) throws IndexUnreachableException {
         String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(solrField);
         Map<String, CollectionResult> result = SearchHelper.findAllCollectionsFromField(solrField, null, null, true, true, splittingChar);
-        return result.values().stream()
+        return result.values()
+                .stream()
                 .filter(c -> !c.getName().contains(splittingChar))
-                .sorted((c1,c2) -> c1.getName().compareTo(c2.getName()))
+                .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
                 .peek(c -> c.setChildCount(getChildCount(c.getName(), splittingChar, result.keySet())))
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * Get all collections which are direct children of the given collection along with the number of contained works and direct children
      * 
@@ -149,13 +154,14 @@ public class DataRetriever {
                 .replace("{splittingChar}", splittingChar);
         Map<String, CollectionResult> result = SearchHelper.findAllCollectionsFromField(solrField, null, filterQuery, true, true, splittingChar);
         String regex = collectionName + "[{}][^{}]+$".replace("{}", splittingChar);
-        return result.values().stream()
+        return result.values()
+                .stream()
                 .filter(c -> c.getName().matches(regex))
-                .sorted((c1,c2) -> c1.getName().compareTo(c2.getName()))
+                .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
                 .peek(c -> c.setChildCount(getChildCount(c.getName(), splittingChar, result.keySet())))
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * Get all records directly belonging to the given collection, only the fields in {@link #CONTAINED_WORKS_QUERY_FIELDS} are returned
      * 
@@ -163,21 +169,21 @@ public class DataRetriever {
      * @param collectionName
      * @return
      * @throws IndexUnreachableException
-     * @throws PresentationException 
+     * @throws PresentationException
      */
     public List<StructElement> getContainedRecords(String solrField, String collectionName) throws IndexUnreachableException, PresentationException {
         String query = "+{field}:{collection} +(ISWORK:* ISANCHOR:*)".replace("{field}", solrField).replace("{collection}", collectionName);
         List<String> displayFields = addLanguageFields(Arrays.asList(CONTAINED_WORKS_QUERY_FIELDS), ViewerResourceBundle.getAllLocales());
 
         List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, displayFields);
-        if(docs == null) {
+        if (docs == null) {
             return Collections.emptyList();
-        } else {            
-            return docs.stream().map(doc -> createStructElement(doc)).filter(struct -> struct != null).collect(Collectors.toList());
         }
+
+        return docs.stream().map(doc -> createStructElement(doc)).filter(struct -> struct != null).collect(Collectors.toList());
     }
 
-    private StructElement createStructElement(SolrDocument doc)  {
+    private static StructElement createStructElement(SolrDocument doc) {
         try {
             return new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
         } catch (NumberFormatException | IndexUnreachableException e) {
@@ -191,7 +197,7 @@ public class DataRetriever {
      * @param keySet
      * @return
      */
-    private long getChildCount(String collection, String splittingChar, Set<String> allCollections) {
+    private static long getChildCount(String collection, String splittingChar, Set<String> allCollections) {
         String regex = collection + "[{}][^{}]+$".replace("{}", splittingChar);
         return allCollections.stream().filter(c -> c.matches(regex)).count();
     }
@@ -268,14 +274,14 @@ public class DataRetriever {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, displayFields);
         if (doc != null) {
             StructElement ele = createStructElement(doc);
-            ele.setImageNumber(1);
-            return ele;
+            if (ele != null) {
+                ele.setImageNumber(1);
+                return ele;
+            }
         }
         return null;
     }
 
-
-    
     /**
      * @param doc
      * @return
@@ -311,7 +317,7 @@ public class DataRetriever {
         }
         return fields;
     }
-    
+
     /**
      * @param displayFields
      * @param allLocales

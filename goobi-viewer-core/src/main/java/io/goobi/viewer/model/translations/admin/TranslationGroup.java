@@ -83,6 +83,7 @@ public class TranslationGroup {
     private Integer untranslatedEntryCount;
     private Integer fullyTranslatedEntryCount = null;
     private String filterString;
+    private Boolean loadError = null;
 
     /**
      * Factory method.
@@ -189,7 +190,14 @@ public class TranslationGroup {
     public int getEntryCount() {
         Set<MessageEntry> returnSet = new HashSet<>();
         for (TranslationGroupItem item : items) {
-            returnSet.addAll(item.getEntries());
+            try {
+                if (item.getEntries() != null) {
+                    returnSet.addAll(item.getEntries());
+                }
+            } catch (Exception e) {
+                loadError = true;
+                break;
+            }
         }
 
         return returnSet.size();
@@ -333,11 +341,21 @@ public class TranslationGroup {
             logger.trace("Loading entries...");
             Set<MessageEntry> retSet = new HashSet<>();
             for (TranslationGroupItem item : items) {
-                retSet.addAll(item.getEntries());
+                try {
+                    if (item.getEntries() != null) {
+                        retSet.addAll(item.getEntries());
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                    loadError = true;
+                    allEntries = Collections.emptyList();
+                    return allEntries;
+                }
             }
 
             allEntries = new ArrayList<>(retSet);
             Collections.sort(allEntries);
+            loadError = false;
         }
 
         return allEntries;
@@ -391,8 +409,24 @@ public class TranslationGroup {
      * @param filterString the filterString to set
      */
     public void setFilterString(String filterString) {
-        logger.trace("setFilterString: {}", filterString);
         this.filterString = filterString;
+    }
+
+    /**
+     * @return the loadError
+     */
+    public boolean isLoadError() {
+        if (loadError == null) {
+            getAllEntries();
+        }
+        return loadError;
+    }
+
+    /**
+     * @param loadError the loadError to set
+     */
+    public void setLoadError(boolean loadError) {
+        this.loadError = loadError;
     }
 
     /**
@@ -419,7 +453,7 @@ public class TranslationGroup {
      * 
      */
     void selectEntry(int step) {
-        logger.trace("selectEntry: {}", step);
+        // logger.trace("selectEntry: {}", step);
         if (getFilteredEntries() == null || getFilteredEntries().isEmpty()) {
             return;
         }
@@ -524,11 +558,10 @@ public class TranslationGroup {
         return new File(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
                 "messages_" + language + ".properties");
     }
-    
+
     /**
-     * Check whether the application has write access to all local messages files 
-     * as well as the containing folder if any languages have no local message file.
-     * The tested languages are taken from {@link ViewerResourceBundle#getAllLocales()}
+     * Check whether the application has write access to all local messages files as well as the containing folder if any languages have no local
+     * message file. The tested languages are taken from {@link ViewerResourceBundle#getAllLocales()}
      * 
      * @return true if all required access rights to edit messages are present. false otherwise
      */
@@ -538,19 +571,26 @@ public class TranslationGroup {
          */
         for (Locale locale : ViewerResourceBundle.getAllLocales()) {
             Path path = getLocalTranslationFile(locale.getLanguage()).toPath();
-            if( Files.exists(path) ) {
-                if( Files.isWritable(path) ) {
+            if (Files.exists(path)) {
+                if (Files.isWritable(path)) {
                     continue;
-                } else {
-                    return false;
                 }
-            } else if( Files.isWritable(path.getParent()) ){
+                return false;
+            } else if (Files.isWritable(path.getParent())) {
                 continue;
             } else {
                 return false;
             }
-        } 
+        }
         return true;
     }
     
+    /**
+     * Resets the counts for fully translated and untranslated entries to update the translation process
+     */
+    public void resetStatusCount() {
+        this.fullyTranslatedEntryCount = null;
+        this.untranslatedEntryCount = null;
+    }
+
 }

@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,12 +24,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.primefaces.expression.SearchExpressionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.ocpsoft.pretty.PrettyContext;
-import com.ocpsoft.pretty.faces.url.URL;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
@@ -102,7 +97,7 @@ public class CollectionView {
      * </p>
      *
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public void populateCollectionList() throws IndexUnreachableException, IllegalRequestException {
         synchronized (this) {
@@ -176,7 +171,8 @@ public class CollectionView {
      * <p>
      * calculateVisibleDcElements.
      * </p>
-     * @throws IllegalRequestException 
+     * 
+     * @throws IllegalRequestException
      */
     public void calculateVisibleDcElements() throws IllegalRequestException {
         calculateVisibleDcElements(true);
@@ -188,7 +184,7 @@ public class CollectionView {
      * </p>
      *
      * @param loadDescriptions a boolean.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public void calculateVisibleDcElements(boolean loadDescriptions) throws IllegalRequestException {
         logger.trace("calculateVisibleDcElements: {}", loadDescriptions);
@@ -199,7 +195,7 @@ public class CollectionView {
             List<HierarchicalBrowseDcElement> visibleList = new ArrayList<>();
             HierarchicalBrowseDcElement topElement = getElement(getTopVisibleElement(), completeCollectionList);
             HierarchicalBrowseDcElement baseElement = getElement(getBaseElementName(), completeCollectionList);
-            if(StringUtils.isNotBlank(getTopVisibleElement()) && topElement == null) {
+            if (StringUtils.isNotBlank(getTopVisibleElement()) && topElement == null) {
                 //invalid top element
                 throw new IllegalRequestException("No collection found with name " + getTopVisibleElement());
             }
@@ -701,7 +697,7 @@ public class CollectionView {
      *
      * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public void expand(HierarchicalBrowseDcElement element) throws IndexUnreachableException, IllegalRequestException {
         setTopVisibleElement(element.getName());
@@ -715,9 +711,9 @@ public class CollectionView {
      * @param reset a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
-    public void reset(boolean reset){
+    public void reset(boolean reset) {
         if (reset && StringUtils.isNotBlank(getTopVisibleElement()) && !getTopVisibleElement().equals(getBaseElementName())) {
             setTopVisibleElement((String) null);
             try {
@@ -789,7 +785,8 @@ public class CollectionView {
      * <p>
      * showAll.
      * </p>
-     * @throws IllegalRequestException 
+     * 
+     * @throws IllegalRequestException
      */
     public void showAll() throws IllegalRequestException {
         if (completeCollectionList != null) {
@@ -804,7 +801,8 @@ public class CollectionView {
      * <p>
      * hideAll.
      * </p>
-     * @throws IllegalRequestException 
+     * 
+     * @throws IllegalRequestException
      */
     public void hideAll() throws IllegalRequestException {
         if (completeCollectionList != null) {
@@ -940,11 +938,11 @@ public class CollectionView {
      * @return a {@link java.lang.String} object.
      */
     public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, String baseSearchUrl) {
-        
-        if(StringUtils.isBlank(baseSearchUrl)) {
+
+        if (StringUtils.isBlank(baseSearchUrl)) {
             baseSearchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/";
         }
-        
+
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
             String ret = collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
             logger.trace("COLLECTION static url: {}", ret);
@@ -957,13 +955,14 @@ public class CollectionView {
             logger.trace("COLLECTION new window url: {}", ret);
             return ret;
         } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
-            
+
             String url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
-            .append("/browse/")
-            .append(field)
-            .append("/")
-            .append(collection.getLuceneName())
-            .append("/record/").toString();
+                    .append("/browse/")
+                    .append(field)
+                    .append("/")
+                    .append(collection.getLuceneName())
+                    .append("/record/")
+                    .toString();
             return url;
         } else {
             String facetString = field + ":" + collection.getLuceneName();
@@ -1066,6 +1065,22 @@ public class CollectionView {
     }
 
     /**
+     * 
+     * @param name Raw collection name
+     * @return Translation for the current langauge; null of none found
+     */
+    public String getTranslationForName(String name) {
+        logger.trace("getTranslationForName: {}", name);
+        for (HierarchicalBrowseDcElement ele : completeCollectionList) {
+            if (ele.getName().equals(name)) {
+                return ele.getLabel();
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>field</code>.
      * </p>
@@ -1075,14 +1090,14 @@ public class CollectionView {
     public String getField() {
         return field;
     }
-    
+
     /**
      * @return the searchUrl
      */
     public String getSearchUrl() {
         return searchUrl;
     }
-    
+
     /**
      * @param searchUrl the searchUrl to set
      */

@@ -35,6 +35,7 @@ public class MyExceptionHandlerFactory extends ExceptionHandlerFactory {
      * @param parent a {@link javax.faces.context.ExceptionHandlerFactory} object.
      */
     public MyExceptionHandlerFactory(ExceptionHandlerFactory parent) {
+        super(parent);
         this.parent = parent;
     }
 

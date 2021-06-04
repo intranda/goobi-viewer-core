@@ -29,10 +29,10 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.model.search.FacetItem;
 import io.goobi.viewer.model.search.SearchFacets;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class SearchFacetsTest extends AbstractSolrEnabledTest {
 
@@ -49,7 +49,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void generateFacetPrefix_shouldEncodeSlashedAndBackslashes() throws Exception {
-        List<FacetItem> list = new ArrayList<>();
+        List<IFacetItem> list = new ArrayList<>();
         list.add(new FacetItem("FIELD:a/b\\c", false));
         Assert.assertEquals("FIELD:a/b\\c;;", SearchFacets.generateFacetPrefix(list, false));
         Assert.assertEquals("FIELD:aU002FbU005Cc;;", SearchFacets.generateFacetPrefix(list, true));
@@ -61,7 +61,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void parseFacetString_shouldFillListCorrectly() throws Exception {
-        List<FacetItem> facetItems = new ArrayList<>();
+        List<IFacetItem> facetItems = new ArrayList<>();
         SearchFacets.parseFacetString("DC:a;;DC:b;;MD_TITLE:word;;", facetItems, null);
         Assert.assertEquals(3, facetItems.size());
         Assert.assertEquals("DC", facetItems.get(0).getField());
@@ -78,7 +78,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void parseFacetString_shouldEmptyListBeforeFilling() throws Exception {
-        List<FacetItem> facetItems = new ArrayList<>();
+        List<IFacetItem> facetItems = new ArrayList<>();
         SearchFacets.parseFacetString("DC:a;;", facetItems, null);
         Assert.assertEquals(1, facetItems.size());
         SearchFacets.parseFacetString("DC:b;;MD_TITLE:word;;", facetItems, null);
@@ -95,7 +95,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void parseFacetString_shouldAddDCFieldPrefixIfNoFieldNameIsGiven() throws Exception {
-        List<FacetItem> facetItems = new ArrayList<>(1);
+        List<IFacetItem> facetItems = new ArrayList<>(1);
         SearchFacets.parseFacetString("collection", facetItems, null);
         Assert.assertEquals(1, facetItems.size());
         Assert.assertEquals(SolrConstants.DC, facetItems.get(0).getField());
@@ -108,7 +108,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void parseFacetString_shouldSetHierarchicalStatusCorrectly() throws Exception {
-        List<FacetItem> facetItems = new ArrayList<>(1);
+        List<IFacetItem> facetItems = new ArrayList<>(1);
         SearchFacets.parseFacetString("DC:a;;", facetItems, null);
         Assert.assertEquals(1, facetItems.size());
         Assert.assertTrue(facetItems.get(0).isHierarchial());
@@ -120,7 +120,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void parseFacetString_shouldUseLabelFromLabelMapIfAvailable() throws Exception {
-        List<FacetItem> facetItems = new ArrayList<>(1);
+        List<IFacetItem> facetItems = new ArrayList<>(1);
         SearchFacets.parseFacetString("FOO:bar;;", facetItems, Collections.singletonMap("FOO:bar", "new label"));
         Assert.assertEquals(1, facetItems.size());
         Assert.assertEquals("new label", facetItems.get(0).getLabel());
@@ -227,7 +227,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     public void generateFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
         facets.setCurrentFacetString("MD_FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
-        Assert.assertEquals("FACET_FIELD1:a AND FIELD2:b AND FACET_YEAR:[c TO d]", facets.generateFacetFilterQuery(true));
+        Assert.assertEquals("FACET_FIELD1:a AND FIELD2:b AND FACET_YEAR:[c TO d]", facets.generateFacetFilterQuery(true, false));
     }
 
     /**
@@ -237,7 +237,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void generateFacetFilterQuery_shouldReturnNullIfFacetListIsEmpty() throws Exception {
         SearchFacets facets = new SearchFacets();
-        Assert.assertNull(facets.generateFacetFilterQuery(true));
+        Assert.assertNull(facets.generateFacetFilterQuery(true, false));
     }
 
     /**
@@ -248,7 +248,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     public void generateFacetFilterQuery_shouldSkipRangeFacetFieldsIfSoRequested() throws Exception {
         SearchFacets facets = new SearchFacets();
         facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
-        Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false));
+        Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false, false));
     }
 
     /**
@@ -259,7 +259,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     public void generateFacetFilterQuery_shouldSkipSubelementFields() throws Exception {
         SearchFacets facets = new SearchFacets();
         facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;" + SolrConstants.DOCSTRCT_SUB + ":figure");
-        Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false));
+        Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false, false));
     }
 
     /**
@@ -319,7 +319,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void updateFacetItem_shouldUpdateFacetItemCorrectly() throws Exception {
-        List<FacetItem> items = new ArrayList<>(2);
+        List<IFacetItem> items = new ArrayList<>(2);
         items.add(new FacetItem("FIELD1:foo", false));
         items.add(new FacetItem("FIELD2:bar", false));
         SearchFacets.updateFacetItem("FIELD2", "[foo TO bar]", items, false);
@@ -335,7 +335,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void updateFacetItem_shouldAddNewItemCorrectly() throws Exception {
-        List<FacetItem> items = new ArrayList<>(2);
+        List<IFacetItem> items = new ArrayList<>(2);
         items.add(new FacetItem("FIELD1:foo", false));
         SearchFacets.updateFacetItem("FIELD2", "bar", items, false);
         Assert.assertEquals(2, items.size());

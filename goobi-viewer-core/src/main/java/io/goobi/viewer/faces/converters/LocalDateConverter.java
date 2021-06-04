@@ -60,9 +60,17 @@ public class LocalDateConverter implements Converter<LocalDate> {
     @Override
     public String getAsString(FacesContext context, UIComponent component, LocalDate value) {
         if (value != null) {
-            return value.toString();
+            if(component != null && component.getAttributes().get("data-format") != null) {
+                String format = (String) component.getAttributes().get("data-format");
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(format);
+                String text = value.format(dateTimeFormatter);
+                return text;
+            } else {                
+                String text = value.toString();
+                return text;
+            }
         }
-        return "";
+        return null;
     }
 
 }

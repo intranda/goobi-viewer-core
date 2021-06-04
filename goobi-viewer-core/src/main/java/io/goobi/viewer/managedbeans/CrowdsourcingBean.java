@@ -49,7 +49,6 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -65,10 +64,12 @@ import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.ReviewMode;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
@@ -91,6 +92,8 @@ public class CrowdsourcingBean implements Serializable {
     protected UserBean userBean;
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
+    
+    private CrowdsourcingStatus targetStatus = null;
 
     /**
      * The campaign selected in backend
@@ -100,10 +103,10 @@ public class CrowdsourcingBean implements Serializable {
      * The campaign being annotated/reviewed
      */
     private Campaign targetCampaign = null;
-    /**
-     * The identifier (PI) of the work currently targeted by this campaign
-     */
+    /** The identifier (PI) of the record currently targeted by this campaign */
     private String targetIdentifier;
+    /** Current page of the current record. */
+    private int targetPage;
 
     /**
      * Initialize all campaigns as lazily loaded list
@@ -637,7 +640,14 @@ public class CrowdsourcingBean implements Serializable {
      */
     public void setRandomIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
-            String pi = getTargetCampaign().getRandomizedTarget(CampaignRecordStatus.ANNOTATE, getTargetIdentifier());
+            String pi = getTargetCampaign().getRandomizedTarget(CrowdsourcingStatus.ANNOTATE, getTargetIdentifier());
+            setTargetIdentifier(pi);
+        }
+    }
+    
+    public void setNextIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
+        if (getTargetCampaign() != null) {
+            String pi = getTargetCampaign().getNextTarget(CrowdsourcingStatus.ANNOTATE, getTargetIdentifier());
             setTargetIdentifier(pi);
         }
     }
@@ -650,9 +660,16 @@ public class CrowdsourcingBean implements Serializable {
      */
     public void setRandomIdentifierForReview() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
-            String pi = getTargetCampaign().getRandomizedTarget(CampaignRecordStatus.REVIEW, getTargetIdentifier());
+            String pi = getTargetCampaign().getRandomizedTarget(CrowdsourcingStatus.REVIEW, getTargetIdentifier());
             setTargetIdentifier(pi);
 
+        }
+    }
+    
+    public void setNextIdentifierForReview() throws PresentationException, IndexUnreachableException {
+        if (getTargetCampaign() != null) {
+            String pi = getTargetCampaign().getNextTarget(CrowdsourcingStatus.REVIEW, getTargetIdentifier());
+            setTargetIdentifier(pi);
         }
     }
 
@@ -730,6 +747,20 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * @return the targetPage
+     */
+    public int getTargetPage() {
+        return targetPage;
+    }
+
+    /**
+     * @param targetPage the targetPage to set
+     */
+    public void setTargetPage(int targetPage) {
+        this.targetPage = targetPage;
+    }
+
+    /**
      * <p>
      * forwardToCrowdsourcingAnnotation.
      * </p>
@@ -791,14 +822,14 @@ public class CrowdsourcingBean implements Serializable {
      * </p>
      *
      * @param campaign The campaign with which to annotate/review
-     * @param status if {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#REVIEW}, return a url for
+     * @param status if {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus#REVIEW}, return a url for
      *            reviewing, otherwise for annotating
      * @return The pretty url to either review or annotate a random work with the given {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
      */
-    public String getRandomItemUrl(Campaign campaign, CampaignRecordStatus status) {
-        String mappingId = CampaignRecordStatus.REVIEW.equals(status) ? "crowdCampaignReview1" : "crowdCampaignAnnotate1";
+    public String getNextItemUrl(Campaign campaign, CrowdsourcingStatus status) {
+        String mappingId = CrowdsourcingStatus.REVIEW.equals(status) ? "crowdCampaignReview1" : "crowdCampaignAnnotate1";
         URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById(mappingId).getPatternParser().getMappedURL(campaign.getId());
-        logger.debug("Mapped URL " + mappedUrl);
+        logger.debug("Mapped URL {}", mappedUrl);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 
@@ -807,10 +838,10 @@ public class CrowdsourcingBean implements Serializable {
      * getTargetRecordStatus.
      * </p>
      *
-     * @return the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} of the {@link #targetCampaign}
+     * @return the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} of the {@link #targetCampaign}
      *         for the {@link #targetIdentifier}
      */
-    public CampaignRecordStatus getTargetRecordStatus() {
+    public CrowdsourcingStatus getTargetRecordStatus() {
         if (getTargetCampaign() != null && StringUtils.isNotBlank(getTargetIdentifier())) {
             return getTargetCampaign().getRecordStatus(getTargetIdentifier());
         }
@@ -830,7 +861,7 @@ public class CrowdsourcingBean implements Serializable {
             return "pretty:crowdCampaigns";
         } else if (getTargetCampaign() == null) {
             return "pretty:crowdCampaigns";
-        } else if (CampaignRecordStatus.FINISHED.equals(getTargetRecordStatus())) {
+        } else if (CrowdsourcingStatus.FINISHED.equals(getTargetRecordStatus())) {
             return "pretty:crowdCampaigns";
         } else if (getTargetCampaign().isHasEnded() || !getTargetCampaign().isHasStarted()) {
             return "pretty:crowdCampaigns";
@@ -939,4 +970,28 @@ public class CrowdsourcingBean implements Serializable {
         return EnumSet.allOf(ReviewMode.class);
     }
 
+    /**
+     * @return List of enum values
+     */
+    public Set<StatisticMode> getAvailableStatisticModes() {
+        return EnumSet.allOf(StatisticMode.class);
+    }
+    
+    /**
+     * @return the targetStatus
+     */
+    public CrowdsourcingStatus getTargetStatus() {
+        return targetStatus;
+    }
+    
+    /**
+     * @param targetStatus the targetStatus to set
+     */
+    public void setTargetStatus(CrowdsourcingStatus targetStatus) {
+        this.targetStatus = targetStatus;
+    }
+    
+    public void setTargetStatus(String targetStatus) {
+        this.targetStatus = CrowdsourcingStatus.forName(targetStatus);
+    }
 }

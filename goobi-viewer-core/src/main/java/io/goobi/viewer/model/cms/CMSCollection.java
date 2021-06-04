@@ -46,7 +46,6 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
@@ -55,6 +54,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.BrowseElementInfo;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * A class representing persistent configurations for a collection. A collections is identified by a SOLR-field name and a label. The most common
@@ -591,10 +591,10 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
                 .collect(Collectors.toMap(l -> l.getLanguage(), l -> l.getValue()));
         if (labels.isEmpty()) {
             return ViewerResourceBundle.getTranslations(getSolrFieldValue());
-        } else {
-            IMetadataValue value = new MultiLanguageMetadataValue(labels);
-            return value;
         }
+        
+        IMetadataValue value = new MultiLanguageMetadataValue(labels);
+        return value;
     }
     
     @Override
@@ -604,10 +604,10 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
                 .collect(Collectors.toMap(l -> l.getLanguage(), l -> l.getValue()));
         if (descriptions.isEmpty()) {
             return null;
-        } else {
-            IMetadataValue value = new MultiLanguageMetadataValue(descriptions);
-            return value;
         }
+        
+        IMetadataValue value = new MultiLanguageMetadataValue(descriptions);
+        return value;
     }
 
     /* (non-Javadoc)

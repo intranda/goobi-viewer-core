@@ -33,7 +33,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
@@ -41,19 +40,18 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.archives.ArchiveEntry;
-import io.goobi.viewer.model.archives.ArchiveResource;
 import io.goobi.viewer.model.archives.ArchiveTree;
 import io.goobi.viewer.model.archives.BasexEADParser;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 @Named
 @ViewScoped
@@ -408,10 +406,10 @@ public class ArchiveBean implements Serializable {
         ListIterator<SolrDocument> iter = docs.listIterator();
         while (iter.hasNext()) {
             SolrDocument doc = iter.next();
-            String id = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.ARCHIVE_ENTRY_ID);
+            String id = SolrTools.getSingleFieldStringValue(doc, SolrConstants.ARCHIVE_ENTRY_ID);
             if (id.equals(entryId)) {
                 if (iter.hasNext()) {
-                    String nextId = SolrSearchIndex.getSingleFieldStringValue(iter.next(), SolrConstants.ARCHIVE_ENTRY_ID);
+                    String nextId = SolrTools.getSingleFieldStringValue(iter.next(), SolrConstants.ARCHIVE_ENTRY_ID);
                     next = Optional.of(nextId);
                 }
                 break;

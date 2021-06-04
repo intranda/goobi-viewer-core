@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,9 +66,6 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
@@ -89,6 +87,10 @@ import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.translations.language.LocaleComparator;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Search utility class. Static methods only.
@@ -527,7 +529,7 @@ public final class SearchHelper {
                 throw new RecordNotFoundException(pi);
             }
 
-            boolean anchorOrGroup = SolrSearchIndex.isAnchor(doc) || SolrSearchIndex.isGroup(doc);
+            boolean anchorOrGroup = SolrTools.isAnchor(doc) || SolrTools.isGroup(doc);
             PageType pageType =
                     PageType.determinePageType((String) doc.get(SolrConstants.DOCSTRCT), (String) doc.get(SolrConstants.MIMETYPE), anchorOrGroup,
                             doc.containsKey(SolrConstants.THUMBNAIL), false);
@@ -768,7 +770,7 @@ public final class SearchHelper {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static List<String> searchAutosuggestion(String suggest, List<FacetItem> currentFacets) throws IndexUnreachableException {
+    public static List<String> searchAutosuggestion(String suggest, List<IFacetItem> currentFacets) throws IndexUnreachableException {
         if (suggest.contains(" ")) {
             return Collections.emptyList();
         }
@@ -779,7 +781,7 @@ public final class SearchHelper {
             StringBuilder sbQuery = new StringBuilder();
             sbQuery.append(SolrConstants.DEFAULT).append(':').append(ClientUtils.escapeQueryChars(suggest)).append('*');
             if (currentFacets != null && !currentFacets.isEmpty()) {
-                for (FacetItem facetItem : currentFacets) {
+                for (IFacetItem facetItem : currentFacets) {
                     if (sbQuery.length() > 0) {
                         sbQuery.append(" AND ");
                     }
@@ -1900,7 +1902,7 @@ public final class SearchHelper {
     public static String facetifyField(String fieldName) {
         if (fieldName != null && fieldName.startsWith("BOOL_")) {
             return fieldName;
-        }
+        } 
         return adaptField(fieldName, "FACET_");
     }
 
@@ -2436,8 +2438,6 @@ public final class SearchHelper {
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
             throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         SXSSFWorkbook wb = new SXSSFWorkbook(25);
-        List<SXSSFSheet> sheets = new ArrayList<>();
-        int currentSheetIndex = 0;
         SXSSFSheet currentSheet = wb.createSheet("intranda_viewer_search");
 
         CellStyle styleBold = wb.createCellStyle();
@@ -2513,11 +2513,12 @@ public final class SearchHelper {
      */
     public static List<String> getAllFacetFields(List<String> hierarchicalFacetFields) {
         List<String> facetFields = DataManager.getInstance().getConfiguration().getDrillDownFields();
-        List<String> allFacetFields = new ArrayList<>(hierarchicalFacetFields.size() + facetFields.size());
+        Optional<String> geoFacetField = Optional.ofNullable(DataManager.getInstance().getConfiguration().getGeoDrillDownField());
+        List<String> allFacetFields = new ArrayList<>(hierarchicalFacetFields.size() + facetFields.size() + (geoFacetField.isPresent() ? 1 : 0));
         allFacetFields.addAll(hierarchicalFacetFields);
         allFacetFields.addAll(facetFields);
-        allFacetFields = SearchHelper.facetifyList(allFacetFields);
-        return allFacetFields;
+        geoFacetField.ifPresent(field -> allFacetFields.add(field));
+        return SearchHelper.facetifyList(allFacetFields);
     }
 
     /**

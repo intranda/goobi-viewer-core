@@ -64,7 +64,6 @@ import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -72,6 +71,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.UncheckedPresentationException;
 import io.goobi.viewer.model.translations.language.Language;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * @author florian
@@ -137,7 +137,7 @@ public class TextResourceBuilder {
         if (file == null || !Files.isRegularFile(file)) {
             throw new ContentNotFoundException("Resource not found");
         }
-        
+
         try {
             return FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
             //                Document doc = XmlTools.readXmlFile(file);
@@ -295,7 +295,7 @@ public class TextResourceBuilder {
      */
     public String getCmdiDocument(String pi, String langCode)
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, IOException {
-        logger.trace("getCmdiDocument({}, {})", pi, langCode);
+        logger.trace("getCmdiDocument({}, {})", StringTools.stripPatternBreakingChars(pi), StringTools.stripPatternBreakingChars(langCode));
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         java.nio.file.Path filePath = getDocumentLanguageVersion(cmdiPath, language);
@@ -634,7 +634,7 @@ public class TextResourceBuilder {
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         java.nio.file.Path filePath = null;
-        logger.trace("CMDI: " + cmdiPath.toAbsolutePath().toString());
+        logger.trace("CMDI: {}", cmdiPath.toAbsolutePath().toString());
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
             try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {

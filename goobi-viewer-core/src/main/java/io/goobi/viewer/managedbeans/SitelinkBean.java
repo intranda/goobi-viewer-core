@@ -19,9 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -35,8 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -44,6 +40,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * SitelinkBean
@@ -146,7 +144,6 @@ public class SitelinkBean implements Serializable {
         SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(query, Arrays.asList(fields));
         if (docList != null && !docList.isEmpty()) {
             hits = new ArrayList<>(docList.size());
-            Map<String, String> anchorTitle = new HashMap<>();
             for (SolrDocument doc : docList) {
                 StringBuilder sbLabel = new StringBuilder();
                 String anchorPi = (String) doc.getFieldValue(SolrConstants.PI_PARENT);
@@ -164,7 +161,7 @@ public class SitelinkBean implements Serializable {
                 if (label == null) {
                     label = (String) doc.getFieldValue(SolrConstants.CURRENTNO);
                     if (label == null) {
-                        label = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE);
+                        label = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
 
                         if (label == null) {
                             label = pi;
@@ -175,9 +172,6 @@ public class SitelinkBean implements Serializable {
                     sbLabel.append(": ");
                 }
                 sbLabel.append(label);
-                String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
-                String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-                boolean hasImages = "image".equals(mimeType);
                 //                PageType pageType = PageType.determinePageType(docStructType, null, false, hasImages, false, false);
                 PageType pageType = PageType.viewMetadata;
                 hits.add(new StringPair(sbLabel.toString(), pageType.getName() + "/" + pi + "/1/"));

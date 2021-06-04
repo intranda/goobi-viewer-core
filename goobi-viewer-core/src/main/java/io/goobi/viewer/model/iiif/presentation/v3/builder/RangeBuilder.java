@@ -19,6 +19,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.intranda.api.iiif.presentation.v3.Canvas3;
 import de.intranda.api.iiif.presentation.v3.Range3;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -34,6 +37,8 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 public class RangeBuilder extends AbstractBuilder {
 
+    private static final Logger logger = LoggerFactory.getLogger(RangeBuilder.class);
+    
     /**
      * @param apiUrlManager
      */
@@ -50,10 +55,15 @@ public class RangeBuilder extends AbstractBuilder {
         return build(mainDocument, childDocuments, logId);
     }
     
-    public Range3 build(StructElement topElement, List<StructElement> structures, String logId) throws ContentNotFoundException {
+    public Range3 build(StructElement topElement, List<StructElement> structures, String logId) throws ContentNotFoundException, PresentationException {
+        
         
         structures.sort((s1,s2) -> Integer.compare(getFirstPageNo(s1), getFirstPageNo(s2)));
         StructElement structElement = logId == null ? topElement : structures.stream().filter(s -> s.getLogid().equals(logId)).findAny().orElseThrow(() -> new ContentNotFoundException("Range not found"));
+        
+        if(structElement.getImageNumber() < 1 ||  structElement.getNumPages() < 1) {
+            throw new PresentationException(String.format("Illegal page count for struct element %s: First page = %d; num pages = %d", logId, structElement.getImageNumber(), structElement.getNumPages()));
+        }
         
         URI id = urls.path(ApiUrls.RECORDS_SECTIONS, ApiUrls.RECORDS_SECTIONS_RANGE).params(topElement.getPi(), structElement.getLogid()).buildURI();
         Range3 range = new Range3(id);
@@ -78,9 +88,13 @@ public class RangeBuilder extends AbstractBuilder {
         }
         
         for (StructElement child : children) {
-            Range3 childRange = build(topElement, structures, child.getLogid());
-            range.addItem(childRange);
-        }
+            try {                
+                Range3 childRange = build(topElement, structures, child.getLogid());
+                range.addItem(childRange);
+            } catch(PresentationException e) {
+                logger.warn(e.getMessage());
+            }
+        } 
 
         return range;
     }

@@ -71,7 +71,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -82,7 +81,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSMediaHolder;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.security.ILicenseType;
@@ -90,6 +88,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.Translation;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  *
@@ -153,12 +152,30 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         }
     }
 
+    /**
+     * Statistics calculation mode (status per record or per record page).
+     */
+    public enum StatisticMode {
+        RECORD("label__crowdsourcing_campaign_statistic_mode_record"),
+        PAGE("label__crowdsourcing_campaign_statistic_mode_page");
+
+        private final String label;
+
+        private StatisticMode(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return this.label;
+        }
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(Campaign.class);
 
     private static final String URI_ID_TEMPLATE =
             DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1") + "crowdsourcing/campaigns/{id}";
     private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/?$";
-    
+
     private static final Random random = new SecureRandom();
 
     @Id
@@ -213,6 +230,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     @Column(name = "review_mode")
     private ReviewMode reviewMode = ReviewMode.REQUIRE_REVIEW;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "statistic_mode")
+    private StatisticMode statisticMode = StatisticMode.RECORD;
 
     @ManyToOne
     @JoinColumn(name = "revewier_user_group_id")
@@ -270,6 +291,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @JsonIgnore
     private List<String> solrQueryResults = null;
 
+    @Transient
+    @JsonIgnore
+    private Integer pageCount = 0;
+
     /**
      * Empty constructor.
      */
@@ -300,6 +325,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         this.selectedLocale = orig.selectedLocale;
         this.solrQuery = orig.solrQuery;
         this.solrQueryResults = orig.solrQueryResults;
+        this.pageCount = orig.pageCount;
         this.visibility = orig.visibility;
         this.statistics = orig.statistics; //no need for deep copy since it can't be changed in campaign editor
         this.showLog = orig.showLog;
@@ -311,6 +337,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         this.limitToGroup = orig.limitToGroup;
         this.reviewMode = orig.reviewMode;
         this.reviewerUserGroup = orig.reviewerUserGroup;
+        this.statisticMode = orig.statisticMode;
     }
 
     /**
@@ -387,11 +414,42 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public long getNumRecords() throws IndexUnreachableException {
         try {
-            return getSolrQueryResults().size();
+            if (StatisticMode.RECORD.equals(getStatisticMode())) {
+                return getSolrQueryResults().size();
+            }
+            return getTotalPageCount();
         } catch (PresentationException e) {
             logger.warn("Error getting number of records for campaign:" + e.toString());
             return 0;
         }
+    }
+
+    /**
+     * @return the total number of pages within the records found by {@link #solrQuery}
+     */
+    private long getTotalPageCount() {
+        if (this.pageCount == null) {
+            String query = "+" + SolrConstants.ISWORK + ":true +" + SolrConstants.BOOL_IMAGEAVAILABLE + ":true";
+            // Validate campaign query before adding it
+            try {
+                query += " +(" + solrQuery + ")";
+                int pages = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(query, Collections.singletonList(SolrConstants.NUMPAGES))
+                        .stream()
+                        .filter(doc -> doc.getFieldValue(SolrConstants.NUMPAGES) != null)
+                        .mapToInt(doc -> (Integer) doc.getFieldValue(SolrConstants.NUMPAGES))
+                        .sum();
+                this.pageCount = pages;
+            } catch (RemoteSolrException e) {
+                logger.error(e.getMessage());
+            } catch (PresentationException e) {
+                logger.error(e.getMessage());
+            } catch (IndexUnreachableException e) {
+                logger.error(e.getMessage());
+            }
+        }
+        return this.pageCount;
     }
 
     /**
@@ -401,6 +459,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @param status a {@link java.lang.String} object.
      * @return number of records with the given status
+     * @should do record-based count correctly
+     * @should do page-based count correctly
      */
     public long getNumRecordsForStatus(String status) {
         if (status == null) {
@@ -410,7 +470,18 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         long count = 0;
         for (String pi : statistics.keySet()) {
             CampaignRecordStatistic statistic = statistics.get(pi);
-            if (statistic.getStatus().name().equals(status)) {
+            if (statistic == null) {
+                continue;
+            }
+            if (StatisticMode.PAGE.equals(statisticMode)) {
+                // Page-based count
+                for (String key : statistic.getPageStatistics().keySet()) {
+                    if (statistic.getPageStatistics().get(key).getStatus().name().equals(status)) {
+                        count++;
+                    }
+                }
+            } else if (statistic.getStatus() != null && statistic.getStatus().name().equals(status)) {
+                // Record-based count
                 count++;
             }
         }
@@ -446,17 +517,31 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     /**
      * Determines the number of distinct users that have created or reviewed annotations in the context of this campaign.
      *
-     * @return number of users
+     * @return number of users who either annotated or reviewed annotations
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getContributorCount() throws DAOException {
         Set<Long> userIds = new HashSet<>();
-        for (String pi : statistics.keySet()) {
-            for (User u : statistics.get(pi).getAnnotators()) {
-                userIds.add(u.getId());
+        if (StatisticMode.PAGE.equals(statisticMode)) {
+            for (String pi : statistics.keySet()) {
+                for (String key : statistics.get(pi).getPageStatistics().keySet()) {
+                    CampaignRecordPageStatistic pageStatistic = statistics.get(pi).getPageStatistics().get(key);
+                    for (User u : pageStatistic.getAnnotators()) {
+                        userIds.add(u.getId());
+                    }
+                    for (User u : pageStatistic.getReviewers()) {
+                        userIds.add(u.getId());
+                    }
+                }
             }
-            for (User u : statistics.get(pi).getReviewers()) {
-                userIds.add(u.getId());
+        } else {
+            for (String pi : statistics.keySet()) {
+                for (User u : statistics.get(pi).getAnnotators()) {
+                    userIds.add(u.getId());
+                }
+                for (User u : statistics.get(pi).getReviewers()) {
+                    userIds.add(u.getId());
+                }
             }
         }
 
@@ -465,12 +550,22 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     /**
      * 
-     * @return
+     * @return true if this campaign has at least one annotation; false otherwise
      */
     public boolean isHasAnnotations() {
-        for (String pi : statistics.keySet()) {
-            if (!statistics.get(pi).getAnnotators().isEmpty()) {
-                return true;
+        if (StatisticMode.PAGE.equals(statisticMode)) {
+            for (String pi : statistics.keySet()) {
+                for (String key : statistics.get(pi).getPageStatistics().keySet()) {
+                    if (!statistics.get(pi).getPageStatistics().get(key).getAnnotators().isEmpty()) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            for (String pi : statistics.keySet()) {
+                if (!statistics.get(pi).getAnnotators().isEmpty()) {
+                    return true;
+                }
             }
         }
 
@@ -486,7 +581,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public int getProgress() throws IndexUnreachableException, PresentationException {
         float numRecords = getNumRecords();
-        float finished = getNumRecordsForStatus(CampaignRecordStatus.FINISHED.getName());
+        float finished = getNumRecordsForStatus(CrowdsourcingStatus.FINISHED.getName());
         return Math.round(finished / numRecords * 100);
     }
 
@@ -584,7 +679,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if the given user is allowed to perform the action associated with the given status; false otherwise
-     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -594,7 +689,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @should return true if user owner of group
      * @should return false if user not in group
      */
-    public boolean isUserAllowedAction(User user, CampaignRecordStatus status) throws PresentationException, IndexUnreachableException, DAOException {
+    public boolean isUserAllowedAction(User user, CrowdsourcingStatus status) throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("isUserAllowedAction: {}", status);
         if (status == null) {
             return false;
@@ -855,7 +950,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @return the id
      */
-    @JsonIgnore
     public Long getId() {
         return id;
     }
@@ -886,7 +980,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @return a {@link java.net.URI} object.
      */
-    @JsonProperty("id")
+    @JsonProperty("url")
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
@@ -1148,6 +1242,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
         this.solrQueryResults = null;
+        this.pageCount = null;
     }
 
     /**
@@ -1317,7 +1412,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         return StringUtils.isNotBlank(getTitle(locale.getLanguage(), false));
 
     }
-    
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
@@ -1331,13 +1425,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     /**
      * Get the targetIdentifier to a random PI from the Solr query result list.
      *
-     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
      * @param piToIgnore a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public String getRandomizedTarget(CampaignRecordStatus status, String piToIgnore) throws PresentationException, IndexUnreachableException {
+    public String getRandomizedTarget(CrowdsourcingStatus status, String piToIgnore) throws PresentationException, IndexUnreachableException {
         User user = BeanUtils.getUserBean().getUser();
         List<String> pis = getSolrQueryResults().stream()
                 .filter(result -> !result.equals(piToIgnore))
@@ -1352,13 +1446,40 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     }
 
     /**
+     * Get the targetIdentifier to a random PI from the Solr query result list.
+     *
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
+     * @param piToIgnore a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public String getNextTarget(CrowdsourcingStatus status, String currentPi) throws PresentationException, IndexUnreachableException {
+        User user = BeanUtils.getUserBean().getUser();
+        List<String> piList = getSolrQueryResults().stream()
+                .filter(result -> isRecordStatus(result, status))
+                .filter(result -> isEligibleToEdit(result, status, user))
+                .collect(Collectors.toList());
+        int currentIndex = piList.indexOf(currentPi);
+        if(piList.isEmpty()) {
+            return "";
+        } if(currentIndex+1 < piList.size()) {
+            return piList.get(currentIndex+1);
+        } else if(currentIndex != 0) {
+            return piList.get(0);
+        } else {
+            return "";
+        }
+    }
+
+    /**
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private List<String> getSolrQueryResults() throws PresentationException, IndexUnreachableException {
+    List<String> getSolrQueryResults() throws PresentationException, IndexUnreachableException {
         if (this.solrQueryResults == null) {
-            String query = "+" + SolrConstants.ISWORK + ":true";
+            String query = "+" + SolrConstants.ISWORK + ":true +" + SolrConstants.BOOL_IMAGEAVAILABLE + ":true";
             // Validate campaign query before adding it
             try {
                 SolrQueryValidator.getHitCount(solrQuery);
@@ -1388,26 +1509,27 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     /**
      * Check if the given user may annotate/review (depending on status) a specific pi within this campaign
      *
-     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if
      *         <ul>
-     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#REVIEW REVIEW} and
-     *         the user is not contained in the annotaters list</li> or
-     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#ANNOTATE ANNOTATE}
+     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus#REVIEW REVIEW} and
+     *         the user is not contained in the annotators list</li> or
+     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus#ANNOTATE ANNOTATE}
      *         and the user is not contained in the reviewers list</li> or
      *         <li>The user is admin</li> or
      *         <li>The user is null</li>
      * @param pi a {@link java.lang.String} object.
      */
-    public boolean isEligibleToEdit(String pi, CampaignRecordStatus status, User user) {
+    public boolean isEligibleToEdit(String pi, CrowdsourcingStatus status, User user) {
         if (user != null) {
             if (user.isSuperuser()) {
                 return true;
             }
-            if (status.equals(CampaignRecordStatus.ANNOTATE)) {
+            // TODO page-based
+            if (status.equals(CrowdsourcingStatus.ANNOTATE)) {
                 return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getReviewers()).orElse(Collections.emptyList()).contains(user);
-            } else if (status.equals(CampaignRecordStatus.REVIEW)) {
+            } else if (status.equals(CrowdsourcingStatus.REVIEW)) {
                 return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getAnnotators()).orElse(Collections.emptyList()).contains(user);
             } else {
                 return true;
@@ -1421,14 +1543,14 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * check if the given user is eligible to review any records
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @return true if there are any records in review status for which {@link #isEligibleToEdit(String, CampaignRecordStatus, User)} returns true
+     * @return true if there are any records in review status for which {@link #isEligibleToEdit(String, CrowdsourcingStatus, User)} returns true
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean hasRecordsToReview(User user) throws PresentationException, IndexUnreachableException {
         return getSolrQueryResults().stream()
-                .filter(result -> isRecordStatus(result, CampaignRecordStatus.REVIEW))
-                .filter(result -> isEligibleToEdit(result, CampaignRecordStatus.REVIEW, user))
+                .filter(result -> isRecordStatus(result, CrowdsourcingStatus.REVIEW))
+                .filter(result -> isEligibleToEdit(result, CrowdsourcingStatus.REVIEW, user))
                 .count() > 0;
     }
 
@@ -1436,14 +1558,14 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * check if the given user is eligible to annotate any records
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @return true if there are any records in annotate status for which {@link #isEligibleToEdit(String, CampaignRecordStatus, User)} returns true
+     * @return true if there are any records in annotate status for which {@link #isEligibleToEdit(String, CrowdsourcingStatus, User)} returns true
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean hasRecordsToAnnotate(User user) throws PresentationException, IndexUnreachableException {
         return getSolrQueryResults().stream()
-                .filter(result -> isRecordStatus(result, CampaignRecordStatus.ANNOTATE))
-                .filter(result -> isEligibleToEdit(result, CampaignRecordStatus.ANNOTATE, user))
+                .filter(result -> isRecordStatus(result, CrowdsourcingStatus.ANNOTATE))
+                .filter(result -> isEligibleToEdit(result, CrowdsourcingStatus.ANNOTATE, user))
                 .count() > 0;
     }
 
@@ -1457,7 +1579,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean mayAnnotate(User user, String pi) throws PresentationException, IndexUnreachableException {
-        return isRecordStatus(pi, CampaignRecordStatus.ANNOTATE) && isEligibleToEdit(pi, CampaignRecordStatus.ANNOTATE, user);
+        return isRecordStatus(pi, CrowdsourcingStatus.ANNOTATE) && isEligibleToEdit(pi, CrowdsourcingStatus.ANNOTATE, user);
     }
 
     /**
@@ -1470,16 +1592,17 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean mayReview(User user, String pi) throws PresentationException, IndexUnreachableException {
-        return isRecordStatus(pi, CampaignRecordStatus.REVIEW) && isEligibleToEdit(pi, CampaignRecordStatus.REVIEW, user);
+        return isRecordStatus(pi, CrowdsourcingStatus.REVIEW) && isEligibleToEdit(pi, CrowdsourcingStatus.REVIEW, user);
 
     }
 
     /**
      * @param result
-     * @return true if record status for the given pi equals status; false otherwise
+     * @return true if record status for the given pi equals status; false otherwise. If no record
      */
-    private boolean isRecordStatus(String pi, CampaignRecordStatus status) {
-        return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE).equals(status);
+    boolean isRecordStatus(String pi, CrowdsourcingStatus status) {
+        boolean ret = Optional.ofNullable(statistics.get(pi)).map(stat -> StatisticMode.RECORD.equals(this.statisticMode) ?  status.equals(stat.getStatus()) : stat.containsPageStatus(status)).orElse(CrowdsourcingStatus.ANNOTATE.equals(status));
+        return ret;
     }
 
     /**
@@ -1490,9 +1613,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @return record status for the given pi
      * @param pi a {@link java.lang.String} object.
      */
-    public CampaignRecordStatus getRecordStatus(String pi) {
-        return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE);
-
+    public CrowdsourcingStatus getRecordStatus(String pi) {
+        return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CrowdsourcingStatus.ANNOTATE);
     }
 
     /**
@@ -1518,18 +1640,18 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * Updates record status in the campaign statistics.
      *
      * @param pi a {@link java.lang.String} object.
-     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
      * @param user a {@link java.util.Optional} object.
      */
-    public void setRecordStatus(String pi, CampaignRecordStatus status, Optional<User> user) {
+    public void setRecordStatus(String pi, CrowdsourcingStatus status, Optional<User> user) {
         CampaignRecordStatistic statistic = statistics.get(pi);
         if (statistic == null) {
             statistic = new CampaignRecordStatistic();
             statistic.setOwner(this);
             statistic.setDateCreated(LocalDateTime.now());
-            statistic.setStatus(CampaignRecordStatus.ANNOTATE);
+            statistic.setStatus(CrowdsourcingStatus.ANNOTATE);
         }
-        if (CampaignRecordStatus.ANNOTATE.equals(statistic.getStatus())) {
+        if (CrowdsourcingStatus.ANNOTATE.equals(statistic.getStatus())) {
             user.ifPresent(statistic::addAnnotater);
         } else {
             user.ifPresent(statistic::addReviewer);
@@ -1537,6 +1659,49 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         statistic.setPi(pi);
         statistic.setStatus(status);
         statistic.setDateUpdated(LocalDateTime.now());
+        statistics.put(pi, statistic);
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param page
+     * @param status
+     * @param user
+     */
+    public void setRecordPageStatus(String pi, int page, CrowdsourcingStatus status, Optional<User> user) {
+        // logger.trace("setRecordPageStatus: {}/{}", pi, page); // Sonar considers this log msg a security issue, so leave it commented out when not needed
+        LocalDateTime now = LocalDateTime.now();
+        CampaignRecordStatistic statistic = statistics.get(pi);
+        if (statistic == null) {
+            statistic = new CampaignRecordStatistic();
+            statistic.setPi(pi);
+            statistic.setOwner(this);
+            statistic.setDateCreated(now);
+            statistic.setStatus(CrowdsourcingStatus.ANNOTATE);
+        }
+
+        String key = pi + "_" + page;
+        CampaignRecordPageStatistic pageStatistic = statistic.getPageStatistics().get(key);
+        if (pageStatistic == null) {
+            pageStatistic = new CampaignRecordPageStatistic();
+            pageStatistic.setOwner(statistic);
+            pageStatistic.setPi(pi);
+            pageStatistic.setPage(page);
+            pageStatistic.setDateCreated(now);
+            pageStatistic.setKey(key);
+            pageStatistic.setStatus(CrowdsourcingStatus.ANNOTATE);
+            statistic.getPageStatistics().put(key, pageStatistic);
+        }
+        if (CrowdsourcingStatus.ANNOTATE.equals(pageStatistic.getStatus())) {
+            user.ifPresent(pageStatistic::addAnnotater);
+        } else {
+            user.ifPresent(pageStatistic::addReviewer);
+        }
+
+        pageStatistic.setStatus(status);
+        pageStatistic.setDateUpdated(now);
+        statistic.setDateUpdated(now);
         statistics.put(pi, statistic);
     }
 
@@ -1617,6 +1782,20 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public void setReviewMode(ReviewMode reviewMode) {
         this.reviewMode = reviewMode;
+    }
+
+    /**
+     * @return the statisticMode
+     */
+    public StatisticMode getStatisticMode() {
+        return statisticMode != null ? statisticMode : StatisticMode.RECORD;
+    }
+
+    /**
+     * @param statisticMode the statisticMode to set
+     */
+    public void setStatisticMode(StatisticMode statisticMode) {
+        this.statisticMode = statisticMode;
     }
 
     /**
@@ -1726,6 +1905,5 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public String toString() {
         return getTitle();
     }
-
 
 }

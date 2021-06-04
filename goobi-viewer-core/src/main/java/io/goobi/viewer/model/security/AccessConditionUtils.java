@@ -40,9 +40,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -52,6 +50,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * <p>
@@ -209,7 +211,7 @@ public class AccessConditionUtils {
         }
 
         String query = generateAccessCheckQuery(identifier, fileName);
-        logger.trace("query: {}", query);
+        // logger.trace("query: {}", query); // Sonar considers this log msg a security issue, so leave it commented out when not needed
         try {
             // Collect access conditions required by the page
             Map<String, Set<String>> requiredAccessConditions = new HashMap<>();
@@ -702,7 +704,7 @@ public class AccessConditionUtils {
     @SuppressWarnings("unchecked")
     public static boolean checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest request, String pi, String contentFileName,
             String privilegeType) throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType);
+        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType); // Sonar considers this log msg a security issue, so leave it commented out when not needed
         if (privilegeType == null) {
             throw new IllegalArgumentException("privilegeType may not be null");
         }
@@ -730,7 +732,7 @@ public class AccessConditionUtils {
 
         String key = new StringBuilder(pi).append('_').append(contentFileName).toString();
         // pi already checked -> look in the session
-        logger.debug("permissions key: " + key + ": " + permissions.get(key));
+        // logger.debug("permissions key: " + key + ": " + permissions.get(key)); // Sonar considers this log msg a security issue, so leave it commented out when not needed
         if (permissions.containsKey(key)) {
             access = permissions.get(key);
             //            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName,
@@ -744,7 +746,7 @@ public class AccessConditionUtils {
                 permissions.put(newKey, pageAccess);
             }
             access = permissions.get(key) != null ? permissions.get(key) : false;
-            logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName, access);
+            // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName, access); // Sonar considers this log msg a security issue, so leave it commented out when not needed
             if (request != null) {
                 request.getSession().setAttribute(attributeName, permissions);
             }
@@ -904,7 +906,7 @@ public class AccessConditionUtils {
     }
 
     /**
-     * Check whether the requiredAccessConditions consist only of the {@link io.goobi.viewer.controller.SolrConstants#OPEN_ACCESS_VALUE OPENACCESS}
+     * Check whether the requiredAccessConditions consist only of the {@link io.goobi.viewer.solr.SolrConstants#OPEN_ACCESS_VALUE OPENACCESS}
      * condition and OPENACCESS is not contained in allLicenseTypes. In this and only this case can we savely assume that everything is permitted. If
      * OPENACCESS is in the database then it likely contains some access restrictions which need to be checked
      *
@@ -964,21 +966,21 @@ public class AccessConditionUtils {
                     // Make sure the condition query is not optional (starts with + or -)
                     sbQuery.append(" +(").append(conditions).append(')');
                 }
-                logger.trace("License relevance query: {}", sbQuery.toString());
+                logger.trace("License relevance query: {}", StringTools.stripPatternBreakingChars(sbQuery.toString()));
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
                     // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to configured the license subquery.", licenseType.getName(), query);
                     if (licenseType.isMovingWall()) {
                         // Moving wall license type allow everything if the condition query doesn't match
                         logger.trace(
                                 "License type '{}' is a moving wall type and its condition query doesn't match the record query '{}'. All restrictions lifted.",
-                                licenseType.getName(), query);
+                                licenseType.getName(), StringTools.stripPatternBreakingChars(query));
                         licenseType.getRestrictionsExpired().put(query, true);
                     } else {
                         continue;
                     }
                 }
                 logger.trace("LicenseType '{}' applies to resource described by '{}' due to configured license subquery.", licenseType.getName(),
-                        query);
+                        StringTools.stripPatternBreakingChars(query));
             }
 
             //no individual file conditions. Write same licenseTypes for all files
@@ -1027,7 +1029,7 @@ public class AccessConditionUtils {
             return 100;
         }
 
-        List<String> requiredAccessConditions = SolrSearchIndex.getMetadataValues(doc, SolrConstants.ACCESSCONDITION);
+        List<String> requiredAccessConditions = SolrTools.getMetadataValues(doc, SolrConstants.ACCESSCONDITION);
         // No relevant access condition values
         if (requiredAccessConditions == null || requiredAccessConditions.isEmpty()
                 || requiredAccessConditions.get(0).equals(SolrConstants.OPEN_ACCESS_VALUE)) {

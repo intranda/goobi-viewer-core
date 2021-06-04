@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.PersistenceException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +43,7 @@ public class CMSMediaUpdate implements IModelUpdate {
 
     private static final String DATATYPE_OLD = "longblob";
     private static final String DATATYPE_NEW = "text";
-    private static final String URL_REGEX = "http.*(?=x$)";
+    private static final String URL_REGEX = "(\\/|http)[\\w\\d-/.:%+!?#]+(?=x$)";
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
@@ -55,11 +57,16 @@ public class CMSMediaUpdate implements IModelUpdate {
 
             List<Object[]> results =
                     dao.createNativeQuery("SELECT cms_media_item_id, link_url FROM cms_media_items WHERE link_url IS NOT NULL").getResultList();
-
             Map<Long, String> linkUrlMap = new HashMap();
             for (Object[] res : results) {
                 if (res[0] instanceof Long && res[1] instanceof byte[]) {
-                    linkUrlMap.put((Long) res[0], parseUrl((byte[]) res[1]));
+                    String value = parseUrl((byte[]) res[1]);
+                    if(value != null) {                        
+                        linkUrlMap.put((Long) res[0], value);
+                    } else {
+                        logger.warn("Encountered link url in cms_media_items which could not be parsed at cms_media_item_id = {}", res[0]);
+                    }
+                    //must delete row anyway because otherwise changing type will fail
                     dao.startTransaction();
                     dao.createNativeQuery("UPDATE cms_media_items SET link_url = NULL WHERE cms_media_item_id = " + res[0]).executeUpdate();
                     dao.commitTransaction();
@@ -70,10 +77,15 @@ public class CMSMediaUpdate implements IModelUpdate {
             dao.commitTransaction();
 
             for (Long id : linkUrlMap.keySet()) {
+                try {
                 dao.startTransaction();
                 dao.createNativeQuery("UPDATE cms_media_items SET link_url = '" + linkUrlMap.get(id) + "' WHERE cms_media_item_id = " + id)
                         .executeUpdate();
                 dao.commitTransaction();
+                logger.trace("Updated cms_media_items value at cms_media_item_id = '{}' to '{}'", id, linkUrlMap.get(id));
+                } catch(Throwable e) {
+                    logger.error("Error attempting to update cms_media_items value at cms_media_item_id = '{}' to '{}'",  id, linkUrlMap.get(id));
+                }
             }
 
             logger.debug("Done converting  cms_media_items.link_url datatype");
@@ -91,7 +103,11 @@ public class CMSMediaUpdate implements IModelUpdate {
                 sb.append(c);
             }
         }
-        String url = StringTools.findFirstMatch(sb.toString(), URL_REGEX, 0).orElse(null);
+        return parseUrl(sb.toString());
+    }
+    
+    protected String parseUrl(String blob) {
+        String url = StringTools.findFirstMatch(blob, URL_REGEX, 0).orElse(null);
         return url;
     }
 

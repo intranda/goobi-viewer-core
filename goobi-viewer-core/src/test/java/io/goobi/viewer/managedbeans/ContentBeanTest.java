@@ -55,9 +55,9 @@ public class ContentBeanTest extends AbstractSolrEnabledTest {
     public void testLoadALlAnnotations() throws PresentationException, IndexUnreachableException, DAOException {
         ContentBean bean = new ContentBean();
         List<DisplayUserGeneratedContent> ugcList = bean.getUserGeneratedContentsForDisplay(PI);
-        for (DisplayUserGeneratedContent ugc : ugcList) {
-            System.out.println(ugc);
-        }
+        //        for (DisplayUserGeneratedContent ugc : ugcList) {
+        //            System.out.println(ugc);
+        //        }
     }
 
 }

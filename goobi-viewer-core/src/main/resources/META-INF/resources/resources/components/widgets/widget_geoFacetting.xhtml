@@ -1,0 +1,204 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+
+
+    <!-- INTERFACE OPTIONS -->
+    <composite:interface />
+
+    <!-- COMPONENT CONTENT -->
+    <composite:implementation>
+    <ui:param name="search" value="#{cc.attrs.search != null ? cc.attrs.search : searchBean}"></ui:param>
+        <!--  WIDGET Geo facetting -->
+        <ui:fragment rendered="#{(searchBean.hasGeoLocationHits() or searchBean.facets.geoFacetting.hasArea()) and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
+        <h:form>
+	        <div class="widget widget-geofacetting">
+				<div class="widget-geofacetting__topbar">
+					<div class="widget-geofacetting__item widget-geofacetting__label">
+						<h3>#{msg.widget_geofacetting__label}</h3>
+					</div>
+					<div class="widget-geofacetting__item widget-geofacetting__actions">	
+						<button type="button" id="resetFacetMap" data-toggle="tooltip" data-geofacet="reset" title="#{msg.removeFacet}" class="btn btn--icon widget-geofacetting__action-reset" aria-label="#{msg.fullscreen_enter}">
+			            	<i class="fa fa-times"/>
+			            </button>
+		            </div>
+				</div>
+				<div class="widget__body widget-geofacetting__body">
+					<div id="geoFacettingMap" class="geo-map">
+					<!-- OVERLAY ON HOVER -->
+					<div id="expandFacetMap" class="widget-geofacetting__action-overlay">
+						<button type="button" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="btn btn--icon widget-geofacetting__action-expand" aria-label="#{msg.fullscreen_enter}">
+		                	<i class="fa fa-expand"/>
+		                </button>
+					</div>
+					</div>
+
+				</div>
+					<h:commandButton id="submitSearch" type="submit" styleClass="d-none" action="#{search.searchSimple}" value="#{msg.search}">
+                    	<f:setPropertyActionListener target="#{search.activeSearchType}" value="0" />
+                    	<f:passThroughAttribute name="data-geofacet" value="execute"/>
+                	</h:commandButton>
+					<h:inputHidden id="searchInput" value="#{searchBean.facets.geoFacetFeature}">
+		        		<f:passThroughAttribute name="data-geofacet" value="feature"/>
+		        	</h:inputHidden>
+		        	
+				<div id="widgetGeoFacettingOverlay" class="widget-geofacetting__overlay">
+				<span data-loader="geoFacet" class="ajax_loader widget-geofacetting__loader-wrapper">
+					<img src="#{request.contextPath}/resources/images/infinity_loader.svg" class="img-responsive widget-geofacetting__loader-animated-image" alt="Waiting..." />
+					<div class="modal-backdrop show"></div>
+				</span>
+				<div class="widget-geofacetting__overlay-buttons-wrapper">
+					<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="cancel">#{msg.cancel}</button>
+					<button class="btn btn--full widget-geofacetting__overlay-submit-search" data-geofacet="trigger-execute">#{msg.search}</button>
+				</div>	
+		        	<div id="geoFacettingOverlayMap" class="overlay__geomap">
+		        	</div>
+				</div>
+	
+			</div>
+			<h:commandScript name="setGeoFacetFeature" render="@form" action="#{searchBean.facets.geoFacetting.setFeatureFromContext()}"
+			 onevent="applyDrilldown">
+			</h:commandScript>
+	          <script type="text/javascript">	  
+	          //<![CDATA[
+	              
+	              function applyDrilldown(data) {
+	                  //console.log("apply drilldown, ", data.status);
+	                  if(data && data.status=="success") {	                      
+	                  	let $searchButton = $("#submitSearch");
+                 	 	if($searchButton.length > 0) {
+                 	 	    $searchButton.click();
+                 	 	}
+	                  }
+	              }
+	              
+		            function initFacetWidgetMap() {
+		                
+	                 	let $facetSearch = $("[data-geofacet='execute']");  
+	                 	let $facetTriggerSearch = $("[data-geofacet='trigger-execute']");  
+	                 	let $facetReset = $("[data-geofacet='reset']");  
+	                 	let $facetCancel = $("[data-geofacet='cancel']"); 
+	                 	let $facetInput = $("[data-geofacet='feature']");  
+	                 	let $loader = $("[data-loader='geoFacet']"); 
+		                
+		                let areaString = '#{searchBean.facets.geoFacetFeature}';
+		                this.area = getArea(areaString);
+		                //console.log("area is ", areaString, this.area, setGeoFacetFeature);
+		                let geoMap = new viewerJS.GeoMap({
+	                	    mapId: "geoFacettingMap",
+	                   		allowMovingFeatures: false,
+	                   		language: "#{navigationHelper.localeString}",
+	                   		popoverOnHover: false,
+	                   		clusterMarkers: false,
+	                   		fixed: true
+	                   	});
+
+	
+                    	geoMap.init({
+                            zoom: 1,
+                            center: [0,0] //long, lat
+                        });
+                    	if(this.area) {	                    	    
+	                    	console.log("draw area" , this.area);
+	                        switch(this.area.type) {
+	                            case "polygon":
+	                                this.shape = geoMap.drawPolygon(this.area.vertices, {
+	                                	fillColor: '#3365a9',
+	                                    color: '#3365a9'
+	                                	}, true);
+	                                break;
+	                            case "circle":
+	                                this.shape = geoMap.drawCircle(this.area.center, this.area.radius, {
+	                                	fillColor: '#3365a9',
+	                                    color: '#3365a9'
+	                                    }, true);
+	                                break;
+	                            case "rectangle":
+	                                this.shape = geoMap.drawRectangle([this.area.vertices[0], this.area.vertices[2]], {
+	                                	fillColor: '#3365a9',
+	                                    color: '#3365a9'
+	                                    }, true);
+	                                break;
+	                        }
+	                        $facetReset.addClass("active");
+	                        $facetReset.on("click", () => {
+	                           $facetInput.val("");
+	                           $facetSearch.click();
+	                        });
+                    	}
+					
+	                    	
+ 
+						$("#expandFacetMap").on("click", e => {
+						    //console.log("open overlay ", this);
+						    
+	                       	viewerJS.overlay.open($('#widgetGeoFacettingOverlay'), false, true, $node => {
+	                       	    $("body").append($node);
+	                       	    $node.hide();
+	                       	})
+	                       	.then(overlay => {
+	                       	    overlay.node.show();
+			                 	$facetTriggerSearch.off().on("click", () => {
+			                 	   //console.log("trigger search");
+			                 	   $facetSearch.click();
+			                 	   $loader.show();
+			                 	});
+			                 	$facetCancel.off().on("click", () => {
+			                 	    overlay.close();
+			                 	})
+			                 	if(this.mapTag) {
+			                 	   this.mapTag.forEach(tag => tag.unmount(true));
+			                 	}
+		                       	this.mapTag = riot.mount("#geoFacettingOverlayMap", "geomapsearch", {
+		     					    inactive: false,
+		     					    area : this.area,
+		     					    onFeatureSelect: area => {
+		     					        //console.log("Set facetting area", area);
+									    sessionStorage.setItem("geoFacet", JSON.stringify(area));
+		     					      	$facetInput.val(area ? JSON.stringify(area) : "");
+		     					    }
+		     					}); 
+	                       	});                       	
+		                })
+		                
+		                // close map overlay with escape
+		                $(document).on('keyup', function(e) {
+							if ( $( "#geoFacettingOverlayMap" ).length ) {
+			                	if (e.key == "Escape") $('[data-geofacet="cancel"]').click();
+								}
+		                	});
+					}
+		            
+		            function getArea(areaString) {
+		                let area = areaString.length > 0 ? JSON.parse(areaString) : undefined;
+		                if(area) {
+		                    let storedAreaString = sessionStorage.getItem("geoFacet");
+		                    if(storedAreaString) {
+		                        let storedArea = JSON.parse(storedAreaString);
+		                        for(v=0; v<area.vertices.length; v++) {
+		                            for(c=0; c<area.vertices[v].length; c++) {
+		                                if(area.vertices[v][c] != storedArea.vertices[v][c]) {
+		                                    return area;
+		                                }
+		                            }
+		                        }
+		                        return storedArea;
+		                    }
+		                }
+		                return area;
+		            }
+		            
+					$(document).ready(e => {					    
+					    let facetWidgetMap = new initFacetWidgetMap();
+					})				    
+	            //]]>
+		        </script>
+        </h:form>
+        
+        </ui:fragment>
+    </composite:implementation>
+</ui:composition>

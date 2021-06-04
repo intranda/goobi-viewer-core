@@ -1,0 +1,257 @@
+/* ==============================================================
+   Widget geofacetting
+   style declarations for widget_geoFacetting.xhtml
+   ==============================================================*/
+// No padding for geomap widget
+.widget.widget-geofacetting {
+	padding: 0;
+	z-index: 2;
+}
+
+.widget-geofacetting {
+	position: relative;
+	&__topbar {
+		display: flex;
+	}
+	&__item {}
+	&__label {}
+	&__actions {
+		display: flex;
+		margin-left: auto;
+		padding: 0 0.9rem;
+		.btn {
+		}
+	}
+	h3 {
+		display: flex;
+		justify-content: space-between;
+		padding: 2rem 2rem 0 2rem;
+		background-color: transparent;
+	}
+	&__action-overlay {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		background: rgba(0, 0, 0, 0);
+		transition: background 0.2s ease;
+		z-index: 1001;
+		cursor: pointer;
+		.widget-geofacetting__action-expand {
+			color: @white;
+			font-size: 4.5rem;
+			&:hover {
+				color: @white;
+			}
+		}
+		&:hover {
+			background: rgba(0, 0, 0, 0.6);
+			.widget-geofacetting__action-expand {
+				opacity: 1.0;
+				transform: translate(-50%, -50%) scale(1);
+			}
+		}
+	}
+	&__action-expand {
+		opacity: 0;
+		transition: all 0.2s ease;
+		padding: 0;
+		background: transparent;
+		border: none;
+		margin-left: auto;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%) scale(.6);
+		&:hover,
+		&:active,
+		&:focus {
+			text-decoration: none;
+			color: inherit;
+			background: none;
+			}	
+	}
+	&__action-reset {
+		display: none;
+		color: inherit;
+		background: transparent;
+		border: none;
+		margin-left: 1rem;
+		&.active {
+			display: block;
+		}
+		&:hover,
+		&:active,
+		&:focus {
+			text-decoration: none;
+			color: inherit;
+			background: none;
+		}
+	}
+	&__body {
+		position: relative;
+	}
+	&__overlay {
+		display: none;
+		&__geo-map {
+			width: 100%;
+			height: 100%;
+		}
+		.ajax_loader {
+			display: none;
+			img { 
+				width: 180px;
+			}
+		}
+	}
+	&__loader-wrapper {
+		display: block;
+		position: relative;
+		z-index: 5000;
+		left: 50%;
+		top: 50%;
+	}
+	&__loader-animated-image {
+		z-index: 5001;
+		position: absolute;
+		transform: translate(-50%, -50%);
+	}
+	.geo-map {
+		min-height: 350px;
+		.mapboxgl-popup-content {
+		    padding: 20px 15px 10px 15px;
+		}
+		.leaflet-popup-content {
+	    	max-width: 200px;
+		}
+		.leaflet-control-zoom  {
+			a {
+				padding: 0;
+				display: block;
+			}
+		}
+		.leaflet-control-container {
+			.leaflet-top {
+				a {					
+				}
+			}
+			.leaflet-bottom {
+				a {
+					display: inline;
+				}
+			}
+		}
+	}
+	&__overlay-buttons-wrapper {
+		position: absolute;
+		right: 15px;
+		bottom: 35px;
+		z-index: 401;	
+	}
+	&__overlay-reset-search {
+		margin-right: 0.5rem;
+	}
+	&__overlay-submit-search {}
+    /* CMS BACKEND WIDGET */
+	h5 {
+    	margin-bottom: 5px;
+    }
+    &__input {
+    	.mx-clearfloats;
+    	margin-bottom: 20px;
+    	.row {
+    		margin: 0;
+    	}
+    	.col-5,
+    	.col-6,
+    	.col-10 {
+    		margin-bottom: 5px;
+    		padding-right: 5px;
+    		padding-left: 0;
+    	}
+    	textarea {
+    		resize: vertical;
+    	}
+    }
+    &__input-spacer {
+    	margin: 10px 0;
+    	width: 100%;
+    	height: 1px;
+    	background-color: @middlegray;
+    }
+    &__action {
+    	position: relative;
+    	z-index: 10;
+    	.col-2 {
+		    margin: -32px 0 0 -6px;
+    		padding: 0 0 21px 0;
+		    text-align: right;
+		    border-bottom: 1px solid @middlegray;
+    	}
+    	a {
+    		&:hover,
+    		&:focus,
+    		&:active {
+    			text-decoration: none;
+    		}
+    	}
+    }
+    &__overlay-check {
+    	.mx-clearfloats;
+    	float: left;
+    	width: 100%;
+    	.checkbox {
+    		margin: 0;
+    	}
+    }
+}
+
+.overlay__geomap {
+	width: 100%;
+	height: 100%;
+	.geo-map {
+		width: 100%;
+		height: 100%;
+		&__wrapper {
+			width: 100%;
+			height: 100%;
+		}
+		&__buttons-wrapper {
+			position: absolute;
+			right: 20px;
+			bottom: 40px;
+			z-index: 401;
+		}
+		&__reset-search {
+			margin-right: 0.5rem;
+		}
+		&__submit-search {
+		}
+	}
+
+	.geocoder {
+		position: absolute;
+		right: 30px;
+		top: 30px;
+		z-index: 401;
+	}
+	.mapboxgl-ctrl-geocoder--input {
+		&:focus {
+			outline: none;
+		}
+	}
+	
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

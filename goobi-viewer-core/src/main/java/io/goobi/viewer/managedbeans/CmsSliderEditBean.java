@@ -196,7 +196,7 @@ public class CmsSliderEditBean implements Serializable {
         return cmsCollections;
     }
     
-    private List<CMSCollection> getCollections(String field) {
+    private static List<CMSCollection> getCollections(String field) {
         try {
             return DataManager.getInstance().getDao().getCMSCollections(field);
         } catch (DAOException e) {

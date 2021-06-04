@@ -18,7 +18,7 @@
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminLicenses">
-                <h:panelGroup rendered="#{userBean.admin}">
+                <h:panelGroup rendered="#{userBean.admin and navigationHelper.solrIndexOnline}">
                     <!-- TITLE -->
                     <div class="admin__title-bar">
                         <h2 class="admin__title">#{msg.admin__licenses}</h2>
@@ -146,6 +146,12 @@
                         </h:form>
                     </div>
                 </h:panelGroup>
+                
+                <ui:fragment rendered="#{!navigationHelper.solrIndexOnline}">
+                    <div class="alert alert-danger" role="alert">
+                        <h:outputText rendered="#{errMsg == null}" value="#{msg.errIndexUnreachableMsg}" />
+                    </div>
+                </ui:fragment>
             </div>
         </f:view>
     </ui:define>

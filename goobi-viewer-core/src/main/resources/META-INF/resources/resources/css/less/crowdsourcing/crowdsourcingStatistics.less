@@ -9,7 +9,6 @@
 			display: grid;
 			grid-template-columns: 80% 20%;
 			dt {
-				float: left;
 				padding-right: 10px;
 				&:after {
 					content: ": ";
@@ -30,18 +29,19 @@
 			width: 80%;
 		}
 		.goobi-progress-bar-wrapper {
-			border: 2px solid @darkgray;
+			border: none;
 			
 			.goobi-progress-bar {
+				background: @grayBar;
 				height: 30px;
 				&__bar {
 					display: inline-block;
 					height:100%;
 					&.finished {
-						background-color: #2ecc71;
+						background-color: @greenBar;
 					}
 					&.review {
-						background-color:  #f4d03f ;
+						background-color:  @yellowBar;
 					}
 				}
 			}

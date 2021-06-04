@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.controller;
+package io.goobi.viewer.solr;
 
 import java.util.Locale;
 
@@ -312,6 +312,8 @@ public class SolrConstants {
     public static final String MD_TEXT = "MD_TEXT"; //content of UGC docs
     /** Constant <code>MD_BODY="MD_BODY"</code> */
     public static final String MD_BODY = "MD_BODY"; //body of UGC docs from json annotations
+    /** Field containing true if a page contains a double image. */
+    public static final String BOOL_DOUBLE_IMAGE = "BOOL_DOUBLE_IMAGE";
     /** Field containing true if a record has a right-to-left reading direction. */
     public static final String BOOL_DIRECTION_RTL = "BOOL_DIRECTION_RTL";
     /** Field containing true if a page or any of the record's pages has an image. */
@@ -320,5 +322,10 @@ public class SolrConstants {
     public static final String YEAR = "YEAR";
     /** Single field containing a date as year for sorting **/
     public static final String SORTNUM_YEAR = "SORTNUM_YEAR";
+    /** Constant <code>WKT_COORDS="WKT_COORDS"</code> */
+    public static final String WKT_COORDS = "WKT_COORDS";
+    /** Constant <code>BOOL_WKT_COORDS="BOOL_WKT_COORDS"</code> */
+    public static final String BOOL_WKT_COORDS = "BOOL_WKT_COORDS";
+
 
 }

@@ -29,8 +29,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -66,6 +68,8 @@ public class StringTools {
     public static final String REGEX_WORDS = "[a-zäáàâöóòôüúùûëéèêßñ0123456789]+";
     /** Constant <code>DEFAULT_ENCODING="UTF-8"</code> */
     public static final String DEFAULT_ENCODING = "UTF-8";
+
+
 
     /**
      * <p>
@@ -217,7 +221,7 @@ public class StringTools {
      * stripJS.
      * </p>
      *
-     * @param s String to clean
+     * @param s
      * @return String sans any script-tag blocks
      * @should remove JS blocks correctly
      */
@@ -228,6 +232,21 @@ public class StringTools {
 
         return s.replaceAll("(?i)<script[\\s\\S]*<\\/script>", "")
                 .replaceAll("(?i)<script[\\s\\S]*/>", "");
+    }
+
+    /**
+     * Use this method to log user-controller variables that may contain pattern-breaking characters such as line breaks and tabs.
+     * 
+     * @param s String to clean
+     * @return String sans any logger pattern-breaking characters
+     * @should remove chars correctly
+     */
+    public static String stripPatternBreakingChars(String s) {
+        if (StringUtils.isBlank(s)) {
+            return s;
+        }
+
+        return s.replaceAll("[\n\r\t]", "_");
     }
 
     /**
@@ -534,7 +553,7 @@ public class StringTools {
 
         return value.charAt(0) == 0x1;
     }
-    
+
     /**
      * 
      * @param values All values to check
@@ -557,4 +576,6 @@ public class StringTools {
 
         return ret;
     }
+    
+
 }

@@ -1,8 +1,11 @@
 /* ==============================================================
-   Crowdsourcing 
-   global style declarations for crowdsourcing_layout.xhtml
+   Archives Layout
    ==============================================================*/
-/* ADMIN LAYOUT */
+
+#archivesWrapper {
+	background: #f2f3f4;
+}
+
 .archives {
 	width: 100vw;
 	&__top-wrapper {
@@ -16,7 +19,7 @@
 			width: auto;	
 		}
 		.login-navigation [data-login="true"] .login-navigation__user-dropdown {
-			top: calc(~"100% + 19px");
+			top: calc(~"100% + 18px");
 		}	
 	}
 	&__header {
@@ -109,6 +112,7 @@
 			text-transform: uppercase;			
 		}
 		.change-local {
+			background: #444;
 			display: none;
 			position: absolute;
 			top: 3.2rem;
@@ -311,7 +315,11 @@
 		grid-template-columns: auto auto auto auto auto auto auto;
 		max-width: 100%;
 		padding: 2rem;
-	}	
+	}
+	&__object-ajax-loader {
+		padding: 0 2rem;
+		background: @white;
+	}
 	.thumbnails-image-wrapper {
 		overflow: hidden;
 		&:hover {
@@ -355,6 +363,7 @@
 		width: 100vw;
 		display: block;
 		margin-top: 60px;
+		min-height: calc(~"100vh - 60px");
 	}
 	&__content-wrapper {
 		width: 100%;

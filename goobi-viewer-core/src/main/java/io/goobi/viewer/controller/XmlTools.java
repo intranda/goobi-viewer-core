@@ -27,15 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import javax.xml.XMLConstants;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
@@ -47,8 +38,6 @@ import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.jdom2.transform.JDOMResult;
-import org.jdom2.transform.JDOMSource;
 import org.jdom2.xpath.XPathBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
@@ -62,7 +51,7 @@ public class XmlTools {
 
     private static final Logger logger = LoggerFactory.getLogger(XmlTools.class);
 
-    static SAXBuilder getSAXBuilder() {
+    public static SAXBuilder getSAXBuilder() {
         SAXBuilder builder = new SAXBuilder();
         // Disable access to external entities
         builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
@@ -295,49 +284,6 @@ public class XmlTools {
         }
         if (doc.getRootElement().getName().equals("TEI") || doc.getRootElement().getName().equals("TEI.2")) {
             return "TEI";
-        }
-
-        return null;
-    }
-
-    /**
-     * Transforms the given JDOM document via the given XSLT stylesheet.
-     *
-     * @param doc JDOM document to transform
-     * @param stylesheetPath Absolute path to the XSLT stylesheet file
-     * @param params Optional transformer parameters
-     * @return Transformed document; null in case of errors
-     * @should transform xml correctly
-     */
-    public static Document transformViaXSLT(Document doc, String stylesheetPath, Map<String, String> params) {
-        if (doc == null) {
-            throw new IllegalArgumentException("doc may not be null");
-        }
-        if (stylesheetPath == null) {
-            throw new IllegalArgumentException("stylesheetPath may not be null");
-        }
-
-        try {
-            JDOMSource docFrom = new JDOMSource(doc);
-            JDOMResult docTo = new JDOMResult();
-
-            TransformerFactory transformerFactory = javax.xml.transform.TransformerFactory.newInstance();
-            //            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            //            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-            Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheetPath));
-            if (params != null && !params.isEmpty()) {
-                for (String param : params.keySet()) {
-                    transformer.setParameter(param, params.get(param));
-                }
-            }
-            transformer.transform(docFrom, docTo);
-            return docTo.getDocument();
-        } catch (TransformerConfigurationException e) {
-            logger.error(e.getMessage(), e);
-        } catch (TransformerFactoryConfigurationError e) {
-            logger.error(e.getMessage(), e);
-        } catch (TransformerException e) {
-            logger.error(e.getMessage(), e);
         }
 
         return null;

@@ -33,13 +33,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Current faceting settings for a search.
@@ -51,9 +51,9 @@ public class SearchFacets implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(SearchFacets.class);
 
     /** Available regular facets for the current search result. */
-    private final Map<String, List<FacetItem>> availableFacets = new LinkedHashMap<>();
+    private final Map<String, List<IFacetItem>> availableFacets = new LinkedHashMap<>();
     /** Currently applied facets. */
-    private final List<FacetItem> currentFacets = new ArrayList<>();
+    private final List<IFacetItem> currentFacets = new ArrayList<>();
 
     private final Map<String, Boolean> drillDownExpanded = new HashMap<>();
 
@@ -106,7 +106,7 @@ public class SearchFacets implements Serializable {
      * @param includeRangeFacets a boolean.
      * @return a {@link java.util.List} object.
      */
-    public List<String> generateFacetFilterQueries(int advancedSearchGroupOperator, boolean includeRangeFacets) {
+    public List<String> generateFacetFilterQueries(int advancedSearchGroupOperator, boolean includeRangeFacets, boolean includeGeoFacet) {
         List<String> ret = new ArrayList<>(2);
 
         // Add hierarchical facets
@@ -116,7 +116,7 @@ public class SearchFacets implements Serializable {
         }
 
         // Add regular facets
-        String regularQuery = generateFacetFilterQuery(includeRangeFacets);
+        String regularQuery = generateFacetFilterQuery(includeRangeFacets, includeGeoFacet);
         if (StringUtils.isNotEmpty(regularQuery)) {
             ret.add(regularQuery);
         }
@@ -139,7 +139,7 @@ public class SearchFacets implements Serializable {
 
         StringBuilder sbQuery = new StringBuilder();
         int count = 0;
-        for (FacetItem facetItem : currentFacets) {
+        for (IFacetItem facetItem : currentFacets) {
             if (!facetItem.isHierarchial()) {
                 continue;
             }
@@ -176,13 +176,13 @@ public class SearchFacets implements Serializable {
      * @should skip range facet fields if so requested
      * @should skip subelement fields
      */
-    String generateFacetFilterQuery(boolean includeRangeFacets) {
+    String generateFacetFilterQuery(boolean includeRangeFacets, boolean includeGeoFacet) {
         if (currentFacets.isEmpty()) {
             return null;
         }
 
         StringBuilder sbQuery = new StringBuilder();
-        for (FacetItem facetItem : currentFacets) {
+        for (IFacetItem facetItem : currentFacets) {
             if (facetItem.isHierarchial()) {
                 continue;
             }
@@ -212,7 +212,7 @@ public class SearchFacets implements Serializable {
         StringBuilder sbQuery = new StringBuilder();
 
         if (!currentFacets.isEmpty()) {
-            for (FacetItem facetItem : currentFacets) {
+            for (IFacetItem facetItem : currentFacets) {
                 if (facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)) {
                     if (sbQuery.length() > 0) {
                         sbQuery.append(" AND ");
@@ -232,8 +232,8 @@ public class SearchFacets implements Serializable {
      * @param field The field name to match.
      * @return a {@link io.goobi.viewer.model.search.FacetItem} object.
      */
-    public FacetItem getCurrentFacetForField(String field) {
-        List<FacetItem> ret = getCurrentFacetsForField(field);
+    public IFacetItem getCurrentFacetForField(String field) {
+        List<IFacetItem> ret = getCurrentFacetsForField(field);
         if (!ret.isEmpty()) {
             return ret.get(0);
         }
@@ -247,10 +247,10 @@ public class SearchFacets implements Serializable {
      * @param field The field name to match.
      * @return a {@link java.util.List} object.
      */
-    public List<FacetItem> getCurrentFacetsForField(String field) {
-        List<FacetItem> ret = new ArrayList<>();
+    public List<IFacetItem> getCurrentFacetsForField(String field) {
+        List<IFacetItem> ret = new ArrayList<>();
 
-        for (FacetItem facet : currentFacets) {
+        for (IFacetItem facet : currentFacets) {
             if (facet.getField().equals(field)) {
                 ret.add(facet);
             }
@@ -265,8 +265,8 @@ public class SearchFacets implements Serializable {
      * @param facet The facet to check.
      * @return a boolean.
      */
-    public boolean isFacetCurrentlyUsed(FacetItem facet) {
-        for (FacetItem fi : getCurrentFacetsForField(facet.getField())) {
+    public boolean isFacetCurrentlyUsed(IFacetItem facet) {
+        for (IFacetItem fi : getCurrentFacetsForField(facet.getField())) {
             if (fi.getLink().equals(facet.getLink())) {
                 return true;
             }
@@ -333,9 +333,9 @@ public class SearchFacets implements Serializable {
      * @should not contain currently used facets
      * @return a {@link java.util.List} object.
      */
-    public List<FacetItem> getLimitedFacetListForField(String field) {
+    public List<IFacetItem> getLimitedFacetListForField(String field) {
         // logger.trace("getLimitedFacetListForField: {}", field);
-        List<FacetItem> facetItems = availableFacets.get(field);
+        List<IFacetItem> facetItems = availableFacets.get(field);
         if (facetItems == null) {
             return null;
         }
@@ -400,7 +400,7 @@ public class SearchFacets implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplayDrillDownExpandLink(String field) {
-        List<FacetItem> facetItems = availableFacets.get(field);
+        List<IFacetItem> facetItems = availableFacets.get(field);
         int expandSize = DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
         if (facetItems != null && !isDrillDownExpanded(field) && expandSize > 0 && facetItems.size() > expandSize) {
             return true;
@@ -473,18 +473,6 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
-     * getCurrentCollection.
-     * </p>
-     *
-     * @return the currentCollection
-     */
-    @Deprecated
-    public String getCurrentCollection() {
-        return "-";
-    }
-
-    /**
      * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for currentFacets.
      *
      * @param currentFacetString a {@link java.lang.String} object.
@@ -509,18 +497,6 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
-     * setCurrentCollection.
-     * </p>
-     *
-     * @param currentCollection the currentCollection to set
-     */
-    @Deprecated
-    public void setCurrentCollection(String currentCollection) {
-        setCurrentHierarchicalFacetString(currentCollection);
-    }
-
-    /**
      * Constructs a list of facet items out of the given facet string.
      * 
      * @param facetString String containing field:value pairs
@@ -532,12 +508,14 @@ public class SearchFacets implements Serializable {
      * @should set hierarchical status correctly
      * @should use label from labelMap if available
      */
-    static void parseFacetString(String facetString, List<FacetItem> facetItems, Map<String, String> labelMap) {
+    static void parseFacetString(String facetString, List<IFacetItem> facetItems, Map<String, String> labelMap) {
+
         if (facetItems == null) {
             facetItems = new ArrayList<>();
         } else {
             facetItems.clear();
         }
+
         if (StringUtils.isEmpty(facetString) || "-".equals(facetString)) {
             return;
         }
@@ -556,10 +534,17 @@ public class SearchFacets implements Serializable {
                 if (!facetLink.contains(":")) {
                     facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
                 }
-                // If there is a cached pre-generated label for this facet link (separate label field), use it so that there's no empty label
-                String label = labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
-                facetItems.add(
-                        new FacetItem(facetLink, label, isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
+                String facetField = facetLink.substring(0, facetLink.indexOf(":"));
+                if (facetField.equals(DataManager.getInstance().getConfiguration().getGeoDrillDownField())) {
+                    GeoFacetItem item = new GeoFacetItem(facetField);
+                    item.setValue(facetLink.substring(facetLink.indexOf(":") + 1));
+                    facetItems.add(item);
+                } else {
+                    // If there is a cached pre-generated label for this facet link (separate label field), use it so that there's no empty label
+                    String label = labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
+                    facetItems.add(
+                            new FacetItem(facetLink, label, isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
+                }
             }
         }
     }
@@ -570,8 +555,8 @@ public class SearchFacets implements Serializable {
      * @return true if field is hierarchical; false otherwise
      */
     static boolean isFieldHierarchical(String field) {
-        logger.trace("isFieldHierarchical: {} ? {}", field,
-                DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().contains(field));
+        //        logger.trace("isFieldHierarchical: {} ? {}", field,
+        //                DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().contains(field));
         return DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().contains(field);
     }
 
@@ -598,7 +583,7 @@ public class SearchFacets implements Serializable {
      * @should update facet item correctly
      * @should add new item correctly
      */
-    static void updateFacetItem(String field, String updateValue, List<FacetItem> facetItems, boolean hierarchical) {
+    static void updateFacetItem(String field, String updateValue, List<IFacetItem> facetItems, boolean hierarchical) {
         if (facetItems == null) {
             facetItems = new ArrayList<>();
         }
@@ -610,15 +595,20 @@ public class SearchFacets implements Serializable {
             } catch (UnsupportedEncodingException e) {
             }
 
-            FacetItem fieldItem = null;
-            for (FacetItem item : facetItems) {
+            IFacetItem fieldItem = null;
+            for (IFacetItem item : facetItems) {
                 if (item.getField().equals(field)) {
                     fieldItem = item;
                     break;
                 }
             }
             if (fieldItem == null) {
-                fieldItem = new FacetItem(field + ":" + updateValue, hierarchical);
+                if (fieldItem instanceof GeoFacetItem) {
+                    fieldItem = new GeoFacetItem(field);
+                    fieldItem.setValue(updateValue);
+                } else {
+                    fieldItem = new FacetItem(field + ":" + updateValue, hierarchical);
+                }
                 facetItems.add(fieldItem);
             }
             fieldItem.setLink(field + ":" + updateValue);
@@ -687,7 +677,7 @@ public class SearchFacets implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getCurrentMinRangeValue(String field) throws PresentationException, IndexUnreachableException {
-        for (FacetItem item : currentFacets) {
+        for (IFacetItem item : currentFacets) {
             if (item.getField().equals(field)) {
                 logger.trace("currentMinRangeValue: {}", item.getValue());
                 return item.getValue();
@@ -708,7 +698,7 @@ public class SearchFacets implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getCurrentMaxRangeValue(String field) throws PresentationException, IndexUnreachableException {
-        for (FacetItem item : currentFacets) {
+        for (IFacetItem item : currentFacets) {
             if (item.getField().equals(field)) {
                 if (item.getValue2() != null) {
                     logger.trace("currentMaxRangeValue: {}", item.getValue());
@@ -822,26 +812,31 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * Returns a URL encoded value returned by generateFacetPrefix() for regular facets.
+     * Returns a URL encoded value returned by generateFacetPrefix() for regular facets. Returns an empty string instead a hyphen if empty.
      *
      * @return a {@link java.lang.String} object.
+     * 
      */
     public String getCurrentFacetStringPrefix() {
-        try {
-            return URLEncoder.encode(generateFacetPrefix(currentFacets, true), SearchBean.URL_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            return generateFacetPrefix(currentFacets, true);
-        }
+        return getCurrentFacetStringPrefix(true);
     }
 
     /**
-     * Returns a URL encoded value returned by generateFacetPrefix() for hierarchical facets.
-     *
-     * @return a {@link java.lang.String} object.
+     * Returns the value returned by generateFacetPrefix() for regular facets. Returns an empty string instead a hyphen if empty.
+     * 
+     * @param urlEncode
+     * @return
      */
-    @Deprecated
-    public String getCurrentHierarchicalFacetPrefix() {
-        return "";
+    public String getCurrentFacetStringPrefix(boolean urlEncode) {
+        if (urlEncode) {
+            try {
+                return URLEncoder.encode(generateFacetPrefix(currentFacets, true), SearchBean.URL_ENCODING);
+            } catch (UnsupportedEncodingException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return generateFacetPrefix(currentFacets, true);
     }
 
     /**
@@ -852,12 +847,12 @@ public class SearchFacets implements Serializable {
      * @return
      * @should encode slashed and backslashes
      */
-    static String generateFacetPrefix(List<FacetItem> facetItems, boolean escapeSlashes) {
+    static String generateFacetPrefix(List<IFacetItem> facetItems, boolean escapeSlashes) {
         if (facetItems == null) {
             throw new IllegalArgumentException("facetItems may not be null");
         }
         StringBuilder sb = new StringBuilder();
-        for (FacetItem facetItem : facetItems) {
+        for (IFacetItem facetItem : facetItems) {
             if (escapeSlashes) {
                 sb.append(BeanUtils.escapeCriticalUrlChracters(facetItem.getLink()));
             } else {
@@ -923,8 +918,8 @@ public class SearchFacets implements Serializable {
      * @should return all facet items in correct order
      * @return a {@link java.util.Map} object.
      */
-    public Map<String, List<FacetItem>> getAllAvailableFacets() {
-        Map<String, List<FacetItem>> ret = new LinkedHashMap<>();
+    public Map<String, List<IFacetItem>> getAllAvailableFacets() {
+        Map<String, List<IFacetItem>> ret = new LinkedHashMap<>();
 
         List<String> allDrillDownFields = DataManager.getInstance().getConfiguration().getAllDrillDownFields();
         for (String field : allDrillDownFields) {
@@ -962,7 +957,7 @@ public class SearchFacets implements Serializable {
      *
      * @return the availableFacets
      */
-    public Map<String, List<FacetItem>> getAvailableFacets() {
+    public Map<String, List<IFacetItem>> getAvailableFacets() {
         return availableFacets;
     }
 
@@ -973,7 +968,7 @@ public class SearchFacets implements Serializable {
      *
      * @return the currentFacets
      */
-    public List<FacetItem> getCurrentFacets() {
+    public List<IFacetItem> getCurrentFacets() {
         return currentFacets;
     }
 
@@ -1078,7 +1073,7 @@ public class SearchFacets implements Serializable {
      * @param facet
      * @return
      */
-    private static String getFacetDescription(FacetItem facet) {
+    private static String getFacetDescription(IFacetItem facet) {
         String desc = "";
         try {
             CMSCollection cmsCollection = DataManager.getInstance().getDao().getCMSCollection(facet.getField(), facet.getValue());
@@ -1095,7 +1090,7 @@ public class SearchFacets implements Serializable {
      * @param facet
      * @return
      */
-    private static String getFacetName(FacetItem facet) {
+    private static String getFacetName(IFacetItem facet) {
         String name = "";
         try {
             CMSCollection cmsCollection = DataManager.getInstance().getDao().getCMSCollection(facet.getField(), facet.getValue());
@@ -1117,4 +1112,42 @@ public class SearchFacets implements Serializable {
     public Map<String, String> getLabelMap() {
         return labelMap;
     }
+
+    /**
+     * @return the geoFacetting
+     */
+    public GeoFacetItem getGeoFacetting() {
+        return this.currentFacets
+                .stream()
+                .filter(f -> f instanceof GeoFacetItem)
+                .map(f -> (GeoFacetItem) f)
+                .findAny()
+                .orElse(new GeoFacetItem(DataManager.getInstance().getConfiguration().getGeoDrillDownField()));
+    }
+
+    /**
+     * Sets the feature of the geoFacettingfield to to given feature. A new GeoFacetItem is added to currentFacets if none exists yet
+     * @param feature
+     */
+    public void setGeoFacetFeature(String feature) {
+        GeoFacetItem item = getGeoFacetting();
+        item.setField(DataManager.getInstance().getConfiguration().getGeoDrillDownField());
+        if (StringUtils.isBlank(feature)) {
+            this.currentFacets.remove(item);
+        } else {
+            item.setFeature(feature);
+            if (!this.currentFacets.contains(item)) {
+                this.currentFacets.add(item);
+            }
+        }
+    }
+
+    public String getGeoFacetFeature() {
+        if (this.getGeoFacetting().isActive()) {
+            return this.getGeoFacetting().getFeature();
+        } else {
+            return "";
+        }
+    }
+
 }

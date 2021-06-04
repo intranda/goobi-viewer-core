@@ -24,9 +24,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
 public class MetadataToolsTest extends AbstractSolrEnabledTest {
 

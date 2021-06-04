@@ -39,6 +39,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.primefaces.shaded.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,6 +213,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         String fileName =
                                 identifier + "_cmspage_" + (fromDate != null ? DateTools.getMillisFromLocalDateTime(fromDate, true) : "-") + "-"
                                         + (toDate != null ? DateTools.getMillisFromLocalDateTime(toDate, true) : "-") + ".zip";
+                        fileName = FilenameUtils.getName(fileName); // Make sure identifier doesn't inject a path traversal
                         Path zipFile = Paths.get(localTempFolder.toAbsolutePath().toString(), fileName);
                         List<File> tempFiles = new ArrayList<>(pages.size() * 2);
                         for (CMSPage page : pages) {

@@ -74,7 +74,6 @@
 	                 	<div class="archives__object-metadata">
 	                      <!-- METADATA -->
 	                      <!-- Replacing these with c:forEach will result in get*List() being called for each iteration -->
-	                      <!-- TODO bold via CSS -->
 	                      <div class="archives__object-title">#{archiveBean.displayEntry.label}</div>
 	                      <!-- Identity statement metadata -->
 	                      <c:if test="#{archiveBean.displayEntry.identityStatementAreaList.stream().filter(field -> field.filled).count() > 0}">
@@ -161,6 +160,9 @@
 		                      </h:outputLink>
 	                      </div>
 	                 </div>
+	                 <div class="archives__object-ajax-loader ajax_loader" data-loader="load_record_image">
+						<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." />
+					 </div>
 					 <div class="archives__object-thumbnails" source="#{request.contextPath}/api/v2/records/#{archiveBean.displayEntry.associatedRecordPi}/manifest"></div>
                  </h:panelGroup>
 				</div>

@@ -19,15 +19,17 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import io.goobi.viewer.model.translations.PersistentTranslation;
+import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.model.translations.Translation;
 
 /**
  * A persistence object holding a translated String value
- *
+ * @deprecated {@link TranslatedText} is used instead
  * @author Florian Alpers
  */
 @Entity
 @Table(name = "cs_question_translations")
+@Deprecated
 public class QuestionTranslation extends PersistentTranslation<Question> {
 
     public QuestionTranslation() {

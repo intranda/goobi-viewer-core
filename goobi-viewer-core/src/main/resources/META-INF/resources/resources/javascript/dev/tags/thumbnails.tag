@@ -15,23 +15,22 @@ For ambigious sources, the additional opts.type property determines how the sour
 
 <thumbnails>
 
-	<div class="thumbnails-image-wrapper {this.opts.index == index ? 'selected' : ''}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}">
-		<a class="thumbnails-image-link" href="{getLink(canvas)}">
-			<img class="thumbnails-image" alt="{getValue(canvas.label)}" src="{getImage(canvas)}" />
-		<div class="thumbnails-image-overlay">
-			<div class="thumbnails-label">{getValue(canvas.label)}</div>
+		<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? 'selected' : ''} {getPageStatus(index)}" each="{canvas, index in thumbnails}">
+			<a class="thumbnails-image-link" href="{getLink(canvas)}"  onclick="{handleClickOnImage}">
+				<img class="thumbnails-image" alt="{getValue(canvas.label)}" src="{getImage(canvas)}" loading="lazy" />
+			<div class="thumbnails-image-overlay">
+				<div class="thumbnails-label">{getValue(canvas.label)}</div>
+			</div>
+			</a>
 		</div>
-		</a>
-	</div>
-
-
 
 <script>
 
 this.thumbnails = [];
+this._debug = false;
 
 this.on("mount", () => {
-	console.log("mount ", this.opts);
+	//console.log("mount ", this.opts);
 	this.type = opts.type ? opts.type : "items";
 	this.language = opts.language ? opts.language : "en";
 	this.imageSize = opts.imagesize;
@@ -43,16 +42,22 @@ this.on("mount", () => {
 		.then(json => this.loadThumbnails(json, this.type));
 	} else {
 		this.loadThumbnails(source, this.type);
-	}
+	} 
 });
 
 this.on("updated", () => {
-	console.log("updated", this.opts);
-	//TODO scroll to .thumbnails-image-wrapper[this.opts.index]
+	if(this._debug)console.log("updated", this.opts);
+	let activeThumb = this.refs.thumb[this.opts.index];
+	if(activeThumb) {		
+		activeThumb.scrollIntoView({block: "end", behavior: "smooth"});
+	}
+	if(this.opts.onload) {
+	    this.opts.onload();
+	}
 });
 
 loadThumbnails(source, type) {
-	console.log("Loading thumbnails from ", source);
+    if(this._debug)console.log("Loading thumbnails from ", source);
 
 	switch(type) {
 		case "structures":
@@ -74,13 +79,15 @@ loadThumbnails(source, type) {
 }
 
 addThumbnail(item) {
-	console.log("add thumbnail from ", item);
+    if(this._debug)console.log("add thumbnail from ", item);
+    
 	this.thumbnails.push(item);
 	this.update();
 }
 
 createThumbnails(items) {
-	console.log("creating thumbnails from ", items)
+    if(this._debug)console.log("creating thumbnails from ", items);
+
 	this.thumbnails = items;
 	this.update();
 }
@@ -186,6 +193,13 @@ handleClickOnImage(event) {
 	//updating is handled in actionlistener. set this to prevent double update
 	event.preventUpdate = true;
 }
+
+getPageStatus(index) {
+	if(this.opts.statusmap) {
+		return this.opts.statusmap.get(index);
+	}
+}
+
 
 </script>
 

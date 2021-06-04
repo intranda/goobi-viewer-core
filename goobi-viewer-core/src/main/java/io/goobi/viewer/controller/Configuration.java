@@ -79,6 +79,7 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
@@ -368,6 +369,7 @@ public final class Configuration extends AbstractConfiguration {
                     String defaultValue = sub2.getString("[@defaultValue]");
                     String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
                     String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
+                    String condition = sub2.getString("[@condition]");
                     boolean addUrl = sub2.getBoolean("[@url]", false);
                     boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", false);
                     boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
@@ -379,6 +381,7 @@ public final class Configuration extends AbstractConfiguration {
                             .setDefaultValue(defaultValue)
                             .setPrefix(prefix)
                             .setSuffix(suffix)
+                            .setCondition(condition)
                             .setAddUrl(addUrl)
                             .setTopstructValueFallback(topstructValueFallback)
                             .setTopstructOnly(topstructOnly));
@@ -559,6 +562,7 @@ public final class Configuration extends AbstractConfiguration {
      * @param sub The subnode configuration
      * @param topstructValueFallbackDefaultValue
      * @return the resulting {@link Metadata} instance
+     * @should load parameters correctly
      * @should load replace rules correctly
      */
     static Metadata getMetadataFromSubnodeConfig(HierarchicalConfiguration sub, boolean topstructValueFallbackDefaultValue) {
@@ -588,7 +592,7 @@ public final class Configuration extends AbstractConfiguration {
                 String defaultValue = sub2.getString("[@defaultValue]");
                 String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
                 String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
-                String search = sub2.getString("[@search]", "").replace("_SPACE_", " ");
+                String condition = sub2.getString("[@condition]");
                 boolean addUrl = sub2.getBoolean("[@url]", false);
                 boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
                 boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
@@ -599,7 +603,7 @@ public final class Configuration extends AbstractConfiguration {
                     replaceRules = new ArrayList<>(replaceRuleElements.size());
                     for (Iterator<HierarchicalConfiguration> it3 = replaceRuleElements.iterator(); it3.hasNext();) {
                         HierarchicalConfiguration sub3 = it3.next();
-                        String condition = sub3.getString("[@conditions]");
+                        String replaceCondition = sub3.getString("[@condition]");
                         Character character = null;
                         try {
                             int charIndex = sub3.getInt("[@char]");
@@ -621,11 +625,11 @@ public final class Configuration extends AbstractConfiguration {
                             replaceWith = "";
                         }
                         if (character != null) {
-                            replaceRules.add(new MetadataReplaceRule(character, replaceWith, condition, MetadataReplaceRuleType.CHAR));
+                            replaceRules.add(new MetadataReplaceRule(character, replaceWith, replaceCondition, MetadataReplaceRuleType.CHAR));
                         } else if (string != null) {
-                            replaceRules.add(new MetadataReplaceRule(string, replaceWith, condition, MetadataReplaceRuleType.STRING));
+                            replaceRules.add(new MetadataReplaceRule(string, replaceWith, replaceCondition, MetadataReplaceRuleType.STRING));
                         } else if (regex != null) {
-                            replaceRules.add(new MetadataReplaceRule(regex, replaceWith, condition, MetadataReplaceRuleType.REGEX));
+                            replaceRules.add(new MetadataReplaceRule(regex, replaceWith, replaceCondition, MetadataReplaceRuleType.REGEX));
                         }
                     }
                 }
@@ -639,6 +643,7 @@ public final class Configuration extends AbstractConfiguration {
                         .setDefaultValue(defaultValue)
                         .setPrefix(prefix)
                         .setSuffix(suffix)
+                        .setCondition(condition)
                         .setAddUrl(addUrl)
                         .setTopstructValueFallback(topstructValueFallback)
                         .setTopstructOnly(topstructOnly)
@@ -781,6 +786,15 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalBoolean("sidebar.sidebarWidgetUsage[@display]", true);
     }
     
+    /**
+     * 
+     * @return Boolean value
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarWidgetUsageCitation() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.citation[@display]", true);
+    }
+
     /**
      * 
      * @return Boolean value
@@ -2531,6 +2545,7 @@ public final class Configuration extends AbstractConfiguration {
                 switch (node.getName()) {
                     case "field":
                     case "hierarchicalField":
+                    case "geoField":
                         ret.add((String) node.getValue());
                         break;
                 }
@@ -2564,6 +2579,10 @@ public final class Configuration extends AbstractConfiguration {
      */
     public List<String> getHierarchicalDrillDownFields() {
         return getLocalList("search.drillDown.hierarchicalField");
+    }
+    
+    public String getGeoDrillDownField() {
+        return getLocalString("search.drillDown.geoField");
     }
 
     /**
@@ -2851,7 +2870,7 @@ public final class Configuration extends AbstractConfiguration {
     public int getThumbnailImageAccessMaxWidth() {
         return getLocalInt("accessConditions.thumbnailImageAccessMaxWidth", getLocalInt("accessConditions.unconditionalImageAccessMaxWidth", 120));
     }
-    
+
     /**
      * The maximal image size retrievable with the permission to view images but without the permission to zoom images
      *

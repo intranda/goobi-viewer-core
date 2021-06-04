@@ -11,9 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class ArchiveEntry {
 
@@ -145,9 +145,10 @@ public class ArchiveEntry {
             return;
         }
         try {
+            //Put quotes around entry id in request, otherwise any document matching any of the '-'-separated parts of the id will be returned
             SolrDocument doc = DataManager.getInstance()
                     .getSearchIndex()
-                    .getFirstDoc("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":" + id, Collections.singletonList(SolrConstants.PI));
+                    .getFirstDoc("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":\"" + id + "\"", Collections.singletonList(SolrConstants.PI));
             if (doc != null) {
                 associatedRecordPi = (String) doc.getFieldValue(SolrConstants.PI);
             }

@@ -203,6 +203,29 @@ var viewerJS = ( function( viewer ) {
                    
 //                $dropdown.on("click", (event) => event.stopPropagation());
             },
+            calcDropDownPos: function(dropdown, button) {
+              var dropDownRect = dropdown.getBoundingClientRect();
+
+              if (dropDownRect.width === 0) {
+                dropdown.style.transform = '';
+                // change display prop to get BoundingClientRect values 
+                dropdown.style.display = 'block';
+                dropDownRect = dropdown.getBoundingClientRect();
+                // change it back, so it will not appear visually
+                dropdown.style.display = 'none';
+
+                // if negativ value: dropdown overflows left
+                if(dropDownRect.x < 0) {
+                  return Math.floor(-dropDownRect.x) +'px';
+                }
+                // if positiv value: dropdown overflows right
+                var overflowRight = (dropDownRect.x + dropDownRect.width) - document.documentElement.clientWidth;
+                if(overflowRight > 0) {
+                  return Math.ceil(-overflowRight) +'px';
+                }
+                return undefined;
+              }
+            },
             renderSessionBookmarksDropdown: function() {
                 var $button = $('[data-bookmark-list-type="dropdown"]');
                 if($button.length == 0) {
@@ -218,7 +241,14 @@ var viewerJS = ( function( viewer ) {
                 var $dropdown = $("<bookmarklistsession></bookmarklistsession>");
                 $dropdown.addClass("bookmark-navigation__dropdown");
                 $button.on("click", (event) => {
-                    $(event.currentTarget).next('.bookmark-navigation__dropdown').fadeToggle('fast');
+
+                    // make sure the dropdown does not overflow the viewport  
+                    var transformVal = this.calcDropDownPos($dropdown[0]);
+
+                    // show/hide dropdown + and set it's width 
+                    $(event.currentTarget).next('.bookmark-navigation__dropdown')
+                      .fadeToggle('fast')
+                      .css("transform", "translate(" + transformVal + ")");
                 })
                 $button.after($dropdown);
                 this.sessionBookmarkDropdown = riot.mount('bookmarklistsession', {
@@ -357,13 +387,13 @@ var viewerJS = ( function( viewer ) {
                     console.log("removeFromBookmarkList, page", page);
                     console.log("removeFromBookmarkList, logid", logid);
                 }
-                
+
                 let list = this.getList(listId);
                 let item = this.getItem(list, pi, page, logid);
-                console.log("got from list ", list, item);
+                // console.log("got from list ", list, item);
                 if(item) {
                     let url = this.getUrl(listId) + "items/" + item.id + "/";
-                    console.log("fetch ", url);
+                    // console.log("fetch ", url);
                     return fetch(url, {method:"DELETE"})
                     .then( res => res.json())
                     .then(data => {

@@ -33,15 +33,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
-import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
  * Old style page loading strategy (load all pages and keep them in memory).
@@ -119,9 +119,6 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.pageloader.IPageLoader#getIddocForPage(int)
-     */
     /** {@inheritDoc} */
     @Override
     public Long getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException {
@@ -134,9 +131,6 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
         return pageOwnerIddocMap.get(pageOrder);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.IPageLoader#generateSelectItems(java.util.List, java.util.List, java.lang.String, java.lang.Boolean, java.util.Locale)
-     */
     /** {@inheritDoc} */
     @Override
     public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
@@ -146,14 +140,17 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
         String labelTemplate = buildPageLabelTemplate(DataManager.getInstance().getConfiguration().getPageSelectionFormat(), locale);
         for (int key : keys) {
             PhysicalElement page = pages.get(key);
-            SelectItem si = new SelectItem();
-            si.setLabel(labelTemplate.replace("{order}", String.valueOf(key)).replace("{orderlabel}", page.getOrderLabel()));
-            si.setValue(key);
+            PhysicalElement nextPage = null;
+            //            if (page.isDoubleImage() && pages.get(key + 1) != null) {
+            //                nextPage = pages.get(key++); // Skip next page since it's displayed together with the current page
+            //            }
+            SelectItem si = buildPageSelectItem(labelTemplate, page.getOrder(), page.getOrderLabel(), nextPage != null ? nextPage.getOrder() : null,
+                    nextPage != null ? nextPage.getOrderLabel() : null);
             dropdownPages.add(si);
             if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !page.isFulltextAvailable())) {
-                SelectItem full = new SelectItem();
-                full.setLabel(key + ":" + page.getOrderLabel());
-                full.setValue(key);
+                SelectItem full =
+                        buildPageSelectItem(labelTemplate, page.getOrder(), page.getOrderLabel(), nextPage != null ? nextPage.getOrder() : null,
+                                nextPage != null ? nextPage.getOrderLabel() : null);
                 dropdownFulltext.add(full);
             }
         }
@@ -216,9 +213,17 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
             return ret;
         }
 
+        boolean flipRectoVerso = false;
         for (SolrDocument doc : result) {
             PhysicalElement pe = loadPageFromDoc(doc, pi, topElement, pageOwnerIddocMap);
             ret.put(pe.getOrder(), pe);
+            if (!pe.isDoubleImage()) {
+                pe.setFlipRectoVerso(flipRectoVerso);
+                logger.trace("page {} flipped: {}", pe.getOrder(), pe.isFlipRectoVerso());
+            }
+            if (pe.isDoubleImage()) {
+                flipRectoVerso = !flipRectoVerso;
+            }
         }
 
         logger.debug("Loaded {} pages for '{}'.", ret.size(), pi);

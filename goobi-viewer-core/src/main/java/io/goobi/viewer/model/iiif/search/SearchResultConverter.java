@@ -63,8 +63,6 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.Comment;
@@ -75,6 +73,8 @@ import io.goobi.viewer.model.iiif.search.model.SearchTermList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
 import io.goobi.viewer.model.iiif.search.parser.AltoSearchParser;
 import io.goobi.viewer.model.iiif.search.parser.SolrSearchParser;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Converts resources found in a search to IIIF Search objects
@@ -216,8 +216,8 @@ public class SearchResultConverter {
     public SearchHit convertUGCToHit(String queryRegex, SolrDocument ugc) {
 
         SearchHit hit = new SearchHit();
-        String mdText = SolrSearchIndex.getMetadataValues(ugc, SolrConstants.UGCTERMS).stream().collect(Collectors.joining("; "));
-        String type = SolrSearchIndex.getSingleFieldStringValue(ugc, SolrConstants.UGCTYPE);
+        String mdText = SolrTools.getMetadataValues(ugc, SolrConstants.UGCTERMS).stream().collect(Collectors.joining("; "));
+        String type = SolrTools.getSingleFieldStringValue(ugc, SolrConstants.UGCTYPE);
         Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(mdText);
         while (m.find()) {
             String match = m.group(1);
@@ -257,7 +257,7 @@ public class SearchResultConverter {
      */
     public SearchHit convertMetadataToHit(String queryRegex, String fieldName, SolrDocument doc) {
         SearchHit hit = new SearchHit();
-        String mdText = SolrSearchIndex.getMetadataValues(doc, fieldName).stream().collect(Collectors.joining("; "));
+        String mdText = SolrTools.getMetadataValues(doc, fieldName).stream().collect(Collectors.joining("; "));
         Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(mdText);
         while (m.find()) {
             String match = m.group(1);
@@ -357,7 +357,7 @@ public class SearchResultConverter {
     public SearchTermList getSearchTerms(String regex, SolrDocument doc, List<String> fieldsToSearch, List<String> searchMotivation) {
         SearchTermList terms = new SearchTermList();
         for (String field : fieldsToSearch) {
-            String value = SolrSearchIndex.getSingleFieldStringValue(doc, field);
+            String value = SolrTools.getSingleFieldStringValue(doc, field);
             terms.addAll(getSearchTerms(regex, value, searchMotivation));
         }
         return terms;
@@ -495,10 +495,10 @@ public class SearchResultConverter {
      * @return
      */
     private OpenAnnotation createAnnotation(String metadataField, SolrDocument doc) {
-        String pi = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
-        String logId = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.LOGID);
-        Boolean isWork = SolrSearchIndex.getSingleFieldBooleanValue(doc, SolrConstants.ISWORK);
-        Integer thumbPageNo = SolrSearchIndex.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO);
+        String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
+        String logId = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LOGID);
+        Boolean isWork = SolrTools.getSingleFieldBooleanValue(doc, SolrConstants.ISWORK);
+        Integer thumbPageNo = SolrTools.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO);
         OpenAnnotation anno = new OpenAnnotation(getMetadataAnnotationURI(pi, logId, metadataField));
         anno.setMotivation(Motivation.DESCRIBING);
         if (thumbPageNo != null) {
@@ -511,8 +511,8 @@ public class SearchResultConverter {
             }
         }
         IMetadataValue label = ViewerResourceBundle.getTranslations(metadataField);
-        IMetadataValue value = SolrSearchIndex.getTranslations(metadataField, doc, (a, b) -> a + "; " + b)
-                .orElse(new SimpleMetadataValue(SolrSearchIndex.getSingleFieldStringValue(doc, metadataField)));
+        IMetadataValue value = SolrTools.getTranslations(metadataField, doc, (a, b) -> a + "; " + b)
+                .orElse(new SimpleMetadataValue(SolrTools.getSingleFieldStringValue(doc, metadataField)));
         Metadata md = new Metadata(label, value);
         anno.setBody(new FieldListResource(Collections.singletonList(md)));
 
@@ -564,10 +564,9 @@ public class SearchResultConverter {
         Dimension pageSize = solrParser.getPageSize(pi, pageNo);
         if (pageSize.getWidth() * pageSize.getHeight() == 0) {
             return new SimpleResource(getPresentationBuilder().getCanvasURI(pi, pageNo));
-        } else {
-            FragmentSelector selector = new FragmentSelector(new Rectangle(0, 0, pageSize.width, pageSize.height));
-            return new SpecificResourceURI(getPresentationBuilder().getCanvasURI(pi, pageNo), selector);
         }
+        FragmentSelector selector = new FragmentSelector(new Rectangle(0, 0, pageSize.width, pageSize.height));
+        return new SpecificResourceURI(getPresentationBuilder().getCanvasURI(pi, pageNo), selector);
     }
 
     /**
@@ -576,9 +575,8 @@ public class SearchResultConverter {
     private URI getAnnotationListURI(String pi, Integer pageNo, AnnotationType type) {
         if (pageNo != null) {
             return presentationBuilder.getAnnotationListURI(pi, pageNo, type, true);
-        } else {
-            return presentationBuilder.getAnnotationListURI(pi, type);
         }
+        return presentationBuilder.getAnnotationListURI(pi, type);
     }
 
     private URI getMetadataAnnotationURI(String pi, String logId, String metadataField) {

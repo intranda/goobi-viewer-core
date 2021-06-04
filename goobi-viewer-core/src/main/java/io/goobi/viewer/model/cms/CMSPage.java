@@ -58,7 +58,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,9 +71,6 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.controller.TEITools;
-import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -90,6 +86,7 @@ import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.misc.Harvestable;
+import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.viewer.CollectionView;
 
 /**
@@ -1267,19 +1264,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                     switch (type) {
                         case CMSMediaItem.CONTENT_TYPE_XML:
                             contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
-                            try {
-                                String format = XmlTools.determineFileFormat(contentString, StringTools.DEFAULT_ENCODING);
-                                if (format != null) {
-                                    switch (format.toLowerCase()) {
-                                        case "tei":
-                                            contentString = TEITools.convertTeiToHtml(contentString);
-                                            break;
-                                    }
-
-                                }
-                            } catch (JDOMException | IOException e) {
-                                logger.error(e.getMessage(), e);
-                            }
                             break;
                         case CMSMediaItem.CONTENT_TYPE_PDF:
                             boolean useContentApi = DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls();
@@ -2152,6 +2136,15 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public void setUnusedSidebarElements(List<CMSSidebarElement> unusedSidebarElements2) {
         this.unusedSidebarElements = unusedSidebarElements2;
 
+    }
+
+    public SearchInterface getSearchFunctionality() {
+        return (SearchInterface) this.getGlobalContentItems()
+                .stream()
+                .filter(item -> CMSContentItemType.SEARCH.equals(item.getType()))
+                .findAny()
+                .map(item -> item.getFunctionality())
+                .orElse(null);
     }
 
 }

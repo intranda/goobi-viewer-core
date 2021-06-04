@@ -24,8 +24,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,13 +45,12 @@ import io.goobi.viewer.api.rest.filters.IIIFPresentationResponseFilter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * @author Florian
@@ -81,10 +78,10 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         SequenceBuilder sequenceBuilder = new SequenceBuilder(new ApiUrls("https://viewer.goobi.io/rest/"));
         StructureBuilder structureBuilder = new StructureBuilder(new ApiUrls("https://viewer.goobi.io/rest/"));
 
-        SolrDocumentList allDocs = DataManager.getInstance().getSearchIndex().search("PI:*");
-        for (SolrDocument solrDocument : allDocs) {
-            String pi = SolrSearchIndex.getSingleFieldStringValue(solrDocument, "PI");
-        }
+        //        SolrDocumentList allDocs = DataManager.getInstance().getSearchIndex().search("PI:*");
+        //        for (SolrDocument solrDocument : allDocs) {
+        //            String pi = SolrTools.getSingleFieldStringValue(solrDocument, "PI");
+        //        }
 
         List<StructElement> docs = builder.getDocumentWithChildren(PI);
         if (docs.isEmpty()) {
@@ -137,9 +134,13 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         ele.setImageNumber(1);
         ele.setLogid("LOG_0003");
         builder.addRenderings(manifest, ele);
-        LinkingContent viewerRendering = manifest.getRendering().stream().filter(rend -> rend.getType().equals(DcType.INTERACTIVE_RESOURCE.getLabel())).findFirst().orElse(null);
+        LinkingContent viewerRendering = manifest.getRendering()
+                .stream()
+                .filter(rend -> rend.getType().equals(DcType.INTERACTIVE_RESOURCE.getLabel()))
+                .findFirst()
+                .orElse(null);
         assertNotNull(viewerRendering);
-        assertEquals("https://viewer.goobi.io/object/" + PI + "/1/LOG_0003/",viewerRendering.getId().toString());
+        assertEquals("https://viewer.goobi.io/object/" + PI + "/1/LOG_0003/", viewerRendering.getId().toString());
     }
-    
+
 }

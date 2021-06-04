@@ -62,8 +62,10 @@ import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
 import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
@@ -2243,7 +2245,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getAllCampaigns_shouldReturnAllCampaigns() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllCampaigns().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllCampaigns().size());
     }
 
     /**
@@ -2252,8 +2254,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCampaigns_shouldFilterCampaignsCorrectly() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getCampaigns(0, 10, null, false, null).size());
-        Assert.assertEquals(1,
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getCampaigns(0, 10, null, false, null).size());
+        Assert.assertEquals(2,
                 DataManager.getInstance().getDao().getCampaigns(0, 10, null, false, Collections.singletonMap("visibility", "PUBLIC")).size());
     }
 
@@ -2263,8 +2265,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCampaignCount_shouldCountCorrectly() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getCampaignCount(null));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getCampaignCount(Collections.singletonMap("visibility", "PUBLIC")));
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getCampaignCount(null));
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getCampaignCount(Collections.singletonMap("visibility", "PUBLIC")));
     }
 
     /**
@@ -2273,22 +2275,42 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCampaign_shouldReturnCorrectCampaign() throws Exception {
-        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
-        Assert.assertNotNull(campaign);
-        campaign.setSelectedLocale(Locale.ENGLISH);
-        Assert.assertEquals(Long.valueOf(1), campaign.getId());
-        Assert.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
-        Assert.assertEquals("+DC:varia", campaign.getSolrQuery());
-        Assert.assertEquals("English title", campaign.getTitle());
+        {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+            Assert.assertNotNull(campaign);
+            campaign.setSelectedLocale(Locale.ENGLISH);
+            Assert.assertEquals(Long.valueOf(1), campaign.getId());
+            Assert.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
+            Assert.assertEquals(StatisticMode.RECORD, campaign.getStatisticMode());
+            Assert.assertEquals("+DC:varia", campaign.getSolrQuery());
+            Assert.assertEquals("English title", campaign.getTitle());
 
-        Assert.assertEquals(2, campaign.getQuestions().size());
-        Assert.assertEquals("English text", campaign.getQuestions().get(0).getText().getText(Locale.ENGLISH));
+            Assert.assertEquals(2, campaign.getQuestions().size());
+            Assert.assertEquals("English text", campaign.getQuestions().get(0).getText().getText(Locale.ENGLISH));
 
-        Assert.assertEquals(4, campaign.getStatistics().size());
-        Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
-        Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
-        Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
-        Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
+            Assert.assertEquals(4, campaign.getStatistics().size());
+            Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
+        }
+        {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(3L);
+            Assert.assertNotNull(campaign);
+            campaign.setSelectedLocale(Locale.ENGLISH);
+            Assert.assertEquals(Long.valueOf(3), campaign.getId());
+            Assert.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
+            Assert.assertEquals("+PI:PI_5", campaign.getSolrQuery());
+
+
+            Assert.assertEquals(1, campaign.getStatistics().size());
+            CampaignRecordStatistic recordStatistic = campaign.getStatistics().get("PI_5");
+            Assert.assertNotNull(recordStatistic);
+            Assert.assertEquals(StatisticMode.PAGE, campaign.getStatisticMode());
+            Assert.assertEquals(2, recordStatistic.getPageStatistics().size());
+            Assert.assertEquals(Integer.valueOf(1), recordStatistic.getPageStatistics().get("PI_5_1").getPage());
+            Assert.assertEquals("PI_5", recordStatistic.getPageStatistics().get("PI_5_1").getPi());
+        }
     }
 
     @Test
@@ -2351,12 +2373,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getCampaignStatisticsForRecord(String,CampaignRecordStatus)
+     * @see JPADAO#getCampaignStatisticsForRecord(String,CrowdsourcingStatus)
      * @verifies return correct rows
      */
     @Test
     public void getCampaignStatisticsForRecord_shouldReturnCorrectRows() throws Exception {
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", CampaignRecordStatus.FINISHED).size());
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", CrowdsourcingStatus.FINISHED).size());
     }
 
     /**
@@ -2574,7 +2596,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
 
         int rows = DataManager.getInstance().getDao().deleteCampaignStatisticsForUser(user);
-        Assert.assertEquals(4, rows);
+        Assert.assertEquals(6, rows);
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
             Assert.assertNotNull(campaign);
@@ -2618,7 +2640,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
 
         int rows = DataManager.getInstance().getDao().changeCampaignStatisticContributors(fromUser, toUser);
-        Assert.assertEquals(4, rows);
+        Assert.assertEquals(6, rows);
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
             Assert.assertNotNull(campaign);
@@ -2896,6 +2918,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(note.getId());
         CMSRecordNote pNote = DataManager.getInstance().getDao().getRecordNote(note.getId());
         assertNotNull(pNote);
+        pNote.getRecordTitle().setSelectedLocale(Locale.GERMAN);
         assertEquals(title, pNote.getRecordTitle().getText());
         assertEquals(title, pNote.getRecordTitle().getText(Locale.GERMAN));
     }
