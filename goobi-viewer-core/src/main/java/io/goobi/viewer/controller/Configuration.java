@@ -797,15 +797,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * 
-     * @return Boolean value
-     * @should return correct value
-     */
-    public boolean isDisplaySidebarWidgetUsageCitation() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.citation[@display]", true);
-    }
-
-    /**
-     * 
      * @return List of available citation style names
      * @should return all configured values
      */
