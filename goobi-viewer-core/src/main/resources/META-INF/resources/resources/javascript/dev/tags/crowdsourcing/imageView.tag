@@ -51,6 +51,10 @@
 		this.initTooltips();
 	});
 	
+	this.on("update", function() {
+	    this.showThumbs = this.isShowThumbs();
+	});
+	
 	// MOUNT IMAGE VIEW
 	this.on("mount", function() {
 		this.showThumbs = this.isShowThumbs();
@@ -198,7 +202,8 @@
 					count++;
 				}
 			}
-			return count > 1;
+			console.log("num images in review ", count, this.opts.item.pageStatusMap);
+			return count !== 1; 
 		} else {			
 			return this.opts.item.canvases.length > 1
 		}

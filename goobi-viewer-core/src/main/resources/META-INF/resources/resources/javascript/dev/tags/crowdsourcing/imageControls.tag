@@ -2,7 +2,7 @@
 
 <div class="image_controls">
 	<div class="image-controls__actions">
-		<div onclick="{toggleThumbs}" class="image-controls__action thumbs {this.opts.showthumbs ? 'in' : ''}">
+		<div onclick="{toggleThumbs}" class="image-controls__action thumbs {this.opts.imagecount < 2 ? 'd-none' : ''} {this.opts.showthumbs ? 'in' : ''}">
 			<a>
 			</a>
 		</div>

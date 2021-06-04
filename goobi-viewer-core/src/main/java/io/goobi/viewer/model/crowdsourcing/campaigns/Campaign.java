@@ -1463,7 +1463,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
                 .filter(result -> isEligibleToEdit(result, status, user))
                 .skip(currentIndex + 1L)
                 .findFirst()
-                .orElse(piList.isEmpty() ? "" : piList.get(0));
+                .orElse("");
     }
 
     /**
