@@ -43,9 +43,11 @@ import de.intranda.digiverso.normdataimporter.model.NormData;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
+import io.goobi.viewer.managedbeans.BrowseBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -375,9 +377,26 @@ public class Metadata implements Serializable {
                     // logger.debug("WIKIPEDIA: " + value + " paramIndex: " + paramIndex);
                     break;
                 case TRANSLATEDFIELD:
-                    // Values that are message keys
-                    value = ViewerResourceBundle.getTranslation(value, locale);
-                    // value = StringEscapeUtils.escapeHtml4(value);
+                    // Values that are message keys (or collection names, etc.)
+                    
+                    // First, check whether translation from CMSCollection is available
+                    String translation = null;
+                    if (SolrConstants.DC.equals(label)) {
+                        BrowseBean browseBean = BeanUtils.getBrowseBean();
+                        if (browseBean != null) {
+                            try {
+                                translation = browseBean.getTranslationForCollectionName(label, value);
+                            } catch (DAOException e) {
+                                logger.error(e.getMessage(), e);
+                            }
+                        }
+                        logger.trace("translation: {}", translation);
+                    }
+                    if (translation != null) {
+                        value = translation;
+                    } else {
+                        value = ViewerResourceBundle.getTranslation(value, locale);
+                    }
                     // convert line breaks back to HTML
                     value = value.replace("&lt;br /&gt;", "<br />");
                     break;
