@@ -311,7 +311,7 @@ public class CollectionView {
      * @return a {@link java.util.List} object.
      */
     public List<HierarchicalBrowseDcElement> getVisibleDcElements() {
-        logger.trace("getVisibleDcElements");
+        // logger.trace("getVisibleDcElements");
         return visibleCollectionList;
     }
 

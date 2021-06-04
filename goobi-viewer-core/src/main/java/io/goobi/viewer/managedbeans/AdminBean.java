@@ -75,6 +75,8 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.security.user.UserTools;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
+import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -1853,7 +1855,7 @@ public class AdminBean implements Serializable {
 
     /**
      * 
-     * @return
+     * @return All configured <code>TranslationGroup</code>s
      */
     public List<TranslationGroup> getConfiguredTranslationGroups() {
         synchronized (TRANSLATION_LOCK) {
@@ -1861,6 +1863,32 @@ public class AdminBean implements Serializable {
             logger.trace("groups: {}", ret.size());
             setTranslationGroupsEditorSession(BeanUtils.getSession().getId());
             logger.trace("Locked translation for: {}", translationGroupsEditorSession);
+            return ret;
+        }
+    }
+
+    /**
+     * 
+     * @param field Index field that the translation groups should have as a key
+     * @return List of TranslationGroups; null if not found
+     * @should return correct groups
+     */
+    public  List<TranslationGroup>  getTranslationGroupsForSolrField(String field) {
+        if (StringUtils.isEmpty(field)) {
+            return Collections.emptyList();
+        }
+
+        synchronized (TRANSLATION_LOCK) {
+            List<TranslationGroup> ret = new ArrayList<>();
+            for (TranslationGroup group : DataManager.getInstance().getConfiguration().getTranslationGroups()) {
+                if (group.getType().equals(TranslationGroupType.SOLR_FIELD_VALUES)) {
+                    for (TranslationGroupItem item : group.getItems()) {
+                        if (field.equals(item.getKey())) {
+                            ret.add(group);
+                        }
+                    }
+                }
+            }
             return ret;
         }
     }
