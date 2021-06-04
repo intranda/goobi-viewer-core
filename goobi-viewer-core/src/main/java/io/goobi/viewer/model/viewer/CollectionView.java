@@ -1070,6 +1070,7 @@ public class CollectionView {
      * @return Translation for the current langauge; null of none found
      */
     public String getTranslationForName(String name) {
+        logger.trace("getTranslationForName: {}", name);
         for (HierarchicalBrowseDcElement ele : completeCollectionList) {
             if (ele.getName().equals(name)) {
                 return ele.getLabel();

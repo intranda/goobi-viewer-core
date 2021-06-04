@@ -51,6 +51,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
@@ -59,10 +60,10 @@ import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
-import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * This bean provides the data for collection and term browsing.
@@ -1041,5 +1042,32 @@ public class BrowseBean implements Serializable {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * 
+     * @param field Collection field name
+     * @param value Collection raw name
+     * @return
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws IllegalRequestException
+     */
+    public String getTranslationForCollectionName(String field, String value) throws DAOException {
+        logger.trace("getTranslationForCollectionName: {}:{}", field, value);
+        if (field == null || value == null) {
+            return null;
+        }
+        CollectionView collectionView = collections.get(field);
+        if (collectionView != null && collectionView.getCompleteList() != null) {
+            return collectionView.getTranslationForName(value);
+        }
+
+        CMSCollection collection = DataManager.getInstance().getDao().getCMSCollection(field, value);
+        if (collection != null) {
+            return collection.getLabel();
+        }
+
+        return null;
     }
 }
