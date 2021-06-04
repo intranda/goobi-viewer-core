@@ -101,4 +101,5 @@ io.goobi.viewer.servlets.oembed
 io.goobi.viewer.servlets.openid
 io.goobi.viewer.servlets.saml
 io.goobi.viewer.servlets.utils
+io.goobi.viewer.solr
 io.goobi.viewer.websockets
