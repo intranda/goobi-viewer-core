@@ -1456,14 +1456,20 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public String getNextTarget(CrowdsourcingStatus status, String currentPi) throws PresentationException, IndexUnreachableException {
         User user = BeanUtils.getUserBean().getUser();
-        List<String> piList = getSolrQueryResults();
-        int currentIndex = piList.indexOf(currentPi);
-        return piList.stream()
+        List<String> piList = getSolrQueryResults().stream()
                 .filter(result -> isRecordStatus(result, status))
                 .filter(result -> isEligibleToEdit(result, status, user))
-                .skip(currentIndex + 1L)
-                .findFirst()
-                .orElse("");
+                .collect(Collectors.toList());
+        int currentIndex = piList.indexOf(currentPi);
+        if(piList.isEmpty()) {
+            return "";
+        } if(currentIndex+1 < piList.size()) {
+            return piList.get(currentIndex+1);
+        } else if(currentIndex != 0) {
+            return piList.get(0);
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -1471,7 +1477,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private List<String> getSolrQueryResults() throws PresentationException, IndexUnreachableException {
+    List<String> getSolrQueryResults() throws PresentationException, IndexUnreachableException {
         if (this.solrQueryResults == null) {
             String query = "+" + SolrConstants.ISWORK + ":true +" + SolrConstants.BOOL_IMAGEAVAILABLE + ":true";
             // Validate campaign query before adding it
@@ -1594,7 +1600,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @param result
      * @return true if record status for the given pi equals status; false otherwise. If no record
      */
-    private boolean isRecordStatus(String pi, CrowdsourcingStatus status) {
+    boolean isRecordStatus(String pi, CrowdsourcingStatus status) {
         boolean ret = Optional.ofNullable(statistics.get(pi)).map(stat -> StatisticMode.RECORD.equals(this.statisticMode) ?  status.equals(stat.getStatus()) : stat.containsPageStatus(status)).orElse(CrowdsourcingStatus.ANNOTATE.equals(status));
         return ret;
     }
@@ -1609,7 +1615,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public CrowdsourcingStatus getRecordStatus(String pi) {
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CrowdsourcingStatus.ANNOTATE);
-
     }
 
     /**

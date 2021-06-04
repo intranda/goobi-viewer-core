@@ -1,9 +1,17 @@
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -475,5 +483,27 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         }
         Assert.assertEquals(4, campaign.getNumRecordsForStatus(CrowdsourcingStatus.FINISHED.name()));
         Assert.assertEquals(1, campaign.getNumRecordsForStatus(CrowdsourcingStatus.REVIEW.name()));
+    }
+    
+    @Test
+    public void testIsRecordStatus() {
+        Campaign campaign = Mockito.spy(Campaign.class);
+        campaign.setStatisticMode(StatisticMode.PAGE);
+        Map<String, CampaignRecordStatistic> statisticsMap = new HashMap<>();
+        CampaignRecordStatistic recordStatistic = new CampaignRecordStatistic();
+        recordStatistic.setTotalPages(2);
+        Map<String, CampaignRecordPageStatistic> pageStatistics = new HashMap<>();
+        statisticsMap.put("PI1", recordStatistic );
+        campaign.setStatistics(statisticsMap );
+        
+        assertTrue(campaign.isRecordStatus("PI1", CrowdsourcingStatus.ANNOTATE));
+        assertFalse(campaign.isRecordStatus("PI1", CrowdsourcingStatus.REVIEW));
+        campaign.setRecordPageStatus("PI1", 1, CrowdsourcingStatus.REVIEW, Optional.empty());
+        assertTrue(campaign.isRecordStatus("PI1", CrowdsourcingStatus.ANNOTATE));
+        assertTrue(campaign.isRecordStatus("PI1", CrowdsourcingStatus.REVIEW));
+        campaign.setRecordPageStatus("PI1", 2, CrowdsourcingStatus.REVIEW, Optional.empty());
+        assertFalse(campaign.isRecordStatus("PI1", CrowdsourcingStatus.ANNOTATE));
+        assertTrue(campaign.isRecordStatus("PI1", CrowdsourcingStatus.REVIEW));
+
     }
 }

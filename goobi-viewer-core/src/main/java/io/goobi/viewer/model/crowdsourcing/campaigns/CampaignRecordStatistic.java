@@ -18,6 +18,7 @@ package io.goobi.viewer.model.crowdsourcing.campaigns;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,11 +40,19 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.solr.common.SolrDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Annotation status of a record in the context of a particular campaign.
@@ -53,6 +62,7 @@ import io.goobi.viewer.model.security.user.User;
 @JsonInclude(Include.NON_EMPTY)
 public class CampaignRecordStatistic implements Serializable {
 
+    private static final Logger logger = LoggerFactory.getLogger(CampaignRecordStatistic.class);
 
     private static final long serialVersionUID = 8902904205183851565L;
 
@@ -97,6 +107,9 @@ public class CampaignRecordStatistic implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> reviewers = new ArrayList<>();
 
+    @Column(name = "total_pages", nullable = true)
+    private Integer totalPages = null;
+    
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -363,8 +376,49 @@ public class CampaignRecordStatistic implements Serializable {
     public boolean containsPageStatus(CrowdsourcingStatus status) {
         if(status == null) {
             return false;
+        } else if(CrowdsourcingStatus.ANNOTATE.equals(status) && this.pageStatistics.size() < this.getTotalPages()) {
+            //if not all pages have a pageStatstic, assume the others are in annotation status, so return true
+            return true;
         } else {
             return this.pageStatistics.values().stream().anyMatch(pageStatistic -> status.equals(pageStatistic.getStatus()));
         }
     }
+    
+    /**
+     * @return the totalPages
+     */
+    public Integer getTotalPages() {
+        if(totalPages == null) {
+            this.totalPages = calculateTotalPages();
+        }
+        return totalPages;
+    }
+
+    /**
+     * @param totalPages the totalPages to set
+     */
+    public void setTotalPages(Integer totalPages) {
+        this.totalPages = totalPages;
+    }
+    
+    /**
+     * @return
+     */
+    private Integer calculateTotalPages() {
+        String query = String.format("PI:\"%s\"", pi);
+        try {
+            SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(SolrConstants.NUMPAGES));
+            if(doc != null && doc.containsKey(SolrConstants.NUMPAGES)) {
+                Integer numPages = (Integer) doc.getFieldValue(SolrConstants.NUMPAGES);
+                return numPages;
+            } else {
+                return 0;
+            }
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error("Error retrieving page cound for " + query);
+            return null;
+        }
+        
+    }
+    
 }
