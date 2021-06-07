@@ -58,7 +58,6 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,10 +169,7 @@ public class SearchBean implements SearchInterface, Serializable {
     private String searchInCurrentItemString;
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
     private Search currentSearch;
-    
 
-    
-    
     private volatile FutureTask<Boolean> downloadReady;
     private volatile FutureTask<Boolean> downloadComplete;
 
@@ -232,7 +228,6 @@ public class SearchBean implements SearchInterface, Serializable {
     public String search(String subtheme) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         return search();
     }
-
 
     /**
      * Executes the search using already set parameters. Usually called from Pretty URLs.
@@ -2661,35 +2656,43 @@ public class SearchBean implements SearchInterface, Serializable {
     public boolean hasGeoLocationHits() {
         return this.currentSearch != null && !this.currentSearch.getHitsLocationList().isEmpty();
     }
-    
+
     public GeoMap getHitsMap() {
-       GeoMap map = new GeoMap();
-       map.setType(GeoMapType.MANUAL);
-       map.setShowPopover(true);
-       //set initial zoom to max zoom so map will be as zoomed in as possible
-       map.setInitialView("{" +
-            "\"zoom\": 12," +
-            "\"center\": [11.073397, -49.451993]" +
-            "}");
-       List<String> features = new ArrayList<>();
-       if(this.currentSearch != null) {
-           for (Location location : this.currentSearch.getHitsLocationList()) {
-               double[] coords = {location.getLng(), location.getLat()};
-               JSONObject feature = new JSONObject();
-               JSONObject geometry = new JSONObject();
-               JSONObject properties = new JSONObject();
-               properties.put("title", location.getLabel());
-               properties.put("link", location.getLink());
-               feature.put("properties", properties);
-               geometry.put("coordinates", coords);
-               geometry.put("type", "Point");
-               feature.put("geometry", geometry);
-               feature.put("type", "Feature");
-               features.add(feature.toString());
+        GeoMap map = new GeoMap();
+        map.setType(GeoMapType.MANUAL);
+        map.setShowPopover(true);
+        //set initial zoom to max zoom so map will be as zoomed in as possible
+        map.setInitialView("{" +
+                "\"zoom\": 12," +
+                "\"center\": [11.073397, -49.451993]" +
+                "}");
+        List<String> features = new ArrayList<>();
+        if (this.currentSearch != null) {
+            for (Location location : this.currentSearch.getHitsLocationList()) {
+                double[] coords = { location.getLng(), location.getLat() };
+                JSONObject feature = new JSONObject();
+                JSONObject geometry = new JSONObject();
+                JSONObject properties = new JSONObject();
+                properties.put("title", location.getLabel());
+                properties.put("link", location.getLink());
+                feature.put("properties", properties);
+                geometry.put("coordinates", coords);
+                geometry.put("type", "Point");
+                feature.put("geometry", geometry);
+                feature.put("type", "Feature");
+                features.add(feature.toString());
+            }
+            map.setFeatures(features);
         }
-           map.setFeatures(features);
-       }
-       return map;
+        return map;
     }
-     
+
+    /**
+     * 
+     * @param fieldName
+     * @return
+     */
+    public String facetifyField(String fieldName) {
+        return SearchHelper.facetifyField(fieldName);
+    }
 }

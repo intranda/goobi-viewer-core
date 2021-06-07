@@ -15,9 +15,9 @@
 				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCollections')}" />
 			<f:event type="preRenderView" listener="#{cmsBean.init()}" />
 			<f:event type="preRenderView"
-				listener="#{browseBean.initializeCollection('DC', 'FACET_DC')}" />
+				listener="#{browseBean.initializeCollection(cmsCollectionsBean.solrField, searchBean.facetifyField(cmsCollectionsBean.solrField))}" />
 			<f:event type="preRenderView"
-				listener="#{browseBean.populateCollection('DC')}" />
+				listener="#{browseBean.populateCollection(cmsCollectionsBean.solrField)}" />
 		</f:metadata>
 	</ui:define>
 
@@ -27,21 +27,28 @@
 			rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
 			<div id="cmsCollections">
 				<div class="admin__title-bar">
-					<h2 class="admin__title">#{msg.cms_collections}</h2>
+					<h2 class="admin__title">#{msg.admin__cms_collections}</h2>
 				</div>
+				<p class="admin__boxed-entry-description">#{msg.admin__cms_collections_desc}</p>
 
 				<div class="admin__content-inner-content">
 
 					<h:form id="cmsCollectionsForm" prependId="false">
 
-
-
-
 						<!-- COLLECTION TREE -->
 						<div class="admin__content-wrapper">
-
+						
 							<div class="admin__content-main -sticky">
-								<div class="admin__default-block">
+								<h3>#{msg.admin__cms_collections_collection_tree}</h3>
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
+                                            <li role="presentation" class="#{status.index == 0 ? 'active' : ''}">
+                                                <a href="#descriptionLanguage-#{status.index}" aria-controls="descriptionLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                <div class="tab-content">
+                                <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
 								<div class="admin__entry-list">
 									<ul class="collection">
 										<ui:repeat var="browseDcElement" value="#{browseBean.getCollection(cmsCollectionsBean.solrField).visibleDcElements}">
@@ -117,7 +124,9 @@
 
 														<!-- TODO: EDIT -->
 														<div>
-															<a href="#" title="#{msg.edit}" target="_blank"> </a>
+                                                			<a href="#{navigationHelper.applicationUrl}admin/cms/collections/edit/#{browseDcElement.name}/"
+                                                				class="admin__boxed-entry-actions-edit"
+                                                				aria-label="#{msg.edit}: #{browseDcElement.name}">#{msg.edit}</a>
 														</div>
 													</div>
 
@@ -141,24 +150,24 @@
 										</ui:repeat>
 									</ul>
 								</div>
-							</div>
+								</ui:repeat>
+								</div>
 							</div>
 
 
 							<!-- SIDEBAR -->
 							<div class="admin__content-side">
 
+							<!-- TRANSLATIONS -->
 								<c:choose>
 									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles()}">
-										<div class="admin__boxed-entry">
-											<!--  TRANSLATION GROUPS -->
 											<ui:repeat var="group"
 												value="#{adminBean.getTranslationGroupsForSolrField(cmsCollectionsBean.solrField)}">
 												<div class="admin__boxed-entry -w100 -std-bottom-pad">
 													<div class="row">
 														<div class="col-12 col-lg-9">
 															<!-- GROUP TITLE -->
-															<h3>#{msg[group.name]}</h3>
+															<h3>#{msg.admin__cms_collections_translation}</h3>
 
 															<!-- DESCRIPTION -->
 															<ui:fragment rendered="#{group.description ne ''}">
@@ -205,7 +214,6 @@
 													</div>
 												</div>
 											</ui:repeat>
-										</div>
 									</c:when>
 									<c:otherwise>
 										<div class="admin__boxed-entry -danger">
@@ -219,8 +227,8 @@
 								<!-- COLLECTION INDEX FIELD -->
 								<div class="admin__boxed-entry">
 									<div class="#{fn:length(cmsCollectionsBean.allCollectionFields) > 1 ? '' : 'd-none'} form-group form-row">
-										<h3><label for="SolrFieldSelect">#{msg.cms_collections_solrField}:</label></h3>
-
+										<h3><label for="SolrFieldSelect">#{msg.admin__cms_collections_solr_field}:</label></h3>
+										<p class="admin__boxed-entry-description">#{msg.admin__cms_collections_solr_field_desc}</p>
 										<div>
 											<h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect"
 												value="#{cmsCollectionsBean.solrField}"
@@ -229,20 +237,13 @@
 													value="#{cmsCollectionsBean.allCollectionFields}" />
 												<f:ajax render="@form"></f:ajax>
 											</h:selectOneMenu>
-											<span class="admin__form-help-text">#{msg.admin__cms_collections_select_field}</span>
-										</div>
-										<div class="col-1 admin__form-help-icon">
-											<button type="button" class="btn btn--clean"
-												data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-												<i class="fa fa-question-circle" aria-hidden="true"></i>
-											</button>
 										</div>
 									</div>
 								</div>
 								
 								<!--TODO: PREVIEW -->
 								<div class="admin__boxed-entry">
-									<h3>#{msg.preview}:</h3>
+									<h3>#{msg.admin__cms_collections_preview}:</h3>
 									
 								</div>
 

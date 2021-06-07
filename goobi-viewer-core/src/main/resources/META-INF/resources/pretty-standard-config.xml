@@ -898,7 +898,7 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminCmsEditCollection">
-        <pattern value="/admin/cms/collections/edit/" />
+        <pattern value="/admin/cms/collections/edit/#{colection:cmsCollectionsBean.solrFieldValue}/" />
         <view-id value="/resources/cms/adminCmsEditCollection.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>

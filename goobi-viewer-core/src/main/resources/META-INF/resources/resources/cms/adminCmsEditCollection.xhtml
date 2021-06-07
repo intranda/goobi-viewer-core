@@ -26,31 +26,6 @@
                     <div class="admin__content-inner-content">
                         <!-- TRANSLATION -->
                         <div class="cms-edit-collection__translation">
-                            <!-- NAME -->
-                            <div class="cms-edit-collection__text name">
-                                <div class="cms-edit-collection__text-label">
-                                    <h3 class="admin__h3">#{msg.cms_collections_label}</h3>
-                                </div>
-                                <div class="cms-edit-collection__text-translation">
-                                    <ul class="nav nav-tabs" role="tablist">
-                                        <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
-                                            <li role="presentation" class="#{status.index == 0 ? 'active' : ''}">
-                                                <a href="#nameLanguage-#{status.index}" aria-controls="nameLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a>
-                                            </li>
-                                        </ui:repeat>
-                                    </ul>
-    
-                                    <div class="tab-content">
-                                        <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
-                                            <div role="tabpanel" class="tab-pane #{status.index == 0 ? 'active' : ''}" id="nameLanguage-#{status.index}">
-                                                <h:inputTextarea value="#{cmsCollectionsBean.getCurrentLabel(language).value}" styleClass="form-control">
-													<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__collections_label}"/>
-												</h:inputTextarea>
-                                            </div>
-                                        </ui:repeat>
-                                    </div>
-                                </div>
-                            </div>
     
                             <!-- DESCRIPTION -->
                             <div class="cms-edit-collection__text description">
@@ -70,7 +45,8 @@
                                     <div class="tab-content">
                                         <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
                                             <div role="tabpanel" class="tab-pane #{status.index == 0 ? 'active' : ''}" id="descriptionLanguage-#{status.index}">
-                                                <h:inputTextarea value="#{cmsCollectionsBean.getCurrentDescription(language).value}" styleClass="form-control">
+                                                <h:inputTextarea value="#{cmsCollectionsBean.getCurrentDescription(language).value}"
+                                                    styleClass="form-control tinyMCE -validation-input">
 													<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__collections_description}"/>
                                                 </h:inputTextarea>
                                             </div>
@@ -81,35 +57,33 @@
                         </div>
     
                         <!-- LINK -->
-                        <div class="cms-edit-collection__text link">
-                            <div class="cms-edit-collection__text-label">
-                                <label for="textControlUrl">#{msg.cms_collections_link}</label>
-                            </div>
-                            <div class="cms-edit-collection__text-control">
-                                <h:inputText id="textControlUrl" styleClass="form-control" value="#{cmsCollectionsBean.currentCollection.collectionUrl}" />
-                            </div>
-                        </div>
-    
-                        <!-- PI -->
-                        <div class="cms-edit-collection__text pi">
-                            <div class="cms-edit-collection__text-label">
-                                <label for="workPI" id="labelPI">#{msg.cms_collections_set_representative}</label>
-                            </div>
-                            <div class="cms-edit-collection__text-control">
-                                <h:inputText id="workPI" styleClass="form-control" validator="#{cmsCollectionsBean.validatePI}" value="#{cmsCollectionsBean.currentCollection.representativeWorkPI}">
-                                    <!--                                 validator="piInSolrValidator" -->
-                                    <f:ajax render="@all"></f:ajax>
-                                </h:inputText>
-                            </div>
+                        <h3 class="admin__h3">#{msg.cms_collections_link}</h3>
+                        <div class="admin__default-block">
+                            <p class="admin__boxed-entry-description">#{msg.admin__cms_collections_link_desc}</p>
+                            <h:inputText id="textControlUrl" styleClass="form-control" value="#{cmsCollectionsBean.currentCollection.collectionUrl}" />
                         </div>
     
                         <!-- IMAGE -->
-                        <div class="cms-edit-collection__text image">
-                            <div class="cms-edit-collection__text-label">
-                                <strong>#{msg.cms_collections_image}</strong>
-                            </div>
-                            <div class="cms-edit-collection__text-image">
-                            <h:panelGroup id="mediaGroup">
+                        <h3 class="admin__h3">#{msg.cms_collections_image}</h3>
+                        <div class="admin__default-block">
+                            <p class="admin__boxed-entry-description">#{msg.admin__cms_collections_image_desc}</p>
+                            
+                            <h:panelGroup id="imageModeGroup">
+                            
+                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
+                                	<f:selectItem itemValue="NONE" itemLabel="#{msg.none}" />
+                                	<f:ajax render="imageModeGroup" />
+                            	</h:selectOneRadio>
+                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
+                                	<f:selectItem itemValue="IMAGE" itemLabel="#{msg.image}" />
+                                	<f:ajax render="imageModeGroup" />
+                            	</h:selectOneRadio>
+                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
+                                	<f:selectItem itemValue="PI" itemLabel="#{msg.pi}" />
+                                	<f:ajax render="imageModeGroup" />
+                            	</h:selectOneRadio>
+                            
+                                <h:panelGroup id="mediaGroup" rendered="#{cmsCollectionsBean.imageMode == 'IMAGE'}">
                                 <!-- THUMBNAIL -->
                                 <div class="cms-edit-collection__text-image-thumbnail">
                                     <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
@@ -142,15 +116,31 @@
 				                    </h:commandLink>                    
 				                </div>
                                 
-							  </h:panelGroup>					
-                            </div>
+                                </h:panelGroup>	
+                            
+                            <h:panelGroup id="piGroup" rendered="#{cmsCollectionsBean.imageMode == 'PI'}">
+                            	<div class="cms-edit-collection__text-label">
+                                	<label for="workPI" id="labelPI">#{msg.cms_collections_set_representative}</label>
+                            	</div>
+                            	<div class="cms-edit-collection__text-control">
+                                	<h:inputText id="workPI" styleClass="form-control" validator="#{cmsCollectionsBean.validatePI}" value="#{cmsCollectionsBean.currentCollection.representativeWorkPI}">
+                                   		<!--                                 validator="piInSolrValidator" -->
+                                    	<f:ajax render="@all"></f:ajax>
+                                	</h:inputText>
+                            	</div>
+                            </h:panelGroup>
+                            
+                            </h:panelGroup>
                         </div>
     
-                        <!-- SAVE -->
+          
                         <div class="cms-edit-collection__actions">
-                            <h:commandLink id="cmsEditCollectionBack" styleClass="btn" value="#{msg.cancel}" action="#{cmsCollectionsBean.resetCurrentCollection()}" />
-                            <h:commandButton disabled="#{!cmsCollectionsBean.currentCollectionValid}" styleClass="btn btn--success" id="saveCollection" value="#{msg.save}"
-                                action="#{cmsCollectionsBean.saveCurrentCollection()}" />
+                        	<!-- CANCEL -->
+                            <h:commandLink id="cmsEditCollectionBack" styleClass="btn" value="#{msg.cancel}" immediate="true"
+                                action="#{cmsCollectionsBean.resetCurrentCollection}" />
+                            <!-- SAVE -->
+                            <h:commandButton disabled="#{!cmsCollectionsBean.currentCollectionValid}" styleClass="btn btn--success" id="saveCollection"
+                                value="#{msg.save}" action="#{cmsCollectionsBean.saveCurrentCollection()}" />
                         </div>
 
                     </div>

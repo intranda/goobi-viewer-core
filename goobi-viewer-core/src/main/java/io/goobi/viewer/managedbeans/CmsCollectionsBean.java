@@ -53,6 +53,12 @@ import io.goobi.viewer.solr.SolrConstants;
 @SessionScoped
 public class CmsCollectionsBean implements Serializable {
 
+    public enum CMSCollectionImageMode {
+        NONE,
+        IMAGE,
+        PI;
+    }
+
     private static final long serialVersionUID = -2862611194397865986L;
 
     private static final Logger logger = LoggerFactory.getLogger(CmsCollectionsBean.class);
@@ -66,6 +72,7 @@ public class CmsCollectionsBean implements Serializable {
     private String solrFieldValue;
     private List<CMSCollection> collections;
     private boolean piValid = true;
+    private CMSCollectionImageMode imageMode = CMSCollectionImageMode.NONE;
 
     /**
      * <p>
@@ -77,7 +84,7 @@ public class CmsCollectionsBean implements Serializable {
             updateCollections();
         } catch (DAOException e) {
             logger.error("Error initializing collections");
-            collections = Collections.EMPTY_LIST;
+            collections = Collections.emptyList();
         }
     }
 
@@ -127,7 +134,7 @@ public class CmsCollectionsBean implements Serializable {
             updateCollections();
         } catch (DAOException e) {
             logger.error("Error initializing collections");
-            collections = Collections.EMPTY_LIST;
+            collections = Collections.emptyList();
         }
     }
 
@@ -151,6 +158,9 @@ public class CmsCollectionsBean implements Serializable {
      */
     public void setSolrFieldValue(String solrFieldValue) {
         this.solrFieldValue = solrFieldValue;
+        if (currentCollection == null) {
+            currentCollection = new CMSCollection(solrField, solrFieldValue);
+        }
     }
 
     /**
@@ -213,7 +223,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * @param collection
      */
-    private void addToCollectionViews(CMSCollection collection) {
+    private static void addToCollectionViews(CMSCollection collection) {
         CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
         if (collectionView != null) {
             collectionView.setCollectionInfo(collection.getSolrFieldValue(), collection);
@@ -225,7 +235,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * @param collection
      */
-    private void removeFromCollectionViews(CMSCollection collection) {
+    private static void removeFromCollectionViews(CMSCollection collection) {
         CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
         if (collectionView != null) {
             collectionView.removeCollectionInfo(collection.getSolrFieldValue());
@@ -315,8 +325,10 @@ public class CmsCollectionsBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String resetCurrentCollection() throws DAOException {
+        logger.trace("resetCurrentCollection");
         if (getCurrentCollection() != null) {
-            DataManager.getInstance().getDao().refreshCMSCollection(getCurrentCollection());
+            // TODO do not refresh unmanaged objects
+            //            DataManager.getInstance().getDao().refreshCMSCollection(getCurrentCollection());
         }
         return "pretty:adminCmsCollections";
     }
@@ -329,9 +341,9 @@ public class CmsCollectionsBean implements Serializable {
     public boolean isCurrentCollectionValid() {
         if (getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {
             return piValid;
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     /**
@@ -375,9 +387,24 @@ public class CmsCollectionsBean implements Serializable {
         if (StringUtils.isNotBlank(pi)) {
             SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
             return doc != null;
-        } else {
-            return true;
         }
+
+        return true;
+    }
+
+    /**
+     * @return the imageMode
+     */
+    public CMSCollectionImageMode getImageMode() {
+        return imageMode;
+    }
+
+    /**
+     * @param imageMode the imageMode to set
+     */
+    public void setImageMode(CMSCollectionImageMode imageMode) {
+        logger.trace("setImageMode: {}", imageMode);
+        this.imageMode = imageMode;
     }
 
 }
