@@ -195,8 +195,8 @@
 	}
 	
 	isShowThumbs() {
-		if(this.opts.item.reviewMode) {
-			//cound canvases in REVIEW status
+		if(this.opts.item.reviewMode && this.opts.item.pageStatisticMode) {
+			//count canvases in REVIEW status
 			let count = 0;
 			for(let status of this.opts.item.pageStatusMap.values()) {
 			    if(status.toUpperCase() == "REVIEW") {
