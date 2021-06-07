@@ -47,10 +47,10 @@
 		        	</h:inputHidden>
 		        	
 				<div id="widgetGeoFacettingOverlay" class="widget-geofacetting__overlay">
-				<span data-loader="geoFacet" class="ajax_loader widget-geofacetting__loader-wrapper">
+				<div data-loader="geoFacet" class="ajax_loader widget-geofacetting__loader-wrapper">
 					<img src="#{request.contextPath}/resources/images/infinity_loader.svg" class="img-responsive widget-geofacetting__loader-animated-image" alt="Waiting..." />
 					<div class="modal-backdrop show"></div>
-				</span>
+				</div>
 				<div class="widget-geofacetting__overlay-buttons-wrapper">
 					<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="cancel">#{msg.cancel}</button>
 					<button class="btn btn--full widget-geofacetting__overlay-submit-search" data-geofacet="trigger-execute">#{msg.search}</button>
@@ -144,7 +144,7 @@
 	                       	    overlay.node.show();
 			                 	$facetTriggerSearch.off().on("click", () => {
 			                 	   //console.log("trigger search");
-			                 	   $facetSearch.click();
+ 			                 	   $facetSearch.click();
 			                 	   $loader.show();
 			                 	});
 			                 	$facetCancel.off().on("click", () => {
