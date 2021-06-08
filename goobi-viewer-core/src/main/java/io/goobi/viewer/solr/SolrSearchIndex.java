@@ -242,6 +242,7 @@ public final class SolrSearchIndex {
         if (facetFields != null && !facetFields.isEmpty()) {
             for (String facetField : facetFields) {
                 if (StringUtils.isNotEmpty(facetField)) {
+                    logger.trace("facet field: {}", facetField);
                     solrQuery.addFacetField(facetField);
                     // TODO only do this once, perhaps?
                     if (StringUtils.isNotEmpty(facetSort)) {
@@ -261,13 +262,13 @@ public final class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(fq);
-                // logger.trace("adding filter query: {}", fq);
+                 logger.trace("adding filter query: {}", fq);
             }
         }
         if (params != null && !params.isEmpty()) {
             for (String key : params.keySet()) {
                 solrQuery.set(key, params.get(key));
-                //logger.trace("&{}={}", key, params.get(key));
+                logger.trace("&{}={}", key, params.get(key));
             }
         }
 

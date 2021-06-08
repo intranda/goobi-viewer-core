@@ -127,7 +127,7 @@ public final class SearchHelper {
     public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -IDDOC_PARENT:*";
 
     private static final Object lock = new Object();
-    
+
     private static final Random random = new SecureRandom();
 
     /** Constant <code>patternNotBrackets</code> */
@@ -620,8 +620,7 @@ public final class SearchHelper {
                         }
                     }
                 }
-                
-                
+
             }
 
             //Add facet (grouping) field values
@@ -1898,11 +1897,13 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      * @should facetify correctly
      * @should leave bool fields unaltered
+     * @should leave year month day fields unaltered
      */
     public static String facetifyField(String fieldName) {
-        if (fieldName != null && fieldName.startsWith("BOOL_")) {
+        if (fieldName != null && (fieldName.startsWith("BOOL_") || fieldName.equals(SolrConstants._CALENDAR_YEAR)
+                || fieldName.equals(SolrConstants._CALENDAR_MONTH) || fieldName.equals(SolrConstants._CALENDAR_DAY))) {
             return fieldName;
-        } 
+        }
         return adaptField(fieldName, "FACET_");
     }
 
@@ -1947,6 +1948,7 @@ public final class SearchHelper {
      * @return modified field name
      * @should apply prefix correctly
      * @should not apply prefix to regular fields if empty
+     * @should not apply facet prefix to calendar fields
      * @should remove untokenized correctly
      */
     static String adaptField(String fieldName, String prefix) {
@@ -1969,7 +1971,6 @@ public final class SearchHelper {
                 if ("SORT_".equals(prefix)) {
                     return "SORTNUM_" + fieldName;
                 }
-                return prefix + fieldName;
             default:
                 if (StringUtils.isNotEmpty(prefix)) {
                     if (fieldName.startsWith("MD_")) {
