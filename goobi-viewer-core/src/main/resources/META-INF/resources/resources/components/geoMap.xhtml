@@ -52,6 +52,7 @@
        			geoMap.setMarkerIcon(#{cc.attrs.geoMap.markerAsJSON});
             	geoMap.init(view, features);
             	
+            	
             	if(#{cc.attrs.geoMap.showPopover}) {
             	    geoMap.onFeatureClick.subscribe(feature => {
             	       console.log("clicked on feature");

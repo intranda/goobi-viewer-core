@@ -74,6 +74,9 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.prototype.init = function(view, features) {
+       
+       if(_debug)console.log("init geomap with", view, features);
+       
         if(this.map) {
             this.map.remove();
         }
@@ -152,35 +155,41 @@ var viewerJS = ( function( viewer ) {
         //init feature layer
         this.locations = L.geoJSON([], {
             
+            onEachFeature: function(feature, layer) {
+            	if(_debug)console.log("onEachFeature ", feature, layer, this);
+            	
+            	layer.id = feature.id;
+                layer.view = feature.view;
+                    
+                layer.getId = function() {
+                    return this.id;
+                }
+                
+                rxjs.fromEvent(layer, "dragend")
+                .pipe(rxjs.operators.map(() => this.openPopup(layer)), rxjs.operators.map(() => this.updatePosition(layer)))
+                .subscribe(this.onFeatureMove);
+                rxjs.fromEvent(layer, "click").pipe(rxjs.operators.map(e => layer.feature)).subscribe(this.onFeatureClick);
+                
+                if(this.config.popover) {                    
+                    if(this.config.popoverOnHover) {                    
+                        rxjs.fromEvent(layer, "mouseover").subscribe(() => layer.openPopup());
+                        rxjs.fromEvent(layer, "mouseout").subscribe(() => layer.closePopup());
+                    }
+                    layer.bindPopup(() => this.createPopup(layer),{closeButton: !this.config.popoverOnHover});
+                }
+            	
+            	this.markers.push(layer);    
+                if(this.cluster) {
+                    this.cluster.addLayer(layer);
+                }
+            }.bind(this),
+            
             pointToLayer: function(geoJsonPoint, latlng) {
+            if(_debug)console.log("point to layer ", geoJsonPoint, latlng, this);
                 let marker = L.marker(latlng, {
                     draggable: this.config.allowMovingFeatures,
                     icon: this.getMarkerIcon()
                 });
-                marker.id = geoJsonPoint.id;
-                marker.view = geoJsonPoint.view;
-                    
-                marker.getId = function() {
-                    return this.id;
-                }
-                
-                rxjs.fromEvent(marker, "dragend")
-                .pipe(rxjs.operators.map(() => this.openPopup(marker)), rxjs.operators.map(() => this.updatePosition(marker)))
-                .subscribe(this.onFeatureMove);
-                rxjs.fromEvent(marker, "click").pipe(rxjs.operators.map(e => marker.feature)).subscribe(this.onFeatureClick);
-                
-                if(this.config.popover) {                    
-                    if(this.config.popoverOnHover) {                    
-                        rxjs.fromEvent(marker, "mouseover").subscribe(() => marker.openPopup());
-                        rxjs.fromEvent(marker, "mouseout").subscribe(() => marker.closePopup());
-                    }
-                    marker.bindPopup(() => this.createPopup(marker),{closeButton: !this.config.popoverOnHover});
-                }
-                
-                this.markers.push(marker);    
-                if(this.cluster) {
-                    this.cluster.addLayer(marker);
-                }
                 return marker;
             }.bind(this)
         });
@@ -200,10 +209,14 @@ var viewerJS = ( function( viewer ) {
         
         if(features && features.length > 0) {
             features.forEach(feature => {
-                this.addMarker(feature);
+            	let type = feature.geometry.type;
+            	if(_debug)console.log("add feature for " + type, feature);
+            	this.addMarker(feature);
             })
             let zoom = view ? view.zoom : this.config.initialView.zoom;
-            this.setView(this.getViewAroundFeatures(zoom));
+            let viewAroundFeatures = this.getViewAroundFeatures(zoom);
+            console.log("viewAroundFeatures", viewAroundFeatures);
+            this.setView(viewAroundFeatures);
         } else if(view){                                                    
             this.setView(view);
         }
@@ -439,14 +452,10 @@ var viewerJS = ( function( viewer ) {
         let features = this.getFeatures();
         if(features.length == 0) {
             return undefined;
-        } else if(features.length == 1) {
-            return {
-                "zoom": defaultZoom,
-                "center": features[0].geometry.coordinates
-            }
         } else {
-            let points = features.map(f => f.geometry.coordinates).map(c =>  L.latLng(c[1], c[0]));
-            let bounds = L.latLngBounds(points).pad(0.2);
+        	let bounds = L.latLngBounds();
+        	features.map(f => L.geoJson(f).getBounds()).forEach(b => bounds.extend(b));
+            bounds = bounds.pad(0.2);
             let center = bounds.getCenter();
             return {
                 "zoom": Math.min(this.map.getBoundsZoom(bounds), defaultZoom),
@@ -502,6 +511,7 @@ var viewerJS = ( function( viewer ) {
     viewer.GeoMap.prototype.addMarker = function(geoJson) {
         let id = this.markerIdCounter++;
         geoJson.id = id;
+        console.log("add location", geoJson, this.locations);
         this.locations.addData(geoJson);
         let marker = this.getMarker(id);
         if(_debug) {            
