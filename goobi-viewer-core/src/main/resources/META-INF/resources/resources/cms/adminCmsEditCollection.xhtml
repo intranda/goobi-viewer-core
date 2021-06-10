@@ -19,52 +19,56 @@
     <!-- CONTENT -->
     <ui:define name="content">
         <ui:fragment id="cmsCollectionsAccessControl" rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
+            
+            
             <div id="cmsEditCollection" class="cms-edit-collection">
-                <h:form id="cmsEditCollectionForm" prependId="false">
-                    <h2 class="admin__content-inner-title">#{cmsCollectionsBean.currentCollection.solrFieldValue}</h2>
-                        
-                    <div class="admin__content-inner-content">
-                        <!-- TRANSLATION -->
-                        <div class="cms-edit-collection__translation">
-    
-                            <!-- DESCRIPTION -->
-                            <div class="cms-edit-collection__text description">
-                                <div class="cms-edit-collection__text-label">
-                                    <h3 class="admin__h3">#{msg.cms_collections_description}</h3>
-                                </div>
-    
-                                <div class="cms-edit-collection__text-translation">
-                                    <ul class="nav nav-tabs" role="tablist">
-                                        <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
-                                            <li role="presentation" class="#{status.index == 0 ? 'active' : ''}">
-                                                <a href="#descriptionLanguage-#{status.index}" aria-controls="descriptionLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a>
-                                            </li>
-                                        </ui:repeat>
-                                    </ul>
-    
-                                    <div class="tab-content">
-                                        <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
-                                            <div role="tabpanel" class="tab-pane #{status.index == 0 ? 'active' : ''}" id="descriptionLanguage-#{status.index}">
-                                                <h:inputTextarea value="#{cmsCollectionsBean.getCurrentDescription(language).value}"
-                                                    styleClass="form-control tinyMCE -validation-input">
-													<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__collections_description}"/>
-                                                </h:inputTextarea>
-                                            </div>
-                                        </ui:repeat>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <div class="admin__title-bar">
+				<h2 class="admin__title">#{cmsCollectionsBean.currentCollection.solrFieldValue}</h2>
+			</div>
+			<div class="admin__content-inner-content">
+            <div class="admin__content-wrapper">
+            <div class="admin__content-main">
+                    
+                    <h:form id="cmsEditCollectionForm" prependId="false">
+
+                             <h3>#{msg.cms_collections_description}</h3>
+ 
+                             <div class="admin__cms-edit-collection-translation-box">
+						<!-- LANGUAGE TABS -->
+						<div class="admin__language-tabs">
+							<viewerComponent:localeSelector 
+							object="#{crowdsourcingBean.selectedCampaign}"
+							render="createCampaignForm:titleDataGroup"
+							execute="createCampaignForm:titleDataGroup"/>
+						</div> 
+ 
+                                 <div class="admin__default-block">
+<!--                                         <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status"> -->
+										<div class="form-group form-row">
+											<div class="col-2">#{msg.description}:</div>
+											<div class="col-10">
+		                                         <div class="#{status.index == 0 ? 'active' : ''}" id="descriptionLanguage-#{status.index}">
+		                                             <h:inputTextarea value="#{cmsCollectionsBean.getCurrentDescription(language).value}"
+		                                                 styleClass="form-control tinyMCE -validation-input">
+												<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__collections_description}"/>
+		                                             </h:inputTextarea>
+		                                         </div>
+	                                         </div>
+                                         </div>
+<!--                                         </ui:repeat> -->
+                                 </div>
+                             </div>
+
     
                         <!-- LINK -->
-                        <h3 class="admin__h3">#{msg.cms_collections_link}</h3>
+                        <h3>#{msg.cms_collections_link}</h3>
                         <div class="admin__default-block">
                             <p class="admin__boxed-entry-description">#{msg.admin__cms_collections_link_desc}</p>
                             <h:inputText id="textControlUrl" styleClass="form-control" value="#{cmsCollectionsBean.currentCollection.collectionUrl}" />
                         </div>
     
                         <!-- IMAGE -->
-                        <h3 class="admin__h3">#{msg.cms_collections_image}</h3>
+                        <h3>#{msg.cms_collections_image}</h3>
                         <div class="admin__default-block">
                             <p class="admin__boxed-entry-description">#{msg.admin__cms_collections_image_desc}</p>
                             
@@ -143,9 +147,8 @@
                                 value="#{msg.save}" action="#{cmsCollectionsBean.saveCurrentCollection()}" />
                         </div>
 
-                    </div>
                 </h:form>
-            </div>
+
             
             <h:panelGroup id="mediaSelectPanel">
 				<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
@@ -163,6 +166,80 @@
 	                   </div>
 				</ui:fragment>
 	        </h:panelGroup>
+	    </div>
+
+	        
+	    <div class="admin__content-side -sticky">
+							<div class="admin__default-block -warning">
+
+								<!-- GROUP TITLE -->
+								<h3>#{msg.admin__cms_collections_translation}</h3>
+
+								<!-- DESCRIPTION AVAILABLE -->
+								<ui:fragment rendered="#{group.description ne ''}">
+									<div class="admin__form-help-text in mb-2">
+										#{msg[group.description]}</div>
+								</ui:fragment>
+
+								<!-- NO DESCRIPTION AVAILABLE -->
+								<ui:fragment rendered="#{group.description eq ''}">
+									<div class="admin__form-help-text in mb-2" aria-disabled="true">
+										(#{msg.admin__label__no_description_available})</div>
+								</ui:fragment>
+
+								<!-- TRANSLATION ACTION -->
+								<div class="row">
+									<div class="col-12 d-flex justify-content-center">
+										<!-- TRANSLATIONS INCOMPLETE - SHOW TRANSLATE BUTTON -->
+										<ui:fragment
+											rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
+											<a class="btn btn--full"
+												href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+												aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translations_translate}</a>
+
+										</ui:fragment>
+
+										<!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
+										<ui:fragment
+											rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
+											<a class="btn btn--default"
+												href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+												aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.show}</a>
+										</ui:fragment>
+									</div>
+								</div>
+							</div>
+							
+							
+						<div class="admin__default-block">
+							<h2>#{msg.admin__cms_collections_information}</h2>
+							<div class="admin__record-notes-info-box">
+								<div class="admin__record-notes-image-wrapper">
+<!-- 									<img class="admin__record-notes-image" -->
+<!-- 										alt="#{note.recordTitle.getValue(navigationHelper.locale).orElse('')}" -->
+<!-- 										title="#{note.recordTitle.getValue(navigationHelper.locale).orElse('')}" -->
+<!-- 										src="#{cmsRecordNotesBean.getThumbnailUrl(note, 350, 420)}" /> -->
+								</div>
+								<div class="admin__record-notes-metadata">
+<!-- 									<ui:include -->
+<!-- 										src="/resources/includes/metadata/metadataElement.xhtml"> -->
+<!-- 										<ui:param name="metadataElement" -->
+<!-- 											value="" /> -->
+<!-- 									</ui:include> -->
+								</div>
+							</div>
+						</div>
+
+						</div>
+
+						
+						
+						
+						
+						</div>
+
+	    </div>
+	    </div>
             
         </ui:fragment>
     </ui:define>

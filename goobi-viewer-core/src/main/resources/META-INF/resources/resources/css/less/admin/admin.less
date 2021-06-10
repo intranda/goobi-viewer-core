@@ -1114,6 +1114,54 @@
 		}
 	}
 	
+	// CMS COLLECTIONS
+	&__cms-collections-tree-wrapper {
+		padding: 1.5rem;
+	}
+	&__cms-collections-entry {
+			border-top: 1px solid @middlegray;
+			&:last-of-type {
+				border-bottom: 1px solid @middlegray;
+			}
+		&:hover {
+			.admin__cms-collections-entry-edit {
+				opacity: 1.0;
+			}
+		}
+	}
+	&__cms-collections-entry-end {
+		align-items: center;
+		display: flex;
+		justify-content: flex-end;
+	}
+	&__cms-collections-entry-edit {
+		transition: opacity 0.2s ease;
+		opacity: 0;
+		padding: 0 2rem;
+	}
+	&__cms-collections-tree-listing {
+		width: 100%;
+		list-style: none;
+		padding-left: 0;
+		border-left: 1px solid @middlegray;
+		border-right: 1px solid @middlegray;
+	}
+	
+	&__cms-collections-progress-bar {	
+		background: @grayBar;
+		height: 12px;
+		width: auto;
+		position: relative;
+		display: flex;
+	}
+	&__cms-collections-progress-bar-info {	
+		position: relative;
+		display: flex;
+	}
+	&__cms-edit-collection-translation-box {
+	}
+	
+	
 	// ADMIN TOPBAR FRONTEND
 	&__topbar-frontend {
 		font-family: 'Inter', sans-serif;

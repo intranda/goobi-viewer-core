@@ -26,33 +26,39 @@
 		<ui:fragment id="cmsCollectionsAccessControl"
 			rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
 			<div id="cmsCollections">
+			
+				<!-- TITLE -->
 				<div class="admin__title-bar">
 					<h2 class="admin__title">#{msg.admin__cms_collections}</h2>
 				</div>
-				<p class="admin__boxed-entry-description">#{msg.admin__cms_collections_desc}</p>
 
 				<div class="admin__content-inner-content">
+				
+				<!-- GENERAL DESCRIPTION -->
+				<div class="admin__info-text">#{msg.admin__cms_collections_desc}</div>
 
+					<!-- COLLECTIONS TREE/FORM -->
 					<h:form id="cmsCollectionsForm" prependId="false">
 
-						<!-- COLLECTION TREE -->
 						<div class="admin__content-wrapper">
 						
 							<div class="admin__content-main -sticky">
 								<h3>#{msg.admin__cms_collections_collection_tree}</h3>
-                                    <ul class="nav nav-tabs" role="tablist">
-                                        <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
-                                            <li role="presentation" class="#{status.index == 0 ? 'active' : ''}">
-                                                <a href="#descriptionLanguage-#{status.index}" aria-controls="descriptionLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a>
-                                            </li>
-                                        </ui:repeat>
-                                    </ul>
+                                    
+								<!-- LANGUAGE TABS -->
+								<div class="admin__language-tabs">
+									<viewerComponent:localeSelector 
+									object="#{crowdsourcingBean.selectedCampaign}"
+									render="createCampaignForm:titleDataGroup"
+									execute="createCampaignForm:titleDataGroup"/>
+								</div>   
                                 <div class="tab-content">
-                                <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
-								<div class="admin__entry-list">
-									<ul class="collection">
+<!--                                 <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status"> -->
+								<div class="admin__default-block">
+								
+									<ul class="admin__cms-collections-tree-listing">
 										<ui:repeat var="browseDcElement" value="#{browseBean.getCollection(cmsCollectionsBean.solrField).visibleDcElements}">
-											<li class="collection__item collection__item--level-#{browseDcElement.level}"
+											<li class="admin__cms-collections-entry admin__cms-collections-entry -level-#{browseDcElement.level}"
 												style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
 												<div class="row">
 													<div class="col-2 col-sm-1 collection__structure-col">
@@ -98,7 +104,7 @@
 															</div>
 														</div>
 													</div>
-													<div class="col-3 col-sm-2 collection__item-end">
+													<div class="col-3 col-sm-2 admin__cms-collections-entry-end">
 														<!-- TOGGLE DESCRIPTION -->
 														<h:panelGroup
 															rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
@@ -123,11 +129,9 @@
 														</h:panelGroup>
 
 														<!-- TODO: EDIT -->
-														<div>
                                                 			<a href="#{navigationHelper.applicationUrl}admin/cms/collections/edit/#{browseDcElement.name}/"
-                                                				class="admin__boxed-entry-actions-edit"
+                                                				class="admin__cms-collections-entry-edit"
                                                 				aria-label="#{msg.edit}: #{browseDcElement.name}">#{msg.edit}</a>
-														</div>
 													</div>
 
 													<!-- DESCRIPTION -->
@@ -150,67 +154,79 @@
 										</ui:repeat>
 									</ul>
 								</div>
-								</ui:repeat>
+<!-- 								</ui:repeat> -->
 								</div>
 							</div>
 
 
 							<!-- SIDEBAR -->
-							<div class="admin__content-side">
+							<div class="admin__content-side -sticky">
 
 							<!-- TRANSLATIONS -->
 								<c:choose>
 									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles()}">
 											<ui:repeat var="group"
 												value="#{adminBean.getTranslationGroupsForSolrField(cmsCollectionsBean.solrField)}">
-												<div class="admin__boxed-entry -w100 -std-bottom-pad">
-													<div class="row">
-														<div class="col-12 col-lg-9">
-															<!-- GROUP TITLE -->
-															<h3>#{msg.admin__cms_collections_translation}</h3>
+												<div class="admin__default-block -warning">
+	
+													<!-- GROUP TITLE -->
+													<h3>#{msg.admin__cms_collections_translation}</h3>
 
-															<!-- DESCRIPTION -->
-															<ui:fragment rendered="#{group.description ne ''}">
-																<p class="admin__boxed-entry-description">#{msg[group.description]}</p>
-															</ui:fragment>
-															<ui:fragment rendered="#{group.description eq ''}">
-																<p class="admin__boxed-entry-description-empty"
-																	aria-disabled="true">
-																	(#{msg.admin__label__no_description_available})</p>
-															</ui:fragment>
-
+													<!-- DESCRIPTION AVAILABLE -->
+													<ui:fragment rendered="#{group.description ne ''}">
+														<div class="admin__form-help-text in mb-2">
+															#{msg[group.description]}
 														</div>
-
-														<div
-															class="col-12 col-lg-3 d-flex justify-content-center justify-content-lg-end">
-															<div class="d-flex flex-column align-items-center">
-
-																<ui:fragment
-																	rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
-																	<a class="btn btn--full"
-																		href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
-																		aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translations_translate}</a>
-																	<div class="admin__translations-overview-number">(#{group.fullyTranslatedEntryCount}
-																		#{msg.of} #{group.entryCount})</div>
-																</ui:fragment>
-
-																<ui:fragment
-																	rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
-																	<a class="btn btn--default"
-																		href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
-																		aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.show}</a>
-																</ui:fragment>
-
+													</ui:fragment>
+													
+													<!-- NO DESCRIPTION AVAILABLE -->
+													<ui:fragment rendered="#{group.description eq ''}">
+														<div class="admin__form-help-text in mb-2"
+															aria-disabled="true">
+															(#{msg.admin__label__no_description_available})</div>
+													</ui:fragment>
+													
+													<!-- PROGRESS BAR FOR COLLECTION NAMES-->
+													<div class="admin__cms-collections-progress-bar-wrapper mb-4">
+													
+														<div class="row no-gutters admin__cms-collections-progress-bar-info">
+			                                                <div class="col-8">
+			                                                	#{msg.progress}
+			                                                </div>
+															<div class="col-4 d-flex justify-content-end mb-1">
+																<span>(#{group.fullyTranslatedEntryCount} #{msg.of} #{group.entryCount})</span>
 															</div>
 														</div>
-
+		                                                    
+			                                        	<div class="admin__cms-collections-progress-bar">
+															<div class="admin__dashboard-translations-progress-complete"
+																style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
+															<div class="admin__dashboard-translations-progress-partially"
+																style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
+														</div>
+													
 													</div>
-
-													<div class="admin__boxed-entry-progress">
-														<div class="admin__boxed-entry-progress-complete"
-															style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
-														<div class="admin__boxed-entry-progress-partially"
-															style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
+													
+													<!-- TRANSLATION ACTION -->
+													<div class="row">
+														<div class="col-12 d-flex justify-content-center">
+															<!-- TRANSLATIONS INCOMPLETE - SHOW TRANSLATE BUTTON -->
+															<ui:fragment
+																rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
+																<a class="btn btn--full"
+																	href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+																	aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translations_translate}</a>
+	
+															</ui:fragment>
+			
+															<!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
+															<ui:fragment
+																rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
+																<a class="btn btn--default"
+																	href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+																	aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.show}</a>
+															</ui:fragment>
+														</div>
 													</div>
 												</div>
 											</ui:repeat>
@@ -225,26 +241,38 @@
 								</c:choose>
 
 								<!-- COLLECTION INDEX FIELD -->
-								<div class="admin__boxed-entry">
-									<div class="#{fn:length(cmsCollectionsBean.allCollectionFields) > 1 ? '' : 'd-none'} form-group form-row">
-										<h3><label for="SolrFieldSelect">#{msg.admin__cms_collections_solr_field}:</label></h3>
-										<p class="admin__boxed-entry-description">#{msg.admin__cms_collections_solr_field_desc}</p>
-										<div>
-											<h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect"
-												value="#{cmsCollectionsBean.solrField}"
-												styleClass="form-control">
-												<f:selectItems
-													value="#{cmsCollectionsBean.allCollectionFields}" />
-												<f:ajax render="@form"></f:ajax>
-											</h:selectOneMenu>
-										</div>
+								<div class="admin__default-block">
+<!-- 							<div class="#{fn:length(cmsCollectionsBean.allCollectionFields) > 1 ? '' : 'd-none'} form-group form-row"> -->
+									<h3>#{msg.admin__cms_collections_solr_field}:</h3>
+									<div class="admin__form-help-text in mb-4">
+										#{msg.admin__cms_collections_solr_field_desc}
+									</div>
+									
+									<div class="d-flex">
+										<h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect"
+											value="#{cmsCollectionsBean.solrField}"
+											styleClass="form-control">
+											<f:selectItems
+												value="#{cmsCollectionsBean.allCollectionFields}" />
+											<f:ajax render="@form"></f:ajax>
+										</h:selectOneMenu>
 									</div>
 								</div>
 								
 								<!--TODO: PREVIEW -->
-								<div class="admin__boxed-entry">
+								<div class="admin__default-block">
 									<h3>#{msg.admin__cms_collections_preview}:</h3>
-									
+									<div class="admin__form-help-text in mb-4">
+										#{msg.admin__cms_collections_preview_description}
+									</div>
+									<div class="row">
+										<div class="col-12 d-flex justify-content-center">
+				                             <h:commandLink styleClass="btn btn--default">
+				                                 <h:outputText value="#{msg.preview}" />
+				                                 <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{lang}" />
+				                             </h:commandLink>
+			                             </div>
+									</div>
 								</div>
 
 							</div>
