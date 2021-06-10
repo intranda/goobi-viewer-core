@@ -2668,24 +2668,14 @@ public class SearchBean implements SearchInterface, Serializable {
        map.setShowPopover(true);
        //set initial zoom to max zoom so map will be as zoomed in as possible
        map.setInitialView("{" +
-            "\"zoom\": 12," +
+            "\"zoom\": 5," +
             "\"center\": [11.073397, -49.451993]" +
             "}");
        List<String> features = new ArrayList<>();
        if(this.currentSearch != null) {
+           
            for (Location location : this.currentSearch.getHitsLocationList()) {
-               double[] coords = {location.getLng(), location.getLat()};
-               JSONObject feature = new JSONObject();
-               JSONObject geometry = new JSONObject();
-               JSONObject properties = new JSONObject();
-               properties.put("title", location.getLabel());
-               properties.put("link", location.getLink());
-               feature.put("properties", properties);
-               geometry.put("coordinates", coords);
-               geometry.put("type", "Point");
-               feature.put("geometry", geometry);
-               feature.put("type", "Feature");
-               features.add(feature.toString());
+               features.add(location.getGeoJson());
         }
            map.setFeatures(features);
        }
