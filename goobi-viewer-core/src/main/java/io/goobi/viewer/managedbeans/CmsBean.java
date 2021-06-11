@@ -2342,7 +2342,6 @@ public class CmsBean implements Serializable {
     public List<String> getSubthemeDiscriminatorValues() throws PresentationException, IndexUnreachableException {
         String subThemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
         if (StringUtils.isNotBlank(subThemeDiscriminatorField)) {
-            subThemeDiscriminatorField = subThemeDiscriminatorField + "_UNTOKENIZED";
             List<String> values = SearchHelper.getFacetValues(subThemeDiscriminatorField + ":*", subThemeDiscriminatorField, 0);
             return values;
         }
