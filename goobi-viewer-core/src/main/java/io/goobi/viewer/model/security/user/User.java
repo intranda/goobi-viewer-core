@@ -1085,7 +1085,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
                     if (license.isPrivCmsAllSubthemes()) {
                         return rawValues;
                     }
-                    if (!license.getAllowedCmsTemplates().isEmpty()) {
+                    if (license.isPrivCmsAllTemplates() || !license.getAllowedCmsTemplates().isEmpty()) {
                         ret.addAll(license.getSubthemeDiscriminatorValues());
                     }
                 }
