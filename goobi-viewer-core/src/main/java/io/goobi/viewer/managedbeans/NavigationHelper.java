@@ -66,6 +66,7 @@ import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -229,6 +230,20 @@ public class NavigationHelper implements Serializable {
         this.isCmsPage = isCmsPage;
     }
 
+    /**
+     * Produce an identifier string for a cms page to use for identifying the page in the navigation bar
+     * 
+     * @param cmsPage
+     * @return
+     */
+    public static String getCMSPageNavigationId(CMSPage cmsPage) {
+        return "cms_" + String.format("%04d", cmsPage.getId());
+    }
+    
+    public void setCurrentPage(CMSPage cmsPage) {
+        setCurrentPage(getCMSPageNavigationId(cmsPage), false, true, true);
+    }
+    
     /**
      * <p>
      * Setter for the field <code>currentPage</code>.

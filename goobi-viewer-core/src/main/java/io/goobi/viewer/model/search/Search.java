@@ -58,7 +58,10 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
+import io.goobi.viewer.model.maps.Point;
+import io.goobi.viewer.model.maps.Polygon;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -412,6 +415,7 @@ public class Search implements Serializable {
                 }
                 if(facets.getGeoFacetting().isActive()) {
                     this.hitLocationList = getLocations(facets.getGeoFacetting().getField(), resp.getResults());
+                    this.hitLocationList.sort((l1,l2) -> Double.compare(l2.getArea().getDiameter(), l1.getArea().getDiameter()));
                 }
                 logger.debug("Total search hits: {}", hitsCount);
             }
@@ -494,7 +498,7 @@ public class Search implements Serializable {
                Boolean hasImages = (Boolean) doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE);
                locations.addAll(getLocations(doc.getFieldValue(solrField))
                        .stream()
-                       .map(p -> new Location(p[0], p[1], label, Location.getRecordURI(pi, PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false))))
+                       .map(p -> new Location(p, label, Location.getRecordURI(pi, PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false))))
                        .collect(Collectors.toList()));
            } catch(IllegalArgumentException e) {
                System.out.println("\"" + doc.getFieldValue(solrField) + "\"");
@@ -505,24 +509,39 @@ public class Search implements Serializable {
         return locations;
     }
 
-    protected static List<double[]> getLocations(Object o) {
-        List<double[]> locs = new ArrayList<>();
+    protected static List<IArea> getLocations(Object o) {
+        List<IArea> locs = new ArrayList<>();
         if(o == null) {
             return locs;
         } else if (o instanceof List) {
             for (int i = 0; i < ((List) o).size(); i++) {
                 locs.addAll(getLocations(((List) o).get(i)));
-                //locs.add(parsePoint(((List) o).get(i), ((List) o).get(i+1)));                
             }
             return locs;
         } else if(o instanceof String) {
-            Matcher matcher = Pattern.compile("([\\d\\.\\-]+)\\s([\\d\\.\\-]+)").matcher((String)o);
-            while(matcher.find() && matcher.groupCount() == 2) {
-                locs.add(parsePoint(matcher.group(1), matcher.group(2)));                
-            } 
+            String s = (String)o;
+            Matcher polygonMatcher = Pattern.compile("POLYGON\\(\\(([0-9.-]+\\s[0-9.-]+(?:,\\s)?)+\\)\\)").matcher(s);
+            while(polygonMatcher.find()) {
+                String match = polygonMatcher.group();
+                locs.add(new Polygon(getPoints(match)));
+                s = s.replace(match, "");
+                polygonMatcher = Pattern.compile("POLYGON\\(\\(([0-9.-]+\\s[0-9.-]+(?:,\\s)?)+\\)\\)").matcher(s);
+            }
+            if(StringUtils.isNotBlank(s)) {
+                locs.addAll(Arrays.asList(getPoints(s)).stream().map(p -> new Point(p[0], p[1])).collect(Collectors.toList()));
+            }
             return locs;
         }
         throw new IllegalArgumentException(String.format("Unable to parse %s of type %s as location", o.toString(), o.getClass()));
+    }
+    
+    protected static double[][] getPoints(String value) {
+        List<double[]> points = new ArrayList<>();
+        Matcher matcher = Pattern.compile("([\\d\\.\\-]+)\\s([\\d\\.\\-]+)").matcher(value);
+        while(matcher.find() && matcher.groupCount() == 2) {
+            points.add(parsePoint(matcher.group(1), matcher.group(2)));                
+        } 
+        return points.toArray(new double[points.size()][2]);
     }
 
     protected static double[] parsePoint(Object x, Object y) {

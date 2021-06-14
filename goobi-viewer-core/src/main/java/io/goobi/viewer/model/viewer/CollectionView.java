@@ -452,6 +452,7 @@ public class CollectionView {
      * @return a {@link java.lang.String} object.
      */
     public String toggleChildren(HierarchicalBrowseDcElement element) {
+        logger.trace("toggleChildren: {}", element.getName());
         if (element.isHasSubelements()) {
             if (element.isShowSubElements()) {
                 hideChildren(element);
@@ -474,7 +475,6 @@ public class CollectionView {
      * @param splittingChar a {@link java.lang.String} object.
      * @return A sorted list.
      */
-    @SuppressWarnings("unchecked")
     protected static List<HierarchicalBrowseDcElement> sortDcList(List<HierarchicalBrowseDcElement> inDcList,
             List<DcSortingList> sortCriteriaSuperList, String topElement, String splittingChar) {
         if (sortCriteriaSuperList != null) {

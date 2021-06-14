@@ -21,7 +21,7 @@
 	                <h:panelGroup rendered="#{cc.attrs.megaMenu == false}">
 	                    <ui:repeat var="navItem" value="#{cmsBean.navigationMenuItems}">
 	                        <h:panelGroup rendered="#{navItem.valid and navItem.shouldDisplay}">
-	                            <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''}#{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
+	                            <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                <!-- WITHOUT SUBMENU -->
 	                                <h:panelGroup rendered="#{navItem.childItems.isEmpty()}">
 	                                    <component:navigationLink navItem="#{navItem}" />
@@ -41,7 +41,7 @@
 	                                        <ul>
 	                                            <ui:repeat varStatus="count" var="child" value="#{parentItem.childItems}">
 	                                                <h:panelGroup rendered="#{child.valid and child.shouldDisplay}">
-	                                                    <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''}#{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
+	                                                    <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                                        <!-- WITHOUT SUBMENU -->
 	                                                        <h:panelGroup rendered="#{child.childItems.isEmpty()}">
 	                                                            <component:navigationLink navItem="#{child}" />
@@ -60,7 +60,7 @@
 	                                                                <ul>
 	                                                                    <ui:repeat varStatus="count" var="child1" value="#{child.childItems}">
 	                                                                        <h:panelGroup rendered="#{child1.valid and child1.shouldDisplay}">
-	                                                                            <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
+	                                                                            <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                                                                <!-- WITHOUT SUBMENU -->
 	                                                                                <h:panelGroup rendered="#{child1.childItems.isEmpty()}">
 	                                                                                    <component:navigationLink navItem="#{child1}" />
@@ -80,7 +80,7 @@
 	                                                                                        <ul>
 	                                                                                            <ui:repeat varStatus="count" var="child2" value="#{child1.childItems}">
 	                                                                                                <h:panelGroup rendered="#{child2.valid and child2.shouldDisplay}">
-	                                                                                                    <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
+	                                                                                                    <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                                                                                        <!-- WITHOUT SUBMENU -->
 	                                                                                                        <h:panelGroup rendered="#{child2.childItems.isEmpty()}">
 	                                                                                                            <component:navigationLink navItem="#{child2m}" />
@@ -101,7 +101,7 @@
 	                                                                                                                <ul>
 	                                                                                                                    <ui:repeat varStatus="count" var="child3" value="#{child2.childItems}">
 	                                                                                                                        <h:panelGroup rendered="#{child3.valid and child3.shouldDisplay}">
-	                                                                                                                            <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
+	                                                                                                                            <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                                                                                                                <!-- WITHOUT SUBMENU -->
 	                                                                                                                                <h:panelGroup rendered="#{child3.childItems.isEmpty()}">
 	                                                                                                                                    <component:navigationLink navItem="#{child3}" />
@@ -122,7 +122,7 @@
 	                                                                                                                                        <ul>
 	                                                                                                                                            <ui:repeat varStatus="count" var="child4" value="#{child3.childItems}">
 	                                                                                                                                                <h:panelGroup rendered="#{child4.valid and child4.shouldDisplay}">
-	                                                                                                                                                    <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
+	                                                                                                                                                    <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                                                                                                                                        <component:navigationLink navItem="#{child4}" />
 	                                                                                                                                                    </li>
 	                                                                                                                                                </h:panelGroup>
@@ -163,7 +163,7 @@
 	                <h:panelGroup rendered="#{cc.attrs.megaMenu == true}">
 	                    <ui:repeat var="navItem" value="#{cmsBean.navigationMenuItems}">
 	                        <h:panelGroup rendered="#{navItem.valid}">
-	                            <li class="#{!navItem.childItems.isEmpty() ? 'navigation__megamenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel ? 'active' : ''}">
+	                            <li class="#{!navItem.childItems.isEmpty() ? 'navigation__megamenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                <!-- WITHOUT SUBMENU -->
 	                                <h:panelGroup rendered="#{navItem.childItems.isEmpty()}">
 	                                    <component:navigationLink navItem="#{navItem}" />
@@ -198,7 +198,7 @@
 	                                                                        <ul>
 	                                                                            <ui:repeat varStatus="count" var="child1" value="#{child.childItems}">
 	                                                                                <h:panelGroup rendered="#{child1.valid}">
-	                                                                                    <li class="navigation__megamenu-item #{navigationHelper.currentPage == child1.itemLabel ? 'active' : ''}">
+	                                                                                    <li class="navigation__megamenu-item #{child1.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                                                                        <component:navigationLink navItem="#{child1}" />
 	                                                                                    </li>
 	                                                                                </h:panelGroup>
