@@ -878,7 +878,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public List<String> autocomplete(String suggest) throws IndexUnreachableException {
         logger.trace("autocomplete: {}", suggest);
         List<String> result = SearchHelper.searchAutosuggestion(suggest, facets.getCurrentFacets());
-        Collections.sort(result);
+        //Collections.sort(result);
 
         return result;
     }
