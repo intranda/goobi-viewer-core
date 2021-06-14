@@ -769,16 +769,16 @@ public final class SearchHelper {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static List<String> searchAutosuggestion(String suggest, List<IFacetItem> currentFacets) throws IndexUnreachableException {
+    public static List<String> searchAutosuggestion(final String suggest, List<IFacetItem> currentFacets) throws IndexUnreachableException {
         if (suggest.contains(" ")) {
             return Collections.emptyList();
         }
 
         List<String> ret = new ArrayList<>();
         try {
-            suggest = suggest.toLowerCase();
+            String suggestLower = suggest.toLowerCase();
             StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append("+").append(SolrConstants.DEFAULT).append(':').append(ClientUtils.escapeQueryChars(suggest)).append('*');
+            sbQuery.append("+").append(SolrConstants.DEFAULT).append(':').append(ClientUtils.escapeQueryChars(suggestLower)).append('*');
             if (currentFacets != null && !currentFacets.isEmpty()) {
                 for (IFacetItem facetItem : currentFacets) {
                     if (sbQuery.length() > 0) {
@@ -790,28 +790,18 @@ public final class SearchHelper {
             }
             sbQuery.append(getAllSuffixes());
             logger.debug("Autocomplete query: {}", sbQuery.toString());
-            SolrDocumentList hits = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(sbQuery.toString(), 100, null, Collections.singletonList(SolrConstants.DEFAULT));
-            for (SolrDocument doc : hits) {
-                String defaultValue = (String) doc.getFieldValue(SolrConstants.DEFAULT);
-                if (StringUtils.isEmpty(defaultValue)) {
-                    continue;
-                }
-                String[] bla = defaultValue.split(" ");
-                for (String s : bla) {
-                    String st = s.trim();
-                    st = st.toLowerCase();
-                    if (!" ".equals(st) && st.startsWith(suggest)) {
-                        while (!StringUtils.isAlphanumeric(st.substring(st.length() - 1))) {
-                            st = st.substring(0, st.length() - 1);
-                        }
-                        if (!ret.contains(st)) {
-                            ret.add(st);
-                        }
-                    }
-                }
-            }
+            
+            QueryResponse response = DataManager.getInstance()
+                    .getSearchIndex().searchFacetsAndStatistics(sbQuery.toString(), null, Collections.singletonList(SolrConstants.DEFAULT), 1, null, false);
+            FacetField facetField = response.getFacetFields().get(0);
+            
+            ret = facetField.getValues().stream()
+            .filter( count -> count.getName().toLowerCase().startsWith(suggestLower))
+            .sorted( (c1,c2) -> Long.compare(c2.getCount(), c1.getCount()) )
+            .map(Count::getName)
+            .distinct()
+            .collect(Collectors.toList());
+            
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
