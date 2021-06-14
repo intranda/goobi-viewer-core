@@ -1599,24 +1599,25 @@
 
 
 // VISUALLY CONNECTED RADIO BUTTONS
+
+.connected-top,
+.connected-middle,
+.connected-bottom {
+    padding-left: 52px;
+    padding-top: 10px;
+    background-position: 0px top;
+    padding-bottom: 10px;
+    background-repeat: no-repeat;
+}
 .connected-top {
     background-image: url(../../images/backend/radio_choice_top.svg);
-    background-repeat: no-repeat;
-    background-size: 54px 1254px;
-    padding-left: 74px;
-    padding-top: 10px;
-    margin-bottom: 3px;
-    background-position: 0% top;
-    padding-bottom: 10px;
+}
+.connected-middle {
+	background-image: url(../../images/backend/radio_choice_middle.svg);
+	background-position: 0px -24px;
 }
 .connected-bottom {
-    padding-left: 75px;
-    background-repeat: no-repeat;
     background-image: url(../../images/backend/radio_choice_bottom.svg);
-    padding-top: 10px;
-    padding-bottom: 10px;
-    background-position: 0% top;
-    background-size: 53px 100px;
 }
 input[type="radio"]:checked+label {
     font-weight: bold;
