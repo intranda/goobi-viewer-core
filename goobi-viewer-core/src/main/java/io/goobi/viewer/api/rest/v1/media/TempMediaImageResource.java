@@ -15,7 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v1.media;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.TEMP_MEDIA_FILES_FILE_IMAGE;
 
 import java.io.IOException;
 import java.net.URI;
@@ -43,7 +43,6 @@ import org.apache.commons.lang3.StringUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import de.unigoettingen.sub.commons.util.PathConverter;
@@ -68,10 +67,10 @@ public class TempMediaImageResource extends ImageResource {
     
     public TempMediaImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Context AbstractApiUrlManager urls,
             @Parameter(description = "Temp folder name") @PathParam("folder") String folder,
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
         super(context, request, response, "", getMediaFileUrl(folder, filename).toString());
+        AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         request.setAttribute("filename", this.imageURI.toString());
         String requestUrl = request.getRequestURI();
         String baseImageUrl = urls.path(ApiUrls.TEMP_MEDIA_FILES, ApiUrls.TEMP_MEDIA_FILES_FILE).params(folder, filename).build();

@@ -157,7 +157,7 @@ public class ActiveDocumentBean implements Serializable {
 
     private String clearCacheMode;
 
-    private CMSSidebarElement mapWidget = null;
+    private Map<String, CMSSidebarElement> mapWidget = new HashMap<>();
 
     private int reloads = 0;
 
@@ -238,7 +238,6 @@ public class ActiveDocumentBean implements Serializable {
             prevHit = null;
             nextHit = null;
             group = false;
-            mapWidget = null; //mapWidget needs to be reset when PI changes
             clearCacheMode = null;
             prevDocstructUrlCache.clear();
             nextDocstructUrlCache.clear();
@@ -2218,14 +2217,25 @@ public class ActiveDocumentBean implements Serializable {
         this.clearCacheMode = clearCacheMode;
     }
 
-    public CMSSidebarElement getMapWidget() throws PresentationException, DAOException {
-        if (this.mapWidget == null) {
-            this.mapWidget = generateMapWidget();
+    /**
+     * Get a CMSSidebarElement with a map containing all GeoMarkers for the current PI. The widget is stored in the bean,
+     * but refreshed each time the PI changes
+     * 
+     * @return
+     * @throws PresentationException
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    public synchronized CMSSidebarElement getMapWidget() throws PresentationException, DAOException, IndexUnreachableException {
+        CMSSidebarElement widget = this.mapWidget.get(getPersistentIdentifier());
+        if(widget == null) {
+            widget = generateMapWidget(getPersistentIdentifier());
+            this.mapWidget = Collections.singletonMap(getPersistentIdentifier(), widget);
         }
-        return this.mapWidget;
+        return widget;
     }
 
-    public CMSSidebarElement generateMapWidget() throws PresentationException, DAOException {
+    public CMSSidebarElement generateMapWidget(String pi) throws PresentationException, DAOException {
         CMSSidebarElement widget = new CMSSidebarElement();
         widget.setType("widgetGeoMap");
         try {

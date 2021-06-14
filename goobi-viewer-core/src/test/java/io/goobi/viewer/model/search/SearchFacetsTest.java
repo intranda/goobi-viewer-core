@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -30,8 +31,6 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.SearchBean;
-import io.goobi.viewer.model.search.FacetItem;
-import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class SearchFacetsTest extends AbstractSolrEnabledTest {
@@ -227,7 +226,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     public void generateFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
         facets.setCurrentFacetString("MD_FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
-        Assert.assertEquals("FACET_FIELD1:a AND FIELD2:b AND FACET_YEAR:[c TO d]", facets.generateFacetFilterQuery(true, false));
+        Assert.assertEquals("FACET_FIELD1:a AND FIELD2:b AND YEAR:[c TO d]", facets.generateFacetFilterQuery(true, false));
     }
 
     /**

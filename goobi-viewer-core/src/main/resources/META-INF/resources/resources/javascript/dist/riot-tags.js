@@ -1908,7 +1908,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	this.isShowThumbs = function() {
-		if(this.opts.item.reviewMode) {
+		if(this.opts.item.reviewMode && this.opts.item.pageStatisticMode) {
 
 			let count = 0;
 			for(let status of this.opts.item.pageStatusMap.values()) {
