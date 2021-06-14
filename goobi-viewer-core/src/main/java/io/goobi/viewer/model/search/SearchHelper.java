@@ -778,7 +778,7 @@ public final class SearchHelper {
         try {
             suggest = suggest.toLowerCase();
             StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.DEFAULT).append(':').append(ClientUtils.escapeQueryChars(suggest)).append('*');
+            sbQuery.append("+").append(SolrConstants.DEFAULT).append(':').append(ClientUtils.escapeQueryChars(suggest)).append('*');
             if (currentFacets != null && !currentFacets.isEmpty()) {
                 for (IFacetItem facetItem : currentFacets) {
                     if (sbQuery.length() > 0) {
