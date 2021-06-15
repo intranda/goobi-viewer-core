@@ -968,7 +968,7 @@ public class ActiveDocumentBean implements Serializable {
 
         int page;
         int page2 = Integer.MAX_VALUE;
-        logger.trace("given range: {}", pageOrderRange);
+        // logger.trace("given range: {}", pageOrderRange);
         if (pageOrderRange.contains("-")) {
             boolean firstMinus = false;
             boolean secondMinus = false;
@@ -1012,7 +1012,7 @@ public class ActiveDocumentBean implements Serializable {
             page2 = Integer.MAX_VALUE;
         }
         String range = page + (page2 != Integer.MAX_VALUE ? "-" + page2 : "");
-        logger.trace("final range: {}", range);
+        // logger.trace("final range: {}", range);
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                 .append('/')
                 .append(PageType.getByName(pageType).getName())
@@ -1125,7 +1125,7 @@ public class ActiveDocumentBean implements Serializable {
      * @should return correct range in double page mode if currently showing one page
      */
     public String getPageUrl(int step) throws IndexUnreachableException, DAOException {
-        logger.trace("getPageUrl: {}", step);
+        // logger.trace("getPageUrl: {}", step);
         if (viewManager == null) {
             return getPageUrl(imageToShow);
         }
@@ -1139,7 +1139,7 @@ public class ActiveDocumentBean implements Serializable {
 
         // Current image contains two pages
         if (viewManager.getCurrentPage().isDoubleImage()) {
-            logger.trace("{} is double page", viewManager.getCurrentPage().getOrder());
+            // logger.trace("{} is double page", viewManager.getCurrentPage().getOrder());
             if (step < 0) {
                 number = viewManager.getCurrentImageOrder() + 2 * step;
             } else {
@@ -1156,11 +1156,11 @@ public class ActiveDocumentBean implements Serializable {
 
         // Only go back one step unit at first
         if (currentLeftPage.isPresent()) {
-            logger.trace("{} is left page", currentLeftPage.get().getOrder());
+            // logger.trace("{} is left page", currentLeftPage.get().getOrder());
             number = currentLeftPage.get().getOrder() + step;
         } else if (currentRightPage.isPresent()) {
             // If only the right page is present, it's probably the first page - do not add step at this point
-            logger.trace("{} is right page", currentRightPage.get().getOrder());
+            // logger.trace("{} is right page", currentRightPage.get().getOrder());
             number = currentRightPage.get().getOrder();
         } else {
             number = viewManager.getCurrentImageOrder() + step;
