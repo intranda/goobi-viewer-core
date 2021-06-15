@@ -2424,7 +2424,7 @@ public class SearchBean implements SearchInterface, Serializable {
             sb.append(currentPath.getApplicationUrl()).append("/").append(currentPath.getPrettifiedPagePath());
             URI uri = URI.create(sb.toString());
             uri = getParameterPath(uri);
-            return uri.toString() + "/";
+            return StringTools.appendTrailingSlash(uri.toString());
         }
 
         //fallback
