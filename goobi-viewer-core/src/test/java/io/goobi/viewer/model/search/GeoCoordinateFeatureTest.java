@@ -30,7 +30,7 @@ public class GeoCoordinateFeatureTest {
         double[][] points = new double[][] {{1.1, 1.2}, {2.1, 2.2}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
         String referencePointsString = "1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2, 1.1 1.2";
         String referenceQuery = "IsWithin(POLYGON(("+referencePointsString+")))";
-        System.out.println("query = " + referenceQuery);
+        // System.out.println("query = " + referenceQuery);
         GeoCoordinateFeature feature = new GeoCoordinateFeature(points);
         String query = feature.getSearchString();
         assertEquals(referenceQuery, query);
@@ -41,7 +41,7 @@ public class GeoCoordinateFeatureTest {
         double[][] referencePoints = new double[][] {{1.1, 1.2}, {2.1, 2.2}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
         String pointsString = "1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2, 1.1 1.2";
         String query = "WKT_COORDS:\"Intersects(POLYGON(("+pointsString+")))";
-        System.out.println("query = " + query);
+        // System.out.println("query = " + query);
         double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
         assertArrayEquals(referencePoints, points);
     }
