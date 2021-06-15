@@ -83,12 +83,11 @@
 													</div>
 													<div class="col-7 col-sm-9">
 														<div class="collection__title">
-
 															<div class="row">
 																<div class="col-12">
 																	<!-- TITLE -->
 																	<h:outputLink
-																		value="#{browseBean.dcCollection.getCollectionUrl(browseDcElement)}"
+																		value="#{navigationHelper.applicationUrl}admin/cms/collections/edit/#{browseDcElement.name}/"
 																		styleClass="#{browseBean.dcCollection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
 																		<h:outputText
 																			rendered="#{browseDcElement.displayNumberOfVolumes}"
