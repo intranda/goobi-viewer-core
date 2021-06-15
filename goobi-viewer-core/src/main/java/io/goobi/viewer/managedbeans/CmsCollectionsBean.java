@@ -32,6 +32,7 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -41,6 +42,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSCollectionTranslation;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -66,6 +68,8 @@ public class CmsCollectionsBean implements Serializable {
 
     @Inject
     CmsMediaBean cmsMediaBean;
+    @Inject
+    BrowseBean browseBean;
 
     private CMSCollection currentCollection;
     private String solrField = SolrConstants.DC;
@@ -132,8 +136,15 @@ public class CmsCollectionsBean implements Serializable {
         this.solrField = solrField;
         try {
             updateCollections();
+            loadCollection(solrField);
         } catch (DAOException e) {
-            logger.error("Error initializing collections");
+            logger.error(e.getMessage());
+            collections = Collections.emptyList();
+        } catch (IllegalRequestException e) {
+            logger.error(e.getMessage());
+            collections = Collections.emptyList();
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage());
             collections = Collections.emptyList();
         }
     }
@@ -407,4 +418,30 @@ public class CmsCollectionsBean implements Serializable {
         this.imageMode = imageMode;
     }
 
+    /**
+     * Initializes the collection tree for the given index field name.
+     * 
+     * @param field
+     * @throws IllegalRequestException
+     * @throws IndexUnreachableException
+     */
+    public void loadCollection(String field) throws IllegalRequestException, IndexUnreachableException {
+        if (StringUtils.isEmpty(field)) {
+            return;
+        }
+        browseBean.initializeCollection(field, SearchHelper.facetifyField(field));
+        browseBean.populateCollection(field);
+    }
+
+    /**
+     * Initializes the collection tree for the current <code>solrField</code>, but only if not yet loaded.
+     * 
+     * @throws IllegalRequestException
+     * @throws IndexUnreachableException
+     */
+    public void initSolrField() throws IllegalRequestException, IndexUnreachableException {
+        if (browseBean.getCollection(solrField) == null) {
+            loadCollection(solrField);
+        }
+    }
 }

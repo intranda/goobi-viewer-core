@@ -14,10 +14,7 @@
 			<f:event type="preRenderView"
 				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCollections')}" />
 			<f:event type="preRenderView" listener="#{cmsBean.init()}" />
-			<f:event type="preRenderView"
-				listener="#{browseBean.initializeCollection(cmsCollectionsBean.solrField, searchBean.facetifyField(cmsCollectionsBean.solrField))}" />
-			<f:event type="preRenderView"
-				listener="#{browseBean.populateCollection(cmsCollectionsBean.solrField)}" />
+			<f:event type="preRenderView" listener="#{cmsCollectionsBean.initSolrField}" />
 		</f:metadata>
 	</ui:define>
 
@@ -47,6 +44,7 @@
                                     
 								<!-- LANGUAGE TABS -->
 								<div class="admin__language-tabs">
+									<!-- TODO -->
 									<viewerComponent:localeSelector 
 									object="#{crowdsourcingBean.selectedCampaign}"
 									render="createCampaignForm:titleDataGroup"
