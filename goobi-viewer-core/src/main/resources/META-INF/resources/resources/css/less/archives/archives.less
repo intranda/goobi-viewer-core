@@ -20,7 +20,13 @@
 		}
 		.login-navigation [data-login="true"] .login-navigation__user-dropdown {
 			top: calc(~"100% + 18px");
-		}	
+		}
+		.login-navigation [data-login="true"] button[data-toggle="user-dropdown"] {
+			font-size: 1.6rem;
+		}
+		.login-navigation [data-login="false"] {
+			display: flex;
+		}
 	}
 	&__header {
 		display: -webkit-box;
@@ -80,7 +86,7 @@
 			}
 		}
 		h1 {
-		    font-size: 1.4rem;
+		    font-size: 1.6rem;
 		    font-weight: 400;
 		    display: inline;
 		    color: @white;
@@ -108,6 +114,7 @@
 	}
 	&__top-actions-language {
 		position: relative;
+		display: flex;
 		[data-toggle="local"] {
 			text-transform: uppercase;			
 		}
