@@ -53,21 +53,18 @@
             	geoMap.init(view, features);
             	
             	
-            	if(#{cc.attrs.geoMap.showPopover}) {
-            	    geoMap.onFeatureClick.subscribe(feature => {
-            	       console.log("clicked on feature");
-            	       if(feature.properties && feature.properties.link) {
-            	           window.location.assign(feature.properties.link);
-            	       }
-            	    });
-            	}
+           	    geoMap.onFeatureClick.subscribe(feature => {
+           	        console.log("Clicked on feature ", feature);
+           	       if(feature.properties && feature.properties.link) {
+           	           window.location.assign(feature.properties.link);
+           	       }
+           	    });
             	
             	if(#{cc.attrs.showAnnotations}) {            	    
             	 $("[data-geomap-feature]").each((index, ele) => {
                      let featureString = $(ele).attr("data-geomap-feature");
                      if(featureString) {
                          let feature = JSON.parse(featureString);
-                         console.log("Add feature from annotations ", feature);
                          geoMap.addMarker(feature);
                          $(ele).parent().on("mouseenter",  () => {
                              geoMap.highlightMarker(feature);

@@ -32,7 +32,9 @@
                     </h3>
 
                     <!-- MAP -->
-                    <viewerComponent:geoMap showAnnotations="#{cc.attrs.showAnnotations}" geoMap="#{cc.attrs.widget.geoMap}" linkToSearch="#{cc.attrs.linkToSearch}" mapId="widget_geoMap_#{cc.attrs.widget.geoMapId}"></viewerComponent:geoMap>
+                    <viewerComponent:geoMap 
+                    showPopever="true" popoverOnHover="true"
+                    showAnnotations="#{cc.attrs.showAnnotations}" geoMap="#{cc.attrs.widget.geoMap}" linkToSearch="#{cc.attrs.linkToSearch}" mapId="widget_geoMap_#{cc.attrs.widget.geoMapId}"></viewerComponent:geoMap>
                 </div>
             </h:panelGroup>
             <popover id="geoMapPopoverTemplate_#{cc.attrs.widget.geoMapId}">

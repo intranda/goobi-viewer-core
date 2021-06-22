@@ -215,7 +215,10 @@ var viewerJS = ( function( viewer ) {
         
         
         if(features && features.length > 0) {
-            features.forEach(feature => {
+        console.log("add features", features);
+            features
+            .sort( (f1,f2) => this.compareFeatures(f1,f2) )
+            .forEach(feature => {
             	let type = feature.geometry.type;
             	if(_debug)console.log("add feature for " + type, feature);
             	this.addMarker(feature);
@@ -261,6 +264,22 @@ var viewerJS = ( function( viewer ) {
     		console.warn("Cannot initialize geocoder: No mapbox token");
     	}
     }
+    
+    viewer.GeoMap.prototype.compareFeatures = function(f1, f2) {
+    
+    	return this.getSize(f2) - this.getSize(f1);
+    
+    }
+    
+    viewer.GeoMap.prototype.getSize = function(feature) {
+    	if(feature.geometry.type == "Point") {
+    		return 0;
+    	} else {
+    		let polygon = L.polygon(feature.geometry.coordinates);
+    		return this.getArea(polygon.getBounds());
+    	}
+    }
+    
     
     viewer.GeoMap.prototype.drawPolygon = function(points, config, centerView) {
     	config = $.extend({interactive: false}, config, true); 
@@ -479,6 +498,13 @@ var viewerJS = ( function( viewer ) {
     	}
     }
     
+    viewer.GeoMap.prototype.getArea = function(bounds) {
+    	if(!bounds || !bounds.isValid()) {
+    		return 0;
+    	} else {
+		    return this.map.distance(bounds.getSouthWest(), bounds.getNorthWest()) * this.map.distance(bounds.getSouthWest(), bounds.getSouthEast())
+    	}
+    }
     
     viewer.GeoMap.prototype.updateMarker = function(id) {
         let marker = this.getMarker(id);
@@ -527,7 +553,6 @@ var viewerJS = ( function( viewer ) {
     viewer.GeoMap.prototype.addMarker = function(geoJson) {
         let id = this.markerIdCounter++;
         geoJson.id = id;
-        console.log("add location", geoJson, this.locations);
         this.locations.addData(geoJson);
         let marker = this.getMarker(id);
         if(_debug) {            
