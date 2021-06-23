@@ -25,6 +25,9 @@
 						<button type="button" id="resetFacetMap" data-toggle="tooltip" data-geofacet="reset" title="#{msg.removeFacet}" class="btn btn--icon widget-geofacetting__action-reset" aria-label="#{msg.fullscreen_enter}">
 			            	<i class="fa fa-times"/>
 			            </button>
+			            <button type="button" id="toggleMarkers" data-toggle="tooltip" data-geofacet="toggleMarkers" title="#{msg.action__toggle_map_markers}" class="btn btn--icon widget-geofacetting__action-toggle-markers" aria-label="#{msg.action__toggle_map_markers}">
+			            	<i class="fa fa-map-marker"/>
+			            </button>
 		            </div>
 				</div>
 				<div class="widget__body widget-geofacetting__body">
@@ -84,44 +87,52 @@
 	                 	let $facetCancel = $("[data-geofacet='cancel']"); 
 	                 	let $facetInput = $("[data-geofacet='feature']");  
 	                 	let $loader = $("[data-loader='geoFacet']"); 
-		                
+		                let $toggleMarkers = $("[data-geofacet='toggleMarkers']")
+	                 	
 		                let areaString = '#{searchBean.facets.geoFacetFeature}';
 		                this.area = getArea(areaString);
+		                this.features = #{searchBean.getHitsLocations()};
 		                //console.log("area is ", areaString, this.area, setGeoFacetFeature);
 		                let geoMap = new viewerJS.GeoMap({
 	                	    mapId: "geoFacettingMap",
-	                   		allowMovingFeatures: false,
 	                   		language: "#{navigationHelper.localeString}",
-	                   		popoverOnHover: false,
-	                   		clusterMarkers: false,
-	                   		fixed: true
+	                   		fixed: true,
+	                   		layer: {
+		                   		allowMovingFeatures: false,
+		                   		popoverOnHover: false,
+		                   		clusterMarkers: false,
+		                   		style: {
+		                   		    fillOpacity: 0.02
+		                   		}
+	                   		}
 	                   	});
 
 	
-                    	geoMap.init({
-                            zoom: 1,
-                            center: [0,0] //long, lat
-                        });
+                    	geoMap.init(
+                    	   {
+	                            zoom: 1,
+	                            center: [0,0] //long, lat
+                        	},
+                        	this.features
+                    	);
+                    	this.drawLayer = new viewerJS.GeoMap.featureGroup(geoMap, {
+                    	    style : {
+    		                    	fillColor : "#d9534f",
+    		                    	color : "#d9534f",
+    		                    	fillOpacity : 0.3,
+    	                    	}
+                    	})
                     	if(this.area) {	                    	    
 	                    	console.log("draw area" , this.area);
 	                        switch(this.area.type) {
 	                            case "polygon":
-	                                this.shape = geoMap.drawPolygon(this.area.vertices, {
-	                                	fillColor: '#3365a9',
-	                                    color: '#3365a9'
-	                                	}, true);
+	                                this.shape = this.drawLayer.drawPolygon(this.area.vertices, true);
 	                                break;
 	                            case "circle":
-	                                this.shape = geoMap.drawCircle(this.area.center, this.area.radius, {
-	                                	fillColor: '#3365a9',
-	                                    color: '#3365a9'
-	                                    }, true);
+	                                this.shape = this.drawLayer.drawCircle(this.area.center, this.area.radius, true);
 	                                break;
 	                            case "rectangle":
-	                                this.shape = geoMap.drawRectangle([this.area.vertices[0], this.area.vertices[2]], {
-	                                	fillColor: '#3365a9',
-	                                    color: '#3365a9'
-	                                    }, true);
+	                                this.shape = this.drawLayer.drawRectangle([this.area.vertices[0], this.area.vertices[2]], true);
 	                                break;
 	                        }
 	                        $facetReset.addClass("active");
@@ -130,7 +141,9 @@
 	                           $facetSearch.click();
 	                        });
                     	}
-					
+                        $toggleMarkers.on("click", () => {
+                            geoMap.layers[0].setVisible(!geoMap.layers[0].isVisible());
+                        })
 	                    	
  
 						$("#expandFacetMap").on("click", e => {
@@ -156,6 +169,7 @@
 		                       	this.mapTag = riot.mount("#geoFacettingOverlayMap", "geomapsearch", {
 		     					    inactive: false,
 		     					    area : this.area,
+		     					    features : this.features,
 		     					    onFeatureSelect: area => {
 		     					        //console.log("Set facetting area", area);
 									    sessionStorage.setItem("geoFacet", JSON.stringify(area));

@@ -90,14 +90,16 @@
                                             $(document).ready( () => {
 
                                                 let geoMap = new viewerJS.GeoMap({
-                                                    popover: undefined,
                                                     mapId: "geomap_#{map.id}",
                                                     fixed: true,
-                                                    clusterMarkers: "#{map.type}" == "SOLR_QUERY",
+                                                    layer: {
+	                                                    popover: undefined,
+	                                                    clusterMarkers: "#{map.type}" == "SOLR_QUERY",
+                                                        markerIcon: #{map.markerAsJSON}
+                                                    }
                                                 });
                                                 let view = #{map.initialView};
                                                 let features = #{map.featuresAsString};
-                                                geoMap.setMarkerIcon(#{map.markerAsJSON});
                                                 geoMap.init(view, features);
                                             })
                                             </script>

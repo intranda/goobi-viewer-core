@@ -1593,11 +1593,13 @@ this.setNameFromEvent = function(event) {
 this.initMap = function() {
     this.geoMap = new viewerJS.GeoMap({
         mapId : "geoMap_" + this.opts.index,
-        allowMovingFeatures: !this.opts.item.isReviewMode(),
         language: Crowdsourcing.translator.language,
-        popover: undefined,
-        emptyMarkerMessage: undefined,
-        popoverOnHover: false,
+        layer: {
+	        allowMovingFeatures: !this.opts.item.isReviewMode(),
+	        popover: undefined,
+	        emptyMarkerMessage: undefined,
+	        popoverOnHover: false,
+        }
     })
     let initialView = {
         zoom: 5,
@@ -1614,7 +1616,7 @@ this.initMap = function() {
     this.geoMap.init(initialView);
     this.geoMap.initGeocoder(this.refs.geocoder);
     this.geoMap.onFeatureMove.subscribe(feature => this.moveFeature(feature));
-    this.geoMap.onFeatureClick.subscribe(feature => this.removeFeature(feature));
+    this.geoMap.layers.forEach(l => l.onFeatureClick.subscribe(feature => this.removeFeature(feature)));
     this.geoMap.onMapClick.subscribe(geoJson => {
         if(this.addMarkerActive && (this.question.targetFrequency == 0 || this.geoMap.getMarkerCount() < this.question.targetFrequency)) {
             if(this.annotationToMark && this.annotationToMark.color) {
@@ -2402,7 +2404,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	    }
     	}.bind(this)
 });
-riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
+riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"></div><button type="button" ref="toggleMarkers" data-toggle="tooltip" title="#{msg.action__toggle_map_markers}" class="btn btn--icon widget-geofacetting__action-toggle-markers" aria-label="#{msg.action__toggle_map_markers}"><i class="fa fa-map-marker"></i></button><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
 
 this.on("mount", function() {
 	this.initMap();
@@ -2412,27 +2414,38 @@ this.initMap = function() {
 
     this.geoMap = new viewerJS.GeoMap({
         element : this.refs.map,
-        allowMovingFeatures: false,
         language: viewerJS.translator.language,
-        popover: undefined,
-        emptyMarkerMessage: undefined,
-        popoverOnHover: false,
-        fixed: this.opts.inactive ? true : false
+        fixed: this.opts.inactive ? true : false,
+        layer: {
+	        allowMovingFeatures: false,
+	        popover: undefined,
+	        popoverOnHover: false,
+	        emptyMarkerMessage: undefined,
+	        markerIcon: {
+	            shape: "circle",
+	            prefix: "fa",
+	            markerColor: "blue",
+	            iconColor: "white",
+	            icon: "fa-circle",
+	            svg: true
+	        },
+		    style: {
+				    fillOpacity: 0.02
+			}
+        }
     })
     let initialView = {
         zoom: 5,
         center: [11.073397, 49.451993]
     };
-    this.geoMap.setMarkerIcon({
-        shape: "circle",
-        prefix: "fa",
-        markerColor: "blue",
-        iconColor: "white",
-        icon: "fa-circle",
-        svg: true
-    })
-    this.geoMap.init(initialView);
-
+    this.geoMap.init(initialView, this.opts.features);
+    this.drawLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
+   	    style : {
+         	fillColor : "#d9534f",
+         	color : "#d9534f",
+         	fillOpacity : 0.3,
+        	}
+    });
     if(!this.opts.inactive) {
         let geocoderConfig = {};
         if(this.opts.search_placeholder) {
@@ -2441,8 +2454,14 @@ this.initMap = function() {
 	    this.geoMap.initGeocoder(this.refs.geocoder, geocoderConfig);
 	    this.initMapDraw();
     }
-    if(this.opts.area) {
 
+    console.log("add event listener ", this.refs);
+    this.refs.toggleMarkers.addEventListener("click", () => {
+        console.log("toggle markers");
+        this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
+    })
+
+    if(this.opts.area) {
         let shape = this.opts.area;
         if(viewerJS.isString(shape)) {
             try {
@@ -2452,30 +2471,20 @@ this.initMap = function() {
             }
         }
 
-        let layer;
+        let layer = undefined;
         switch(shape.type) {
             case "polygon":
-                layer = this.geoMap.drawPolygon(shape.vertices, {
-                	fillColor: '#3365a9',
-                    color: '#3365a9'
-                    }, true);
-                this.onLayerDrawn({layer: layer});
+                layer = this.drawLayer.drawPolygon(shape.vertices, true);
                 break;
             case "circle":
-                layer = this.geoMap.drawCircle(shape.center, shape.radius, {
-                	fillColor: '#3365a9',
-                    color: '#3365a9'
-                	}, true);
-                this.onLayerDrawn({layer: layer});
+                layer = this.drawLayer.drawCircle(shape.center, shape.radius, true);
                 break;
             case "rectangle":
-                layer = this.geoMap.drawRectangle([shape.vertices[0], shape.vertices[2]], {
-                	fillColor: '#3365a9',
-                    color: '#3365a9'
-                	}, true);
-                this.onLayerDrawn({layer: layer});
+                layer = this.drawLayer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
                 break;
         }
+        console.log("draw layer");
+        this.onLayerDrawn({layer: layer});
 
     }
 
@@ -2484,6 +2493,7 @@ this.initMap = function() {
 this.initMapDraw = function() {
 
     this.drawnItems = new L.FeatureGroup();
+
     this.geoMap.map.addLayer(this.drawnItems);
     this.drawControl = new L.Control.Draw({
         edit: {
@@ -2499,18 +2509,16 @@ this.initMapDraw = function() {
     });
     this.drawControl.setDrawingOptions({
         rectangle: {
-        	shapeOptions: {
-            	color: '#3365a9'
-            }
+        	shapeOptions: this.drawLayer.config.style
         },
         circle: {
         	shapeOptions: {
-            	color: '#3365a9'
+        	    shapeOptions: this.drawLayer.config.style
             }
         },
         polygon: {
         	shapeOptions: {
-            	color: '#3365a9'
+        	    shapeOptions: this.drawLayer.config.style
             }
         }
     });

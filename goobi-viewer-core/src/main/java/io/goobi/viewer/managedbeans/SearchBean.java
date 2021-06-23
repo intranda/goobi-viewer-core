@@ -2662,6 +2662,14 @@ public class SearchBean implements SearchInterface, Serializable {
         return this.currentSearch != null && !this.currentSearch.getHitsLocationList().isEmpty();
     }
     
+    public List<String> getHitsLocations() {
+        if(this.currentSearch != null) {
+            return this.currentSearch.getHitsLocationList().stream().map(l -> l.getGeoJson()).collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+    
     public GeoMap getHitsMap() {
        GeoMap map = new GeoMap();
        map.setType(GeoMapType.MANUAL);

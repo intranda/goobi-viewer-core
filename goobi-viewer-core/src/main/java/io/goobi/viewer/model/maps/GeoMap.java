@@ -505,7 +505,7 @@ public class GeoMap {
                 return marker.toJSONString();
             }
         }
-        return null;
+        return "{}";
     }
 
     /**

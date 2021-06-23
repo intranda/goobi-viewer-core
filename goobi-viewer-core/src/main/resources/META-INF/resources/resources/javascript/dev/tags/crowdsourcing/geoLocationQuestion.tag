@@ -133,11 +133,13 @@ setNameFromEvent(event) {
 initMap() {
     this.geoMap = new viewerJS.GeoMap({
         mapId : "geoMap_" + this.opts.index,
-        allowMovingFeatures: !this.opts.item.isReviewMode(),
         language: Crowdsourcing.translator.language,
-        popover: undefined,
-        emptyMarkerMessage: undefined,
-        popoverOnHover: false,
+        layer: {
+	        allowMovingFeatures: !this.opts.item.isReviewMode(),
+	        popover: undefined,
+	        emptyMarkerMessage: undefined,            
+	        popoverOnHover: false,
+        }
     })
     let initialView = {
         zoom: 5,
@@ -154,7 +156,7 @@ initMap() {
     this.geoMap.init(initialView);
     this.geoMap.initGeocoder(this.refs.geocoder);
     this.geoMap.onFeatureMove.subscribe(feature => this.moveFeature(feature));
-    this.geoMap.onFeatureClick.subscribe(feature => this.removeFeature(feature));
+    this.geoMap.layers.forEach(l => l.onFeatureClick.subscribe(feature => this.removeFeature(feature)));
     this.geoMap.onMapClick.subscribe(geoJson => {
         if(this.addMarkerActive && (this.question.targetFrequency == 0 || this.geoMap.getMarkerCount() < this.question.targetFrequency)) {
             if(this.annotationToMark && this.annotationToMark.color) {

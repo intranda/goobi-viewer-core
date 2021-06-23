@@ -6,7 +6,11 @@
 	<div ref="geocoder" class="geocoder"/>
 	<div class="geo-map__buttons-wrapper">
 	</div>
-	<div ref="map" class="geo-map"></div>
+		<button  type="button" ref="toggleMarkers" data-toggle="tooltip" title="#{msg.action__toggle_map_markers}" class="btn btn--icon widget-geofacetting__action-toggle-markers" aria-label="#{msg.action__toggle_map_markers}">
+           	<i class="fa fa-map-marker"/>
+        </button>
+	<div ref="map" class="geo-map">
+	</div>
 </div>
 
 
@@ -14,33 +18,44 @@
 
 this.on("mount", function() {
 	this.initMap();
-});
+}); 
 
 initMap() {
     //console.log("initializing geomap for search", this.refs.map);
     this.geoMap = new viewerJS.GeoMap({
         element : this.refs.map, 
-        allowMovingFeatures: false,
         language: viewerJS.translator.language,
-        popover: undefined,
-        emptyMarkerMessage: undefined,
-        popoverOnHover: false,
-        fixed: this.opts.inactive ? true : false
+        fixed: this.opts.inactive ? true : false,
+        layer: {
+	        allowMovingFeatures: false,
+	        popover: undefined,
+	        popoverOnHover: false,
+	        emptyMarkerMessage: undefined,
+	        markerIcon: {
+	            shape: "circle",
+	            prefix: "fa",
+	            markerColor: "blue",
+	            iconColor: "white",
+	            icon: "fa-circle",
+	            svg: true
+	        },
+		    style: {
+				    fillOpacity: 0.02
+			}
+        }
     })
     let initialView = {
         zoom: 5,
         center: [11.073397, 49.451993] //long, lat
     };
-    this.geoMap.setMarkerIcon({
-        shape: "circle",
-        prefix: "fa",
-        markerColor: "blue",
-        iconColor: "white",
-        icon: "fa-circle",
-        svg: true
-    })
-    this.geoMap.init(initialView);
-    //console.log("geomap ", this.geoMap);
+    this.geoMap.init(initialView, this.opts.features);
+    this.drawLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
+   	    style : {
+         	fillColor : "#d9534f",
+         	color : "#d9534f",
+         	fillOpacity : 0.3,
+        	}
+    });
     if(!this.opts.inactive) {        
         let geocoderConfig = {};
         if(this.opts.search_placeholder) {
@@ -49,8 +64,13 @@ initMap() {
 	    this.geoMap.initGeocoder(this.refs.geocoder, geocoderConfig);
 	    this.initMapDraw();
     }
+    
+    console.log("add event listener ", this.refs);
+    this.refs.toggleMarkers.addEventListener("click", () => {
+        this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
+    })
+    
     if(this.opts.area) {
-    	//console.log("area ", this.opts)
         let shape = this.opts.area;
         if(viewerJS.isString(shape)) {
             try {                
@@ -59,31 +79,21 @@ initMap() {
                 console.error("Unable to draw geomap area ", this.opts.area, ": cannot parse json");
             }
         }
-        //console.log("area to draw:", shape);
-        let layer;
+
+        let layer = undefined;
         switch(shape.type) {
             case "polygon":
-                layer = this.geoMap.drawPolygon(shape.vertices, {
-                	fillColor: '#3365a9',
-                    color: '#3365a9'
-                    }, true);
-                this.onLayerDrawn({layer: layer});
+                layer = this.drawLayer.drawPolygon(shape.vertices, true);
                 break;
             case "circle":
-                layer = this.geoMap.drawCircle(shape.center, shape.radius, {
-                	fillColor: '#3365a9',
-                    color: '#3365a9'
-                	}, true);
-                this.onLayerDrawn({layer: layer});
+                layer = this.drawLayer.drawCircle(shape.center, shape.radius, true);
                 break;
             case "rectangle":
-                layer = this.geoMap.drawRectangle([shape.vertices[0], shape.vertices[2]], {
-                	fillColor: '#3365a9',
-                    color: '#3365a9'
-                	}, true);
-                this.onLayerDrawn({layer: layer});
+                layer = this.drawLayer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
                 break;
         }
+        console.log("draw layer");
+        this.onLayerDrawn({layer: layer});
 
     }
 
@@ -92,6 +102,7 @@ initMap() {
 initMapDraw() {
     //console.log("init map draw");
     this.drawnItems = new L.FeatureGroup();
+    //this.drawnItems = this.drawLayer.locations;
     this.geoMap.map.addLayer(this.drawnItems);
     this.drawControl = new L.Control.Draw({
         edit: {
@@ -107,18 +118,16 @@ initMapDraw() {
     });
     this.drawControl.setDrawingOptions({
         rectangle: {
-        	shapeOptions: {
-            	color: '#3365a9'
-            }
+        	shapeOptions: this.drawLayer.config.style
         },
         circle: {
         	shapeOptions: {
-            	color: '#3365a9'
+        	    shapeOptions: this.drawLayer.config.style
             }
         },
         polygon: {
         	shapeOptions: {
-            	color: '#3365a9'
+        	    shapeOptions: this.drawLayer.config.style
             }
         }
     });
