@@ -2509,14 +2509,10 @@ this.initMapDraw = function() {
         	shapeOptions: this.drawLayer.config.style
         },
         circle: {
-        	shapeOptions: {
-        	    shapeOptions: this.drawLayer.config.style
-            }
+        	shapeOptions: this.drawLayer.config.style
         },
         polygon: {
-        	shapeOptions: {
-        	    shapeOptions: this.drawLayer.config.style
-            }
+        	shapeOptions: this.drawLayer.config.style
         }
     });
 
@@ -2541,7 +2537,6 @@ this.initMapDraw = function() {
 }.bind(this)
 
 this.onLayerDeleted = function(e) {
-    console.log("layer deleted ", e);
     if(this.searchLayer) {
         this.drawnItems.removeLayer(this.searchLayer);
         this.searchLayer = undefined;
