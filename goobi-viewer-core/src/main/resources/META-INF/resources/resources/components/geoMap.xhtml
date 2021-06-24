@@ -31,11 +31,13 @@
 
         	let geoMap = new viewerJS.GeoMap({
         	    mapId: "#{cc.attrs.mapId}",
-           		allowMovingFeatures: false,
-           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
            		language: "#{navigationHelper.localeString}",
-           		popoverOnHover: #{cc.attrs.popoverOnHover},
-           		clusterMarkers: #{cc.attrs.clusterMarkers},
+           		layer : {
+	           		allowMovingFeatures: false,
+	           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
+	           		popoverOnHover: #{cc.attrs.popoverOnHover},
+	           		clusterMarkers: #{cc.attrs.clusterMarkers},
+           		}
            	});
            	$(document).ready(() => {                  		    
             	let view = #{cc.attrs.geoMap.initialView};

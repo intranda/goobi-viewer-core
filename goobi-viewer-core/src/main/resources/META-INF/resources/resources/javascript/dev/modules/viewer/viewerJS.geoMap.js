@@ -476,7 +476,7 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function() {
-        if(this.config.markerIcon) {
+        if(this.config.markerIcon && !jQuery.isEmptyObject(this.config.markerIcon)) {
             let icon = L.ExtraMarkers.icon(this.config.markerIcon);
             if(this.config.markerIcon.shadow === false) {                
                 icon.options.shadowSize = [0,0];
