@@ -6,9 +6,6 @@
 	<div ref="geocoder" class="geocoder"/>
 	<div class="geo-map__buttons-wrapper">
 	</div>
-		<button  type="button" ref="toggleMarkers" data-toggle="tooltip" title="{opts.msg.action__toggle_map_markers}" class="btn btn--icon widget-geofacetting__action-toggle-markers" aria-label="{opts.msg.action__toggle_map_markers}">
-           	<i class="fa fa-map-marker"/>
-        </button>
 	<div ref="map" class="geo-map">
 	</div>
 </div>
