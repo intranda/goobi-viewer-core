@@ -49,7 +49,10 @@
 								    onFeatureSelect: (feature) => setSearchString(JSON.stringify(feature)),
 								    area : '#{searchBean.facets.geoFacetting.feature}',
 								    search_placeholder: "#{msg.ADDRESS}",
-								    reset_button: $("[data-feature='reset']")
+								    reset_button: $("[data-feature='reset']"),
+								    msg: {
+								        action__toggle_map_markers : "#{msg.action__toggle_map_markers}"
+								    }
 								});    
 							}
 							

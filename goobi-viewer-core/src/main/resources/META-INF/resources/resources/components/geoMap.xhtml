@@ -31,43 +31,43 @@
 
         	let geoMap = new viewerJS.GeoMap({
         	    mapId: "#{cc.attrs.mapId}",
-           		allowMovingFeatures: false,
-           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
            		language: "#{navigationHelper.localeString}",
-           		popoverOnHover: #{cc.attrs.popoverOnHover},
-           		clusterMarkers: #{cc.attrs.clusterMarkers},
+           		layer : {
+	           		allowMovingFeatures: false,
+	           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
+	           		popoverOnHover: #{cc.attrs.popoverOnHover},
+	           		clusterMarkers: #{cc.attrs.clusterMarkers},
+           		}
            	});
-        	if(#{cc.attrs.linkToSearch and cc.attrs.geoMap.type == 'SOLR_QUERY'}) {
-                let searchUrlTemplate = '#{geoMapBean.getCoordinateSearchQueryTemplate(cc.attrs.geoMap)}';
-                geoMap.onFeatureClick.subscribe( (feature) => {
-                    let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
-                    queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
-//                     window.location = queryUrl;
-                    window.open(queryUrl, "#{cc.attrs.linkTarget}");
-                });
-            }
            	$(document).ready(() => {                  		    
             	let view = #{cc.attrs.geoMap.initialView};
+            	console.log("set initial view to ", view);
             	let features = #{cc.attrs.geoMap.featuresAsString};
-       			geoMap.setMarkerIcon(#{cc.attrs.geoMap.markerAsJSON});
-            	geoMap.init(view, features);
-            	
-            	
-            	if(#{cc.attrs.geoMap.showPopover}) {
-            	    geoMap.onFeatureClick.subscribe(feature => {
-            	       console.log("clicked on feature");
-            	       if(feature.properties && feature.properties.link) {
-            	           window.location.assign(feature.properties.link);
-            	       }
-            	    });
-            	}
+            	geoMap.init(view);
+            	let layer = new viewerJS.GeoMap.featureGroup(geoMap, {
+            	    markerIcon: #{cc.attrs.geoMap.markerAsJSON}
+            	})
+            	layer.onFeatureClick.subscribe(feature => {
+           	       if(feature.properties && feature.properties.link) {
+           	           window.location.assign(feature.properties.link);
+           	       }
+           	    });
+	        	if(#{cc.attrs.linkToSearch and cc.attrs.geoMap.type == 'SOLR_QUERY'}) {
+	                let searchUrlTemplate = '#{geoMapBean.getCoordinateSearchQueryTemplate(cc.attrs.geoMap)}';
+	                geoMap.onFeatureClick.subscribe( (feature) => {
+	                    let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
+	                    queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
+	//                     window.location = queryUrl;
+	                    window.open(queryUrl, "#{cc.attrs.linkTarget}");
+	                });
+	            }
+            	layer.init(features, true);
             	
             	if(#{cc.attrs.showAnnotations}) {            	    
             	 $("[data-geomap-feature]").each((index, ele) => {
                      let featureString = $(ele).attr("data-geomap-feature");
                      if(featureString) {
                          let feature = JSON.parse(featureString);
-                         console.log("Add feature from annotations ", feature);
                          geoMap.addMarker(feature);
                          $(ele).parent().on("mouseenter",  () => {
                              geoMap.highlightMarker(feature);
@@ -77,7 +77,7 @@
                          });
                      }
                  });
-                 geoMap.setView(geoMap.getViewAroundFeatures());
+                 geoMap.setView(geoMap.getViewAroundFeatures(layer.getFeatures()));
             	}
             })
 		    

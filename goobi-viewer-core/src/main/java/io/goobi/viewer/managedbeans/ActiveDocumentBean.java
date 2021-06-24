@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -39,6 +41,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +54,7 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
@@ -72,6 +76,7 @@ import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
+import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -91,8 +96,8 @@ import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
@@ -2235,7 +2240,7 @@ public class ActiveDocumentBean implements Serializable {
         return widget;
     }
 
-    public CMSSidebarElement generateMapWidget(String pi) throws PresentationException, DAOException {
+    public CMSSidebarElement generateMapWidget(String pi) throws PresentationException {
         CMSSidebarElement widget = new CMSSidebarElement();
         widget.setType("widgetGeoMap");
         try {
@@ -2245,15 +2250,40 @@ public class ActiveDocumentBean implements Serializable {
 
             GeoMap map = new GeoMap();
             map.setId(Long.MAX_VALUE);
-            map.setType(GeoMapType.SOLR_QUERY);
-            map.setShowPopover(false);
+            map.setType(GeoMapType.MANUAL);
+            map.setShowPopover(true);
             map.setMarkerTitleField(null);
-            map.setMarker("default");
-            map.setSolrQuery(String.format("PI:%s OR PI_TOPSTRUCT:%s", getPersistentIdentifier(), getPersistentIdentifier()));
-
-            if (!map.getFeaturesAsString().equals("[]") || contentBean.hasGeoCoordinateAnnotations(getPersistentIdentifier())) {
+            //map.setMarker("default");
+            
+            String mainDocQuery = String.format("PI:%s", getPersistentIdentifier());
+            List<String> mainDocFields = PrettyUrlTools.getSolrFieldsToDeterminePageType();
+            SolrDocument mainDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(mainDocQuery, mainDocFields);
+            PageType pageType = PrettyUrlTools.getPreferredPageType(mainDoc);
+            
+            String subDocQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:DOCSTRCT", getPersistentIdentifier());
+            List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
+            List<String> subDocFields = new ArrayList<>();
+            subDocFields.add(SolrConstants.LABEL);
+            subDocFields.add(SolrConstants.PI_TOPSTRUCT);
+            subDocFields.add(SolrConstants.THUMBPAGENO);
+            subDocFields.add(SolrConstants.LOGID);
+            subDocFields.addAll(coordinateFields);
+            
+            SolrDocumentList subDocs = DataManager.getInstance().getSearchIndex().getDocs(subDocQuery, subDocFields);
+            Collection<GeoMapFeature> features = new ArrayList<>();
+            for (SolrDocument solrDocument : subDocs) {
+                List<GeoMapFeature> docFeatures = new ArrayList<GeoMapFeature>();
+                for (String coordinateField : coordinateFields) {
+                    docFeatures.addAll(GeoMap.getGeojsonPoints(solrDocument, coordinateField, SolrConstants.LABEL, null));
+                }
+                docFeatures.forEach(f -> f.setLink(PrettyUrlTools.getRecordUrl(solrDocument, pageType)));
+                features.addAll(docFeatures);
+            }
+            if(!features.isEmpty()) {
+                map.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
                 widget.setGeoMap(map);
             }
+
         } catch (IndexUnreachableException e) {
             logger.error("Unable to load geomap", e);
         }

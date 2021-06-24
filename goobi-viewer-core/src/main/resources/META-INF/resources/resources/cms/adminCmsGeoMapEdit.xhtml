@@ -275,7 +275,6 @@
 				            	<script>
 				            	$(document).ready(() => {
 				            	    if($("#geomap").length > 0) {				            	        
-					            	    console.log("init map");
 					            	    let editable = #{geoMapBean.currentMap.type == 'MANUAL'};
 					            	    mapEditor.geoMap.config.popover = "#geoMapPopoverTemplate";
 					            	    if(!editable) {					            	        
@@ -284,10 +283,11 @@
 						            	    }
 					            	    }
 					            	    //cluster icons for non-editable maps
-					            	    mapEditor.geoMap.config.clusterMarkers = !editable;
-					            	    mapEditor.geoMap.config.popoverOnHover = !editable;
+					            	    mapEditor.geoMap.layers[0].config.clusterMarkers = !editable;
+					            	    mapEditor.geoMap.layers[0].config.popoverOnHover = !editable;
 					            	    mapEditor.setAllowEditFeatures(editable);
-					            	    mapEditor.setMarkerIcon(#{geoMapBean.currentMap.markerAsJSON});
+					            	    mapEditor.geoMap.layers[0].config.markerIcon = #{geoMapBean.currentMap.markerAsJSON};
+					            	    mapEditor.geoMap.layers[0].config.markerIcon.name = "";
 					            	    mapEditor.init(window.storedView);
 // 					            	    mapEditor.updateFeatures();
 // 					            	    mapEditor.updateView(window.storedView);

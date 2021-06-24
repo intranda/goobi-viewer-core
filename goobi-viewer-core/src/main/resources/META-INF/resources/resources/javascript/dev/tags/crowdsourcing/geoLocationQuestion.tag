@@ -41,28 +41,28 @@ setView(view) {
 
 resetFeatures() {
     this.setFeatures(this.question.annotations);
-    if(this.geoMap.getMarkerCount() > 0) {
+    if(this.geoMap.layers[0].getMarkerCount() > 0) {
         let zoom = 12;
-        if(this.geoMap.getMarkerCount() == 1) {
-            let marker = this.geoMap.getMarker(this.question.annotations[0].markerId);
+        if(this.geoMap.layers[0].getMarkerCount() == 1) {
+            let marker = this.geoMap.layers[0].getMarker(this.question.annotations[0].markerId);
             if(marker) {                
             	zoom = marker.feature.view.zoom;
             }
         }
-        let featureView = this.geoMap.getViewAroundFeatures(zoom);
+        let featureView = this.geoMap.getViewAroundFeatures(this.geoMap.layers[0].getFeatures(), zoom);
 	    this.geoMap.setView(featureView);
     }
 }
 
 setFeatures(annotations) {
-    this.geoMap.resetMarkers();
+    this.geoMap.layers.forEach(l => l.resetMarkers());
     annotations.filter(anno => !anno.isEmpty()).forEach((anno) => {
         if(anno.color) {
-            let markerIcon = this.geoMap.getMarkerIcon().options;
+            let markerIcon = this.geoMap.layers[0].getMarkerIcon().options;
             markerIcon.markerColor = anno.color;
-            this.geoMap.setMarkerIcon(markerIcon);
+            this.geoMap.layers[0].config.markerIcon = markerIcon;
         }
-        let marker = this.geoMap.addMarker(anno.body);
+        let marker = this.geoMap.layers[0].addMarker(anno.body);
         anno.markerId = marker.getId();
     });
 }
@@ -86,7 +86,7 @@ updateAnnotation(anno) {
 focusAnnotation(index) {
     let anno = this.question.getByIndex(index);
     if(anno) {
-        let marker = this.geoMap.getMarker(anno.markerId);
+        let marker = this.geoMap.layers[0].getMarker(anno.markerId);
     }
 }
 
@@ -133,36 +133,38 @@ setNameFromEvent(event) {
 initMap() {
     this.geoMap = new viewerJS.GeoMap({
         mapId : "geoMap_" + this.opts.index,
-        allowMovingFeatures: !this.opts.item.isReviewMode(),
         language: Crowdsourcing.translator.language,
-        popover: undefined,
-        emptyMarkerMessage: undefined,
-        popoverOnHover: false,
+        layer: {
+	        allowMovingFeatures: !this.opts.item.isReviewMode(),
+	        popover: undefined,
+	        emptyMarkerMessage: undefined,            
+	        popoverOnHover: false,
+	        markerIcon: {
+	            shape: "circle",
+	            prefix: "fa",
+	            markerColor: "blue",
+	            iconColor: "white",
+	            icon: "fa-circle",
+	            svg: true
+	        }
+        }
     })
     let initialView = {
         zoom: 5,
         center: [11.073397, 49.451993] //long, lat
     };
-    this.geoMap.setMarkerIcon({
-        shape: "circle",
-        prefix: "fa",
-        markerColor: "blue",
-        iconColor: "white",
-        icon: "fa-circle",
-        svg: true
-    })
     this.geoMap.init(initialView);
     this.geoMap.initGeocoder(this.refs.geocoder);
-    this.geoMap.onFeatureMove.subscribe(feature => this.moveFeature(feature));
-    this.geoMap.onFeatureClick.subscribe(feature => this.removeFeature(feature));
+    this.geoMap.layers.forEach(l => l.onFeatureMove.subscribe(feature => this.moveFeature(feature)));
+    this.geoMap.layers.forEach(l => l.onFeatureClick.subscribe(feature => this.removeFeature(feature)));
     this.geoMap.onMapClick.subscribe(geoJson => {
-        if(this.addMarkerActive && (this.question.targetFrequency == 0 || this.geoMap.getMarkerCount() < this.question.targetFrequency)) {
+        if(this.addMarkerActive && (this.question.targetFrequency == 0 || this.geoMap.layers[0].getMarkerCount() < this.question.targetFrequency)) {
             if(this.annotationToMark && this.annotationToMark.color) {
-                let markerIcon = this.geoMap.getMarkerIcon().options;
+                let markerIcon = this.geoMap.layers[0].getMarkerIcon().options;
                 markerIcon.markerColor = this.annotationToMark.color;
-                this.geoMap.setMarkerIcon(markerIcon);
+                this.geoMap.layers[0].config.markerIcon = markerIcon;
             }
-            let marker = this.geoMap.addMarker(geoJson);
+            let marker = this.geoMap.layers[0].addMarker(geoJson);
             if(this.annotationToMark) {
                 this.annotationToMark.markerId = marker.getId();
                 this.updateFeature(marker.getId());
@@ -183,7 +185,7 @@ getAnnotation(id) {
 
 updateFeature(id) {
     let annotation = this.getAnnotation(id);
-    let marker = this.geoMap.getMarker(annotation.markerId);
+    let marker = this.geoMap.layers[0].getMarker(annotation.markerId);
     annotation.setBody(marker.feature);
     annotation.setView(marker.feature.view);
     this.question.saveToLocalStorage();
@@ -193,7 +195,7 @@ updateFeature(id) {
  * Add a new marker. If the marker doesn't exist as an annotation, it is added as well
  */
 addFeature(id) {
-    let marker = this.geoMap.getMarker(id);
+    let marker = this.geoMap.layers[0].getMarker(id);
     let annotation = this.question.addAnnotation();
     annotation.markerId = id;
     annotation.setBody(marker.feature);

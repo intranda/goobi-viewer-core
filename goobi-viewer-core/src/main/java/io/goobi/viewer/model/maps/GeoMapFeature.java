@@ -28,6 +28,7 @@ public class GeoMapFeature {
 
     private String title;
     private String description;
+    private String link;
     private String json;
 
     public GeoMapFeature() {
@@ -67,6 +68,20 @@ public class GeoMapFeature {
     public void setDescription(String description) {
         this.description = description;
     }
+    
+    /**
+     * @return the link
+     */
+    public String getLink() {
+        return link;
+    }
+    
+    /**
+     * @param link the link to set
+     */
+    public void setLink(String link) {
+        this.link = link;
+    }
 
     /**
      * @return the json
@@ -94,6 +109,9 @@ public class GeoMapFeature {
         }
         if (StringUtils.isNotBlank(this.description)) {
             properties.append("description", this.description);
+        }
+        if (StringUtils.isNotBlank(this.link)) {
+            properties.append("link", this.link);
         }
         return object;
     }

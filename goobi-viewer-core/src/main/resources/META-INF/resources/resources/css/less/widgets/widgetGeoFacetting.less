@@ -72,12 +72,13 @@
 			background: none;
 			}	
 	}
+	&__action-toggle-markers {
+		margin-left: 0.8rem;
+	}
 	&__action-reset {
 		display: none;
 		color: inherit;
-		background: transparent;
-		border: none;
-		margin-left: 1rem;
+		margin-left: 0.8rem;
 		&.active {
 			display: block;
 		}
@@ -207,6 +208,40 @@
     }
 }
 
+
+// TOGGLE FOR MARKERS ON FULLSCREEN VIEW FOR GEO MAP FACETTING
+.geo-map__toggle-markers {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 4px;
+	padding: 0;
+	border: 2px solid rgba(0,0,0,0.2);
+	.fa-map-marker {
+		color: #464646;
+		width: 30px;
+		height: 30px;
+		line-height: 30px;
+		background-color: #fff;
+		font-size: 1.8rem;
+	}
+	&:hover,
+	&:focus,
+	&:active,
+	&:active:focus  {
+		.fa-map-marker {
+			background-color: #f4f4f4;
+			color: #464646;
+		}
+	}
+	&:focus {
+		.fa-map-marker {
+			background-color: #fff;
+			color: #464646;
+		}
+	}
+}
+
 .overlay__geomap {
 	width: 100%;
 	height: 100%;
@@ -242,6 +277,20 @@
 		}
 	}
 	
+}
+
+@{RTL}  {
+	.widget-geofacetting {
+		&__actions {
+			margin-left: unset;
+			margin-right: auto;
+		}
+		&__action-reset, 
+		&__action-toggle-markers {
+			margin-left: 0;
+			margin-right: 0.8rem;
+		}
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

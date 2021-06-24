@@ -54,11 +54,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -141,7 +143,7 @@ public class GeoMap {
 
     @Transient
     private boolean showPopover = true;
-
+    
     /**
      * Empty Constructor
      */
@@ -387,7 +389,7 @@ public class GeoMap {
     public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, String metadataField, String titleField, String descriptionField) {
         String title = StringUtils.isBlank(titleField) ? null : SolrTools.getSingleFieldStringValue(doc, titleField);
         String desc = StringUtils.isBlank(descriptionField) ? null : SolrTools.getSingleFieldStringValue(doc, descriptionField);
-        Set<GeoMapFeature> docFeatures = new HashSet<>();
+        List<GeoMapFeature> docFeatures = new ArrayList<>();
         List<String> points = SolrTools.getMetadataValues(doc, metadataField);
         for (String point : points) {
             JSONObject json = new JSONObject(point);
@@ -402,7 +404,9 @@ public class GeoMap {
                             GeoMapFeature feature = new GeoMapFeature(jsonString);
                             feature.setTitle(title);
                             feature.setDescription(desc);
-                            docFeatures.add(feature);
+                            if(!docFeatures.contains(feature)) {                                
+                                docFeatures.add(feature);
+                            }
                         }
                     });
                 }
@@ -415,6 +419,7 @@ public class GeoMap {
         }
         return docFeatures;
     }
+
 
     /**
      * @param initialView the initialView to set
@@ -500,7 +505,7 @@ public class GeoMap {
                 return marker.toJSONString();
             }
         }
-        return null;
+        return "{}";
     }
 
     /**
@@ -537,4 +542,5 @@ public class GeoMap {
     public void updateFeatures() {
         this.featuresAsString = null;
     }
+
 }

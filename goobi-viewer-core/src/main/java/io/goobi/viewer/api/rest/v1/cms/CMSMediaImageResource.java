@@ -67,7 +67,6 @@ public class CMSMediaImageResource extends ImageResource {
         super(context, request, response, "", getMediaFileUrl(filename).toString());
         request.setAttribute("filename", this.imageURI.toString());
         String requestUrl = request.getRequestURI();
-        filename = URLEncoder.encode(filename, "utf-8");
         String baseImageUrl = (ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE).replace("{filename}", filename);
         int baseStartIndex = requestUrl.indexOf(baseImageUrl);
         int baseEndIndex = baseStartIndex + baseImageUrl.length();
