@@ -30,25 +30,51 @@ public class CitationDataProviderTest extends AbstractTest {
 
             CitationDataProvider provider = new CitationDataProvider();
             provider.addItemData("id", fields, CSLType.BOOK);
-            CSLItemData itemData =provider.retrieveItem("id");
+            CSLItemData itemData = provider.retrieveItem("id");
             Assert.assertNotNull(itemData);
             Assert.assertNotNull(itemData.getAuthor());
             Assert.assertEquals(1, itemData.getAuthor().length);
             Assert.assertEquals("Zahn", itemData.getAuthor()[0].getFamily());
             Assert.assertEquals("Timothy", itemData.getAuthor()[0].getGiven());
+            Assert.assertEquals("2017-04-11", itemData.getIssued().getRaw());
         }
         {
-//            Map<String, List<String>> fields = new HashMap<>();
-//            fields.put(CitationDataProvider.AUTHOR, Arrays.asList(new String[] { "Timothy Zahn" }));
-//
-//            CitationDataProvider provider = new CitationDataProvider();
-//            provider.addItemData("id", fields, CSLType.BOOK);
-//            CSLItemData itemData =provider.retrieveItem("id");
-//            Assert.assertNotNull(itemData);
-//            Assert.assertNotNull(itemData.getAuthor());
-//            Assert.assertEquals(1, itemData.getAuthor().length);
-//            Assert.assertEquals("Zahn", itemData.getAuthor()[0].getFamily());
-//            Assert.assertEquals("Timothy", itemData.getAuthor()[0].getGiven());
+            //            Map<String, List<String>> fields = new HashMap<>();
+            //            fields.put(CitationDataProvider.AUTHOR, Arrays.asList(new String[] { "Timothy Zahn" }));
+            //
+            //            CitationDataProvider provider = new CitationDataProvider();
+            //            provider.addItemData("id", fields, CSLType.BOOK);
+            //            CSLItemData itemData =provider.retrieveItem("id");
+            //            Assert.assertNotNull(itemData);
+            //            Assert.assertNotNull(itemData.getAuthor());
+            //            Assert.assertEquals(1, itemData.getAuthor().length);
+            //            Assert.assertEquals("Zahn", itemData.getAuthor()[0].getFamily());
+            //            Assert.assertEquals("Timothy", itemData.getAuthor()[0].getGiven());
         }
+    }
+
+    /**
+     * @see CitationDataProvider#addItemData(String,Map,CSLType)
+     * @verifies parse years correctly
+     */
+    @Test
+    public void addItemData_shouldParseYearsCorrectly() throws Exception {
+        Map<String, List<String>> fields = new HashMap<>();
+        fields.put(CitationDataProvider.AUTHOR, Arrays.asList(new String[] { "Zahn, Timothy" }));
+        fields.put(CitationDataProvider.TITLE, Collections.singletonList("Thrawn"));
+        fields.put(CitationDataProvider.ISSUED, Collections.singletonList("2017"));
+        fields.put(CitationDataProvider.ISBN, Collections.singletonList("9780606412148"));
+
+        CitationDataProvider provider = new CitationDataProvider();
+        provider.addItemData("id", fields, CSLType.BOOK);
+        CSLItemData itemData = provider.retrieveItem("id");
+        Assert.assertNotNull(itemData);
+        Assert.assertNotNull(itemData.getAuthor());
+        Assert.assertEquals(1, itemData.getAuthor().length);
+        Assert.assertEquals("Zahn", itemData.getAuthor()[0].getFamily());
+        Assert.assertEquals("Timothy", itemData.getAuthor()[0].getGiven());
+        Assert.assertNull(itemData.getIssued().getRaw());
+        Assert.assertEquals(2017, itemData.getIssued().getDateParts()[0][0]);
+
     }
 }

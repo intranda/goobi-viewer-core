@@ -104,7 +104,7 @@ public class Citation {
         // logger.trace("Citation string generation START");
         CSLItemData itemData = itemDataProvider.addItemData(id, fields, type);
         String ret = makeAdhocBibliography(outputFormat, itemData).makeString().trim();
-
+        logger.trace("issued: {}", itemData.getIssued().getRaw());
         // logger.trace("Citation string generation END");
         return ret;
     }
