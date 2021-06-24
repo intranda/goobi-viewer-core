@@ -101,6 +101,7 @@ public class CitationDataProvider implements ItemDataProvider {
                     builder.ISSN(fields.get(key).get(0));
                     break;
                 case ISSUED:
+                    // Use different method for year-only values (to avoid duplicates in APA6)
                     try {
                         DateTools.formatterYearOnly.parse(fields.get(key).get(0));
                         builder.issued(Integer.valueOf(fields.get(key).get(0)));
