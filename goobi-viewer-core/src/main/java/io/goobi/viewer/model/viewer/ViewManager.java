@@ -3514,7 +3514,7 @@ public class ViewManager implements Serializable {
      * @return the firstPageOrientation
      */
     public PageOrientation getFirstPageOrientation() {
-        if (getCurrentPage().isFlipRectoVerso()) {
+        if (getCurrentPage() != null && getCurrentPage().isFlipRectoVerso()) {
             logger.trace("page {} is flipped", getCurrentPage().getOrder());
             return firstPageOrientation.opposite();
         }
