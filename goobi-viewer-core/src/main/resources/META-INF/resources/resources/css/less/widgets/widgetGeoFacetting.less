@@ -208,16 +208,32 @@
     }
 }
 
+
+// TOGGLE FOR MARKERS ON FULLSCREEN VIEW FOR GEO MAP FACETTING
 .geo-map__toggle-markers {
-	width: 30px;
-	height: 30px;
-	line-height: 30px;
-	background-color: #fff;
-	border-bottom: 1px solid #ccc;
-	display: none;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	border-radius: 4px;
+	padding: 0;
+	border: 2px solid rgba(0,0,0,0.2);
+	.fa-map-marker {
+		color: #464646;
+		width: 30px;
+		height: 30px;
+		line-height: 30px;
+		background-color: #fff;
+		font-size: 1.8rem;
+	}
+	&:hover,
+	&:focus,
+	&:active,
+	&:active:focus  {
+		.fa-map-marker {
+			background-color: #f4f4f4;
+			color: #464646;
+		}
+	}
 }
 
 .overlay__geomap {
