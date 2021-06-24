@@ -2240,7 +2240,7 @@ public class ActiveDocumentBean implements Serializable {
         return widget;
     }
 
-    public CMSSidebarElement generateMapWidget(String pi) throws PresentationException, DAOException {
+    public CMSSidebarElement generateMapWidget(String pi) throws PresentationException {
         CMSSidebarElement widget = new CMSSidebarElement();
         widget.setType("widgetGeoMap");
         try {

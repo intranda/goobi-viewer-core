@@ -337,6 +337,8 @@
     <url-mapping id="image1">
         <pattern value="/image/#{pi:activeDocumentBean.persistentIdentifier}/" />
         <view-id value="/viewObject.xhtml" />
+        <!-- TODO set representative page, if available -->
+        <action onPostback="false">#{activeDocumentBean.setImageToShow('1')}</action>
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
 	<url-mapping id="image2">
@@ -372,6 +374,8 @@
     <url-mapping id="object1">
         <pattern value="/object/#{pi:activeDocumentBean.persistentIdentifier}/" />
         <view-id value="/viewObject.xhtml" />
+        <!-- TODO set representative page, if available -->
+        <action onPostback="false">#{activeDocumentBean.setImageToShow('1')}</action>
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
 	<url-mapping id="object2">
@@ -456,6 +460,8 @@
     <url-mapping id="fulltext1">
         <pattern value="/fulltext/#{pi:activeDocumentBean.persistentIdentifier}/" />
         <view-id value="/viewFulltext.xhtml" />
+        <!-- TODO set representative page, if available -->
+        <action onPostback="false">#{activeDocumentBean.setImageToShow('1')}</action>
         <action onPostback="false">#{activeDocumentBean.openFulltext}</action>
     </url-mapping>
 	<url-mapping id="fulltext2">
@@ -600,6 +606,8 @@
     <url-mapping id="fullscreen1">
         <pattern value="/fullscreen/#{pi:activeDocumentBean.persistentIdentifier}/" />
         <view-id value="/viewObjectFullscreen.xhtml" />
+        <!-- TODO set representative page, if available -->
+        <action onPostback="false">#{activeDocumentBean.setImageToShow('1')}</action>
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
 	<url-mapping id="fullscreen2">
