@@ -14,7 +14,8 @@
                 <h:form id="widgetUserInteractionsStandardForm" prependId="false">
                     <h3>#{msg.menuUser_workInteractions}</h3>
                     <ul>
-                        <h:panelGroup rendered="#{userBean.user.maySetRepresentativeImage and activeDocumentBean.viewManager.hasPages}">
+                        <h:panelGroup
+                            rendered="#{userBean.user.maySetRepresentativeImage and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS'}">
                             <li>
                                 <h:commandLink
                                     action="#{adminBean.setRepresantativeImageAction(activeDocumentBean.viewManager.pi, activeDocumentBean.topDocument.dataRepository, activeDocumentBean.viewManager.currentPage.fileIdRoot)}">
