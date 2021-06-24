@@ -2462,6 +2462,11 @@ this.initMap = function() {
 		    },
 		    onAdd: function(map) {
 		        let button  = this.opts.toggleFeatures;
+		        L.DomEvent.on(button, "dblclick" , (e) => {
+		            L.DomEvent.stopPropagation(e);
+		            e.stopPropagation();
+		            return false;
+		        });
 		        L.DomEvent.on(button, "click" , (e) => {
 		            this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
 		            L.DomEvent.stopPropagation(e);
