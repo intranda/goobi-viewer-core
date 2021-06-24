@@ -97,7 +97,9 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     @Column(name = "public")
     private Boolean isPublic = false;
 
-    @Column(name = "share_key", unique = true)
+    // Field length had to be limited to 64 chars (SHA-256 length) because InnoDB only supports 767 bytes per index,
+    // and the unique index will require 255*n bytes (where n depends on the charset)
+    @Column(name = "share_key", unique = true, columnDefinition = "VARCHAR(64)")
     private String shareKey;
 
     @Column(name = "date_updated")
