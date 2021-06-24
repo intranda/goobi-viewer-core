@@ -6,7 +6,7 @@
 	<div ref="geocoder" class="geocoder"/>
 	<div class="geo-map__buttons-wrapper">
 	</div>
-		<button  type="button" ref="toggleMarkers" data-toggle="tooltip" title="#{msg.action__toggle_map_markers}" class="btn btn--icon widget-geofacetting__action-toggle-markers" aria-label="#{msg.action__toggle_map_markers}">
+		<button  type="button" ref="toggleMarkers" data-toggle="tooltip" title="{opts.msg.action__toggle_map_markers}" class="btn btn--icon widget-geofacetting__action-toggle-markers" aria-label="{opts.msg.action__toggle_map_markers}">
            	<i class="fa fa-map-marker"/>
         </button>
 	<div ref="map" class="geo-map">
@@ -28,17 +28,17 @@ initMap() {
         fixed: this.opts.inactive ? true : false,
         layer: {
 	        allowMovingFeatures: false,
-	        popover: undefined,
-	        popoverOnHover: false,
+	        popover: $("<div><p data-metadata='title'></p></div>"),
+	        popoverOnHover: true,
 	        emptyMarkerMessage: undefined,
-	        markerIcon: {
-	            shape: "circle",
-	            prefix: "fa",
-	            markerColor: "blue",
-	            iconColor: "white",
-	            icon: "fa-circle",
-	            svg: true
-	        },
+// 	        markerIcon: {
+// 	            shape: "circle",
+// 	            prefix: "fa",
+// 	            markerColor: "blue",
+// 	            iconColor: "white",
+// 	            icon: "fa-circle",
+// 	            svg: true
+// 	        },
 		    style: {
 				    fillOpacity: 0.02
 			}
@@ -48,6 +48,7 @@ initMap() {
         zoom: 5,
         center: [11.073397, 49.451993] //long, lat
     };
+    console.log("init map ", this.opts.features);
     this.geoMap.init(initialView, this.opts.features);
     this.drawLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
    	    style : {
@@ -65,9 +66,14 @@ initMap() {
 	    this.initMapDraw();
     }
     
-    console.log("add event listener ", this.refs);
     this.refs.toggleMarkers.addEventListener("click", () => {
         this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
+    })
+    
+    this.geoMap.layers[0].onFeatureClick.subscribe(f => {
+        if(f.properties && f.properties.link) {
+           window.location.assign(f.properties.link);
+       }
     })
     
     if(this.opts.area) {
@@ -92,7 +98,6 @@ initMap() {
                 layer = this.drawLayer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
                 break;
         }
-        console.log("draw layer");
         this.onLayerDrawn({layer: layer});
 
     }

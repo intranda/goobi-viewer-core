@@ -2404,7 +2404,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	    }
     	}.bind(this)
 });
-riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"></div><button type="button" ref="toggleMarkers" data-toggle="tooltip" title="#{msg.action__toggle_map_markers}" class="btn btn--icon widget-geofacetting__action-toggle-markers" aria-label="#{msg.action__toggle_map_markers}"><i class="fa fa-map-marker"></i></button><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
+riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"></div><button type="button" ref="toggleMarkers" data-toggle="tooltip" title="{opts.msg.action__toggle_map_markers}" class="btn btn--icon widget-geofacetting__action-toggle-markers" aria-label="{opts.msg.action__toggle_map_markers}"><i class="fa fa-map-marker"></i></button><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
 
 this.on("mount", function() {
 	this.initMap();
@@ -2418,17 +2418,10 @@ this.initMap = function() {
         fixed: this.opts.inactive ? true : false,
         layer: {
 	        allowMovingFeatures: false,
-	        popover: undefined,
-	        popoverOnHover: false,
+	        popover: $("<div><p data-metadata='title'></p></div>"),
+	        popoverOnHover: true,
 	        emptyMarkerMessage: undefined,
-	        markerIcon: {
-	            shape: "circle",
-	            prefix: "fa",
-	            markerColor: "blue",
-	            iconColor: "white",
-	            icon: "fa-circle",
-	            svg: true
-	        },
+
 		    style: {
 				    fillOpacity: 0.02
 			}
@@ -2438,6 +2431,7 @@ this.initMap = function() {
         zoom: 5,
         center: [11.073397, 49.451993]
     };
+    console.log("init map ", this.opts.features);
     this.geoMap.init(initialView, this.opts.features);
     this.drawLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
    	    style : {
@@ -2455,10 +2449,14 @@ this.initMap = function() {
 	    this.initMapDraw();
     }
 
-    console.log("add event listener ", this.refs);
     this.refs.toggleMarkers.addEventListener("click", () => {
-        console.log("toggle markers");
         this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
+    })
+
+    this.geoMap.layers[0].onFeatureClick.subscribe(f => {
+        if(f.properties && f.properties.link) {
+           window.location.assign(f.properties.link);
+       }
     })
 
     if(this.opts.area) {
@@ -2483,7 +2481,6 @@ this.initMap = function() {
                 layer = this.drawLayer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
                 break;
         }
-        console.log("draw layer");
         this.onLayerDrawn({layer: layer});
 
     }

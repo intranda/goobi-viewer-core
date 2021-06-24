@@ -39,13 +39,13 @@
            	});
            	$(document).ready(() => {                  		    
             	let view = #{cc.attrs.geoMap.initialView};
+            	console.log("set initial view to ", view);
             	let features = #{cc.attrs.geoMap.featuresAsString};
             	geoMap.init(view);
             	let layer = new viewerJS.GeoMap.featureGroup(geoMap, {
             	    markerIcon: #{cc.attrs.geoMap.markerAsJSON}
             	})
             	layer.onFeatureClick.subscribe(feature => {
-           	        console.log("Clicked on feature ", feature);
            	       if(feature.properties && feature.properties.link) {
            	           window.location.assign(feature.properties.link);
            	       }
@@ -59,7 +59,7 @@
 	                    window.open(queryUrl, "#{cc.attrs.linkTarget}");
 	                });
 	            }
-            	layer.init(features);
+            	layer.init(features, true);
             	
             	if(#{cc.attrs.showAnnotations}) {            	    
             	 $("[data-geomap-feature]").each((index, ele) => {

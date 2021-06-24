@@ -123,7 +123,6 @@
     	                    	}
                     	})
                     	if(this.area) {	                    	    
-	                    	console.log("draw area" , this.area);
 	                        switch(this.area.type) {
 	                            case "polygon":
 	                                this.shape = this.drawLayer.drawPolygon(this.area.vertices, true);
@@ -174,7 +173,10 @@
 		     					        //console.log("Set facetting area", area);
 									    sessionStorage.setItem("geoFacet", JSON.stringify(area));
 		     					      	$facetInput.val(area ? JSON.stringify(area) : "");
-		     					    }
+		     					    },
+		     					   msg: {
+								        action__toggle_map_markers : "#{msg.action__toggle_map_markers}"
+								    }
 		     					}); 
 	                       	});                       	
 		                })

@@ -148,7 +148,6 @@ var viewerJS = ( function( viewer ) {
        		this.layers[0].init(features);
             let zoom = view ? view.zoom : this.config.initialView.zoom;
             let viewAroundFeatures = this.getViewAroundFeatures(this.layers[0].getFeatures(), zoom);
-            console.log("viewAroundFeatures", viewAroundFeatures);
             this.setView(viewAroundFeatures);
         } else if(view){                                                    
             this.setView(view);
@@ -282,8 +281,8 @@ var viewerJS = ( function( viewer ) {
     viewer.GeoMap.featureGroup = function(geoMap, config) {
  		this.geoMap = geoMap;
         this.config = $.extend( true, {}, _defaults_featureGroup, config );
-            console.log("create featureGroup with config ", this.config);
         if(_debug) {
+            console.log("create featureGroup with config ", this.config);
         }
         this.markerIdCounter = 1;
         this.markers = [];
@@ -297,7 +296,7 @@ var viewerJS = ( function( viewer ) {
 
     }
     
-    viewer.GeoMap.featureGroup.prototype.init = function(features) {
+    viewer.GeoMap.featureGroup.prototype.init = function(features, zoomToFeatures) {
        
        if(_debug)console.log("init featureGroup ", features);
     
@@ -317,7 +316,7 @@ var viewerJS = ( function( viewer ) {
             }.bind(this),
             
             onEachFeature: function(feature, layer) {
-            	if(_debug);console.log("onEachFeature ", feature, layer, this);
+            	if(_debug)console.log("onEachFeature ", feature, layer, this);
             	
             	layer.id = feature.id;
                 layer.view = feature.view;
@@ -370,6 +369,12 @@ var viewerJS = ( function( viewer ) {
             	if(_debug)console.log("add feature for " + type, feature);
             	this.addMarker(feature);
             })
+        }
+        
+        if(zoomToFeatures && features && features.length > 0) {
+            let zoom = this.geoMap.getView().zoom;
+            let viewAroundFeatures = this.geoMap.getViewAroundFeatures(this.getFeatures(), zoom);
+            this.geoMap.setView(viewAroundFeatures);
         }
         
     }
@@ -427,7 +432,7 @@ var viewerJS = ( function( viewer ) {
     
     viewer.GeoMap.featureGroup.prototype.openPopup = function(marker) {
         try{
-            marker.openPopup();
+            marker.openPopup(); 
         } catch(e) {
             //swallow
         }
@@ -492,6 +497,7 @@ var viewerJS = ( function( viewer ) {
     viewer.GeoMap.featureGroup.prototype.createPopup = function(marker) {
         let title = viewerJS.getMetadataValue(marker.feature.properties.title, this.config.language);
         let desc = viewerJS.getMetadataValue(marker.feature.properties.description, this.config.language);
+
         if(this.config.popover && (title || desc) ) {
             let $popover = $(this.config.popover).clone();
             $popover.find("[data-metadata='title']").text(title);
