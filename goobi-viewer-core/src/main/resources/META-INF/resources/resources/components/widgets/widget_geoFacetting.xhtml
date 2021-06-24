@@ -55,7 +55,7 @@
 					<div class="modal-backdrop show"></div>
 				</div>
 				<div class="widget-geofacetting__overlay-buttons-wrapper">
-					<button  type="button" ref="toggleMarkers" data-placement="right" data-toggle="tooltip" title="{opts.msg.action__toggle_map_markers}" class="btn btn--icon geo-map__toggle-markers" aria-label="{opts.msg.action__toggle_map_markers}">
+					<button  type="button" data-geofacet="toggleMarkersFullscreen" data-placement="right" data-toggle="tooltip" title="{opts.msg.action__toggle_map_markers}" class="btn btn--icon geo-map__toggle-markers" aria-label="{opts.msg.action__toggle_map_markers}">
            				<i class="fa fa-map-marker"/>
         			</button>
 					<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="cancel">#{msg.cancel}</button>
@@ -91,7 +91,8 @@
 	                 	let $facetInput = $("[data-geofacet='feature']");  
 	                 	let $loader = $("[data-loader='geoFacet']"); 
 		                let $toggleMarkers = $("[data-geofacet='toggleMarkers']")
-	                 	
+	                 	let $toggleMarkersFullscreen = $("[data-geofacet='toggleMarkersFullscreen']")
+
 		                let areaString = '#{searchBean.facets.geoFacetFeature}';
 		                this.area = getArea(areaString);
 		                this.features = #{searchBean.getHitsLocations()};
@@ -172,6 +173,7 @@
 		     					    inactive: false,
 		     					    area : this.area,
 		     					    features : this.features,
+		     					    toggleFeatures: $toggleMarkersFullscreen.get(0),
 		     					    onFeatureSelect: area => {
 		     					        //console.log("Set facetting area", area);
 									    sessionStorage.setItem("geoFacet", JSON.stringify(area));

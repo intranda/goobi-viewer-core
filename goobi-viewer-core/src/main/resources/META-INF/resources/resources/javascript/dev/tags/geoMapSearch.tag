@@ -63,15 +63,40 @@ initMap() {
 	    this.initMapDraw();
     }
     
-    this.refs.toggleMarkers.addEventListener("click", () => {
-        this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
-    })
+//     this.refs.toggleMarkers.addEventListener("click", () => {
+//         this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
+//     })
+    
+    
     
     this.geoMap.layers[0].onFeatureClick.subscribe(f => {
         if(f.properties && f.properties.link) {
            window.location.assign(f.properties.link);
        }
     })
+
+	if(this.opts.toggleFeatures) {   
+		let ToggleFeaturesControl = L.Control.extend({
+		    options: {
+		        position: "topleft"
+		    },
+		    onAdd: function(map) {
+		        let button  = this.opts.toggleFeatures;
+		        L.DomEvent.on(button, "click" , (e) => {
+		            this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
+		            L.DomEvent.stopPropagation(e);
+		            e.stopPropagation();
+		            return false;
+		        });
+		        return button;
+		    }.bind(this),
+		    onRemove: function(map) {
+		        
+		    }
+		})
+		let control = new ToggleFeaturesControl();
+		this.geoMap.map.addControl(control);
+	}
     
     if(this.opts.area) {
         let shape = this.opts.area;
