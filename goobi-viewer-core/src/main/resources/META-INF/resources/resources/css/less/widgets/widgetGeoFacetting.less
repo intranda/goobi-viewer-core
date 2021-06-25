@@ -64,6 +64,8 @@
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%) scale(.6);
+		width: 90%;
+		text-align: center;
 		&:hover,
 		&:active,
 		&:focus {
@@ -72,8 +74,21 @@
 			background: none;
 			}	
 	}
+	&__action-expand-hint {
+		font-size: 1.7rem;
+	}
 	&__action-toggle-markers {
 		margin-left: 0.8rem;
+		font-size: 1.8rem;
+		border: none;
+		background: none;
+		color: @white;
+		&:hover,
+		&:focus,
+		&:active,
+		&:active:focus {
+			color: @white;
+		}
 	}
 	&__action-reset {
 		display: none;
