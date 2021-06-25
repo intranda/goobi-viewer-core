@@ -287,7 +287,8 @@ var viewerJS = ( function( viewer ) {
         if(_debug) {
             console.log("create featureGroup with config ",  config);
         }
-        this.markerIdCounter = 1;
+
+		this.markerIdCounter = 1;
         this.markers = [];
         this.areas = [];
         this.highlighted = []; //list of currently highlighted colors
@@ -295,14 +296,23 @@ var viewerJS = ( function( viewer ) {
         this.onFeatureClick = new rxjs.Subject();
         this.onFeatureMove = new rxjs.Subject();
 
-		this.layer = new L.FeatureGroup();
-
     }
     
     viewer.GeoMap.featureGroup.prototype.init = function(features, zoomToFeatures) {
        
        if(_debug)console.log("init featureGroup ", features);
-    
+        
+        this.markerIdCounter = 1;
+        this.markers = [];
+        this.areas = [];
+        this.highlighted = []; //list of currently highlighted colors
+
+
+        if(this.layer) {
+        	this.geoMap.map.removeLayer(this.layer);
+        }
+		this.layer = new L.FeatureGroup();
+        
         //init feature layer
         this.locations = L.geoJSON([], {
             
@@ -568,8 +578,11 @@ var viewerJS = ( function( viewer ) {
 
     viewer.GeoMap.featureGroup.prototype.removeMarker = function(feature) {
         let marker = this.getMarker(feature.id);
+        console.log("remove marker", marker);
         marker.remove();
+        console.log("remaining markers", this.markers);
         let index = this.markers.indexOf(marker);
+        this.markers.splice(index, 1);
     }
 
 
