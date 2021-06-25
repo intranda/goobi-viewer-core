@@ -377,6 +377,7 @@ var viewerJS = ( function( viewer ) {
         
         if(features && features.length > 0) {
             features
+            .sort( (f1,f2) => this.compareFeatures(f1,f2) )
             .forEach(feature => {
             	let type = feature.geometry.type;
             	if(_debug)console.log("add feature for " + type, feature);
