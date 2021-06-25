@@ -169,8 +169,32 @@ public class CmsCollectionsBean implements Serializable {
      */
     public void setSolrFieldValue(String solrFieldValue) {
         this.solrFieldValue = solrFieldValue;
-        if (currentCollection == null) {
-            currentCollection = new CMSCollection(solrField, solrFieldValue);
+    }
+
+    public String getCollectionName() {
+        if (currentCollection != null) {
+            return currentCollection.getName();
+        }
+
+        return StringUtils.isNotEmpty(getSolrFieldValue()) ? getSolrFieldValue() : "-";
+    }
+
+    public void setCollectionName(String collectionName) throws DAOException {
+        if("-".equals(collectionName)) {
+            return;
+        }
+        
+        setSolrFieldValue(collectionName);
+
+        // Init collection
+        if (currentCollection == null || !currentCollection.getSolrField().equals(solrField)
+                || !currentCollection.getSolrFieldValue().equals(collectionName)) {
+            currentCollection = DataManager.getInstance().getDao().getCMSCollection(solrField, collectionName);
+            if (currentCollection == null) {
+                currentCollection = new CMSCollection(solrField, solrFieldValue);
+                editCollection(currentCollection);
+                addCollection();
+            }
         }
     }
 
@@ -226,6 +250,7 @@ public class CmsCollectionsBean implements Serializable {
             DataManager.getInstance().getDao().addCMSCollection(collection);
             updateCollections();
             setSolrFieldValue("");//empty solr field value to avoid creating the same collection again
+            logger.trace("collection added to DB: {}", collection);
         } else {
             Messages.error("cms_collections_err_noselection");
         }
@@ -281,7 +306,7 @@ public class CmsCollectionsBean implements Serializable {
     public String editCollection(CMSCollection collection) {
         setCurrentCollection(collection);
         collection.populateDescriptions();
-        collection.populateLabels();
+        // collection.populateLabels();
         return "pretty:adminCmsEditCollection";
     }
 

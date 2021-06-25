@@ -34,6 +34,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,13 +45,13 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.viewer.BrowseElementInfo;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -65,7 +66,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 @Entity
 @Table(name = "cms_collections")
-public class CMSCollection implements Comparable<CMSCollection>, BrowseElementInfo, CMSMediaHolder {
+public class CMSCollection implements Comparable<CMSCollection>, BrowseElementInfo, CMSMediaHolder, IPolyglott {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSCollection.class);
 
@@ -98,13 +99,15 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     @PrivateOwned
     private List<CMSCollectionTranslation> translations = new ArrayList<>();
 
+    @Transient
+    private Locale selectedLocale = BeanUtils.getLocale();
+
     /**
      * <p>
      * Constructor for CMSCollection.
      * </p>
      */
     public CMSCollection() {
-
     }
 
     /**
@@ -263,6 +266,14 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
+     * 
+     * @return
+     */
+    public CMSCollectionTranslation getDescriptionAsTranslation() {
+        return getDescriptionAsTranslation(selectedLocale.getLanguage());
+    }
+
+    /**
      * <p>
      * setLabel.
      * </p>
@@ -379,9 +390,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         if (obj != null && obj.getClass().equals(this.getClass())) {
             return getSolrField().equals(((CMSCollection) obj).getSolrField())
                     && getSolrFieldValue().equals(((CMSCollection) obj).getSolrFieldValue());
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -404,6 +415,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * </p>
      */
     public void populateDescriptions() {
+        logger.trace("populateDescriptions");
         List<String> languages = BeanUtils.getNavigationHelper().getSupportedLanguages();
         for (String language : languages) {
             if (getDescriptions().stream().noneMatch(description -> description.getLanguage().equalsIgnoreCase(language))) {
@@ -492,9 +504,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
             }
             URI uri = applicationUri.resolve(getCollectionUrl().replaceAll("^\\/", "").trim());
             return uri;
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /* (non-Javadoc)
@@ -592,11 +604,11 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         if (labels.isEmpty()) {
             return ViewerResourceBundle.getTranslations(getSolrFieldValue());
         }
-        
+
         IMetadataValue value = new MultiLanguageMetadataValue(labels);
         return value;
     }
-    
+
     @Override
     public IMetadataValue getTranslationsForDescription() {
         Map<String, String> descriptions = getDescriptions().stream()
@@ -605,7 +617,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         if (descriptions.isEmpty()) {
             return null;
         }
-        
+
         IMetadataValue value = new MultiLanguageMetadataValue(descriptions);
         return value;
     }
@@ -628,10 +640,59 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         if (hasMediaItem()) {
             return new CategorizableTranslatedSelectable<CMSMediaItem>(mediaItem, true,
                     mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
-        } else {
-            return null;
         }
+
+        return null;
     }
-    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isComplete(java.util.Locale)
+     */
+    @Override
+    public boolean isComplete(Locale locale) {
+        return !isEmpty(locale);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isValid(java.util.Locale)
+     */
+    @Override
+    public boolean isValid(Locale locale) {
+        return !isEmpty(locale);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
+     */
+    @Override
+    public boolean isEmpty(Locale locale) {
+        if (locale == null) {
+            throw new IllegalArgumentException("locale may not be null");
+        }
+
+        CMSCollectionTranslation translation = getDescriptionAsTranslation(locale.getLanguage());
+        if (translation == null) {
+            return true;
+        }
+
+        return StringUtils.isBlank(translation.getValue());
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.translations.IPolyglott#getSelectedLocale()
+     */
+    @Override
+    public Locale getSelectedLocale() {
+        return selectedLocale;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.translations.IPolyglott#setSelectedLocale(java.util.Locale)
+     */
+    @Override
+    public void setSelectedLocale(Locale locale) {
+        logger.trace("setSelectedLocale: {}", locale);
+        this.selectedLocale = locale;
+    }
 
 }
