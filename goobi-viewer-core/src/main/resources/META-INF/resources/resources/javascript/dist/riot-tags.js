@@ -2431,7 +2431,7 @@ this.initMap = function() {
         zoom: 5,
         center: [11.073397, 49.451993]
     };
-    console.log("init map ", this.opts.features);
+
     this.geoMap.init(initialView, this.opts.features);
     this.drawLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
    	    style : {
