@@ -22,7 +22,7 @@
 						<h3>#{msg.widget_geofacetting__label}</h3>
 					</div>
 					<div class="widget-geofacetting__item widget-geofacetting__actions">
-			            <button type="button" id="toggleMarkers" data-toggle="tooltip" data-geofacet="toggleMarkers" title="#{msg.action__toggle_map_markers}" class="btn btn--icon widget-geofacetting__action-toggle-markers" aria-label="#{msg.action__toggle_map_markers}">
+			            <button type="button" id="toggleMarkers" data-toggle="tooltip" data-geofacet="toggleMarkers" title="#{msg.action__toggle_map_markers}" class="widget-geofacetting__action-toggle-markers" aria-label="#{msg.action__toggle_map_markers}">
 			            	<i class="fa fa-map-marker"/>
 			            </button>
 						<button type="button" id="resetFacetMap" data-toggle="tooltip" data-geofacet="reset" title="#{msg.removeFacet}" class="btn btn--icon widget-geofacetting__action-reset" aria-label="#{msg.fullscreen_enter}">
@@ -34,9 +34,10 @@
 					<div id="geoFacettingMap" class="geo-map">
 					<!-- OVERLAY ON HOVER -->
 					<div id="expandFacetMap" class="widget-geofacetting__action-overlay">
-						<button type="button" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="btn btn--icon widget-geofacetting__action-expand" aria-label="#{msg.fullscreen_enter}">
-		                	<i class="fa fa-expand"/>
-		                </button>
+						<div type="button" class="widget-geofacetting__action-expand" aria-label="#{msg.widget_geofacetting__area_facetting}">
+		                	<div><i class="fa fa-expand"/></div>
+		                	<div class="widget-geofacetting__action-expand-hint">#{msg.widget_geofacetting__area_facetting}</div>
+		                </div>
 					</div>
 					</div>
 

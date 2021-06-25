@@ -232,7 +232,9 @@ var viewerJS = ( function( viewer ) {
         if(!features || features.length == 0) {
             return undefined;
         } else {
-        	//console.log("view around ", features);
+            if(_debug) {
+        	console.log("view around ", features);
+            }
         	let bounds = L.latLngBounds();
         	features.map(f => L.geoJson(f).getBounds()).forEach(b => bounds.extend(b));
             let center = bounds.getCenter();
