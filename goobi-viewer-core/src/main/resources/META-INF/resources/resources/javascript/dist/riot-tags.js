@@ -2431,7 +2431,7 @@ this.initMap = function() {
         zoom: 5,
         center: [11.073397, 49.451993]
     };
-    console.log("init map ", this.opts.features);
+    console.log("init map ", this.opts);
     this.geoMap.init(initialView, this.opts.features);
     this.drawLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
    	    style : {
@@ -2979,7 +2979,7 @@ riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="p
         } ).then( function() {
             return this.opts.page.getTextContent();
         }.bind( this ) ).then( function( textContent ) {
-            console.log( "viewport ", this.viewport );
+
             $( this.textLayer ).css( {
                 height: this.viewport.height + 'px',
                 width: this.viewport.width + 'px',

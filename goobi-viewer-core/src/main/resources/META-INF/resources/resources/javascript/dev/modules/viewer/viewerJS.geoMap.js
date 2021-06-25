@@ -28,7 +28,7 @@ var viewerJS = ( function( viewer ) {
     'use strict'; 
     
     // default variables
-    var _debug = true;
+    var _debug = false;
     
     var _defaults = {
             mapId : "geomap",
@@ -232,7 +232,7 @@ var viewerJS = ( function( viewer ) {
         if(!features || features.length == 0) {
             return undefined;
         } else {
-        	console.log("view around ", features);
+        	//console.log("view around ", features);
         	let bounds = L.latLngBounds();
         	features.map(f => L.geoJson(f).getBounds()).forEach(b => bounds.extend(b));
             let center = bounds.getCenter();
@@ -281,9 +281,9 @@ var viewerJS = ( function( viewer ) {
         
     viewer.GeoMap.featureGroup = function(geoMap, config) {
  		this.geoMap = geoMap;
-        this.config = $.extend( true, {}, _defaults_featureGroup, config );
+        this.config = $.extend( true, {}, _defaults_featureGroup, geoMap.config.layer, config );
         if(_debug) {
-            console.log("create featureGroup with config ", this.config);
+            console.log("create featureGroup with config ",  config);
         }
         this.markerIdCounter = 1;
         this.markers = [];
@@ -330,7 +330,7 @@ var viewerJS = ( function( viewer ) {
                 .pipe(rxjs.operators.map(() => this.openPopup(layer)), rxjs.operators.map(() => this.updatePosition(layer)))
                 .subscribe(this.onFeatureMove);
                 rxjs.fromEvent(layer, "click").pipe(rxjs.operators.map(e => layer.feature)).subscribe(this.onFeatureClick);
-                
+
                 if(this.config.popover) {                    
                     if(this.config.popoverOnHover) {                    
                         rxjs.fromEvent(layer, "mouseover").subscribe(() => layer.openPopup());
@@ -478,6 +478,7 @@ var viewerJS = ( function( viewer ) {
     viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function() {
         if(this.config.markerIcon && !jQuery.isEmptyObject(this.config.markerIcon)) {
             let icon = L.ExtraMarkers.icon(this.config.markerIcon);
+        	icon.options.name = "";	//remove name property to avoid it being displayed on the map
             if(this.config.markerIcon.shadow === false) {                
                 icon.options.shadowSize = [0,0];
             }
