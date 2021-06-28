@@ -19,6 +19,7 @@
 		display: flex;
 		margin-left: auto;
 		padding: 0 0.9rem;
+		align-items: center;
 		.btn {
 		}
 	}
@@ -64,6 +65,8 @@
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%) scale(.6);
+		width: 90%;
+		text-align: center;
 		&:hover,
 		&:active,
 		&:focus {
@@ -72,13 +75,30 @@
 			background: none;
 			}	
 	}
+	&__action-expand-hint {
+		font-size: 1.7rem;
+	}
 	&__action-toggle-markers {
 		margin-left: 0.8rem;
+		font-size: 1.7rem;
+		border: none;
+		background: none;
+		color: @white;
+		&:hover,
+		&:focus,
+		&:active,
+		&:active:focus {
+			color: @white;
+		}
 	}
 	&__action-reset {
 		display: none;
 		color: inherit;
 		margin-left: 0.8rem;
+		font-size: 1.7rem;
+		border: none;
+		background: none;
+		color: @white;
 		&.active {
 			display: block;
 		}
@@ -88,6 +108,7 @@
 			text-decoration: none;
 			color: inherit;
 			background: none;
+			color: @white;
 		}
 	}
 	&__body {

@@ -41,7 +41,6 @@
            	});
            	$(document).ready(() => {                  		    
             	let view = #{cc.attrs.geoMap.initialView};
-            	console.log("set initial view to ", view);
             	let features = #{cc.attrs.geoMap.featuresAsString};
             	geoMap.init(view);
             	let layer = new viewerJS.GeoMap.featureGroup(geoMap, {

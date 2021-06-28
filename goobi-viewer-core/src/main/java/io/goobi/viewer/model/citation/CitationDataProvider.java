@@ -17,6 +17,7 @@ package io.goobi.viewer.model.citation;
 
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -142,8 +143,8 @@ public class CitationDataProvider implements ItemDataProvider {
      * @see de.undercouch.citeproc.ItemDataProvider#getIds()
      */
     @Override
-    public String[] getIds() {
-        return itemDataMap.keySet().toArray(new String[0]);
+    public Collection<String> getIds() {
+        return itemDataMap.keySet();
     }
 
 }

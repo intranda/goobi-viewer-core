@@ -285,10 +285,9 @@
 					            	    //cluster icons for non-editable maps
 					            	    mapEditor.geoMap.layers[0].config.clusterMarkers = !editable;
 					            	    mapEditor.geoMap.layers[0].config.popoverOnHover = !editable;
-					            	    mapEditor.setAllowEditFeatures(editable);
 					            	    mapEditor.geoMap.layers[0].config.markerIcon = #{geoMapBean.currentMap.markerAsJSON};
-					            	    mapEditor.geoMap.layers[0].config.markerIcon.name = "";
 					            	    mapEditor.init(window.storedView);
+					            	    mapEditor.setAllowEditFeatures(editable);
 // 					            	    mapEditor.updateFeatures();
 // 					            	    mapEditor.updateView(window.storedView);
 					            	    

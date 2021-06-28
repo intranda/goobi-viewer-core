@@ -71,6 +71,7 @@ import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
@@ -3598,6 +3599,34 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CampaignRecordPageStatistic> getCampaignPageStatisticsForRecord(String pi, CrowdsourcingStatus status) throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            try {
+                String query = "SELECT a FROM CampaignRecordPageStatistic a WHERE a.pi = :pi";
+                if (status != null) {
+                    query += " AND a.status = :status";
+                }
+                Query q = getEntityManager().createQuery(query);
+                q.setParameter("pi", pi);
+                if (status != null) {
+                    q.setParameter("status", status);
+                }
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+                List<CampaignRecordPageStatistic> list = q.getResultList();
+                return list;
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
+                return Collections.emptyList();
+            }
+        }
+    }
+
+    
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#addCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
      */

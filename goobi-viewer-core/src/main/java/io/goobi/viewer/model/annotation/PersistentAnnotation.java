@@ -51,6 +51,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
@@ -646,9 +648,23 @@ public class PersistentAnnotation {
      * @throws DAOException
      */
     public CrowdsourcingStatus getReviewStatus() throws DAOException {
-        return Optional.ofNullable(getGenerator()).map(Question::getOwner).map(c -> c.getRecordStatus(getTargetPI())).orElse(CrowdsourcingStatus.FINISHED);
+        return Optional.ofNullable(getGenerator()).map(Question::getOwner).map(c -> getStatus(c, getTargetPI(), getTargetPageOrder())).orElse(CrowdsourcingStatus.FINISHED);
     }
     
+    /**
+     * @param c
+     * @param targetPI2
+     * @param targetPageOrder2
+     * @return
+     */
+    private CrowdsourcingStatus getStatus(Campaign campaign, String pi, Integer page) {
+        if(page == null || StatisticMode.RECORD == campaign.getStatisticMode()) {
+            return campaign.getRecordStatus(pi);
+        } else {
+            return campaign.getPageStatus(pi, page);
+        }
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

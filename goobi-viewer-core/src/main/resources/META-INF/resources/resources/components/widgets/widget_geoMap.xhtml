@@ -33,14 +33,14 @@
 
                     <!-- MAP -->
                     <viewerComponent:geoMap 
-                    showPopever="true" popoverOnHover="true"
+                    showPopover="true" popoverOnHover="false"
                     showAnnotations="#{cc.attrs.showAnnotations}" geoMap="#{cc.attrs.widget.geoMap}" linkToSearch="#{cc.attrs.linkToSearch}" mapId="widget_geoMap_#{cc.attrs.widget.geoMapId}"></viewerComponent:geoMap>
                 </div>
             </h:panelGroup>
-            <popover id="geoMapPopoverTemplate_#{cc.attrs.widget.geoMapId}">
-           		<h4 data-metadata="title"></h4>
-           		<span data-metadata="description"></span>
-           	</popover>
+<!--             <popover id="geoMapPopoverTemplate_#{cc.attrs.widget.geoMapId}"> -->
+<!--            		<h4 data-metadata="title"></h4> -->
+<!--            		<span data-metadata="description"></span> -->
+<!--            	</popover> -->
             <script type="text/javascript">	  
           //<![CDATA[
             $("#widgetGeoMap_#{cc.attrs.widget.geoMapId}").show();
