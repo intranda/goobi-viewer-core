@@ -43,6 +43,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSCollectionTranslation;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.translations.LocaleSwitch;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -77,6 +78,8 @@ public class CmsCollectionsBean implements Serializable {
     private List<CMSCollection> collections;
     private boolean piValid = true;
     private CMSCollectionImageMode imageMode = CMSCollectionImageMode.NONE;
+    /** Current tab language */
+    private LocaleSwitch localeSwitch  = new LocaleSwitch();
 
     /**
      * <p>
@@ -185,10 +188,10 @@ public class CmsCollectionsBean implements Serializable {
      * @throws DAOException
      */
     public void setCollectionName(String collectionName) throws DAOException {
-        if("-".equals(collectionName)) {
+        if ("-".equals(collectionName)) {
             return;
         }
-        
+
         setSolrFieldValue(collectionName);
 
         // Load or init collection
@@ -447,6 +450,20 @@ public class CmsCollectionsBean implements Serializable {
     public void setImageMode(CMSCollectionImageMode imageMode) {
         logger.trace("setImageMode: {}", imageMode);
         this.imageMode = imageMode;
+    }
+
+    /**
+     * @return the localeSwitch
+     */
+    public LocaleSwitch getLocaleSwitch() {
+        return localeSwitch;
+    }
+
+    /**
+     * @param localeSwitch the localeSwitch to set
+     */
+    public void setLocaleSwitch(LocaleSwitch localeSwitch) {
+        this.localeSwitch = localeSwitch;
     }
 
     /**

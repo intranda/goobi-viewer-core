@@ -41,22 +41,22 @@
 							<div class="admin__content-main -sticky">
 								<h3>#{msg.admin__cms_collections_collection_tree}</h3>
                                     
-								<!-- LANGUAGE TABS -->
-								<div class="admin__language-tabs">
-									<!-- TODO -->
-									<viewerComponent:localeSelector 
-									object="#{crowdsourcingBean.selectedCampaign}"
-									render="createCampaignForm:titleDataGroup"
-									execute="createCampaignForm:titleDataGroup"/>
-								</div>   
-                                <div class="tab-content">
-<!--                                 <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status"> -->
-								<div class="admin__default-block">
+                                <h:panelGroup id="collectionTreeGroup">
+                        
+                                    <!-- LANGUAGE TABS -->
+                                    <div class="admin__language-tabs">
+                                        <viewerComponent:localeSelector 
+                                            object="#{cmsCollectionsBean.localeSwitch}"
+                                            render="collectionTreeGroup"
+                                            execute="collectionTreeGroup"/>
+                                    </div>  
+                                    
+								    <div class="admin__default-block">
 								
-									<ul class="admin__cms-collections-tree-listing">
-										<ui:repeat var="browseDcElement" value="#{browseBean.getCollection(cmsCollectionsBean.solrField).visibleDcElements}">
-											<li class="admin__cms-collections-entry admin__cms-collections-entry -level-#{browseDcElement.level}"
-												style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
+                                            <ul class="admin__cms-collections-tree-listing">
+                                                <ui:repeat var="browseDcElement" value="#{browseBean.getCollection(cmsCollectionsBean.solrField).visibleDcElements}">
+                                                    <li class="admin__cms-collections-entry admin__cms-collections-entry -level-#{browseDcElement.level}"
+                                                        style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
 												<div class="row">
 													<div class="col-2 col-sm-1 collection__structure-col">
 														<!-- STRUCTURE -->
@@ -90,10 +90,10 @@
 																		styleClass="#{browseBean.dcCollection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
 																		<h:outputText
 																			rendered="#{browseDcElement.displayNumberOfVolumes}"
-																			value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})" />
+																			value="#{navigationHelper.getTranslation(browseDcElement.label, cmsCollectionsBean.localeSwitch.selectedLocale.language)} (#{browseDcElement.numberOfVolumes})" />
 																		<h:outputText
 																			rendered="#{!browseDcElement.displayNumberOfVolumes}"
-																			value="#{msg[browseDcElement.label]}" />
+																			value="#{navigationHelper.getTranslation(browseDcElement.label, cmsCollectionsBean.localeSwitch.selectedLocale.language)}" />
 																		<f:ajax render="@form" />
 																	</h:outputLink>
 																</div>
@@ -150,8 +150,8 @@
 										</ui:repeat>
 									</ul>
 								</div>
-<!-- 								</ui:repeat> -->
-								</div>
+								
+								</h:panelGroup>
 							</div>
 
 
