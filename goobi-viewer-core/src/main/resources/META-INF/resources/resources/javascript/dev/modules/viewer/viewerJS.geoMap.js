@@ -285,8 +285,8 @@ var viewerJS = ( function( viewer ) {
  		this.geoMap = geoMap;
         this.config = $.extend( true, {}, _defaults_featureGroup, geoMap.config.layer, config );
         if(_debug) {
-            console.log("create featureGroup with config ",  config);
         }
+            console.log("create featureGroup with config ",  config);
 
 		this.markerIdCounter = 1;
         this.markers = [];
@@ -490,6 +490,7 @@ var viewerJS = ( function( viewer ) {
     
     viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function() {
         if(this.config.markerIcon && !jQuery.isEmptyObject(this.config.markerIcon)) {
+        console.log("use marker icon ", this.config.markerIcon);
             let icon = L.ExtraMarkers.icon(this.config.markerIcon);
         	icon.options.name = "";	//remove name property to avoid it being displayed on the map
             if(this.config.markerIcon.shadow === false) {                
