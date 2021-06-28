@@ -67,6 +67,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -237,6 +238,13 @@ public class NavigationHelper implements Serializable {
      * @return
      */
     public static String getCMSPageNavigationId(CMSPage cmsPage) {
+        try {
+            Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(cmsPage).stream().findFirst();
+            if(staticPage.isPresent()) {
+                return staticPage.get().getPageName();
+            }
+        } catch (DAOException e) {
+        }
         return "cms_" + String.format("%04d", cmsPage.getId());
     }
     
