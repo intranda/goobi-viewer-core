@@ -179,6 +179,11 @@ public class CmsCollectionsBean implements Serializable {
         return StringUtils.isNotEmpty(getSolrFieldValue()) ? getSolrFieldValue() : "-";
     }
 
+    /**
+     * 
+     * @param collectionName
+     * @throws DAOException
+     */
     public void setCollectionName(String collectionName) throws DAOException {
         if("-".equals(collectionName)) {
             return;
@@ -186,15 +191,16 @@ public class CmsCollectionsBean implements Serializable {
         
         setSolrFieldValue(collectionName);
 
-        // Init collection
+        // Load or init collection
         if (currentCollection == null || !currentCollection.getSolrField().equals(solrField)
                 || !currentCollection.getSolrFieldValue().equals(collectionName)) {
             currentCollection = DataManager.getInstance().getDao().getCMSCollection(solrField, collectionName);
             if (currentCollection == null) {
                 currentCollection = new CMSCollection(solrField, solrFieldValue);
-                editCollection(currentCollection);
                 addCollection();
             }
+            // Always generate missing translations
+            editCollection(currentCollection);
         }
     }
 

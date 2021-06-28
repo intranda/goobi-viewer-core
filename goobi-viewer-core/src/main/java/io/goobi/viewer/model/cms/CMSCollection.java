@@ -270,6 +270,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @return
      */
     public CMSCollectionTranslation getDescriptionAsTranslation() {
+        // logger.trace("getDescriptionAsTranslation: {}", selectedLocale.getLanguage());
         return getDescriptionAsTranslation(selectedLocale.getLanguage());
     }
 
