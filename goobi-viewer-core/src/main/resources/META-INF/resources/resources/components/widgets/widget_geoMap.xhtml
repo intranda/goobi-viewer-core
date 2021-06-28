@@ -13,6 +13,7 @@
     	<composite:attribute name="allowFullscreen" required="false" default="true" />
     	<composite:attribute name="title" required="false" default="#{cc.attrs.widget.geoMap.title}" />
     	<composite:attribute name="showAnnotations" type="java.lang.Boolean" required="false" default="false"/>
+    	<composite:attribute name="popoverOnHover" type="java.lang.Boolean" required="false" default="false"/>
     </composite:interface>
 
     <composite:implementation>
@@ -33,7 +34,7 @@
 
                     <!-- MAP -->
                     <viewerComponent:geoMap 
-                    showPopover="true" popoverOnHover="false"
+                    showPopover="true" popoverOnHover="#{cc.attrs.popoverOnHover}"
                     showAnnotations="#{cc.attrs.showAnnotations}" geoMap="#{cc.attrs.widget.geoMap}" linkToSearch="#{cc.attrs.linkToSearch}" mapId="widget_geoMap_#{cc.attrs.widget.geoMapId}"></viewerComponent:geoMap>
                 </div>
             </h:panelGroup>
