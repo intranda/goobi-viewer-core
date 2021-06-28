@@ -2271,6 +2271,7 @@ public class ActiveDocumentBean implements Serializable {
             subDocFields.addAll(coordinateFields);
             
             SolrDocumentList subDocs = DataManager.getInstance().getSearchIndex().getDocs(subDocQuery, subDocFields);
+            if(subDocs != null) {
             Collection<GeoMapFeature> features = new ArrayList<>();
             for (SolrDocument solrDocument : subDocs) {
                 List<GeoMapFeature> docFeatures = new ArrayList<GeoMapFeature>();
@@ -2286,7 +2287,7 @@ public class ActiveDocumentBean implements Serializable {
                 map.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
                 widget.setGeoMap(map);
             }
-
+            }
         } catch (IndexUnreachableException e) {
             logger.error("Unable to load geomap", e);
         }
