@@ -93,7 +93,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     		}
     		let keyName = event.key;
     		let targetIndex = undefined;
-    		console.log("key event ", keyName);
     		switch(keyName) {
     			case "ArrowLeft":
     				targetIndex = this.getPreviousAccessibleIndex(this.currentCanvasIndex);
@@ -152,7 +151,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     		this.statusMapUpdates.next(this.pageStatusMap);
     	} else {
     		let targetIndex = this.getNextAccessibleIndex(this.currentCanvasIndex);
-    		console.log("handle locks", targetIndex);
     		if(targetIndex == undefined) {
     			this.setShowThumbs.next(true);
     		} else {
@@ -175,7 +173,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     		return index > -1 && index < this.canvases.length;
     	} else {    	
 	    	let status = this.pageStatusMap.get(index);
-	    	console.log("page status ", status);
 	    	if(this.reviewMode) {
 	    		return "review" == status;
 	    	} else {
@@ -185,7 +182,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     };
     
    crowdsourcing.Item.prototype.getNextAccessibleIndex = function(currentIndex) {
-   		console.log("get next accessible index", currentIndex, this.canvases.length);
    		if(this.canvases.length == 1) {
    			return undefined;
    		} else if(currentIndex == this.canvases.length-1) {
@@ -364,6 +360,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
     * only delete from that page and/or question
     */
     crowdsourcing.Item.prototype.deleteAnnotations = function(save, pageId, questionId) {
+	    if(!save) {
+	    	return
+	    }
+    
         let questions = save.questions;
         if(questionId) {
             questions = questions.filter(q => q.id == questionId);
