@@ -1614,7 +1614,7 @@ this.initMap = function() {
         center: [11.073397, 49.451993]
     };
     this.geoMap.init(initialView);
-    this.geoMap.initGeocoder(this.refs.geocoder);
+    this.geoMap.initGeocoder(this.refs.geocoder, {placeholder: Crowdsourcing.translate("ADDRESS")});
     this.geoMap.layers.forEach(l => l.onFeatureMove.subscribe(feature => this.moveFeature(feature)));
     this.geoMap.layers.forEach(l => l.onFeatureClick.subscribe(feature => this.removeFeature(feature)));
     this.geoMap.onMapClick.subscribe(geoJson => {
