@@ -293,7 +293,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     @Transient
     @JsonIgnore
-    private Integer pageCount = 0;
+    private Integer pageCount = null;
 
     /**
      * Empty constructor.
