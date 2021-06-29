@@ -90,4 +90,21 @@ public class MessageEntryTest {
         Assert.assertEquals(2, entry.getValues().size());
         Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
     }
+
+    /**
+     * @see MessageEntry#getTranslationStatusForLanguage(String)
+     * @verifies return correct status for language
+     */
+    @Test
+    public void getTranslationStatusForLanguage_shouldRetutrnCorrectStatusForLanguage() throws Exception {
+        List<MessageValue> values = new ArrayList<>(2);
+        values.add(new MessageValue("en", "value", "value"));
+        values.add(new MessageValue("de", "wert zzz", "wert"));
+        values.add(new MessageValue("fr", "", ""));
+        MessageEntry entry = new MessageEntry("key", values);
+        Assert.assertEquals(3, entry.getValues().size());
+        Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatusForLanguage("en"));
+        Assert.assertEquals(TranslationStatus.PARTIAL, entry.getTranslationStatusForLanguage("de"));
+        Assert.assertEquals(TranslationStatus.NONE, entry.getTranslationStatusForLanguage("fr"));
+    }
 }

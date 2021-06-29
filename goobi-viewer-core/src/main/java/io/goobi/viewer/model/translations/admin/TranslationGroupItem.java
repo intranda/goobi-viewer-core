@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 
 /**
@@ -70,6 +71,38 @@ public abstract class TranslationGroupItem {
     }
 
     /**
+     * 
+     * @param language
+     * @return
+     * @throws Exception 
+     */
+    public TranslationStatus getTranslationStatusLanguage(String language) throws Exception {
+        int full = 0;
+        int none = 0;
+        for (MessageEntry entry : getEntries()) {
+            switch (entry.getTranslationStatusForLanguage(language)) {
+                case NONE:
+                    none++;
+                    break;
+                case FULL:
+                    full++;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (none == entries.size()) {
+            return TranslationStatus.NONE;
+        }
+        if (full == entries.size()) {
+            return TranslationStatus.FULL;
+        }
+
+        return TranslationStatus.PARTIAL;
+    }
+
+    /**
      * @return the key
      */
     public String getKey() {
@@ -85,7 +118,7 @@ public abstract class TranslationGroupItem {
 
     /**
      * @return the messageKeys
-     * @throws Exception 
+     * @throws Exception
      */
     public List<MessageEntry> getEntries() throws Exception {
         if (entries == null) {

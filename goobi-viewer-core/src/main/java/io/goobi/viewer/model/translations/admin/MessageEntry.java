@@ -116,6 +116,26 @@ public class MessageEntry implements Comparable<MessageEntry> {
     }
 
     /**
+     * 
+     * @param language
+     * @return appropriate {@link TranslationStatus}
+     * @should return correct status for language
+     */
+    public TranslationStatus getTranslationStatusForLanguage(String language) {
+        if (language == null) {
+            return TranslationStatus.NONE;
+        }
+
+        for (MessageValue value : getValues()) {
+            if (language.equals(value.getLanguage())) {
+                return value.getTranslationStatus();
+            }
+        }
+
+        return TranslationStatus.NONE;
+    }
+
+    /**
      * @return the key
      */
     public String getKey() {

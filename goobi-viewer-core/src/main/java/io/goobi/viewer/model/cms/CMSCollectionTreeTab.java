@@ -13,25 +13,47 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.translations;
+package io.goobi.viewer.model.cms;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.admin.TranslationGroup;
 
 /**
- * Basic object for language tabs.
+ * Object representing tab status for a collection tree.
  */
-public class LocaleSwitch implements IPolyglott {
+public class CMSCollectionTreeTab implements IPolyglott {
 
-    private Locale selectedLocale =  BeanUtils.getLocale();
+    private Map<Locale, TranslationStatus> translationStatusMap = new HashMap<>(getLocales().size());
+    private Locale selectedLocale = BeanUtils.getLocale();
+
+    public CMSCollectionTreeTab(String field) {
+        List<TranslationGroup> groups = AdminBean.getTranslationGroupsForSolrFieldStatic(field);
+        if (!groups.isEmpty() && !groups.get(0).getItems().isEmpty()) {
+            for (Locale locale : getLocales()) {
+                try {
+                    TranslationStatus translationStatus = groups.get(0).getItems().get(0).getTranslationStatusLanguage(locale.getLanguage());
+                    translationStatusMap.put(locale, translationStatus);
+                } catch (Exception e) {
+
+                }
+            }
+        }
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.translations.IPolyglott#isComplete(java.util.Locale)
      */
     @Override
     public boolean isComplete(Locale locale) {
-        return true;
+        return TranslationStatus.FULL.equals(translationStatusMap.get(locale));
     }
 
     /* (non-Javadoc)
@@ -47,7 +69,7 @@ public class LocaleSwitch implements IPolyglott {
      */
     @Override
     public boolean isEmpty(Locale locale) {
-        return true;
+        return TranslationStatus.NONE.equals(translationStatusMap.get(locale));
     }
 
     /* (non-Javadoc)

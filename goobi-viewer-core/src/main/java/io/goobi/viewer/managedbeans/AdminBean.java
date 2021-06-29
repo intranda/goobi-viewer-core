@@ -1873,7 +1873,16 @@ public class AdminBean implements Serializable {
      * @return List of TranslationGroups; null if not found
      * @should return correct groups
      */
-    public  List<TranslationGroup>  getTranslationGroupsForSolrField(String field) {
+    public List<TranslationGroup> getTranslationGroupsForSolrField(String field) {
+        return getTranslationGroupsForSolrFieldStatic(field);
+    }
+
+    /**
+     * 
+     * @param field Index field that the translation groups should have as a key
+     * @return List of TranslationGroups; null if not found
+     */
+    public static List<TranslationGroup> getTranslationGroupsForSolrFieldStatic(String field) {
         if (StringUtils.isEmpty(field)) {
             return Collections.emptyList();
         }

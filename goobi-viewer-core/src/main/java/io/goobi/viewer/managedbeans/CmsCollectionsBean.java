@@ -42,8 +42,8 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSCollectionTranslation;
+import io.goobi.viewer.model.cms.CMSCollectionTreeTab;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.translations.LocaleSwitch;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -79,7 +79,7 @@ public class CmsCollectionsBean implements Serializable {
     private boolean piValid = true;
     private CMSCollectionImageMode imageMode = CMSCollectionImageMode.NONE;
     /** Current tab language */
-    private LocaleSwitch localeSwitch  = new LocaleSwitch();
+    private CMSCollectionTreeTab localeSwitch  = new CMSCollectionTreeTab(solrField);
 
     /**
      * <p>
@@ -455,14 +455,14 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * @return the localeSwitch
      */
-    public LocaleSwitch getLocaleSwitch() {
+    public CMSCollectionTreeTab getLocaleSwitch() {
         return localeSwitch;
     }
 
     /**
      * @param localeSwitch the localeSwitch to set
      */
-    public void setLocaleSwitch(LocaleSwitch localeSwitch) {
+    public void setLocaleSwitch(CMSCollectionTreeTab localeSwitch) {
         this.localeSwitch = localeSwitch;
     }
 
