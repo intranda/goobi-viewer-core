@@ -201,6 +201,7 @@
 											</c:when>
 	
 											<c:when test="#{slider.sourceType == 'RECORDS'}">
+												<!-- SOLR QUERY -->
 												<div class="form-group form-row">
 													<div class="col-2 control-label admin__form-label">
 														<label for="recordsQuery">
@@ -232,6 +233,64 @@
 															<f:ajax event="change" render="previewSlider recordsQueryValidation"/>
 														</h:inputText>
 														<span class="admin__form-help-text">#{msg.cms__edit_slider__solr_query__help}</span>
+													</h:panelGroup>
+													<div class="col-1 admin__form-help-icon">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
+													</div>
+												</div>
+												
+												<!-- SORT FIELD -->
+												<div class="form-group form-row">
+													<div class="col-2 control-label admin__form-label">
+														<label for="recordsQuery">
+															#{msg.cms_itemSolrSortFields}: <span
+															class="admin__label-required-field">(#{msg.form__required_field})</span>
+														</label>
+													</div>
+	
+													<h:panelGroup layout="block" 
+														class="col-9 admin__form-input cms-module__option-control">
+
+														<h:selectOneMenu id="solrSortFields" styleClass="form-control" value="#{slider.sortField}">
+											                  <f:selectItem itemValue="" itemLabel="#{msg.select}" />
+											                  <c:forEach var="field" items="#{configurationBean.sortFields}">
+											                      <f:selectItem itemValue="#{field}" itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_ascending})" />
+											                      <f:selectItem itemValue="!#{field}" itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_descending})" />
+											                  </c:forEach>
+														      <f:ajax event="change" render="previewSlider"/>											                  
+															  <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemSolrSortFields}" />
+										                </h:selectOneMenu>
+														<span class="admin__form-help-text">#{msg.cms__edit_slider__solr_sortfield__help}</span>
+													</h:panelGroup>
+													<div class="col-1 admin__form-help-icon">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
+													</div>
+												</div>
+												
+												<div class="form-group form-row">
+													<div class="col-2 control-label admin__form-label">
+														<label for="recordsQuery">
+															#{msg.cms_itemCount}: <span
+															class="admin__label-required-field">(#{msg.form__required_field})</span>
+														</label>
+													</div>
+	
+													<h:panelGroup layout="block" 
+														class="col-9 admin__form-input cms-module__option-control">
+
+														<h:selectOneMenu id="maxItems" styleClass="form-control" value="#{slider.maxEntries}">
+											                  <f:selectItem itemValue="" itemLabel="#{msg.select}" />
+											                      <f:selectItems value="#{slider.maxEntriesOptions}" />
+														      <f:ajax event="change" render="previewSlider"/>											                  
+															  <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemSolrSortFields}" />
+										                </h:selectOneMenu>
+														<span class="admin__form-help-text">#{msg.cms__edit_slider__max_entries__help}</span>
 													</h:panelGroup>
 													<div class="col-1 admin__form-help-icon">
 														<button type="button" class="btn btn--clean"
@@ -320,7 +379,7 @@
 									<h:panelGroup id="previewSlider" >
 										<h:panelGroup layout="block" class="cms-sliders-select__preview" rendered="#{not slider.isEmpty()}">
 											<h3>#{msg.title__preview}</h3>
-												<iframe src="#{request.contextPath}" id="previewIframeSlider"></iframe>
+<!-- 												<iframe src="#{request.contextPath}" id="previewIframeSlider"></iframe> -->
 											<div class="cms-sliders-select__preview-inner">
 												<h:outputText id="previewSource" class="hidden" value="#{cmsSliderEditBean.sliderSource}"></h:outputText>
 												<viewerComponent:cmsSlider slider="#{slider}" sourceElement="previewSource" linkTarget="none"/>
