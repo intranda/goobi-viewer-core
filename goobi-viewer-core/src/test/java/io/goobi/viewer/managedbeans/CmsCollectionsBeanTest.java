@@ -44,4 +44,16 @@ public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.solrField = SolrConstants.DC; // Do not use the setter, that'd require more test infrastructure
         Assert.assertTrue(bean.isDisplayTranslationWidget());
     }
+
+    /**
+     * @see CmsCollectionsBean#isDisplaySolrFieldSelectionWidget()
+     * @verifies return false if only one collection field is configured
+     */
+    @Test
+    public void isDisplaySolrFieldSelectionWidget_shouldReturnFalseIfOnlyOneCollectionFieldIsConfigured() throws Exception {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        Assert.assertEquals(3, bean.getAllCollectionFields().size());
+        
+        Assert.assertTrue(bean.isDisplaySolrFieldSelectionWidget());
+    }
 }

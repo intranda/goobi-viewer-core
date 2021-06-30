@@ -238,25 +238,20 @@
 								</c:choose>
 							</ui:fragment>
 
-								<!-- COLLECTION INDEX FIELD -->
-								<!-- TODO: Only display if #{fn:length(cmsCollectionsBean.allCollectionFields) > 1} -->
-								<div class="admin__default-block">
-<!-- 							<div class="#{fn:length(cmsCollectionsBean.allCollectionFields) > 1 ? '' : 'd-none'} form-group form-row"> -->
-									<h3>#{msg.admin__cms_collections_solr_field}:</h3>
-									<div class="admin__form-help-text in mb-4">
-										#{msg.admin__cms_collections_solr_field_desc}
-									</div>
-									
-									<div class="d-flex">
-										<h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect"
-											value="#{cmsCollectionsBean.solrField}"
-											styleClass="form-control">
-											<f:selectItems
-												value="#{cmsCollectionsBean.allCollectionFields}" />
-											<f:ajax render="@form"></f:ajax>
-										</h:selectOneMenu>
-									</div>
-								</div>
+                                <!-- COLLECTION INDEX FIELD -->
+                                <ui:fragment rendered="#{cmsCollectionsBean.displaySolrFieldSelectionWidget}">
+                                    <div class="admin__default-block">
+                                        <h3>#{msg.admin__cms_collections_solr_field}:</h3>
+                                        <div class="admin__form-help-text in mb-4">#{msg.admin__cms_collections_solr_field_desc}</div>						
+                                        <div class="d-flex">
+                                            <h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect"
+                                                value="#{cmsCollectionsBean.solrField}" styleClass="form-control">
+                                                <f:selectItems value="#{cmsCollectionsBean.allCollectionFields}" />
+                                                    <f:ajax render="@form"></f:ajax>
+                                            </h:selectOneMenu>
+                                        </div>
+                                    </div>
+								</ui:fragment>
 								
 								<!--TODO: PREVIEW -->
 								<div class="admin__default-block">

@@ -132,6 +132,15 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
+     * 
+     * @return true if number of available collections is greater than 1; false otherwise
+     * @should return false if only one collection field is configured
+     */
+    public boolean isDisplaySolrFieldSelectionWidget() {
+        return getAllCollectionFields().size() > 1;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>currentCollection</code>.
      * </p>
