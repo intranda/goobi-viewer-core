@@ -36,12 +36,12 @@ public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see CmsCollectionsBean#isDisplayTranslationWidget()
-     * @verifies return false if solrField values fully translated
+     * @verifies return true if solrField values not or partially translated
      */
     @Test
-    public void isDisplayTranslationWidget_shouldReturnFalseIfSolrFieldValuesFullyTranslated() throws Exception {
+    public void isDisplayTranslationWidget_shouldReturnTrueIfSolrFieldValuesNotOrPartiallyTranslated() throws Exception {
         CmsCollectionsBean bean = new CmsCollectionsBean();
         bean.solrField = SolrConstants.DC; // Do not use the setter, that'd require more test infrastructure
-        Assert.assertFalse(bean.isDisplayTranslationWidget());
+        Assert.assertTrue(bean.isDisplayTranslationWidget());
     }
 }
