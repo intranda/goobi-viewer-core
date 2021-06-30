@@ -122,6 +122,9 @@
                                                                     </div>
                                                                 </div>
                                                             </ui:fragment>
+                                                            
+                                                            <!-- Topbar slider -->
+                                                            <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeTopBarSlider.xhtml" />
 
                                                             <ui:repeat var="contentItem" value="#{cmsBean.selectedPage.getContentItems(locale)}">
                                                                 <!-- HTML SNIPPET -->
@@ -170,6 +173,7 @@
                                                                         </div>
                                                                     </div>
                                                                 </ui:fragment>
+
 
                                                                 <!-- CONTENT TYPE MEDIA -->
                                                                 <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeMedia.xhtml" />

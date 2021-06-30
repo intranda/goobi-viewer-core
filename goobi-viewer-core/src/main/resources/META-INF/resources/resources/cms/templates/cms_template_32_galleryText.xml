@@ -4,6 +4,9 @@
     <description>cms_template_32_galleryText__description</description>
     <icon>cms_template_32_galleryText.png</icon>
     <html>cms_template_32_galleryText.xhtml</html>
+    <options>    
+        <topBarSlider>true</topBarSlider>
+    </options>
     <content>
         <item id="image01" order="1" type="MEDIA" label="image" inlinehelp="cms_template_32_galleryText__help"/>
         <item id="image02" order="2" type="MEDIA" label="image" inlinehelp="cms_template_32_galleryText__help"/>

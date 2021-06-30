@@ -105,6 +105,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public static final String GLOBAL_LANGUAGE = "global";
     /** Constant <code>CLASSIFICATION_OVERVIEWPAGE="overviewpage"</code> */
     public static final String CLASSIFICATION_OVERVIEWPAGE = "overviewpage";
+    public static final String TOPBAR_SLIDER_ID = "topbar_slider";
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -2147,4 +2149,42 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 .orElse(null);
     }
 
+
+    /**
+     * @return
+     */
+    public CMSSlider getTopBarSlider() {
+        try {
+            CMSPageLanguageVersion lang = getLanguageVersion(GLOBAL_LANGUAGE);
+            if(lang != null)  {
+                CMSContentItem item = lang.getContentItem(TOPBAR_SLIDER_ID);
+                if(item != null) {
+                    return item.getSlider();
+                }
+            }
+        } catch (CmsElementNotFoundException e) {
+        }
+        return null;
+    }
+    
+    public boolean mayHaveTopBarSlider() {
+        return getTemplate().isMayHaveTopBarSlider();
+    }
+
+    public Long getTopBarSliderId() {
+        return Optional.ofNullable(getTopBarSlider()).map(CMSSlider::getId).orElse(null);
+    }
+    
+    public void setTopBarSliderId(Long id) throws DAOException {
+            CMSContentItem sliderItem = getContentItemIfExists(TOPBAR_SLIDER_ID).orElse(new CMSContentItem(CMSContentItemType.SLIDER)); 
+            sliderItem.setItemId(TOPBAR_SLIDER_ID);
+            sliderItem.setSliderId(id);
+            if(!hasContentItem(TOPBAR_SLIDER_ID)) {
+                try {
+                    getLanguageVersion(GLOBAL_LANGUAGE).addContentItem(sliderItem);
+                } catch (CmsElementNotFoundException e) {
+                    logger.error("Unable to set topbar slider: {}", e.toString());
+                }
+            }
+    }
 }
