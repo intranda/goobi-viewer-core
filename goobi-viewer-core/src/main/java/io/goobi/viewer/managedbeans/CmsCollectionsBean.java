@@ -44,9 +44,10 @@ import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSCollectionTranslation;
 import io.goobi.viewer.model.cms.CMSCollectionTreeTab;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.translations.admin.MessageEntry;
+import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
-import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -138,6 +139,37 @@ public class CmsCollectionsBean implements Serializable {
      */
     public boolean isDisplaySolrFieldSelectionWidget() {
         return getAllCollectionFields().size() > 1;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public MessageEntry getMessageEntryForFieldValue() {
+        List<TranslationGroup> groups = AdminBean.getTranslationGroupsForSolrFieldStatic(solrField);
+        for (TranslationGroup group : groups) {
+            if (group.getItems().isEmpty()) {
+                continue;
+            }
+            for (TranslationGroupItem item : group.getItems()) {
+                if (!item.getKey().equals(solrField)) {
+                    continue;
+                }
+                try {
+                    for (MessageEntry entry : item.getEntries()) {
+                        if (entry.getKey().equals(solrFieldValue)) {
+                            return entry;
+                        }
+
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    break;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**

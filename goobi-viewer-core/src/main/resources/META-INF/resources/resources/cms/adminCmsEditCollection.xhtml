@@ -218,17 +218,13 @@
 								#{msg.admin__cms_collections_info_internal_name}
 								#{cmsCollectionsBean.currentCollection.name}
 								<div class="admin__record-notes-image-wrapper">
-<!-- 									<img class="admin__record-notes-image" -->
-<!-- 										alt="#{note.recordTitle.getValue(navigationHelper.locale).orElse('')}" -->
-<!-- 										title="#{note.recordTitle.getValue(navigationHelper.locale).orElse('')}" -->
-<!-- 										src="#{cmsRecordNotesBean.getThumbnailUrl(note, 350, 420)}" /> -->
+
 								</div>
 								<div class="admin__record-notes-metadata">
-<!-- 									<ui:include -->
-<!-- 										src="/resources/includes/metadata/metadataElement.xhtml"> -->
-<!-- 										<ui:param name="metadataElement" -->
-<!-- 											value="" /> -->
-<!-- 									</ui:include> -->
+								    <ui:repeat var="value" value="#{cmsCollectionsBean.messageEntryForFieldValue.values}">
+								        #{msg[value.language]} #{value.value != null ? value.value : '-/-'}
+								        <br />
+								    </ui:repeat>
 								</div>
 							</div>
 						</div>
