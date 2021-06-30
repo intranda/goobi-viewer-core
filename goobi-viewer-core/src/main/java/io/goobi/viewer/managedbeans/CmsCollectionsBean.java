@@ -44,6 +44,9 @@ import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSCollectionTranslation;
 import io.goobi.viewer.model.cms.CMSCollectionTreeTab;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.translations.admin.TranslationGroup;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
+import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -73,13 +76,13 @@ public class CmsCollectionsBean implements Serializable {
     BrowseBean browseBean;
 
     private CMSCollection currentCollection;
-    private String solrField = SolrConstants.DC;
+    String solrField = SolrConstants.DC;
     private String solrFieldValue;
     private List<CMSCollection> collections;
     private boolean piValid = true;
     private CMSCollectionImageMode imageMode = CMSCollectionImageMode.NONE;
     /** Current tab language */
-    private CMSCollectionTreeTab localeSwitch  = new CMSCollectionTreeTab(solrField);
+    private CMSCollectionTreeTab localeSwitch = new CMSCollectionTreeTab(solrField);
 
     /**
      * <p>
@@ -93,6 +96,39 @@ public class CmsCollectionsBean implements Serializable {
             logger.error("Error initializing collections");
             collections = Collections.emptyList();
         }
+    }
+
+    /**
+     * @return true if the if translations for the values of <code>solrField</code> are not or only partially translated; false if they are fully
+     *         translated
+     * @should return false if solrField not among configured translation groups
+     * @should return false if solrField values fully translated
+     * @should return true if solrField values not or partially translated
+     */
+    public boolean isDisplayTranslationWidget() {
+        logger.trace("isDisplayTranslationWidget: {}", solrField);
+        if (StringUtils.isEmpty(solrField)) {
+            return false;
+        }
+
+        List<TranslationGroup> groups = AdminBean.getTranslationGroupsForSolrFieldStatic(solrField);
+        for (TranslationGroup group : groups) {
+            if (group.getItems().isEmpty()) {
+                continue;
+            }
+            for (TranslationGroupItem item : group.getItems()) {
+                if (!item.getKey().equals(solrField)) {
+                    continue;
+                }
+                try {
+                    return !TranslationStatus.FULL.equals(item.getTranslationStatus());
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -70,6 +70,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     private static final Logger logger = LoggerFactory.getLogger(CMSCollection.class);
 
+    @Deprecated
     private static final String LABEL_TAG = "label";
     private static final String DESCRIPTION_TAG = "description";
 
@@ -212,6 +213,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @param language a {@link java.lang.String} object.
      * @return The string value of the label of the given language, or an empty string
      */
+    @Deprecated
     public String getLabel(String language) {
         return getLabels().stream()
                 .filter(translation -> language.equalsIgnoreCase(translation.getLanguage()))
@@ -227,6 +229,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @param locale a {@link java.util.Locale} object.
      * @return The string value of the label of the given locale, or an empty string
      */
+    @Deprecated
     public String getLabel(Locale locale) {
         return getLabel(locale.getLanguage());
     }
@@ -237,6 +240,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      *
      * @return The string value of the label of the current locale, or an empty string
      */
+    @Deprecated
     public String getLabel() {
         return getLabel(BeanUtils.getLocale());
     }

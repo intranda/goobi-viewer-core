@@ -159,6 +159,7 @@
 							<div class="admin__content-side -sticky">
 
 							<!-- TRANSLATIONS -->
+							<ui:fragment rendered="#{cmsCollectionsBean.displayTranslationWidget}">
 								<c:choose>
 									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles()}">
 											<ui:repeat var="group"
@@ -235,8 +236,10 @@
 										</div>
 									</c:otherwise>
 								</c:choose>
+							</ui:fragment>
 
 								<!-- COLLECTION INDEX FIELD -->
+								<!-- TODO: Only display if #{fn:length(cmsCollectionsBean.allCollectionFields) > 1} -->
 								<div class="admin__default-block">
 <!-- 							<div class="#{fn:length(cmsCollectionsBean.allCollectionFields) > 1 ? '' : 'd-none'} form-group form-row"> -->
 									<h3>#{msg.admin__cms_collections_solr_field}:</h3>
@@ -263,10 +266,9 @@
 									</div>
 									<div class="row">
 										<div class="col-12 d-flex justify-content-center">
-				                             <h:commandLink styleClass="btn btn--default">
+				                             <h:outputLink styleClass="btn btn--default" target="_blank" value="#{navigationHelper.browseUrl}">
 				                                 <h:outputText value="#{msg.preview}" />
-				                                 <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{lang}" />
-				                             </h:commandLink>
+				                             </h:outputLink>
 			                             </div>
 									</div>
 								</div>

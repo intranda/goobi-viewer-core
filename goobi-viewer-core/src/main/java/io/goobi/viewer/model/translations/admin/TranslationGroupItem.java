@@ -71,10 +71,43 @@ public abstract class TranslationGroupItem {
     }
 
     /**
+     * Returns the translation status over all existing entries.
      * 
-     * @param language
-     * @return
-     * @throws Exception 
+     * @return <code>TranslationStatu</code>; FULL if all entries are FULL; NONE if all entries are NONE; PARTIAL otherwise
+     * @throws Exception
+     */
+    public TranslationStatus getTranslationStatus() throws Exception {
+        int full = 0;
+        int none = 0;
+        for (MessageEntry entry : getEntries()) {
+            switch (entry.getTranslationStatus()) {
+                case NONE:
+                    none++;
+                    break;
+                case FULL:
+                    full++;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (none == entries.size()) {
+            return TranslationStatus.NONE;
+        }
+        if (full == entries.size()) {
+            return TranslationStatus.FULL;
+        }
+
+        return TranslationStatus.PARTIAL;
+    }
+
+    /**
+     * Returns the translation status for the requested language over all existing entries.
+     * 
+     * @param language Requested language
+     * @return <code>TranslationStatu</code>; FULL if all entries are FULL; NONE if all entries are NONE; PARTIAL otherwise
+     * @throws Exception
      */
     public TranslationStatus getTranslationStatusLanguage(String language) throws Exception {
         int full = 0;

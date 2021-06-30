@@ -83,6 +83,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
     }
 
     /**
+     * Returns the translation statusover all languages.
      * 
      * @return appropriate {@link TranslationStatus}
      * @should return none status correctly
@@ -116,8 +117,9 @@ public class MessageEntry implements Comparable<MessageEntry> {
     }
 
     /**
+     * Returns the translation status for the requested language.
      * 
-     * @param language
+     * @param language Requested language
      * @return appropriate {@link TranslationStatus}
      * @should return correct status for language
      */

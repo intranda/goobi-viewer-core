@@ -77,6 +77,7 @@ import io.goobi.viewer.model.security.user.UserTools;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
+import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
