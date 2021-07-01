@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class DataFileToolsTest extends AbstractTest {
 

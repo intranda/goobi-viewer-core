@@ -80,6 +80,7 @@
                     </ui:insert>                    
                 </h:panelGroup>
                 
+                <!-- VIEW 3D OBJECT -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'object'}">
                     <ui:insert name="viewObject3d">
                         <ui:include src="/resources/includes/object/object3d.xhtml" />        
@@ -98,7 +99,9 @@
                 <!--  PAGINATOR -->
                 <viewerComponent:simplePaginator
                     itemCount="#{activeDocumentBean.viewManager.imagesCount}"
-                    itemActive="#{activeDocumentBean.viewManager.currentImageNoForPaginator}"
+                    itemActive="#{activeDocumentBean.viewManager.currentImageOrderForPaginator}"
+                    firstItem="#{activeDocumentBean.viewManager.firstPageOrder}"
+                    lastItem="#{activeDocumentBean.viewManager.lastPageOrder}"
                     urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/"
                     urlSuffix="#topDocAnchor"
                     rtl="#{activeDocumentBean.viewManager.topDocument.rtl}" />                    
@@ -177,7 +180,8 @@
         title="#{msg.NORM_LOCATION}" 
         allowFullscreen="false" 
         linkToSearch="false" 
-        showAnnotations="true"/>
+        showAnnotations="true"
+        popoverOnHover="true"/>
         
         <widgetComponent:widget_annotations />
                 

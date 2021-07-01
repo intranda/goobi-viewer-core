@@ -391,6 +391,9 @@ public class BasexEADParser {
         // read response
         SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
         builder.setFeature("http://xml.org/sax/features/validation", false);
+        builder.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        builder.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         builder.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
         builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 

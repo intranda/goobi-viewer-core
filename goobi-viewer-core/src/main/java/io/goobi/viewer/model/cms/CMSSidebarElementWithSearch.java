@@ -94,6 +94,9 @@ public class CMSSidebarElementWithSearch extends CMSSidebarElement {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
         return o.getClass().equals(CMSSidebarElementWithSearch.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
                 && bothNullOrEqual(getWidgetTitle(), ((CMSSidebarElementWithSearch) o).getWidgetTitle())
                 && bothNullOrEqual(getAdditionalQuery(), ((CMSSidebarElementWithSearch) o).getAdditionalQuery());

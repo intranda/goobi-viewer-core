@@ -15,7 +15,15 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_CMDI;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_PDF;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PDF;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,7 +31,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -51,21 +58,20 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.PathConverter;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.api.rest.v1.records.media.RecordsFilesImageResource;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
-import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
-import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.translations.language.Language;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -84,7 +90,7 @@ public class RecordFileResource {
     @Context
     private HttpServletResponse servletResponse;
     @Inject
-    private AbstractApiUrlManager urls;
+    private ApiUrls urls;
 
     private final String pi;
     private final TextResourceBuilder builder = new TextResourceBuilder();
@@ -101,7 +107,7 @@ public class RecordFileResource {
     public String getAlto(
             @Parameter(description = "Filename of the alto document") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, ContentNotFoundException,
-            ServiceNotAllowedException, DAOException {
+            ServiceNotAllowedException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
@@ -115,7 +121,7 @@ public class RecordFileResource {
     @Operation(tags = { "records" }, summary = "Get plaintext for a single page")
     public String getPlaintext(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
-            throws ContentNotFoundException, PresentationException, IndexUnreachableException, DAOException, ServiceNotAllowedException {
+            throws ContentNotFoundException, PresentationException, IndexUnreachableException, ServiceNotAllowedException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
@@ -129,7 +135,7 @@ public class RecordFileResource {
     @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format")
     public String getTEI(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
-            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, ContentLibException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
@@ -138,13 +144,14 @@ public class RecordFileResource {
     }
 
     /**
-     *@deprecated use {@link RecordsFilesImageResource#getPdf()} instead
+     * @deprecated use {@link RecordsFilesImageResource#getPdf()} instead
      */
     @Deprecated
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_PDF)
     @Produces({ "application/pdf" })
-    @Operation(tags = { "records" }, summary = "Non-canonical URL to PDF file")
+    @Operation(tags = { "records" }, summary = "Non-canonical URL to PDF file",
+            description = "This redirects to " + RECORDS_FILES_IMAGE + RECORDS_FILES_IMAGE_PDF + ", which should be used instead")
     public Response getPDF(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws ContentLibException {
@@ -165,6 +172,9 @@ public class RecordFileResource {
     public StreamingOutput getSourceFile(
             @Parameter(description = "Source file name") @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
+        if (!filename.equals(StringTools.stripJS(filename))) {
+            throw new ServiceNotAllowedException("Script detected in input");
+        }
         Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, filename);
         if (!Files.isRegularFile(path)) {
             throw new ContentNotFoundException("Source file " + filename + " not found");
@@ -174,7 +184,7 @@ public class RecordFileResource {
         if (!access) {
             throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
         }
-        
+
         try {
             String contentType = Files.probeContentType(path);
             logger.trace("content type: {}", contentType);
@@ -193,7 +203,7 @@ public class RecordFileResource {
             }
         };
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_CMDI)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
@@ -201,13 +211,13 @@ public class RecordFileResource {
     public String getCMDI(
             @Parameter(description = "Image file name for cmdi") @PathParam("filename") String filename,
             @Parameter(description = "Language for CMDI") @QueryParam("lang") String lang)
-            throws ContentLibException, PresentationException, IndexUnreachableException, DAOException, IOException {
+            throws ContentLibException, PresentationException, IndexUnreachableException, IOException {
         checkFulltextAccessConditions(pi, filename);
 
-        if(lang == null) {
+        if (lang == null) {
             lang = BeanUtils.getLocale().getLanguage();
         }
-        
+
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(lang);
         Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         Path filePath = getDocumentLanguageVersion(cmdiPath, language);
@@ -245,7 +255,7 @@ public class RecordFileResource {
             throw new ServiceNotAllowedException("Access to fulltext file " + pi + "/" + filename + " not allowed");
         }
     }
-    
+
     /**
      * Returns the first file on the given folder path that contains the requested language code in its name. ISO-3 files are preferred, with a
      * fallback to ISO-2.

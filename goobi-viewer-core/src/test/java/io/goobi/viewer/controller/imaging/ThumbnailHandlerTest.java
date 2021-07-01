@@ -36,15 +36,16 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
 /**
  * @author Florian Alpers
@@ -76,8 +77,16 @@ public class ThumbnailHandlerTest extends AbstractTest {
 
     @Test
     public void testPage() {
-        PhysicalElement page =
-                new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
+        PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
+                .setPhysId("PHYS_0001")
+                .setFilePath("00000001.tif")
+                .setOrder(1)
+                .setOrderLabel("Seite 1")
+                .setUrn("urn:234235:3423")
+                .setPurlPart("http://purl")
+                .setMimeType("image/tiff")
+                .setDataRepository(null)
+                .build();
 
         String url = handler.getThumbnailUrl(page, 200, 300);
         Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
@@ -86,7 +95,16 @@ public class ThumbnailHandlerTest extends AbstractTest {
     @Test
     public void testExternalIIIFImageUrl() {
         String fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/full/0/native.jpg";
-        PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
+        PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
+                .setPhysId("PHYS_0001")
+                .setFilePath(fileUrl)
+                .setOrder(1)
+                .setOrderLabel("Seite 1")
+                .setUrn("urn:234235:3423")
+                .setPurlPart("http://purl")
+                .setMimeType("image/tiff")
+                .setDataRepository(null)
+                .build();
 
         String url = handler.getThumbnailUrl(page, 200, 300);
         String refrenceUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/!200,300/0/native.jpg";
@@ -96,7 +114,16 @@ public class ThumbnailHandlerTest extends AbstractTest {
     @Test
     public void testExternalIIIFImageInfoUrl() {
         String fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/info.json";
-        PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
+        PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
+                .setPhysId("PHYS_0001")
+                .setFilePath(fileUrl)
+                .setOrder(1)
+                .setOrderLabel("Seite 1")
+                .setUrn("urn:234235:3423")
+                .setPurlPart("http://purl")
+                .setMimeType("image/tiff")
+                .setDataRepository(null)
+                .build();
 
         String url = handler.getThumbnailUrl(page, 200, 300);
         String refrenceUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/!200,300/0/default.jpg";
@@ -106,7 +133,16 @@ public class ThumbnailHandlerTest extends AbstractTest {
     @Test
     public void testGetFullImageUrl() {
         String fileUrl = "00000001.tif";
-        PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
+        PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
+                .setPhysId("PHYS_0001")
+                .setFilePath(fileUrl)
+                .setOrder(1)
+                .setOrderLabel("Seite 1")
+                .setUrn("urn:234235:3423")
+                .setPurlPart("http://purl")
+                .setMimeType("image/tiff")
+                .setDataRepository(null)
+                .build();
 
         String urlMax = handler.getFullImageUrl(page, Scale.MAX);
         Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/max/0/default.tif",
@@ -124,7 +160,16 @@ public class ThumbnailHandlerTest extends AbstractTest {
     @Test
     public void testThumbnailUrl() {
         String fileUrl = "00000001.tif";
-        PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
+        PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
+                .setPhysId("PHYS_0001")
+                .setFilePath(fileUrl)
+                .setOrder(1)
+                .setOrderLabel("Seite 1")
+                .setUrn("urn:234235:3423")
+                .setPurlPart("http://purl")
+                .setMimeType("image/tiff")
+                .setDataRepository(null)
+                .build();
 
         String urlMax = handler.getThumbnailUrl(page, 0, 0);
         Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/max/0/default.jpg",
@@ -155,7 +200,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
 
     /**
      * TODO: Calling the thumbnailUrl for the anchor should yield an url with the pi of the first child This is implemented, but I don't know how to
-     * set up the test data ({@link io.goobi.viewer.controller.SolrSearchIndex#getFirstDoc(String, List, List) SolrSearchIndex#getFirstDoc} is used)
+     * set up the test data ({@link io.goobi.viewer.solr.SolrSearchIndex#getFirstDoc(String, List, List) SolrSearchIndex#getFirstDoc} is used)
      */
     //    @Test
     public void testAnchorLocal() throws IndexUnreachableException {
@@ -246,7 +291,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
         String thumbUrlV1 = ThumbnailHandler.getCMSMediaImageApiUrl(filename, currentApiUrl);
         assertEquals(currentApiUrl + ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE.replace("{filename}", filename), thumbUrlV1);
     }
-    
+
     @Test
     public void testGetCMSMediaImageApiUrl_withSpaces() {
 

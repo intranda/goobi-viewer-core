@@ -26,21 +26,21 @@
                             <div class="input-group-addon">
                                 <c:choose>
                                 	<c:when test="#{activeDocumentBean.group}">
-	                                	<button class="btn btn-default" aria-label="#{msg.search}"
+	                                	<button class="btn" aria-label="#{msg.search}"
 	                               			 jsf:action="#{searchBean.searchInRecord(activeDocumentBean.viewManager.topDocument.groupIdField, activeDocumentBean.persistentIdentifier)}">
 		                                	<f:passThroughAttribute name="aria-label" value="#{msg.search}" />
 		                                    <i class="fa fa-search"/>
 	                                	</button>
                                 	</c:when>
                                 	<c:when test="#{activeDocumentBean.anchor}">
-                                		<button class="btn btn-default" aria-label="#{msg.search}"
+                                		<button class="btn" aria-label="#{msg.search}"
 	                               			 jsf:action="#{searchBean.searchInRecord('PI_ANCHOR', activeDocumentBean.persistentIdentifier)}">
 		                                	<f:passThroughAttribute name="aria-label" value="#{msg.search}" />
 		                                    <i class="fa fa-search"/>
 	                                	</button>
                                 	</c:when>
                                 	<c:otherwise>
-                                		<button class="btn btn-default" aria-label="#{msg.search}"
+                                		<button class="btn" aria-label="#{msg.search}"
 	                               			 jsf:action="#{searchBean.searchInRecord('PI_TOPSTRUCT', activeDocumentBean.persistentIdentifier)}">
 		                                	<f:passThroughAttribute name="aria-label" value="#{msg.search}" />
 		                                    <i class="fa fa-search"/>

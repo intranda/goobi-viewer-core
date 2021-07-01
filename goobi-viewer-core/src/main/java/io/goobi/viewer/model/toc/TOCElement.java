@@ -109,7 +109,7 @@ public class TOCElement implements Serializable {
         pageType = PageType.determinePageType(docStructType, recordMimeType, anchorOrGroup, hasImages, false);
         urlPrefix = new StringBuilder().append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').toString();
         urlSuffix =
-                DataManager.getInstance().getUrlBuilder().buildPageUrl(topStructPi, pageNo != null ? Integer.valueOf(pageNo) : 1, logId, pageType);
+                DataManager.getInstance().getUrlBuilder().buildPageUrl(topStructPi, pageNo != null ? Integer.valueOf(pageNo) : 1, logId, pageType, false);
     }
 
     /* (non-Javadoc)
@@ -404,12 +404,12 @@ public class TOCElement implements Serializable {
                     if (PageType.viewObject.equals(this.pageType) || PageType.viewImage.equals(this.pageType)) {
                         return urlPrefix + DataManager.getInstance()
                                 .getUrlBuilder()
-                                .buildPageUrl(topStructPi, Integer.valueOf(pageNo), logId, PageType.viewFullscreen);
+                                .buildPageUrl(topStructPi, Integer.valueOf(pageNo), logId, PageType.viewFullscreen, false);
                     }
                     break;
                 case viewImage:
                     return urlPrefix
-                            + DataManager.getInstance().getUrlBuilder().buildPageUrl(topStructPi, Integer.valueOf(pageNo), logId, PageType.viewImage);
+                            + DataManager.getInstance().getUrlBuilder().buildPageUrl(topStructPi, Integer.valueOf(pageNo), logId, PageType.viewImage, false);
                 default:
                     return urlPrefix + urlSuffix;
             }

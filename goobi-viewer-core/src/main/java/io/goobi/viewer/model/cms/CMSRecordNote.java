@@ -15,9 +15,6 @@
  */
 package io.goobi.viewer.model.cms;
 
-import java.util.Locale;
-import java.util.Objects;
-
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -30,11 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
-import io.goobi.viewer.model.misc.TranslatedText;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
- * Class holding a formatted text related to a single PI 
- * which may be edited in the admin/cms-backend and displayed in a (sidebar) widget
+ * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget
  * 
  * @author florian
  *
@@ -54,12 +50,10 @@ public class CMSRecordNote {
     private Long id;
 
     /**
-     * PI of the record this note relates to.
-     * Should be effectively final, but can't be for DAO campatibility 
+     * PI of the record this note relates to. Should be effectively final, but can't be for DAO campatibility
      */
     @Column(name = "record_pi", nullable = false)
     private String recordPi;
-    
 
     /**
      * Title of the record this note relates to; used for searching in notes. This is mulitlangual since record titles may be multilangual too
@@ -67,27 +61,27 @@ public class CMSRecordNote {
     @Column(name = "record_title", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText recordTitle = new TranslatedText();
-    
+
     /**
      * Title of the note, plaintext
      */
     @Column(name = "note_title", nullable = true, columnDefinition = "TINYTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText noteTitle = new TranslatedText();
-    
+
     /**
      * The actual note. May contain html text
      */
     @Column(name = "note_text", nullable = true, columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText noteText = new TranslatedText();
-    
+
     @Column(name = "display_note", nullable = false, columnDefinition = "boolean default true")
     private boolean displayNote = true;
-    
+
     public CMSRecordNote() {
     }
-    
+
     /**
      * @param pi
      */
@@ -95,7 +89,7 @@ public class CMSRecordNote {
         this();
         this.recordPi = pi;
     }
-    
+
     /**
      * @param o
      */
@@ -108,6 +102,36 @@ public class CMSRecordNote {
         this.displayNote = source.displayNote;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CMSRecordNote other = (CMSRecordNote) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
+    }
 
     /**
      * @return the id
@@ -143,7 +167,7 @@ public class CMSRecordNote {
     public TranslatedText getRecordTitle() {
         return recordTitle;
     }
-    
+
     /**
      * @param recordTitle the recordTitle to set
      */
@@ -164,31 +188,18 @@ public class CMSRecordNote {
     public TranslatedText getNoteText() {
         return noteText;
     }
-    
+
     /**
      * @return the displayŃote
      */
     public boolean isDisplayNote() {
         return displayNote;
     }
-    
+
     /**
      * @param displayŃote the displayŃote to set
      */
     public void setDisplayNote(boolean displayNote) {
         this.displayNote = displayNote;
     }
-
-    /**
-     * Compares two objects by their ids
-     */
-    @Override
-    public boolean equals(Object o) {
-        if(o != null && o.getClass().equals(this.getClass())) {
-            return Objects.equals(this.getId(), ((CMSRecordNote)o).getId());
-        } else {
-            return false;
-        }
-    }
-    
 }

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +50,10 @@ import io.goobi.viewer.servlets.saml.SAMLAssertionServlet;
  * @author Oliver Paetzel
  *
  */
-public class SAMLProvider implements IAuthenticationProvider {
+public class SAMLProvider implements IAuthenticationProvider, Serializable {
+
+    private static final long serialVersionUID = -7433420581168842304L;
+
     private static final Logger logger = LoggerFactory.getLogger(SAMLProvider.class);
 
     private final String name;
@@ -141,9 +145,7 @@ public class SAMLProvider implements IAuthenticationProvider {
                     // use fake email, because the field may not be empty
                     String email = id + "@nomail.com";
                     user.setEmail(email);
-                    if (id != null) {
-                        user.getOpenIdAccounts().add(id);
-                    }
+                    user.getOpenIdAccounts().add(id);
                     logger.debug("Created new user.");
                 }
                 // Add to bean and persist

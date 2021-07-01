@@ -14,7 +14,7 @@
 
 	<ui:define name="metadata">
 		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.title, false, true, true)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
 			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
 			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
 		</f:metadata>
@@ -45,8 +45,7 @@
 				<h2>#{cmsPage.title}</h2>                
 				
 				<div class="tpl-browse-terms__content">
-					<ui:include src="#{cmsPage.getContent('text01')}">
-					</ui:include>
+					<h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>
 				</div>
 				
 				<!-- BROWSE TERMS LIST -->

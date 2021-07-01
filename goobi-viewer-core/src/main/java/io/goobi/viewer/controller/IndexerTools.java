@@ -38,7 +38,6 @@ import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -47,9 +46,12 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.modules.IModule;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
  * Utility class for Solr indexer interactions (indexing, deleting, etc.).
@@ -181,13 +183,49 @@ public class IndexerTools {
 
         // Export annotations (only those that belong to a campaign for which the statistic for this record is marked as finished)
         List<CampaignRecordStatistic> statistics =
-                DataManager.getInstance().getDao().getCampaignStatisticsForRecord(pi, CampaignRecordStatus.FINISHED);
+                DataManager.getInstance().getDao().getCampaignStatisticsForRecord(pi, CrowdsourcingStatus.FINISHED);
         if (!statistics.isEmpty()) {
             AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
             AnnotationsResourceBuilder annoBuilder = new AnnotationsResourceBuilder(urls, null);
             for (CampaignRecordStatistic statistic : statistics) {
                 Campaign campaign = statistic.getOwner();
                 List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
+                if (!annotations.isEmpty()) {
+                    logger.debug("Found {} annotations for this record (campaign '{}').", annotations.size(), campaign.getTitle());
+                    File annotationDir =
+                            new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATIONS);
+                    for (PersistentAnnotation annotation : annotations) {
+                        try {
+                            WebAnnotation webAnno = annoBuilder.getAsWebAnnotation(annotation);
+                            //Write access condition info into annotation for indexing. Normally that field is not written
+                            if(StringUtils.isNotBlank(annotation.getAccessCondition())) {
+                                webAnno.setRights(annotation.getAccessCondition());
+                            }
+                            String json = webAnno.toString();
+                            String jsonFileName = annotation.getTargetPI() + "_" + annotation.getId() + ".json";
+                            FileUtils.writeStringToFile(new File(annotationDir, jsonFileName), json, Charset.forName(StringTools.DEFAULT_ENCODING));
+                        } catch (JsonParseException e) {
+                            logger.error(e.getMessage(), e);
+                        } catch (JsonMappingException e) {
+                            logger.error(e.getMessage(), e);
+                        } catch (IOException e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Export annotations for pages
+        List<CampaignRecordPageStatistic> pageStatistics =
+                DataManager.getInstance().getDao().getCampaignPageStatisticsForRecord(pi, CrowdsourcingStatus.FINISHED);
+        if (!pageStatistics.isEmpty()) {
+            AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
+            AnnotationsResourceBuilder annoBuilder = new AnnotationsResourceBuilder(urls, null);
+            for (CampaignRecordPageStatistic statistic : pageStatistics) {
+                Campaign campaign = statistic.getOwner().getOwner();
+                Integer page = statistic.getPage();
+                List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, pi, page);
                 if (!annotations.isEmpty()) {
                     logger.debug("Found {} annotations for this record (campaign '{}').", annotations.size(), campaign.getTitle());
                     File annotationDir =

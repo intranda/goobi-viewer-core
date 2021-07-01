@@ -23,11 +23,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CalendarBean;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Data for the calendar view of an individual record (e.g. newspaper).

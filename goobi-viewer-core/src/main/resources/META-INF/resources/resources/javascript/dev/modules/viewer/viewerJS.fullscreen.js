@@ -635,20 +635,20 @@ var viewerJS = ( function( viewer ) {
                 }
                 break;
             case 39:
-								// jump to last image, if right arrow key was pressed twice
+                // jump to last image, if right arrow key was pressed twice
                 if (doubleKeypress && $('.image-controls__action.end a').length) {
                     $('.image-controls__action.end a').get(0).click();
                 }
-								// advance one image at a time, if right arrow key is pressed once
+                // advance one image at a time, if right arrow key is pressed once
                 else if ($('.image-controls__action.forward a').length) {
                     $('.image-controls__action.forward a').get(0).click();
                 }
                 break;
-						case 27:
-							// exit fullscreen on escape
-							if ($('[data-selector="exit-fullscreen"]').length && document.readyState == 'complete') {
-								$('[data-selector="exit-fullscreen"]').get(0).click();
-							}
+            case 27:
+                // exit fullscreen on escape
+                if ($('[data-js="exit-fullscreen"]').length && document.readyState == 'complete') {
+                    $('[data-js="exit-fullscreen"]').get(0).click();
+                }
         };
     }   
     

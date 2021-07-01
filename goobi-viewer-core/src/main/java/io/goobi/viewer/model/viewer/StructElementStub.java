@@ -33,11 +33,11 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
  * StructElement essentials with a reduced memory footprint.

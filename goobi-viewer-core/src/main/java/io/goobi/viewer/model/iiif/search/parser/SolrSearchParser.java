@@ -27,11 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * <p>
@@ -65,8 +65,8 @@ public class SolrSearchParser extends AbstractSearchParser {
             try {
                 SolrDocument pageDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, PAGEFIELDLIST);
                 if (pageDoc != null) {
-                    Integer width = Optional.ofNullable(SolrSearchIndex.getAsInt(pageDoc.getFieldValue(SolrConstants.WIDTH))).orElse(0);
-                    Integer height = Optional.ofNullable(SolrSearchIndex.getAsInt(pageDoc.getFieldValue(SolrConstants.HEIGHT))).orElse(0);
+                    Integer width = Optional.ofNullable(SolrTools.getAsInt(pageDoc.getFieldValue(SolrConstants.WIDTH))).orElse(0);
+                    Integer height = Optional.ofNullable(SolrTools.getAsInt(pageDoc.getFieldValue(SolrConstants.HEIGHT))).orElse(0);
                     pageSizes.put(pageNo, new Dimension(width, height));
                 }
             } catch (PresentationException | IndexUnreachableException | NullPointerException e) {

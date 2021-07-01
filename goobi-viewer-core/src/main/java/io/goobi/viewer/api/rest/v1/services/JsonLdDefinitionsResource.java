@@ -38,7 +38,7 @@ import io.goobi.viewer.controller.DataManager;
 public class JsonLdDefinitionsResource {
 
     @Inject
-    AbstractApiUrlManager urls;
+    ApiUrls urls;
     
     /**
      * Returns a service context for the size information service for viewer collections: Number of direct child-collections and of total contained

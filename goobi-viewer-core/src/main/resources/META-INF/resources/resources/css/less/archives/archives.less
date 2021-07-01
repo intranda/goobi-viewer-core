@@ -1,8 +1,11 @@
 /* ==============================================================
-   Crowdsourcing 
-   global style declarations for crowdsourcing_layout.xhtml
+   Archives Layout
    ==============================================================*/
-/* ADMIN LAYOUT */
+
+#archivesWrapper {
+	background: #f2f3f4;
+}
+
 .archives {
 	width: 100vw;
 	&__top-wrapper {
@@ -16,8 +19,14 @@
 			width: auto;	
 		}
 		.login-navigation [data-login="true"] .login-navigation__user-dropdown {
-			top: calc(~"100% + 19px");
-		}	
+			top: calc(~"100% + 18px");
+		}
+		.login-navigation [data-login="true"] button[data-toggle="user-dropdown"] {
+			font-size: 1.6rem;
+		}
+		.login-navigation [data-login="false"] {
+			display: flex;
+		}
 	}
 	&__header {
 		display: -webkit-box;
@@ -77,7 +86,7 @@
 			}
 		}
 		h1 {
-		    font-size: 1.4rem;
+		    font-size: 1.6rem;
 		    font-weight: 400;
 		    display: inline;
 		    color: @white;
@@ -105,10 +114,12 @@
 	}
 	&__top-actions-language {
 		position: relative;
+		display: flex;
 		[data-toggle="local"] {
 			text-transform: uppercase;			
 		}
 		.change-local {
+			background: #444;
 			display: none;
 			position: absolute;
 			top: 3.2rem;
@@ -230,10 +241,15 @@
 		
 	}
 	&__object-field-name {
-		flex: 0 0 250px;
 		font-weight: 700;
+		width: 250px;
+		max-width: 250px;
+		flex-shrink: 0;
+		flex: 0 0 250px;
 	}
 	&__object-field-value {
+		margin-left: 1rem;
+		min-width: 145px;
 	}
 	&__object-image {
 		flex: 0 0 40%;
@@ -242,6 +258,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: flex-start;
+		margin-left: auto;
 		img {
 			max-width: 100%;
 		}
@@ -298,11 +315,62 @@
 		width: 100%;
 		text-align: center;
 	}
+	&__object-thumbnails {
+		background: @white;
+		display: grid;
+		grid-gap: 20px;
+		grid-template-columns: auto auto auto auto auto auto auto;
+		max-width: 100%;
+		padding: 2rem;
+	}
+	&__object-ajax-loader {
+		padding: 0 2rem;
+		background: @white;
+	}
+	.thumbnails-image-wrapper {
+		overflow: hidden;
+		&:hover {
+			.thumbnails-image-overlay {
+				opacity: 1;
+			}
+		}
+		
+	}
+	.thumbnails-image {
+		max-width: 100%;
+		max-height: 350px;
+	}
+	.thumbnails-image-overlay {
+		opacity: 0;
+		background: rgba(0,0,0,0.3);
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: flex-end;
+		padding-bottom: 2rem;
+		transition: all 0.2s ease;
+	}
+	.thumbnails-image-link {
+		position: relative;
+		display: inline-block;
+	}
+	.thumbnails-label {
+		color: white;
+		font-weight: 700;
+		max-height: 100%;
+		text-align: center;
+		word-wrap: anywhere;
+	}
 	&__main {
 		background-color: #f2f3f4;
 		width: 100vw;
 		display: block;
 		margin-top: 60px;
+		min-height: calc(~"100vh - 60px");
 	}
 	&__content-wrapper {
 		width: 100%;
@@ -404,7 +472,16 @@
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {}
+@media screen and (max-width: @largeBreakpoint) {
+	.archives__object-thumbnails {
+		background: @white;
+		display: grid;
+		grid-gap: 15px;
+		grid-template-columns: auto auto auto auto;
+		max-width: 100%;
+		padding: 2rem;
+	}	
+}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
@@ -424,6 +501,7 @@
 	.archives__object-image {
 		flex: 0 0 100%;
 		padding: 2rem 0 0 0;
+		justify-content: flex-start;
 	}
 }
 

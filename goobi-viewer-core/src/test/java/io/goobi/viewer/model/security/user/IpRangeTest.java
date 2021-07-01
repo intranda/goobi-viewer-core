@@ -25,9 +25,9 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.IpRange;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class IpRangeTest extends AbstractDatabaseEnabledTest {
 

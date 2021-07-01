@@ -1,7 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:p="http://primefaces.org/ui"
+                
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -156,6 +156,75 @@
                                     </div>
                                 </h:form>
                             </ui:fragment>
+                            
+                            <!-- TRANSLATIONS -->
+							<ui:fragment rendered="#{userBean.admin and adminBean.displayTranslationsDashboardWidget}">
+                            	<c:choose>
+									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles()}">
+                                		<h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 #{adminBean.configuredTranslationGroups.stream().anyMatch(g -> g.loadError).get() ? '-danger':'-warning'}">
+		                                    <div class="row">
+		                                        <h3 class="col-9">#{msg.admin__translations}</h3>
+		                                    </div>
+		                                    <div class="row">
+		                                        <div class="col-12">
+		                                            <!-- NOT TRANSLATED GROUPS -->
+		                                            <div class="row">
+		                                                <div class="col-12">#{msg.admin__translations_not_translated}:</div>
+		                                            </div>
+		                                            
+		                                            <ui:repeat var="group" value="#{adminBean.configuredTranslationGroups}">
+			                                            <ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount and !group.loadError}">
+			                                            	<a href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+			                                                	class="row admin__translations-not-translated-entry"
+			                                                    aria-label="#{msg.edit}: #{msg[group.name]}">
+			                                                    <div class="col-8 pl-5 -textlink">
+			                                                       #{msg[group.name]}
+			                                                    </div>
+			                                                    <div class="col-4 d-flex justify-content-end">
+			                                                        <span>#{msg.admin__translations_translate}</span>
+			                                                    </div>
+			                                                </a>
+				                                        	<div class="admin__dashboard-translations-progress">
+																<div class="admin__dashboard-translations-progress-complete"
+																	style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
+																<div class="admin__dashboard-translations-progress-partially"
+																	style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
+															</div>
+			                                            </ui:fragment>
+			                                            <ui:fragment rendered="#{group.loadError}">
+			                                            	<div class="row admin__translations-not-translated-entry"
+			                                                    aria-label="#{msg.edit}: #{msg[group.name]}">
+			                                                    <div class="col-8 pl-5">
+			                                                       #{msg[group.name]}: #{msg.errIndexUnreachableTitle}
+			                                                    </div>
+			                                                    <div class="col-4 d-flex justify-content-end align-items-center">
+			                                                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> 
+			                                                    </div>
+			                                                </div>
+				                                        	<div class="admin__dashboard-translations-progress">
+																<div class="admin__dashboard-translations-progress-error"></div>
+															</div>
+			                                            </ui:fragment>
+		                                            </ui:repeat>
+		                                        </div>
+		                                    </div>
+                                		</h:form>
+                                   	</c:when>
+                            		<c:otherwise>
+                            			<h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
+			                            	<div class="row">
+		                                        <h3 class="col-9">#{msg.admin__translations}</h3>
+		                                    </div>
+			                            	<div class="row">
+			                            		<div class="col-12">
+				                            		<h:outputText escape="false" value="#{msg.admin__translations__missing_write_permissions__description}"></h:outputText>
+			                            		</div>
+			                            	</div>
+		                            	</h:form>
+		                            </c:otherwise>
+	                            </c:choose>
+                            </ui:fragment>
+
 
 
                             <!-- VERSIONS -->
@@ -195,7 +264,7 @@
 
 
                             <!-- RSS FEED -->
-                            <ui:fragment rendered="#{searchBean.solrIndexReachable}">
+                            <ui:fragment rendered="#{searchBean.solrIndexReachable and configurationBean.displaySidebarRssFeed}">
 	                            <div class="admin__boxed-entry -no-actions -w33">
 	                                <ui:include src="/resources/includes/rssFeed.xhtml" />
 	                            </div>

@@ -85,6 +85,8 @@ public class CMSNavigationManager {
         addAvailableItem(searchadvanced);
         SelectableNavigationItem searchcalendar = new SelectableNavigationItem("searchcalendar", "searchCalendar");
         addAvailableItem(searchcalendar);
+        SelectableNavigationItem searchGeomap = new SelectableNavigationItem("searchgeomap", "title__search_geomap");
+        addAvailableItem(searchGeomap);
         SelectableNavigationItem browse = new SelectableNavigationItem("browse", "browse");
         addAvailableItem(browse);
         SelectableNavigationItem timematrix = new SelectableNavigationItem("timematrix", "timematrix");

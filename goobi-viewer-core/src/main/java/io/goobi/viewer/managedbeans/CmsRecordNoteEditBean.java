@@ -38,9 +38,9 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.metadata.MetadataElement;
-import io.goobi.viewer.model.misc.IPolyglott;
-import io.goobi.viewer.model.misc.TranslatedText;
 import io.goobi.viewer.model.toc.TocMaker;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -220,18 +220,28 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         return labelAsText;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isComplete(java.util.Locale)
+    /**
+     * Return true if text and title are both complete (not empty) for both title and text. If locale is not the default locale, text/title counts as complete if they are empty as long
+     * as the corresponding field in the default language is also empty
      */
     @Override
     public boolean isComplete(Locale locale) {
-        return this.note != null &&
-                this.note.getNoteTitle().isComplete(locale) &&
-                this.note.getNoteText().isComplete(locale);
+        
+        if(this.note != null) {
+            if(IPolyglott.getDefaultLocale().equals(locale)) {
+                return this.note.getNoteTitle().isComplete(locale) && this.note.getNoteText().isComplete(locale);
+            } else {
+                return (this.note.getNoteTitle().isComplete(locale) || !this.note.getNoteTitle().isComplete(IPolyglott.getDefaultLocale())) && 
+                       (this.note.getNoteText().isComplete(locale) || !this.note.getNoteText().isComplete(IPolyglott.getDefaultLocale()));
+            }
+        } else {
+            return false;
+        }
+
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isValid(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isValid(java.util.Locale)
      */
     @Override
     public boolean isValid(Locale locale) {
@@ -239,7 +249,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isEmpty(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
      */
     @Override
     public boolean isEmpty(Locale locale) {
@@ -247,7 +257,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#getSelectedLocale()
+     * @see io.goobi.viewer.model.translations.IPolyglott#getSelectedLocale()
      */
     @Override
     public Locale getSelectedLocale() {
@@ -255,7 +265,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#setSelectedLocale(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#setSelectedLocale(java.util.Locale)
      */
     @Override
     public void setSelectedLocale(Locale locale) {

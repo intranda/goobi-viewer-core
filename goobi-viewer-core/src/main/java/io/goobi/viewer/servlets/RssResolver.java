@@ -33,7 +33,6 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedOutput;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -42,6 +41,7 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.rss.RSSFeed;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Servlet implementation class RssResolver

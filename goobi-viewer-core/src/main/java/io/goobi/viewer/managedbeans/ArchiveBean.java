@@ -33,7 +33,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
@@ -41,19 +40,18 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.archives.ArchiveEntry;
-import io.goobi.viewer.model.archives.ArchiveResource;
 import io.goobi.viewer.model.archives.ArchiveTree;
 import io.goobi.viewer.model.archives.BasexEADParser;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 @Named
 @ViewScoped
@@ -133,46 +131,6 @@ public class ArchiveBean implements Serializable {
         //            context.getExternalContext().getSessionMap().put(storageKey, eadParser);
         //        }
 
-    }
-
-    /**
-     * @param eadParser
-     * @param databaseName
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws HTTPException
-     * @throws IllegalStateException
-     * @throws JDOMException
-     * @deprecated Storing database in application seems ineffective since verifying that database is current takes about as much time as retriving
-     *             the complete database
-     */
-    @Deprecated
-    public void loadDatabaseAndStoreInApplicationScope(BasexEADParser eadParser, String databaseName)
-            throws ClientProtocolException, IOException, HTTPException, IllegalStateException, JDOMException {
-            Document databaseDoc = null;
-            String storageKey = databaseName + "@" + eadParser.getBasexUrl();
-            List<ArchiveResource> dbs;
-            try (Time t1 = DataManager.getInstance().getTiming().takeTime("getPossibleDatabases")) {
-                dbs = eadParser.getPossibleDatabases();
-            }
-            ArchiveResource db = dbs.stream().filter(res -> res.getCombinedName().equals(databaseName)).findAny().orElse(null);
-            if (db == null) {
-                throw new IllegalStateException("Configured default database not found in " + eadParser.getBasexUrl());
-            } else if (storage.contains(storageKey) && !storage.olderThan(storageKey, db.lastModified)) {
-                databaseDoc = (Document) storage.get(storageKey);
-            } else {
-                try (Time t2 = DataManager.getInstance().getTiming().takeTime("retrieveDatabaseDocument")) {
-                    databaseDoc = eadParser.retrieveDatabaseDocument(databaseName);
-                    storage.put(storageKey, databaseDoc);
-                }
-            }
-            HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
-            try (Time t3 = DataManager.getInstance().getTiming().takeTime("eadParser.loadDatabase")) {
-                eadParser.readConfiguration(baseXMetadataConfig).loadDatabase(databaseName, databaseDoc);
-            } catch (ConfigurationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
     }
 
     /**
@@ -448,10 +406,10 @@ public class ArchiveBean implements Serializable {
         ListIterator<SolrDocument> iter = docs.listIterator();
         while (iter.hasNext()) {
             SolrDocument doc = iter.next();
-            String id = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.ARCHIVE_ENTRY_ID);
+            String id = SolrTools.getSingleFieldStringValue(doc, SolrConstants.ARCHIVE_ENTRY_ID);
             if (id.equals(entryId)) {
                 if (iter.hasNext()) {
-                    String nextId = SolrSearchIndex.getSingleFieldStringValue(iter.next(), SolrConstants.ARCHIVE_ENTRY_ID);
+                    String nextId = SolrTools.getSingleFieldStringValue(iter.next(), SolrConstants.ARCHIVE_ENTRY_ID);
                     next = Optional.of(nextId);
                 }
                 break;

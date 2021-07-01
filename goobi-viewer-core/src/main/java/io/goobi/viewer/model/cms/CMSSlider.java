@@ -18,6 +18,8 @@ package io.goobi.viewer.model.cms;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -40,6 +42,9 @@ import io.goobi.viewer.dao.converter.StringListConverter;
 @Table(name = "cms_sliders")
 public class CMSSlider implements Serializable {
 
+    public static final int MAX_ENTRIES_MIN = 1;
+    public static final int MAX_ENTRIES_MAX = 30;
+    
     private static final long serialVersionUID = -3029283417613875012L;
     
     @Id
@@ -54,6 +59,10 @@ public class CMSSlider implements Serializable {
     private String description;
     @Column(name = "query", columnDefinition = "LONGTEXT")
     private String solrQuery;
+    @Column(name = "sort_field", columnDefinition = "LONGTEXT")
+    private String sortField;
+    @Column(name = "max_entries")
+    private int maxEntries;
     @Column(name = "categories", columnDefinition = "LONGTEXT")
     @Convert(converter = StringListConverter.class)
     private List<String> categories  = new ArrayList<>();
@@ -71,6 +80,8 @@ public class CMSSlider implements Serializable {
         this.name = o.name;
         this.description = o.description;
         this.solrQuery = o.solrQuery;
+        this.sortField = o.sortField;
+        this.maxEntries = o.maxEntries;
         this.categories = new ArrayList<>(o.categories);
         this.collections = new ArrayList<>(o.collections);
         this.style = o.style;
@@ -226,5 +237,38 @@ public class CMSSlider implements Serializable {
             return label;
         }
     }
+    
+    /**
+     * @return the sortField
+     */
+    public String getSortField() {
+        return sortField;
+    }
+    
+    /**
+     * @param sortField the sortField to set
+     */
+    public void setSortField(String sortField) {
+        this.sortField = sortField;
+    }
+    
+    /**
+     * @param maxEntries the maxEntries to set
+     */
+    public void setMaxEntries(int maxEntries) {
+        this.maxEntries = maxEntries;
+    }
+    
+    /**
+     * @return the maxEntries
+     */
+    public int getMaxEntries() {
+        return maxEntries;
+    }
+    
+    public List<Integer> getMaxEntriesOptions() {
+        return IntStream.range(MAX_ENTRIES_MIN, MAX_ENTRIES_MAX + 1).boxed().collect(Collectors.toList());
+    }
+    
 
 }

@@ -18,6 +18,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -115,7 +116,7 @@ public class UserBean implements Serializable {
     private String transkribusPassword;
 
     /** Reusable Random object. */
-    Random random = new Random();
+    Random random = new SecureRandom();
 
     // private CompletableFuture<Optional<User>> loginFuture = null;
 
@@ -605,7 +606,7 @@ public class UserBean implements Serializable {
         if (StringUtils.isNotEmpty(user.getEmail())) {
             // Generate and save the activation key, if not yet set
             if (user.getActivationKey() == null) {
-                user.setActivationKey(StringTools.generateMD5(UUID.randomUUID() + String.valueOf(System.currentTimeMillis())));
+                user.setActivationKey(StringTools.generateHash(UUID.randomUUID() + String.valueOf(System.currentTimeMillis())));
             }
 
             // Generate e-mail text
@@ -656,7 +657,7 @@ public class UserBean implements Serializable {
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
         if (user != null && !user.isOpenIdUser()) {
             if (user.isActive()) {
-                user.setActivationKey(StringTools.generateMD5(String.valueOf(System.currentTimeMillis())));
+                user.setActivationKey(StringTools.generateHash(String.valueOf(System.currentTimeMillis())));
                 String requesterIp = "???";
                 if (FacesContext.getCurrentInstance().getExternalContext() != null
                         && FacesContext.getCurrentInstance().getExternalContext().getRequest() != null) {
@@ -711,7 +712,7 @@ public class UserBean implements Serializable {
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
         if (user != null && user.isActive() && !user.isOpenIdUser()) {
             if (StringUtils.isNotEmpty(activationKey) && activationKey.equals(user.getActivationKey())) {
-                String newPassword = StringTools.generateMD5(String.valueOf(System.currentTimeMillis())).substring(0, 8);
+                String newPassword = StringTools.generateHash(String.valueOf(System.currentTimeMillis())).substring(0, 8);
                 user.setNewPassword(newPassword);
                 user.setActivationKey(null);
                 try {

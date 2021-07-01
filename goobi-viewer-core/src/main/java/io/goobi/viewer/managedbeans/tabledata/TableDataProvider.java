@@ -265,7 +265,7 @@ public class TableDataProvider<T> implements Serializable {
      * @return a int.
      */
     public int getLastPageNumber() {
-        int ret = new Double(Math.floor(getSizeOfDataList() / entriesPerPage)).intValue();
+        int ret = (int) Math.floor((double) getSizeOfDataList() / entriesPerPage);
         if (ret > 0 && getSizeOfDataList() % entriesPerPage == 0) {
             ret--;
         }
@@ -328,7 +328,7 @@ public class TableDataProvider<T> implements Serializable {
         if (this.currentPage > totalPages) {
             this.currentPage = totalPages;
         }
-        return Long.valueOf(this.currentPage + 1);
+        return Long.valueOf((long) this.currentPage + 1);
     }
 
     /**
@@ -339,7 +339,7 @@ public class TableDataProvider<T> implements Serializable {
      * @return a {@link java.lang.Long} object.
      */
     public Long getPageNumberLast() {
-        return Long.valueOf(getLastPageNumber() + 1);
+        return Long.valueOf((long) getLastPageNumber() + 1);
     }
 
     /**

@@ -20,6 +20,7 @@
 
     <!-- SEARCH LIST HITS -->
     <div class="search-list__hits">
+
         <!-- SEARCH LIST SORTING -->
         <h:panelGroup rendered="#{showSortingOptions and search.hitsCount > 1}">
         	<h3 class="-sr-only">#{msg.searchHitNavigation}:</h3>
@@ -45,7 +46,7 @@
                         </div>
                     </div>
                  </ui:fragment>
-                    
+
                     <div class="search-list__sorting__item">
                         <div class="search-list__sorting__label">
                             <label for="sortSelect">#{msg.sortBy}:</label>

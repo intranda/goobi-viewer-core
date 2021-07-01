@@ -34,6 +34,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.filters.AdminLoggedInFilter;
@@ -44,6 +47,7 @@ import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AccessDeniedException;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -56,8 +60,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 @Path(TASKS)
 public class TasksResource {
 
+    private static final Logger logger = LoggerFactory.getLogger(TasksResource.class);
     private final HttpServletRequest request;
 
+    
     public TasksResource(@Context HttpServletRequest request, @Context HttpServletResponse response) {
         this.request = request;
     }
@@ -72,6 +78,7 @@ public class TasksResource {
         }
         if (isAuthorized(desc.type, Optional.empty(), request)) {
             Task job = new Task(desc, TaskManager.createTask(desc.type));
+            logger.debug("Created new task REST API task '{}'", job);
             DataManager.getInstance().getRestApiJobManager().addTask(job);
             DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.id, request);
             return job;

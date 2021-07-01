@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -39,8 +40,6 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -52,6 +51,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
@@ -62,6 +62,8 @@ import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * This bean provides the data for collection and term browsing.
@@ -482,9 +484,10 @@ public class BrowseBean implements Serializable {
                     break;
                 }
                 BrowseTerm term = terms.get(i);
-                if (term.getTranslations() != null && term.getTranslations().getValue(locale).isPresent()) {
+                Optional<String> translation = term.getTranslations() != null ? term.getTranslations().getValue(locale) : Optional.empty();
+                if (translation.isPresent()) {
                     // Use translated label, if present
-                    browseTermList.add(term.getTranslations().getValue(locale).get());
+                    browseTermList.add(translation.get());
                 } else {
                     browseTermList.add(term.getTerm());
                 }
@@ -991,6 +994,7 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * TODO translation from DB
      * 
      * @param colletionField
      * @param collectionValue
@@ -998,6 +1002,7 @@ public class BrowseBean implements Serializable {
      * @should return hierarchy correctly
      */
     public String getCollectionHierarchy(String collectionField, String collectionValue) {
+        logger.trace("getCollectionHierarchy: {}:{}", collectionField, collectionValue);
         if (StringUtils.isEmpty(collectionField) || StringUtils.isEmpty(collectionValue)) {
             return "";
         }
@@ -1007,6 +1012,13 @@ public class BrowseBean implements Serializable {
         }
         String[] valueSplit = collectionValue.split(separator);
         if (valueSplit.length == 0) {
+            if (collections.get(collectionField) != null) {
+                String translation = collections.get(collectionField).getTranslationForName(collectionValue);
+                if (translation != null) {
+                    return translation;
+                }
+
+            }
             return ViewerResourceBundle.getTranslation(collectionValue, null);
         }
 
@@ -1018,9 +1030,44 @@ public class BrowseBean implements Serializable {
                 collectionName += ".";
             }
             collectionName += value;
+            if (collections.get(collectionField) != null) {
+                String translation = collections.get(collectionField).getTranslationForName(collectionValue);
+                if (translation != null) {
+                    sb.append(translation);
+                    continue;
+                }
+
+            }
             sb.append(ViewerResourceBundle.getTranslation(collectionName, null));
         }
 
         return sb.toString();
+    }
+
+    /**
+     * 
+     * @param field Collection field name
+     * @param value Collection raw name
+     * @return
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws IllegalRequestException
+     */
+    public String getTranslationForCollectionName(String field, String value) throws DAOException {
+        logger.trace("getTranslationForCollectionName: {}:{}", field, value);
+        if (field == null || value == null) {
+            return null;
+        }
+        CollectionView collectionView = collections.get(field);
+        if (collectionView != null && collectionView.getCompleteList() != null) {
+            return collectionView.getTranslationForName(value);
+        }
+
+        CMSCollection collection = DataManager.getInstance().getDao().getCMSCollection(field, value);
+        if (collection != null) {
+            return collection.getLabel();
+        }
+
+        return null;
     }
 }

@@ -47,9 +47,9 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -85,7 +85,7 @@ public class RecordsImageResource {
     @GET
     @Path(RECORDS_IMAGE)
     @Produces({ MediaType.APPLICATION_JSON, ContentServerResource.MEDIA_TYPE_APPLICATION_JSONLD })
-    @Operation(summary = "IIIF image identifier for the representative image of the process given by the identifier", tags = { "iiif", "records" })
+    @Operation(summary = "IIIF image identifier for the representative image of the process given by the identifier. Returns a IIIF 2.1.1 image information object", tags = { "iiif", "records" })
     @ApiResponse(responseCode = "200", description = "Get the IIIF image information object as json")
     @ApiResponse(responseCode = "404", description = "Either the record or the file for the representative image doesn't exist")
     @ApiResponse(responseCode = "500", description = "Internal error reading image or querying index")

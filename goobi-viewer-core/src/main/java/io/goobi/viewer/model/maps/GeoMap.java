@@ -54,12 +54,15 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * @author florian
@@ -123,7 +126,7 @@ public class GeoMap {
     @Column(name = "initial_view")
     private String initialView = "{" +
             "\"zoom\": 5," +
-            "\"center\": [11.073397, 49.451993]" +
+            "\"center\": [11.073397, -49.451993]" +
             "}";
 
     @Column(name = "marker")
@@ -140,7 +143,7 @@ public class GeoMap {
 
     @Transient
     private boolean showPopover = true;
-
+    
     /**
      * Empty Constructor
      */
@@ -301,6 +304,7 @@ public class GeoMap {
      */
     public void setType(GeoMapType type) {
         this.type = type;
+        this.featuresAsString = null;
     }
 
     /**
@@ -383,11 +387,10 @@ public class GeoMap {
      * @param docFeatures
      */
     public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, String metadataField, String titleField, String descriptionField) {
-
-        String title = StringUtils.isBlank(titleField) ? null : SolrSearchIndex.getSingleFieldStringValue(doc, titleField);
-        String desc = StringUtils.isBlank(descriptionField) ? null : SolrSearchIndex.getSingleFieldStringValue(doc, descriptionField);
-        Set<GeoMapFeature> docFeatures = new HashSet<>();
-        List<String> points = SolrSearchIndex.getMetadataValues(doc, metadataField);
+        String title = StringUtils.isBlank(titleField) ? null : SolrTools.getSingleFieldStringValue(doc, titleField);
+        String desc = StringUtils.isBlank(descriptionField) ? null : SolrTools.getSingleFieldStringValue(doc, descriptionField);
+        List<GeoMapFeature> docFeatures = new ArrayList<>();
+        List<String> points = SolrTools.getMetadataValues(doc, metadataField);
         for (String point : points) {
             JSONObject json = new JSONObject(point);
             String type = json.getString("type");
@@ -401,7 +404,9 @@ public class GeoMap {
                             GeoMapFeature feature = new GeoMapFeature(jsonString);
                             feature.setTitle(title);
                             feature.setDescription(desc);
-                            docFeatures.add(feature);
+                            if(!docFeatures.contains(feature)) {                                
+                                docFeatures.add(feature);
+                            }
                         }
                     });
                 }
@@ -414,6 +419,7 @@ public class GeoMap {
         }
         return docFeatures;
     }
+
 
     /**
      * @param initialView the initialView to set
@@ -472,7 +478,7 @@ public class GeoMap {
             URI uri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/oembed?url=" + escLinkURI + "&format=json");
             return uri;
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
         return null;
@@ -499,7 +505,7 @@ public class GeoMap {
                 return marker.toJSONString();
             }
         }
-        return null;
+        return "{}";
     }
 
     /**
@@ -536,4 +542,5 @@ public class GeoMap {
     public void updateFeatures() {
         this.featuresAsString = null;
     }
+
 }

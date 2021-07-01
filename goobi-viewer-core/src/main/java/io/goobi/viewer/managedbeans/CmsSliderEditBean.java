@@ -71,6 +71,8 @@ public class CmsSliderEditBean implements Serializable {
 
     private List<CMSCollection> cmsCollections;
     
+    private String collectionField;
+        
 
 
     /**
@@ -80,6 +82,7 @@ public class CmsSliderEditBean implements Serializable {
         try {
             selectableCategories = BeanUtils.getCmsBean().getAllCategories()
                     .stream().map(cat -> new Selectable<CMSCategory>(cat, false)).collect(Collectors.toList());
+            collectionField = getAllCollectionFields().get(0);
         } catch (DAOException e) {
             logger.error("Error getting cms categories", e);
             selectableCategories = Collections.emptyList();
@@ -92,7 +95,19 @@ public class CmsSliderEditBean implements Serializable {
     public void setSelectedSlider(CMSSlider selectedSlider) {
         this.selectedSlider = selectedSlider;
         readCategories();
+        setSolrField();
         
+    }
+
+    private void setSolrField() {
+        if(this.selectedSlider != null && !this.selectedSlider.getCollections().isEmpty()) {
+            String solrField = this.selectedSlider.getCollections().get(0);
+            solrField = solrField.substring(0, solrField.indexOf("/"));
+            if(this.getAllCollectionFields().contains(solrField)) {
+                this.collectionField = solrField;
+            }
+            
+        }
     }
     
     /**
@@ -173,9 +188,7 @@ public class CmsSliderEditBean implements Serializable {
     public List<CMSCollection> getAvailableCollections() {
         Locale locale = BeanUtils.getLocale();
         if(cmsCollections == null) {            
-                cmsCollections = DataManager.getInstance().getConfiguration().getConfiguredCollectionFields()
-                .stream()
-                .flatMap(field -> getCollections(field).stream())
+                cmsCollections = getCollections(collectionField).stream()
 //                .map(collection -> collection.getLabel(BeanUtils.getLocale()))
                 .sorted( (c1, c2) -> ObjectUtils.compare(c1.getLabel(locale), c2.getLabel(locale)))
                 .collect(Collectors.toList());
@@ -183,7 +196,7 @@ public class CmsSliderEditBean implements Serializable {
         return cmsCollections;
     }
     
-    private List<CMSCollection> getCollections(String field) {
+    private static List<CMSCollection> getCollections(String field) {
         try {
             return DataManager.getInstance().getDao().getCMSCollections(field);
         } catch (DAOException e) {
@@ -236,13 +249,37 @@ public class CmsSliderEditBean implements Serializable {
         }
     }
 
-    public String getSliderSource() throws ContentNotFoundException, IllegalRequestException, PresentationException, IndexUnreachableException, JsonProcessingException {
+    public String getSliderSource() {
         if(this.selectedSlider != null) {            
-            List<URI> list = new CMSSliderResource(selectedSlider).getSlides();
-            return new ObjectMapper().writeValueAsString(list);
+            try {
+                List<URI> list = new CMSSliderResource(selectedSlider).getSlides();
+                return new ObjectMapper().writeValueAsString(list);
+            } catch (ContentNotFoundException | IllegalRequestException | PresentationException | IndexUnreachableException | JsonProcessingException e) {
+                logger.error("Unable to create slider source: {}", e.toString());
+                return "[]";
+            }
         } else {
             return "[]";
         }
     }
     
+    /**
+     * @return the collectionField
+     */
+    public String getCollectionField() {
+        return collectionField;
+    }
+    
+    /**
+     * @param collectionField the collectionField to set
+     */
+    public void setCollectionField(String collectionField) {
+        this.collectionField = collectionField;
+        this.cmsCollections = null;
+    }
+    
+    public List<String> getAllCollectionFields() {
+        List<String> collections = DataManager.getInstance().getConfiguration().getConfiguredCollections();
+        return collections;
+    }
 }

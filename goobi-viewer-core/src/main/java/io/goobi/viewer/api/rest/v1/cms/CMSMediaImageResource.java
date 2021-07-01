@@ -62,25 +62,26 @@ public class CMSMediaImageResource extends ImageResource {
     
     public CMSMediaImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Context AbstractApiUrlManager urls,
+            @Context ApiUrls urls,
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename) throws UnsupportedEncodingException {
         super(context, request, response, "", getMediaFileUrl(filename).toString());
         request.setAttribute("filename", this.imageURI.toString());
         String requestUrl = request.getRequestURI();
-        filename = URLEncoder.encode(filename, "utf-8");
-        String baseImageUrl = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
-        String imageRequestPath = requestUrl.replace(baseImageUrl, "");
-        this.resourceURI = URI.create(baseImageUrl);
+        String baseImageUrl = (ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE).replace("{filename}", filename);
+        int baseStartIndex = requestUrl.indexOf(baseImageUrl);
+        int baseEndIndex = baseStartIndex + baseImageUrl.length();
+        String imageRequestPath = requestUrl.substring(baseEndIndex);
+        this.resourceURI = URI.create(requestUrl.substring(0, baseEndIndex));
         
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        if(parts.size() == 4) {
+        if(parts.size() == 4 ) {
             //image request
             request.setAttribute("iiif-info", false);
             request.setAttribute("iiif-region", parts.get(0));
             request.setAttribute("iiif-size", parts.get(1));
             request.setAttribute("iiif-rotation", parts.get(2));
             request.setAttribute("iiif-format", parts.get(3));
-        } else {
+        } else if(imageRequestPath.endsWith("info.json")) {
             //image info request
             request.setAttribute("iiif-info", true);
         }
@@ -106,7 +107,7 @@ public class CMSMediaImageResource extends ImageResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
-    @Operation(tags = {"iiif" }, summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF image information object")
+    @Operation(tags = {"iiif" }, summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
        return super.redirectToCanonicalImageInfo();
     }

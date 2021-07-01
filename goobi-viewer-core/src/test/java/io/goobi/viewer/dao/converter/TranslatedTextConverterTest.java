@@ -25,7 +25,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.goobi.viewer.model.misc.TranslatedText;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * @author florian

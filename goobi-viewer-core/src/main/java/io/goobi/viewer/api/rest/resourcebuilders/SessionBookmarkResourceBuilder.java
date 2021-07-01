@@ -26,7 +26,7 @@ import javax.ws.rs.PathParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.iiif.presentation.Collection;
+import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -276,7 +276,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * @see io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder#createCollection(io.goobi.viewer.model.bookmark.BookmarkList, io.goobi.viewer.api.rest.AbstractApiUrlManager)
      */
     @Override
-    public Collection createCollection(BookmarkList list, AbstractApiUrlManager urls) {
+    public Collection2 createCollection(BookmarkList list, AbstractApiUrlManager urls) {
         String url = urls.path(ApiUrls.USERS_BOOKMARKS, ApiUrls.USERS_BOOKMARKS_LIST_IIIF).params("-", list.getId()).build();
         return createCollection(list, url);
     }
@@ -326,7 +326,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * @see io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder#getAsCollection(java.lang.Long, io.goobi.viewer.api.rest.AbstractApiUrlManager)
      */
     @Override
-    public Collection getAsCollection(Long id, AbstractApiUrlManager urls) throws DAOException, RestApiException, IOException {
+    public Collection2 getAsCollection(Long id, AbstractApiUrlManager urls) throws DAOException, RestApiException, IOException {
         BookmarkList list = getBookmarkListById(id);
         return createCollection(list, urls);
     }

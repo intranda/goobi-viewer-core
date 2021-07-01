@@ -16,6 +16,7 @@
 package io.goobi.viewer.controller;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * <p>
@@ -67,6 +68,9 @@ public class AlphabetIterator implements Iterator<String> {
     /** {@inheritDoc} */
     @Override
     public String next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
         currentValue = increment(currentValue);
         return String.valueOf(currentValue);
     }

@@ -24,12 +24,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
@@ -44,6 +48,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * Manages (possibly timeconsuming) {@link Task tasks} within the viewer which can be triggered and monitored via the {@link TasksResource}. The tasks
@@ -53,6 +58,8 @@ import io.goobi.viewer.model.sitemap.SitemapBuilder;
  *
  */
 public class TaskManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(TaskManager.class);
 
     private final ConcurrentHashMap<Long, Task> tasks = new ConcurrentHashMap<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
@@ -96,10 +103,22 @@ public class TaskManager {
     public Future triggerTaskInThread(long jobId, HttpServletRequest request) {
         Task job = tasks.get(jobId);
         if (job != null) {
-            //            System.out.println("executorService " + executorService.toString());
+            logger.debug("Submitting task '{}' to ThreadPool ({} of {} threads in use)", job, getActiveThreads(executorService), 5);
             return executorService.submit(() -> job.doTask(request));
         }
         return CompletableFuture.completedFuture(null);
+    }
+
+    /**
+     * @param executorService2
+     * @return
+     */
+    private static int getActiveThreads(ExecutorService pool) {
+        if (pool instanceof ThreadPoolExecutor) {
+            return ((ThreadPoolExecutor) pool).getActiveCount();
+        } else {
+            return -1;
+        }
     }
 
     public List<Task> getTasks(TaskType type) {
@@ -126,13 +145,20 @@ public class TaskManager {
                 };
             case UPDATE_SITEMAP:
                 return (request, job) -> {
+                    
                     SitemapRequestParameters params = Optional.ofNullable(job.params)
                             .filter(p -> p instanceof SitemapRequestParameters)
                             .map(p -> (SitemapRequestParameters) p)
                             .orElse(null);
+                    
+                    String viewerRootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
+                    String outputPath = params.getOutputPath();
+                    if(StringUtils.isBlank(outputPath)) {
+                        outputPath = request.getServletContext().getRealPath("/");
+                    }
                     try {
-                        new SitemapBuilder(request).updateSitemap(params);
-                    } catch (IllegalRequestException | AccessDeniedException | JSONException | InterruptedException | PresentationException e) {
+                        new SitemapBuilder(request).updateSitemap(outputPath, viewerRootUrl);
+                    } catch (IllegalRequestException | AccessDeniedException | JSONException | PresentationException e) {
                         job.setError(e.getMessage());
                     }
                 };

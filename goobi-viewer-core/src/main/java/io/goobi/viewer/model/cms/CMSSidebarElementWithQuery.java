@@ -196,6 +196,9 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
         return o.getClass().equals(CMSSidebarElementWithQuery.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
                 && bothNullOrEqual(getWidgetTitle(), ((CMSSidebarElementWithQuery) o).getWidgetTitle())
                 && bothNullOrEqual(getSearchField(), ((CMSSidebarElementWithQuery) o).getSearchField());
@@ -209,7 +212,7 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
         }
         return super.getLinkedPages();
     }
-    
+
     /**
      * Currently only used for configurable search drillDown. Return the configured drillDown fields
      * 

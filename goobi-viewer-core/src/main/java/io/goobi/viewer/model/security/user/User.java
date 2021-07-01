@@ -60,7 +60,6 @@ import com.timgroup.jgravatar.GravatarRating;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -77,6 +76,7 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
@@ -1085,7 +1085,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
                     if (license.isPrivCmsAllSubthemes()) {
                         return rawValues;
                     }
-                    if (!license.getAllowedCmsTemplates().isEmpty()) {
+                    if (license.isPrivCmsAllTemplates() || !license.getAllowedCmsTemplates().isEmpty()) {
                         ret.addAll(license.getSubthemeDiscriminatorValues());
                     }
                 }
@@ -1627,7 +1627,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         Set<User> logins = (Set<User>) event.getSession().getServletContext().getAttribute(ATTRIBUTE_LOGINS);
         if (logins != null) {
             logins.remove(this);
-            logger.debug("User removed from context: {}", getId());
+            logger.trace("User removed from context: {}", getId());
         }
     }
 

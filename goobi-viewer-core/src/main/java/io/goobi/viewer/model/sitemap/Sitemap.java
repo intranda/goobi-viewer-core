@@ -39,9 +39,6 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -51,6 +48,9 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
  * Sitemap generation.
@@ -88,9 +88,9 @@ public class Sitemap {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<File> generate(HttpServletRequest request, String outputPath)
+    public List<File> generate(String viewerRootUrl, String outputPath)
             throws IOException, PresentationException, IndexUnreachableException, DAOException {
-        this.viewerRootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
+        this.viewerRootUrl = viewerRootUrl;
         // Sitemap index root
         docIndex.setRootElement(new Element("sitemapindex", nsSitemap));
 
@@ -127,7 +127,7 @@ public class Sitemap {
                 .append(":* AND NOT(")
                 .append(SolrConstants.DATEDELETED)
                 .append(":*)")
-                .append(SearchHelper.getAllSuffixes(request, true, true));
+                .append(SearchHelper.getAllSuffixes(null, true, true));
         logger.debug("Sitemap: sitemap query: {}", sbQuery.toString());
         String[] fields = { SolrConstants.PI, SolrConstants.DATECREATED, SolrConstants.DATEUPDATED, SolrConstants.FULLTEXTAVAILABLE,
                 SolrConstants.DOCTYPE, SolrConstants.ISANCHOR, SolrConstants.THUMBPAGENO };

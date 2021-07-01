@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.bindings.CrowdsourcingCampaignBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.CrowdsourcingCampaignFilter;
@@ -64,8 +65,8 @@ public class CampaignItemLogResource {
     @Context
     private HttpServletResponse servletResponse;
 
-    @Inject
-    protected AbstractApiUrlManager urls;
+    
+    protected AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
     protected AnnotationsResourceBuilder annoBuilder = null;
 
     private final Long campaignId;

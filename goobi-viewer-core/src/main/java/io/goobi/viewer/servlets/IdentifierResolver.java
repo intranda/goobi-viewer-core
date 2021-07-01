@@ -16,6 +16,7 @@
 package io.goobi.viewer.servlets;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,8 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -48,6 +48,8 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * This Servlet maps a given lucene field value to a url and then either redirects there or forwards there, depending on the config.
@@ -131,14 +133,26 @@ public class IdentifierResolver extends HttpServlet {
             fieldValue = request.getParameter(CUSTOM_IDENTIFIER_PARAMETER);
         }
         if (StringUtils.isEmpty(fieldValue)) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_NO_ARGUMENT + "urn");
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_NO_ARGUMENT + "urn");
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
             return;
         }
 
-        fieldValue = URLDecoder.decode(fieldValue, SearchBean.URL_ENCODING);
+        try {
+            fieldValue = URLDecoder.decode(fieldValue, SearchBean.URL_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
+        }
 
         if (SolrConstants.PI.contentEquals(fieldName) && !PIValidator.validatePi(fieldValue)) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_IDENTIFIER + ": " + fieldValue);
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_IDENTIFIER + ": " + fieldValue);
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
             return;
         }
 
@@ -147,9 +161,7 @@ public class IdentifierResolver extends HttpServlet {
         Map<Integer, String> moreValues = new HashMap<>();
         parseFieldValueParameters(request.getParameterMap(), moreFields, moreValues);
 
-        try
-
-        {
+        try {
             StringBuilder sbQuery = new StringBuilder()
                     .append('+')
                     .append(fieldName.toUpperCase())
@@ -171,23 +183,36 @@ public class IdentifierResolver extends HttpServlet {
             }
 
             sbQuery.append(SearchHelper.getAllSuffixes(request, false, false));
-            logger.trace("query: {}", sbQuery.toString());
+            String query = sbQuery.toString();
+            logger.trace("query: {}", StringTools.stripPatternBreakingChars(query));
 
             // 3. evaluate the search
-            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString());
+            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(query);
             if (hits.getNumFound() == 0) {
                 // 3.1 start the alternative page field search
                 if (!customMode) {
-                    doPageSearch(fieldValue, request, response);
+                    try {
+                        doPageSearch(fieldValue, request, response);
+                    } catch (IOException | ServletException e) {
+                        logger.error(e.getMessage());
+                    }
                 } else {
                     logger.trace("not found: {}:{}", fieldName, fieldValue);
-                    redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
+                    try {
+                        redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
+                    } catch (IOException | ServletException e) {
+                        logger.error(e.getMessage());
+                    }
                     return;
                 }
                 return;
             } else if (hits.getNumFound() > 1) {
                 // 3.2 show multiple match, that indicates corrupted index
-                redirectToError(HttpServletResponse.SC_CONFLICT, fieldValue, request, response);
+                try {
+                    redirectToError(HttpServletResponse.SC_CONFLICT, fieldValue, request, response);
+                } catch (IOException | ServletException e) {
+                    logger.error(e.getMessage());
+                }
                 return;
             }
 
@@ -211,7 +236,11 @@ public class IdentifierResolver extends HttpServlet {
             // Deleted record check
             if (targetDoc.getFieldValue(SolrConstants.DATEDELETED) != null) {
                 logger.debug("Record '{}' has been deleted, trace document found.", targetDoc.getFieldValue(SolrConstants.PI));
-                redirectToError(HttpServletResponse.SC_GONE, fieldValue, request, response);
+                try {
+                    redirectToError(HttpServletResponse.SC_GONE, fieldValue, request, response);
+                } catch (IOException | ServletException e) {
+                    logger.error(e.getMessage());
+                }
                 return;
             }
 
@@ -227,7 +256,11 @@ public class IdentifierResolver extends HttpServlet {
             }
 
             if (pi == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_TARGET_FIELD_NOT_FOUND + SolrConstants.PI);
+                try {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_TARGET_FIELD_NOT_FOUND + SolrConstants.PI);
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                }
                 return;
             }
 
@@ -241,12 +274,20 @@ public class IdentifierResolver extends HttpServlet {
             try {
                 access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, request);
             } catch (RecordNotFoundException e) {
-                redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
+                try {
+                    redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
+                } catch (ServletException | IOException e1) {
+                    logger.error(e.getMessage(), e1);
+                }
                 return;
             }
             if (!access) {
                 logger.debug("User may not list record '{}'.", pi);
-                redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
+                try {
+                    redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
+                } catch (ServletException | IOException e) {
+                    logger.error(e.getMessage(), e);
+                }
                 return;
             }
 
@@ -256,22 +297,42 @@ public class IdentifierResolver extends HttpServlet {
             // 5. redirect or forward using the target field value
             if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
                 // response.sendRedirect(TARGET_WORK_URL.replaceAll("\\(0\\)", outputPart));
-                response.sendRedirect(result);
+                try {
+                    response.sendRedirect(result);
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                }
             } else {
                 // getServletContext().getRequestDispatcher(TARGET_WORK_URL.replaceAll("\\(0\\)", outputPart)).forward(request, response);
-                getServletContext().getRequestDispatcher(result).forward(request, response);
+                try {
+                    getServletContext().getRequestDispatcher(result).forward(request, response);
+                } catch (ServletException | IOException e) {
+                    logger.error(e.getMessage(), e);
+                }
             }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e.getMessage(), e1);
+            }
             return;
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e.getMessage(), e1);
+            }
             return;
         } catch (DAOException e) {
             logger.debug("DAOException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e.getMessage(), e1);
+            }
             return;
         }
     }
@@ -447,7 +508,7 @@ public class IdentifierResolver extends HttpServlet {
         String docStructType = (String) targetDoc.getFieldValue(SolrConstants.DOCSTRCT);
         String mimeType = (String) targetDoc.getFieldValue(SolrConstants.MIMETYPE);
         String topstructPi = (String) targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-        boolean anchorOrGroup = SolrSearchIndex.isAnchor(targetDoc) || SolrSearchIndex.isGroup(targetDoc);
+        boolean anchorOrGroup = SolrTools.isAnchor(targetDoc) || SolrTools.isGroup(targetDoc);
         boolean hasImages = targetDoc.containsKey(SolrConstants.ORDER) || (targetDoc.containsKey(SolrConstants.THUMBNAIL)
                 && !StringUtils.isEmpty((String) targetDoc.getFieldValue(SolrConstants.THUMBNAIL)));
 

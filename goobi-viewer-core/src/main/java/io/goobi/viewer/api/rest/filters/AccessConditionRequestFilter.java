@@ -43,6 +43,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.Absolute
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.RelativeScale;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
@@ -92,6 +93,7 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                 String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
                 String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
 
+
             if ( StringUtils.isBlank(filename) || 
                       (!BeanUtils.getImageDeliveryBean().isExternalUrl(filename) 
                     && !BeanUtils.getImageDeliveryBean().isPublicUrl(filename)
@@ -101,8 +103,9 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                 FilterTools.filterForConcurrentViewLimit(pi, servletRequest);
             }
         } catch (ServiceNotAllowedException e) {
-            Response response = Response.status(Status.FORBIDDEN).type(responseMediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
-            request.abortWith(response);
+            servletRequest.setAttribute(ImageResource.REQUEST_ATTRIBUTE_ERROR, e);
+//            Response response = Response.status(Status.FORBIDDEN).type(responseMediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
+//            request.abortWith(response);
         } catch (ViewerConfigurationException e) {
             Response response = Response.status(Status.INTERNAL_SERVER_ERROR)
                     .type(responseMediaType)
@@ -129,17 +132,20 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                 access = AccessConditionUtils.checkAccessPermissionForThumbnail(request, pi, contentFileName);
                 //                                logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access);
             } else {
-                String privilege = (String) request.getAttribute(REQUIRED_PRIVILEGE);
-                if(StringUtils.isBlank(privilege)) {
-                    privilege = IPrivilegeHolder.PRIV_LIST;
+                String[] privileges = getRequiredPrivileges(request);
+                if(privileges.length == 0) {
+                    privileges = new String[] {IPrivilegeHolder.PRIV_LIST};
                 }
                 if(StringUtils.isBlank(pi)) {
                     throw new ServiceNotAllowedException("Serving this resource is currently impossible Because no persistent identifier is given");
-                } else if(StringUtils.isNotBlank(contentFileName)) {                    
-                    access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, privilege);
+                } else if(StringUtils.isNotBlank(contentFileName)) {              
+                    for (String privilege : privileges) {                        
+                        access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, privilege);
+                    }
                 } else {
-                    access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logid, privilege, request);
-
+                    for (String privilege : privileges) {  
+                        access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logid, privilege, request);
+                    }
                 }
             }
         } catch (IndexUnreachableException e) {
@@ -155,15 +161,22 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param width
+     * Read attribute {@link #REQUIRED_PRIVILEGE} from request and return it as String array. If the attribute doesn't
+     * exist, return an empty array
+     * 
+     * @param request
      * @return
      */
-    private static int parse(String string) {
-        try {
-            return Integer.parseInt(string);
-        } catch (NumberFormatException e) {
-            return 0;
+    public static String[] getRequiredPrivileges(HttpServletRequest request) {
+        Object privileges = request.getAttribute(REQUIRED_PRIVILEGE);
+        if(privileges == null) {
+            return new String[0];
+        } else if(privileges.getClass().isArray()) {
+            return (String[]) privileges;
+        } else {
+            return new String[]{privileges.toString()};
         }
     }
+
 
 }

@@ -13,10 +13,10 @@
  
                     <!-- STRUCT ELEMENT -->
 					<ui:fragment
-						rendered="#{(activeDocumentBean.viewManager.currentDocumentIddoc != activeDocumentBean.viewManager.topDocumentIddoc) 
-							and ((activeDocumentBean.viewManager.currentDocument.accessPermissionDownloadMetadata)
+						rendered="#{(activeDocumentBean.viewManager.currentStructElementIddoc != activeDocumentBean.viewManager.topDocumentIddoc) 
+							and ((activeDocumentBean.viewManager.currentStructElement.accessPermissionDownloadMetadata)
 						    or (!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf))}">
-						<h4 id="titlePage" class="widget-usage__subtitle" title="#{activeDocumentBean.viewManager.currentDocument.label}">#{msg[activeDocumentBean.viewManager.currentDocument.docStructType]}</h4>
+						<h4 id="titlePage" class="widget-usage__subtitle" title="#{activeDocumentBean.viewManager.currentStructElement.label}">#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}</h4>
 
 						<!-- STRUCT ELEMENT DOWNLOADS -->
 						<div class="widget-usage__struct-downloads">
@@ -29,9 +29,12 @@
 	                                    href="#{activeDocumentBean.viewManager.pdfStructDownloadLink}" 
 	                                    id="pdfStruct" 
 	                                    class="badge badge-dark widget-usage__struct-download-pdf" 
-	                                    title="#{msg.label__pdf_download_section}" 
+	                                    title="#{msg.label__pdf_download_section}"
+                                        data-toggle="tooltip"
+									    data-placement="top"
+									    data-trigger="hover"
                                         target="_blank" rel="nofollow noopener"
-                                        aria-label="#{msg[activeDocumentBean.viewManager.currentDocument.docStructType]}: #{msg.label__pdf_download}">
+                                        aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.label__pdf_download}">
                                     	<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 	                                    #{msg.label__pdf_download}</a>
 	                            </ui:fragment>
@@ -42,23 +45,29 @@
 	                                    class="badge badge-dark widget-usage__struct-download-pdf download-modal-widget" 
 	                                    data-type="pdf" 
 	                                    data-title="#{activeDocumentBean.titleBarLabel}" 
-	                                    data-id="#{activeDocumentBean.viewManager.currentDocument.logid}"
+	                                    data-id="#{activeDocumentBean.viewManager.currentStructElement.logid}"
 	                                    data-pi="#{activeDocumentBean.viewManager.pi}" 
                                         title="#{msg.label__pdf_download_section}"
-                                        aria-label="#{msg[activeDocumentBean.viewManager.currentDocument.docStructType]}: #{msg.label__pdf_download}">
+                                        data-toggle="tooltip"
+									    data-placement="top"
+									    data-trigger="hover"
+                                        aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.label__pdf_download}">
 	                                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 	                                    #{msg.label__pdf_download}
 	                                </a>    
 	                            </ui:fragment>
                             </ui:fragment>
                             <!-- RIS (current) -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentDocument.accessPermissionDownloadMetadata}">
-                                <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/sections/#{activeDocumentBean.viewManager.currentDocument.logid}/ris/"
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentStructElement.accessPermissionDownloadMetadata}">
+                                <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/sections/#{activeDocumentBean.viewManager.currentStructElement.logid}/ris/"
                                     id="risCurrent"
                                     class="badge badge-dark widget-usage__struct-download-ris" 
                                     title="#{msg.risLinkTopstruct}"
+                                    data-toggle="tooltip"
+									data-placement="top"
+									data-trigger="hover"
                                     rel="nofollow"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.currentDocument.docStructType]}: #{msg.risLinkTopstruct}">
+                                    aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.risLinkTopstruct}">
                                     #{msg.risLinkTopstruct}
                                 </a>
                             </ui:fragment>

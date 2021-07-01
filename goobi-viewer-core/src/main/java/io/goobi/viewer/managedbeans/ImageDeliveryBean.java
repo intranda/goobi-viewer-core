@@ -29,7 +29,6 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.xerces.impl.dtd.models.ContentModelValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +45,6 @@ import io.goobi.viewer.controller.imaging.Object3DHandler;
 import io.goobi.viewer.controller.imaging.PdfHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.controller.imaging.WatermarkHandler;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -106,8 +104,9 @@ public class ImageDeliveryBean implements Serializable {
         logger.trace("init");
         try {
             Configuration config = DataManager.getInstance().getConfiguration();
-            AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
-            AbstractApiUrlManager contentUrlManager = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
+            AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getIIIFDataApiManager();
+            AbstractApiUrlManager contentUrlManager =
+                    DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
             init(config, dataUrlManager, contentUrlManager);
         } catch (NullPointerException e) {
             logger.error("Failed to initialize ImageDeliveryBean: Resources misssing");
@@ -144,9 +143,9 @@ public class ImageDeliveryBean implements Serializable {
 
         iiif = new IIIFUrlHandler(contentUrlManager);
         images = new ImageHandler(contentUrlManager);
-        if(contentUrlManager != null) {
+        if (contentUrlManager != null) {
             objects3d = new Object3DHandler(contentUrlManager);
-        } else {            
+        } else {
             objects3d = new Object3DHandler(config);
         }
         footer = new WatermarkHandler(config, config.getIIIFApiUrl());
@@ -602,5 +601,7 @@ public class ImageDeliveryBean implements Serializable {
     public void setPdf(PdfHandler pdf) {
         this.pdf = pdf;
     }
+
+
 
 }

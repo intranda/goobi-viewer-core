@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import de.intranda.api.iiif.discovery.Activity;
 import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
-import io.goobi.viewer.api.rest.AbstractRestApiTest;
+import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.api.rest.v1.ApiUrlManagerTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;

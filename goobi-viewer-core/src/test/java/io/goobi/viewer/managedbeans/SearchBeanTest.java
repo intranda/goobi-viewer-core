@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -34,6 +34,7 @@ import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -209,6 +210,29 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(SolrConstants.DC, item3.getField());
         Assert.assertEquals("b", item3.getValue());
     }
+    
+
+    /**
+     * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
+     * @verifies not add identical hierarchical query items
+     */
+    @Test
+    public void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotAddIdenticalHierarchicalQueryItems() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.resetAdvancedSearchParameters(1, 1);
+        Assert.assertEquals(1, sb.getAdvancedQueryGroups().size());
+        SearchQueryGroup group = sb.getAdvancedQueryGroups().get(0);
+        SearchQueryItem item1 = group.getQueryItems().get(0);
+
+        item1.setField(SolrConstants.DC);
+        item1.setValue("foo");
+        sb.getFacets().setCurrentFacetString("DC:foo;;DC:foo");
+        sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
+        // There should be no second query item generated for the other DC:foo
+        Assert.assertEquals(1, sb.getAdvancedQueryGroups().get(0).getQueryItems().size());
+        Assert.assertEquals(SolrConstants.DC, item1.getField());
+        Assert.assertEquals("foo", item1.getValue());
+    }
 
     /**
      * @see SearchBean#generateAdvancedSearchString()
@@ -299,6 +323,200 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.generateAdvancedSearchString(true);
         Assert.assertEquals("(All fields: foo bar OR Title: bla \"blup\" -nein) OR\n<br />(Full text: \"lorem ipsum dolor sit amet\")",
                 sb.getAdvancedSearchQueryInfo());
+    }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @verifies add multiple facets for the same field correctly
+     */
+    @Test
+    public void generateAdvancedSearchString_shouldAddMultipleFacetsForTheSameFieldCorrectly() throws Exception {
+        SearchBean bean = new SearchBean();
+        bean.resetAdvancedSearchParameters(2, 2);
+        bean.setAdvancedSearchGroupOperator(1);
+
+        SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
+        {
+            SearchQueryItem item = group.getQueryItems().get(0);
+            item.setOperator(SearchItemOperator.IS);
+            item.setField(SolrConstants.DC);
+            item.setValue("foo");
+            Assert.assertTrue(item.isHierarchical());
+        }
+        {
+            SearchQueryItem item = group.getQueryItems().get(1);
+            item.setOperator(SearchItemOperator.IS);
+            item.setField(SolrConstants.DC);
+            item.setValue("bar");
+            Assert.assertTrue(item.isHierarchical());
+        }
+        bean.generateAdvancedSearchString(true);
+
+        Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
+                bean.getFacets().getCurrentFacetString());
+    }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @verifies add multiple facets for the same field correctly if field already in current facets
+     */
+    @Test
+    public void generateAdvancedSearchString_shouldAddMultipleFacetsForTheSameFieldCorrectlyIfFieldAlreadyInCurrentFacets() throws Exception {
+        SearchBean bean = new SearchBean();
+        bean.resetAdvancedSearchParameters(1, 2);
+        bean.setAdvancedSearchGroupOperator(1);
+        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;"); // current facet string already contains this field
+
+        SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
+        {
+            SearchQueryItem item = group.getQueryItems().get(0);
+            item.setOperator(SearchItemOperator.IS);
+            item.setField(SolrConstants.DC);
+            item.setValue("foo");
+            Assert.assertTrue(item.isHierarchical());
+        }
+        {
+            SearchQueryItem item = group.getQueryItems().get(1);
+            item.setOperator(SearchItemOperator.IS);
+            item.setField(SolrConstants.DC);
+            item.setValue("bar");
+            Assert.assertTrue(item.isHierarchical());
+        }
+        bean.generateAdvancedSearchString(true);
+
+        Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
+                bean.getFacets().getCurrentFacetString());
+    }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @verifies only add identical facets once
+     */
+    @Test
+    public void generateAdvancedSearchString_shouldOnlyAddIdenticalFacetsOnce() throws Exception {
+        SearchBean bean = new SearchBean();
+        bean.resetAdvancedSearchParameters(1, 2);
+        bean.setAdvancedSearchGroupOperator(1);
+
+        SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
+        {
+            SearchQueryItem item = group.getQueryItems().get(0);
+            item.setOperator(SearchItemOperator.IS);
+            item.setField(SolrConstants.DC);
+            item.setValue("foo");
+            Assert.assertTrue(item.isHierarchical());
+        }
+        {
+            SearchQueryItem item = group.getQueryItems().get(1);
+            item.setOperator(SearchItemOperator.IS);
+            item.setField(SolrConstants.DC);
+            item.setValue("foo");
+            Assert.assertTrue(item.isHierarchical());
+        }
+        bean.generateAdvancedSearchString(true);
+
+        Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
+                bean.getFacets().getCurrentFacetString());
+    }
+    
+
+    /**
+     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @verifies not add more facets if field value combo already in current facets
+     */
+    @Test
+    public void generateAdvancedSearchString_shouldNotAddMoreFacetsIfFieldValueComboAlreadyInCurrentFacets() throws Exception {
+        SearchBean bean = new SearchBean();
+        bean.resetAdvancedSearchParameters(1, 2);
+        bean.setAdvancedSearchGroupOperator(1);
+        
+        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;");
+
+        SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
+        {
+            SearchQueryItem item = group.getQueryItems().get(0);
+            item.setOperator(SearchItemOperator.IS);
+            item.setField(SolrConstants.DC);
+            item.setValue("foo");
+            Assert.assertTrue(item.isHierarchical());
+        }
+        {
+            SearchQueryItem item = group.getQueryItems().get(1);
+            item.setOperator(SearchItemOperator.IS);
+            item.setField(SolrConstants.DC);
+            item.setValue("foo");
+            Assert.assertTrue(item.isHierarchical());
+        }
+        bean.generateAdvancedSearchString(true);
+
+        Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
+                bean.getFacets().getCurrentFacetString());
+    }
+    
+    /**
+     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @verifies not replace obsolete facets with duplicates
+     */
+    @Test
+    public void generateAdvancedSearchString_shouldNotReplaceObsoleteFacetsWithDuplicates() throws Exception {
+        SearchBean bean = new SearchBean();
+        bean.resetAdvancedSearchParameters(1, 2);
+        bean.setAdvancedSearchGroupOperator(1);
+        
+        // Current facets are DC:foo and DC:bar
+        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;" +  SolrConstants.DC + ":bar;;");
+
+        // Passing DC:foo and DC:foo from the advanced search
+        SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
+        {
+            SearchQueryItem item = group.getQueryItems().get(0);
+            item.setOperator(SearchItemOperator.IS);
+            item.setField(SolrConstants.DC);
+            item.setValue("foo");
+            Assert.assertTrue(item.isHierarchical());
+        }
+        {
+            SearchQueryItem item = group.getQueryItems().get(1);
+            item.setOperator(SearchItemOperator.IS);
+            item.setField(SolrConstants.DC);
+            item.setValue("foo");
+            Assert.assertTrue(item.isHierarchical());
+        }
+        bean.generateAdvancedSearchString(true);
+
+        // Only one DC:foo should be in the facets
+        Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
+                bean.getFacets().getCurrentFacetString());
+    }
+
+    
+
+    /**
+     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @verifies remove facets that are not matched among query items
+     */
+    @Test
+    public void generateAdvancedSearchString_shouldRemoveFacetsThatAreNotMatchedAmongQueryItems() throws Exception {
+        SearchBean bean = new SearchBean();
+        bean.resetAdvancedSearchParameters(1, 1);
+        bean.setAdvancedSearchGroupOperator(1);
+
+        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;" +  SolrConstants.DC + ":bar;;");
+        Assert.assertEquals(2, bean.getFacets().getCurrentFacets().size());
+        Assert.assertTrue(bean.getFacets().getCurrentFacets().get(0).isHierarchial());
+        
+        
+        SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
+        {
+            SearchQueryItem item = group.getQueryItems().get(0);
+            item.setOperator(SearchItemOperator.IS);
+            item.setField(SolrConstants.DC);
+            item.setValue("foo");
+        }
+        bean.generateAdvancedSearchString(true);
+
+        Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
+                bean.getFacets().getCurrentFacetString());
     }
 
     /**

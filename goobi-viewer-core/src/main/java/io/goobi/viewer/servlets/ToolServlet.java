@@ -26,12 +26,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.Version;
-import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Servlet for deleting cache elements. Should not be accessible to unauthorized persons. This is a temporary solutions which will probably be
@@ -88,7 +89,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
             switch (action) {
                 case "emptyCache":
                     int deleted = CacheUtils.deleteFromCache(identifier, fromContentCache, fromThumbnailCache, fromPdfCache);
-                    response.getWriter().write(deleted + " cache elements belonging to '" + identifier + "' deleted.");
+                    response.getWriter().write(deleted + " cache elements belonging to '" + StringEscapeUtils.escapeHtml4(identifier) + "' deleted.");
                     break;
                 case "fillCache":
                     //                    String answer = performCacheFillerAction(request.getParameterMap());
@@ -100,7 +101,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
                     //                }
                     break;
                 case "checkSolrSchemaName":
-                    String[] result = SolrSearchIndex.checkSolrSchemaName();
+                    String[] result = SolrTools.checkSolrSchemaName();
                     int status = Integer.valueOf(result[0]);
                     if (status == 200) {
                         response.setStatus(200);

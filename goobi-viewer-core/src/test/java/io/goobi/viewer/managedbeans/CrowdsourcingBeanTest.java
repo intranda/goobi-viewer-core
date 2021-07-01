@@ -68,14 +68,14 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void testGetCampaignCount() throws DAOException {
         long numPublic = bean.getCampaignCount(CampaignVisibility.PUBLIC);
         long numPrivate = bean.getCampaignCount(CampaignVisibility.PRIVATE);
-        Assert.assertEquals(1, numPublic);
+        Assert.assertEquals(2, numPublic);
         Assert.assertEquals(1, numPrivate);
     }
 
     @Test
     public void testGetAllCampaigns() throws DAOException {
         List<Campaign> campaigns = bean.getAllCampaigns();
-        Assert.assertEquals(2, campaigns.size());
+        Assert.assertEquals(3, campaigns.size());
 
     }
 

@@ -49,8 +49,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.RestApiManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -59,6 +57,8 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
  * <p>
@@ -97,7 +97,9 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     @Column(name = "public")
     private Boolean isPublic = false;
 
-    @Column(name = "share_key", unique = true)
+    // Field length had to be limited to 64 chars (SHA-256 length) because InnoDB only supports 767 bytes per index,
+    // and the unique index will require 255*n bytes (where n depends on the charset)
+    @Column(name = "share_key", unique = true, columnDefinition = "VARCHAR(64)")
     private String shareKey;
 
     @Column(name = "date_updated")
@@ -525,7 +527,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      * Generates a persistent share key for public sharing via link.
      */
     public void generateShareKey() {
-        setShareKey(StringTools.generateMD5(String.valueOf(System.currentTimeMillis())));
+        setShareKey(StringTools.generateHash(String.valueOf(System.currentTimeMillis())));
     }
 
     /**

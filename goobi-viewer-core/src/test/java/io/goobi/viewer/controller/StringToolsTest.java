@@ -15,9 +15,12 @@
  */
 package io.goobi.viewer.controller;
 
+import static org.junit.Assert.assertEquals;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
@@ -82,6 +85,15 @@ public class StringToolsTest {
         Assert.assertEquals("foo  bar", StringTools.stripJS("foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar"));
         Assert.assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT>\nfunction f {\n alert();\n}\n</ScRiPt> bar"));
         Assert.assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT src=\"http://dangerousscript.js\"/> bar"));
+    }
+
+    /**
+     * @see StringTools#stripPatternBreakingChars(String)
+     * @verifies remove chars correctly
+     */
+    @Test
+    public void stripPatternBreakingChars_shouldRemoveCharsCorrectly() throws Exception {
+        Assert.assertEquals("foo_bar__", StringTools.stripPatternBreakingChars("foo\tbar\r\n"));
     }
 
     @Test
@@ -171,12 +183,12 @@ public class StringToolsTest {
     }
 
     /**
-     * @see StringTools#generateMD5(String)
+     * @see StringTools#generateHash(String)
      * @verifies hash string correctly
      */
     @Test
-    public void generateMD5_shouldHashStringCorrectly() throws Exception {
-        Assert.assertEquals("098f6bcd4621d373cade4e832627b4f6", StringTools.generateMD5("test"));
+    public void generateHash_shouldHashStringCorrectly() throws Exception {
+        Assert.assertEquals("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", StringTools.generateHash("test"));
     }
 
     /**
@@ -206,4 +218,30 @@ public class StringToolsTest {
     public void checkValueEmptyOrInverted_shouldReturnFalseOtherwise() throws Exception {
         Assert.assertFalse(StringTools.checkValueEmptyOrInverted("foo"));
     }
+
+    /**
+     * @see StringTools#filterStringsViaRegex(List,String)
+     * @verifies return all matching keys
+     */
+    @Test
+    public void filterStringsViaRegex_shouldReturnAllMatchingKeys() throws Exception {
+        String[] keys = new String[] { "foo", "bar", "key0", "key1", "key2" };
+        List<String> result = StringTools.filterStringsViaRegex(Arrays.asList(keys), "key[0-9]+");
+        Assert.assertEquals(3, result.size());
+        Assert.assertEquals("key0", result.get(0));
+        Assert.assertEquals("key1", result.get(1));
+        Assert.assertEquals("key2", result.get(2));
+    }
+    
+//   @Test
+//    public void testGetGeoSearchPoints() {
+//        String searchString = "WKT_COORDS:\"IsWithin(POLYGON((1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2))) distErrPct=0\"";
+//    
+//        double[][] points = StringTools.getGeoSearchPoints(searchString);
+//        assertEquals(4, points.length);
+//        assertEquals(1.1, points[0][0], 0.0);
+//        assertEquals(1.2, points[0][1], 0.0);
+//        assertEquals(4.1, points[3][0], 0.0);
+//        assertEquals(4.2, points[3][1], 0.0);
+//    }
 }

@@ -15,7 +15,7 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:panelGroup id="cmsMenuItemsAccessControl" rendered="#{userBean.user.isHasCmsPrivilege('CMS_MENU')}">
+        <h:panelGroup id="cmsMenuItemsAccessControl" rendered="#{userBean.user.isHasCmsPrivilege('CMS_MENU') and navigationHelper.solrIndexOnline}">
             <div id="cmsMenuItems" class="cms-menu">
                 <h:form id="editMenuForm" prependId="false">
                     <div class="admin__title-bar">
@@ -308,6 +308,13 @@
                 } );
             </script>
         </h:panelGroup>
+        
+       <ui:fragment rendered="#{!navigationHelper.solrIndexOnline}">
+           <div class="alert alert-danger" role="alert">
+               <h:outputText rendered="#{errMsg == null}" value="#{msg.errIndexUnreachableMsg}" />
+           </div>
+       </ui:fragment>
+        
     </ui:define>
 
 </ui:composition>

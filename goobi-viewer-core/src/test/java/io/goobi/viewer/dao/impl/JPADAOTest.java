@@ -62,8 +62,10 @@ import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
 import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
@@ -2051,7 +2053,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getDownloadJobByIdentifier_shouldReturnCorrectObject() throws Exception {
-        DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByIdentifier("0afb73c418262beb2c88dc40c95831b7");
+        DownloadJob job =
+                DataManager.getInstance().getDao().getDownloadJobByIdentifier("187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118a");
         Assert.assertNotNull(job);
         Assert.assertEquals(PDFDownloadJob.class, job.getClass());
         Assert.assertEquals(Long.valueOf(1), job.getId());
@@ -2242,7 +2245,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getAllCampaigns_shouldReturnAllCampaigns() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllCampaigns().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllCampaigns().size());
     }
 
     /**
@@ -2251,8 +2254,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCampaigns_shouldFilterCampaignsCorrectly() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getCampaigns(0, 10, null, false, null).size());
-        Assert.assertEquals(1,
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getCampaigns(0, 10, null, false, null).size());
+        Assert.assertEquals(2,
                 DataManager.getInstance().getDao().getCampaigns(0, 10, null, false, Collections.singletonMap("visibility", "PUBLIC")).size());
     }
 
@@ -2262,8 +2265,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCampaignCount_shouldCountCorrectly() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getCampaignCount(null));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getCampaignCount(Collections.singletonMap("visibility", "PUBLIC")));
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getCampaignCount(null));
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getCampaignCount(Collections.singletonMap("visibility", "PUBLIC")));
     }
 
     /**
@@ -2272,22 +2275,42 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCampaign_shouldReturnCorrectCampaign() throws Exception {
-        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
-        Assert.assertNotNull(campaign);
-        campaign.setSelectedLocale(Locale.ENGLISH);
-        Assert.assertEquals(Long.valueOf(1), campaign.getId());
-        Assert.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
-        Assert.assertEquals("+DC:varia", campaign.getSolrQuery());
-        Assert.assertEquals("English title", campaign.getTitle());
+        {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+            Assert.assertNotNull(campaign);
+            campaign.setSelectedLocale(Locale.ENGLISH);
+            Assert.assertEquals(Long.valueOf(1), campaign.getId());
+            Assert.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
+            Assert.assertEquals(StatisticMode.RECORD, campaign.getStatisticMode());
+            Assert.assertEquals("+DC:varia", campaign.getSolrQuery());
+            Assert.assertEquals("English title", campaign.getTitle());
 
-        Assert.assertEquals(2, campaign.getQuestions().size());
-        Assert.assertEquals("English text", campaign.getQuestions().get(0).getText().getText(Locale.ENGLISH));
+            Assert.assertEquals(2, campaign.getQuestions().size());
+            Assert.assertEquals("English text", campaign.getQuestions().get(0).getText().getText(Locale.ENGLISH));
 
-        Assert.assertEquals(4, campaign.getStatistics().size());
-        Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
-        Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
-        Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
-        Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
+            Assert.assertEquals(4, campaign.getStatistics().size());
+            Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
+        }
+        {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(3L);
+            Assert.assertNotNull(campaign);
+            campaign.setSelectedLocale(Locale.ENGLISH);
+            Assert.assertEquals(Long.valueOf(3), campaign.getId());
+            Assert.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
+            Assert.assertEquals("+PI:PI_5", campaign.getSolrQuery());
+
+
+            Assert.assertEquals(1, campaign.getStatistics().size());
+            CampaignRecordStatistic recordStatistic = campaign.getStatistics().get("PI_5");
+            Assert.assertNotNull(recordStatistic);
+            Assert.assertEquals(StatisticMode.PAGE, campaign.getStatisticMode());
+            Assert.assertEquals(2, recordStatistic.getPageStatistics().size());
+            Assert.assertEquals(Integer.valueOf(1), recordStatistic.getPageStatistics().get("PI_5_1").getPage());
+            Assert.assertEquals("PI_5", recordStatistic.getPageStatistics().get("PI_5_1").getPi());
+        }
     }
 
     @Test
@@ -2350,12 +2373,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getCampaignStatisticsForRecord(String,CampaignRecordStatus)
+     * @see JPADAO#getCampaignStatisticsForRecord(String,CrowdsourcingStatus)
      * @verifies return correct rows
      */
     @Test
     public void getCampaignStatisticsForRecord_shouldReturnCorrectRows() throws Exception {
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", CampaignRecordStatus.FINISHED).size());
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", CrowdsourcingStatus.FINISHED).size());
     }
 
     /**
@@ -2573,7 +2596,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
 
         int rows = DataManager.getInstance().getDao().deleteCampaignStatisticsForUser(user);
-        Assert.assertEquals(4, rows);
+        Assert.assertEquals(6, rows);
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
             Assert.assertNotNull(campaign);
@@ -2617,7 +2640,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
 
         int rows = DataManager.getInstance().getDao().changeCampaignStatisticContributors(fromUser, toUser);
-        Assert.assertEquals(4, rows);
+        Assert.assertEquals(6, rows);
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
             Assert.assertNotNull(campaign);
@@ -2895,6 +2918,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(note.getId());
         CMSRecordNote pNote = DataManager.getInstance().getDao().getRecordNote(note.getId());
         assertNotNull(pNote);
+        pNote.getRecordTitle().setSelectedLocale(Locale.GERMAN);
         assertEquals(title, pNote.getRecordTitle().getText());
         assertEquals(title, pNote.getRecordTitle().getText(Locale.GERMAN));
     }
@@ -2932,7 +2956,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", true).size());
         assertEquals(0, DataManager.getInstance().getDao().getRecordNotesForPi("PI5", false).size());
     }
-    
+
     @Test
     public void testGetAllSliders() throws DAOException {
         List<CMSSlider> sliders = DataManager.getInstance().getDao().getAllSliders();
@@ -2940,20 +2964,20 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertTrue(sliders.stream().anyMatch(sl -> sl.getName().equals("Query Slider")));
         assertTrue(sliders.stream().anyMatch(sl -> sl.getDescription().equals("Slider from collections")));
     }
-    
+
     @Test
     public void testGetSlider() throws DAOException {
         CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
         assertNotNull(slider);
     }
-    
+
     @Test
     public void testAddSlider() throws DAOException {
         String name = "Test Slider";
         CMSSlider slider = new CMSSlider(SourceType.COLLECTIONS);
         slider.setName(name);
         assertTrue(DataManager.getInstance().getDao().addSlider(slider));
-        
+
         assertNotNull(slider.getId());
         CMSSlider loadedSlider = DataManager.getInstance().getDao().getSlider(slider.getId());
         assertNotNull(loadedSlider);
@@ -2961,20 +2985,20 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(loadedSlider.getId(), slider.getId());
         assertEquals(name, loadedSlider.getName());
     }
-    
+
     @Test
     public void testUpdateSlider() throws DAOException {
         String name = "Test Slider";
         CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
         assertNotEquals(name, slider.getName());
-        
+
         slider.setName(name);
         assertNotEquals(name, DataManager.getInstance().getDao().getSlider(1l).getName());
-        
+
         DataManager.getInstance().getDao().updateSlider(slider);
         assertEquals(name, DataManager.getInstance().getDao().getSlider(1l).getName());
     }
-    
+
     @Test
     public void testDeleteSlider() throws DAOException {
         String name = "Test Slider";
@@ -2982,12 +3006,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         slider.setName(name);
         assertTrue(DataManager.getInstance().getDao().addSlider(slider));
         assertNotNull(DataManager.getInstance().getDao().getSlider(slider.getId()));
-        
+
         assertTrue(DataManager.getInstance().getDao().deleteSlider(slider));
         assertNull(DataManager.getInstance().getDao().getSlider(slider.getId()));
 
     }
-    
+
     @Test
     public void testGetEmbeddingCmsPage() throws DAOException {
         CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);

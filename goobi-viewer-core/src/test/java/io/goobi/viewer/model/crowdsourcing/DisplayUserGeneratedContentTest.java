@@ -23,8 +23,8 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class DisplayUserGeneratedContentTest extends AbstractSolrEnabledTest {
 

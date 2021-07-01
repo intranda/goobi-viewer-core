@@ -3,6 +3,7 @@
    ==============================================================*/
 /* FONTS */
 @fontFamily: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+@fontBackend: 'Inter', 'Roboto', 'Helvetica Neue', 'Helvectia', 'Lato', 'Arial', sans-serif;
 @fonts: "../../fonts";
 @fontSmall: 1.2rem;
 @fontMedium: 1.4rem;
@@ -87,8 +88,20 @@
 // 
 // @labelGray - #444; Label Gray
 // @labelHoverGray - #5e5e5e; Label Hover Gray
-// 
-// Styleguide Basics.colors.labels
+
+
+// STYLEGUIDE 
+
+/* LOGIN NAV (e.g. in /archives) */
+@loginNavBG: #444;
+@loginNavBGHover: #5e5e5e;
+@loginNavFG: #fff;
+@loginNavFGHover: #fff;
+@loginNavBookmarksBG: #3a3a3a;
+@loginNavBookmarksFG: #fff;
+@loginNavBookmarksFGHover: #ffd65b;
+@loginNavBookmarksCounterBG: #3365a9;
+
 /* LABELS */
 @labelGray: #444;
 @labelHoverGray: #5e5e5e;
@@ -183,6 +196,12 @@
 
 /* RIGHT TO LEFT LANGUAGES STYLING */
 @RTL: ~'html[dir=rtl]';
+
+/* BACKEND COLOR */
+@greenBar: #5cb85c;
+@yellowBar: #f0ad4e;
+@redBar: #d9534f;
+@grayBar: #ccc;
 
 /* MEDIA QUERY BREAK POINTS */
 @xSmallBreakpoint: 480px;

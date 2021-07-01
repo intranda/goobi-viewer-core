@@ -52,7 +52,7 @@ var viewerJS = (function(viewer) {
 				console.log("Init paginator with config ", viewer.paginator.config);
 			}
 
-			if(this.config.rightToLeft) {
+			if(this.config.rightToLeft === 'true') {
 			    _forwardKey = _leftKey;
 			    _backwardKey = _rightKey;
 			} else {

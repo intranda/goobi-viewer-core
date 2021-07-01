@@ -15,8 +15,14 @@
  */
 package io.goobi.viewer.model.toc;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,8 +31,6 @@ import org.junit.Test;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.toc.TOC;
-import io.goobi.viewer.model.toc.TOCElement;
 
 public class TOCTest {
 
@@ -101,5 +105,42 @@ public class TOCTest {
         // Invalid value
         toc.setCurrentPage(40);
         Assert.assertEquals(7, toc.getCurrentPage());
+    }
+    
+    @Test
+    public void expandToCurrentStruct() {
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> tocElementMap = new HashMap();
+        TOCElement top = new TOCElement(null, "1", null , "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        TOCElement child = new TOCElement(null, "1", null , "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        TOCElement grandchild = new TOCElement(null, "1", null , "3", "LOG_0003", 2, null, null, false, false, false, null, null, null);
+        TOCElement otherChild = new TOCElement(null, "2", null , "4", "LOG_0004", 1, null, null, false, false, false, null, null, null);
+        TOCElement otherGrandchild = new TOCElement(null, "2", null , "5", "LOG_0005", 2, null, null, false, false, false, null, null, null);
+
+        List<TOCElement> list = Arrays.asList(top, child, grandchild, otherChild, otherGrandchild);
+        tocElementMap.put(TOC.DEFAULT_GROUP, list);
+        
+        toc.setTocElementMap(tocElementMap);
+        
+        toc.buildTree(TOC.DEFAULT_GROUP, 1, 5, 0, null);
+        assertTrue(top.isVisible());
+        assertTrue(top.isExpanded());
+        assertTrue(child.isVisible());
+        assertFalse(child.isExpanded());
+        assertFalse(grandchild.isVisible());
+        assertTrue(otherChild.isVisible());
+        assertFalse(otherChild.isExpanded());
+        assertFalse(otherGrandchild.isVisible());
+        
+        toc.buildTree(TOC.DEFAULT_GROUP, 1, 5, 0, Long.parseLong(grandchild.getIddoc()));
+        assertTrue(top.isVisible());
+        assertTrue(top.isExpanded());
+        assertTrue(child.isVisible());
+        assertTrue(child.isExpanded());
+        assertTrue(grandchild.isVisible());
+        assertFalse(grandchild.isExpanded());
+        assertTrue(otherChild.isVisible());
+        assertFalse(otherChild.isExpanded());
+        assertFalse(otherGrandchild.isVisible());
     }
 }

@@ -37,7 +37,7 @@ public class RecordsRequestParameters {
     public List<String> sortFields = new ArrayList<>();
     @Schema(description = "If this has the value 'desc', the results will be sorted by the given sortFields in descending order, otherwise ascending", example="asc")
     public String sortOrder = "asc";
-    @Schema(description = "If this has the value 'datecentric', the results will bedelivered in a date centric format", example="recordcentric")
+    @Schema(description = "If this has the value 'datecentric', the results will be grouped by their import date in their JSON representation", example="recordcentric")
     public String jsonFormat = "";
     @Schema(description = "The maximum number of results to return", example="10")
     public int count = 0;

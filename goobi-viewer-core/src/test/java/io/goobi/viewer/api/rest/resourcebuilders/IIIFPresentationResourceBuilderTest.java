@@ -42,7 +42,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
  */
 public class IIIFPresentationResourceBuilderTest extends AbstractSolrEnabledTest{
 
-    private IIIFPresentationResourceBuilder testee;
+    private IIIFPresentation2ResourceBuilder testee;
     
     /**
      * @throws java.lang.Exception
@@ -50,7 +50,7 @@ public class IIIFPresentationResourceBuilderTest extends AbstractSolrEnabledTest
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        testee = new IIIFPresentationResourceBuilder(new ApiUrls(""), null);
+        testee = new IIIFPresentation2ResourceBuilder(new ApiUrls(""), null);
     }
 
     /**

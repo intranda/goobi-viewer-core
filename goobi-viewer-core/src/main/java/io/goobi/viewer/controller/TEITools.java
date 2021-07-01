@@ -20,8 +20,6 @@ import java.io.IOException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.jdom2.Namespace;
-import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +53,7 @@ public class TEITools {
         if (doc.getRootElement() != null) {
             Element eleText = doc.getRootElement().getChild("text", null);
             if (eleText != null && eleText.getChild("body", null) != null) {
-                String language = eleText.getAttributeValue("lang", Namespace.getNamespace("xml", "http://www.w3.org/XML/1998/namespace"));
+                // String language = eleText.getAttributeValue("lang", Namespace.getNamespace("xml", "http://www.w3.org/XML/1998/namespace"));
                 Element eleBody = eleText.getChild("body", null);
                 Element eleNewRoot = new Element("tempRoot");
                 for (Element ele : eleBody.getChildren()) {
@@ -69,31 +67,4 @@ public class TEITools {
 
         return null;
     }
-
-    /**
-     * <p>
-     * convertTeiToHtml.
-     * </p>
-     *
-     * @param tei a {@link java.lang.String} object.
-     * @return HTML conversion of the TEI
-     * @should convert tei to html correctly
-     * @throws java.io.IOException if any.
-     * @throws org.jdom2.JDOMException if any.
-     */
-    public static String convertTeiToHtml(String tei) throws IOException, JDOMException {
-        if (tei == null) {
-            return null;
-        }
-
-        Document teiDoc = XmlTools.getDocumentFromString(tei, StringTools.DEFAULT_ENCODING);
-        Document htmlDoc = XmlTools.transformViaXSLT(teiDoc,
-                DataManager.getInstance().getConfiguration().getViewerHome() + "resources/TEI/html5/html5.xsl", null);
-        if (htmlDoc != null) {
-            return new XMLOutputter().outputString(htmlDoc);
-        }
-
-        return null;
-    }
-
 }

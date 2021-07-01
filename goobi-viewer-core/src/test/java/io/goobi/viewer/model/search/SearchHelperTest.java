@@ -42,8 +42,6 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
@@ -55,6 +53,8 @@ import io.goobi.viewer.model.termbrowsing.BrowseTerm;
 import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -612,6 +612,17 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#facetifyField(String)
+     * @verifies leave year month day fields unaltered
+     */
+    @Test
+    public void facetifyField_shouldLeaveYearMonthDayFieldsUnaltered() throws Exception {
+        Assert.assertEquals(SolrConstants._CALENDAR_YEAR, SearchHelper.facetifyField(SolrConstants._CALENDAR_YEAR));
+        Assert.assertEquals(SolrConstants._CALENDAR_MONTH, SearchHelper.facetifyField(SolrConstants._CALENDAR_MONTH));
+        Assert.assertEquals(SolrConstants._CALENDAR_DAY, SearchHelper.facetifyField(SolrConstants._CALENDAR_DAY));
+    }
+
+    /**
      * @see SearchHelper#facetifyList(List)
      * @verifies facetify correctly
      */
@@ -675,6 +686,17 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void adaptField_shouldRemoveUntokenizedCorrectly() throws Exception {
         Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MD_FOO_UNTOKENIZED", "SORT_"));
+    }
+
+    /**
+     * @see SearchHelper#adaptField(String,String)
+     * @verifies not apply facet prefix to calendar fields
+     */
+    @Test
+    public void adaptField_shouldNotApplyFacetPrefixToCalendarFields() throws Exception {
+        Assert.assertEquals(SolrConstants._CALENDAR_YEAR, SearchHelper.adaptField(SolrConstants._CALENDAR_YEAR, "FACET_"));
+        Assert.assertEquals(SolrConstants._CALENDAR_MONTH, SearchHelper.adaptField(SolrConstants._CALENDAR_MONTH, "FACET_"));
+        Assert.assertEquals(SolrConstants._CALENDAR_DAY, SearchHelper.adaptField(SolrConstants._CALENDAR_DAY, "FACET_"));
     }
 
     /**
@@ -947,22 +969,22 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
-    /**
-     * @see SearchHelper#getBrowseElement(String,int,List,Map,Set,Locale,boolean)
-     * @verifies return correct hit for non-aggregated search
-     */
-    @Test
-    public void getBrowseElement_shouldReturnCorrectHitForNonaggregatedSearch() throws Exception {
-        String rawQuery = SolrConstants.IDDOC + ":*";
-        List<SearchHit> hits = SearchHelper.searchWithFulltext(SearchHelper.buildFinalQuery(rawQuery, false), 0, 10, null, null, null, null, null,
-                null, Locale.ENGLISH, null);
-        Assert.assertNotNull(hits);
-        Assert.assertEquals(10, hits.size());
-        for (int i = 0; i < 10; ++i) {
-            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, false, null);
-            Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
-        }
-    }
+    //    /**
+    //     * @see SearchHelper#getBrowseElement(String,int,List,Map,Set,Locale,boolean)
+    //     * @verifies return correct hit for non-aggregated search
+    //     */
+    //    @Test
+    //    public void getBrowseElement_shouldReturnCorrectHitForNonaggregatedSearch() throws Exception {
+    //        String rawQuery = SolrConstants.IDDOC + ":*";
+    //        List<SearchHit> hits = SearchHelper.searchWithFulltext(SearchHelper.buildFinalQuery(rawQuery, false), 0, 10, null, null, null, null, null,
+    //                null, Locale.ENGLISH, null);
+    //        Assert.assertNotNull(hits);
+    //        Assert.assertEquals(10, hits.size());
+    //        for (int i = 0; i < 10; ++i) {
+    //            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, false, null);
+    //            Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
+    //        }
+    //    }
 
     /**
      * @see SearchHelper#getBrowseElement(String,int,List,Map,Set,Locale,boolean)

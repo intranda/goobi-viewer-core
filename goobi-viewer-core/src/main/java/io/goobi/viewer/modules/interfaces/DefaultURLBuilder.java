@@ -22,10 +22,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
  * <p>
@@ -76,7 +76,7 @@ public class DefaultURLBuilder implements IURLBuilder {
 
     /** {@inheritDoc} */
     @Override
-    public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType) {
+    public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType, boolean topStruct) {
         StringBuilder sb = new StringBuilder();
         sb.append(pageType.getName())
                 .append('/')

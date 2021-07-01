@@ -22,7 +22,8 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
 
-import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
+import de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2;
+import de.intranda.api.iiif.presentation.v3.AbstractPresentationModelElement3;
 import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
@@ -39,10 +40,10 @@ import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 @IIIFPresentationBinding
 public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
 
-    /** Constant <code>CONTEXT="http://iiif.io/api/presentation/2/conte"{trunked}</code> */
-    public static final String CONTEXT = "http://iiif.io/api/presentation/2/context.json";
-    /** Constant <code>CONTEXT_SEARCH="http://iiif.io/api/search/1/context.jso"{trunked}</code> */
+    public static final String CONTEXT_PRESENTATION_2 = "http://iiif.io/api/presentation/2/context.json";
+    public static final String CONTEXT_PRESENTATION_3 = "http://iiif.io/api/presentation/3/context.json";
     public static final String CONTEXT_SEARCH = "http://iiif.io/api/search/1/context.json";
+    public static final String CONTENT_TYPE_IIIF3 = "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"";
 
     /* (non-Javadoc)
      * @see javax.ws.rs.container.ContainerResponseFilter#filter(javax.ws.rs.container.ContainerRequestContext, javax.ws.rs.container.ContainerResponseContext)
@@ -52,14 +53,20 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
 
         Object responseObject = response.getEntity();
-        if (responseObject != null && responseObject instanceof AbstractPresentationModelElement) {
-            AbstractPresentationModelElement element = (AbstractPresentationModelElement) responseObject;
+        if (responseObject != null && responseObject instanceof AbstractPresentationModelElement2) {
+            AbstractPresentationModelElement2 element = (AbstractPresentationModelElement2) responseObject;
             setResponseCharset(response, "UTF-8");
-            element.setContext(CONTEXT);
+            element.setContext(CONTEXT_PRESENTATION_2);
+        } else if (responseObject != null && responseObject instanceof AbstractPresentationModelElement3) {
+            AbstractPresentationModelElement3 element = (AbstractPresentationModelElement3) responseObject;
+            response.getHeaders().remove("Content-Type");
+            response.getHeaders().add("Content-Type", CONTENT_TYPE_IIIF3);
+//            setResponseCharset(response, "UTF-8");
+            element.setContext(CONTEXT_PRESENTATION_3);
         } else if (responseObject != null && responseObject instanceof SearchResult) {
             SearchResult element = (SearchResult) responseObject;
             setResponseCharset(response, "UTF-8");
-            element.addContext(CONTEXT);
+            element.addContext(CONTEXT_PRESENTATION_3);
             if (!element.getHits().isEmpty()) {
                 element.addContext(CONTEXT_SEARCH);
             }

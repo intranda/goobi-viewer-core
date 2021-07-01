@@ -38,12 +38,8 @@ var viewerJS = ( function( viewer ) {
                 zoom: 5,
                 center: [11.073397, 49.451993] //long, lat
             },
-            allowMovingFeatures: false,
             mapBoxToken : undefined,
             language: "de",
-            popover: undefined,
-            emptyMarkerMessage: undefined,
-            popoverOnHover: false,
             fixed: false
             
     }
@@ -57,26 +53,24 @@ var viewerJS = ( function( viewer ) {
         if(_debug) {
             console.log("load GeoMap with config ", this.config);
         }
-        
-        this.markerIdCounter = 1;
-        this.markers = [];
-        this.highlighted = []; //list of currently highlighted colors
-        
+
+        this.layers = [];
         
         this.onMapRightclick = new rxjs.Subject();
         this.onMapClick = new rxjs.Subject();
-        this.onFeatureClick = new rxjs.Subject();
-        this.onFeatureMove = new rxjs.Subject();
         this.onMapMove = new rxjs.Subject();
 
+        this.layers.push(new viewer.GeoMap.featureGroup(this, this.config.layer));
 
     }
     
     viewer.GeoMap.prototype.init = function(view, features) {
+       
+       if(_debug)console.log("init geomap with", view, features);
+       
         if(this.map) {
             this.map.remove();
         }
-        
         //init mapBox config. If no config object is set in viewerJS, only get token from viewerJS
         //if that doesn't exists, don't create mapBox config
         if(!this.config.mapBox && viewerJS.getMapBoxToken()) {
@@ -99,12 +93,17 @@ var viewerJS = ( function( viewer ) {
             console.log("init GeoMap with config ", this.config);
         }
         
-        this.map = new L.Map(this.config.mapId, {
+        this.map = new L.Map(this.config.element ? this.config.element : this.config.mapId, {
             zoomControl: !this.config.fixed,
             doubleClickZoom: !this.config.fixed,
             scrollWheelZoom: !this.config.fixed,
             dragging: !this.config.fixed,    
             keyboard: !this.config.fixed
+        });
+        
+        let defer = Q.defer();
+        this.map.whenReady(e => {
+        	defer.resolve(this);
         });
         
         if(this.config.mapBox) {
@@ -138,191 +137,58 @@ var viewerJS = ( function( viewer ) {
         //init map events
         rxjs.fromEvent(this.map, "moveend").pipe(rxjs.operators.map(e => this.getView())).subscribe(this.onMapMove);
         rxjs.fromEvent(this.map, "contextmenu")
-        .pipe(rxjs.operators.map(e => this.createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
+        .pipe(rxjs.operators.map(e => this.layers[0].createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
         .subscribe(this.onMapRightclick);
         rxjs.fromEvent(this.map, "click")
-        .pipe(rxjs.operators.map(e => this.createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
+        .pipe(rxjs.operators.map(e => this.layers[0].createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
         .subscribe(this.onMapClick);
     
-        //init feature layer
-        this.locations = L.geoJSON([], {
-            
-            pointToLayer: function(geoJsonPoint, latlng) {
-                let marker = L.marker(latlng, {
-                    draggable: this.config.allowMovingFeatures,
-                    icon: this.getMarkerIcon()
-                });
-                marker.id = geoJsonPoint.id;
-                marker.view = geoJsonPoint.view;
-                    
-                marker.getId = function() {
-                    return this.id;
-                }
-                
-                rxjs.fromEvent(marker, "dragend")
-                .pipe(rxjs.operators.map(() => this.openPopup(marker)), rxjs.operators.map(() => this.updatePosition(marker)))
-                .subscribe(this.onFeatureMove);
-                rxjs.fromEvent(marker, "click").pipe(rxjs.operators.map(e => marker.feature)).subscribe(this.onFeatureClick);
-                
-                if(this.config.popover) {                    
-                    if(this.config.popoverOnHover) {                    
-                        rxjs.fromEvent(marker, "mouseover").subscribe(() => marker.openPopup());
-                        rxjs.fromEvent(marker, "mouseout").subscribe(() => marker.closePopup());
-                    }
-                    marker.bindPopup(() => this.createPopup(marker),{closeButton: !this.config.popoverOnHover});
-                }
-                
-                this.markers.push(marker);    
-                if(this.cluster) {
-                    this.cluster.addLayer(marker);
-                }
-                return marker;
-            }.bind(this)
-        });
         
-        if(this.config.clusterMarkers) {        
-            try {                
-                this.cluster = this.createMarkerCluster();
-                this.map.addLayer(this.cluster);
-            } catch(error) {
-                console.warn(error);
-                this.map.addLayer(this.locations);
-            }
-        } else {
-            this.map.addLayer(this.locations);
-        }
-        
-        
+       	this.layers[0].init(features);
         if(features && features.length > 0) {
-            features.forEach(feature => {
-                this.addMarker(feature);
-            })
             let zoom = view ? view.zoom : this.config.initialView.zoom;
-            this.setView(this.getViewAroundFeatures(zoom));
+            let viewAroundFeatures = this.getViewAroundFeatures(this.layers[0].getFeatures(), zoom);
+            this.setView(viewAroundFeatures);
         } else if(view){                                                    
             this.setView(view);
         }
+
+        
+        return defer.promise;
         
     }
     
-    viewer.GeoMap.prototype.createMarkerCluster = function() {
-        let cluster = L.markerClusterGroup({
-            maxClusterRadius: 80,
-            zoomToBoundsOnClick: !this.config.fixed,
-            iconCreateFunction: function(cluster) {
-                return this.getClusterIcon(cluster.getChildCount());
-            }.bind(this)
-        });
-        if(!this.config.fixed) {            
-            cluster.on('clustermouseover', function (a) {
-                this.removePolygon();
-                
-//            a.layer.setOpacity(0.2);
-                this.shownLayer = a.layer;
-                this.polygon = L.polygon(a.layer.getConvexHull());
-                this.map.addLayer(this.polygon);
-            }.bind(this));
-            cluster.on('clustermouseout', () => this.removePolygon());
-            this.map.on('zoomend', () => this.removePolygon());
-        }
-        return cluster;
-    }
-    
-    viewer.GeoMap.prototype.removePolygon = function() {
-        if (this.shownLayer) {
-            this.shownLayer.setOpacity(1);
-            this.shownLayer = null;
-        }
-        if (this.polygon) {
-            this.map.removeLayer(this.polygon);
-            this.polygon = null;
-        }
-    };
-    
-    viewer.GeoMap.prototype.openPopup = function(marker) {
-        try{
-            marker.openPopup();
-        } catch(e) {
-            //swallow
-        }
-    }
-    
-    viewer.GeoMap.prototype.highlightMarker = function(feature) {
-        if(feature) {            
-            let marker = this.getMarker(feature.id);
-            let icon  = marker.getIcon();
-            icon.options.defaultColor = icon.options.markerColor;
-            icon.options.markerColor = icon.options.highlightColor;
-            marker.setIcon(icon);
-            this.highlighted.push(marker);
-        } else {
-            this.highlighted.forEach(marker => {
-                let icon  = marker.getIcon();
-                icon.options.markerColor = icon.options.defaultColor;
-                icon.options.defaultColor = undefined;
-                marker.setIcon(icon);
-                let index = this.highlighted.indexOf(marker);
-                this.highlighted.splice(index, 1);
-            })
-        }
+    viewer.GeoMap.prototype.initGeocoder = function(element, config) {
+    	if(this.config.mapBox && this.config.mapBox.token) {
+	    	config = $.extend(config ? config: {}, {
+	    		accessToken : this.config.mapBox.token,
+	    		mapboxgl: mapboxgl
+	    	});
+	    	if(_debug)console.log("init geocoder with config" , config);
+	    	this.geocoder = new MapboxGeocoder(config);
+	    	this.geocoder.addTo(element);
+	    	this.geocoder.on("result", (event) => {
+	    		//console.log("geocoder result",  event.result, event.result.center, event.result.place_type, event.result.place_name);
+	    		
+	    		if(event.result.bbox) {
+	    			let p1 = new L.latLng(event.result.bbox[1], event.result.bbox[0]);
+	    			let p2 = new L.latLng(event.result.bbox[3], event.result.bbox[2]);
+	    			let bounds = new L.latLngBounds(p1, p2);
+	    			this.map.fitBounds(bounds);
+	    		} else {
+		    		let view = {
+		                "zoom": this.config.maxZoom,
+		                "center": event.result.center
+		            }
+		            this.setView(view);
+	    		}
+	    	});
+    	} else {
+    		console.warn("Cannot initialize geocoder: No mapbox token");
+    	}
     }
 
-    
-    viewer.GeoMap.prototype.setMarkerIcon = function(icon) {
-        this.markerIcon = icon;
-        if(this.markerIcon) {            
-            this.markerIcon.name = "";
-        }
-    }
-    
-    viewer.GeoMap.prototype.getClusterIcon = function(num) {
-        let iconConfig = {
-            icon: "fa-number",
-            number: num,
-            svg: true,
-            prefix: "fa",
-            iconRotate: 0
-        };
-        if(this.markerIcon) {
-            iconConfig = $.extend(true, {}, this.markerIcon, iconConfig);
-        }
-        let icon = L.ExtraMarkers.icon(iconConfig);
-        return icon;
-    }
-    
-    viewer.GeoMap.prototype.getMarkerIcon = function() {
-        if(this.markerIcon) {       
-            let icon = L.ExtraMarkers.icon(this.markerIcon);
-            if(this.markerIcon.shadow === false) {                
-                icon.options.shadowSize = [0,0];
-            }
-            return icon;
-        } else {
-            return new L.Icon.Default();
-        }
-    }
 
-    
-    viewer.GeoMap.prototype.updatePosition = function(marker) {
-        marker.feature.geometry = marker.toGeoJSON().geometry;
-        marker.feature.view = {zoom: this.map.getZoom(), center: [marker.getLatLng().lng, marker.getLatLng().lat]};
-        return marker.feature;
-    }
-
-    
-    viewer.GeoMap.prototype.createPopup = function(marker) {
-        let title = viewerJS.getMetadataValue(marker.feature.properties.title, this.config.language);
-        let desc = viewerJS.getMetadataValue(marker.feature.properties.description, this.config.language);
-        if(this.config.popover && (title || desc) ) {
-            let $popover = $(this.config.popover).clone();
-            $popover.find("[data-metadata='title']").text(title);
-            $popover.find("[data-metadata='description']").html(desc);
-            $popover.css("display", "block");
-            return $popover.get(0);
-        } else if(this.config.popover){
-            return this.config.emptyMarkerMessage;
-        }
-    }
     
     /**
      * Center must be an array containing longitude andlatitude as numbers - in that order
@@ -359,37 +225,332 @@ var viewerJS = ( function( viewer ) {
         }
     }
     
-    viewer.GeoMap.prototype.getViewAroundFeatures = function(defaultZoom) {
+    viewer.GeoMap.prototype.getViewAroundFeatures = function(features, defaultZoom) {
         if(!defaultZoom) {
             defaultZoom = this.map.getZoom();
         }
-        let features = this.getFeatures();
-        if(features.length == 0) {
+        if(!features || features.length == 0) {
             return undefined;
-        } else if(features.length == 1) {
-            return {
-                "zoom": defaultZoom,
-                "center": features[0].geometry.coordinates
-            }
         } else {
-            let points = features.map(f => f.geometry.coordinates).map(c =>  L.latLng(c[1], c[0]));
-            let bounds = L.latLngBounds(points).pad(0.2);
+            if(_debug) {
+        	console.log("view around ", features);
+            }
+        	let bounds = L.latLngBounds();
+        	features.map(f => L.geoJson(f).getBounds()).forEach(b => bounds.extend(b));
             let center = bounds.getCenter();
+            let diameter = this.getDiameter(bounds);
             return {
-                "zoom": Math.min(this.map.getBoundsZoom(bounds), defaultZoom),
+                "zoom": diameter > 0 ?  Math.max(1, this.map.getBoundsZoom(bounds.pad(0.2))) : defaultZoom,
                 "center": [center.lng, center.lat]
             }
         }
     }
+
     
-    viewer.GeoMap.prototype.updateMarker = function(id) {
+    viewer.GeoMap.prototype.getZoom = function() {
+        return this.map.getZoom();
+    }
+
+    
+    viewer.GeoMap.prototype.close = function() {
+        this.onMapClick.complete();
+        this.layers.forEach(l => l.close());
+        this.onMapMove.complete();
+        if(this.map) {
+            this.map.remove();
+        }
+    }
+    
+    // FEATURE GROUP
+    var _defaults_featureGroup = {
+            allowMovingFeatures: false,
+            clusterMarkers : false,
+            popover: undefined,
+            emptyMarkerMessage: undefined,
+            popoverOnHover: false,
+            markerIcon : undefined,
+            style: {
+            	stroke: true,
+            	color: '#3388ff',
+            	wight: 3,
+            	opactity: 1.0,
+            	fill: true,
+            	fillColor: undefined, //defaults to color
+            	fillOpacity: 0.1,
+            }
+    }
+    
+        
+    viewer.GeoMap.featureGroup = function(geoMap, config) {
+ 		this.geoMap = geoMap;
+        this.config = $.extend( true, {}, _defaults_featureGroup, geoMap.config.layer, config );
+        if(_debug) {
+            console.log("create featureGroup with config ",  config);
+        }
+
+		this.markerIdCounter = 1;
+        this.markers = [];
+        this.areas = [];
+        this.highlighted = []; //list of currently highlighted colors
+
+        this.onFeatureClick = new rxjs.Subject();
+        this.onFeatureMove = new rxjs.Subject();
+
+    }
+    
+    viewer.GeoMap.featureGroup.prototype.init = function(features, zoomToFeatures) {
+       
+       if(_debug)console.log("init featureGroup ", features);
+        
+        this.markerIdCounter = 1;
+        this.markers = [];
+        this.areas = [];
+        this.highlighted = []; //list of currently highlighted colors
+
+
+        if(this.layer) {
+        	this.geoMap.map.removeLayer(this.layer);
+        }
+		this.layer = new L.FeatureGroup();
+        
+        //init feature layer
+        this.locations = L.geoJSON([], {
+            
+            style: function(feature) {
+            	return this.config.style;
+            }.bind(this),
+            
+            pointToLayer: function(geoJsonPoint, latlng) {
+                let marker = L.marker(latlng, {
+                    draggable: this.config.allowMovingFeatures,
+                    icon: this.getMarkerIcon()
+                });
+                return marker;
+            }.bind(this),
+            
+            onEachFeature: function(feature, layer) {
+            	if(_debug)console.log("onEachFeature ", feature, layer, this);
+            	
+            	layer.id = feature.id;
+                layer.view = feature.view;
+                    
+                layer.getId = function() {
+                    return this.id;
+                }
+                
+                rxjs.fromEvent(layer, "dragend")
+                .pipe(rxjs.operators.map(() => this.openPopup(layer)), rxjs.operators.map(() => this.updatePosition(layer)))
+                .subscribe(this.onFeatureMove);
+                rxjs.fromEvent(layer, "click").pipe(rxjs.operators.map(e => layer.feature)).subscribe(this.onFeatureClick);
+
+                if(this.config.popover && feature.properties && (feature.properties.title || feature.properties.desc)) {                    
+                    if(this.config.popoverOnHover) {                    
+                        rxjs.fromEvent(layer, "mouseover").subscribe(() => layer.openPopup());
+                        rxjs.fromEvent(layer, "mouseout").subscribe(() => layer.closePopup());
+                    }
+                    layer.bindPopup(() => this.createPopup(layer),{
+                    	closeButton: !this.config.popoverOnHover,
+                    	autoPan: false
+                    });
+                }
+            	this.markers.push(layer);    
+                if(this.cluster) {
+                    this.cluster.addLayer(layer);
+                }
+            }.bind(this)
+        });
+        
+        //add layer
+		this.geoMap.map.addLayer(this.layer);
+        if(this.config.clusterMarkers) {        
+            try {                
+                this.cluster = this.createMarkerCluster();
+                this.layer.addLayer(this.cluster);
+            } catch(error) {
+                console.warn(error);
+                this.layer.addLayer(this.locations);
+            }
+        } else {
+            this.layer.addLayer(this.locations);
+        }
+        
+        
+        if(features && features.length > 0) {
+            features
+            .sort( (f1,f2) => this.compareFeatures(f1,f2) )
+            .forEach(feature => {
+            	let type = feature.geometry.type;
+            	if(_debug)console.log("add feature for " + type, feature);
+            	this.addMarker(feature);
+            })
+        }
+        
+        if(zoomToFeatures && features && features.length > 0) {
+            let zoom = this.geoMap.getView().zoom;
+            let viewAroundFeatures = this.geoMap.getViewAroundFeatures(this.getFeatures(), zoom);
+            this.geoMap.setView(viewAroundFeatures);
+        }
+        
+    }
+    
+    viewer.GeoMap.featureGroup.prototype.compareFeatures = function(f1, f2) {
+    
+    	return this.getSize(f2) - this.getSize(f1);
+    
+    }
+    
+    
+    viewer.GeoMap.featureGroup.prototype.getSize = function(feature) {
+    	if(feature.geometry.type == "Point") {
+    		return 0;
+    	} else {
+    		let polygon = L.polygon(feature.geometry.coordinates);
+    		return this.getArea(polygon.getBounds());
+    	}
+    }
+
+    
+    viewer.GeoMap.featureGroup.prototype.createMarkerCluster = function() {
+        let cluster = L.markerClusterGroup({
+            maxClusterRadius: 80,
+            zoomToBoundsOnClick: !this.geoMap.config.fixed,
+            iconCreateFunction: function(cluster) {
+                return this.getClusterIcon(cluster.getChildCount());
+            }.bind(this)
+        });
+        if(!this.geoMap.config.fixed) {            
+            cluster.on('clustermouseover', function (a) {
+                this.removePolygon();
+                
+//            a.layer.setOpacity(0.2);
+                this.shownLayer = a.layer;
+                this.polygon = L.polygon(a.layer.getConvexHull());
+                this.layer.addLayer(this.polygon);
+            }.bind(this));
+            cluster.on('clustermouseout', () => this.removePolygon());
+            this.geoMap.map.on('zoomend', () => this.removePolygon());
+        }
+        return cluster;
+    }
+    
+    viewer.GeoMap.featureGroup.prototype.removePolygon = function() {
+        if (this.shownLayer) {
+            this.shownLayer.setOpacity(1);
+            this.shownLayer = null;
+        }
+        if (this.polygon) {
+            this.geoMap.map.removeLayer(this.polygon);
+            this.polygon = null;
+        }
+    };
+    
+    viewer.GeoMap.featureGroup.prototype.openPopup = function(marker) {
+        try{
+            marker.openPopup(); 
+        } catch(e) {
+            //swallow
+        }
+    }
+    
+    viewer.GeoMap.featureGroup.prototype.highlightMarker = function(feature) {
+        if(feature) {            
+            let marker = this.getMarker(feature.id);
+            let icon  = marker.getIcon();
+            icon.options.defaultColor = icon.options.markerColor;
+            icon.options.markerColor = icon.options.highlightColor;
+            marker.setIcon(icon);
+            this.highlighted.push(marker);
+        } else {
+            this.highlighted.forEach(marker => {
+                let icon  = marker.getIcon();
+                icon.options.markerColor = icon.options.defaultColor;
+                icon.options.defaultColor = undefined;
+                marker.setIcon(icon);
+                let index = this.highlighted.indexOf(marker);
+                this.highlighted.splice(index, 1);
+            })
+        }
+    }
+
+    
+    viewer.GeoMap.featureGroup.prototype.getClusterIcon = function(num) {
+        let iconConfig = {
+            icon: "fa-number",
+            number: num,
+            svg: true,
+            prefix: "fa",
+            iconRotate: 0
+        };
+        if(this.config.markerIcon) {
+            iconConfig = $.extend(true, {}, this.config.markerIcon, iconConfig);
+        }
+        let icon = L.ExtraMarkers.icon(iconConfig);
+        return icon;
+    }
+    
+    viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function() {
+        if(this.config.markerIcon && !jQuery.isEmptyObject(this.config.markerIcon)) {
+        console.log("use marker icon ", this.config.markerIcon);
+            let icon = L.ExtraMarkers.icon(this.config.markerIcon);
+        	icon.options.name = "";	//remove name property to avoid it being displayed on the map
+            if(this.config.markerIcon.shadow === false) {                
+                icon.options.shadowSize = [0,0];
+            }
+            return icon;
+        } else {
+            return new L.Icon.Default();
+        }
+    }
+
+    
+    viewer.GeoMap.featureGroup.prototype.updatePosition = function(marker) {
+        marker.feature.geometry = marker.toGeoJSON().geometry;
+        marker.feature.view = {zoom: this.geoMap.map.getZoom(), center: [marker.getLatLng().lng, marker.getLatLng().lat]};
+        return marker.feature;
+    }
+
+    
+    viewer.GeoMap.featureGroup.prototype.createPopup = function(marker) {
+        let title = viewerJS.getMetadataValue(marker.feature.properties.title, this.config.language);
+        let desc = viewerJS.getMetadataValue(marker.feature.properties.description, this.config.language);
+
+        if(this.config.popover && (title || desc) ) {
+            let $popover = $(this.config.popover).clone();
+            $popover.find("[data-metadata='title']").text(title);
+            $popover.find("[data-metadata='description']").html(desc);
+            $popover.css("display", "block");
+            return $popover.get(0);
+        } else if(this.config.popover){
+            return this.config.emptyMarkerMessage;
+        }
+    }
+
+
+        
+    viewer.GeoMap.prototype.getDiameter = function(bounds) {
+    	if(!bounds || !bounds.isValid()) {
+    		return 0;
+    	} else {
+		    return this.map.distance(bounds.getSouthWest(), bounds.getNorthEast())
+    	}
+    }
+    
+    viewer.GeoMap.featureGroup.prototype.getArea = function(bounds) {
+    	if(!bounds || !bounds.isValid()) {
+    		return 0;
+    	} else {
+		    return this.geoMap.map.distance(bounds.getSouthWest(), bounds.getNorthWest()) * this.geoMap.map.distance(bounds.getSouthWest(), bounds.getSouthEast())
+    	}
+    }
+    
+    viewer.GeoMap.featureGroup.prototype.updateMarker = function(id) {
         let marker = this.getMarker(id);
         if(marker) {            
             marker.openPopup();
         }
     }
     
-    viewer.GeoMap.prototype.resetMarkers = function() {
+    viewer.GeoMap.featureGroup.prototype.resetMarkers = function() {
         this.markerIdCounter = 1;
         this.markers.forEach((marker) => {
             marker.remove();
@@ -397,7 +558,37 @@ var viewerJS = ( function( viewer ) {
         this.markers = [];
     }
 
-    viewer.GeoMap.prototype.createGeoJson = function(location, zoom, center) {
+    viewer.GeoMap.featureGroup.prototype.getMarker = function(id) {
+        return this.markers.find(marker => marker.getId() == id);
+    }
+    
+    viewer.GeoMap.featureGroup.prototype.getFeatures = function(id) {
+        return this.markers.map(marker => marker.feature);
+    }
+
+    viewer.GeoMap.featureGroup.prototype.addMarker = function(geoJson) {
+        let id = this.markerIdCounter++;
+        geoJson.id = id;
+        this.locations.addData(geoJson);
+        let marker = this.getMarker(id);
+        if(_debug) {            
+            console.log("Add marker ", marker);
+        }
+        return marker;
+    }
+
+
+    viewer.GeoMap.featureGroup.prototype.removeMarker = function(feature) {
+        let marker = this.getMarker(feature.id);
+        console.log("remove marker", marker);
+        marker.remove();
+        console.log("remaining markers", this.markers);
+        let index = this.markers.indexOf(marker);
+        this.markers.splice(index, 1);
+    }
+
+
+    viewer.GeoMap.featureGroup.prototype.createGeoJson = function(location, zoom, center) {
         let id = this.markerIdCounter++;
         var geojsonFeature = {
                 "type": "Feature",
@@ -418,50 +609,59 @@ var viewerJS = ( function( viewer ) {
         return geojsonFeature;
     }
 
-    viewer.GeoMap.prototype.getMarker = function(id) {
-        return this.markers.find(marker => marker.getId() == id);
-    }
-    
-    viewer.GeoMap.prototype.getFeatures = function(id) {
-        return this.markers.map(marker => marker.feature);
-    }
-
-    viewer.GeoMap.prototype.addMarker = function(geoJson) {
-        let id = this.markerIdCounter++;
-        geoJson.id = id;
-        this.locations.addData(geoJson);
-        let marker = this.getMarker(id);
-        if(_debug) {            
-            console.log("Add marker ", marker);
-        }
-        return marker;
-    }
-
-
-    viewer.GeoMap.prototype.removeMarker = function(feature) {
-        let marker = this.getMarker(feature.id);
-        marker.remove();
-        let index = this.markers.indexOf(marker);
-        this.markers.splice(index, 1);
-    }
-    
-    viewer.GeoMap.prototype.getZoom = function() {
-        return this.map.getZoom();
-    }
-
-    viewer.GeoMap.prototype.getMarkerCount = function() {
+    viewer.GeoMap.featureGroup.prototype.getMarkerCount = function() {
         return this.markers.length;
     }
-
     
-    viewer.GeoMap.prototype.close = function() {
-        this.onMapClick.complete();
-        this.onFeatureClick.complete();
-        this.onFeatureMove.complete();
-        this.onMapMove.complete();
-        if(this.map) {
-            this.map.remove();
-        }
+        
+    viewer.GeoMap.featureGroup.prototype.drawPolygon = function(points, centerView) {
+    	let config = $.extend({interactive: false}, this.config.style, true); 
+    	let polygon = new L.Polygon(points, config);
+    	polygon.addTo(this.geoMap.map);
+    	this.areas.push(polygon);
+    	if(centerView) {
+    		this.geoMap.map.fitBounds(polygon.getBounds());
+    	}
+    	return polygon;
+    }
+    
+   viewer.GeoMap.featureGroup.prototype.drawRectangle = function(points, centerView) {
+    	let config = $.extend({interactive: false}, this.config.style, true); 
+    	let rect = new L.Rectangle(points, config);
+    	rect.addTo(this.geoMap.map);
+    	this.areas.push(rect);
+    	if(centerView) {
+    		this.geoMap.map.fitBounds(rect.getBounds());
+    	}
+    	return rect;
+    }
+    
+    viewer.GeoMap.featureGroup.prototype.drawCircle = function(center, radius, centerView) {
+    	let config = $.extend({interactive: false}, this.config.style, true); 
+    	let circle = new L.Circle(center, radius, config);
+    	circle.addTo(this.geoMap.map);
+    	this.areas.push(circle);
+    	if(centerView) {
+    		this.geoMap.map.fitBounds(circle.getBounds());
+    	}
+    	return circle;
+	}
+    
+    viewer.GeoMap.featureGroup.prototype.isVisible = function() {
+		return this.geoMap.map.hasLayer(this.layer);
+    }
+    
+    viewer.GeoMap.featureGroup.prototype.setVisible = function(visible) {
+	    if(visible && !this.isVisible()) {
+	    	this.geoMap.map.addLayer(this.layer);
+	    } else if(!visible) {
+	    	this.geoMap.map.removeLayer(this.layer);
+	    }
+    }
+    
+    viewer.GeoMap.featureGroup.prototype.close = function() {
+	    this.onFeatureClick.complete();
+        this.onFeatureMove.complete();	
     }
 
     return viewer;

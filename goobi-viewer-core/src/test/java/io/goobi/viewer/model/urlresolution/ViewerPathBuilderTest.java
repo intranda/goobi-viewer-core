@@ -73,7 +73,7 @@ public class ViewerPathBuilderTest {
         String url = "http://localhost:8082/viewer/!fulltext/AC03343066/13/";
         String serverUrl = "http://localhost:8082/viewer";
         String applicationName ="/viewer";
-        Optional<ViewerPath> path = ViewerPathBuilder.createPath(serverUrl, applicationName, url);
+        Optional<ViewerPath> path = ViewerPathBuilder.createPath(serverUrl, applicationName, url, "");
         assertTrue(path.isPresent());
         assertEquals("fulltext/AC03343066/13/", path.get().getCombinedPath().toString());
     }

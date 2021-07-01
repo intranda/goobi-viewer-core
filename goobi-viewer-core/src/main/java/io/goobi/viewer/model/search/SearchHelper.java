@@ -17,6 +17,7 @@ package io.goobi.viewer.model.search;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,12 +66,8 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
-import io.goobi.viewer.controller.language.LocaleComparator;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -86,15 +84,18 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
 import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
+import io.goobi.viewer.model.translations.language.LocaleComparator;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Search utility class. Static methods only.
  */
 public final class SearchHelper {
-
-    private static final Random random = new Random(System.currentTimeMillis());
 
     private static final Logger logger = LoggerFactory.getLogger(SearchHelper.class);
 
@@ -126,6 +127,8 @@ public final class SearchHelper {
     public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -IDDOC_PARENT:*";
 
     private static final Object lock = new Object();
+
+    private static final Random random = new SecureRandom();
 
     /** Constant <code>patternNotBrackets</code> */
     public static Pattern patternNotBrackets = Pattern.compile("NOT\\([^()]*\\)");
@@ -526,7 +529,7 @@ public final class SearchHelper {
                 throw new RecordNotFoundException(pi);
             }
 
-            boolean anchorOrGroup = SolrSearchIndex.isAnchor(doc) || SolrSearchIndex.isGroup(doc);
+            boolean anchorOrGroup = SolrTools.isAnchor(doc) || SolrTools.isGroup(doc);
             PageType pageType =
                     PageType.determinePageType((String) doc.get(SolrConstants.DOCSTRCT), (String) doc.get(SolrConstants.MIMETYPE), anchorOrGroup,
                             doc.containsKey(SolrConstants.THUMBNAIL), false);
@@ -617,6 +620,7 @@ public final class SearchHelper {
                         }
                     }
                 }
+
             }
 
             //Add facet (grouping) field values
@@ -765,18 +769,18 @@ public final class SearchHelper {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static List<String> searchAutosuggestion(String suggest, List<FacetItem> currentFacets) throws IndexUnreachableException {
+    public static List<String> searchAutosuggestion(final String suggest, List<IFacetItem> currentFacets) throws IndexUnreachableException {
         if (suggest.contains(" ")) {
             return Collections.emptyList();
         }
 
         List<String> ret = new ArrayList<>();
         try {
-            suggest = suggest.toLowerCase();
+            String suggestLower = suggest.toLowerCase();
             StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.DEFAULT).append(':').append(ClientUtils.escapeQueryChars(suggest)).append('*');
+            sbQuery.append("+").append(SolrConstants.DEFAULT).append(':').append(ClientUtils.escapeQueryChars(suggestLower)).append('*');
             if (currentFacets != null && !currentFacets.isEmpty()) {
-                for (FacetItem facetItem : currentFacets) {
+                for (IFacetItem facetItem : currentFacets) {
                     if (sbQuery.length() > 0) {
                         sbQuery.append(" AND ");
                     }
@@ -786,28 +790,18 @@ public final class SearchHelper {
             }
             sbQuery.append(getAllSuffixes());
             logger.debug("Autocomplete query: {}", sbQuery.toString());
-            SolrDocumentList hits = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(sbQuery.toString(), 100, null, Collections.singletonList(SolrConstants.DEFAULT));
-            for (SolrDocument doc : hits) {
-                String defaultValue = (String) doc.getFieldValue(SolrConstants.DEFAULT);
-                if (StringUtils.isEmpty(defaultValue)) {
-                    continue;
-                }
-                String[] bla = defaultValue.split(" ");
-                for (String s : bla) {
-                    String st = s.trim();
-                    st = st.toLowerCase();
-                    if (!" ".equals(st) && st.startsWith(suggest)) {
-                        while (!StringUtils.isAlphanumeric(st.substring(st.length() - 1))) {
-                            st = st.substring(0, st.length() - 1);
-                        }
-                        if (!ret.contains(st)) {
-                            ret.add(st);
-                        }
-                    }
-                }
-            }
+            
+            QueryResponse response = DataManager.getInstance()
+                    .getSearchIndex().searchFacetsAndStatistics(sbQuery.toString(), null, Collections.singletonList(SolrConstants.DEFAULT), 1, null, false);
+            FacetField facetField = response.getFacetFields().get(0);
+            
+            ret = facetField.getValues().stream()
+            .filter( count -> count.getName().toLowerCase().startsWith(suggestLower))
+            .sorted( (c1,c2) -> Long.compare(c2.getCount(), c1.getCount()) )
+            .map(Count::getName)
+            .distinct()
+            .collect(Collectors.toList());
+            
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
@@ -1893,9 +1887,11 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      * @should facetify correctly
      * @should leave bool fields unaltered
+     * @should leave year month day fields unaltered
      */
     public static String facetifyField(String fieldName) {
-        if (fieldName != null && fieldName.startsWith("BOOL_")) {
+        if (fieldName != null && (fieldName.startsWith("BOOL_") || fieldName.equals(SolrConstants._CALENDAR_YEAR)
+                || fieldName.equals(SolrConstants._CALENDAR_MONTH) || fieldName.equals(SolrConstants._CALENDAR_DAY))) {
             return fieldName;
         }
         return adaptField(fieldName, "FACET_");
@@ -1942,6 +1938,7 @@ public final class SearchHelper {
      * @return modified field name
      * @should apply prefix correctly
      * @should not apply prefix to regular fields if empty
+     * @should not apply facet prefix to calendar fields
      * @should remove untokenized correctly
      */
     static String adaptField(String fieldName, String prefix) {
@@ -1964,7 +1961,6 @@ public final class SearchHelper {
                 if ("SORT_".equals(prefix)) {
                     return "SORTNUM_" + fieldName;
                 }
-                return prefix + fieldName;
             default:
                 if (StringUtils.isNotEmpty(prefix)) {
                     if (fieldName.startsWith("MD_")) {
@@ -2433,8 +2429,6 @@ public final class SearchHelper {
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
             throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         SXSSFWorkbook wb = new SXSSFWorkbook(25);
-        List<SXSSFSheet> sheets = new ArrayList<>();
-        int currentSheetIndex = 0;
         SXSSFSheet currentSheet = wb.createSheet("intranda_viewer_search");
 
         CellStyle styleBold = wb.createCellStyle();
@@ -2510,11 +2504,12 @@ public final class SearchHelper {
      */
     public static List<String> getAllFacetFields(List<String> hierarchicalFacetFields) {
         List<String> facetFields = DataManager.getInstance().getConfiguration().getDrillDownFields();
-        List<String> allFacetFields = new ArrayList<>(hierarchicalFacetFields.size() + facetFields.size());
+        Optional<String> geoFacetField = Optional.ofNullable(DataManager.getInstance().getConfiguration().getGeoDrillDownField());
+        List<String> allFacetFields = new ArrayList<>(hierarchicalFacetFields.size() + facetFields.size() + (geoFacetField.isPresent() ? 1 : 0));
         allFacetFields.addAll(hierarchicalFacetFields);
         allFacetFields.addAll(facetFields);
-        allFacetFields = SearchHelper.facetifyList(allFacetFields);
-        return allFacetFields;
+        geoFacetField.ifPresent(field -> allFacetFields.add(field));
+        return SearchHelper.facetifyList(allFacetFields);
     }
 
     /**

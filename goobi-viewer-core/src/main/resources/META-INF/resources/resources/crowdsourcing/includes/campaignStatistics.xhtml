@@ -13,7 +13,12 @@
 			<dl>
 				<dt>#{msg.label__crowdsourcing_campaign_progress}</dt>
 				<dd>#{campaign.progress}%</dd>
-				<dt>#{msg.label__crowdsourcing_campaign_total_items}</dt>
+				<ui:fragment rendered="#{campaign.statisticMode == 'PAGE'}">
+					<dt>#{msg.label__crowdsourcing_campaign_total_pages}</dt>
+				</ui:fragment>
+				<ui:fragment rendered="#{campaign.statisticMode == 'RECORD'}">
+					<dt>#{msg.label__crowdsourcing_campaign_total_records}</dt>
+				</ui:fragment>
 				<dd>#{campaign.numRecords}</dd>
 				<dt>#{msg.label__crowdsourcing_campaign_finished_items}</dt>
 				<dd>#{campaign.getNumRecordsForStatus('FINISHED')}</dd>

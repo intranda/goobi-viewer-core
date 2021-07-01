@@ -115,6 +115,11 @@ public class MediaResource {
             }
         } else {
             logger.error("File '{}' not found.", file.toAbsolutePath());
+            try {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            } catch (IOException e) {
+                throw new WebApplicationException(e);
+            }
         }
         return "";
     }

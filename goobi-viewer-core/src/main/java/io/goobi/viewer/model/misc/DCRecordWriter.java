@@ -27,21 +27,27 @@ import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.goobi.viewer.model.maps.GeoMap;
 
 /**
  * @author florian
  * 
- * Creates a xml document representing a simple Dublin Core record.
- * Each instance of this class creates a single record which can be filled with metadata
- * and eventually written to the file system
+ *         Creates a xml document representing a simple Dublin Core record. Each instance of this class creates a single record which can be filled
+ *         with metadata and eventually written to the file system
  *
  */
 public class DCRecordWriter {
+    
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(DCRecordWriter.class);
 
     public static final Namespace namespaceDC = Namespace.getNamespace("dc", "http://purl.org/dc/elements/1.1/");
 
     private final Document doc;
-    
+
     /**
      * Creates a new jdom document with an empty record element
      */
@@ -51,7 +57,7 @@ public class DCRecordWriter {
         record.addNamespaceDeclaration(namespaceDC);
         doc.setRootElement(record);
     }
-    
+
     /**
      * Add a metadata element with namespace "dc" to the record element
      * 
@@ -59,13 +65,13 @@ public class DCRecordWriter {
      * @param value
      */
     public void addDCMetadata(String name, String value) {
-        if(StringUtils.isNotBlank(value)) {            
+        if (StringUtils.isNotBlank(value)) {
             Element md = new Element(name, namespaceDC);
             md.setText(value);
             doc.getRootElement().addContent(md);
         }
     }
-    
+
     /**
      * Reads the value of the given metadata from the jdom document
      * 
@@ -74,13 +80,13 @@ public class DCRecordWriter {
      */
     public String getMetadataValue(String name) {
         Element ele = doc.getRootElement().getChild(name, namespaceDC);
-        if(ele != null) {
+        if (ele != null) {
             return ele.getText();
-        } else {
-            return null;
         }
+
+        return null;
     }
-        
+
     /**
      * Get the base jdom2 document
      * 
@@ -89,37 +95,35 @@ public class DCRecordWriter {
     public Document getDocument() {
         return this.doc;
     }
-    
+
     /**
-     * Writes the created jdom document to the given path.
-     * If the path denotes a directory, a new file will be created within the directory
-     * with the filename being the "identifier" metadata value if it exists. Otherwise the "title" metadata value 
-     * or the current timestamp if title doesn't exist either
+     * Writes the created jdom document to the given path. If the path denotes a directory, a new file will be created within the directory with the
+     * filename being the "identifier" metadata value if it exists. Otherwise the "title" metadata value or the current timestamp if title doesn't
+     * exist either
      * 
-     * @param path  The path to the file (created if it doesn't exist, overwritten if it does) or the directory which should contain the file
-     * @throws IOException  if the parent directory of the given path doesn't exist, or writing the file fails for some other reason
+     * @param path The path to the file (created if it doesn't exist, overwritten if it does) or the directory which should contain the file
+     * @throws IOException if the parent directory of the given path doesn't exist, or writing the file fails for some other reason
      */
     public void write(Path path) throws IOException {
         Path filePath = path;
-        if(Files.isDirectory(path)) {
-            if(StringUtils.isNotBlank(getMetadataValue("identifier"))) {
+        if (Files.isDirectory(path)) {
+            if (StringUtils.isNotBlank(getMetadataValue("identifier"))) {
                 filePath = path.resolve(getMetadataValue("identifier") + ".xml");
-            } else if(StringUtils.isNotBlank(getMetadataValue("title"))) {
+            } else if (StringUtils.isNotBlank(getMetadataValue("title"))) {
                 filePath = path.resolve(getMetadataValue("title") + ".xml");
             } else {
                 filePath = path.resolve(System.currentTimeMillis() + ".xml");
             }
-        } else if(!Files.exists(path.getParent())) {
+        } else if (!Files.exists(path.getParent())) {
             throw new IOException("Parent directory of output destination " + path + " must exist to create file");
         }
         XMLOutputter xmlOutput = new XMLOutputter();
         xmlOutput.setFormat(Format.getPrettyFormat());
-        try(OutputStream out = Files.newOutputStream(filePath)) {
+        try (OutputStream out = Files.newOutputStream(filePath)) {
             xmlOutput.output(doc, out);
         }
     }
-    
-    
+
     public String getAsString() {
         XMLOutputter xmlOutput = new XMLOutputter();
         xmlOutput.setFormat(Format.getPrettyFormat());
@@ -127,9 +131,9 @@ public class DCRecordWriter {
         try {
             xmlOutput.output(doc, writer);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return writer.toString();
     }
-    
+
 }

@@ -62,14 +62,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
 import io.goobi.viewer.api.rest.model.index.SolrFieldInfo;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.JsonTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -77,6 +74,9 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -174,7 +174,7 @@ public class IndexResource {
         }
         if (params.randomize) {
             sortFieldList.clear();
-            sortFieldList.add(new StringPair(SolrSearchIndex.generateRandomSortField(), ("desc".equals(params.sortOrder) ? "desc" : "asc")));
+            sortFieldList.add(new StringPair(SolrTools.generateRandomSortField(), ("desc".equals(params.sortOrder) ? "desc" : "asc")));
         }
         try {
             List<String> fieldList = params.resultFields;
@@ -189,8 +189,6 @@ public class IndexResource {
                             .getSearchIndex()
                             .search(query, params.offset, count, sortFieldList, params.facetFields, fieldList, null, paramMap);
 
-
-
             JSONObject object = new JSONObject();
             object.put("numFound", response.getResults().getNumFound());
             object.put("docs", getQueryResults(params, response));
@@ -202,7 +200,7 @@ public class IndexResource {
         }
     }
 
-    private Optional<JSONArray> getFacetResults(QueryResponse response) {
+    private static Optional<JSONArray> getFacetResults(QueryResponse response) {
         List<FacetField> facetFields = response.getFacetFields();
         if (facetFields != null && !facetFields.isEmpty()) {
             JSONArray facets = new JSONArray();
@@ -329,11 +327,11 @@ public class IndexResource {
                 sfi.setSortField(sortFieldName);
             }
             String facetFieldName = SearchHelper.facetifyField(fieldName);
-            if (!facetFieldName.equals(fieldName) &&reference.contains(facetFieldName)) {
+            if (!facetFieldName.equals(fieldName) && reference.contains(facetFieldName)) {
                 sfi.setFacetField(facetFieldName);
             }
             String boolFieldName = SearchHelper.boolifyField(fieldName);
-            if (!boolFieldName.equals(fieldName) &&reference.contains(boolFieldName)) {
+            if (!boolFieldName.equals(fieldName) && reference.contains(boolFieldName)) {
                 sfi.setBoolField(boolFieldName);
             }
             for (Locale locale : ViewerResourceBundle.getAllLocales()) {

@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.managedbeans.AdminBean;
 
 /**
  * <p>
@@ -52,8 +53,12 @@ public class SessionListener implements HttpSessionListener {
     @Override
     public void sessionDestroyed(HttpSessionEvent event) {
         if (DataManager.getInstance().getSessionMap().remove(event.getSession().getId()) != null) {
-            logger.trace("Session destroyed: {}", event.getSession().getId());
-            DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(event.getSession().getId(), null);
+            String sessionId = event.getSession().getId();
+            logger.trace("Session destroyed: {}", sessionId);
+            DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(sessionId, null);
+            if (sessionId.equals(AdminBean.getTranslationGroupsEditorSession())) {
+                AdminBean.setTranslationGroupsEditorSession(null);
+            }
         }
     }
 }

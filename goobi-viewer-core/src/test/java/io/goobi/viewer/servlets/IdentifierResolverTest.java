@@ -42,8 +42,8 @@ import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -159,7 +159,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "AC11442160";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.IMAGEURN + ":" + urn, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
-        Assert.assertEquals("/object/" + pi + "/2/-/", IdentifierResolver.constructUrl(qr.getResults().get(0), true));
+        Assert.assertEquals("/object/" + pi + "/2/LOG_0002/", IdentifierResolver.constructUrl(qr.getResults().get(0), true));
     }
 
     /**

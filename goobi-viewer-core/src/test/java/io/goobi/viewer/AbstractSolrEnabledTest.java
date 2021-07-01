@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * JUnit test classes that extend this class can use the embedded Solr server setup with a fixed viewer index.

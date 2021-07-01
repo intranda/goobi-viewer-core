@@ -11,9 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class ArchiveEntry {
 
@@ -41,13 +41,13 @@ public class ArchiveEntry {
     private boolean displaySearch;
     // true if the validation of all metadata fields was successful
     private boolean valid = true;
-    
+
     private String descriptionLevel;
-    
+
     private boolean visible = true;
-    
+
     private boolean expanded = false;
-    
+
     private String associatedRecordPi;
 
     /* 1. metadata for Identity Statement Area */
@@ -145,9 +145,10 @@ public class ArchiveEntry {
             return;
         }
         try {
+            //Put quotes around entry id in request, otherwise any document matching any of the '-'-separated parts of the id will be returned
             SolrDocument doc = DataManager.getInstance()
                     .getSearchIndex()
-                    .getFirstDoc("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":" + id, Collections.singletonList(SolrConstants.PI));
+                    .getFirstDoc("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":\"" + id + "\"", Collections.singletonList(SolrConstants.PI));
             if (doc != null) {
                 associatedRecordPi = (String) doc.getFieldValue(SolrConstants.PI);
             }
@@ -198,12 +199,13 @@ public class ArchiveEntry {
         if (parentNode != null && other.parentNode == null) {
             return false;
         }
-
-        if (!parentNode.getOrderNumber().equals(other.parentNode.getOrderNumber())) {
-            return false;
-        }
-        if (!parentNode.getHierarchyLevel().equals(other.parentNode.getHierarchyLevel())) {
-            return false;
+        if (parentNode != null && other.parentNode != null) {
+            if (!parentNode.getOrderNumber().equals(other.parentNode.getOrderNumber())) {
+                return false;
+            }
+            if (!parentNode.getHierarchyLevel().equals(other.parentNode.getHierarchyLevel())) {
+                return false;
+            }
         }
 
         return true;
@@ -658,7 +660,6 @@ public class ArchiveEntry {
     public void setDescriptionLevel(String descriptionLevel) {
         this.descriptionLevel = descriptionLevel;
     }
-
 
     /**
      * @return the visible

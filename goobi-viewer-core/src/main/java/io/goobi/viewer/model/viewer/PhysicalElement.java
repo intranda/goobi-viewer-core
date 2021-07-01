@@ -50,19 +50,13 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
-import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
-import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.PdfHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -80,6 +74,8 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * Physical element (page) containing an image, video or audio.
@@ -134,6 +130,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private int height = 0;
     /** Whether or not this page has image data. */
     private boolean hasImage = false;
+    /** Whether or not this page contains an image that spans two pages. */
+    private boolean doubleImage = false;
+    /** If this page comes after an uneven number of double image pages, this should be set to true. */
+    private boolean flipRectoVerso = false;
     /** Whether or not full-text is available for this page. */
     private boolean fulltextAvailable = false;
 
@@ -177,10 +177,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @param mimeType Page mime type
      * @param dataRepository Record date repository
      */
-    public PhysicalElement(String physId, String filePath, int order, String orderLabel, String urn, String purlPart, String pi, String mimeType,
+    PhysicalElement(String physId, String filePath, int order, String orderLabel, String urn, String purlPart, String pi, String mimeType,
             String dataRepository) {
-
-        super();
         this.physId = physId;
         this.filePath = filePath;
         this.order = order;
@@ -200,7 +198,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (watermarkTextConfiguration == null) {
             watermarkTextConfiguration = DataManager.getInstance().getConfiguration().getWatermarkTextConfiguration();
         }
-
     }
 
     /**
@@ -690,6 +687,35 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * @return the doubleImage
+     */
+    public boolean isDoubleImage() {
+        // logger.trace("isDoubleImage: {}", doubleImage);
+        return doubleImage;
+    }
+
+    /**
+     * @param doubleImage the doubleImage to set
+     */
+    public void setDoubleImage(boolean doubleImage) {
+        this.doubleImage = doubleImage;
+    }
+
+    /**
+     * @return the flipRectoVerso
+     */
+    public boolean isFlipRectoVerso() {
+        return flipRectoVerso;
+    }
+
+    /**
+     * @param flipRectoVerso the flipRectoVerso to set
+     */
+    public void setFlipRectoVerso(boolean flipRectoVerso) {
+        this.flipRectoVerso = flipRectoVerso;
+    }
+
+    /**
      * <p>
      * isFulltextAvailableForPage.
      * </p>
@@ -738,18 +764,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public Boolean isFulltextAccessPermission() throws ViewerConfigurationException {
         if (fulltextAccessPermission == null) {
-            boolean access = false;
+            fulltextAccessPermission = false;
             try {
-                access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                        BeanUtils.getRequest());
+                fulltextAccessPermission =
+                        AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                                BeanUtils.getRequest());
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(String.format("Cannot check fulltext access for pi %s and pageNo %d: %s", pi, order, e.toString()));
             } catch (RecordNotFoundException e) {
                 logger.error("Record not found in index: {}", pi);
             }
-            return access;
         }
-        return fulltextAccessPermission != null ? fulltextAccessPermission : false;
+
+        return fulltextAccessPermission;
     }
 
     /**
@@ -772,18 +799,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean isAltoAvailable() throws IndexUnreachableException, DAOException {
+    public boolean isAltoAvailable() {
         String filename = null;
         try {
             filename = FileTools.getFilenameFromPathString(getAltoFileName());
-        } catch (FileNotFoundException e) {
-        }
-        if (StringUtils.isBlank(filename)) {
+            if (StringUtils.isBlank(filename)) {
+                return false;
+            }
+
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        } catch (FileNotFoundException | IndexUnreachableException | DAOException e) {
             return false;
         }
-
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
     }
 
     /**
@@ -867,12 +895,26 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (StringUtils.isNotEmpty(altoText)) {
             wordCoordsFormat = CoordsFormat.ALTO;
             String text = ALTOTools.getFullText(altoText, false, null);
+            if (StringUtils.isNotEmpty(text)) {
+                String cleanText = StringTools.stripJS(text);
+                if (cleanText.length() < text.length()) {
+                    text = cleanText;
+                    logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, getOrder());
+                }
+            }
             return text;
         }
         wordCoordsFormat = CoordsFormat.NONE;
         if (fullText == null) {
             try {
                 fullText = loadFullText();
+                if (StringUtils.isNotEmpty(fullText)) {
+                    String cleanText = StringTools.stripJS(fullText);
+                    if (cleanText.length() < fullText.length()) {
+                        fullText = cleanText;
+                        logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, getOrder());
+                    }
+                }
                 fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
                 fulltextAccessPermission = false;
@@ -1013,9 +1055,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         try {
-            TextResourceBuilder builder = new TextResourceBuilder();
-            altoText = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFileName),
-                    FileTools.getFilenameFromPathString(altoFileName));
+            altoText = DataFileTools.loadAlto(altoFileName);
             //Text from alto is always plain text
             textContentType = "text/plain";
             if (altoText != null) {
@@ -1187,13 +1227,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public String getImageUrl() {
-        ImageFileFormat format = ImageFileFormat.JPG;
-        if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
-            format = ImageFileFormat.PNG;
-        }
-        return new IIIFUrlHandler().getIIIFImageUrl(
-                DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "image/" + pi + "/" + getFileName(), RegionRequest.FULL, Scale.MAX,
-                Rotation.NONE, Colortype.DEFAULT, format);
+        return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, Scale.MAX);
     }
 
     /**
@@ -1205,13 +1239,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public String getImageUrl(int size) {
-        ImageFileFormat format = ImageFileFormat.JPG;
-        if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
-            format = ImageFileFormat.PNG;
-        }
-        return new IIIFUrlHandler().getIIIFImageUrl(
-                DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "image/" + pi + "/" + getFileName(), RegionRequest.FULL,
-                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
+        Scale scale = new Scale.ScaleToWidth(size);
+        return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, scale);
+
     }
 
     /**
@@ -1371,6 +1401,46 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         } else {
             logger.trace("FacesContext not found");
         }
+
+        return false;
+    }
+
+    /**
+     * checks if the user has the privilege {@link IPrivilegeHolder.PRIV_ZOOM_IMAGES} If the check fails and
+     * {@link Configuration#getUnzoomedImageAccessMaxWidth()} is greater than 0, false is returned
+     * 
+     * @return true exactly if the user is allowed to zoom images. false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isAccessPermissionImageZoom() throws IndexUnreachableException, DAOException {
+        if (DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth() > 0) {
+            if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+                HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+                return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
+                        IPrivilegeHolder.PRIV_ZOOM_IMAGES);
+            }
+            logger.trace("FacesContext not found");
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isAccessPermissionImageDownload() throws IndexUnreachableException, DAOException {
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
+                    IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES);
+        }
+        logger.trace("FacesContext not found");
 
         return false;
     }

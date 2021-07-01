@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.viewer;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +45,7 @@ public class CollectionLabeledLink extends CompoundLabeledLink {
      * @param collection a {@link io.goobi.viewer.model.viewer.CollectionView} object.
      */
     public CollectionLabeledLink(String name, String url, CollectionView collection, int weight) {
-        super(name, url, collection.getField(), weight);
+        super(name, url, Optional.ofNullable(collection).map(CollectionView::getField).orElse(null), weight);
         this.collection = collection;
     }
 

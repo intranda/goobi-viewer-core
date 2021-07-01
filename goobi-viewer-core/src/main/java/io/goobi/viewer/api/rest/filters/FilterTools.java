@@ -29,17 +29,18 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordLimitExceededException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 public class FilterTools {
 
@@ -48,6 +49,7 @@ public class FilterTools {
     public static final String ATTRIBUTE_PI = "pi";
     public static final String ATTRIBUTE_FILENAME = "filename";
     public static final String ATTRIBUTE_LOGID = "logid";
+    public static final String ATTRIBUTE_PAGENO = "pageno";
 
     public static final int PRIORITY_REDIRECT = 100;
 
@@ -60,7 +62,7 @@ public class FilterTools {
      * @should throw exception if record not found
      */
     public static void filterForConcurrentViewLimit(String pi, HttpServletRequest request) throws ServiceNotAllowedException {
-        logger.trace("filterForConcurrentViewLimit: {}", request.getSession().getId());
+        // logger.trace("filterForConcurrentViewLimit: {}", request.getSession().getId());
         HttpSession session = request.getSession();
         // Release all locks for this session except the current record
         if (session != null) {
@@ -79,9 +81,9 @@ public class FilterTools {
                 if (doc == null) {
                     throw new RecordNotFoundException("Record not found: " + pi);
                 }
-                limits = SolrSearchIndex.getMetadataValues(doc, (SolrConstants.ACCESSCONDITION_CONCURRENTUSE));
+                limits = SolrTools.getMetadataValues(doc, (SolrConstants.ACCESSCONDITION_CONCURRENTUSE));
                 DataManager.getInstance().getRecordLockManager().getRecordLimitsCache().put(pi, limits);
-                accessConditions = SolrSearchIndex.getMetadataValues(doc, (SolrConstants.ACCESSCONDITION));
+                accessConditions = SolrTools.getMetadataValues(doc, (SolrConstants.ACCESSCONDITION));
                 DataManager.getInstance().getRecordLockManager().getRecordAccessConditionsCache().put(pi, accessConditions);
             }
 
@@ -124,12 +126,12 @@ public class FilterTools {
         try {
             Scale scale = Scale.getScaleMethod(size);
             imageWidth = Integer.parseInt(scale.getWidth());
-        } catch (NumberFormatException | IllegalRequestException | NullPointerException e) {
+        } catch (NumberFormatException | IllegalRequestException | NullPointerException | ServiceNotImplementedException e) {
             //no image width, assume large image
         }
 
         boolean isThumb =
-                "full".equalsIgnoreCase(region) && imageWidth <= DataManager.getInstance().getConfiguration().getUnconditionalImageAccessMaxWidth();
+                "full".equalsIgnoreCase(region) && imageWidth <= DataManager.getInstance().getConfiguration().getThumbnailImageAccessMaxWidth();
         return isThumb;
     }
 }

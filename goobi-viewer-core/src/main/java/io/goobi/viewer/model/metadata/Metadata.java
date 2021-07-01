@@ -40,14 +40,14 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
+import io.goobi.viewer.managedbeans.BrowseBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -56,6 +56,9 @@ import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Metadata field configuration.
@@ -374,9 +377,26 @@ public class Metadata implements Serializable {
                     // logger.debug("WIKIPEDIA: " + value + " paramIndex: " + paramIndex);
                     break;
                 case TRANSLATEDFIELD:
-                    // Values that are message keys
-                    value = ViewerResourceBundle.getTranslation(value, locale);
-                    // value = StringEscapeUtils.escapeHtml4(value);
+                    // Values that are message keys (or collection names, etc.)
+                    
+                    // First, check whether translation from CMSCollection is available
+                    String translation = null;
+                    if (SolrConstants.DC.equals(label)) {
+                        BrowseBean browseBean = BeanUtils.getBrowseBean();
+                        if (browseBean != null) {
+                            try {
+                                translation = browseBean.getTranslationForCollectionName(label, value);
+                            } catch (DAOException e) {
+                                logger.error(e.getMessage(), e);
+                            }
+                        }
+                        logger.trace("translation: {}", translation);
+                    }
+                    if (translation != null) {
+                        value = translation;
+                    } else {
+                        value = ViewerResourceBundle.getTranslation(value, locale);
+                    }
                     // convert line breaks back to HTML
                     value = value.replace("&lt;br /&gt;", "<br />");
                     break;
@@ -689,6 +709,13 @@ public class Metadata implements Serializable {
                         if (!param.getReplaceRules().isEmpty()) {
                             value = MetadataTools.applyReplaceRules(value, param.getReplaceRules(), se.getPi());
                         }
+                        // If a conditional query is configured, check for match first
+                        if (StringUtils.isNotEmpty(param.getCondition())) {
+                            String query = param.getCondition().replace("{0}", value);
+                            if (DataManager.getInstance().getSearchIndex().getHitCount(query) == 0) {
+                                continue;
+                            }
+                        }
                         setParamValue(count, indexOfParam, Collections.singletonList(value), param.getKey(), null, null, null, locale);
                         count++;
                     }
@@ -759,7 +786,7 @@ public class Metadata implements Serializable {
                         String value = (String) doc.getFieldValue(fieldName);
                         values.add(value);
                     } else if (doc.getFieldValue(fieldName) instanceof Collection) {
-                        values.addAll(SolrSearchIndex.getMetadataValues(doc, fieldName));
+                        values.addAll(SolrTools.getMetadataValues(doc, fieldName));
 
                     }
                 }
@@ -779,18 +806,22 @@ public class Metadata implements Serializable {
                     if (groupFieldMap.get(param.getKey()) != null) {
                         found = true;
                         Map<String, String> options = new HashMap<>();
-                        StringBuilder sbValue = new StringBuilder();
                         List<String> values = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
                         for (String value : groupFieldMap.get(param.getKey())) {
-                            if (sbValue.length() == 0) {
-                                sbValue.append(value);
+                            // If a conditional query is configured, check for match first
+                            if (StringUtils.isNotEmpty(param.getCondition())) {
+                                String query = param.getCondition().replace("{0}", value);
+                                if (DataManager.getInstance().getSearchIndex().getHitCount(query) == 0) {
+                                    continue;
+                                }
+                                logger.trace("conditional value added: {}", value);
                             }
                             values.add(value);
                         }
-                        String paramValue = sbValue.toString();
+                        //                        String paramValue = sbValue.toString();
                         if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
                             if (doc.getFieldValue("NORM_TYPE") != null) {
-                                options.put("NORM_TYPE", SolrSearchIndex.getSingleFieldStringValue(doc, "NORM_TYPE"));
+                                options.put("NORM_TYPE", SolrTools.getSingleFieldStringValue(doc, "NORM_TYPE"));
                             }
                         }
                         setParamValue(count, i, values, param.getKey(), null, options, groupType, locale);

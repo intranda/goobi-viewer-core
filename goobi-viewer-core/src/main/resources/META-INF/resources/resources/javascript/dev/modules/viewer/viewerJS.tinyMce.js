@@ -38,9 +38,6 @@ var viewerJS = ( function( viewer ) {
         statusbar: false,
         pagebreak_separator: '<span class="pagebreak"></span>',
         relative_urls: false,
-        force_br_newlines: false,
-        force_p_newlines: false,
-        forced_root_block: '',
         language: 'de'
     };
     

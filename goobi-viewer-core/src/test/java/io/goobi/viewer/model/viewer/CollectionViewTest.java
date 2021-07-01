@@ -32,12 +32,12 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class CollectionViewTest extends AbstractDatabaseEnabledTest {
 

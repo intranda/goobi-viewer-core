@@ -41,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -54,6 +53,7 @@ import io.goobi.viewer.model.calendar.CalendarItemWeek;
 import io.goobi.viewer.model.calendar.CalendarItemYear;
 import io.goobi.viewer.model.calendar.CalendarRow;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * This bean provides data for the calendar and time based search entries.

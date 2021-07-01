@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -94,8 +93,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
             //unknown error. Probably request error
             status = Status.BAD_REQUEST;
             printStackTrace = true;
-            logger.error(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
         String mediaType = MediaType.APPLICATION_JSON;

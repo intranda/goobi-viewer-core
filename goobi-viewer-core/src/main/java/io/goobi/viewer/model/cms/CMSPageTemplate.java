@@ -64,6 +64,8 @@ public class CMSPageTemplate implements Serializable {
     private boolean displaySortingField = false;
 
     private boolean appliesToExpandedUrl = true;
+    
+    private boolean mayHaveTopBarSlider = false;
 
     private List<CMSContentItemTemplate> contentItems = new ArrayList<>();
 
@@ -128,6 +130,7 @@ public class CMSPageTemplate implements Serializable {
                 if (options != null) {
                     template.setDisplaySortingField(parseBoolean(options.getChildText("useSorterField")));
                     template.setAppliesToExpandedUrl(parseBoolean(options.getChildText("appliesToExpandedUrl"), true));
+                    template.setMayHaveTopBarSlider(parseBoolean(options.getChildText("topBarSlider"), true));
                 }
                 template.validate();
                 return template;
@@ -207,7 +210,7 @@ public class CMSPageTemplate implements Serializable {
         for (CMSContentItem item : contentItems) {
             if (item.getType() == CMSContentItemType.HTML || item.getType() == CMSContentItemType.TEXT) {
                 for (CMSPageLanguageVersion langVersion : page.getLanguageVersions()) {
-                    if (langVersion.getLanguage() != CMSPage.GLOBAL_LANGUAGE) {
+                    if (!CMSPage.GLOBAL_LANGUAGE.equals(langVersion.getLanguage())) {
                         CMSContentItem actualItem = item.clone();
                         actualItem.setOwnerPageLanguageVersion(langVersion);
                         langVersion.getContentItems().add(actualItem);
@@ -420,6 +423,11 @@ public class CMSPageTemplate implements Serializable {
                 return item;
             }
         }
+        //return custom template for special items
+        switch(itemId) {
+            case CMSPage.TOPBAR_SLIDER_ID:
+                return new CMSContentItemTemplate(CMSContentItemType.SLIDER);
+        }
         return null;
     }
 
@@ -489,7 +497,7 @@ public class CMSPageTemplate implements Serializable {
         if (enabled == null) {
             enabled = new CMSPageTemplateEnabled(id);
         }
-         
+
         return enabled;
     }
 
@@ -520,6 +528,20 @@ public class CMSPageTemplate implements Serializable {
      */
     public boolean isAppliesToExpandedUrl() {
         return appliesToExpandedUrl;
+    }
+    
+    /**
+     * @param mayHaveTopBarSlider the mayHaveTopBarSlider to set
+     */
+    public void setMayHaveTopBarSlider(boolean mayHaveTopBarSlider) {
+        this.mayHaveTopBarSlider = mayHaveTopBarSlider;
+    }
+    
+    /**
+     * @return the mayHaveTopBarSlider
+     */
+    public boolean isMayHaveTopBarSlider() {
+        return mayHaveTopBarSlider;
     }
 
     /**

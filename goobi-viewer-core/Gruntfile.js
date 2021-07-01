@@ -165,6 +165,10 @@ module.exports = function (grunt) {
                             "hc-sticky/dist/hc-sticky.js" : "hcsticky/",
                             "mirador/dist/mirador.min.js*" : "mirador/",
                             "swiper/swiper-bundle.min.js" : "swiper/",
+                            "sweetalert2/dist/sweetalert2.min.js" : "sweetalert/",
+                            "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.min.js" : "mapbox/geocoder/",
+                            "mapbox-gl/dist/mapbox-gl.js" : "mapbox/",
+                            "leaflet-draw/dist/leaflet.draw.js" : "leaflet/draw"
                         },
                         css : {
                             "leaflet/dist/leaflet.css" : "leaflet/",
@@ -172,6 +176,11 @@ module.exports = function (grunt) {
                             "leaflet.markercluster/dist/MarkerCluster.css" : "leaflet/markercluster",
                             "swagger-ui-dist/swagger-ui.css" : "swagger/",
                             "swiper/swiper-bundle.min.css" :  "swiper/",
+                            "sweetalert2/dist/sweetalert2.min.css" : "sweetalert/",
+                            "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css" : "mapbox/geocoder/",
+                            "mapbox-gl/dist/mapbox-gl.css" : "mapbox/",
+                            "leaflet-draw/dist/leaflet.draw.css" : "leaflet/draw",
+                            "leaflet-draw/dist/images" : "leaflet/draw",
                         }
                     }
                 },

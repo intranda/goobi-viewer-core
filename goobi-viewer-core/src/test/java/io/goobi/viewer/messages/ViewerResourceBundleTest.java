@@ -16,7 +16,6 @@
 package io.goobi.viewer.messages;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.FileNotFoundException;
@@ -25,24 +24,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import javax.faces.application.Application;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-
+import org.apache.commons.io.FileUtils;
 import org.jdom2.JDOMException;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.managedbeans.ContextMocker;
+import io.goobi.viewer.controller.DataManager;
 
 public class ViewerResourceBundleTest extends AbstractTest {
 
@@ -50,8 +43,8 @@ public class ViewerResourceBundleTest extends AbstractTest {
     public void testGetDefaultLocale() {
         Assert.assertEquals(Locale.ENGLISH, ViewerResourceBundle.getDefaultLocale());
     }
-    
-    @Test 
+
+    @Test
     public void testGetAllLocales() {
         List<Locale> locales = ViewerResourceBundle.getAllLocales();
         Assert.assertEquals(2, locales.size());
@@ -81,15 +74,14 @@ public class ViewerResourceBundleTest extends AbstractTest {
      */
     @Test
     public void getAllLocales_shouldReturnEnglishForUnknownLanguages() throws Exception {
-        
-        
+
         String germanTranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.GERMAN);
         String englishTranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.ENGLISH);
         String frenchtranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.FRENCH);
         Assert.assertEquals(englishTranslation, frenchtranslation);
         Assert.assertNotEquals(englishTranslation, germanTranslation);
     }
-    
+
     @Test
     public void testGetLocalesFromFile() throws FileNotFoundException, IOException, JDOMException {
         Path configPath = Paths.get("src/test/resources/localConfig/faces-config.xml");
@@ -99,18 +91,58 @@ public class ViewerResourceBundleTest extends AbstractTest {
         assertEquals(Locale.ENGLISH, locales.get(1));
         assertEquals(Locale.FRENCH, locales.get(3));
     }
-    
+
     @Test
-    public void testGetTranslation() throws IOException, InterruptedException {
+    public void testGetTranslation() {
         String autor = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.GERMAN);
         Assert.assertEquals("Autor", autor);
     }
-    
+
     @Test
     public void testGetTranslations() {
         IMetadataValue translations = ViewerResourceBundle.getTranslations("MD_AUTHOR");
         Assert.assertTrue(translations instanceof MultiLanguageMetadataValue);
         Assert.assertEquals("Author", translations.getValue("en").orElse(""));
         Assert.assertEquals("Autor", translations.getValue("de").orElse(""));
+    }
+
+    /**
+     * @see ViewerResourceBundle#createLocalMessageFiles(List)
+     * @verifies create files correctly
+     */
+    @Test
+    public void createLocalMessageFiles_shouldCreateFilesCorrectly() throws Exception {
+        List<Locale> locales = Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN });
+        Assert.assertEquals(2, locales.size());
+
+        // Create config folder
+        Path configFolder = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
+        try {
+            if (!Files.exists(configFolder)) {
+                Files.createDirectories(configFolder);
+            }
+            Assert.assertTrue(Files.isDirectory(configFolder));
+
+            // Verify files do not exist yet
+            for (Locale locale : locales) {
+                Path path =
+                        Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
+                                "messages_" + locale.getLanguage() + ".properties");
+                Assert.assertFalse(Files.exists(path));
+            }
+
+            ViewerResourceBundle.createLocalMessageFiles();
+            // Verify files have been created
+            for (Locale locale : locales) {
+                Path path =
+                        Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
+                                "messages_" + locale.getLanguage() + ".properties");
+                Assert.assertTrue(Files.isRegularFile(path));
+            }
+        } finally {
+            if (Files.exists(configFolder)) {
+                FileUtils.deleteDirectory(configFolder.toFile());
+            }
+        }
     }
 }

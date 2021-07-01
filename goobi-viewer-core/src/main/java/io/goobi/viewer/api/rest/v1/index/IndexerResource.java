@@ -34,9 +34,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.model.IndexerVersionRequestParameters;
+import io.goobi.viewer.api.rest.model.IndexerDataRequestParameters;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.controller.DataManager;
 
@@ -58,9 +57,10 @@ public class IndexerResource {
     @Path("/version")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
-    public SuccessMessage setIndexerVersion(IndexerVersionRequestParameters params) throws IllegalRequestException {
+    public SuccessMessage setIndexerVersion(IndexerDataRequestParameters params) throws IllegalRequestException {
         try {
             DataManager.getInstance().setIndexerVersion(new ObjectMapper().writeValueAsString(params));
+            DataManager.getInstance().setHotfolderFileCount(params.getHotfolderFileCount());
             return new SuccessMessage(true);
         } catch (JsonProcessingException e) {
             logger.error(e.getMessage());

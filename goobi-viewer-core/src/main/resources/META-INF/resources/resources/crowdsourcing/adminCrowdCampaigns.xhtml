@@ -1,7 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:p="http://primefaces.org/ui"
+                
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -16,7 +16,8 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:panelGroup id="crowdCampaignOverview" rendered="#{userBean.user.superuser or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)}">
+        <h:panelGroup id="crowdCampaignOverview"
+            rendered="#{(userBean.user.superuser or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)) and navigationHelper.solrIndexOnline}">
             <div id="crowdCampaigns">
                 <h:form id="csCampaignsForm" prependId="false">
                     <div class="admin__title-bar">
@@ -137,5 +138,12 @@
                         riot.mount("progressBar");
             </script>
         </h:panelGroup>
+        
+        <ui:fragment rendered="#{!navigationHelper.solrIndexOnline}">
+            <div class="alert alert-danger" role="alert">
+                <h:outputText rendered="#{errMsg == null}" value="#{msg.errIndexUnreachableMsg}" />
+            </div>
+        </ui:fragment>
+        
     </ui:define>
 </ui:composition>

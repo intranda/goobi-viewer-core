@@ -83,7 +83,7 @@ public class CMSProperty {
      */
     public CMSProperty(CMSProperty original) {
         if (original.id != null) {
-            this.id = Long.valueOf(original.id);
+            this.id = original.id;
         }
         this.key = original.getKey();
         this.value = original.getValue();

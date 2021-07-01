@@ -43,8 +43,8 @@ import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
-import de.intranda.api.iiif.presentation.Canvas;
-import de.intranda.api.iiif.presentation.Manifest;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
@@ -77,10 +77,11 @@ public class AnnotationResource {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
-    @Inject
-    private AbstractApiUrlManager urls;
+    
+    private final AbstractApiUrlManager urls;
 
     public AnnotationResource() {
+        this.urls = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
     }
 
     /**
@@ -149,7 +150,7 @@ public class AnnotationResource {
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
+    @Operation(tags = { "annotations" }, summary = "Create a new annotation")
     @ApiResponse(responseCode = "501",
             description = "Persisting this king of annotation or its target is not implemented. Only W3C Web Annotations targeting a manifest, canvas or part of a canvas may be persisted")
     public IAnnotation addAnnotation(IAnnotation anno) throws DAOException, NotImplementedException {
@@ -212,14 +213,15 @@ public class AnnotationResource {
         if (anno instanceof WebAnnotation) {
             IResource target = anno.getTarget();
             String template;
-            if (target instanceof Manifest) {
+            if (target instanceof Manifest2) {
                 template = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).build();
-            } else if (target instanceof Canvas) {
+            } else if (target instanceof Canvas2) {
                 template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
             } else if (target instanceof SpecificResource) {
                 //assume specific resources are on a canvas
                 template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
             } else {
+                //TODO: implement handling IIIF 3 resources
                 return null;//not implemented
             }
 

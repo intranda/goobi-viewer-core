@@ -32,27 +32,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
  * FacetItem class.
  * </p>
  */
-public class FacetItem implements Comparable<FacetItem>, Serializable {
+public class FacetItem implements Comparable<FacetItem>, Serializable, IFacetItem {
 
     private static final long serialVersionUID = 5033196184122928247L;
 
     private static final Logger logger = LoggerFactory.getLogger(FacetItem.class);
 
-    private static final Comparator<FacetItem> NUMERIC_COMPARATOR = new FacetItem.NumericComparator();
-    private static final Comparator<FacetItem> ALPHABETIC_COMPARATOR = new FacetItem.AlphabeticComparator();
+    private static final Comparator<IFacetItem> NUMERIC_COMPARATOR = new FacetItem.NumericComparator();
+    private static final Comparator<IFacetItem> ALPHABETIC_COMPARATOR = new FacetItem.AlphabeticComparator();
+    private static final Comparator<IFacetItem> COUNT_COMPARATOR = new FacetItem.CountComparator();
 
     private String field;
     private String value;
@@ -119,9 +120,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
+     * @see io.goobi.viewer.model.search.IFacetItem#hashCode()
      */
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -132,9 +132,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
+     * @see io.goobi.viewer.model.search.IFacetItem#equals(java.lang.Object)
      */
-    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -217,10 +216,10 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @should add priority values first
      * @should set label from separate field if configured and found
      */
-    public static List<FacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, Locale locale,
+    public static List<IFacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, Locale locale,
             Map<String, String> labelMap) {
         // logger.trace("generateFilterLinkList: {}", field);
-        List<FacetItem> retList = new ArrayList<>();
+        List<IFacetItem> retList = new ArrayList<>();
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField(field);
         Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
 
@@ -286,12 +285,12 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                 Collections.reverse(retList);
                 break;
             default:
-                Collections.sort(retList); // sort by count
+                Collections.sort(retList, FacetItem.COUNT_COMPARATOR);
 
         }
         // Add priority values at the beginning
         if (!priorityValueMap.isEmpty()) {
-            List<FacetItem> regularValues = new ArrayList<>(retList);
+            List<IFacetItem> regularValues = new ArrayList<>(retList);
             retList.clear();
             for (String val : priorityValues) {
                 if (priorityValueMap.containsKey(val)) {
@@ -316,7 +315,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @should sort items correctly
      * @return a {@link java.util.List} object.
      */
-    public static List<FacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean reverseOrder, boolean hierarchical,
+    public static List<IFacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean reverseOrder,
+            boolean hierarchical,
             Locale locale) {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
@@ -325,7 +325,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
             throw new IllegalArgumentException("values may not be null");
         }
 
-        List<FacetItem> retList = new ArrayList<>(values.keySet().size());
+        List<IFacetItem> retList = new ArrayList<>(values.keySet().size());
 
         boolean numeric = true;
         for (String s : values.keySet()) {
@@ -383,6 +383,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @should construct polygon link correctly
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getQueryEscapedLink() {
         String field = SearchHelper.facetifyField(this.field);
         String escapedValue = getEscapedValue(value);
@@ -435,6 +436,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getEscapedLink() {
         return BeanUtils.escapeCriticalUrlChracters(link);
     }
@@ -444,6 +446,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getUrlEscapedLink() {
         String ret = getEscapedLink();
         try {
@@ -460,6 +463,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @return the field
      */
+    @Override
     public String getField() {
         return field;
     }
@@ -471,6 +475,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @param field the field to set
      */
+    @Override
     public void setField(String field) {
         this.field = field;
     }
@@ -499,6 +504,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @return the value
      */
+    @Override
     public String getValue() {
         return value;
     }
@@ -510,6 +516,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @param value the value to set
      */
+    @Override
     public void setValue(String value) {
         this.value = value;
     }
@@ -521,6 +528,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @return the value2
      */
+    @Override
     public String getValue2() {
         return value2;
     }
@@ -532,6 +540,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @param value2 the value2 to set
      */
+    @Override
     public void setValue2(String value2) {
         this.value2 = value2;
     }
@@ -543,6 +552,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @return the link
      */
+    @Override
     public String getLink() {
         return link;
     }
@@ -554,6 +564,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @param link the link to set
      */
+    @Override
     public void setLink(String link) {
         // TODO move logic out of the setter
         int colonIndex = link.indexOf(':');
@@ -561,6 +572,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
             throw new IllegalArgumentException(new StringBuilder().append("Field and value are not colon-separated: ").append(link).toString());
         }
         this.link = link;
+        if (this.link.endsWith(";;")) {
+            this.link = this.link.substring(0, this.link.length() - 2);
+        }
         parseLink();
     }
 
@@ -571,6 +585,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @return the label
      */
+    @Override
     public String getLabel() {
         return label;
     }
@@ -583,6 +598,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @param label the label to set
      * @return this
      */
+    @Override
     public FacetItem setLabel(String label) {
         this.label = label;
         return this;
@@ -595,6 +611,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @return the translatedLabel
      */
+    @Override
     public String getTranslatedLabel() {
         return translatedLabel;
     }
@@ -606,6 +623,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @param translatedLabel the translatedLabel to set
      */
+    @Override
     public void setTranslatedLabel(String translatedLabel) {
         this.translatedLabel = translatedLabel;
     }
@@ -617,6 +635,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @return the count
      */
+    @Override
     public long getCount() {
         return count;
     }
@@ -629,6 +648,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @param count the count to set
      * @return this
      */
+    @Override
     public FacetItem setCount(long count) {
         this.count = count;
         return this;
@@ -641,14 +661,22 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      *
      * @return the hierarchial
      */
+    @Override
     public boolean isHierarchial() {
         return hierarchial;
     }
 
-    public static class AlphabeticComparator implements Comparator<FacetItem> {
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#toString()
+     */
+    public String toString() {
+        return field + ":" + value + " - " + value2;
+    }
+
+    public static class AlphabeticComparator implements Comparator<IFacetItem> {
 
         @Override
-        public int compare(FacetItem o1, FacetItem o2) {
+        public int compare(IFacetItem o1, IFacetItem o2) {
             String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
             String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
             int ret = label1.compareTo(label2);
@@ -657,10 +685,10 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
 
     }
 
-    public static class NumericComparator implements Comparator<FacetItem> {
+    public static class NumericComparator implements Comparator<IFacetItem> {
 
         @Override
-        public int compare(FacetItem o1, FacetItem o2) {
+        public int compare(IFacetItem o1, IFacetItem o2) {
             try {
                 int i1 = Integer.parseInt(o1.getLabel());
                 int i2 = Integer.parseInt(o2.getLabel());
@@ -668,6 +696,17 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
             } catch (NumberFormatException e) {
                 return o1.getLabel().compareTo(o2.getLabel());
             }
+        }
+
+    }
+
+    public static class CountComparator implements Comparator<IFacetItem> {
+
+        @Override
+        public int compare(IFacetItem o1, IFacetItem o2) {
+            return o1.getCount() > o2.getCount() ? -1
+                    : o1.getCount() < o2.getCount() ? +1 : (o1.getLabel() != null ? o1.getLabel().compareTo(o2.getLabel()) : 0);
+
         }
 
     }

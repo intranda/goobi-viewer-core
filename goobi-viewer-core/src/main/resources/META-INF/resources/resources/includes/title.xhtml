@@ -103,19 +103,7 @@
 								</dd>
 							</dl>
 						</ui:fragment>
-
-						<!-- NUMBER OF VOLUMES -->
-						<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.anchor}">
-							<dl>
-								<dt>
-									<h:outputText value="#{msg.numVolumes}: " />
-								</dt>
-								<dd>
-									<h:outputText value="#{activeDocumentBean.viewManager.topDocument.numVolumes}" />
-								</dd>
-							</dl>
-						</ui:fragment>
-
+						
 						<!-- PURL -->
 						<ui:fragment rendered="#{purl and configurationBean.displayTitlePURL}">
 							<dl>
@@ -140,9 +128,6 @@
 											varStatus="status">
 											<ui:fragment rendered="#{!status.last}">
 												<a href="#{docStruct.url}" title="#{msg[docStruct.label]}">#{msg[docStruct.label]}</a>
-											</ui:fragment>
-											<ui:fragment rendered="#{!status.last and status.last != ''}">
-												<a href="#{breadcrumb.url}" title="#{msg[breadcrumb.name]}">#{msg[breadcrumb.name]}</a>
 											</ui:fragment>
 											<ui:fragment rendered="#{!status.last}">
 												<i class="fa fa-angle-right" aria-hidden="true"></i>

@@ -72,6 +72,7 @@
         		persistRotation: #{configurationBean.rememberImageRotation},
         		persistenceId: "#{activeDocumentBean.topDocumentIddoc}" + "_" + "#{navigationHelper.currentPage}",
         		maxZoomLevel: 5,
+        		zoomSpeed: #{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom ? 1.25 : 1},
         		controls : {
         		    rotateLeft: '.rotate-left',
         		    rotateRight: '.rotate-right',

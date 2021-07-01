@@ -44,12 +44,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
@@ -258,7 +258,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
         // Remove file name conditions
         conditions = getQueryConditions(conditions);
         // Convert "NOW/YEAR"
-        conditions = SolrSearchIndex.getProcessedConditions(conditions);
+        conditions = SolrTools.getProcessedConditions(conditions);
 
         return conditions.trim();
     }
@@ -511,11 +511,13 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
      * 
      * @return Sorted list of privileges contained in <code>privileges</code>
      */
+    @Override
     public List<String> getSortedPrivileges(Set<String> privileges) {
         List<String> ret = new ArrayList<>(IPrivilegeHolder.PRIVS_RECORD.length);
         for (String priv : Arrays.asList(IPrivilegeHolder.PRIVS_RECORD)) {
             if (privileges.contains(priv)) {
                 ret.add(priv);
+                logger.debug("has priv: {}", priv);
             }
         }
 
@@ -539,7 +541,9 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
      * @param privilege
      * @return true if successful; false otherwise
      */
+    @Override
     public boolean addPrivilege(String privilege) {
+        logger.debug("addPrivilege: {}", privilege);
         return privilegesCopy.add(privilege);
     }
 
@@ -549,7 +553,9 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
      * @param privilege
      * @return true if successful; false otherwise
      */
+    @Override
     public boolean removePrivilege(String privilege) {
+        logger.debug("removePrivilege: {}", privilege);
         return privilegesCopy.remove(privilege);
     }
 

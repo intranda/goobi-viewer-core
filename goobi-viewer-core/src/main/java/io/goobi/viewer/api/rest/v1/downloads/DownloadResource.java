@@ -81,7 +81,7 @@ public class DownloadResource {
     @Context
     private HttpServletResponse servletResponse;
     @Inject
-    private AbstractApiUrlManager urls;
+    private ApiUrls urls;
 
     public DownloadResource() {
     }

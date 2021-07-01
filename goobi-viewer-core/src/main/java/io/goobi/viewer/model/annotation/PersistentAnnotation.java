@@ -52,7 +52,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 
@@ -641,15 +642,29 @@ public class PersistentAnnotation {
     }
     
     /**
-     * Find the record status of the generator campaign and pi. If the annotation does not belong to a campaign, return {@link CampaignRecordStatus.FINISHED}
+     * Find the record status of the generator campaign and pi. If the annotation does not belong to a campaign, return {@link CrowdsourcingStatus.FINISHED}
      * 
      * @return  The review status for this annotation
      * @throws DAOException
      */
-    public CampaignRecordStatus getReviewStatus() throws DAOException {
-        return Optional.ofNullable(getGenerator()).map(Question::getOwner).map(c -> c.getRecordStatus(getTargetPI())).orElse(CampaignRecordStatus.FINISHED);
+    public CrowdsourcingStatus getReviewStatus() throws DAOException {
+        return Optional.ofNullable(getGenerator()).map(Question::getOwner).map(c -> getStatus(c, getTargetPI(), getTargetPageOrder())).orElse(CrowdsourcingStatus.FINISHED);
     }
     
+    /**
+     * @param c
+     * @param targetPI2
+     * @param targetPageOrder2
+     * @return
+     */
+    private CrowdsourcingStatus getStatus(Campaign campaign, String pi, Integer page) {
+        if(page == null || StatisticMode.RECORD == campaign.getStatisticMode()) {
+            return campaign.getRecordStatus(pi);
+        } else {
+            return campaign.getPageStatus(pi, page);
+        }
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

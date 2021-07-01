@@ -200,7 +200,7 @@ public abstract class DownloadJob implements Serializable {
             }
         }
 
-        return StringTools.generateMD5(sbCriteria.toString());
+        return StringTools.generateHash(sbCriteria.toString());
     }
 
     /**

@@ -38,7 +38,7 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.messages.MessagesTranslation;
-import io.goobi.viewer.model.misc.Translation;
+import io.goobi.viewer.model.translations.Translation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

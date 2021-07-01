@@ -32,9 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Validates the query syntax and displays the number of hits.
@@ -68,7 +68,7 @@ public class SolrQueryValidator implements Validator<String> {
 
             return;
         } catch (SolrServerException | RemoteSolrException e) {
-            if (SolrSearchIndex.isQuerySyntaxError(e)) {
+            if (SolrTools.isQuerySyntaxError(e)) {
                 logger.debug(e.getMessage());
                 String message = ViewerResourceBundle.getTranslation("inline_help__solr_query_danger", null);
                 FacesMessage msg = new FacesMessage(message, "");

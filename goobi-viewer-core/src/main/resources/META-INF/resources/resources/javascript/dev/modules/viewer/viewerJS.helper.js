@@ -526,6 +526,20 @@ var viewerJS = ( function( viewer ) {
     viewer.unique = (value, index, self) => {
         return self.indexOf(value) === index;
     }
+    
+    /**
+    * Create a map from the given object by using the property names as keys and their values as values
+    * a missing or empty object results in an empty map
+    */
+    viewer.parseMap = (object) => {
+    	let map = new Map();
+    	if(object) {
+    		Object.keys(object).forEach(key => {
+    			map.set(key, object[key]);
+    		});
+    	}
+    	return map;
+    }
 
 
 

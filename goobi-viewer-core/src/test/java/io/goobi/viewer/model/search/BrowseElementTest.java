@@ -32,10 +32,10 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class BrowseElementTest extends AbstractSolrEnabledTest {
 

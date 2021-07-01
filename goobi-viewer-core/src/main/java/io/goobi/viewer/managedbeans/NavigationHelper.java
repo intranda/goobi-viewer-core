@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.awt.ComponentOrientation;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -65,8 +66,10 @@ import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
@@ -228,6 +231,27 @@ public class NavigationHelper implements Serializable {
         this.isCmsPage = isCmsPage;
     }
 
+    /**
+     * Produce an identifier string for a cms page to use for identifying the page in the navigation bar
+     * 
+     * @param cmsPage
+     * @return
+     */
+    public static String getCMSPageNavigationId(CMSPage cmsPage) {
+        try {
+            Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(cmsPage).stream().findFirst();
+            if(staticPage.isPresent()) {
+                return staticPage.get().getPageName();
+            }
+        } catch (DAOException e) {
+        }
+        return "cms_" + String.format("%04d", cmsPage.getId());
+    }
+    
+    public void setCurrentPage(CMSPage cmsPage) {
+        setCurrentPage(getCMSPageNavigationId(cmsPage), false, true, true);
+    }
+    
     /**
      * <p>
      * Setter for the field <code>currentPage</code>.
@@ -422,13 +446,13 @@ public class NavigationHelper implements Serializable {
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @param pi a {@link java.lang.String} object.
-     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
      */
-    public void setCrowdsourcingAnnotationPage(Campaign campaign, String pi, CampaignRecordStatus status) {
+    public void setCrowdsourcingAnnotationPage(Campaign campaign, String pi, CrowdsourcingStatus status) {
         if (campaign == null) {
             return;
         }
-        String urlActionParam = CampaignRecordStatus.REVIEW.equals(status) ? "review" : "annotate";
+        String urlActionParam = CrowdsourcingStatus.REVIEW.equals(status) ? "review" : "annotate";
         setCurrentPage("crowdsourcingAnnotation", false, true);
         breadcrumbBean.updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(getLocaleString(), true),
                 BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/",
@@ -693,6 +717,30 @@ public class NavigationHelper implements Serializable {
                 return "dd/MM/yyyy";
             default:
                 return "yyyy-MM-dd";
+        }
+    }
+    
+    /**
+     * <p>
+     * getDatePatternjQueryDatePicker.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getDatePatternjQueryDatePicker() {
+        if (locale == null) {
+            return "yy-mm-dd";
+        }
+
+        switch (locale.getLanguage()) {
+            case "de":
+                return "dd.mm.yy";
+            case "en":
+                return "mm/dd/yy";
+            case "es":
+                return "dd/mm/yy";
+            default:
+                return "yy-mm-dd";
         }
     }
 
@@ -974,7 +1022,7 @@ public class NavigationHelper implements Serializable {
             if (activeDocumentBean != null && activeDocumentBean.getViewManager() != null && getCurrentPageType().isDocumentPage()) {
                 // If a record is loaded, get the value from the record's value
                 // in discriminatorField
-                subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopDocument().getMetadataValue(discriminatorField);
+                subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopStructElement().getMetadataValue(discriminatorField);
             } else if (isCmsPage()) {
                 CmsBean cmsBean = BeanUtils.getCmsBean();
                 if (cmsBean != null && cmsBean.getCurrentPage() != null) {
@@ -1886,4 +1934,20 @@ public class NavigationHelper implements Serializable {
         return "";
     }
 
+    public boolean isRtl() {
+        return isRtl(getLocale());
+    }
+    
+    public boolean isRtl(String locale) {
+        return isRtl(new Locale(locale));
+    }
+    
+    public boolean isRtl(Locale locale) {
+        return !ComponentOrientation.getOrientation(locale).isLeftToRight();  
+    }
+    
+
+    public boolean isSolrIndexOnline() {
+        return DataManager.getInstance().getSearchIndex().isSolrIndexOnline();
+    }
 }

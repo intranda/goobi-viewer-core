@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -34,7 +32,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.search.SearchHelper;
 
 /**
  * Collection tree element.
@@ -43,6 +40,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
 
     private static final long serialVersionUID = -3308596220913009726L;
 
+    /** Collection name */
     private final String name;
     private final String field;
     public final String splittingChar;
@@ -151,7 +149,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
 
     /**
      * <p>
-     * Getter for the field <code>name</code>.
+     * Getter for the field <code>name</code>. If the <code>CMSCollection</code> translation is desired, use <code>getLabel()</code> instead.
      * </p>
      *
      * @return the name
@@ -165,7 +163,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * getLabel.
      * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return <code>CMSCollection</code> translation, if available; name otherwise
      */
     public String getLabel() {
         if (getInfo() != null) {
@@ -413,13 +411,11 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
                         .append("/-/-/-/")
                         .toString();
             }
-        } else {
-
-            return urls.path(ApiUrls.RECORDS_RSS)
-                    .query("query", query)
-                    .build();
         }
         
+        return urls.path(ApiUrls.RECORDS_RSS)
+                .query("query", query)
+                .build();
     }
 
     /** {@inheritDoc} */

@@ -77,7 +77,7 @@ public class ConvertAbbyyToAlto {
      * @throws java.io.IOException if any.
      */
     public Element convert(File input) throws JDOMException, IOException {
-        SAXBuilder builder = new SAXBuilder();
+        SAXBuilder builder = XmlTools.getSAXBuilder();
         creationtime = Instant.ofEpochMilli(input.lastModified()).atZone(ZoneId.systemDefault()).toLocalDateTime();
         DateTools.getLocalDateTimeFromMillis(input.lastModified(), false);
         Document abbyyDoc = builder.build(input);

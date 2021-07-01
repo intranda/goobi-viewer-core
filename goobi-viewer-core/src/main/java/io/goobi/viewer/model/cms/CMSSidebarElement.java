@@ -115,7 +115,7 @@ public class CMSSidebarElement {
 
     @Transient
     private final int sortingId = ID_COUNTER.next();
-    
+
     @Transient
     private GeoMap geoMap = null;
 
@@ -168,7 +168,7 @@ public class CMSSidebarElement {
      */
     public CMSSidebarElement(CMSSidebarElement original, CMSPage owner) {
         if (original.id != null) {
-            this.id = new Long(original.id);
+            this.id = original.id;
         }
         this.ownerPage = owner;
         this.type = original.type;
@@ -228,6 +228,9 @@ public class CMSSidebarElement {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
         return o.getClass().equals(CMSSidebarElement.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
                 && bothNullOrEqual(getHtml(), ((CMSSidebarElement) o).getHtml())
                 && bothNullOrEqual(getCssClass(), ((CMSSidebarElement) o).getCssClass())
@@ -537,7 +540,7 @@ public class CMSSidebarElement {
             return SidebarElementType.Category.pageLinks;
         } else if (this.getGeoMapId() != null) {
             return SidebarElementType.Category.geoMap;
-        } 
+        }
         return this.getHtml() != null ? SidebarElementType.Category.custom : SidebarElementType.Category.standard;
     }
 
@@ -634,55 +637,54 @@ public class CMSSidebarElement {
         }
         this.geoMap = null;
     }
-    
+
     /**
      * @return the geoMapId
      */
     public Long getGeoMapId() {
         return geoMapId;
     }
-    
+
     /**
      * @param geoMapId the geoMapId to set
      */
     public void setGeoMapId(Long geoMapId) {
-        if(geoMapId != null) {            
+        if (geoMapId != null) {
             this.geoMapId = geoMapId;
             this.geoMap = null;
         }
     }
-    
+
     /**
      * @param geoMap the geoMap to set
      */
-    public void setGeoMap(GeoMap geoMap) {
+    public synchronized void setGeoMap(GeoMap geoMap) {
         this.geoMap = geoMap;
-        if(this.geoMap != null)  {
+        if (this.geoMap != null) {
             this.geoMapId = this.geoMap.getId();
         } else {
             this.geoMapId = Long.MAX_VALUE;
         }
     }
-    
+
     public synchronized GeoMap getGeoMap() throws DAOException {
-        if(this.geoMap == null) {
+        if (this.geoMap == null) {
             GeoMap map = loadGeoMap();
-            if(map == null) {
+            if (map == null) {
                 map = MISSING_GEOMAP;
             }
             this.geoMap = map;
         }
         return this.geoMap;
     }
-        
+
     private GeoMap loadGeoMap() throws DAOException {
-        if(this.getGeoMapId() != null && this.getGeoMapId() > -1) {
+        if (this.getGeoMapId() != null && this.getGeoMapId() > -1) {
             GeoMap map = DataManager.getInstance().getDao().getGeoMap(this.getGeoMapId());
             return map;
         }
         return null;
     }
-
 
     /**
      * <p>
@@ -728,7 +730,6 @@ public class CMSSidebarElement {
         return this.linkedPages != null && !this.linkedPages.isEmpty();
     }
 
-    
     /**
      * @return the simple name of the actual class of the widget. Usually CMSSidebarWidget
      */

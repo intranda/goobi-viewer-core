@@ -1,0 +1,83 @@
+.swagger-api__wrapper {
+	width: 100%;
+	max-width: 1460px;
+	margin: 0 auto;
+	box-sizing: border-box;
+}
+.swagger-api__intro-wrapper {
+	padding: 40px;
+	background: #f5f5f5;
+	border: 1px solid gray;
+	border-bottom: none;
+	border-top: none;	
+}
+
+.swagger-api__heading {
+	font-size: 40px;
+}
+
+.swagger-api__info {
+	margin-top: 20px;
+}
+
+.swagger-api__wrapper .swagger-ui .info {
+	margin-top: 0;
+}
+
+.swagger-api__options {
+	margin-top: 1rem;
+}
+
+
+#swagger-api__option-v1, #swagger-api__option-v2 {
+	font-size: 18px;
+	font-weight: 700;
+	padding: 5px 10px 5px 10px;
+	border: 2px solid #41444e;
+	border-radius: 4px;
+	box-shadow: 0 1px 2px 0 rgba(0,0,0,.25);
+	font-family: sans-serif;
+	color: #3b4151;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	margin-right: 25px;
+	background: transparent;
+	color: #222;
+	transition: all 0.2s ease;
+}
+
+.version {
+	background: 
+}
+
+#swagger-api__option-v1 {
+}
+
+#swagger-api__option-v2 {
+}
+
+.swagger-api__containers {
+	border: 1px solid grey;
+	border-top: none;
+}
+
+#swagger-api__option-v1.-active{
+	background: #49cc90;
+}
+#swagger-api__option-v2.-active {
+	background: #49cc90;
+}
+
+#swagger-container-v1, #swagger-container-v2 {
+	padding-top: 40px;
+}
+
+#swagger-container-v1 .fa-spinner, #swagger-container-v2 .fa-spinner {
+	margin-left: 30px;
+	margin-bottom: 30px;
+}
+
+#swagger-container-v2 {
+	display: none;
+}

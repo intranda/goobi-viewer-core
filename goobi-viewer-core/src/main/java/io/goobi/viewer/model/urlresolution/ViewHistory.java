@@ -17,7 +17,6 @@ package io.goobi.viewer.model.urlresolution;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.faces.context.FacesContext;
@@ -30,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import com.ocpsoft.pretty.PrettyContext;
 
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
@@ -66,12 +64,13 @@ public class ViewHistory {
                     String hostUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest);
                     String applicationName = httpRequest.getContextPath();
                     String serviceUrl = ((HttpServletRequest) request).getRequestURI();
+                    String queryString = httpRequest.getQueryString();
                     PrettyContext context = PrettyContext.getCurrentInstance(httpRequest);
                     if (context != null && context.getRequestURL() != null) {
                         serviceUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + context.getRequestURL().toURL();
                     }
 
-                    Optional<ViewerPath> oCurrentPath = ViewerPathBuilder.createPath(hostUrl, applicationName, serviceUrl);
+                    Optional<ViewerPath> oCurrentPath = ViewerPathBuilder.createPath(hostUrl, applicationName, serviceUrl, queryString);
                     if (oCurrentPath.isPresent()) {
                         //viewer page url
                         setCurrentView(oCurrentPath.get(), session);

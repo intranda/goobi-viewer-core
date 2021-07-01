@@ -130,13 +130,29 @@ a.btn--icon {
 	line-height: normal;
 }
 
+// BUTTONS MIN-WIDTH
+.btn--full, 
+.btn--default, 
+.btn--danger, 
+.btn--success {
+	min-width: 100px;
+}
+
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	// BUTTONS MIN-WIDTH
+	.btn--full, 
+	.btn--default, 
+	.btn--danger, 
+	.btn--success {
+		min-width: 60px;
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}

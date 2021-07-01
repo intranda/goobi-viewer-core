@@ -20,6 +20,7 @@ import java.text.ParseException;
 import java.text.RuleBasedCollator;
 import java.util.Comparator;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -69,13 +70,13 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
 
         String relevantString1 = o1a.getTerm();
         if (StringUtils.isNotEmpty(relevantString1)) {
+            Optional<String> translationValue = o1a.getTranslations() != null ? o1a.getTranslations().getValue(locale) : Optional.empty();
             if (o1a.getSortTerm() != null) {
                 // sort term
                 relevantString1 = o1a.getSortTerm().toLowerCase();
-            } else if (o1a.getTranslations() != null && o1a.getTranslations().getValue(locale) != null
-                    && o1a.getTranslations().getValue(locale).isPresent()) {
+            } else if (translationValue.isPresent()) {
                 // translated term
-                relevantString1 = o1a.getTranslations().getValue(locale).get();
+                relevantString1 = translationValue.get();
             } else {
                 // raw term
                 relevantString1 = relevantString1.toLowerCase();
@@ -85,11 +86,11 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
 
         String relevantString2 = o2a.getTerm();
         if (StringUtils.isNotEmpty(relevantString2)) {
+            Optional<String> translationValue = o2a.getTranslations() != null ? o2a.getTranslations().getValue(locale) : Optional.empty();
             if (o2a.getSortTerm() != null) {
                 relevantString2 = o2a.getSortTerm().toLowerCase();
-            } else if (o2a.getTranslations() != null && o2a.getTranslations().getValue(locale) != null
-                    && o2a.getTranslations().getValue(locale).isPresent()) {
-                relevantString2 = o2a.getTranslations().getValue(locale).get();
+            } else if (translationValue.isPresent()) {
+                relevantString2 = translationValue.get();
             } else {
                 relevantString2 = relevantString2.toLowerCase();
             }

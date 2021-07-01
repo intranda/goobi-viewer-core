@@ -15,11 +15,13 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,6 +32,8 @@ import javax.ws.rs.core.MediaType;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
+import io.goobi.viewer.controller.DataManager;
 import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
 import io.swagger.v3.oas.integration.OpenApiConfigurationException;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
@@ -50,25 +54,24 @@ public class OpenApiResource {
     Application application;
     @Context 
     ServletConfig servletConfig;
-    @Inject
-    private AbstractApiUrlManager urls;
     
     private OpenAPI openApi;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public OpenAPI getOpenApi() {
-        this.openApi = initSwagger(servletConfig, application, urls.getApiPath());
+        this.openApi = initSwagger(servletConfig, application, getApiUrls());
         return this.openApi;
     }
     
-    private OpenAPI initSwagger(ServletConfig servletConfig, ResourceConfig application, String apiUrl) {
+    private OpenAPI initSwagger(ServletConfig servletConfig, ResourceConfig application, List<String> apiUrls) {
 
         try {
             SwaggerConfiguration oasConfig = new SwaggerConfiguration()
                     .prettyPrint(true)
                     .readAllResources(false)
-                    .resourcePackages(Stream.of("io.goobi.viewer.api.rest").collect(Collectors.toSet()));
+                    .resourcePackages(Stream.of("io.goobi.viewer.api.rest.v1").collect(Collectors.toSet()));
+            
             
             OpenAPI openApi = new JaxrsOpenApiContextBuilder()
                     .servletConfig(servletConfig)
@@ -76,9 +79,13 @@ public class OpenApiResource {
                     .openApiConfiguration(oasConfig)
                     .buildContext(true).read();
             
-            Server server = new Server();
-            server.setUrl(apiUrl);
-            openApi.setServers(Collections.singletonList(server));
+            List<Server> servers = new ArrayList<>();
+            for (String url : apiUrls) {                
+                Server server = new Server();
+                server.setUrl(url);
+                servers.add(server);
+            }
+            openApi.setServers(servers);
             
             openApi.setInfo(getInfo());
             
@@ -86,6 +93,17 @@ public class OpenApiResource {
         } catch (OpenApiConfigurationException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
+    }
+    
+    private List<String> getApiUrls() {
+
+        return Arrays.asList(
+                DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).map(AbstractApiUrlManager::getApiUrl).orElse(null),
+                DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v1).map(AbstractApiUrlManager::getApiUrl).orElse(null))
+                .stream()
+                .filter(url -> url != null)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     /**

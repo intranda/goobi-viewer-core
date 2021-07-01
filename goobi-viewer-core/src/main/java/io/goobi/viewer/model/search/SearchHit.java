@@ -46,9 +46,6 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
@@ -65,6 +62,9 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Wrapper class for search hits. Contains the corresponding <code>BrowseElement</code>
@@ -455,7 +455,8 @@ public class SearchHit implements Comparable<SearchHit> {
 
         try {
             String fulltext = null;
-            if (BeanUtils.getRequest() != null && AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false)) {
+            if (BeanUtils.getRequest() != null
+                    && AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false)) {
                 fulltext = DataFileTools.loadTei((String) doc.getFieldValue(SolrConstants.PI), language);
             }
             if (fulltext != null) {
@@ -524,7 +525,6 @@ public class SearchHit implements Comparable<SearchHit> {
         }
         Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
         Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
-        List<SolrDocument> ugcDocs = null;
         for (int i = 0; i < number; ++i) {
             SolrDocument childDoc = childDocs.get(i + skip);
             String fulltext = null;
@@ -533,7 +533,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 logger.warn("Document {} has no DOCTYPE field, cannot add to child search hits.", childDoc.getFieldValue(SolrConstants.IDDOC));
                 continue;
             }
-            //                    logger.trace("Found child doc: {}", docType);
+            // logger.trace("Found child doc: {}", docType);
             boolean acccessDeniedType = false;
             switch (docType) {
                 case PAGE:
@@ -696,7 +696,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             }
                         }
 
-                        List<String> fieldValues = SolrSearchIndex.getMetadataValues(doc, docFieldName);
+                        List<String> fieldValues = SolrTools.getMetadataValues(doc, docFieldName);
                         for (String fieldValue : fieldValues) {
                             // Skip values that are equal to the hit label
                             if (fieldValue.equals(browseElement.getLabel())) {
@@ -725,7 +725,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 default:
                     // Look up the exact field name in he Solr doc and add its values that contain any of the terms for that field
                     if (doc.containsKey(termsFieldName)) {
-                        List<String> fieldValues = SolrSearchIndex.getMetadataValues(doc, termsFieldName);
+                        List<String> fieldValues = SolrTools.getMetadataValues(doc, termsFieldName);
                         for (String fieldValue : fieldValues) {
                             // Skip values that are equal to the hit label
                             if (fieldValue.equals(browseElement.getLabel())) {
@@ -797,7 +797,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     if (added) {
                         break;
                     }
-                    String value = SolrSearchIndex.getSingleFieldStringValue(doc, field);
+                    String value = SolrTools.getSingleFieldStringValue(doc, field);
                     if (value != null) {
                         for (String term : searchTerms.get(SolrConstants.UGCTERMS)) {
                             if (value.toLowerCase().contains(term)) {

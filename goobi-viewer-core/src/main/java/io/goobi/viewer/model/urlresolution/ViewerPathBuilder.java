@@ -61,13 +61,14 @@ public class ViewerPathBuilder {
         String serverUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest); // http://localhost:8080/viewer
         String serviceUrl = httpRequest.getServletPath(); // /resources/.../index.xhtml
         String serverName = httpRequest.getContextPath(); // /viewer
+        String queryString = httpRequest.getQueryString();
         PrettyContext context = PrettyContext.getCurrentInstance(httpRequest);
         if (!serviceUrl.contains("/cms/") && !serviceUrl.contains("/campaigns/") && context != null && context.getRequestURL() != null) {
             serviceUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest)
                     + ("/".equals(context.getRequestURL().toURL()) ? "/index" : context.getRequestURL().toURL());
         }
         serviceUrl = serviceUrl.replaceAll("\\/index\\.x?html", "/");
-        return createPath(serverUrl, serverName, serviceUrl);
+        return createPath(serverUrl, serverName, serviceUrl, queryString);
 
     }
 
@@ -85,7 +86,7 @@ public class ViewerPathBuilder {
         String serverUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request); // http://localhost:8080/viewer
         String serverName = request.getContextPath(); // /viewer
         String serviceUrl = baseUrl.replaceAll("^" + serverUrl, "").replaceAll("^" + serverName, "");
-        return createPath(serverUrl, serverName, serviceUrl);
+        return createPath(serverUrl, serverName, serviceUrl, request.getQueryString());
     }
 
     /**
@@ -100,7 +101,7 @@ public class ViewerPathBuilder {
      * @return A {@link io.goobi.viewer.model.urlresolution.ViewerPath} containing the complete path information
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static Optional<ViewerPath> createPath(String applicationUrl, String applicationName, String serviceUrl) throws DAOException {
+    public static Optional<ViewerPath> createPath(String applicationUrl, String applicationName, String serviceUrl, String queryString) throws DAOException {
         serviceUrl = serviceUrl.replace(applicationUrl, "").replaceAll("^\\/", "");
         try {
             serviceUrl = URLEncoder.encode(serviceUrl, "utf-8").replace("%2F", "/");
@@ -115,6 +116,7 @@ public class ViewerPathBuilder {
         ViewerPath currentPath = new ViewerPath();
         currentPath.setApplicationUrl(applicationUrl);
         currentPath.setApplicationName(applicationName);
+        currentPath.setQueryString(queryString);
 
         if (serviceUrl.matches("cms/\\d+/.*")) {
             Long cmsPageId = Long.parseLong(pathParts[1].toString());
@@ -289,10 +291,14 @@ public class ViewerPathBuilder {
      * @param slave a {@link java.net.URI} object.
      * @return a {@link java.net.URI} object.
      */
-    public static URI resolve(URI master, URI slave) {
-        return resolve(master, slave.toString());
+    public static URI resolve(URI master, URI slave, String fragment, String query) {
+        return resolve(master, slave.toString(), fragment, query);
     }
 
+    public static URI resolve(URI master, String slave) {
+        return resolve(master, slave, "", "");
+    }
+    
     /**
      * <p>
      * resolve.
@@ -302,15 +308,42 @@ public class ViewerPathBuilder {
      * @param slave a {@link java.lang.String} object.
      * @return a {@link java.net.URI} object.
      */
-    public static URI resolve(URI master, String slave) {
+    public static URI resolve(URI master, String slave, String fragment, String query) {
         String base = master.toString();
         if (base.endsWith("/")) {
             base = base.substring(0, base.length() - 1);
         }
+        if (StringUtils.isNotBlank(slave) && !slave.endsWith("/")) {
+            slave = slave + "/";
+        }
         if (StringUtils.isBlank(master.toString())) {
-            return URI.create(slave);
+            return URI.create(slave + getFragmentString(fragment) + getQueryString(query));
         } else {
-            return URI.create(base + "/" + slave);
+            return URI.create(base + "/" + slave + getFragmentString(fragment) + getQueryString(query));
+        }
+    }
+
+    /**
+     * @param query
+     * @return
+     */
+    private static String getQueryString(String query) {
+        if(StringUtils.isBlank(query)) {
+            return "";
+        } else {
+            return "?" + query;
+        }
+    }
+
+    /**
+     * @param fragment
+     * @return
+     */
+    private static String getFragmentString(String fragment) {
+        if(StringUtils.isBlank(fragment)) {
+            return "";
+        } else {
+            return "#" + fragment;
         }
     }
 

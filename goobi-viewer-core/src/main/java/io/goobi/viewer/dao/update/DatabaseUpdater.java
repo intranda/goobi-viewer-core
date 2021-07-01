@@ -34,7 +34,7 @@ public class DatabaseUpdater {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseUpdater.class);
 
-    private static final IModelUpdate[] updates = { new SidebarWidgetTypeUpdate(), new CMSCategoryUpdate(), new LicenseTypeUpdate() };
+    private static final IModelUpdate[] updates = { new CMSMediaUpdate(), new SidebarWidgetTypeUpdate(), new CMSCategoryUpdate(), new LicenseTypeUpdate() };
 
     private final IDAO dao;
 

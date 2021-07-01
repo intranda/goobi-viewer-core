@@ -34,7 +34,7 @@ import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
-import de.intranda.api.serializer.MetadataSerializer;
+import de.intranda.api.serializer.WebAnnotationMetadataValueSerializer;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.util.PathConverter;
@@ -49,9 +49,9 @@ import io.goobi.viewer.model.cms.CMSMediaItem;
 public class MediaItem {
 
     private final Long id;
-    @JsonSerialize(using = MetadataSerializer.class)
+    @JsonSerialize(using = WebAnnotationMetadataValueSerializer.class)
     private final IMetadataValue label;
-    @JsonSerialize(using = MetadataSerializer.class)
+    @JsonSerialize(using = WebAnnotationMetadataValueSerializer.class)
     private final IMetadataValue description;
     private final IContent image;
     private final String link;
