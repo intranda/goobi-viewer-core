@@ -2167,6 +2167,18 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return null;
     }
     
+    private Optional<CMSContentItem> getTopBarSliderItem() {
+        try {
+            CMSPageLanguageVersion lang = getLanguageVersion(GLOBAL_LANGUAGE);
+            if(lang != null)  {
+                CMSContentItem item = lang.getContentItem(TOPBAR_SLIDER_ID);
+                return Optional.ofNullable(item);
+            }
+        } catch (CmsElementNotFoundException e) {
+        }
+        return Optional.empty();
+    }
+    
     public boolean mayHaveTopBarSlider() {
         return getTemplate().isMayHaveTopBarSlider();
     }
@@ -2176,7 +2188,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
     
     public void setTopBarSliderId(Long id) throws DAOException {
-            CMSContentItem sliderItem = getContentItemIfExists(TOPBAR_SLIDER_ID).orElse(new CMSContentItem(CMSContentItemType.SLIDER)); 
+            CMSContentItem sliderItem = getTopBarSliderItem().orElse(new CMSContentItem(CMSContentItemType.SLIDER)); 
             sliderItem.setItemId(TOPBAR_SLIDER_ID);
             sliderItem.setSliderId(id);
             if(!hasContentItem(TOPBAR_SLIDER_ID)) {

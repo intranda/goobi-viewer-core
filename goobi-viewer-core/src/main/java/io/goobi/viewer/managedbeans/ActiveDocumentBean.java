@@ -2223,8 +2223,8 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * Get a CMSSidebarElement with a map containing all GeoMarkers for the current PI. The widget is stored in the bean,
-     * but refreshed each time the PI changes
+     * Get a CMSSidebarElement with a map containing all GeoMarkers for the current PI. The widget is stored in the bean, but refreshed each time the
+     * PI changes
      * 
      * @return
      * @throws PresentationException
@@ -2233,7 +2233,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public synchronized CMSSidebarElement getMapWidget() throws PresentationException, DAOException, IndexUnreachableException {
         CMSSidebarElement widget = this.mapWidget.get(getPersistentIdentifier());
-        if(widget == null) {
+        if (widget == null) {
             widget = generateMapWidget(getPersistentIdentifier());
             this.mapWidget = Collections.singletonMap(getPersistentIdentifier(), widget);
         }
@@ -2244,7 +2244,7 @@ public class ActiveDocumentBean implements Serializable {
         CMSSidebarElement widget = new CMSSidebarElement();
         widget.setType("widgetGeoMap");
         try {
-            if ("-".equals(getPersistentIdentifier())) {
+            if ("-".equals(pi)) {
                 return null;
             }
 
@@ -2254,13 +2254,13 @@ public class ActiveDocumentBean implements Serializable {
             map.setShowPopover(true);
             map.setMarkerTitleField(null);
             //map.setMarker("default");
-            
-            String mainDocQuery = String.format("PI:%s", getPersistentIdentifier());
+
+            String mainDocQuery = String.format("PI:%s", pi);
             List<String> mainDocFields = PrettyUrlTools.getSolrFieldsToDeterminePageType();
             SolrDocument mainDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(mainDocQuery, mainDocFields);
             PageType pageType = PrettyUrlTools.getPreferredPageType(mainDoc);
-            
-            String subDocQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:DOCSTRCT", getPersistentIdentifier());
+
+            String subDocQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:DOCSTRCT", pi);
             List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
             List<String> subDocFields = new ArrayList<>();
             subDocFields.add(SolrConstants.LABEL);
@@ -2269,24 +2269,30 @@ public class ActiveDocumentBean implements Serializable {
             subDocFields.add(SolrConstants.LOGID);
             subDocFields.add(SolrConstants.ISWORK);
             subDocFields.addAll(coordinateFields);
+
+            String annotationQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:UGC +UGCTYPE:\"ADDRESS\"", pi);
+            long numAnnotations = DataManager.getInstance().getSearchIndex().getHitCount(annotationQuery);
             
             SolrDocumentList subDocs = DataManager.getInstance().getSearchIndex().getDocs(subDocQuery, subDocFields);
-            if(subDocs != null) {
-            Collection<GeoMapFeature> features = new ArrayList<>();
-            for (SolrDocument solrDocument : subDocs) {
-                List<GeoMapFeature> docFeatures = new ArrayList<GeoMapFeature>();
-                for (String coordinateField : coordinateFields) {
-                    docFeatures.addAll(GeoMap.getGeojsonPoints(solrDocument, coordinateField, SolrConstants.LABEL, null));
+            if (subDocs != null) {
+                Collection<GeoMapFeature> features = new ArrayList<>();
+                for (SolrDocument solrDocument : subDocs) {
+                    List<GeoMapFeature> docFeatures = new ArrayList<GeoMapFeature>();
+                    for (String coordinateField : coordinateFields) {
+                        docFeatures.addAll(GeoMap.getGeojsonPoints(solrDocument, coordinateField, SolrConstants.LABEL, null));
+                    }
+                    if (!solrDocument.containsKey(SolrConstants.ISWORK)
+                            && !solrDocument.getFieldValue(SolrConstants.LOGID).equals(getViewManager().getLogId())) {
+                        docFeatures.forEach(f -> f.setLink(PrettyUrlTools.getRecordUrl(solrDocument, pageType)));
+                    }
+                    features.addAll(docFeatures);
                 }
-                if(!solrDocument.containsKey(SolrConstants.ISWORK) && !solrDocument.getFieldValue(SolrConstants.LOGID).equals(getViewManager().getLogId())) {                    
-                    docFeatures.forEach(f -> f.setLink(PrettyUrlTools.getRecordUrl(solrDocument, pageType)));
+                if (!features.isEmpty()) {
+                    map.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
                 }
-                features.addAll(docFeatures);
             }
-            if(!features.isEmpty()) {
-                map.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
+            if(numAnnotations > 0 || !map.getFeatures().isEmpty()) {                
                 widget.setGeoMap(map);
-            }
             }
         } catch (IndexUnreachableException e) {
             logger.error("Unable to load geomap", e);
@@ -2389,7 +2395,7 @@ public class ActiveDocumentBean implements Serializable {
         if (PrettyContext.getCurrentInstance() != null && PrettyContext.getCurrentInstance().getCurrentMapping() != null) {
             return "pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId();
         }
-        
+
         return "";
     }
 }
