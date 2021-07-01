@@ -223,8 +223,11 @@
 	    </nav>
 	
 	    <script type="text/javascript">
-	        var navigationConfig = {};
-	
+	        var navigationConfig = {
+	                subMenuSelector: "##{cc.clientId}\\:navigationForm [data-toggle='submenu']",
+	                megaMenuSelector: "##{cc.clientId}\\:navigationForm [data-toggle='megamenu']",
+	                closeMegaMenuSelector: "##{cc.clientId}\\:navigationForm [data-toggle='close']",
+	        };
 	        viewerJS.navigation.init(navigationConfig);
 	    </script>
 	</composite:implementation>
