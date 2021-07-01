@@ -240,18 +240,18 @@ public class NavigationHelper implements Serializable {
     public static String getCMSPageNavigationId(CMSPage cmsPage) {
         try {
             Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(cmsPage).stream().findFirst();
-            if(staticPage.isPresent()) {
+            if (staticPage.isPresent()) {
                 return staticPage.get().getPageName();
             }
         } catch (DAOException e) {
         }
         return "cms_" + String.format("%04d", cmsPage.getId());
     }
-    
+
     public void setCurrentPage(CMSPage cmsPage) {
         setCurrentPage(getCMSPageNavigationId(cmsPage), false, true, true);
     }
-    
+
     /**
      * <p>
      * Setter for the field <code>currentPage</code>.
@@ -719,7 +719,7 @@ public class NavigationHelper implements Serializable {
                 return "yyyy-MM-dd";
         }
     }
-    
+
     /**
      * <p>
      * getDatePatternjQueryDatePicker.
@@ -1633,10 +1633,26 @@ public class NavigationHelper implements Serializable {
      * @should escape quotation marks
      */
     public String getTranslation(String msgKey, String language) {
+        return getTranslation(msgKey, language, true);
+    }
+
+    /**
+     * Returns a simple translation for the given language (or current language, if none given).
+     * 
+     * @param msgKey Message key to translate
+     * @param language Optional desired language
+     * @param escape If true the return string will be Java-escaped
+     * @return Translated key
+     */
+    public String getTranslation(String msgKey, String language, boolean escape) {
         String msg = ViewerResourceBundle.getTranslation(msgKey, language != null ? Locale.forLanguageTag(language) : null);
 
         // If msg contains unescaped quotation marks, it may interfere with calls to this method from JavaScript
-        return StringEscapeUtils.escapeJava(msg);
+        if (escape) {
+            return StringEscapeUtils.escapeJava(msg);
+        }
+
+        return msg;
     }
 
     /**
@@ -1937,15 +1953,14 @@ public class NavigationHelper implements Serializable {
     public boolean isRtl() {
         return isRtl(getLocale());
     }
-    
+
     public boolean isRtl(String locale) {
         return isRtl(new Locale(locale));
     }
-    
+
     public boolean isRtl(Locale locale) {
-        return !ComponentOrientation.getOrientation(locale).isLeftToRight();  
+        return !ComponentOrientation.getOrientation(locale).isLeftToRight();
     }
-    
 
     public boolean isSolrIndexOnline() {
         return DataManager.getInstance().getSearchIndex().isSolrIndexOnline();

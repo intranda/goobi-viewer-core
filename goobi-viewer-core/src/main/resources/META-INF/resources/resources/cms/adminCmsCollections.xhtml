@@ -90,10 +90,10 @@
 																		styleClass="#{browseBean.dcCollection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
 																		<h:outputText
 																			rendered="#{browseDcElement.displayNumberOfVolumes}"
-																			value="#{navigationHelper.getTranslation(browseDcElement.label, cmsCollectionsBean.localeSwitch.selectedLocale.language)} (#{browseDcElement.numberOfVolumes})" />
+																			value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.localeSwitch.selectedLocale.language, false)} (#{browseDcElement.numberOfVolumes})" />
 																		<h:outputText
 																			rendered="#{!browseDcElement.displayNumberOfVolumes}"
-																			value="#{navigationHelper.getTranslation(browseDcElement.label, cmsCollectionsBean.localeSwitch.selectedLocale.language)}" />
+																			value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.localeSwitch.selectedLocale.language, false)}" />
 																		<f:ajax render="@form" />
 																	</h:outputLink>
 																</div>

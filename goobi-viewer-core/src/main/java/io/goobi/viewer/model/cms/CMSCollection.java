@@ -207,43 +207,15 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * get the label for the given {@code language}, or an empty string if no matching label exists the language should be the language code of a
-     * {@link java.util.Locale} and is case insensitive
-     *
-     * @param language a {@link java.lang.String} object.
-     * @return The string value of the label of the given language, or an empty string
-     */
-    @Deprecated
-    public String getLabel(String language) {
-        return getLabels().stream()
-                .filter(translation -> language.equalsIgnoreCase(translation.getLanguage()))
-                .filter(translation -> StringUtils.isNotBlank(translation.getValue()))
-                .findFirst()
-                .map(translation -> translation.getValue())
-                .orElse(ViewerResourceBundle.getTranslation(getSolrFieldValue(), null));
-    }
-
-    /**
      * get the label for the given {@code locale}, or an empty string if no matching label exists
      *
      * @param locale a {@link java.util.Locale} object.
      * @return The string value of the label of the given locale, or an empty string
      */
-    @Deprecated
     public String getLabel(Locale locale) {
-        return getLabel(locale.getLanguage());
+        return ViewerResourceBundle.getTranslation(getSolrFieldValue(), locale);
     }
 
-    /**
-     * get the label for the current locale (given by {@link io.goobi.viewer.managedbeans.utils.BeanUtils#getLocale()}, or an empty string if no
-     * matching label exists
-     *
-     * @return The string value of the label of the current locale, or an empty string
-     */
-    @Deprecated
-    public String getLabel() {
-        return getLabel(BeanUtils.getLocale());
-    }
 
     /**
      * <p>
@@ -485,7 +457,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /** {@inheritDoc} */
     @Override
     public String getName() {
-        return getLabel();
+        return solrFieldValue;
     }
 
     /** {@inheritDoc} */
