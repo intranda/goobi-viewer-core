@@ -431,6 +431,16 @@ public class CmsCollectionsBean implements Serializable {
      */
     public String saveCurrentCollection() throws DAOException {
         if (getCurrentCollection() != null) {
+            switch (getImageMode()) {
+                case NONE:
+                    getCurrentCollection().setMediaItem(null);
+                case IMAGE:
+                    getCurrentCollection().setRepresentativeWorkPI(null);
+                    break;
+                case PI:
+                    getCurrentCollection().setMediaItem(null);
+                    break;
+            }
             DataManager.getInstance().getDao().updateCMSCollection(getCurrentCollection());
             updateCollections();
             addToCollectionViews(getCurrentCollection());

@@ -271,7 +271,6 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @return The string value of the description of the given language, or an empty string
      */
     public String getDescription(String language) {
-        logger.trace("getDescription: {}", language);
         return getDescriptions().stream()
                 .filter(translation -> language.equalsIgnoreCase(translation.getLanguage()))
                 //                .filter(translation -> StringUtils.isNotBlank(translation.getValue()))
