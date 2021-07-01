@@ -45,7 +45,7 @@ import io.goobi.viewer.solr.SolrConstants;
  * FacetItem class.
  * </p>
  */
-public class FacetItem implements Comparable<FacetItem>, Serializable, IFacetItem {
+public class FacetItem implements Serializable, IFacetItem {
 
     private static final long serialVersionUID = 5033196184122928247L;
 
@@ -161,18 +161,6 @@ public class FacetItem implements Comparable<FacetItem>, Serializable, IFacetIte
             return false;
         }
         return true;
-    }
-
-    /**
-     * Compares this item's count to the other item's count. Larger count means the item is sorted before the other item.
-     * 
-     * @should return plus if count less than other count
-     * @should return minus if count more than other count
-     * @should compare by label if count equal
-     */
-    @Override
-    public int compareTo(FacetItem facetItem) {
-        return count > facetItem.getCount() ? -1 : count < facetItem.getCount() ? +1 : (label != null ? label.compareTo(facetItem.getLabel()) : 0);
     }
 
     /**
