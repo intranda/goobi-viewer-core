@@ -285,8 +285,8 @@ var viewerJS = ( function( viewer ) {
  		this.geoMap = geoMap;
         this.config = $.extend( true, {}, _defaults_featureGroup, geoMap.config.layer, config );
         if(_debug) {
-        }
             console.log("create featureGroup with config ",  config);
+        }
 
 		this.markerIdCounter = 1;
         this.markers = [];
@@ -343,7 +343,7 @@ var viewerJS = ( function( viewer ) {
                 .subscribe(this.onFeatureMove);
                 rxjs.fromEvent(layer, "click").pipe(rxjs.operators.map(e => layer.feature)).subscribe(this.onFeatureClick);
 
-                if(this.config.popover) {                    
+                if(this.config.popover && feature.properties && (feature.properties.title || feature.properties.desc)) {                    
                     if(this.config.popoverOnHover) {                    
                         rxjs.fromEvent(layer, "mouseover").subscribe(() => layer.openPopup());
                         rxjs.fromEvent(layer, "mouseout").subscribe(() => layer.closePopup());

@@ -15,6 +15,7 @@
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
 			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
 			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+			<f:event type="preRenderView" listener="#{cmsDynamicContentBean.setCmsPage(cmsBean.currentPage)}" />
         </f:metadata>
     </ui:define>
     
@@ -22,6 +23,10 @@
         <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
     
+	<ui:define name="topbar">
+		<h:panelGroup binding="#{cmsDynamicContentBean.topBarContent}"></h:panelGroup>
+	</ui:define>
+
 
 	<ui:define name="content">
 		<ui:include src="/resources/cms/includes/cms_script.xhtml" />

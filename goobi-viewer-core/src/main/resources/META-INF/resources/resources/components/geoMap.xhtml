@@ -28,7 +28,6 @@
 		**/
 		//<![CDATA[
 		(() => {
-
         	let geoMap = new viewerJS.GeoMap({
         	    mapId: "#{cc.attrs.mapId}",
            		language: "#{navigationHelper.localeString}",
@@ -37,9 +36,14 @@
 	           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
 	           		popoverOnHover: #{cc.attrs.popoverOnHover},
 	           		clusterMarkers: #{cc.attrs.clusterMarkers},
+// 	           		markerIcon: {
+// 	           		 	markerColor: 'blue',
+// 	           		 	highlightColor: 'red',
+// 	           	     	shape: 'square',
+// 	           		}
            		}
            	});
-           	$(document).ready(() => {                  		    
+           	$(document).ready(() => {   
             	let view = #{cc.attrs.geoMap.initialView};
             	let features = #{cc.attrs.geoMap.featuresAsString};
             	geoMap.init(view);
@@ -62,17 +66,18 @@
 	            }
             	layer.init(features, true);
             	
+            	console.log("Show annotations: " + #{cc.attrs.showAnnotations});
             	if(#{cc.attrs.showAnnotations}) {            	    
             	 $("[data-geomap-feature]").each((index, ele) => {
                      let featureString = $(ele).attr("data-geomap-feature");
                      if(featureString) {
                          let feature = JSON.parse(featureString);
-                         geoMap.addMarker(feature);
+                         layer.addMarker(feature);
                          $(ele).parent().on("mouseenter",  () => {
-                             geoMap.highlightMarker(feature);
+                             layer.highlightMarker(feature);
                          });
                          $(ele).parent().on("mouseleave",  () => {
-                             geoMap.highlightMarker(null);
+                             layer.highlightMarker(null);
                          });
                      }
                  });

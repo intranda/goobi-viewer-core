@@ -36,7 +36,6 @@
 							<ui:repeat var="content"
 								value="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi)}">
 								<h:panelGroup rendered="#{content.isEmpty() ? 'false':'true'}">
-
 									<li id="words-#{content.id}"
 										class="widget-annotations__entry #{content.isOnThisPage(activeDocumentBean.viewManager.currentPage) ? '-onpage' : ''}">
 										<div class="widget-annotations__type">
