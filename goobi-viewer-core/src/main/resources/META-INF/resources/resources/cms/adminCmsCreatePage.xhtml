@@ -126,7 +126,7 @@
                                                             <!-- Topbar slider -->
                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeTopBarSlider.xhtml" />
 
-                                                            <ui:repeat var="contentItem" value="#{cmsBean.selectedPage.getContentItems(locale)}">
+                                                            <ui:repeat var="contentItem" value="#{cmsBean.selectedPage.getContentItems(locale).stream().filter(item -> item.appearInListings()).toList()}">
                                                                 <!-- HTML SNIPPET -->
                                                                 <ui:fragment rendered="#{contentItem.type == 'TEXT'}">
                                                                     <div class="cms-module__option-group">

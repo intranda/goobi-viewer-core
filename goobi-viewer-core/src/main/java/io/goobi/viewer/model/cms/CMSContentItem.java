@@ -1803,5 +1803,14 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public void setSlider(CMSSlider slider) {
         this.slider = slider;
     }
+    
+    /**
+     * The item with itemId {@link CMSPage#TOPBAR_SLIDER_ID} should never occur in any contentItem lists
+     * 
+     * @return
+     */
+    public boolean appearInListings() {
+        return !CMSPage.TOPBAR_SLIDER_ID.equals(this.itemId);
+    }
 
 }

@@ -19,6 +19,7 @@ import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.component.html.HtmlPanelGroup;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.jboss.weld.exceptions.IllegalStateException;
@@ -33,7 +34,7 @@ import io.goobi.viewer.model.jsf.DynamicContentType;
  *
  */
 @Named
-@SessionScoped
+@ViewScoped
 public class CmsDynamicContentBean implements Serializable{
 
     private static final long serialVersionUID = 644204008911471246L;
