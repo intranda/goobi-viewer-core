@@ -100,7 +100,7 @@
 		                let geoMap = new viewerJS.GeoMap({
 	                	    mapId: "geoFacettingMap",
 	                   		language: "#{navigationHelper.localeString}",
-	                   		fixed: true,
+	                   		fixed: false,
 	                   		layer: {
 		                   		allowMovingFeatures: false,
 		                   		popoverOnHover: false,
@@ -119,6 +119,13 @@
                         	},
                         	this.features
                     	);
+                    	
+                        geoMap.layers[0].onFeatureClick.subscribe(f => {
+                            if(f.properties && f.properties.link) {
+                               window.location.assign(f.properties.link);
+                           }
+                        })
+                    	
                     	this.drawLayer = new viewerJS.GeoMap.featureGroup(geoMap, {
                     	    style : {
     		                    	fillColor : "#d9534f",
