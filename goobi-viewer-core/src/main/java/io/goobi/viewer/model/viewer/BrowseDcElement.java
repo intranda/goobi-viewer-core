@@ -52,8 +52,8 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     private int displayNumberOfVolumesLevel;
     private BrowseElementInfo info;
     /**
-     * A list of metadata values of a specified SORL field contained in any volumes within the collection.
-     * Used to group collections into groups with matching elements in "facetValues"
+     * A list of metadata values of a specified SORL field contained in any volumes within the collection. Used to group collections into groups with
+     * matching elements in "facetValues"
      */
     private List<String> facetValues = new ArrayList<>();
 
@@ -180,6 +180,19 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     public String getDescription() {
         if (getInfo() != null) {
             return getInfo().getDescription();
+        }
+        return new StringBuilder(name).append("_DESCRIPTION").toString();
+    }
+
+    /**
+     * Returns the message key for the collection description for the given language.
+     * 
+     * @param language Requested language (ISO 639-1)
+     * @return
+     */
+    public String getDescription(String language) {
+        if (getInfo() != null) {
+            return getInfo().getDescription(language);
         }
         return new StringBuilder(name).append("_DESCRIPTION").toString();
     }
@@ -366,7 +379,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     public String getRssUrl() throws ViewerConfigurationException {
         return buildRssUrl();
     }
-    
+
     /**
      * 
      * @return +({field}:{name} {field}:{name}.*) +(ISWORK:* ISANCHOR:*)
@@ -384,7 +397,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     private String buildRssUrl() throws ViewerConfigurationException {
         String query = new StringBuilder()
                 .append("(")
-                .append(field) 
+                .append(field)
                 .append(':')
                 .append(name)
                 .append(" OR ")
@@ -395,8 +408,8 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
                 .toString();
 
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
-        
-        if(urls == null) {
+
+        if (urls == null) {
 
             try {
                 return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
@@ -412,7 +425,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
                         .toString();
             }
         }
-        
+
         return urls.path(ApiUrls.RECORDS_RSS)
                 .query("query", query)
                 .build();
@@ -493,22 +506,22 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         if (getInfo() != null) {
             return getInfo().getIconURI();
         }
-        
+
         return null;
     }
-    
+
     /**
      * @return the groupingValues
      */
     public List<String> getFacetValues() {
         return facetValues;
     }
-    
+
     /**
      * @param groupingValues the groupingValues to set
      */
     public void setFacetValues(Collection<String> facetValues) {
         this.facetValues = new ArrayList<>(facetValues);
     }
-    
+
 }

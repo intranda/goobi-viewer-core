@@ -46,7 +46,7 @@
                                     <!-- LANGUAGE TABS -->
                                     <div class="admin__language-tabs">
                                         <viewerComponent:localeSelector 
-                                            object="#{cmsCollectionsBean.localeSwitch}"
+                                            object="#{cmsCollectionsBean.currentTab}"
                                             render="collectionTreeGroup"
                                             execute="collectionTreeGroup"/>
                                     </div>  
@@ -90,10 +90,10 @@
 																		styleClass="#{browseBean.dcCollection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
 																		<h:outputText
 																			rendered="#{browseDcElement.displayNumberOfVolumes}"
-																			value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.localeSwitch.selectedLocale.language, false)} (#{browseDcElement.numberOfVolumes})" />
+																			value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)} (#{browseDcElement.numberOfVolumes})" />
 																		<h:outputText
 																			rendered="#{!browseDcElement.displayNumberOfVolumes}"
-																			value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.localeSwitch.selectedLocale.language, false)}" />
+																			value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)}" />
 																		<f:ajax render="@form" />
 																	</h:outputLink>
 																</div>
@@ -135,7 +135,7 @@
 														<div class="col-12 col-sm-11 col-sm-offset-1">
 															<div class="collection__description">
 																<h:outputText
-																	value="#{msg[browseDcElement.description]}"
+																	value="#{browseDcElement.getDescription(cmsCollectionsBean.currentTab.selectedLocale.language)}"
 																	escape="false" />
 															</div>
 															<h:panelGroup rendered="#{browseDcElement.hasIcon()}">

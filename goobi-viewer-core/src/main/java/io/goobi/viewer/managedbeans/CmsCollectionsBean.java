@@ -83,7 +83,7 @@ public class CmsCollectionsBean implements Serializable {
     private boolean piValid = true;
     private CMSCollectionImageMode imageMode = CMSCollectionImageMode.NONE;
     /** Current tab language */
-    private CMSCollectionTreeTab localeSwitch = new CMSCollectionTreeTab(solrField);
+    private CMSCollectionTreeTab currentTab = new CMSCollectionTreeTab(solrField);
 
     /**
      * <p>
@@ -260,8 +260,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
+     * Loads existing or creates a new <code>CMSCollection</code> for the current <code>solrfield</code> and the given <code>collectionName</code>.
      * 
-     * @param collectionName
+     * @param collectionName Collection field value
      * @throws DAOException
      */
     public void setCollectionName(String collectionName) throws DAOException {
@@ -530,17 +531,17 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * @return the localeSwitch
+     * @return the currentTab
      */
-    public CMSCollectionTreeTab getLocaleSwitch() {
-        return localeSwitch;
+    public CMSCollectionTreeTab getCurrentTab() {
+        return currentTab;
     }
 
     /**
-     * @param localeSwitch the localeSwitch to set
+     * @param currentTab the currentTab to set
      */
-    public void setLocaleSwitch(CMSCollectionTreeTab localeSwitch) {
-        this.localeSwitch = localeSwitch;
+    public void setCurrentTab(CMSCollectionTreeTab currentTab) {
+        this.currentTab = currentTab;
     }
 
     /**
