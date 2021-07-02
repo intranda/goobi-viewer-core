@@ -282,6 +282,8 @@ public class CmsCollectionsBean implements Serializable {
             }
             // Always generate missing translations
             editCollection(currentCollection);
+            // Set the image mode value based on what values exist on the collection entry
+            initImageMode();
         }
     }
 
@@ -431,6 +433,7 @@ public class CmsCollectionsBean implements Serializable {
      */
     public String saveCurrentCollection() throws DAOException {
         if (getCurrentCollection() != null) {
+            // Remove thumbnail data for whatever mode is not selected
             switch (getImageMode()) {
                 case NONE:
                     getCurrentCollection().setMediaItem(null);
@@ -538,6 +541,25 @@ public class CmsCollectionsBean implements Serializable {
     public void setImageMode(CMSCollectionImageMode imageMode) {
         logger.trace("setImageMode: {}", imageMode);
         this.imageMode = imageMode;
+    }
+
+    /**
+     * Sets the value of <code>imageMode</code> depending on the properties of <code>currentCollection</code>.
+     * 
+     * @should set imageMode correctly
+     */
+    public void initImageMode() {
+        if (currentCollection == null) {
+            return;
+        }
+
+        if (currentCollection.hasRepresentativeWork()) {
+            imageMode = CMSCollectionImageMode.PI;
+        } else if (currentCollection.hasMediaItem()) {
+            imageMode = CMSCollectionImageMode.IMAGE;
+        } else {
+            imageMode = CMSCollectionImageMode.NONE;
+        }
     }
 
     /**

@@ -19,6 +19,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.managedbeans.CmsCollectionsBean.CMSCollectionImageMode;
+import io.goobi.viewer.model.cms.CMSCollection;
+import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -53,7 +56,29 @@ public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void isDisplaySolrFieldSelectionWidget_shouldReturnFalseIfOnlyOneCollectionFieldIsConfigured() throws Exception {
         CmsCollectionsBean bean = new CmsCollectionsBean();
         Assert.assertEquals(3, bean.getAllCollectionFields().size());
-        
+
         Assert.assertTrue(bean.isDisplaySolrFieldSelectionWidget());
+    }
+
+    /**
+     * @see CmsCollectionsBean#initImageMode()
+     * @verifies set imageMode correctly
+     */
+    @Test
+    public void initImageMode_shouldSetImageModeCorrectly() throws Exception {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        bean.setCurrentCollection(new CMSCollection(SolrConstants.DC, "varia"));
+        
+        bean.getCurrentCollection().setRepresentativeWorkPI("PPN123");
+        bean.initImageMode();
+        Assert.assertEquals(CMSCollectionImageMode.PI, bean.getImageMode());
+        
+        bean.getCurrentCollection().setRepresentativeWorkPI(null);
+        bean.initImageMode();
+        Assert.assertEquals(CMSCollectionImageMode.NONE, bean.getImageMode());
+        
+        bean.getCurrentCollection().setMediaItem(new CMSMediaItem());
+        bean.initImageMode();
+        Assert.assertEquals(CMSCollectionImageMode.IMAGE, bean.getImageMode());
     }
 }
