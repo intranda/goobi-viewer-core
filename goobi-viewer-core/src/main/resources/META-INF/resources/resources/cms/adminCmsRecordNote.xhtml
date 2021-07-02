@@ -120,7 +120,6 @@
 				
 														<div
 															class="col-9 admin__form-input cms-module__option-control">
-				
 															<h:message for="recordNoteTitle"
 																errorClass="-validation-message -danger"></h:message>
 															<div class="-validation-mark">
@@ -205,6 +204,24 @@
 							
 							<!-- SIDEBAR START -->
 							<div class="admin__content-side">
+							
+								<!-- VISIBLE YES / NO -->
+								<div class="admin__default-block">
+								
+									<div class="admin__record-notes-visibility">
+										<h3>#{msg.cms__record_notes_visibility}</h3>
+										<div class="admin__form-help-text in mb-2">
+										#{msg.cms__record_notes_edit_text__toggle_help}
+										</div>
+										<div class="mb-1 d-flex justify-content-between">
+											<label>#{msg.cms__record_notes_edit_text__toggle}: </label>
+											<viewerComponent:toggleSwitch name="showThisNote" value="#{note.displayNote}" />
+										</div>
+									</div>
+
+								</div>
+							
+								<!-- RECORD INFOS -->
 								<div class="admin__default-block">
 									<h2>#{msg.cms__record_notes_select_record__title}</h2>
 									<div class="admin__record-notes-info-box">
@@ -224,25 +241,8 @@
 									</div>
 								</div>
 								
-			                   	<!-- VISIBLE YES / NO -->
-								<div class="admin__default-block">
-								
-									<div class="admin__record-notes-visibility">
-										<h3>#{msg.cms__record_notes_visibility}</h3>
-										<div class="admin__form-help-text in mb-2">
-										#{msg.cms__record_notes_edit_text__toggle_help}
-										</div>
-										<div class="mb-1 d-flex justify-content-between">
-											<label>#{msg.cms__record_notes_edit_text__toggle}: </label>
-											<viewerComponent:toggleSwitch name="showThisNote" value="#{note.displayNote}" />
-										</div>
-									</div>
-
-								</div>
-								
-							</div>
 							<!-- SIDEBAR EOL -->
-						
+							</div>
 						</div>
 					</ui:fragment>
 				</div>
