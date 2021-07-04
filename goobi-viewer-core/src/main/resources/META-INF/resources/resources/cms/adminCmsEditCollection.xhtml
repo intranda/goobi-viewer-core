@@ -76,15 +76,15 @@
                             <h:panelGroup id="imageModeGroup">
                             
                             	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
-                                	<f:selectItem itemValue="NONE" itemLabel="#{msg.none}" />
+                                	<f:selectItem itemValue="NONE" itemLabel="#{msg.admin__cms_collections_image_mode_none}" />
                                 	<f:ajax render="imageModeGroup" />
                             	</h:selectOneRadio>
                             	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
-                                	<f:selectItem itemValue="IMAGE" itemLabel="#{msg.image}" />
+                                	<f:selectItem itemValue="IMAGE" itemLabel="#{msg.admin__cms_collections_image_mode_upload}" />
                                 	<f:ajax render="imageModeGroup" />
                             	</h:selectOneRadio>
                             	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
-                                	<f:selectItem itemValue="PI" itemLabel="#{msg.pi}" />
+                                	<f:selectItem itemValue="PI" itemLabel="#{msg.admin__cms_collections_image_mode_record}" />
                                 	<f:ajax render="imageModeGroup" />
                             	</h:selectOneRadio>
                             
