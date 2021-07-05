@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.search;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -115,7 +118,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void findAllCollectionsFromField_shouldFindAllCollections() throws Exception {
         // First, make sure the collection blacklist always comes from the same config file;
         Map<String, CollectionResult> collections =
-                SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, ".");
+                SearchHelper.findAllCollectionsFromField(SolrConstants.DC, null, null, true, true, ".");
         Assert.assertTrue(collections.size() > 40);
         List<String> keys = new ArrayList<>(collections.keySet());
         // Collections.sort(keys);
@@ -180,6 +183,21 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         //    }
 
     }
+    
+    @Test
+    public void findAllCollectionsFromField_shouldGroupCorrectly() throws Exception {
+        // First, make sure the collection blacklist always comes from the same config file;
+        Map<String, CollectionResult> collections =
+                SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DOCSTRCT, null, true, true, ".");
+//        for (String collection : collections.keySet()) {
+//            System.out.println("collection " + collection + " with facets " + collections.get(collection).getFacetValues().stream().collect(Collectors.joining(", ")));
+//        }
+        assertTrue(collections.get("dcmultimedia").getFacetValues().containsAll(Arrays.asList("video", "Audio")));
+        assertTrue(collections.get("dcauthoritydata.provenance").getFacetValues().containsAll(Arrays.asList("monograph")));
+        assertTrue(collections.get("dcauthoritydata").getFacetValues().containsAll(Arrays.asList("item", "musical_notation", "monograph", "letter", "3dobject", "video")));
+        assertTrue(collections.get("dcimage.many").getFacetValues().containsAll(Arrays.asList("volume")));
+
+    } 
 
     /**
      * @see SearchHelper#getPersonalFilterQuerySuffix(User,String)

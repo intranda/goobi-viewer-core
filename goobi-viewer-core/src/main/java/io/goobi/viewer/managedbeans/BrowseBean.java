@@ -227,7 +227,7 @@ public class BrowseBean implements Serializable {
     public List<BrowseDcElement> getList(String field, int depth) throws IndexUnreachableException {
         try {
             if (collections.get(field) == null) {
-                initializeCollection(field, field);
+                initializeCollection(field, null);
                 populateCollection(field);
             }
             if (collections.get(field) != null) {
@@ -318,7 +318,7 @@ public class BrowseBean implements Serializable {
      * @throws IllegalRequestException
      */
     public void expandCollection(int levels) throws IndexUnreachableException, IllegalRequestException {
-        expandCollection(SolrConstants.DC, SolrConstants.FACET_DC, levels);
+        expandCollection(SolrConstants.DC, null, levels);
     }
 
     /**
@@ -926,7 +926,7 @@ public class BrowseBean implements Serializable {
     public CollectionView getOrCreateCollection(String field) {
         CollectionView collection = getCollection(field);
         if (collection == null) {
-            initializeCollection(field, getFacetField(field));
+            initializeCollection(field, null);
             collection = getCollection(field);
         }
         return collection;
@@ -948,22 +948,26 @@ public class BrowseBean implements Serializable {
      * </p>
      */
     public void initializeDCCollection() {
-        initializeCollection(SolrConstants.DC, SolrConstants.FACET_DC);
+        initializeCollection(SolrConstants.DC, null);
+    }
+    
+    public void initializeCollection(final String collectionField) {
+        initializeCollection(collectionField, null);
     }
 
     /**
      * Adds a CollectionView object for the given field to the map and populates its values.
      *
      * @param collectionField a {@link java.lang.String} object.
-     * @param facetField a {@link java.lang.String} object.
+     * @param groupingField a {@link java.lang.String} object. Used for grouping results
      */
-    public void initializeCollection(final String collectionField, final String facetField) {
+    public void initializeCollection(final String collectionField, final String groupingField) {
         logger.trace("initializeCollection: {}", collectionField);
         collections.put(collectionField, new CollectionView(collectionField, new BrowseDataProvider() {
 
             @Override
             public Map<String, CollectionResult> getData() throws IndexUnreachableException {
-                Map<String, CollectionResult> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true,
+                Map<String, CollectionResult> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, groupingField, null, true, true,
                         DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
                 return dcStrings;
             }

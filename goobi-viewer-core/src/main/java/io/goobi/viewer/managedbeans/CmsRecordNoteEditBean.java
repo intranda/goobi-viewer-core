@@ -164,9 +164,14 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         return this.note == null || this.note.getId() == null;
     }
 
-    public MetadataElement getMetadataElement() throws PresentationException, IndexUnreachableException, DAOException {
+    public MetadataElement getMetadataElement() {
         if (this.metadataElement == null && this.note != null) {
-            this.metadataElement = loadMetadataElement(this.note.getRecordPi(), 0);
+            try {
+                this.metadataElement = loadMetadataElement(this.note.getRecordPi(), 0);
+            } catch (PresentationException | IndexUnreachableException | DAOException e) {
+                logger.error("Unable to reetrive metadata elemement for {}. Reason: {}", this.note.getRecordTitle().getText(), e.getMessage());
+                Messages.error(null, "Unable to reetrive metadata elemement for {}. Reason: {}", this.note.getRecordTitle().getText(), e.getMessage());
+            }
         }
         return this.metadataElement;
     }

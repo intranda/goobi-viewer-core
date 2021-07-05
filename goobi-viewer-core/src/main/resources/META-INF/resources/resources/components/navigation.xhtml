@@ -14,7 +14,7 @@
 	</composite:interface>
 	
 	<composite:implementation>
-	    <nav id="navigation" class="navigation" aria-label="#{msg.aria_label__nav_main}">
+	    <nav id="#{cc.clientId}" class="navigation" aria-label="#{msg.aria_label__nav_main}">
 	        <h:form id="navigationForm" prependId="false">
 	            <ul>
 	                <!-- STANDARD MENU -->
@@ -223,8 +223,12 @@
 	    </nav>
 	
 	    <script type="text/javascript">
-	        var navigationConfig = {};
-	
+	        var navigationConfig = {
+	        		navigationSelector: ".navigation",
+	                subMenuSelector: "##{cc.clientId} [data-toggle='submenu']",
+	                megaMenuSelector: "##{cc.clientId}  [data-toggle='megamenu']",
+	                closeMegaMenuSelector: "##{cc.clientId} [data-toggle='close']",
+	        };
 	        viewerJS.navigation.init(navigationConfig);
 	    </script>
 	</composite:implementation>

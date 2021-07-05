@@ -246,8 +246,7 @@
 												<div class="form-group form-row">
 													<div class="col-2 control-label admin__form-label">
 														<label for="recordsQuery">
-															#{msg.cms_itemSolrSortFields}: <span
-															class="admin__label-required-field">(#{msg.form__required_field})</span>
+															#{msg.cms_itemSolrSortFields}:
 														</label>
 													</div>
 	
@@ -273,6 +272,7 @@
 													</div>
 												</div>
 												
+												<!-- ITEM COUNT -->
 												<div class="form-group form-row">
 													<div class="col-2 control-label admin__form-label">
 														<label for="recordsQuery">
@@ -285,8 +285,7 @@
 														class="col-9 admin__form-input cms-module__option-control">
 
 														<h:selectOneMenu id="maxItems" styleClass="form-control" value="#{slider.maxEntries}">
-											                  <f:selectItem itemValue="" itemLabel="#{msg.select}" />
-											                      <f:selectItems value="#{slider.maxEntriesOptions}" />
+											                  <f:selectItems value="#{slider.maxEntriesOptions}" />
 														      <f:ajax event="change" render="previewSlider"/>											                  
 															  <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemSolrSortFields}" />
 										                </h:selectOneMenu>

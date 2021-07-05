@@ -63,6 +63,8 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
+import de.intranda.monitoring.timer.Timer;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -561,10 +563,9 @@ public final class SearchHelper {
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static Map<String, CollectionResult> findAllCollectionsFromField(String luceneField, String facetField, String filterQuery,
+    public static Map<String, CollectionResult> findAllCollectionsFromField(String luceneField, String groupingField, String filterQuery,
             boolean filterForWhitelist, boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
         logger.debug("findAllCollectionsFromField: {}", luceneField);
-        Map<String, CollectionResult> ret = new HashMap<>();
         if (StringUtils.isBlank(splittingChar)) {
             throw new IllegalArgumentException("Splitting char may not be empty. Check configuration for collection field " + luceneField);
         }
@@ -585,71 +586,119 @@ public final class SearchHelper {
             }
 
             // Iterate over record hits instead of using facets to determine the size of the parent collections
-            {
-                logger.trace("query: {}", sbQuery.toString());
+            logger.trace("query: {}", sbQuery.toString());
 
-                QueryResponse response = DataManager.getInstance()
-                        .getSearchIndex()
-                        .searchFacetsAndStatistics(sbQuery.toString(), null, Collections.singletonList(luceneField), 1, false);
-                FacetField facetResults = response.getFacetField(luceneField);
-
-                for (Count count : facetResults.getValues()) {
-                    String dc = count.getName();
-                    // Skip inverted values
-                    if (StringTools.checkValueEmptyOrInverted(dc)) {
-                        continue;
-                    }
-
-                    CollectionResult result = ret.get(dc);
-                    if (result == null) {
-                        result = new CollectionResult(dc);
-                        ret.put(dc, result);
-                    }
-                    result.incrementCount(count.getCount());
-
-                    if (dc.contains(splittingChar)) {
-                        String parent = dc;
-                        while (parent.lastIndexOf(splittingChar) != -1) {
-                            parent = parent.substring(0, parent.lastIndexOf(splittingChar));
-                            CollectionResult parentCollection = ret.get(parent);
-                            if (parentCollection == null) {
-                                parentCollection = new CollectionResult(parent);
-                                ret.put(parent, parentCollection);
-                            }
-                            parentCollection.incrementCount(count.getCount());
-                        }
-                    }
-                }
-
+            FacetField facetResults = null;
+            FacetField groupResults = null;
+            List<String> facetFields = new ArrayList<>();
+            facetFields.add(luceneField);
+            if (StringUtils.isNotBlank(groupingField)) {
+                facetFields.add(groupingField);
             }
+            QueryResponse response = DataManager.getInstance()
+                    .getSearchIndex()
+                    .searchFacetsAndStatistics(sbQuery.toString(), null, facetFields, 1, false);
+            facetResults = response.getFacetField(luceneField);
+            groupResults = response.getFacetField(groupingField);
 
-            //Add facet (grouping) field values
-            if (StringUtils.isNotBlank(facetField)) {
-                for (String collectionName : ret.keySet()) {
-                    //query all results from above filtered for this collection and subcollections
-                    String collectionFilterQuery = "+($1:$2 $1:$2.*)".replace("$1", luceneField).replace("$2", collectionName);
-                    String query = sbQuery.toString() + " " + collectionFilterQuery;
+            Map<String, CollectionResult> ret = createCollectionResults(facetResults, splittingChar);
 
-                    QueryResponse response = DataManager.getInstance()
-                            .getSearchIndex()
-                            .searchFacetsAndStatistics(query, null, Collections.singletonList(facetField), 1, false);
-                    FacetField facetResults = response.getFacetField(facetField);
-
-                    CollectionResult collectionResult = ret.get(collectionName);
-                    collectionResult.setFacetValues(facetResults.getValues()
-                            .stream()
-                            .map(Count::getName)
-                            .filter(v -> !v.startsWith("#1;") && !v.startsWith("\\u0001") && !v.startsWith("\u0001"))
-                            .collect(Collectors.toSet()));
-                }
-            }
-
+            addGrouping(ret, luceneField, groupResults, sbQuery.toString());
+            
+            logger.debug("{} collections found", ret.size());
+            return ret;
+            
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
 
-        logger.debug("{} collections found", ret.size());
+        return Collections.emptyMap();
+    }
+
+    private static Map<String, CollectionResult> createCollectionResults(FacetField facetResults, String splittingChar) {
+        Map<String, CollectionResult> ret = new HashMap<>();
+        for (Count count : facetResults.getValues()) {
+            String dc = count.getName();
+            // Skip inverted values
+            if (StringTools.checkValueEmptyOrInverted(dc)) {
+                continue;
+            }
+
+            CollectionResult result = ret.get(dc);
+            if (result == null) {
+                result = new CollectionResult(dc);
+                ret.put(dc, result);
+            }
+            result.incrementCount(count.getCount());
+
+            if (dc.contains(splittingChar)) {
+                String parent = dc;
+                while (parent.lastIndexOf(splittingChar) != -1) {
+                    parent = parent.substring(0, parent.lastIndexOf(splittingChar));
+                    CollectionResult parentCollection = ret.get(parent);
+                    if (parentCollection == null) {
+                        parentCollection = new CollectionResult(parent);
+                        ret.put(parent, parentCollection);
+                    }
+                    parentCollection.incrementCount(count.getCount());
+                }
+            }
+        }
         return ret;
+    }
+
+    private static void addGrouping(Map<String, CollectionResult> ret, String luceneField, FacetField groupResults, String filterQuery) {
+        if (groupResults != null) {
+            String groupField = groupResults.getName();
+            groupResults.getValues()
+                    .parallelStream()
+                    .map(Count::getName)
+                    .forEach(name -> {
+                        try {
+                            String query = filterQuery + " " + String.format("+%s:%s", groupField, name);
+                            QueryResponse response = DataManager.getInstance()
+                                    .getSearchIndex()
+                                    .searchFacetsAndStatistics(query, null, Collections.singletonList(luceneField), 1, false);
+                            FacetField facetField = response.getFacetField(luceneField);
+                            for (Count count : facetField.getValues()) {
+                                String collectionName = count.getName();
+                                if (collectionName.startsWith("#1;") || collectionName.startsWith("\\u0001")
+                                        || collectionName.startsWith("\u0001")) {
+                                    continue;
+                                }
+                                getAllParentCollections(collectionName, true).stream()
+                                        .forEach(col -> {
+                                            CollectionResult collectionResult = ret.get(col);
+                                            collectionResult.addFacetValues(Collections.singletonList(name));
+                                        });
+                            }
+                        } catch (PresentationException | IndexUnreachableException e) {
+                            logger.error("Error applying grouping to collection: {}", e.toString());
+                        }
+                    });
+        }
+    }
+
+    /**
+     * @param collectionName
+     * @param b
+     */
+    private static Collection<String> getAllParentCollections(String collectionName, boolean includeSelf) {
+        List<String> collections = new ArrayList<>();
+        if (includeSelf) {
+            collections.add(collectionName);
+        }
+        while (StringUtils.isNotBlank(collectionName)) {
+            int dotIndex = collectionName.lastIndexOf(".");
+            if (dotIndex > -1) {
+                collectionName = collectionName.substring(0, dotIndex);
+                collections.add(collectionName);
+            } else {
+                break;
+            }
+        }
+        Collections.reverse(collections);
+        return collections;
     }
 
     /**
@@ -790,18 +839,20 @@ public final class SearchHelper {
             }
             sbQuery.append(getAllSuffixes());
             logger.debug("Autocomplete query: {}", sbQuery.toString());
-            
+
             QueryResponse response = DataManager.getInstance()
-                    .getSearchIndex().searchFacetsAndStatistics(sbQuery.toString(), null, Collections.singletonList(SolrConstants.DEFAULT), 1, null, false);
+                    .getSearchIndex()
+                    .searchFacetsAndStatistics(sbQuery.toString(), null, Collections.singletonList(SolrConstants.DEFAULT), 1, null, false);
             FacetField facetField = response.getFacetFields().get(0);
-            
-            ret = facetField.getValues().stream()
-            .filter( count -> count.getName().toLowerCase().startsWith(suggestLower))
-            .sorted( (c1,c2) -> Long.compare(c2.getCount(), c1.getCount()) )
-            .map(Count::getName)
-            .distinct()
-            .collect(Collectors.toList());
-            
+
+            ret = facetField.getValues()
+                    .stream()
+                    .filter(count -> count.getName().toLowerCase().startsWith(suggestLower))
+                    .sorted((c1, c2) -> Long.compare(c2.getCount(), c1.getCount()))
+                    .map(Count::getName)
+                    .distinct()
+                    .collect(Collectors.toList());
+
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }

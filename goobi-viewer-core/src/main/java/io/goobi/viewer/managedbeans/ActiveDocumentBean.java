@@ -2270,7 +2270,7 @@ public class ActiveDocumentBean implements Serializable {
             subDocFields.add(SolrConstants.ISWORK);
             subDocFields.addAll(coordinateFields);
 
-            String annotationQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:UGC +UGCTYPE:\"ADDRESS\"", pi);
+            String annotationQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:UGC +MD_COORDS:*", pi);
             long numAnnotations = DataManager.getInstance().getSearchIndex().getHitCount(annotationQuery);
             
             SolrDocumentList subDocs = DataManager.getInstance().getSearchIndex().getDocs(subDocQuery, subDocFields);

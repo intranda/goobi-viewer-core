@@ -62,14 +62,14 @@
 		<view-id value="/browse.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-		<action onPostback="false">#{browseBean.initializeCollection('DC', 'FACET_DC')}</action>
+		<action onPostback="false">#{browseBean.initializeCollection('DC')}</action>
 		<action onPostback="false">#{browseBean.populateCollection('DC')}</action>
 	</url-mapping>
 	<url-mapping id="browseTopics">
 		<pattern value="/browseTopics/" />
 		<view-id value="/browse.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{browseBean.initializeCollection('MD_TOPIC', 'SORT_TOPIC')}</action>
+		<action onPostback="false">#{browseBean.initializeCollection('MD_TOPIC')}</action>
 		<action onPostback="false">#{browseBean.populateCollection('MD_TOPIC')}</action>
 		<!-- <action onPostback="false">#{browseBean.expandCollection(2)}</action> -->
 		<!-- <action onPostback="false">#{browseBean.collection.showAll()}</action> -->
@@ -77,7 +77,7 @@
 	<url-mapping id="browseHierarchy">
 		<pattern value="/browseHierarchy/" />
 		<view-id value="/browse.xhtml" />
-		<action onPostback="false">#{browseBean.initializeCollection('MD_HIERARCHY', 'MD_HIERARCHY')}</action>
+		<action onPostback="false">#{browseBean.initializeCollection('MD_HIERARCHY')}</action>
 		<action onPostback="false">#{browseBean.populateCollection('MD_HIERARCHY')}</action>
 		<!-- <action onPostback="false">#{browseBean.expandCollection(2)}</action> -->
 		<!-- <action onPostback="false">#{browseBean.collection.showAll()}</action> -->

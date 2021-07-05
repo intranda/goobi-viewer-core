@@ -44,6 +44,7 @@ public class CMSSlider implements Serializable {
 
     public static final int MAX_ENTRIES_MIN = 1;
     public static final int MAX_ENTRIES_MAX = 30;
+    public static final int MAX_ENTRIES_DEFAULT = 10;
     
     private static final long serialVersionUID = -3029283417613875012L;
     
@@ -62,7 +63,7 @@ public class CMSSlider implements Serializable {
     @Column(name = "sort_field", columnDefinition = "LONGTEXT")
     private String sortField;
     @Column(name = "max_entries")
-    private int maxEntries;
+    private int maxEntries = MAX_ENTRIES_DEFAULT;
     @Column(name = "categories", columnDefinition = "LONGTEXT")
     @Convert(converter = StringListConverter.class)
     private List<String> categories  = new ArrayList<>();
