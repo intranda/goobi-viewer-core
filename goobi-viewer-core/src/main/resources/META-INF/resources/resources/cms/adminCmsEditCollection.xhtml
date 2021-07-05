@@ -73,24 +73,33 @@
                         <div class="admin__default-block">
                             <p class="admin__boxed-entry-description">#{msg.admin__cms_collections_image_desc}</p>
                             
-                            <h:panelGroup id="imageModeGroup">
+                            <h:panelGroup layout="block" id="imageModeGroup" styleClass="admin__cms-edit-collection-image-actions-wrapper">
                             
-                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
-                                	<f:selectItem itemValue="NONE" itemLabel="#{msg.admin__cms_collections_image_mode_none}" />
-                                	<f:ajax render="imageModeGroup" />
-                            	</h:selectOneRadio>
-                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
-                                	<f:selectItem itemValue="IMAGE" itemLabel="#{msg.admin__cms_collections_image_mode_upload}" />
-                                	<f:ajax render="imageModeGroup" />
-                            	</h:selectOneRadio>
-                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
-                                	<f:selectItem itemValue="PI" itemLabel="#{msg.admin__cms_collections_image_mode_record}" />
-                                	<f:ajax render="imageModeGroup" />
-                            	</h:selectOneRadio>
+                            	<div class="form-group admin__cms-edit-collection-connected-radio-buttons">
+                            		<div class="connected-top">
+		                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
+		                                	<f:selectItem itemValue="NONE" itemLabel="#{msg.admin__cms_collections_image_mode_none}" />
+		                                	<f:ajax render="imageModeGroup" />
+		                            	</h:selectOneRadio>
+	                            	</div>
+	                            	<div class="connected-middle">
+		                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
+		                                	<f:selectItem itemValue="IMAGE" itemLabel="#{msg.admin__cms_collections_image_mode_upload}" />
+		                                	<f:ajax render="imageModeGroup" />
+		                            	</h:selectOneRadio>
+	                            	</div>
+	                            	<div class="connected-bottom">
+		                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
+		                                	<f:selectItem itemValue="PI" itemLabel="#{msg.admin__cms_collections_image_mode_record}" />
+		                                	<f:ajax render="imageModeGroup" />
+		                            	</h:selectOneRadio>
+	                            	</div>
+								</div>
+                            	
                             
-                                <h:panelGroup id="mediaGroup" rendered="#{cmsCollectionsBean.imageMode == 'IMAGE'}">
+                                <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image" id="mediaGroup" rendered="#{cmsCollectionsBean.imageMode == 'IMAGE'}">
                                 <!-- THUMBNAIL -->
-                                <div class="cms-edit-collection__text-image-thumbnail">
+                                <div class="admin__cms-edit-collection-image-thumbnail">
                                     <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
                                         <img src="#{cmsCollectionsBean.currentCollection.iconURI}" class="img-fluid" alt="" />
                                     </ui:fragment>
@@ -100,14 +109,13 @@
                                             class="img-fluid" alt="" />
                                     </ui:fragment>
                                 </div>
-
                                 
 				                <!-- ACTIONS -->
-				                <div class="cms-module__actions">
+				                <div class="admin__cms-edit-collection-image-actions">
 				                    <h:commandLink 
 				                        action="#{cmsBean.setSelectedMediaHolder(cmsCollectionsBean.currentCollection)}" 
 				                        value="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}" 
-				                        class="btn #{cmsCollectionsBean.currentCollection.getMediaItem() == null ? 'btn--default' : 'btn--clean'}" 
+				                        class="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? 'btn btn--default' : ''}" 
 				                        role="button">
 				                        <f:ajax execute="@form" render="mediaSelectPanel" />
 				                    </h:commandLink>
@@ -115,7 +123,7 @@
 				                        rendered="#{cmsCollectionsBean.currentCollection.getMediaItem() != null}" 
 				                        action="#{cmsCollectionsBean.currentCollection.setMediaItem(null)}" 
 				                        value="#{msg.cms_selectMediaItem_deselect}" 
-				                        class="btn btn--clean delete"
+				                        class="-redlink"
 				                        role="button">
 				                        <f:ajax render="mediaGroup" />
 				                    </h:commandLink>                    
@@ -123,7 +131,7 @@
                                 
                                 </h:panelGroup>	
                             
-                            <h:panelGroup id="piGroup" rendered="#{cmsCollectionsBean.imageMode == 'PI'}">
+                            <h:panelGroup layout="block" styleClass="admin__cms-collections-wrapper-identifier" id="piGroup" rendered="#{cmsCollectionsBean.imageMode == 'PI'}">
                             	<div class="cms-edit-collection__text-label">
                                 	<label for="workPI" id="labelPI">#{msg.cms_collections_set_representative}</label>
                             	</div>
@@ -139,7 +147,7 @@
                         </div>
     
           
-                        <div class="cms-edit-collection__actions">
+                        <div class="row no-gutters justify-content-end admin__final-actions mb-0">
                         	<!-- CANCEL -->
                             <h:commandLink id="cmsEditCollectionBack" styleClass="btn" value="#{msg.cancel}" immediate="true"
                                 action="#{cmsCollectionsBean.resetCurrentCollection}" />
