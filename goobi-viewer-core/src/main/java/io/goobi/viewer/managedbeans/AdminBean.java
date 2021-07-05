@@ -75,6 +75,7 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.security.user.UserTools;
 import io.goobi.viewer.model.translations.admin.MessageEntry;
+import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
@@ -1880,20 +1881,19 @@ public class AdminBean implements Serializable {
 
     /**
      * 
-     * @param field
-     * @param value
-     * @return
+     * @param field Solr field
+     * @param key Message key
+     * @return First <code>TranslationGroup</code> that contains the requested field+key; null if none found
      */
-    public TranslationGroup getTranslationGroupForFieldAndValue(String field, String value) {
-        logger.trace("getTranslationGroupForFieldAndValue: {}:{}", field, value);
+    public TranslationGroup getTranslationGroupForFieldAndKey(String field, String key) {
         for (TranslationGroup group : getTranslationGroupsForSolrFieldStatic(field)) {
             for (MessageEntry entry : group.getAllEntries()) {
-                if (entry.getKey().equals(value)) {
+                if (entry.getKey().equals(key)) {
                     return group;
                 }
             }
         }
-        
+
         return null;
     }
 

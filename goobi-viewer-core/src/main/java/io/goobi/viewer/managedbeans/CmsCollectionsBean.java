@@ -134,6 +134,41 @@ public class CmsCollectionsBean implements Serializable {
 
     /**
      * 
+     * @return true if the if translations for the values of <code>solrField</code> and <code>solrFieldValue</code> are not or only partially
+     *         translated; false if they are fully translated
+     */
+    public boolean isDisplayTranslationWidgetEdit() {
+        logger.trace("isDisplayTranslationWidgetEdit: {}:{}", solrField, solrFieldValue);
+        if (StringUtils.isEmpty(solrField)) {
+            return false;
+        }
+
+        List<TranslationGroup> groups = AdminBean.getTranslationGroupsForSolrFieldStatic(solrField);
+        for (TranslationGroup group : groups) {
+            if (group.getItems().isEmpty()) {
+                continue;
+            }
+            for (TranslationGroupItem item : group.getItems()) {
+                if (!item.getKey().equals(solrField)) {
+                    continue;
+                }
+                try {
+                    for (MessageEntry entry : item.getEntries()) {
+                        if (entry.getKey().equals(solrFieldValue)) {
+                            return !TranslationStatus.FULL.equals(entry.getTranslationStatus());
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 
      * @return true if number of available collections is greater than 1; false otherwise
      * @should return false if only one collection field is configured
      */
