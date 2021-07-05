@@ -8,7 +8,7 @@
 	/* ELEMENT */
 	&__wrapper {
 		position: relative;
-		div[class*="col-xs"],
+		div[class*="col-"],
 		div[class*="col-sm"] {
             padding: 0;
         }
@@ -45,11 +45,7 @@
 		}
 	}
 	&__structure {}
-	&__title {
-	   div.col-12 {
-	       padding-left: 15px;
-	   }
-	}
+	&__title {}
 	&__top-element {
 		font-weight: bold;
 	}
@@ -59,9 +55,8 @@
 	}
 	&__description-toggle,
 	&__rss {
-		width: 50%;
 		padding-right: 15px;
-		text-align: right;
+		text-align: center;
 	}
 	&__description-toggle {
 	   padding: 0;
@@ -69,6 +64,11 @@
 	&__rss {}
 	&__description {
 		padding: 5px 15px;
+		padding-left: 0;
+		~ img {
+			max-height: 250px;
+			margin-bottom: 2rem;
+		}
 	}
 	/* MODIFICATION */
 	&__item--level-0 {
@@ -92,7 +92,7 @@
     .collection__title a, 
     .collection__description-toggle a, 
     .collection__rss a {
-        padding: 10px 0;
+        padding: 10px 3px;
     }
     .collection__description img {
 		display: block;

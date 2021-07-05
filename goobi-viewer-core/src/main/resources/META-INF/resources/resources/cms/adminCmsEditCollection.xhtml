@@ -132,9 +132,6 @@
                                 </h:panelGroup>	
                             
                             <h:panelGroup layout="block" styleClass="admin__cms-collections-wrapper-identifier" id="piGroup" rendered="#{cmsCollectionsBean.imageMode == 'PI'}">
-                            	<div class="cms-edit-collection__text-label">
-                                	<label for="workPI" id="labelPI">#{msg.cms_collections_set_representative}</label>
-                            	</div>
                             	<div class="cms-edit-collection__text-control">
                                 	<h:inputText id="workPI" styleClass="form-control" validator="#{cmsCollectionsBean.validatePI}" value="#{cmsCollectionsBean.currentCollection.representativeWorkPI}">
                                    		<!--                                 validator="piInSolrValidator" -->
@@ -205,7 +202,6 @@
 											<a class="btn btn--full"
 												href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
 												aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translations_translate}</a>
-
 										</ui:fragment>
 
 										<!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
@@ -218,8 +214,7 @@
 									</div>
 								</div>
 							</div>
-							
-							
+
 						<div class="admin__default-block">
 							<h2>#{msg.admin__cms_collections_information}</h2>
 							<div class="admin__record-notes-info-box">

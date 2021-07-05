@@ -1115,6 +1115,33 @@
 	}
 	
 	// CMS COLLECTIONS
+	&__cms-collections {
+		.admin__language-tab.-partly-translated a {
+			background: #eee;
+		}
+		.admin__language-tab.-already-translated a {
+			background: #eee;
+		}
+		.admin__language-tab.active {
+			&.-already-translated, 
+			&.-partly-translated {
+				a {
+					background: @white;
+				}
+			}
+		}
+		.collection__title a {
+			display: inline-block;
+		}
+		.collection__description {
+			padding-left: 0;
+		}
+		.admin__language-tab:first-child a, 
+		.admin__language-tab:first-child.-already-translated a,
+		.admin__language-tab:first-child.-already-translated a {
+			background: @blue;
+		}
+	}
 	&__cms-collections-tree-wrapper {
 		padding: 1.5rem;
 	}
@@ -1158,6 +1185,14 @@
 		position: relative;
 		display: flex;
 	}
+	&__cms-collections-description-toggle {
+		margin-right: 2rem;
+		.fa {
+			padding: 0.2rem 0.3rem;
+			font-size: 1.2rem;
+			border: 1px solid #d5d5d5;
+		}
+	}
 	&__cms-edit-collection-image-actions-wrapper {
 		display: flex;
 	}
@@ -1169,6 +1204,7 @@
 	&__cms-edit-collection-connected-radio-buttons {
 		padding-right: 10rem;
 		margin-bottom: 0;
+		min-width: 360px;
 		label {
 			margin-left: 0.5rem;
 		}
@@ -1187,9 +1223,9 @@
 	}
 	&__cms-edit-collection-image-thumbnail {
 		max-width: 200px;
-		max-height: 180px;
+		max-height: 140px;
 		img {
-			max-height: 180px;
+			max-height: 140px;
 		}
 	}
 	&__cms-edit-collection-image-actions {

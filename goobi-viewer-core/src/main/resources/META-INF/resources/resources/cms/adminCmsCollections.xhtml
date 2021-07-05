@@ -21,7 +21,7 @@
 	<ui:define name="content">
 		<ui:fragment id="cmsCollectionsAccessControl"
 			rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
-			<div id="cmsCollections">
+			<div id="adminCMSCollections" class="admin__cms-collections">
 			
 				<!-- TITLE -->
 				<div class="admin__title-bar">
@@ -55,10 +55,9 @@
 								
                                             <ul class="admin__cms-collections-tree-listing">
                                                 <ui:repeat var="browseDcElement" value="#{browseBean.getCollection(cmsCollectionsBean.solrField).visibleDcElements}">
-                                                    <li class="admin__cms-collections-entry admin__cms-collections-entry -level-#{browseDcElement.level}"
+                                                    <li class="row no-gutters admin__cms-collections-entry admin__cms-collections-entry -level-#{browseDcElement.level}"
                                                         style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
-												<div class="row">
-													<div class="col-2 col-sm-1 collection__structure-col">
+													<div class="col-1 collection__structure-col">
 														<!-- STRUCTURE -->
 														<h:panelGroup
 															rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
@@ -80,7 +79,7 @@
 															</div>
 														</h:panelGroup>
 													</div>
-													<div class="col-7 col-sm-9">
+													<div class="col-9">
 														<div class="collection__title">
 															<div class="row">
 																<div class="col-12">
@@ -94,17 +93,20 @@
 																		<h:outputText
 																			rendered="#{!browseDcElement.displayNumberOfVolumes}"
 																			value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)}" />
+																		<f:passThroughAttribute name="data-toggle" value="tooltip" />
+																		<f:passThroughAttribute name="data-placement" value="top" />
+																		<f:passThroughAttribute name="title" value="#{msg.edit}" />
 																		<f:ajax render="@form" />
 																	</h:outputLink>
 																</div>
 															</div>
 														</div>
 													</div>
-													<div class="col-3 col-sm-2 admin__cms-collections-entry-end">
+													<div class="col-2 admin__cms-collections-entry-end">
 														<!-- TOGGLE DESCRIPTION -->
 														<h:panelGroup
 															rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
-															<div class="collection__description-toggle">
+															<div class="admin__cms-collections-description-toggle">
 																<h:commandLink title="#{msg[browseDcElement.label]}">
 																	<h:panelGroup
 																		rendered="#{not browseDcElement.showDescription}">
@@ -123,16 +125,12 @@
 																</h:commandLink>
 															</div>
 														</h:panelGroup>
-
-														<!-- TODO: EDIT -->
-                                                			<a href="#{navigationHelper.applicationUrl}admin/cms/collections/edit/#{browseDcElement.name}/"
-                                                				class="admin__cms-collections-entry-edit"
-                                                				aria-label="#{msg.edit}: #{browseDcElement.name}">#{msg.edit}</a>
 													</div>
 
 													<!-- DESCRIPTION -->
 													<h:panelGroup rendered="#{browseDcElement.showDescription}">
-														<div class="col-12 col-sm-11 col-sm-offset-1">
+														<div class="col-1"></div>
+														<div class="col-8 pb-3">
 															<div class="collection__description">
 																<h:outputText
 																	value="#{browseDcElement.getDescription(cmsCollectionsBean.currentTab.selectedLocale.language)}"
@@ -143,8 +141,8 @@
 																	class="img-fluid" data-viewer-thumbnail="thumbnail" />
 															</h:panelGroup>
 														</div>
+														
 													</h:panelGroup>
-												</div>
 
 											</li>
 										</ui:repeat>
