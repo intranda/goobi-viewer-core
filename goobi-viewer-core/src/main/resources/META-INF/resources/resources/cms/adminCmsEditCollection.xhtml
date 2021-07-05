@@ -200,7 +200,7 @@
 										<ui:fragment
 											rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
 											<a class="btn btn--full"
-												href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+												href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndValue(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/"
 												aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translations_translate}</a>
 										</ui:fragment>
 
@@ -208,7 +208,7 @@
 										<ui:fragment
 											rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
 											<a class="btn btn--default"
-												href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+												href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndValue(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/"
 												aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.show}</a>
 										</ui:fragment>
 									</div>

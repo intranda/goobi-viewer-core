@@ -74,6 +74,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.security.user.UserTools;
+import io.goobi.viewer.model.translations.admin.MessageEntry;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
@@ -1875,6 +1876,25 @@ public class AdminBean implements Serializable {
      */
     public List<TranslationGroup> getTranslationGroupsForSolrField(String field) {
         return getTranslationGroupsForSolrFieldStatic(field);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param value
+     * @return
+     */
+    public TranslationGroup getTranslationGroupForFieldAndValue(String field, String value) {
+        logger.trace("getTranslationGroupForFieldAndValue: {}:{}", field, value);
+        for (TranslationGroup group : getTranslationGroupsForSolrFieldStatic(field)) {
+            for (MessageEntry entry : group.getAllEntries()) {
+                if (entry.getKey().equals(value)) {
+                    return group;
+                }
+            }
+        }
+        
+        return null;
     }
 
     /**
