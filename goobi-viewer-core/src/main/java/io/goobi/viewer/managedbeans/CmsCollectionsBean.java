@@ -137,6 +137,9 @@ public class CmsCollectionsBean implements Serializable {
      * 
      * @return true if the if translations for the values of <code>solrField</code> and <code>solrFieldValue</code> are not or only partially
      *         translated; false if they are fully translated
+     * @should return false if solrField not among configured translation groups
+     * @should return false if solrField values fully translated
+     * @should return true if solrFieldValue not or partially translated
      */
     public boolean isDisplayTranslationWidgetEdit() {
         logger.trace("isDisplayTranslationWidgetEdit: {}:{}", solrField, solrFieldValue);
