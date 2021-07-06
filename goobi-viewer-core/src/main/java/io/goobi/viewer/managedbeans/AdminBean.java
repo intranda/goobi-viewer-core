@@ -1970,7 +1970,7 @@ public class AdminBean implements Serializable {
 
     /**
      * 
-     * @param id
+     * @param id Looks up and loads <code>currentTranslationGroup</code> that matches the given id
      */
     public void setCurrentTranslationGroupId(int id) {
         List<TranslationGroup> groups = DataManager.getInstance().getConfiguration().getTranslationGroups();
@@ -1986,7 +1986,7 @@ public class AdminBean implements Serializable {
 
     /**
      * 
-     * @return
+     * @return Key of the currently selected entry; otherwise "-"
      */
     public String getCurrentTranslationMessageKey() {
         if (currentTranslationGroup != null && currentTranslationGroup.getSelectedEntry() != null) {
@@ -1997,8 +1997,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * If <code>currentTranslationGroup</code> is set, looks up the message entry for the given key and pre-selects it.
      * 
-     * @param key
+     * @param key Message key to select
      */
     public void setCurrentTranslationMessageKey(String key) {
         if (currentTranslationGroup != null) {
