@@ -34,10 +34,9 @@ var viewerJS = ( function( viewer ) {
 		confirm : (message, confirmText, denyText) => {
 			return viewer.translator.addTranslations(["cancel", "ok"])
 			.then( () => {
-						
-				confirmText = confirmText ? confirmText : viewer.translator.translate("ok");
-				denyText = denyText ? denyText : viewer.translator.translate("cancel");
-				if(Swal) {
+				confirmText = confirmText ? confirmText : viewerJS.translator.translate("ok");
+				denyText = denyText ? denyText : viewerJS.translator.translate("cancel");
+				if(typeof(Swal) !== 'undefined') {
 					return Swal.fire({
 						title: message,
 						icon: 'warning',
@@ -54,7 +53,7 @@ var viewerJS = ( function( viewer ) {
 						return result.isConfirmed ? Promise.resolve() : Promise.reject();
 					});
 				} else {
-					return confirm(message) ? Promise.resolve() : Promise.reject();
+					return window.confirm(message) ? Promise.resolve() : Promise.reject();
 				}		
 				
 			});

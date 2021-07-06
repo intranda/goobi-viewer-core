@@ -4096,15 +4096,14 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateCMSCollection(CMSCollection collection) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
             em.merge(collection);
             em.getTransaction().commit();
             // Refresh the object from the DB so that any new licenses etc. have IDs
-            if (this.getEntityManager().contains(collection)) {
-                this.getEntityManager().refresh(collection);
-            }
+//            if (this.getEntityManager().contains(collection)) {
+//                this.getEntityManager().refresh(collection);
+//            }
             return true;
         } finally {
             em.close();

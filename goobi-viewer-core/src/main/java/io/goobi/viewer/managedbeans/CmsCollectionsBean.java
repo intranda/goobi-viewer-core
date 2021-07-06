@@ -77,6 +77,7 @@ public class CmsCollectionsBean implements Serializable {
     BrowseBean browseBean;
 
     private CMSCollection currentCollection;
+    private CMSCollection originalCollection;   //collection from database, without any edits after last save
     String solrField = SolrConstants.DC;
     private String solrFieldValue;
     private List<CMSCollection> collections;
@@ -307,19 +308,17 @@ public class CmsCollectionsBean implements Serializable {
 
         setSolrFieldValue(collectionName);
 
-        // Load or init collection
-        if (currentCollection == null || !currentCollection.getSolrField().equals(solrField)
-                || !currentCollection.getSolrFieldValue().equals(collectionName)) {
-            currentCollection = DataManager.getInstance().getDao().getCMSCollection(solrField, collectionName);
-            if (currentCollection == null) {
-                currentCollection = new CMSCollection(solrField, solrFieldValue);
-                addCollection();
-            }
-            // Always generate missing translations
-            editCollection(currentCollection);
-            // Set the image mode value based on what values exist on the collection entry
-            initImageMode();
+        currentCollection = DataManager.getInstance().getDao().getCMSCollection(solrField, collectionName);
+        if (currentCollection == null) {
+            currentCollection = new CMSCollection(solrField, solrFieldValue);
         }
+        // Always generate missing translations
+        editCollection(currentCollection);
+        // Set the image mode value based on what values exist on the collection entry
+        initImageMode();
+        
+        originalCollection = currentCollection;
+        currentCollection = new CMSCollection(originalCollection);
     }
 
     /**
@@ -636,5 +635,10 @@ public class CmsCollectionsBean implements Serializable {
         if (browseBean.getCollection(solrField) == null) {
             loadCollection(solrField);
         }
+    }
+    
+    public boolean isDirty() {
+        boolean dirty = this.currentCollection != null && this.originalCollection != null && !this.currentCollection.contentEquals(this.originalCollection);
+        return dirty;
     }
 }

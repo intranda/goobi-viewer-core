@@ -313,7 +313,9 @@ var viewerJS = (function () {
                     });
                     
                     ed.on('change input paste', function (e) {
-                        tinymce.triggerSave();
+                       tinymce.triggerSave();
+                       //trigger a change event on the underlying textArea
+                       $(ed.targetElm).change();
                         if (currentPage === 'adminCmsCreatePage') {
                             createPageConfig.prevBtn.attr('disabled', true);
                             createPageConfig.prevDescription.show();

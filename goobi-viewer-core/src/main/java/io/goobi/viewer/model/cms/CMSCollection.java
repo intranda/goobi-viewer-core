@@ -37,6 +37,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -128,6 +130,22 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         this.solrField = solrField;
         this.solrFieldValue = solrFieldValue;
     }
+    
+    /**
+     * Cloning constructor
+     * @param orig
+     */
+    public CMSCollection(CMSCollection orig) {
+        this.solrField = orig.solrField;
+        this.solrFieldValue = orig.solrFieldValue;
+        this.id = orig.id;
+        this.collectionUrl = orig.collectionUrl;
+        this.mediaItem = orig.mediaItem;
+        this.representativeWorkPI = orig.representativeWorkPI;
+        this.selectedLocale = orig.selectedLocale;
+        this.translations = orig.translations.stream().map(tr -> new CMSCollectionTranslation(tr, this)).collect(Collectors.toList());
+    }
+
 
     /**
      * <p>
@@ -371,6 +389,39 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         }
 
         return false;
+    }
+    
+    public boolean contentEquals(CMSCollection other) {
+        return ObjectUtils.equals(this.mediaItem, other.mediaItem) &&
+                StringUtils.equals(this.representativeWorkPI, other.representativeWorkPI) && 
+                StringUtils.equals(this.solrField, other.solrField) &&
+                StringUtils.equals(this.collectionUrl, other.collectionUrl) && 
+                StringUtils.equals(this.solrFieldValue, other.solrFieldValue) && 
+                translationsEquals(this.translations, other.translations);
+    }
+
+    /**
+     * @param translations2
+     * @param translations3
+     * @return
+     */
+    private boolean translationsEquals(List<CMSCollectionTranslation> tr1, List<CMSCollectionTranslation> tr2) {
+        if(tr1.size() == tr2.size()) {
+            for (CMSCollectionTranslation tr : tr1) {
+                CMSCollectionTranslation otr = tr2.stream()
+                        .filter(t -> StringUtils.equals(t.getTag(), tr.getTag()))
+                        .filter(t -> StringUtils.equals(t.getLanguage(), tr.getLanguage()))
+                        .findAny().orElse(null);
+                if(otr == null && StringUtils.isNotBlank(tr.getValue())) {
+                    return false;
+                } else if(otr != null && !StringUtils.equals(otr.getValue(), tr.getValue())) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

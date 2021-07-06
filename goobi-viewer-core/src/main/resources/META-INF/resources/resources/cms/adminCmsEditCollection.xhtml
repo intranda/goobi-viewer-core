@@ -51,6 +51,7 @@
 		                                    <h:inputTextarea value="#{cmsCollectionsBean.currentCollection.descriptionAsTranslation.value}"
 		                                        styleClass="form-control tinyMCE -validation-input">
                                                 <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__collections_description}"/>
+		                                    	<f:ajax execute="@this" event="valueChange"/>
 		                                    </h:inputTextarea>
 		                                </div>
 	                                </div>
@@ -65,7 +66,9 @@
                         <h3>#{msg.cms_collections_link}</h3>
                         <div class="admin__default-block">
                             <p class="admin__boxed-entry-description">#{msg.admin__cms_collections_link_desc}</p>
-                            <h:inputText id="textControlUrl" styleClass="form-control" value="#{cmsCollectionsBean.currentCollection.collectionUrl}" />
+                            <h:inputText id="textControlUrl" styleClass="form-control" value="#{cmsCollectionsBean.currentCollection.collectionUrl}">
+                            	<f:ajax execute="@this" event="valueChange"/>
+                            </h:inputText>
                         </div>
     
                         <!-- IMAGE -->
@@ -104,7 +107,7 @@
                                         <img src="#{cmsCollectionsBean.currentCollection.iconURI}" class="img-fluid" alt="" />
                                     </ui:fragment>
                                     <ui:fragment rendered="#{!cmsCollectionsBean.currentCollection.hasImage()}">
-                                        <img data-src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}"
+                                        <img data-src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(cmsCollectionsBean.currentCollection.solrFieldValue))}"
                                         data-viewer-thumbnail="thumbnail"
                                             class="img-fluid" alt="" />
                                     </ui:fragment>
@@ -201,6 +204,7 @@
 										<ui:fragment
 											rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
 											<a class="btn btn--full"
+												data-trigger="displayTranslations"
 												href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/"
 												aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translations_translate}</a>
 										</ui:fragment>
@@ -208,7 +212,7 @@
 										<!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
 										<ui:fragment
 											rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
-											<a class="btn btn--default"
+											<a class="btn btn--default" data-trigger="displayTranslations"
 												href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/"
 												aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.show}</a>
 										</ui:fragment>
@@ -234,14 +238,43 @@
 							</div>
 						</div>
 
-						</div>
+					</div>
 
-						
-						
-						
-						
+		<h:form prependId="false" id="dirtyEvaluatorForm">
+			<h:commandScript id="dirtyEvaluator" name="checkDirtyStatus" render="@form"></h:commandScript>
+		    <h:inputHidden id="dirtyMessage" value="#{cmsCollectionsBean.dirty}"></h:inputHidden>
+		</h:form>
+	    <script>
+	    
+	    //Click on link to translations checks dirty status of current collection and ask for confirmation
+	    //before following link if status is dirty
+	  	    $("[data-trigger='displayTranslations']").on("click", e => {
+	  	        let target = e.target.href;
+	  	        viewerJS.jsfAjax.success
+	  	        .pipe(rxjs.operators.filter(e => e.source.id == "dirtyEvaluator"),
+	  	              rxjs.operators.first())
+	  	        .subscribe(e => {
+  	  	             let dirty = document.getElementById("dirtyMessage").value === 'true';
+	  	            
+		  	         let promise = Promise.resolve();
+		  		     if(dirty) {
+		  		     	promise = viewerJS.notifications.confirm("#{msg.crowdsourcing__confirm_skip_page}")
+		  		     }
+		  		     promise.then( () => {
+		  		     	window.location.assign(target);
+		  		     })
+		  		     .catch((e) => {
+		  		     });
+	  	        })
+	  	        checkDirtyStatus();
+	  	        return false;
+	  	    })
+	  	    
+	    </script>
+	    
+	    
 						</div>
-
+	  	    
 	    </div>
 	    </div>
             
