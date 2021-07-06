@@ -146,6 +146,22 @@ public class TranslationGroup {
             return false;
         return true;
     }
+    
+    /**
+     * 
+     * @param key
+     * @return
+     */
+    public boolean findEntryByMessageKey(String key) {
+        for(MessageEntry entry : getAllEntries()) {
+            if(entry.getKey().equals(key)) {
+                setSelectedEntry(entry);
+                return true;
+            }
+        }
+        
+        return false;
+    }
 
     /**
      * @return the id

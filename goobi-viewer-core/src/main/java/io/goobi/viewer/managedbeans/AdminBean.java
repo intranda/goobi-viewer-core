@@ -1988,6 +1988,28 @@ public class AdminBean implements Serializable {
      * 
      * @return
      */
+    public String getCurrentTranslationMessageKey() {
+        if (currentTranslationGroup != null && currentTranslationGroup.getSelectedEntry() != null) {
+            return currentTranslationGroup.getSelectedEntry().getKey();
+        }
+
+        return "-";
+    }
+
+    /**
+     * 
+     * @param key
+     */
+    public void setCurrentTranslationMessageKey(String key) {
+        if (currentTranslationGroup != null) {
+            currentTranslationGroup.findEntryByMessageKey(key);
+        }
+    }
+
+    /**
+     * 
+     * @return
+     */
     public boolean isTranslationLocked() {
         return translationGroupsEditorSession != null && !translationGroupsEditorSession.equals(BeanUtils.getSession().getId());
     }

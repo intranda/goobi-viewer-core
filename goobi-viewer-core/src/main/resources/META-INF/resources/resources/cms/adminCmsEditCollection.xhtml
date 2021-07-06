@@ -205,7 +205,7 @@
 											rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
 											<a class="btn btn--full"
 												data-trigger="displayTranslations"
-												href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/"
+												href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/#{cmsCollectionsBean.currentCollection.solrFieldValue}/"
 												aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translations_translate}</a>
 										</ui:fragment>
 
@@ -213,7 +213,7 @@
 										<ui:fragment
 											rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
 											<a class="btn btn--default" data-trigger="displayTranslations"
-												href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/"
+												href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/#{cmsCollectionsBean.currentCollection.solrFieldValue}/"
 												aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.show}</a>
 										</ui:fragment>
 									</div>

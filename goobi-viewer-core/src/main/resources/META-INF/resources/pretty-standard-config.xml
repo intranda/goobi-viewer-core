@@ -842,6 +842,11 @@
         <view-id value="/resources/admin/views/adminTranslationsEdit.xhtml" />
         <action onPostback="false">#{adminBean.lockTranslation}</action>
     </url-mapping>
+    <url-mapping id="adminEditTranslations2">
+        <pattern value="/admin/translations/edit/#{groupId:adminBean.currentTranslationGroupId}/#{currentTranslationKey:adminBean.currentTranslationMessageKey}/" />
+        <view-id value="/resources/admin/views/adminTranslationsEdit.xhtml" />
+        <action onPostback="false">#{adminBean.lockTranslation}</action>
+    </url-mapping>
 
     <!-- ADMIN STYLES FOR DEVS -->
     <url-mapping id="adminEditTranslations">
