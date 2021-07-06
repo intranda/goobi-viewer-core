@@ -27,6 +27,28 @@ import io.goobi.viewer.solr.SolrConstants;
 public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
+     * @see CmsCollectionsBean#initImageMode()
+     * @verifies set imageMode correctly
+     */
+    @Test
+    public void initImageMode_shouldSetImageModeCorrectly() throws Exception {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        bean.setCurrentCollection(new CMSCollection(SolrConstants.DC, "varia"));
+
+        bean.getCurrentCollection().setRepresentativeWorkPI("PPN123");
+        bean.initImageMode();
+        Assert.assertEquals(CMSCollectionImageMode.PI, bean.getImageMode());
+
+        bean.getCurrentCollection().setRepresentativeWorkPI(null);
+        bean.initImageMode();
+        Assert.assertEquals(CMSCollectionImageMode.NONE, bean.getImageMode());
+
+        bean.getCurrentCollection().setMediaItem(new CMSMediaItem());
+        bean.initImageMode();
+        Assert.assertEquals(CMSCollectionImageMode.IMAGE, bean.getImageMode());
+    }
+
+    /**
      * @see CmsCollectionsBean#isDisplayTranslationWidget()
      * @verifies return false if solrField not among configured translation groups
      */
@@ -61,24 +83,25 @@ public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CmsCollectionsBean#initImageMode()
-     * @verifies set imageMode correctly
+     * @see CmsCollectionsBean#isDisplayTranslationWidgetEdit()
+     * @verifies return false if solrField not among configured translation groups
      */
     @Test
-    public void initImageMode_shouldSetImageModeCorrectly() throws Exception {
+    public void isDisplayTranslationWidgetEdit_shouldReturnFalseIfSolrFieldNotAmongConfiguredTranslationGroups() throws Exception {
         CmsCollectionsBean bean = new CmsCollectionsBean();
-        bean.setCurrentCollection(new CMSCollection(SolrConstants.DC, "varia"));
-        
-        bean.getCurrentCollection().setRepresentativeWorkPI("PPN123");
-        bean.initImageMode();
-        Assert.assertEquals(CMSCollectionImageMode.PI, bean.getImageMode());
-        
-        bean.getCurrentCollection().setRepresentativeWorkPI(null);
-        bean.initImageMode();
-        Assert.assertEquals(CMSCollectionImageMode.NONE, bean.getImageMode());
-        
-        bean.getCurrentCollection().setMediaItem(new CMSMediaItem());
-        bean.initImageMode();
-        Assert.assertEquals(CMSCollectionImageMode.IMAGE, bean.getImageMode());
+        bean.solrField = "MD_NOPE"; // Do not use the setter, that'd require more test infrastructure
+        Assert.assertFalse(bean.isDisplayTranslationWidgetEdit());
+    }
+
+    /**
+     * @see CmsCollectionsBean#isDisplayTranslationWidgetEdit()
+     * @verifies return true if solrFieldValue not or partially translated
+     */
+    @Test
+    public void isDisplayTranslationWidgetEdit_shouldReturnTrueIfSolrFieldValueNotOrPartiallyTranslated() throws Exception {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        bean.solrField = SolrConstants.DC; // Do not use the setter, that'd require more test infrastructure
+        bean.setSolrFieldValue("dcmetadata");
+        Assert.assertTrue(bean.isDisplayTranslationWidgetEdit());
     }
 }
