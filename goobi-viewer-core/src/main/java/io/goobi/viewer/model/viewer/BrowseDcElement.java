@@ -481,7 +481,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * @return a boolean.
      */
     public boolean hasCMSDescription() {
-        return !(this.info instanceof SimpleBrowseElementInfo);
+        return !(this.info instanceof SimpleBrowseElementInfo) && StringUtils.isNotBlank(info.getDescription());
     }
 
     /**
