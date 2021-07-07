@@ -299,6 +299,7 @@ public class ArchiveTree implements Serializable {
         for (ArchiveEntry tcElem : entryMap.get(DEFAULT_GROUP)) {
             if (tcElem.getHierarchyLevel() == 0) {
                 tcElem.setExpanded(false);
+                tcElem.setVisible(true);
             } else {
                 if (collapseAllEntries) {
                     tcElem.setExpanded(false);
