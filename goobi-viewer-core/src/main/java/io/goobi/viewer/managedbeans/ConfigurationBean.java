@@ -1057,18 +1057,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * getDefaultBrowseIcon.
-     * </p>
-     *
-     * @param collection a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getDefaultBrowseIcon(String collection) {
-        return DataManager.getInstance().getConfiguration().getDefaultBrowseIcon(collection);
-    }
-
-    /**
-     * <p>
      * isTranskribusEnabled.
      * </p>
      *

@@ -15,29 +15,20 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v3.builder;
 
-import static io.goobi.viewer.api.rest.v2.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS_COLLECTION;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.wa.ImageResource;
-import de.intranda.api.iiif.IIIFUrlResolver;
-import de.intranda.api.iiif.image.ImageInformation;
-import de.intranda.api.iiif.image.v3.ImageInformation3;
-import de.intranda.api.iiif.presentation.content.ImageContent;
-import de.intranda.api.iiif.presentation.enums.ViewingHint;
-import de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2;
 import de.intranda.api.iiif.presentation.v3.Collection3;
 import de.intranda.api.iiif.presentation.v3.Manifest3;
-import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.metadata.multilanguage.Metadata;
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.controller.DataManager;
@@ -45,7 +36,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
@@ -71,7 +61,6 @@ public class CollectionBuilder extends AbstractBuilder {
                     SolrConstants.IDDOC };
     public final static String RSS_FEED_LABEL = "Rss feed";
     public final static String RSS_FEED_FORMAT = "Rss feed";
-
 
     public CollectionBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
@@ -107,10 +96,10 @@ public class CollectionBuilder extends AbstractBuilder {
 
         List<StructElement> records = dataRetriever.getContainedRecords(collectionField, collectionName);
         for (StructElement record : records) {
-            if(record.isAnchor()) {
+            if (record.isAnchor()) {
                 Collection3 manifest = createAnchorLink(collectionField, collectionName, record);
                 baseCollection.addItem(manifest);
-            } else {                
+            } else {
                 Manifest3 manifest = createRecordLink(collectionField, collectionName, record);
                 baseCollection.addItem(manifest);
             }
@@ -119,7 +108,6 @@ public class CollectionBuilder extends AbstractBuilder {
         return baseCollection;
 
     }
-
 
     private Collection3 createCollection(String collectionField, String collectionName) {
         URI id = urls.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(collectionField, collectionName).buildURI();
@@ -135,12 +123,16 @@ public class CollectionBuilder extends AbstractBuilder {
             collection.setDescription(cmsCollection.getTranslationsForDescription());
 
             ImageResource thumb = createThumbnail(collectionField, collectionName, cmsCollection);
-            collection.addThumbnail(thumb);
+            if (thumb != null) {
+                collection.addThumbnail(thumb);
+            }
 
         } else {
             collection.setLabel(ViewerResourceBundle.getTranslations(collectionName, false));
             ImageResource thumb = new ImageResource(CMSCollection.getDefaultIcon(collectionField));
-            collection.addThumbnail(thumb);
+            if (thumb != null) {
+                collection.addThumbnail(thumb);
+            }
         }
         return collection;
     }
