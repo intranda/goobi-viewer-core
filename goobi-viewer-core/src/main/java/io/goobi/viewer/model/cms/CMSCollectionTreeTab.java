@@ -20,16 +20,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 
 /**
  * Object representing tab status for a collection tree.
  */
 public class CMSCollectionTreeTab implements IPolyglott {
+
+    private static final Logger logger = LoggerFactory.getLogger(CMSCollectionTreeTab.class);
 
     private Map<Locale, TranslationStatus> translationStatusMap = new HashMap<>(getLocales().size());
     private Locale selectedLocale = BeanUtils.getLocale();
@@ -39,10 +45,15 @@ public class CMSCollectionTreeTab implements IPolyglott {
         if (!groups.isEmpty() && !groups.get(0).getItems().isEmpty()) {
             for (Locale locale : getLocales()) {
                 try {
-                    TranslationStatus translationStatus = groups.get(0).getItems().get(0).getTranslationStatusLanguage(locale.getLanguage());
-                    translationStatusMap.put(locale, translationStatus);
+                    for (TranslationGroupItem item : groups.get(0).getItems()) {
+                        if (item.getKey().equals(field)) {
+                            TranslationStatus translationStatus = item.getTranslationStatusLanguage(locale.getLanguage());
+                            translationStatusMap.put(locale, translationStatus);
+                            logger.trace("translation status {}: {}", locale, translationStatus);
+                        }
+                    }
                 } catch (Exception e) {
-
+                    logger.error(e.getMessage(), e);
                 }
             }
         }
