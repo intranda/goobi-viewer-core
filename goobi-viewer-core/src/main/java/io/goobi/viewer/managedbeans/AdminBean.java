@@ -1888,7 +1888,7 @@ public class AdminBean implements Serializable {
     public TranslationGroup getTranslationGroupForFieldAndKey(String field, String key) {
         for (TranslationGroup group : getTranslationGroupsForSolrFieldStatic(field)) {
             for (MessageEntry entry : group.getAllEntries()) {
-                if (entry.getKey().equals(key)) {
+                if (entry.getKey().equals(key) || entry.getKey().startsWith(key + ".")) {
                     return group;
                 }
             }

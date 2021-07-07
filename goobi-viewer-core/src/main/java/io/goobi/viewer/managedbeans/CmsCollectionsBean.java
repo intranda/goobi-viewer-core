@@ -158,7 +158,7 @@ public class CmsCollectionsBean implements Serializable {
                 }
                 try {
                     for (MessageEntry entry : item.getEntries()) {
-                        if (entry.getKey().equals(solrFieldValue)) {
+                        if (entry.getKey().equals(solrFieldValue) || entry.getKey().startsWith(solrFieldValue + ".")) {
                             return !TranslationStatus.FULL.equals(entry.getTranslationStatus());
                         }
                     }

@@ -155,11 +155,13 @@ public class TranslationGroup {
     public boolean findEntryByMessageKey(String key) {
         for(MessageEntry entry : getAllEntries()) {
             if(entry.getKey().equals(key)) {
+                logger.trace("found key: {}", key);
                 setSelectedEntry(entry);
                 return true;
             }
         }
         
+        setSelectedEntry(null);
         return false;
     }
 
