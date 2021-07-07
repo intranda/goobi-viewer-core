@@ -77,7 +77,7 @@ public class CmsCollectionsBean implements Serializable {
     BrowseBean browseBean;
 
     private CMSCollection currentCollection;
-    private CMSCollection originalCollection;   //collection from database, without any edits after last save
+    private CMSCollection originalCollection; //collection from database, without any edits after last save
     String solrField = SolrConstants.DC;
     private String solrFieldValue;
     private List<CMSCollection> collections;
@@ -319,7 +319,7 @@ public class CmsCollectionsBean implements Serializable {
         editCollection(currentCollection);
         // Set the image mode value based on what values exist on the collection entry
         initImageMode();
-        
+
         originalCollection = currentCollection;
         currentCollection = new CMSCollection(originalCollection);
     }
@@ -363,24 +363,24 @@ public class CmsCollectionsBean implements Serializable {
         }
     }
 
-    /**
-     * <p>
-     * addCollection.
-     * </p>
-     *
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public void addCollection() throws DAOException {
-        if (StringUtils.isNoneBlank(getSolrField(), getSolrFieldValue())) {
-            CMSCollection collection = new CMSCollection(getSolrField(), getSolrFieldValue());
-            DataManager.getInstance().getDao().addCMSCollection(collection);
-            updateCollections();
-            setSolrFieldValue("");//empty solr field value to avoid creating the same collection again
-            logger.trace("collection added to DB: {}", collection);
-        } else {
-            Messages.error("cms_collections_err_noselection");
-        }
-    }
+    //    /**
+    //     * <p>
+    //     * addCollection.
+    //     * </p>
+    //     *
+    //     * @throws io.goobi.viewer.exceptions.DAOException if any.
+    //     */
+    //    public void addCollection() throws DAOException {
+    //        if (StringUtils.isNoneBlank(getSolrField(), getSolrFieldValue())) {
+    //            CMSCollection collection = new CMSCollection(getSolrField(), getSolrFieldValue());
+    //            DataManager.getInstance().getDao().addCMSCollection(collection);
+    //            updateCollections();
+    //            setSolrFieldValue("");//empty solr field value to avoid creating the same collection again
+    //            logger.trace("collection added to DB: {}", collection);
+    //        } else {
+    //            Messages.error("cms_collections_err_noselection");
+    //        }
+    //    }
 
     /**
      * @param collection
@@ -481,7 +481,11 @@ public class CmsCollectionsBean implements Serializable {
                     getCurrentCollection().setMediaItem(null);
                     break;
             }
-            DataManager.getInstance().getDao().updateCMSCollection(getCurrentCollection());
+            if (getCurrentCollection().getId() != null) {
+                DataManager.getInstance().getDao().updateCMSCollection(getCurrentCollection());
+            } else {
+                DataManager.getInstance().getDao().addCMSCollection(getCurrentCollection());
+            }
             updateCollections();
             addToCollectionViews(getCurrentCollection());
 
@@ -639,9 +643,10 @@ public class CmsCollectionsBean implements Serializable {
             loadCollection(solrField);
         }
     }
-    
+
     public boolean isDirty() {
-        boolean dirty = this.currentCollection != null && this.originalCollection != null && !this.currentCollection.contentEquals(this.originalCollection);
+        boolean dirty =
+                this.currentCollection != null && this.originalCollection != null && !this.currentCollection.contentEquals(this.originalCollection);
         return dirty;
     }
 }
