@@ -17,7 +17,10 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -38,7 +41,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSCollectionTranslation;
@@ -47,6 +49,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.admin.MessageEntry;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
+import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.solr.SolrConstants;
@@ -209,6 +212,44 @@ public class CmsCollectionsBean implements Serializable {
         }
 
         return null;
+    }
+
+    public String importDescriptionsAction() {
+        if (StringUtils.isEmpty(solrField)) {
+            return "";
+        }
+
+        List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
+
+        // Collect descriptions from messages.properties
+        Map<String, Map<String, String>> descriptions = new HashMap<>();
+        for (String key : ViewerResourceBundle.getAllKeys()) {
+            if (key.endsWith("_DESCRIPTION")) {
+                String rawKey = key.replace("_DESCRIPTION", "");
+                Map<String, String> description = descriptions.get(rawKey);
+                if (description == null) {
+                    description = new HashMap<>();
+                    descriptions.put(rawKey, description);
+                }
+                for (Locale locale : allLocales) {
+                    String value = ViewerResourceBundle.getTranslation(key, locale);
+                    if (!key.equals(value)) {
+                        description.put(locale.getLanguage(), value);
+                    }
+                }
+            }
+        }
+
+        TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_VALUES, solrField, false);
+        try {
+            for (MessageEntry entry : item.getEntries()) {
+
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return "";
     }
 
     /**
