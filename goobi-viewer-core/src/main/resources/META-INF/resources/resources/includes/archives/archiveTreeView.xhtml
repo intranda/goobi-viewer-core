@@ -45,7 +45,7 @@
 							<f:passThroughAttribute name="data-toggle" value="tooltip" />
 							<f:passThroughAttribute name="data-placement" value="top" />
 							<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
-							<f:ajax render="#{render}" />
+							<f:ajax render="archivesForm" />
 						</h:commandLink>
 <!-- 						<h:commandLink action="#{archiveBean.archiveTree.expandAll}" -->
 <!-- 							title="#{msg.allOpen}"> -->
@@ -56,7 +56,6 @@
 <!-- 							<f:ajax render="#{render}" /> -->
 <!-- 						</h:commandLink> -->
 					</div>
-	
 					<nav class="archives-tree__list">
 						<ul>
 							<c:forEach var="entry" items="#{visibleTree}" varStatus="status">
