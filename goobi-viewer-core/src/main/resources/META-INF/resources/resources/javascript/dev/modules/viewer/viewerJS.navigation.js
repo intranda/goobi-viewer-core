@@ -71,7 +71,7 @@ var viewerJS = ( function( viewer ) {
                     _calcSubMenuPosition( currTrigger.next( '.navigation__submenu' ) );
                 } else {
                     _resetMenus();
-                    console.log("open submenu", currTrigger.parent());
+                    // console.log("open submenu", currTrigger.parent());
                     currTrigger.parent().addClass( 'active' );
                     currTrigger.next( '.navigation__submenu' ).addClass( 'in' );
                 }
