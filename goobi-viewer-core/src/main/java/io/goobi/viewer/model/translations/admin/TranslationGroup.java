@@ -146,21 +146,37 @@ public class TranslationGroup {
             return false;
         return true;
     }
-    
+
     /**
      * 
-     * @param key
-     * @return
+     * @param field Solr field
+     * @param key Message key to find
+     * @return true if message entry was found or added; false if no matching group item could be found
      */
     public boolean findEntryByMessageKey(String key) {
-        for(MessageEntry entry : getAllEntries()) {
-            if(entry.getKey().equals(key)) {
+        logger.trace("findEntryByMessageKey: {}", key);
+
+        for (MessageEntry entry : getAllEntries()) {
+            if (entry.getKey().equals(key)) {
                 logger.trace("found key: {}", key);
                 setSelectedEntry(entry);
                 return true;
             }
         }
-        
+
+        // Create and add new message entry, if key yet not in messages
+        try {
+            List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
+            MessageEntry entry = MessageEntry.create(key, allLocales);
+            getAllEntries().add(entry);
+            Collections.sort(getAllEntries());
+            setSelectedEntry(entry);
+            logger.trace("Added new message entry: {}", key);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
         setSelectedEntry(null);
         return false;
     }
@@ -602,7 +618,7 @@ public class TranslationGroup {
         }
         return true;
     }
-    
+
     /**
      * Resets the counts for fully translated and untranslated entries to update the translation process
      */

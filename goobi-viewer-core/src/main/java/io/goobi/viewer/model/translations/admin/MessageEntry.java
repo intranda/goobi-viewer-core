@@ -15,7 +15,11 @@
  */
 package io.goobi.viewer.model.translations.admin;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * A single message key with all its available translations for admin backend editing.
@@ -30,6 +34,25 @@ public class MessageEntry implements Comparable<MessageEntry> {
 
     private final String key;
     private final List<MessageValue> values;
+
+    /**
+     * Factory method that creates a <code>MessageEntry</code> instance with values initialized for all given locales.
+     * 
+     * @param key Message key
+     * @param allLocales List of locales
+     * @return new <code>MessageEntry</code>
+     * @should create MessageEntry correctly
+     */
+    public static MessageEntry create(String key, List<Locale> allLocales) {
+        List<MessageValue> values = new ArrayList<>(ViewerResourceBundle.getAllLocales().size());
+        for (Locale locale : allLocales) {
+            String translation = ViewerResourceBundle.getTranslation(key, locale, false, false, false, false);
+            String globalTranslation = ViewerResourceBundle.getTranslation(key, locale, false, false, true, false);
+            values.add(new MessageValue(locale.getLanguage(), translation, globalTranslation));
+        }
+
+        return new MessageEntry(key, values);
+    }
 
     /**
      * 
