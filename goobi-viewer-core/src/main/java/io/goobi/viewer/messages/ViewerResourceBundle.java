@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -731,5 +732,23 @@ public class ViewerResourceBundle extends ResourceBundle {
             return Collections.emptySet();
         }
         return bundle.keySet();
+    }
+
+    /**
+     * 
+     * @return Set of message keys from local messages_*.properties
+     */
+    public static Set<String> getAllLocalKeys() {
+        Set<String> ret = new HashSet<>();
+        for (Locale locale : getAllLocales()) {
+            ResourceBundle bundle = localBundles.get(locale);
+            if (bundle == null) {
+                logger.error("Reource bundle '{}' not found.", BUNDLE_NAME);
+                continue;
+            }
+            ret.addAll(bundle.keySet());
+        }
+
+        return ret;
     }
 }

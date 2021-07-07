@@ -155,6 +155,23 @@
 
 							<!-- SIDEBAR -->
 							<div class="admin__content-side -sticky">
+							
+							    <!-- IMPORT -->
+                                <ui:fragment rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}">
+                                    <div class="admin__default-block">
+                                        <h3>#{msg.admin__cms_collections_import}</h3>
+                                        <div class="admin__form-help-text in mb-2">
+                                            #{msg.admin__cms_collections_import_desc}
+                                        </div>
+                                        <div class="admin__cms-edit-collection-info-box">
+                                            <h:commandButton
+                                                value="#{msg.admin__cms_collections_import_start}"
+                                                action="#{cmsCollectionsBean.importDescriptionsAction}">
+                                            </h:commandButton>
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+        
 
 							<!-- TRANSLATIONS -->
 							<ui:fragment rendered="#{cmsCollectionsBean.displayTranslationWidget}">

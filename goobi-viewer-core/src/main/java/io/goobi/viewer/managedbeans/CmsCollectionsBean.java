@@ -17,10 +17,8 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -49,7 +47,6 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.admin.MessageEntry;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
-import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.solr.SolrConstants;
@@ -214,7 +211,22 @@ public class CmsCollectionsBean implements Serializable {
         return null;
     }
 
-    public String importDescriptionsAction() {
+    /**
+     * 
+     * @param solrField
+     * @return
+     */
+    public boolean isDisplayImportDescriptionsWidget() {
+        for (String key : ViewerResourceBundle.getAllLocalKeys()) {
+            if (key.endsWith("_DESCRIPTION") && !key.startsWith("MD_")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public String importDescriptionsAction() throws DAOException {
         if (StringUtils.isEmpty(solrField)) {
             return "";
         }
@@ -222,32 +234,44 @@ public class CmsCollectionsBean implements Serializable {
         List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
 
         // Collect descriptions from messages.properties
-        Map<String, Map<String, String>> descriptions = new HashMap<>();
-        for (String key : ViewerResourceBundle.getAllKeys()) {
-            if (key.endsWith("_DESCRIPTION")) {
+        int stringCount = 0;
+        int collectionCount = 0;
+        for (String key : ViewerResourceBundle.getAllLocalKeys()) {
+            if (key.endsWith("_DESCRIPTION") && !key.startsWith("MD_")) {
                 String rawKey = key.replace("_DESCRIPTION", "");
-                Map<String, String> description = descriptions.get(rawKey);
-                if (description == null) {
-                    description = new HashMap<>();
-                    descriptions.put(rawKey, description);
+                CMSCollection collection = DataManager.getInstance().getDao().getCMSCollection(solrField, rawKey);
+                if (collection == null) {
+                    collection = new CMSCollection(solrField, rawKey);
+                    logger.trace("Created new collection: {}", collection.toString());
                 }
+                collection.populateDescriptions();
+
+                boolean dirty = false;
                 for (Locale locale : allLocales) {
                     String value = ViewerResourceBundle.getTranslation(key, locale);
                     if (!key.equals(value)) {
-                        description.put(locale.getLanguage(), value);
+                        logger.trace("Found key: {}:{}", key, value);
+                        if (StringUtils.isEmpty(collection.getDescription(locale))) {
+                            collection.setDescription(value, locale.getLanguage());
+                            stringCount++;
+                            dirty = true;
+                            // TODO remove key from messages file
+                        }
                     }
+                }
+                if (dirty) {
+                    if (collection.getId() != null) {
+                        DataManager.getInstance().getDao().updateCMSCollection(collection);
+                    } else {
+                        DataManager.getInstance().getDao().addCMSCollection(collection);
+                    }
+                    collectionCount++;
+                    logger.trace("Saved collection: {}", collection.toString());
                 }
             }
         }
 
-        TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_VALUES, solrField, false);
-        try {
-            for (MessageEntry entry : item.getEntries()) {
-
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+        logger.trace("Updated {} description texts in {} collections.", stringCount, collectionCount);
 
         return "";
     }
