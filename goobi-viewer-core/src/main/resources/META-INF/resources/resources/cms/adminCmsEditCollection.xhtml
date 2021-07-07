@@ -22,7 +22,7 @@
             
             <div id="cmsEditCollection" class="cms-edit-collection">
             <div class="admin__title-bar">
-				<h2 class="admin__title">#{cmsCollectionsBean.currentCollection.solrFieldValue}</h2>
+				<h2 class="admin__title">#{msg.cms_collection_edit}</h2>
 			</div>
 			<div class="admin__content-inner-content">
             <div class="admin__content-wrapper">
@@ -223,16 +223,15 @@
 
 						<div class="admin__default-block">
 							<h2>#{msg.admin__cms_collections_information}</h2>
-							<div class="admin__record-notes-info-box">
+							<div class="admin__cms-edit-collection-info-box">
 								#{msg.admin__cms_collections_info_internal_name}
 								#{cmsCollectionsBean.currentCollection.name}
-								<div class="admin__record-notes-image-wrapper">
+								<div class="admin__cms-edit-collection-image-wrapper">
 
 								</div>
-								<div class="admin__record-notes-metadata">
+								<div class="admin__cms-edit-collection-metadata">
 								    <ui:repeat var="value" value="#{cmsCollectionsBean.messageEntryForFieldValue.values}">
 								        #{msg[value.language]} #{value.value != null ? value.value : '-/-'}
-								        <br />
 								    </ui:repeat>
 								</div>
 							</div>
