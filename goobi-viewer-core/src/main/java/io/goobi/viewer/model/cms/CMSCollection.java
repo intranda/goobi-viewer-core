@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,9 +36,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -66,7 +67,7 @@ import io.goobi.viewer.solr.SolrConstants;
  * @author Florian Alpers
  */
 @Entity
-@Table(name = "cms_collections")
+@Table(name = "cms_collections", uniqueConstraints = { @UniqueConstraint(columnNames = { "solrField", "solrFieldValue" }) })
 public class CMSCollection implements Comparable<CMSCollection>, BrowseElementInfo, CMSMediaHolder, IPolyglott {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSCollection.class);
@@ -129,9 +130,10 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         this.solrField = solrField;
         this.solrFieldValue = solrFieldValue;
     }
-    
+
     /**
      * Cloning constructor
+     * 
      * @param orig
      */
     public CMSCollection(CMSCollection orig) {
@@ -144,7 +146,6 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         this.selectedLocale = orig.selectedLocale;
         this.translations = orig.translations.stream().map(tr -> new CMSCollectionTranslation(tr, this)).collect(Collectors.toList());
     }
-
 
     /**
      * <p>
@@ -233,7 +234,6 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     public String getLabel(Locale locale) {
         return ViewerResourceBundle.getTranslation(getSolrFieldValue(), locale);
     }
-
 
     /**
      * <p>
@@ -389,13 +389,18 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
         return false;
     }
-    
+
+    /**
+     * 
+     * @param other
+     * @return
+     */
     public boolean contentEquals(CMSCollection other) {
-        return ObjectUtils.equals(this.mediaItem, other.mediaItem) &&
-                StringUtils.equals(this.representativeWorkPI, other.representativeWorkPI) && 
+        return Objects.equals(this.mediaItem, other.mediaItem) &&
+                StringUtils.equals(this.representativeWorkPI, other.representativeWorkPI) &&
                 StringUtils.equals(this.solrField, other.solrField) &&
-                StringUtils.equals(this.collectionUrl, other.collectionUrl) && 
-                StringUtils.equals(this.solrFieldValue, other.solrFieldValue) && 
+                StringUtils.equals(this.collectionUrl, other.collectionUrl) &&
+                StringUtils.equals(this.solrFieldValue, other.solrFieldValue) &&
                 translationsEquals(this.translations, other.translations);
     }
 
@@ -404,23 +409,24 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @param translations3
      * @return
      */
-    private boolean translationsEquals(List<CMSCollectionTranslation> tr1, List<CMSCollectionTranslation> tr2) {
-        if(tr1.size() == tr2.size()) {
+    private static boolean translationsEquals(List<CMSCollectionTranslation> tr1, List<CMSCollectionTranslation> tr2) {
+        if (tr1.size() == tr2.size()) {
             for (CMSCollectionTranslation tr : tr1) {
                 CMSCollectionTranslation otr = tr2.stream()
                         .filter(t -> StringUtils.equals(t.getTag(), tr.getTag()))
                         .filter(t -> StringUtils.equals(t.getLanguage(), tr.getLanguage()))
-                        .findAny().orElse(null);
-                if(otr == null && StringUtils.isNotBlank(tr.getValue())) {
+                        .findAny()
+                        .orElse(null);
+                if (otr == null && StringUtils.isNotBlank(tr.getValue())) {
                     return false;
-                } else if(otr != null && !StringUtils.equals(otr.getValue(), tr.getValue())) {
+                } else if (otr != null && !StringUtils.equals(otr.getValue(), tr.getValue())) {
                     return false;
                 }
             }
             return true;
-        } else {
-            return false;
         }
+        
+        return false;
     }
 
     /**
