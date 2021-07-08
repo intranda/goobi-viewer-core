@@ -155,6 +155,7 @@
 
 							<!-- SIDEBAR -->
 							<div class="admin__content-side -sticky -refreshHCsticky">
+							<h:panelGroup id="collectionsTranslationProgress" layout="block">
 							
 							    <!-- IMPORT -->
                                 <ui:fragment rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}">
@@ -256,6 +257,7 @@
                                                 value="#{cmsCollectionsBean.solrField}" styleClass="form-control">
                                                 <f:selectItems value="#{cmsCollectionsBean.allCollectionFields}" />
                                                     <f:ajax render="collectionTreeGroup"></f:ajax>
+                                                    <f:ajax render="collectionsTranslationProgress"></f:ajax>
                                             </h:selectOneMenu>
                                         </div>
                                     </div>
@@ -276,6 +278,7 @@
 									</div>
 								</div>
 
+							</h:panelGroup>
 							</div>
 
 						</div>
