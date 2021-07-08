@@ -230,11 +230,13 @@
 					<div class="admin__cms-edit-collection-data-wrapper">
 						<div class="admin__cms-edit-collection-data-type mb-4">#{msg.admin__cms_collections_info_internal_name}</div>
 						<div class="admin__cms-edit-collection-data-value mb-4">#{cmsCollectionsBean.currentCollection.name}</div>
-					    <ui:repeat var="value" value="#{cmsCollectionsBean.messageEntryForFieldValue.values}">
-					        <div class="admin__cms-edit-collection-data-type">#{msg[value.language]}</div>
-					        <div class="admin__cms-edit-collection-data-value">#{value.value != null ? value.value : '-/-'}</div>
-					    </ui:repeat>
 					</div>
+				    <ui:repeat var="value" value="#{cmsCollectionsBean.messageEntryForFieldValue.values}">
+				    	<div class="admin__cms-edit-collection-data-wrapper">
+				        	<div class="admin__cms-edit-collection-data-type">#{msg[value.language]}</div>
+				        	<div class="admin__cms-edit-collection-data-value">#{value.value != null ? value.value : '-/-'}</div>
+				        </div>
+				    </ui:repeat>
 				</div>
 			</div>
 
