@@ -275,7 +275,7 @@ public class CmsCollectionsBean implements Serializable {
 
         logger.trace("Updated {} description texts in {} collections.", stringCount, collectionCount);
         Messages.info("Updated: " + stringCount);
-        
+
         return "";
     }
 
@@ -324,6 +324,7 @@ public class CmsCollectionsBean implements Serializable {
         try {
             updateCollections();
             loadCollection(solrField);
+            currentTab.refresh(solrField);
         } catch (DAOException e) {
             logger.error(e.getMessage());
             collections = Collections.emptyList();
