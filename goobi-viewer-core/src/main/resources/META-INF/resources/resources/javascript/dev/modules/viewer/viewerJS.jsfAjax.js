@@ -78,7 +78,12 @@ var viewerJS = ( function ( viewer ) {
                             }
                             // hc sticky recalculation
                             if ( $('.-refreshHCsticky' ).length > 0 ) {
-                            	viewer.refreshHCsticky();
+                            	setTimeout(
+                            			  function() 
+                            			  {
+                                          	viewer.refreshHCsticky();
+                            			  }, 0);
+
                     		}
                             this.success.next(data);
                             break;

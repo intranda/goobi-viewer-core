@@ -303,7 +303,13 @@ var viewerJS = (function () {
     
     // refresh HC sticky method (use case: after ajax calls/DOM changes)
     viewer.refreshHCsticky = function () {
-    	$(".-refreshHCsticky").hcSticky('refresh', {});
+    	jQuery(document).ready(function($) {
+
+        	$(".-refreshHCsticky").hcSticky('refresh', {});
+
+    		});
+
+    	// console.log('refresh hc sticky done');
     }
     
     viewer.initTinyMCE  = function(event) {

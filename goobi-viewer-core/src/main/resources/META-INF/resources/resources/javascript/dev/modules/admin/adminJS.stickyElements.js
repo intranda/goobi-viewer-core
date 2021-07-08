@@ -41,8 +41,8 @@ var adminJS = ( function( admin ) {
          // STICKY ELEMENTS TARGETS AND OPTIONS
          	// sticky admin main menu sidebar left side
             if ( $( ".admin__sidebar" ).length ) {
-	         	$(".admin__sidebar").hcSticky({
-	         		stickTo: $('.admin__content')[0],
+	         	$(".admin__sidebar-inner").hcSticky({
+	         		stickTo: $('.admin')[0],
 	         		innerTop: 0
 	         	});
             }
