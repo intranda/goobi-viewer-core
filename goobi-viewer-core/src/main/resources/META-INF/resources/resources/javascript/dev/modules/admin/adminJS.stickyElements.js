@@ -62,17 +62,11 @@ var adminJS = ( function( admin ) {
 	         		stickTo: $('.admin__content-wrapper')[0],
 	         		innerTop: -50
 	         	});
-            } 		
+            }
         }
     }
     
-    // methods to refresh hc sticky after ajax calls or modifications of dom
-    if ( $( ".admin__sidebar" ).length ) {
-	    viewerJS.jsfAjax.complete.subscribe(function() {
-	    	$(".admin__sidebar").hcSticky('refresh', {
-	    	});
-	    });
-    }
+
 	
 	return admin;
     

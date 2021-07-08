@@ -69,13 +69,17 @@ var viewerJS = ( function ( viewer ) {
                             viewerJS.helper.initBsFeatures();
                             // load thumbnails
                             viewer.loadThumbnails();
-                            // init tinyMCE    
+                            // init tinyMCE
                             let isTiny = data.responseText.includes("tinyMCE");
                             if(isTiny) {
 //                            if ( $( '.tinyMCE' ).length > 0 ) {
                                 viewerJS.tinyMce.close();
                                 viewerJS.tinyMce.init( viewerJS.tinyConfig );
                             }
+                            // hc sticky recalculation
+                            if ( $('.-refreshHCsticky' ).length > 0 ) {
+                            	viewer.refreshHCsticky();
+                    		}
                             this.success.next(data);
                             break;
                         case 'error':
