@@ -256,7 +256,8 @@ public class CmsCollectionsBean implements Serializable {
                             collection.setDescription(value, locale.getLanguage());
                             stringCount++;
                             dirty = true;
-                            // TODO remove key from messages file
+                            // Remove key from messages file
+                            ViewerResourceBundle.updateLocalMessageKey(key, null, locale.getLanguage());
                         }
                     }
                 }

@@ -34,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 
@@ -540,62 +539,14 @@ public class TranslationGroup {
             return;
         }
 
-        Map<String, PropertiesConfiguration> configMap = new HashMap<>();
         for (MessageValue value : selectedEntry.getValues()) {
             if (!value.isDirty()) {
                 continue;
             }
-
-            PropertiesConfiguration config = configMap.get(value.getLanguage());
-
-            // Load config
-            if (config == null) {
-                File file = getLocalTranslationFile(value.getLanguage());
-                if (!file.exists()) {
-                    try {
-                        file.createNewFile();
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                }
-
-                config = new PropertiesConfiguration();
-                try {
-                    config.load(file);
-                    configMap.put(value.getLanguage(), config);
-                } catch (ConfigurationException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-
-            if (StringUtils.isNotEmpty(value.getValue())) {
-                // Update value in file
-                config.setProperty(selectedEntry.getKey(), value.getValue());
-                logger.trace("value set ({}): {}:{}->{}", config.getFile().getName(), selectedEntry.getKey(), value.getLoadedValue(),
-                        config.getProperty(selectedEntry.getKey()));
-            } else {
-                // Delete value in file if cleared in entry
-                config.clearProperty(selectedEntry.getKey());
-                logger.trace("value removed ({}): {}", config.getFile().getName(), selectedEntry.getKey());
-            }
+            
+            ViewerResourceBundle.updateLocalMessageKey(selectedEntry.getKey(), value.getValue(), value.getLanguage());
             value.resetDirtyStatus();
         }
-
-        for (String key : configMap.keySet()) {
-            try {
-                configMap.get(key)
-                        .setFile(getLocalTranslationFile(key));
-                configMap.get(key).save();
-                logger.trace("File written: {}", configMap.get(key).getFile().getAbsolutePath());
-            } catch (ConfigurationException e) {
-                logger.error(e.getMessage());
-            }
-        }
-    }
-
-    private static File getLocalTranslationFile(String language) {
-        return new File(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
-                "messages_" + language + ".properties");
     }
 
     /**
@@ -609,7 +560,7 @@ public class TranslationGroup {
          * Reports vary, though...
          */
         for (Locale locale : ViewerResourceBundle.getAllLocales()) {
-            Path path = getLocalTranslationFile(locale.getLanguage()).toPath();
+            Path path = ViewerResourceBundle.getLocalTranslationFile(locale.getLanguage()).toPath();
             if (Files.exists(path)) {
                 if (Files.isWritable(path)) {
                     continue;

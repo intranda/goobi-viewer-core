@@ -47,6 +47,8 @@ import java.util.stream.Collectors;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -750,5 +752,68 @@ public class ViewerResourceBundle extends ResourceBundle {
         }
 
         return ret;
+    }
+
+    /**
+     * 
+     * @param key Message key
+     * @param value Message value
+     * @param language ISO 639-1 language code
+     * @return
+     */
+    public static boolean updateLocalMessageKey(String key, String value, String language) {
+        if (StringUtils.isEmpty(key)) {
+            throw new IllegalArgumentException("key may not be empty");
+        }
+        if (StringUtils.isEmpty(language)) {
+            throw new IllegalArgumentException("language may not be empty");
+        }
+
+        // Load config
+        File file = getLocalTranslationFile(language);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+                return false;
+            }
+        }
+
+        PropertiesConfiguration config = new PropertiesConfiguration();
+        try {
+            config.load(file);
+        } catch (ConfigurationException e) {
+            logger.error(e.getMessage(), e);
+            return false;
+        }
+
+        if (StringUtils.isNotEmpty(value)) {
+            // Update value in file
+            String oldValue = config.getProperty(key) != null ? config.getProperty(key).toString() : null;
+            config.setProperty(key, value);
+            logger.trace("value set ({}): {}:{}->{}", config.getFile().getName(), key, oldValue,
+                    config.getProperty(key));
+        } else {
+            // Delete value in file if cleared in entry
+            config.clearProperty(key);
+            logger.trace("value removed ({}): {}", config.getFile().getName(), key);
+        }
+
+        try {
+            config.setFile(getLocalTranslationFile(language));
+            config.save();
+            logger.trace("File written: {}", config.getFile().getAbsolutePath());
+            return true;
+        } catch (ConfigurationException e) {
+            logger.error(e.getMessage());
+        }
+
+        return false;
+    }
+
+    public static File getLocalTranslationFile(String language) {
+        return new File(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
+                "messages_" + language + ".properties");
     }
 }
