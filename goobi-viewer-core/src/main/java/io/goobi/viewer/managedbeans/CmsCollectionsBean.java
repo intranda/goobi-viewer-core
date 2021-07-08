@@ -39,6 +39,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSCollectionTranslation;
@@ -248,8 +249,8 @@ public class CmsCollectionsBean implements Serializable {
 
                 boolean dirty = false;
                 for (Locale locale : allLocales) {
-                    String value = ViewerResourceBundle.getTranslation(key, locale);
-                    if (!key.equals(value)) {
+                    String value = ViewerResourceBundle.getTranslation(key, locale, false, false, false, false);
+                    if (StringUtils.isNotEmpty(value) && !key.equals(value)) {
                         logger.trace("Found key: {}:{}", key, value);
                         if (StringUtils.isEmpty(collection.getDescription(locale))) {
                             collection.setDescription(value, locale.getLanguage());
@@ -272,7 +273,8 @@ public class CmsCollectionsBean implements Serializable {
         }
 
         logger.trace("Updated {} description texts in {} collections.", stringCount, collectionCount);
-
+        Messages.info("Updated: " + stringCount);
+        
         return "";
     }
 
