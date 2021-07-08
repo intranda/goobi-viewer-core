@@ -4,6 +4,9 @@
     <description>cms__template_01__description</description>
     <icon>cms_template_01_generic.png</icon>
     <html>cms_template_01_generic.xhtml</html>
+    <options>    
+        <topBarSlider>true</topBarSlider>
+    </options>
     <content>
         <item id="text01" order="1" label="cms__template_01__textblock__label" type="HTML" mandatory="true" />
         <item id="image01" order="2" label="cms__template_01__textblock_image__label" type="MEDIA" mandatory="false" />
