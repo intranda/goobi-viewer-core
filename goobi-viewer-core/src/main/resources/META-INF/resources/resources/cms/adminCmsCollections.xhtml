@@ -213,21 +213,24 @@
 													<!-- TRANSLATION ACTION -->
 													<div class="row">
 														<div class="col-12 d-flex justify-content-center">
-															<!-- TRANSLATIONS INCOMPLETE - SHOW TRANSLATE BUTTON -->
-															<ui:fragment
-																rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
-																<a class="btn btn--full"
-																	href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
-																	aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__cms_collections_translation_translate}</a>
-															</ui:fragment>
+                                                            <ui:fragment rendered="#{!adminBean.translationLocked}">
+                                                                <!-- TRANSLATIONS INCOMPLETE - SHOW TRANSLATE BUTTON -->
+                                                                <ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
+                                                                    <a class="btn btn--full"
+                                                                        href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+                                                                        aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__cms_collections_translation_translate}</a>
+                                                                </ui:fragment>
 			
-															<!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
-															<ui:fragment
-																rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
-																<a class="btn btn--default"
-																	href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
-																	aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.show}</a>
-															</ui:fragment>
+                                                                <!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
+                                                                <ui:fragment rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
+                                                                    <a class="btn btn--default"
+                                                                        href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+                                                                        aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.show}</a>
+                                                                </ui:fragment>
+                                                            </ui:fragment>
+															
+															<!-- TRANSLATIONS LOCKED -->
+															<h:outputText rendered="#{userBean.admin and adminBean.translationLocked}" value="#{msg.admin__translation_locked}" />
 														</div>
 													</div>
 												</div>
