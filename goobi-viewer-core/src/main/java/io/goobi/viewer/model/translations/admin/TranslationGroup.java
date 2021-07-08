@@ -569,9 +569,14 @@ public class TranslationGroup {
             }
 
             if (StringUtils.isNotEmpty(value.getValue())) {
+                // Update value in file
                 config.setProperty(selectedEntry.getKey(), value.getValue());
                 logger.trace("value set ({}): {}:{}->{}", config.getFile().getName(), selectedEntry.getKey(), value.getLoadedValue(),
                         config.getProperty(selectedEntry.getKey()));
+            } else {
+                // Delete value in file if cleared in entry
+                config.clearProperty(selectedEntry.getKey());
+                logger.trace("value removed ({}): {}", config.getFile().getName(), selectedEntry.getKey());
             }
             value.resetDirtyStatus();
         }
