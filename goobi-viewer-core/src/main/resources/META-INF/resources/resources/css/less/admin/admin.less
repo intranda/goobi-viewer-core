@@ -6,6 +6,7 @@
 .admin {
 	/* BACKEND FONT + FALLBACK FONTS */
 	font-family: @fontBackend;
+	display: flex;
 
 	/* BASIC ELEMENTS */
 	h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
@@ -20,7 +21,6 @@
 	&__content {
 		min-height: 100vh;
 		width: calc(~"100vw - 250px");
-		margin-left: 250px;
 		background-color: @neutralgray2;
 		padding: 1.5rem;
 		position: relative;
@@ -718,11 +718,11 @@
 		z-index: 1;
 	}
 	&__sidebar {
-		position: absolute;
+		position: relative;
 		padding: 1.5rem;
-		padding-top: 3rem;
 		font-size: @fontNormal;
 		z-index: 1010;
+		padding-top: 0;
 		&.fixed-top,
 		&.fixed-bottom {
 			position: fixed;
@@ -748,6 +748,7 @@
 		padding-top: 1.4rem;
 	}
 	&__sidebar-inner {
+		padding-top: 3rem;
 		h1 {
 			line-height: normal;
 			margin: 0;
@@ -1116,30 +1117,11 @@
 	
 	// CMS COLLECTIONS
 	&__cms-collections {
-		.admin__language-tab.-partly-translated a {
-			background: #eee;
-		}
-		.admin__language-tab.-already-translated a {
-			background: #eee;
-		}
-		.admin__language-tab.active {
-			&.-already-translated, 
-			&.-partly-translated {
-				a {
-					background: @white;
-				}
-			}
-		}
 		.collection__title a {
 			display: inline-block;
 		}
 		.collection__description {
 			padding-left: 0;
-		}
-		.admin__language-tab:first-child a, 
-		.admin__language-tab:first-child.-already-translated a,
-		.admin__language-tab:first-child.-already-translated a {
-			background: @blue;
 		}
 	}
 	&__cms-collections-tree-wrapper {
@@ -1203,7 +1185,6 @@
 	}
 	&__cms-edit-collection-data-wrapper {
 		display: flex;
-		flex-wrap: wrap;
 	}
 	&__cms-edit-collection-data-type {
 		flex: 0 0 125px;
@@ -1213,6 +1194,7 @@
 	&__cms-edit-collection-data-value {
 		flex: 0 0 calc(~"100% - 125px");
 		max-width: 0 0 calc(~"100% - 125px");
+		word-break: break-word;
 	}
 	&__cms-edit-collection-connected-radio-buttons {
 		padding-right: 10rem;
@@ -1471,6 +1453,7 @@
 			}
 		}
 		&:first-child,
+		&:first-child.-partly-translated,
 		&:first-child.-already-translated {
 			a {
 	    		background: #3365a9;

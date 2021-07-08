@@ -19,7 +19,7 @@
 	</ui:define>
 
 	<ui:define name="content">
-		<h:panelGroup id="crowdAddCampaignView"
+		<h:panelGroup id="crowdAddCampaignView" styleClass="-refreshHCsticky"
 			rendered="#{userBean.loggedIn and (userBean.user.superuser or crowdsourcingBean.selectedCampaign.userGroup.owner == userBean.user)}">
 			<div id="createCampaign" class="cms-create-page">
 
@@ -457,7 +457,7 @@
 	                                </div>
 	                                
 									</div>
-									<div class="admin__content-side -sticky">
+									<div class="admin__content-side -sticky -refreshHCsticky">
 										<!-- VISIBILITY OF CAMPAIGN -->
 										<div class="admin__default-block">
 											<h3>#{msg.admin__crowdsourcing_campaign_settings}</h3>
