@@ -115,7 +115,7 @@ public class Feedback implements Serializable {
      * @param email the email to set
      */
     public void setEmail(String email) {
-        logger.trace("setEmail: {}", email);
+        // logger.trace("setEmail: {}", email);
         this.email = email;
     }
 

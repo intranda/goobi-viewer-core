@@ -178,7 +178,7 @@
 	    </div>
 
 	        
-	    <div class="admin__content-side -sticky">
+	    <div class="admin__content-side -sticky -refreshHCsticky">
 			<ui:fragment rendered="#{cmsCollectionsBean.displayTranslationWidgetEdit}">
 				<div class="admin__default-block -warning">
 		
@@ -199,22 +199,25 @@
 					<!-- TRANSLATION ACTION -->
 					<div class="row">
 						<div class="col-12 d-flex justify-content-center">
-							<!-- TRANSLATIONS INCOMPLETE - SHOW TRANSLATE BUTTON -->
-							<ui:fragment
-								rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
-								<a class="btn btn--full"
-									data-trigger="displayTranslations"
-									href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/#{cmsCollectionsBean.currentCollection.solrFieldValue}/"
-									aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__cms_collections_translation_translate}</a>
-							</ui:fragment>
+                            <ui:fragment rendered="#{!adminBean.translationLocked}">
+´                               <!-- TRANSLATIONS INCOMPLETE - SHOW TRANSLATE BUTTON -->
+                                <ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
+                                    <a class="btn btn--full"
+                                        data-trigger="displayTranslations"
+                                        href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/#{cmsCollectionsBean.currentCollection.solrFieldValue}/"
+                                        aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__cms_collections_translation_translate}</a>
+                                </ui:fragment>
 		
-							<!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
-							<ui:fragment
-								rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
-								<a class="btn btn--full" data-trigger="displayTranslations"
-									href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/#{cmsCollectionsBean.currentCollection.solrFieldValue}/"
-									aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translations_translate}</a>
-							</ui:fragment>
+                                <!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
+                                <ui:fragment rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
+                                    <a class="btn btn--full" data-trigger="displayTranslations"
+                                        href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/#{cmsCollectionsBean.currentCollection.solrFieldValue}/"
+                                        aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translations_translate}</a>
+                                </ui:fragment>
+                            </ui:fragment>
+							
+                            <!-- TRANSLATIONS LOCKED -->
+                            <h:outputText rendered="#{adminBean.translationLocked}" value="#{msg.admin__translation_locked}" />
 						</div>
 					</div>
 				</div>
@@ -227,11 +230,13 @@
 					<div class="admin__cms-edit-collection-data-wrapper">
 						<div class="admin__cms-edit-collection-data-type mb-4">#{msg.admin__cms_collections_info_internal_name}</div>
 						<div class="admin__cms-edit-collection-data-value mb-4">#{cmsCollectionsBean.currentCollection.name}</div>
-					    <ui:repeat var="value" value="#{cmsCollectionsBean.messageEntryForFieldValue.values}">
-					        <div class="admin__cms-edit-collection-data-type">#{msg[value.language]}</div>
-					        <div class="admin__cms-edit-collection-data-value">#{value.value != null ? value.value : '-/-'}</div>
-					    </ui:repeat>
 					</div>
+				    <ui:repeat var="value" value="#{cmsCollectionsBean.messageEntryForFieldValue.values}">
+				    	<div class="admin__cms-edit-collection-data-wrapper">
+				        	<div class="admin__cms-edit-collection-data-type">#{msg[value.language]}</div>
+				        	<div class="admin__cms-edit-collection-data-value">#{value.value != null ? value.value : '-/-'}</div>
+				        </div>
+				    </ui:repeat>
 				</div>
 			</div>
 
