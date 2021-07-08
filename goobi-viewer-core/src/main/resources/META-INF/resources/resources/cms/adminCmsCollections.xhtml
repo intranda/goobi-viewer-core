@@ -158,13 +158,14 @@
 							
 							    <!-- IMPORT -->
                                 <ui:fragment rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}">
-                                    <div class="admin__default-block">
+                                    <div class="admin__default-block -danger">
                                         <h3>#{msg.admin__cms_collections_import}</h3>
                                         <div class="admin__form-help-text in mb-2">
                                             #{msg.admin__cms_collections_import_desc}
                                         </div>
-                                        <div class="admin__cms-edit-collection-info-box">
+                                        <div class="col-12 d-flex justify-content-center">
                                             <h:commandButton
+                                                styleClass="btn btn--full"
                                                 value="#{msg.admin__cms_collections_import_start}"
                                                 action="#{cmsCollectionsBean.importDescriptionsAction}">
                                             </h:commandButton>
