@@ -77,7 +77,7 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
         String url = "https://viewer.goobi.io/api/v1/cms/media/files/" + filename;
         ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getRequestURI()).thenReturn(url);
+        Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(url));
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename);
         String resourceURI = resource.getResourceURI().toString();
