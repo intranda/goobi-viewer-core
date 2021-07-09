@@ -72,20 +72,23 @@ public class CMSMediaImageResource extends ImageResource {
         request.setAttribute("filename", this.imageURI.toString());
         
         filename = URLDecoder.decode(filename, "utf-8");
-        String baseImageUrl = (ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE).replace("{filename}", filename);
+        String baseImageUrl = (ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE).replace("{filename}", "");
         
         String requestUrl = request.getRequestURI();
-        requestUrl = URLDecoder.decode(requestUrl, "utf-8");
         
         int baseStartIndex = requestUrl.indexOf(baseImageUrl);
         int baseEndIndex = baseStartIndex + baseImageUrl.length();
-        
+
         String imageRequestPath = requestUrl.substring(baseEndIndex);
-        String resourceUrl = URLEncoder.encode(requestUrl.substring(0, baseEndIndex), "utf-8");
+        int parameterPathIndex = imageRequestPath.indexOf("/") + 1;
+        String imageParameterPath = "";
+        if(parameterPathIndex > 0 && parameterPathIndex < imageRequestPath.length()) {
+            imageParameterPath = imageRequestPath.substring(parameterPathIndex);
+            requestUrl = requestUrl.substring(0, baseEndIndex + parameterPathIndex);
+        }         
+        this.resourceURI = URI.create(requestUrl);
         
-        this.resourceURI = URI.create(resourceUrl);
-        
-        List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        List<String> parts = Arrays.stream(imageParameterPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         if(parts.size() == 4 ) {
             //image request
             request.setAttribute("iiif-info", false);
