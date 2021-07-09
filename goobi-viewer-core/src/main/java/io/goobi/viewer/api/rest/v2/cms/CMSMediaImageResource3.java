@@ -69,10 +69,9 @@ public class CMSMediaImageResource3 extends ImageResource {
         request.setAttribute("filename", this.imageURI.toString());
         request.setAttribute(ImageResource.IIIF_VERSION, "3.0");
 
-        filename = URLDecoder.decode(filename, "utf-8");
         String baseImageUrl = (ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE).replace("{filename}", "");
         
-        String requestUrl = request.getRequestURI();
+        String requestUrl = new String(request.getRequestURL());
         
         int baseStartIndex = requestUrl.indexOf(baseImageUrl);
         int baseEndIndex = baseStartIndex + baseImageUrl.length();
@@ -86,7 +85,7 @@ public class CMSMediaImageResource3 extends ImageResource {
         }         
         this.resourceURI = URI.create(requestUrl);
         
-        List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        List<String> parts = Arrays.stream(imageParameterPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         if(parts.size() == 4) {
             //image request
             request.setAttribute("iiif-info", false);

@@ -18,6 +18,7 @@ package io.goobi.viewer.api.rest.v1.cms;
 import static org.junit.Assert.*;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -81,6 +82,15 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
         CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename);
         String resourceURI = resource.getResourceURI().toString();
         assertEquals(url, resourceURI);
+    }
+    
+    @Test
+    public void testUrlencoding() throws UnsupportedEncodingException {
+        
+        String filename = "ä (b) c";
+        String filenameEnc = URLEncoder.encode(filename, "utf-8");
+        System.out.println(filename + " -> " + filenameEnc);
+        
     }
 
 }
