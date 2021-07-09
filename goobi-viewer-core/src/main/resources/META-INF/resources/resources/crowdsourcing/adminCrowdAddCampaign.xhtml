@@ -4,7 +4,7 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:p="http://primefaces.org/ui"
+	
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:crowdsourcingComponent="http://xmlns.jcp.org/jsf/composite/crowdsourcing/components"
@@ -19,7 +19,7 @@
 	</ui:define>
 
 	<ui:define name="content">
-		<h:panelGroup id="crowdAddCampaignView"
+		<h:panelGroup id="crowdAddCampaignView" styleClass="-refreshHCsticky"
 			rendered="#{userBean.loggedIn and (userBean.user.superuser or crowdsourcingBean.selectedCampaign.userGroup.owner == userBean.user)}">
 			<div id="createCampaign" class="cms-create-page">
 
@@ -457,7 +457,7 @@
 	                                </div>
 	                                
 									</div>
-									<div class="admin__content-side -sticky">
+									<div class="admin__content-side -sticky -refreshHCsticky">
 										<!-- VISIBILITY OF CAMPAIGN -->
 										<div class="admin__default-block">
 											<h3>#{msg.admin__crowdsourcing_campaign_settings}</h3>

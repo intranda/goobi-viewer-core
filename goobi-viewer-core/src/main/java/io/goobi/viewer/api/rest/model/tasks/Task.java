@@ -22,6 +22,9 @@ import java.util.function.BiConsumer;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -50,6 +53,7 @@ import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
 @JsonInclude(Include.NON_EMPTY)
 public class Task {
     
+    private static final Logger logger = LoggerFactory.getLogger(Task.class);
     private static final AtomicLong idCounter = new AtomicLong(0);
     
     public static enum Accessibility {
@@ -123,12 +127,14 @@ public class Task {
 
     
     public void doTask(HttpServletRequest request) {
+        logger.debug("Started Task '{}'", this);
         this.sessionId = Optional.ofNullable(request).map(r -> r.getSession().getId());
         this.status = TaskStatus.STARTED;
         this.work.accept(request, this);
         if(TaskStatus.ERROR != this.status) {
             this.status = TaskStatus.COMPLETE;
         }
+        logger.debug("Finished Task '{}'", this);
     }
     
     public void setError(String error) {
@@ -151,6 +157,14 @@ public class Task {
     
     public String getErrorMessage() {
         return exception.orElse(null);
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Task " + this.id + "; Type: " + this.type + "; Status: " + this.status;
     }
     
 }

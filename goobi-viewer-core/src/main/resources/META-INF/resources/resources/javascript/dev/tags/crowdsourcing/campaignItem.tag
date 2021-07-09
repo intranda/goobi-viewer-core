@@ -40,7 +40,7 @@
 			<div if="{!item.pageStatisticMode && item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review">
 				<button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate("action__accept_review")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
-				<button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate("action__reject_review")}</button>
+				<button onclick="{rejectReview}" class="options-wrapper__option btn btn--default" id="reject">{Crowdsourcing.translate("action__reject_review")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
@@ -57,7 +57,7 @@
 			<div if="{item.pageStatisticMode && item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review">
 				<button onclick="{acceptReviewForPage}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate("action__accept_page_review")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
-				<button onclick="{rejectReviewForPage}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate("action__reject_page_review")}</button>
+				<button onclick="{rejectReviewForPage}" class="options-wrapper__option btn btn--default" id="reject">{Crowdsourcing.translate("action__reject_page_review")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>

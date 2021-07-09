@@ -35,14 +35,13 @@
         .ui-autocomplete {
             position: relative;
             display: block;
-            .ui-autocomplete-input {
-                width: 100%;
-                height: 3.4rem;
-                font-size: @fontNormal;
-                border: 1px solid @middlegray;
-                background-image: none;
-                background-color: @white;
-            }
+		    .ui-autocomplete-input {
+		        width: 100%;
+		        height: 3.4rem;
+		        font-size: @fontNormal;
+		        border: 1px solid @middlegray;
+		        background-image: none;
+		    }
         }
     }
     &__filter {
@@ -71,28 +70,17 @@
     }
     /* MODIFICATION */
 }
-
-/* AUTOCOMPLETE PANEL */
-.ui-autocomplete-panel {
-	max-width: 100%;
-    font-size: @fontMedium;
-    border: 1px solid @lightgray;
-    border-radius: 0;
-    box-shadow: none;
+       
+.ui-autocomplete.ui-menu {
+	border: 1px solid #eee;
     background-color: @white;
-    ul.ui-autocomplete-items {
-        padding: 0;
-        li.ui-autocomplete-item {
-            span.ui-autocomplete-query {}
-        }
-        li.ui-state-highlight {
-            color: @black;
-            border: none;
-            border-radius: 0;
-            background: @lightgray;
-        }
-    }
+	.ui-menu-item {
+		.ui-state-active {
+			background-color: lightgray;
+		}
+	}
 }
+
 
 /* SEARCH HELP MODAL */
 /* BLOCK */

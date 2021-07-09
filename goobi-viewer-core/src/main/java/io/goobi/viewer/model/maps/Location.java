@@ -17,6 +17,8 @@ package io.goobi.viewer.model.maps;
 
 import java.net.URI;
 
+import org.json.JSONObject;
+
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
@@ -31,14 +33,12 @@ import io.goobi.viewer.model.viewer.PageType;
  */
 public class Location {
 
-    private final double lng;
-    private final double lat;
+    private final IArea area;
     private final String label;
     private final URI uri;
     
-    public Location(double lng, double lat, String label, URI uri) {
-        this.lng = lng;
-        this.lat = lat;
+    public Location(IArea area, String label, URI uri) {
+        this.area = area;
         this.label = label;
         this.uri = uri;
     }
@@ -64,17 +64,10 @@ public class Location {
     }
     
     /**
-     * @return the lat
+     * @return the area
      */
-    public double getLat() {
-        return lat;
-    }
-    
-    /**
-     * @return the lng
-     */
-    public double getLng() {
-        return lng;
+    public IArea getArea() {
+        return area;
     }
     
     /**
@@ -89,6 +82,18 @@ public class Location {
      */
     public URI getLink() {
         return uri;
+    }
+    
+    public String getGeoJson() {
+        JSONObject feature = new JSONObject();
+        JSONObject geometry = new JSONObject(area.getGeoJson());
+        JSONObject properties = new JSONObject();
+        properties.put("title", getLabel());
+        properties.put("link", getLink());
+        feature.put("properties", properties);
+        feature.put("geometry", geometry);
+        feature.put("type", "Feature");
+        return feature.toString();
     }
     
 }

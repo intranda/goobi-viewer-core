@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 
 /**
@@ -70,6 +71,71 @@ public abstract class TranslationGroupItem {
     }
 
     /**
+     * Returns the translation status over all existing entries.
+     * 
+     * @return <code>TranslationStatu</code>; FULL if all entries are FULL; NONE if all entries are NONE; PARTIAL otherwise
+     * @throws Exception
+     */
+    public TranslationStatus getTranslationStatus() throws Exception {
+        int full = 0;
+        int none = 0;
+        for (MessageEntry entry : getEntries()) {
+            switch (entry.getTranslationStatus()) {
+                case NONE:
+                    none++;
+                    break;
+                case FULL:
+                    full++;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (none == entries.size()) {
+            return TranslationStatus.NONE;
+        }
+        if (full == entries.size()) {
+            return TranslationStatus.FULL;
+        }
+
+        return TranslationStatus.PARTIAL;
+    }
+
+    /**
+     * Returns the translation status for the requested language over all existing entries.
+     * 
+     * @param language Requested language
+     * @return <code>TranslationStatu</code>; FULL if all entries are FULL; NONE if all entries are NONE; PARTIAL otherwise
+     * @throws Exception
+     */
+    public TranslationStatus getTranslationStatusLanguage(String language) throws Exception {
+        int full = 0;
+        int none = 0;
+        for (MessageEntry entry : getEntries()) {
+            switch (entry.getTranslationStatusForLanguage(language)) {
+                case NONE:
+                    none++;
+                    break;
+                case FULL:
+                    full++;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (none == entries.size()) {
+            return TranslationStatus.NONE;
+        }
+        if (full == entries.size()) {
+            return TranslationStatus.FULL;
+        }
+
+        return TranslationStatus.PARTIAL;
+    }
+
+    /**
      * @return the key
      */
     public String getKey() {
@@ -85,7 +151,7 @@ public abstract class TranslationGroupItem {
 
     /**
      * @return the messageKeys
-     * @throws Exception 
+     * @throws Exception
      */
     public List<MessageEntry> getEntries() throws Exception {
         if (entries == null) {
@@ -113,15 +179,9 @@ public abstract class TranslationGroupItem {
         }
 
         entries = new ArrayList<>(keys.size());
+        List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
         for (String k : keys) {
-            List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
-            List<MessageValue> values = new ArrayList<>(allLocales.size());
-            for (Locale locale : allLocales) {
-                String translation = ViewerResourceBundle.getTranslation(k, locale, false, false, false, false);
-                String globalTranslation = ViewerResourceBundle.getTranslation(k, locale, false, false, true, false);
-                values.add(new MessageValue(locale.getLanguage(), translation, globalTranslation));
-            }
-            entries.add(new MessageEntry(k, values));
+            entries.add(MessageEntry.create(k, allLocales));
         }
     }
 }

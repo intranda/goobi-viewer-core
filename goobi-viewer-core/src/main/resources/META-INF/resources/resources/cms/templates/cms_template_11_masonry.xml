@@ -4,6 +4,9 @@
     <description>cms__template_11__description</description>
     <icon>cms_template_11_masonry.png</icon>
     <html>cms_template_11_masonry.xhtml</html>
+    <options>    
+        <topBarSlider>true</topBarSlider>
+    </options>
     <content>
  	    <item id="text" label="cms__template_11__text__label" type="HTML" order="1"/>
         <item id="grid" label="cms__template_11__masonry__label" type="TILEGRID" order="2"/>

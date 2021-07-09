@@ -6,6 +6,7 @@
 .admin {
 	/* BACKEND FONT + FALLBACK FONTS */
 	font-family: @fontBackend;
+	display: flex;
 
 	/* BASIC ELEMENTS */
 	h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
@@ -20,7 +21,6 @@
 	&__content {
 		min-height: 100vh;
 		width: calc(~"100vw - 250px");
-		margin-left: 250px;
 		background-color: @neutralgray2;
 		padding: 1.5rem;
 		position: relative;
@@ -718,11 +718,11 @@
 		z-index: 1;
 	}
 	&__sidebar {
-		position: absolute;
+		position: relative;
 		padding: 1.5rem;
-		padding-top: 3rem;
 		font-size: @fontNormal;
 		z-index: 1010;
+		padding-top: 0;
 		&.fixed-top,
 		&.fixed-bottom {
 			position: fixed;
@@ -748,6 +748,7 @@
 		padding-top: 1.4rem;
 	}
 	&__sidebar-inner {
+		padding-top: 3rem;
 		h1 {
 			line-height: normal;
 			margin: 0;
@@ -1114,6 +1115,132 @@
 		}
 	}
 	
+	// CMS COLLECTIONS
+	&__cms-collections {
+		.collection__title a {
+			display: inline-block;
+		}
+		.collection__description {
+			padding-left: 0;
+		}
+	}
+	&__cms-collections-tree-wrapper {
+		padding: 1.5rem;
+	}
+	&__cms-collections-entry {
+			border-top: 1px solid @middlegray;
+			&:last-of-type {
+				border-bottom: 1px solid @middlegray;
+			}
+		&:hover {
+			.admin__cms-collections-entry-edit {
+				opacity: 1.0;
+			}
+		}
+	}
+	&__cms-collections-entry-end {
+		align-items: center;
+		display: flex;
+		justify-content: flex-end;
+	}
+	&__cms-collections-entry-edit {
+		transition: opacity 0.2s ease;
+		opacity: 0;
+		padding: 0 2rem;
+	}
+	&__cms-collections-tree-listing {
+		width: 100%;
+		list-style: none;
+		padding-left: 0;
+		border-left: 1px solid @middlegray;
+		border-right: 1px solid @middlegray;
+	}
+	
+	&__cms-collections-progress-bar {	
+		background: @grayBar;
+		height: 12px;
+		width: auto;
+		position: relative;
+		display: flex;
+	}
+	&__cms-collections-progress-bar-info {	
+		position: relative;
+		display: flex;
+	}
+	&__cms-collections-description-toggle {
+		margin-right: 2rem;
+		.fa {
+			padding: 0.2rem 0.3rem;
+			font-size: 1.2rem;
+			border: 1px solid #d5d5d5;
+		}
+	}
+	&__cms-edit-collection-image-actions-wrapper {
+		display: flex;
+	}
+	&__cms-edit-collection-translation-box {
+	}
+	&__cms-edit-collection-actions {
+		
+	}
+	&__cms-edit-collection-data-wrapper {
+		display: flex;
+	}
+	&__cms-edit-collection-data-type {
+		flex: 0 0 125px;
+		max-width: 125px;
+		font-weight: 700;
+	}
+	&__cms-edit-collection-data-value {
+		flex: 0 0 calc(~"100% - 125px");
+		max-width: 0 0 calc(~"100% - 125px");
+		word-break: break-word;
+	}
+	&__cms-edit-collection-connected-radio-buttons {
+		padding-right: 10rem;
+		margin-bottom: 0;
+		min-width: 360px;
+		label {
+			margin-left: 0.5rem;
+		}
+		.connected-bottom {
+			margin-bottom: 0;
+			padding-bottom: 0.5rem;
+		}
+	}
+	&__cms-collections-wrapper-identifier {
+		display: flex;
+		flex-direction: column;
+		margin-top: auto;
+	}
+	&__cms-edit-collection-wrapper-choose-image {
+		display: flex;
+	}
+	&__cms-edit-collection-image-thumbnail {
+		max-width: 200px;
+		max-height: 140px;
+		img {
+			max-height: 140px;
+		}
+	}
+	&__cms-edit-collection-image-actions {
+		padding-left: 2rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: flex-start;
+		a {
+			padding: 0.5rem 0;
+			&:after {
+				display: none;
+			}
+		}
+		.btn {
+			padding: .6rem 1.2rem;
+		}
+	}
+	
+	
 	// ADMIN TOPBAR FRONTEND
 	&__topbar-frontend {
 		font-family: 'Inter', sans-serif;
@@ -1185,9 +1312,11 @@
 		}
 	}
 	&__topbar-frontend-logo {
+		max-height: 35px;
 		width: 40px;
 		svg {
 			width: 100%;
+			height: auto;
 		}
 	}		
 	&__topbar-frontend-view-dashboard-link {
@@ -1324,6 +1453,7 @@
 			}
 		}
 		&:first-child,
+		&:first-child.-partly-translated,
 		&:first-child.-already-translated {
 			a {
 	    		background: #3365a9;
@@ -1499,13 +1629,6 @@
 			filter: grayscale(1);
 		}
 	}
-	&__non-clickable-area-overlay {
-		width: 100%;
-		height: 100%;
-		position: absolute;
-		opacity: 0;
-		z-index: 100;
-	}
 	&__cancel-button {
 		margin-right: 1.5rem;
 		min-width: 120px;
@@ -1551,24 +1674,25 @@
 
 
 // VISUALLY CONNECTED RADIO BUTTONS
+
+.connected-top,
+.connected-middle,
+.connected-bottom {
+    padding-left: 35px;
+    padding-top: 10px;
+    background-position: 0px top;
+    padding-bottom: 10px;
+    background-repeat: no-repeat;
+}
 .connected-top {
     background-image: url(../../images/backend/radio_choice_top.svg);
-    background-repeat: no-repeat;
-    background-size: 54px 1254px;
-    padding-left: 74px;
-    padding-top: 10px;
-    margin-bottom: 3px;
-    background-position: 0% top;
-    padding-bottom: 10px;
+}
+.connected-middle {
+	background-image: url(../../images/backend/radio_choice_middle.svg);
+	background-position: 0px -24px;
 }
 .connected-bottom {
-    padding-left: 75px;
-    background-repeat: no-repeat;
     background-image: url(../../images/backend/radio_choice_bottom.svg);
-    padding-top: 10px;
-    padding-bottom: 10px;
-    background-position: 0% top;
-    background-size: 53px 100px;
 }
 input[type="radio"]:checked+label {
     font-weight: bold;
@@ -1910,6 +2034,33 @@ html[lang="es"] .admin__radio-switch {
 			margin-right: unset;
 			margin-left: 1.5rem;
 		}
+		&__topbar-frontend-logout-link,
+		&__topbar-frontend-add,
+		&__topbar-frontend-view-dashboard-link {
+			.fa {
+				margin-left: 0.9rem; 
+				margin-right: 0;
+			}
+		}
+		&__topbar-frontend-right {
+			margin-left: 0;
+			margin-right: auto;
+		}
+		&__topbar-frontend-logout-link {
+			.fa {
+				margin-right: 0.9rem;
+			}
+		}
+		&__topbar-frontend-dropdown {
+			left: unset;
+			right: 0;
+			padding-right: 0;
+			li {
+				padding: .3rem 2rem .3rem .7rem;
+			}
+		}
+		
+		
 	}
 }
 

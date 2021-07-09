@@ -301,6 +301,17 @@ var viewerJS = (function () {
         $(".ajax_loader").show();
     }
     
+    // refresh HC sticky method (use case: after ajax calls/DOM changes)
+    viewer.refreshHCsticky = function () {
+    	jQuery(document).ready(function($) {
+
+        	$(".-refreshHCsticky").hcSticky('refresh', {});
+
+    		});
+
+    	// console.log('refresh hc sticky done');
+    }
+    
     viewer.initTinyMCE  = function(event) {
         //trigger initializazion if either no event was given or if it is a jsf event in status 'success'
         if(!event || event.status == "success") {            
@@ -310,10 +321,13 @@ var viewerJS = (function () {
                     // listen to changes on tinymce input fields
                     ed.on('init', function (e) {
                         if(_debug)console.log("init ", e);
+                        viewer.refreshHCsticky();
                     });
                     
                     ed.on('change input paste', function (e) {
-                        tinymce.triggerSave();
+                       tinymce.triggerSave();
+                       //trigger a change event on the underlying textArea
+                       $(ed.targetElm).change();
                         if (currentPage === 'adminCmsCreatePage') {
                             createPageConfig.prevBtn.attr('disabled', true);
                             createPageConfig.prevDescription.show();

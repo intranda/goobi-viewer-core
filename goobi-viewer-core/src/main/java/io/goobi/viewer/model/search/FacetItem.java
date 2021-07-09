@@ -120,9 +120,6 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.IFacetItem#hashCode()
      */
     @Override
@@ -134,9 +131,6 @@ public class FacetItem implements Serializable, IFacetItem {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.IFacetItem#equals(java.lang.Object)
      */
@@ -309,7 +303,8 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should sort items correctly
      * @return a {@link java.util.List} object.
      */
-    public static List<IFacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean reverseOrder, boolean hierarchical,
+    public static List<IFacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean reverseOrder,
+            boolean hierarchical,
             Locale locale) {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
@@ -366,11 +361,15 @@ public class FacetItem implements Serializable, IFacetItem {
         return retList;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getQueryEscapedLink()
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getQueryEscapedLink()
+    /**
+     * Returns field:value (with the value escaped for the Solr query).
+     *
+     * @should construct link correctly
+     * @should escape values containing whitespaces
+     * @should construct hierarchical link correctly
+     * @should construct range link correctly
+     * @should construct polygon link correctly
+     * @return a {@link java.lang.String} object.
      */
     @Override
     public String getQueryEscapedLink() {
@@ -420,22 +419,20 @@ public class FacetItem implements Serializable, IFacetItem {
         return escapedValue;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getEscapedLink()
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getEscapedLink()
+    /**
+     * Link after slash/backslash replacements for partner collection, static drill-down components and topic browsing (HU Berlin).
+     *
+     * @return a {@link java.lang.String} object.
      */
     @Override
     public String getEscapedLink() {
         return BeanUtils.escapeCriticalUrlChracters(link);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getUrlEscapedLink()
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getUrlEscapedLink()
+    /**
+     * URL escaped link for using in search drill-downs.
+     *
+     * @return a {@link java.lang.String} object.
      */
     @Override
     public String getUrlEscapedLink() {
@@ -447,35 +444,38 @@ public class FacetItem implements Serializable, IFacetItem {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getField()
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getField()
+    /**
+     * <p>
+     * Getter for the field <code>field</code>.
+     * </p>
+     *
+     * @return the field
      */
     @Override
     public String getField() {
         return field;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setField(java.lang.String)
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setField(java.lang.String)
+    /**
+     * <p>
+     * Setter for the field <code>field</code>.
+     * </p>
+     *
+     * @param field the field to set
      */
     @Override
     public void setField(String field) {
         this.field = field;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getFullValue()
+    /**
+     * <p>
+     * getFullValue.
+     * </p>
+     *
+     * @return Range of value - value2; just value if value2 empty
+     * @should build full value correctly
      */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getFullValue()
-     */
-    @Override
     public String getFullValue() {
         StringBuilder sb = new StringBuilder(value);
         if (StringUtils.isNotEmpty(value2)) {
@@ -485,66 +485,72 @@ public class FacetItem implements Serializable, IFacetItem {
         return sb.toString();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getValue()
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getValue()
+    /**
+     * <p>
+     * Getter for the field <code>value</code>.
+     * </p>
+     *
+     * @return the value
      */
     @Override
     public String getValue() {
         return value;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setValue(java.lang.String)
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setValue(java.lang.String)
+    /**
+     * <p>
+     * Setter for the field <code>value</code>.
+     * </p>
+     *
+     * @param value the value to set
      */
     @Override
     public void setValue(String value) {
         this.value = value;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getValue2()
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getValue2()
+    /**
+     * <p>
+     * Getter for the field <code>value2</code>.
+     * </p>
+     *
+     * @return the value2
      */
     @Override
     public String getValue2() {
         return value2;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setValue2(java.lang.String)
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setValue2(java.lang.String)
+    /**
+     * <p>
+     * Setter for the field <code>value2</code>.
+     * </p>
+     *
+     * @param value2 the value2 to set
      */
     @Override
     public void setValue2(String value2) {
         this.value2 = value2;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getLink()
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getLink()
+    /**
+     * <p>
+     * Getter for the field <code>link</code>.
+     * </p>
+     *
+     * @return the link
      */
     @Override
     public String getLink() {
         return link;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setLink(java.lang.String)
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setLink(java.lang.String)
+    /**
+     * <p>
+     * Setter for the field <code>link</code>.
+     * </p>
+     *
+     * @param link the link to set
      */
     @Override
     public void setLink(String link) {
@@ -560,22 +566,25 @@ public class FacetItem implements Serializable, IFacetItem {
         parseLink();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getLabel()
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getLabel()
+    /**
+     * <p>
+     * Getter for the field <code>label</code>.
+     * </p>
+     *
+     * @return the label
      */
     @Override
     public String getLabel() {
         return label;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setLabel(java.lang.String)
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setLabel(java.lang.String)
+    /**
+     * <p>
+     * Setter for the field <code>label</code>.
+     * </p>
+     *
+     * @param label the label to set
+     * @return this
      */
     @Override
     public FacetItem setLabel(String label) {
@@ -583,44 +592,49 @@ public class FacetItem implements Serializable, IFacetItem {
         return this;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getTranslatedLabel()
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getTranslatedLabel()
+    /**
+     * <p>
+     * Getter for the field <code>translatedLabel</code>.
+     * </p>
+     *
+     * @return the translatedLabel
      */
     @Override
     public String getTranslatedLabel() {
         return translatedLabel;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setTranslatedLabel(java.lang.String)
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setTranslatedLabel(java.lang.String)
+    /**
+     * <p>
+     * Setter for the field <code>translatedLabel</code>.
+     * </p>
+     *
+     * @param translatedLabel the translatedLabel to set
      */
     @Override
     public void setTranslatedLabel(String translatedLabel) {
         this.translatedLabel = translatedLabel;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getCount()
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#getCount()
+    /**
+     * <p>
+     * Getter for the field <code>count</code>.
+     * </p>
+     *
+     * @return the count
      */
     @Override
     public long getCount() {
         return count;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setCount(long)
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#setCount(long)
+    /**
+     * <p>
+     * Setter for the field <code>count</code>.
+     * </p>
+     *
+     * @param count the count to set
+     * @return this
      */
     @Override
     public FacetItem setCount(long count) {
@@ -628,11 +642,12 @@ public class FacetItem implements Serializable, IFacetItem {
         return this;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#isHierarchial()
-     */
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.search.IFacetItem#isHierarchial()
+    /**
+     * <p>
+     * isHierarchial.
+     * </p>
+     *
+     * @return the hierarchial
      */
     @Override
     public boolean isHierarchial() {
@@ -650,7 +665,9 @@ public class FacetItem implements Serializable, IFacetItem {
 
         @Override
         public int compare(IFacetItem o1, IFacetItem o2) {
-            int ret = o1.getLabel().compareTo(o2.getLabel());
+            String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
+            String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
+            int ret = label1.compareTo(label2);
             return ret;
         }
 
@@ -670,12 +687,13 @@ public class FacetItem implements Serializable, IFacetItem {
         }
 
     }
-    
+
     public static class CountComparator implements Comparator<IFacetItem> {
 
         @Override
         public int compare(IFacetItem o1, IFacetItem o2) {
-            return o1.getCount() > o2.getCount() ? -1 : o1.getCount() < o2.getCount() ? +1 : (o1.getLabel() != null ? o1.getLabel().compareTo(o2.getLabel()) : 0);
+            return o1.getCount() > o2.getCount() ? -1
+                    : o1.getCount() < o2.getCount() ? +1 : (o1.getLabel() != null ? o1.getLabel().compareTo(o2.getLabel()) : 0);
 
         }
 

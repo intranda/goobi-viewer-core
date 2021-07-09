@@ -56,9 +56,11 @@ var cmsJS = ( function( cms ) {
         
         this.geoMap = new viewerJS.GeoMap({
             language: this.config.displayLanguage,
-            popover: this.config.popover,
-            emptyMarkerMessage: this.config.msg.emptyMarker,
-            allowMovingFeatures: this.config.allowEditFeatures,
+            layer : {
+	            popover: this.config.popover,
+	            emptyMarkerMessage: this.config.msg.emptyMarker,
+	            allowMovingFeatures: this.config.allowEditFeatures,
+            }
         });
         
         this.geoMap.onMapRightclick
@@ -69,13 +71,15 @@ var cmsJS = ( function( cms ) {
         .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures))
         .subscribe(() => this.setCurrentFeature());
         
-        this.geoMap.onFeatureClick
-        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures))
-        .subscribe(geojson => this.setCurrentFeature(geojson, true));
+        this.geoMap.layers.forEach(l => l.onFeatureClick
+	        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures))
+	        .subscribe(geojson => this.setCurrentFeature(geojson, true))
+        );
         
-        this.geoMap.onFeatureMove
-        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures), rxjs.operators.map(geojson => this.setCurrentFeature(geojson)))
-        .subscribe(() => this.saveFeatures());
+        this.geoMap.layers.forEach(l => l.onFeatureMove
+	        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures), rxjs.operators.map(geojson => this.setCurrentFeature(geojson)))
+	        .subscribe(() => this.saveFeatures())
+	   );
         
         this.geoMap.onMapMove
         .subscribe(() => this.saveView())
@@ -121,22 +125,20 @@ var cmsJS = ( function( cms ) {
     
     cms.GeoMapEditor.prototype.addFeature = function(geojson) {
         this.currentFeature = geojson;
-        this.geoMap.addMarker(geojson).openPopup();
+        console.log("layers", this.geoMap.layers);
+        this.geoMap.layers[0].addMarker(geojson).openPopup();
         this.updateMetadata(geojson);
     }
     
     cms.GeoMapEditor.prototype.saveFeatures = function() {
-        $(this.config.featuresInput).val(JSON.stringify(this.geoMap.getFeatures()));
+        $(this.config.featuresInput).val(JSON.stringify(this.geoMap.layers[0].getFeatures()));
     }
     
     cms.GeoMapEditor.prototype.saveView = function() {
         $(this.config.viewInput).val(JSON.stringify(this.geoMap.getView()));
     }
-    
-    cms.GeoMapEditor.prototype.setMarkerIcon = function(icon) {
-        this.geoMap.setMarkerIcon(icon); 
-    }
-    
+
+
     /**
      * Updates the content of the metadata editor with the content of the given geojson object
      * Also scrolls to the top of the metadata edtor (config.metadataArea)
@@ -186,7 +188,7 @@ var cmsJS = ( function( cms ) {
     
     cms.GeoMapEditor.prototype.deleteCurrentFeature = function() {
         if(this.currentFeature) {
-            this.geoMap.removeMarker(this.currentFeature);
+            this.geoMap.layers[0].removeMarker(this.currentFeature);
             this.currentFeature = undefined;
             this.updateMetadata();
         }
@@ -195,7 +197,7 @@ var cmsJS = ( function( cms ) {
     cms.GeoMapEditor.prototype.updateCurrentFeatureMetadata = function(metadata) {
         if(this.currentFeature && metadata) {                                                
             this.currentFeature.properties[metadata.property] = metadata.value;
-            this.geoMap.updateMarker(this.currentFeature.id);
+            this.geoMap.layers[0].updateMarker(this.currentFeature.id);
         }
     }
     
@@ -207,8 +209,8 @@ var cmsJS = ( function( cms ) {
             } else {                
                 view = JSON.parse(view);
             }
-            if(this.geoMap.getFeatures().length > 0) {            
-                return this.geoMap.getViewAroundFeatures(view.zoom);
+            if(this.geoMap.layers[0].getFeatures().length > 0) {            
+                return this.geoMap.getViewAroundFeatures(this.geoMap.layers[0].getFeatures(), view.zoom);
             } else {           
                 return view;
             }
@@ -225,8 +227,8 @@ var cmsJS = ( function( cms ) {
             } else {                
                 view = JSON.parse(view);
             }
-            if(this.geoMap.getFeatures().length > 0) {            
-                this.geoMap.setView(this.geoMap.getViewAroundFeatures(view.zoom));
+            if(this.geoMap.layers[0].getFeatures().length > 0) {            
+                this.geoMap.setView(this.geoMap.getViewAroundFeatures(this.geoMap.layers[0].getFeatures(), view.zoom));
             } else {           
                 this.geoMap.setView(view);
             }
@@ -244,14 +246,14 @@ var cmsJS = ( function( cms ) {
         let features = JSON.parse($(this.config.featuresInput).val())
         if(_debug)console.log("update features", features);
         features.forEach( feature => {
-            this.geoMap.addMarker(feature);
+            this.geoMap.layers[0].addMarker(feature);
         })
     }
     
     cms.GeoMapEditor.prototype.setAllowEditFeatures = function(allow) {
         this.config.allowEditFeatures = allow;
-        this.geoMap.config.allowMovingFeatures = allow;
-        this.geoMap.markers.filter(m => m.dragging).forEach(marker => {
+        this.geoMap.layers[0].config.allowMovingFeatures = allow;
+        this.geoMap.layers[0].markers.filter(m => m.dragging).forEach(marker => {
             if(allow) {
                 marker.dragging.enable();
             } else {

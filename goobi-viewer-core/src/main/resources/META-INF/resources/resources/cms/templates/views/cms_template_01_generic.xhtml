@@ -14,15 +14,20 @@
 
 	<ui:define name="metadata">
 		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.title, false, true, true)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
 			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
 			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+            <f:viewAction action="#{cmsDynamicContentBean.setCmsPage(cmsBean.currentPage)}" />
 		</f:metadata>
 	</ui:define>
 	
 
 	<ui:define name="breadcrumbs">
 		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
+	</ui:define>
+	
+    <ui:define name="topbar">
+		<h:panelGroup binding="#{cmsDynamicContentBean.topBarContent}"></h:panelGroup>
 	</ui:define>
 
 	<ui:define name="content">

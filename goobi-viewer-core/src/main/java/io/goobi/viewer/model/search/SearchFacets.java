@@ -1091,19 +1091,11 @@ public class SearchFacets implements Serializable {
      * @return
      */
     private static String getFacetName(IFacetItem facet) {
-        String name = "";
-        try {
-            CMSCollection cmsCollection = DataManager.getInstance().getDao().getCMSCollection(facet.getField(), facet.getValue());
-            if (cmsCollection != null) {
-                name = cmsCollection.getLabel();
-            }
-        } catch (DAOException e) {
-            logger.trace("Error retrieving cmsCollection from DAO");
+        if (facet == null) {
+            return "";
         }
-        if (StringUtils.isBlank(name)) {
-            name = facet.getValue();
-        }
-        return name;
+
+        return facet.getValue();
     }
 
     /**
@@ -1127,6 +1119,7 @@ public class SearchFacets implements Serializable {
 
     /**
      * Sets the feature of the geoFacettingfield to to given feature. A new GeoFacetItem is added to currentFacets if none exists yet
+     * 
      * @param feature
      */
     public void setGeoFacetFeature(String feature) {

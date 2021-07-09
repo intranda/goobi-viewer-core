@@ -16,18 +16,13 @@
 package io.goobi.viewer.model.viewer;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
@@ -76,6 +71,14 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
         return description;
     }
 
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getDescription(java.lang.String)
+     */
+    @Override
+    public String getDescription(String language) {
+        return description;
+    }
+
     /**
      * <p>
      * Setter for the field <code>description</code>.
@@ -113,9 +116,6 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     /** {@inheritDoc} */
     @Override
     public URI getIconURI() {
-        if (this.iconURI == null) {
-            this.iconURI = createIconURI(this.collectionName);
-        }
         return this.iconURI;
     }
 
@@ -140,36 +140,6 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     @Override
     public URI getIconURI(int size) {
         return getIconURI();
-    }
-
-    /**
-     * <p>
-     * createIconURI.
-     * </p>
-     *
-     * @param collectionName a {@link java.lang.String} object.
-     * @return a {@link java.net.URI} object.
-     */
-    protected static URI createIconURI(String collectionName) {
-        String icon = DataManager.getInstance().getConfiguration().getDefaultBrowseIcon(collectionName);
-        if (StringUtils.isBlank(icon)) {
-            return null;
-        }
-        try {
-            URI iconURI = new URI(icon);
-            if (!iconURI.isAbsolute()) {
-                String iconPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/resources/themes/"
-                        + BeanUtils.getNavigationHelper().getTheme() + "/" + icon;
-                iconURI = new URI(iconPath);
-            }
-            return iconURI;
-        } catch (URISyntaxException e) {
-            logger.error("Unable to parse " + icon + " as URI");
-            return null;
-        } catch (NullPointerException e) {
-            logger.error("Unable to create icon path. Probably due to missing jsf context");
-            return null;
-        }
     }
 
     /* (non-Javadoc)
@@ -197,5 +167,4 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     public IMetadataValue getTranslationsForDescription() {
         return null;
     }
-
 }

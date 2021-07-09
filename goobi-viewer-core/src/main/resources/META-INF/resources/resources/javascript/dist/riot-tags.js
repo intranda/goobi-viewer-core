@@ -1002,7 +1002,7 @@ riot.tag2('authorityresourcequestion', '<div if="{this.showInstructions()}" clas
 });
 
 
-riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations__content-wrapper"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="crowdsourcing-annotations__content-wrapper"><span if="{this.loading}" class="crowdsourcing-annotations__loader-wrapper"><img riot-src="{this.opts.loaderimageurl}"></span></span><div class="crowdsourcing-annotations__content-left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView></div><div if="{this.item}" class="crowdsourcing-annotations__content-right"><div class="crowdsourcing-annotations__questions-wrapper"><div each="{question, index in this.item.questions}" onclick="{setActive}" class="crowdsourcing-annotations__question-wrapper {question.isRegionTarget() ? \'area-selector-question\' : \'\'} {question.active ? \'active\' : \'\'}"><div class="crowdsourcing-annotations__question-wrapper-description">{Crowdsourcing.translate(question.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion><richtextquestion if="{question.questionType == \'RICHTEXT\'}" question="{question}" item="{this.item}" index="{index}"></richtextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion><authorityresourcequestion if="{question.questionType == \'NORMDATA\'}" question="{question}" item="{this.item}" index="{index}"></authorityResourceQuestion><metadataquestion if="{question.questionType == \'METADATA\'}" question="{question}" item="{this.item}" index="{index}"></metadataQuestion></div></div><campaignitemlog if="{item.showLog}" item="{item}"></campaignItemLog><div if="{!item.pageStatisticMode && !item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate"><button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{item.isReviewActive()}" onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><button if="{!item.isReviewActive()}" onclick="{saveAndAcceptReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{!item.pageStatisticMode && item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.pageStatisticMode && !item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate"><button onclick="{savePageAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save_page⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{item.isReviewActive()}" onclick="{submitPageForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_page_for_review⁗)}</button><button if="{!item.isReviewActive()}" onclick="{saveAndAcceptReviewForPage}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__accept_page_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.pageStatisticMode && item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review"><button onclick="{acceptReviewForPage}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_page_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReviewForPage}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate(⁗action__reject_page_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
+riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations__content-wrapper"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="crowdsourcing-annotations__content-wrapper"><span if="{this.loading}" class="crowdsourcing-annotations__loader-wrapper"><img riot-src="{this.opts.loaderimageurl}"></span></span><div class="crowdsourcing-annotations__content-left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView></div><div if="{this.item}" class="crowdsourcing-annotations__content-right"><div class="crowdsourcing-annotations__questions-wrapper"><div each="{question, index in this.item.questions}" onclick="{setActive}" class="crowdsourcing-annotations__question-wrapper {question.isRegionTarget() ? \'area-selector-question\' : \'\'} {question.active ? \'active\' : \'\'}"><div class="crowdsourcing-annotations__question-wrapper-description">{Crowdsourcing.translate(question.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion><richtextquestion if="{question.questionType == \'RICHTEXT\'}" question="{question}" item="{this.item}" index="{index}"></richtextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion><authorityresourcequestion if="{question.questionType == \'NORMDATA\'}" question="{question}" item="{this.item}" index="{index}"></authorityResourceQuestion><metadataquestion if="{question.questionType == \'METADATA\'}" question="{question}" item="{this.item}" index="{index}"></metadataQuestion></div></div><campaignitemlog if="{item.showLog}" item="{item}"></campaignItemLog><div if="{!item.pageStatisticMode && !item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate"><button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{item.isReviewActive()}" onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><button if="{!item.isReviewActive()}" onclick="{saveAndAcceptReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{!item.pageStatisticMode && item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReview}" class="options-wrapper__option btn btn--default" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.pageStatisticMode && !item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate"><button onclick="{savePageAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save_page⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{item.isReviewActive()}" onclick="{submitPageForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_page_for_review⁗)}</button><button if="{!item.isReviewActive()}" onclick="{saveAndAcceptReviewForPage}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__accept_page_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.pageStatisticMode && item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review"><button onclick="{acceptReviewForPage}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_page_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReviewForPage}" class="options-wrapper__option btn btn--default" id="reject">{Crowdsourcing.translate(⁗action__reject_page_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
 
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/";
 	this.annotationSource = this.itemSource + "annotations/";
@@ -1516,28 +1516,28 @@ this.setView = function(view) {
 
 this.resetFeatures = function() {
     this.setFeatures(this.question.annotations);
-    if(this.geoMap.getMarkerCount() > 0) {
+    if(this.geoMap.layers[0].getMarkerCount() > 0) {
         let zoom = 12;
-        if(this.geoMap.getMarkerCount() == 1) {
-            let marker = this.geoMap.getMarker(this.question.annotations[0].markerId);
+        if(this.geoMap.layers[0].getMarkerCount() == 1) {
+            let marker = this.geoMap.layers[0].getMarker(this.question.annotations[0].markerId);
             if(marker) {
             	zoom = marker.feature.view.zoom;
             }
         }
-        let featureView = this.geoMap.getViewAroundFeatures(zoom);
+        let featureView = this.geoMap.getViewAroundFeatures(this.geoMap.layers[0].getFeatures(), zoom);
 	    this.geoMap.setView(featureView);
     }
 }.bind(this)
 
 this.setFeatures = function(annotations) {
-    this.geoMap.resetMarkers();
+    this.geoMap.layers.forEach(l => l.resetMarkers());
     annotations.filter(anno => !anno.isEmpty()).forEach((anno) => {
         if(anno.color) {
-            let markerIcon = this.geoMap.getMarkerIcon().options;
+            let markerIcon = this.geoMap.layers[0].getMarkerIcon().options;
             markerIcon.markerColor = anno.color;
-            this.geoMap.setMarkerIcon(markerIcon);
+            this.geoMap.layers[0].config.markerIcon = markerIcon;
         }
-        let marker = this.geoMap.addMarker(anno.body);
+        let marker = this.geoMap.layers[0].addMarker(anno.body);
         anno.markerId = marker.getId();
     });
 }.bind(this)
@@ -1558,7 +1558,7 @@ this.updateAnnotation = function(anno) {
 this.focusAnnotation = function(index) {
     let anno = this.question.getByIndex(index);
     if(anno) {
-        let marker = this.geoMap.getMarker(anno.markerId);
+        let marker = this.geoMap.layers[0].getMarker(anno.markerId);
     }
 }.bind(this)
 
@@ -1593,36 +1593,38 @@ this.setNameFromEvent = function(event) {
 this.initMap = function() {
     this.geoMap = new viewerJS.GeoMap({
         mapId : "geoMap_" + this.opts.index,
-        allowMovingFeatures: !this.opts.item.isReviewMode(),
         language: Crowdsourcing.translator.language,
-        popover: undefined,
-        emptyMarkerMessage: undefined,
-        popoverOnHover: false,
+        layer: {
+	        allowMovingFeatures: !this.opts.item.isReviewMode(),
+	        popover: undefined,
+	        emptyMarkerMessage: undefined,
+	        popoverOnHover: false,
+	        markerIcon: {
+	            shape: "circle",
+	            prefix: "fa",
+	            markerColor: "blue",
+	            iconColor: "white",
+	            icon: "fa-circle",
+	            svg: true
+	        }
+        }
     })
     let initialView = {
         zoom: 5,
         center: [11.073397, 49.451993]
     };
-    this.geoMap.setMarkerIcon({
-        shape: "circle",
-        prefix: "fa",
-        markerColor: "blue",
-        iconColor: "white",
-        icon: "fa-circle",
-        svg: true
-    })
     this.geoMap.init(initialView);
-    this.geoMap.initGeocoder(this.refs.geocoder);
-    this.geoMap.onFeatureMove.subscribe(feature => this.moveFeature(feature));
-    this.geoMap.onFeatureClick.subscribe(feature => this.removeFeature(feature));
+    this.geoMap.initGeocoder(this.refs.geocoder, {placeholder: Crowdsourcing.translate("ADDRESS")});
+    this.geoMap.layers.forEach(l => l.onFeatureMove.subscribe(feature => this.moveFeature(feature)));
+    this.geoMap.layers.forEach(l => l.onFeatureClick.subscribe(feature => this.removeFeature(feature)));
     this.geoMap.onMapClick.subscribe(geoJson => {
-        if(this.addMarkerActive && (this.question.targetFrequency == 0 || this.geoMap.getMarkerCount() < this.question.targetFrequency)) {
+        if(this.addMarkerActive && (this.question.targetFrequency == 0 || this.geoMap.layers[0].getMarkerCount() < this.question.targetFrequency)) {
             if(this.annotationToMark && this.annotationToMark.color) {
-                let markerIcon = this.geoMap.getMarkerIcon().options;
+                let markerIcon = this.geoMap.layers[0].getMarkerIcon().options;
                 markerIcon.markerColor = this.annotationToMark.color;
-                this.geoMap.setMarkerIcon(markerIcon);
+                this.geoMap.layers[0].config.markerIcon = markerIcon;
             }
-            let marker = this.geoMap.addMarker(geoJson);
+            let marker = this.geoMap.layers[0].addMarker(geoJson);
             if(this.annotationToMark) {
                 this.annotationToMark.markerId = marker.getId();
                 this.updateFeature(marker.getId());
@@ -1643,14 +1645,14 @@ this.getAnnotation = function(id) {
 
 this.updateFeature = function(id) {
     let annotation = this.getAnnotation(id);
-    let marker = this.geoMap.getMarker(annotation.markerId);
+    let marker = this.geoMap.layers[0].getMarker(annotation.markerId);
     annotation.setBody(marker.feature);
     annotation.setView(marker.feature.view);
     this.question.saveToLocalStorage();
 }.bind(this)
 
 this.addFeature = function(id) {
-    let marker = this.geoMap.getMarker(id);
+    let marker = this.geoMap.layers[0].getMarker(id);
     let annotation = this.question.addAnnotation();
     annotation.markerId = id;
     annotation.setBody(marker.feature);
@@ -2412,27 +2414,31 @@ this.initMap = function() {
 
     this.geoMap = new viewerJS.GeoMap({
         element : this.refs.map,
-        allowMovingFeatures: false,
         language: viewerJS.translator.language,
-        popover: undefined,
-        emptyMarkerMessage: undefined,
-        popoverOnHover: false,
-        fixed: this.opts.inactive ? true : false
+        fixed: this.opts.inactive ? true : false,
+        layer: {
+	        allowMovingFeatures: false,
+	        popover: $("<div><p data-metadata='title'></p></div>"),
+	        popoverOnHover: true,
+	        emptyMarkerMessage: undefined,
+
+		    style: {
+				    fillOpacity: 0.02
+			}
+        }
     })
     let initialView = {
         zoom: 5,
         center: [11.073397, 49.451993]
     };
-    this.geoMap.setMarkerIcon({
-        shape: "circle",
-        prefix: "fa",
-        markerColor: "blue",
-        iconColor: "white",
-        icon: "fa-circle",
-        svg: true
-    })
-    this.geoMap.init(initialView);
-
+    this.geoMap.init(initialView, this.opts.features);
+    this.drawLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
+   	    style : {
+         	fillColor : "#d9534f",
+         	color : "#d9534f",
+         	fillOpacity : 0.3,
+        	}
+    });
     if(!this.opts.inactive) {
         let geocoderConfig = {};
         if(this.opts.search_placeholder) {
@@ -2441,8 +2447,42 @@ this.initMap = function() {
 	    this.geoMap.initGeocoder(this.refs.geocoder, geocoderConfig);
 	    this.initMapDraw();
     }
-    if(this.opts.area) {
 
+    this.geoMap.layers[0].onFeatureClick.subscribe(f => {
+        if(f.properties && f.properties.link) {
+           window.location.assign(f.properties.link);
+       }
+    })
+
+	if(this.opts.toggleFeatures) {
+		let ToggleFeaturesControl = L.Control.extend({
+		    options: {
+		        position: "topleft"
+		    },
+		    onAdd: function(map) {
+		        let button  = this.opts.toggleFeatures;
+		        L.DomEvent.on(button, "dblclick" , (e) => {
+		            L.DomEvent.stopPropagation(e);
+		            e.stopPropagation();
+		            return false;
+		        });
+		        L.DomEvent.on(button, "click" , (e) => {
+		            this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
+		            L.DomEvent.stopPropagation(e);
+		            e.stopPropagation();
+		            return false;
+		        });
+		        return button;
+		    }.bind(this),
+		    onRemove: function(map) {
+
+		    }
+		})
+		let control = new ToggleFeaturesControl();
+		this.geoMap.map.addControl(control);
+	}
+
+    if(this.opts.area) {
         let shape = this.opts.area;
         if(viewerJS.isString(shape)) {
             try {
@@ -2452,30 +2492,19 @@ this.initMap = function() {
             }
         }
 
-        let layer;
+        let layer = undefined;
         switch(shape.type) {
             case "polygon":
-                layer = this.geoMap.drawPolygon(shape.vertices, {
-                	fillColor: '#3365a9',
-                    color: '#3365a9'
-                    }, true);
-                this.onLayerDrawn({layer: layer});
+                layer = this.drawLayer.drawPolygon(shape.vertices, true);
                 break;
             case "circle":
-                layer = this.geoMap.drawCircle(shape.center, shape.radius, {
-                	fillColor: '#3365a9',
-                    color: '#3365a9'
-                	}, true);
-                this.onLayerDrawn({layer: layer});
+                layer = this.drawLayer.drawCircle(shape.center, shape.radius, true);
                 break;
             case "rectangle":
-                layer = this.geoMap.drawRectangle([shape.vertices[0], shape.vertices[2]], {
-                	fillColor: '#3365a9',
-                    color: '#3365a9'
-                	}, true);
-                this.onLayerDrawn({layer: layer});
+                layer = this.drawLayer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
                 break;
         }
+        this.onLayerDrawn({layer: layer});
 
     }
 
@@ -2484,6 +2513,7 @@ this.initMap = function() {
 this.initMapDraw = function() {
 
     this.drawnItems = new L.FeatureGroup();
+
     this.geoMap.map.addLayer(this.drawnItems);
     this.drawControl = new L.Control.Draw({
         edit: {
@@ -2499,19 +2529,13 @@ this.initMapDraw = function() {
     });
     this.drawControl.setDrawingOptions({
         rectangle: {
-        	shapeOptions: {
-            	color: '#3365a9'
-            }
+        	shapeOptions: this.drawLayer.config.style
         },
         circle: {
-        	shapeOptions: {
-            	color: '#3365a9'
-            }
+        	shapeOptions: this.drawLayer.config.style
         },
         polygon: {
-        	shapeOptions: {
-            	color: '#3365a9'
-            }
+        	shapeOptions: this.drawLayer.config.style
         }
     });
 
@@ -2536,7 +2560,6 @@ this.initMapDraw = function() {
 }.bind(this)
 
 this.onLayerDeleted = function(e) {
-    console.log("layer deleted ", e);
     if(this.searchLayer) {
         this.drawnItems.removeLayer(this.searchLayer);
         this.searchLayer = undefined;
@@ -2955,7 +2978,7 @@ riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="p
         } ).then( function() {
             return this.opts.page.getTextContent();
         }.bind( this ) ).then( function( textContent ) {
-            console.log( "viewport ", this.viewport );
+
             $( this.textLayer ).css( {
                 height: this.viewport.height + 'px',
                 width: this.viewport.width + 'px',

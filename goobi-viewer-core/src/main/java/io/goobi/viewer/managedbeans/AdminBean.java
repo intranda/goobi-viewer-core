@@ -74,7 +74,10 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.security.user.UserTools;
+import io.goobi.viewer.model.translations.admin.MessageEntry;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
+import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -1853,7 +1856,7 @@ public class AdminBean implements Serializable {
 
     /**
      * 
-     * @return
+     * @return All configured <code>TranslationGroup</code>s
      */
     public List<TranslationGroup> getConfiguredTranslationGroups() {
         synchronized (TRANSLATION_LOCK) {
@@ -1861,6 +1864,59 @@ public class AdminBean implements Serializable {
             logger.trace("groups: {}", ret.size());
             setTranslationGroupsEditorSession(BeanUtils.getSession().getId());
             logger.trace("Locked translation for: {}", translationGroupsEditorSession);
+            return ret;
+        }
+    }
+
+    /**
+     * 
+     * @param field Index field that the translation groups should have as a key
+     * @return List of TranslationGroups; null if not found
+     * @should return correct groups
+     */
+    public List<TranslationGroup> getTranslationGroupsForSolrField(String field) {
+        return getTranslationGroupsForSolrFieldStatic(field);
+    }
+
+    /**
+     * 
+     * @param field Solr field
+     * @param key Message key
+     * @return First <code>TranslationGroup</code> that contains the requested field+key; null if none found
+     */
+    public TranslationGroup getTranslationGroupForFieldAndKey(String field, String key) {
+        for (TranslationGroup group : getTranslationGroupsForSolrFieldStatic(field)) {
+            for (MessageEntry entry : group.getAllEntries()) {
+                if (entry.getKey().equals(key) || entry.getKey().startsWith(key + ".")) {
+                    return group;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param field Index field that the translation groups should have as a key
+     * @return List of TranslationGroups; null if not found
+     */
+    public static List<TranslationGroup> getTranslationGroupsForSolrFieldStatic(String field) {
+        if (StringUtils.isEmpty(field)) {
+            return Collections.emptyList();
+        }
+
+        synchronized (TRANSLATION_LOCK) {
+            List<TranslationGroup> ret = new ArrayList<>();
+            for (TranslationGroup group : DataManager.getInstance().getConfiguration().getTranslationGroups()) {
+                if (group.getType().equals(TranslationGroupType.SOLR_FIELD_VALUES)) {
+                    for (TranslationGroupItem item : group.getItems()) {
+                        if (field.equals(item.getKey())) {
+                            ret.add(group);
+                        }
+                    }
+                }
+            }
             return ret;
         }
     }
@@ -1913,7 +1969,7 @@ public class AdminBean implements Serializable {
 
     /**
      * 
-     * @param id
+     * @param id Looks up and loads <code>currentTranslationGroup</code> that matches the given id
      */
     public void setCurrentTranslationGroupId(int id) {
         List<TranslationGroup> groups = DataManager.getInstance().getConfiguration().getTranslationGroups();
@@ -1924,6 +1980,29 @@ public class AdminBean implements Serializable {
             }
         } else {
             logger.error("Translation group ID not found: {}", id);
+        }
+    }
+
+    /**
+     * 
+     * @return Key of the currently selected entry; otherwise "-"
+     */
+    public String getCurrentTranslationMessageKey() {
+        if (currentTranslationGroup != null && currentTranslationGroup.getSelectedEntry() != null) {
+            return currentTranslationGroup.getSelectedEntry().getKey();
+        }
+
+        return "-";
+    }
+
+    /**
+     * If <code>currentTranslationGroup</code> is set, looks up the message entry for the given key and pre-selects it.
+     * 
+     * @param key Message key to select
+     */
+    public void setCurrentTranslationMessageKey(String key) {
+        if (currentTranslationGroup != null) {
+            currentTranslationGroup.findEntryByMessageKey(key);
         }
     }
 

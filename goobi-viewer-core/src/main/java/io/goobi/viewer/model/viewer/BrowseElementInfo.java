@@ -38,6 +38,13 @@ public interface BrowseElementInfo {
      * @return a {@link java.lang.String} object.
      */
     public String getDescription();
+    
+    /**
+     * 
+     * @param language
+     * @return a {@link java.lang.String} object.
+     */
+    public String getDescription(String language);
 
     /**
      * <p>

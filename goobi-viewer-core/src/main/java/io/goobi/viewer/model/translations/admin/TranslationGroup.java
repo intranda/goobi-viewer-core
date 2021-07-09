@@ -34,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 
@@ -145,6 +144,40 @@ public class TranslationGroup {
         if (id != other.id)
             return false;
         return true;
+    }
+
+    /**
+     * 
+     * @param field Solr field
+     * @param key Message key to find
+     * @return true if message entry was found or added; false if no matching group item could be found
+     */
+    public boolean findEntryByMessageKey(String key) {
+        logger.trace("findEntryByMessageKey: {}", key);
+
+        for (MessageEntry entry : getAllEntries()) {
+            if (entry.getKey().equals(key)) {
+                logger.trace("found key: {}", key);
+                setSelectedEntry(entry);
+                return true;
+            }
+        }
+
+        // Create and add new message entry, if key yet not in messages
+        try {
+            List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
+            MessageEntry entry = MessageEntry.create(key, allLocales);
+            getAllEntries().add(entry);
+            Collections.sort(getAllEntries());
+            setSelectedEntry(entry);
+            logger.trace("Added new message entry: {}", key);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        setSelectedEntry(null);
+        return false;
     }
 
     /**
@@ -506,57 +539,14 @@ public class TranslationGroup {
             return;
         }
 
-        Map<String, PropertiesConfiguration> configMap = new HashMap<>();
         for (MessageValue value : selectedEntry.getValues()) {
             if (!value.isDirty()) {
                 continue;
             }
-
-            PropertiesConfiguration config = configMap.get(value.getLanguage());
-
-            // Load config
-            if (config == null) {
-                File file = getLocalTranslationFile(value.getLanguage());
-                if (!file.exists()) {
-                    try {
-                        file.createNewFile();
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                }
-
-                config = new PropertiesConfiguration();
-                try {
-                    config.load(file);
-                    configMap.put(value.getLanguage(), config);
-                } catch (ConfigurationException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-
-            if (StringUtils.isNotEmpty(value.getValue())) {
-                config.setProperty(selectedEntry.getKey(), value.getValue());
-                logger.trace("value set ({}): {}:{}->{}", config.getFile().getName(), selectedEntry.getKey(), value.getLoadedValue(),
-                        config.getProperty(selectedEntry.getKey()));
-            }
+            
+            ViewerResourceBundle.updateLocalMessageKey(selectedEntry.getKey(), value.getValue(), value.getLanguage());
             value.resetDirtyStatus();
         }
-
-        for (String key : configMap.keySet()) {
-            try {
-                configMap.get(key)
-                        .setFile(getLocalTranslationFile(key));
-                configMap.get(key).save();
-                logger.trace("File written: {}", configMap.get(key).getFile().getAbsolutePath());
-            } catch (ConfigurationException e) {
-                logger.error(e.getMessage());
-            }
-        }
-    }
-
-    private static File getLocalTranslationFile(String language) {
-        return new File(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
-                "messages_" + language + ".properties");
     }
 
     /**
@@ -570,7 +560,7 @@ public class TranslationGroup {
          * Reports vary, though...
          */
         for (Locale locale : ViewerResourceBundle.getAllLocales()) {
-            Path path = getLocalTranslationFile(locale.getLanguage()).toPath();
+            Path path = ViewerResourceBundle.getLocalTranslationFile(locale.getLanguage()).toPath();
             if (Files.exists(path)) {
                 if (Files.isWritable(path)) {
                     continue;
@@ -584,7 +574,7 @@ public class TranslationGroup {
         }
         return true;
     }
-    
+
     /**
      * Resets the counts for fully translated and untranslated entries to update the translation process
      */

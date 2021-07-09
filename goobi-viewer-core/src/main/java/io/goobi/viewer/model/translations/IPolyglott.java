@@ -15,15 +15,8 @@
  */
 package io.goobi.viewer.model.translations;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
-
-import org.opensaml.saml.saml2.common.IsTimeboundSAMLObjectValidPredicate;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;

@@ -18,6 +18,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -32,6 +33,7 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -41,6 +43,12 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSCollectionTranslation;
+import io.goobi.viewer.model.cms.CMSCollectionTreeTab;
+import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.translations.admin.MessageEntry;
+import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
+import io.goobi.viewer.model.translations.admin.TranslationGroup;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -53,6 +61,12 @@ import io.goobi.viewer.solr.SolrConstants;
 @SessionScoped
 public class CmsCollectionsBean implements Serializable {
 
+    public enum CMSCollectionImageMode {
+        NONE,
+        IMAGE,
+        PI;
+    }
+
     private static final long serialVersionUID = -2862611194397865986L;
 
     private static final Logger logger = LoggerFactory.getLogger(CmsCollectionsBean.class);
@@ -60,12 +74,18 @@ public class CmsCollectionsBean implements Serializable {
 
     @Inject
     CmsMediaBean cmsMediaBean;
+    @Inject
+    BrowseBean browseBean;
 
     private CMSCollection currentCollection;
-    private String solrField = SolrConstants.DC;
+    private CMSCollection originalCollection; //collection from database, without any edits after last save
+    String solrField = SolrConstants.DC;
     private String solrFieldValue;
     private List<CMSCollection> collections;
     private boolean piValid = true;
+    private CMSCollectionImageMode imageMode = CMSCollectionImageMode.NONE;
+    /** Current tab language */
+    private CMSCollectionTreeTab currentTab = new CMSCollectionTreeTab(solrField);
 
     /**
      * <p>
@@ -77,8 +97,186 @@ public class CmsCollectionsBean implements Serializable {
             updateCollections();
         } catch (DAOException e) {
             logger.error("Error initializing collections");
-            collections = Collections.EMPTY_LIST;
+            collections = Collections.emptyList();
         }
+    }
+
+    /**
+     * @return true if the if translations for the values of <code>solrField</code> are not or only partially translated; false if they are fully
+     *         translated
+     * @should return false if solrField not among configured translation groups
+     * @should return false if solrField values fully translated
+     * @should return true if solrField values not or partially translated
+     */
+    public boolean isDisplayTranslationWidget() {
+        logger.trace("isDisplayTranslationWidget: {}", solrField);
+        if (StringUtils.isEmpty(solrField)) {
+            return false;
+        }
+
+        List<TranslationGroup> groups = AdminBean.getTranslationGroupsForSolrFieldStatic(solrField);
+        for (TranslationGroup group : groups) {
+            if (group.getItems().isEmpty()) {
+                continue;
+            }
+            for (TranslationGroupItem item : group.getItems()) {
+                if (!item.getKey().equals(solrField)) {
+                    continue;
+                }
+                try {
+                    return !TranslationStatus.FULL.equals(item.getTranslationStatus());
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @return true if the if translations for the values of <code>solrField</code> and <code>solrFieldValue</code> are not or only partially
+     *         translated; false if they are fully translated
+     * @should return false if solrField not among configured translation groups
+     * @should return false if solrField values fully translated
+     * @should return true if solrFieldValue not or partially translated
+     */
+    public boolean isDisplayTranslationWidgetEdit() {
+        logger.trace("isDisplayTranslationWidgetEdit: {}:{}", solrField, solrFieldValue);
+        if (StringUtils.isEmpty(solrField)) {
+            return false;
+        }
+
+        List<TranslationGroup> groups = AdminBean.getTranslationGroupsForSolrFieldStatic(solrField);
+        for (TranslationGroup group : groups) {
+            if (group.getItems().isEmpty()) {
+                continue;
+            }
+            for (TranslationGroupItem item : group.getItems()) {
+                if (!item.getKey().equals(solrField)) {
+                    continue;
+                }
+                try {
+                    for (MessageEntry entry : item.getEntries()) {
+                        if (entry.getKey().equals(solrFieldValue) || entry.getKey().startsWith(solrFieldValue + ".")) {
+                            return !TranslationStatus.FULL.equals(entry.getTranslationStatus());
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @return true if number of available collections is greater than 1; false otherwise
+     * @should return false if only one collection field is configured
+     */
+    public boolean isDisplaySolrFieldSelectionWidget() {
+        return getAllCollectionFields().size() > 1;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public MessageEntry getMessageEntryForFieldValue() {
+        List<TranslationGroup> groups = AdminBean.getTranslationGroupsForSolrFieldStatic(solrField);
+        for (TranslationGroup group : groups) {
+            if (group.getItems().isEmpty()) {
+                continue;
+            }
+            for (TranslationGroupItem item : group.getItems()) {
+                if (!item.getKey().equals(solrField)) {
+                    continue;
+                }
+                try {
+                    for (MessageEntry entry : item.getEntries()) {
+                        if (entry.getKey().equals(solrFieldValue)) {
+                            return entry;
+                        }
+
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    break;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param solrField
+     * @return
+     */
+    public boolean isDisplayImportDescriptionsWidget() {
+        for (String key : ViewerResourceBundle.getAllLocalKeys()) {
+            if (key.endsWith("_DESCRIPTION") && !key.startsWith("MD_")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public String importDescriptionsAction() throws DAOException {
+        if (StringUtils.isEmpty(solrField)) {
+            return "";
+        }
+
+        List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
+
+        // Collect descriptions from messages.properties
+        int stringCount = 0;
+        int collectionCount = 0;
+        for (String key : ViewerResourceBundle.getAllLocalKeys()) {
+            if (key.endsWith("_DESCRIPTION") && !key.startsWith("MD_")) {
+                String rawKey = key.replace("_DESCRIPTION", "");
+                CMSCollection collection = DataManager.getInstance().getDao().getCMSCollection(solrField, rawKey);
+                if (collection == null) {
+                    collection = new CMSCollection(solrField, rawKey);
+                    logger.trace("Created new collection: {}", collection.toString());
+                }
+                collection.populateDescriptions();
+
+                boolean dirty = false;
+                for (Locale locale : allLocales) {
+                    String value = ViewerResourceBundle.getTranslation(key, locale, false, false, false, false);
+                    if (StringUtils.isNotEmpty(value) && !key.equals(value)) {
+                        logger.trace("Found key: {}:{}", key, value);
+                        if (StringUtils.isEmpty(collection.getDescription(locale))) {
+                            collection.setDescription(value, locale.getLanguage());
+                            stringCount++;
+                            dirty = true;
+                            // Remove key from messages file
+                            ViewerResourceBundle.updateLocalMessageKey(key, null, locale.getLanguage());
+                        }
+                    }
+                }
+                if (dirty) {
+                    if (collection.getId() != null) {
+                        DataManager.getInstance().getDao().updateCMSCollection(collection);
+                    } else {
+                        DataManager.getInstance().getDao().addCMSCollection(collection);
+                    }
+                    collectionCount++;
+                    logger.trace("Saved collection: {}", collection.toString());
+                }
+            }
+        }
+
+        logger.trace("Updated {} description texts in {} collections.", stringCount, collectionCount);
+        Messages.info("Updated: " + stringCount);
+
+        return "";
     }
 
     /**
@@ -125,9 +323,17 @@ public class CmsCollectionsBean implements Serializable {
         this.solrField = solrField;
         try {
             updateCollections();
+            loadCollection(solrField);
+            currentTab.refresh(solrField);
         } catch (DAOException e) {
-            logger.error("Error initializing collections");
-            collections = Collections.EMPTY_LIST;
+            logger.error(e.getMessage());
+            collections = Collections.emptyList();
+        } catch (IllegalRequestException e) {
+            logger.error(e.getMessage());
+            collections = Collections.emptyList();
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage());
+            collections = Collections.emptyList();
         }
     }
 
@@ -151,6 +357,40 @@ public class CmsCollectionsBean implements Serializable {
      */
     public void setSolrFieldValue(String solrFieldValue) {
         this.solrFieldValue = solrFieldValue;
+    }
+
+    public String getCollectionName() {
+        if (currentCollection != null) {
+            return currentCollection.getName();
+        }
+
+        return StringUtils.isNotEmpty(getSolrFieldValue()) ? getSolrFieldValue() : "-";
+    }
+
+    /**
+     * Loads existing or creates a new <code>CMSCollection</code> for the current <code>solrfield</code> and the given <code>collectionName</code>.
+     * 
+     * @param collectionName Collection field value
+     * @throws DAOException
+     */
+    public void setCollectionName(String collectionName) throws DAOException {
+        if ("-".equals(collectionName)) {
+            return;
+        }
+
+        setSolrFieldValue(collectionName);
+
+        currentCollection = DataManager.getInstance().getDao().getCMSCollection(solrField, collectionName);
+        if (currentCollection == null) {
+            currentCollection = new CMSCollection(solrField, solrFieldValue);
+        }
+        // Always generate missing translations
+        editCollection(currentCollection);
+        // Set the image mode value based on what values exist on the collection entry
+        initImageMode();
+
+        originalCollection = currentCollection;
+        currentCollection = new CMSCollection(originalCollection);
     }
 
     /**
@@ -192,28 +432,29 @@ public class CmsCollectionsBean implements Serializable {
         }
     }
 
-    /**
-     * <p>
-     * addCollection.
-     * </p>
-     *
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public void addCollection() throws DAOException {
-        if (StringUtils.isNoneBlank(getSolrField(), getSolrFieldValue())) {
-            CMSCollection collection = new CMSCollection(getSolrField(), getSolrFieldValue());
-            DataManager.getInstance().getDao().addCMSCollection(collection);
-            updateCollections();
-            setSolrFieldValue("");//empty solr field value to avoid creating the same collection again
-        } else {
-            Messages.error("cms_collections_err_noselection");
-        }
-    }
+    //    /**
+    //     * <p>
+    //     * addCollection.
+    //     * </p>
+    //     *
+    //     * @throws io.goobi.viewer.exceptions.DAOException if any.
+    //     */
+    //    public void addCollection() throws DAOException {
+    //        if (StringUtils.isNoneBlank(getSolrField(), getSolrFieldValue())) {
+    //            CMSCollection collection = new CMSCollection(getSolrField(), getSolrFieldValue());
+    //            DataManager.getInstance().getDao().addCMSCollection(collection);
+    //            updateCollections();
+    //            setSolrFieldValue("");//empty solr field value to avoid creating the same collection again
+    //            logger.trace("collection added to DB: {}", collection);
+    //        } else {
+    //            Messages.error("cms_collections_err_noselection");
+    //        }
+    //    }
 
     /**
      * @param collection
      */
-    private void addToCollectionViews(CMSCollection collection) {
+    private static void addToCollectionViews(CMSCollection collection) {
         CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
         if (collectionView != null) {
             collectionView.setCollectionInfo(collection.getSolrFieldValue(), collection);
@@ -225,7 +466,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * @param collection
      */
-    private void removeFromCollectionViews(CMSCollection collection) {
+    private static void removeFromCollectionViews(CMSCollection collection) {
         CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
         if (collectionView != null) {
             collectionView.removeCollectionInfo(collection.getSolrFieldValue());
@@ -260,7 +501,7 @@ public class CmsCollectionsBean implements Serializable {
     public String editCollection(CMSCollection collection) {
         setCurrentCollection(collection);
         collection.populateDescriptions();
-        collection.populateLabels();
+        // collection.populateLabels();
         return "pretty:adminCmsEditCollection";
     }
 
@@ -298,7 +539,22 @@ public class CmsCollectionsBean implements Serializable {
      */
     public String saveCurrentCollection() throws DAOException {
         if (getCurrentCollection() != null) {
-            DataManager.getInstance().getDao().updateCMSCollection(getCurrentCollection());
+            // Remove thumbnail data for whatever mode is not selected
+            switch (getImageMode()) {
+                case NONE:
+                    getCurrentCollection().setMediaItem(null);
+                case IMAGE:
+                    getCurrentCollection().setRepresentativeWorkPI(null);
+                    break;
+                case PI:
+                    getCurrentCollection().setMediaItem(null);
+                    break;
+            }
+            if (getCurrentCollection().getId() != null) {
+                DataManager.getInstance().getDao().updateCMSCollection(getCurrentCollection());
+            } else {
+                DataManager.getInstance().getDao().addCMSCollection(getCurrentCollection());
+            }
             updateCollections();
             addToCollectionViews(getCurrentCollection());
 
@@ -315,8 +571,10 @@ public class CmsCollectionsBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String resetCurrentCollection() throws DAOException {
+        logger.trace("resetCurrentCollection");
         if (getCurrentCollection() != null) {
-            DataManager.getInstance().getDao().refreshCMSCollection(getCurrentCollection());
+            // TODO do not refresh unmanaged objects
+            //            DataManager.getInstance().getDao().refreshCMSCollection(getCurrentCollection());
         }
         return "pretty:adminCmsCollections";
     }
@@ -329,9 +587,9 @@ public class CmsCollectionsBean implements Serializable {
     public boolean isCurrentCollectionValid() {
         if (getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {
             return piValid;
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     /**
@@ -375,9 +633,89 @@ public class CmsCollectionsBean implements Serializable {
         if (StringUtils.isNotBlank(pi)) {
             SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
             return doc != null;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return the imageMode
+     */
+    public CMSCollectionImageMode getImageMode() {
+        return imageMode;
+    }
+
+    /**
+     * @param imageMode the imageMode to set
+     */
+    public void setImageMode(CMSCollectionImageMode imageMode) {
+        logger.trace("setImageMode: {}", imageMode);
+        this.imageMode = imageMode;
+    }
+
+    /**
+     * Sets the value of <code>imageMode</code> depending on the properties of <code>currentCollection</code>.
+     * 
+     * @should set imageMode correctly
+     */
+    public void initImageMode() {
+        if (currentCollection == null) {
+            return;
+        }
+
+        if (currentCollection.hasRepresentativeWork()) {
+            imageMode = CMSCollectionImageMode.PI;
+        } else if (currentCollection.hasMediaItem()) {
+            imageMode = CMSCollectionImageMode.IMAGE;
         } else {
-            return true;
+            imageMode = CMSCollectionImageMode.NONE;
         }
     }
 
+    /**
+     * @return the currentTab
+     */
+    public CMSCollectionTreeTab getCurrentTab() {
+        return currentTab;
+    }
+
+    /**
+     * @param currentTab the currentTab to set
+     */
+    public void setCurrentTab(CMSCollectionTreeTab currentTab) {
+        this.currentTab = currentTab;
+    }
+
+    /**
+     * Initializes the collection tree for the given index field name.
+     * 
+     * @param field
+     * @throws IllegalRequestException
+     * @throws IndexUnreachableException
+     */
+    public void loadCollection(String field) throws IllegalRequestException, IndexUnreachableException {
+        if (StringUtils.isEmpty(field)) {
+            return;
+        }
+        browseBean.initializeCollection(field, SearchHelper.facetifyField(field));
+        browseBean.populateCollection(field);
+    }
+
+    /**
+     * Initializes the collection tree for the current <code>solrField</code>, but only if not yet loaded.
+     * 
+     * @throws IllegalRequestException
+     * @throws IndexUnreachableException
+     */
+    public void initSolrField() throws IllegalRequestException, IndexUnreachableException {
+        if (browseBean.getCollection(solrField) == null) {
+            loadCollection(solrField);
+        }
+    }
+
+    public boolean isDirty() {
+        boolean dirty =
+                this.currentCollection != null && this.originalCollection != null && !this.currentCollection.contentEquals(this.originalCollection);
+        return dirty;
+    }
 }

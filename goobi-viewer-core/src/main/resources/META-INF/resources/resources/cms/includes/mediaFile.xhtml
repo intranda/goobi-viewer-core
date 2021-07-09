@@ -3,7 +3,7 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:p="http://primefaces.org/ui"
+    
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
@@ -51,7 +51,7 @@
                 <!-- FILE METADATA VIEW -->
                 <div class="admin-cms-media__file-metadata-view in">
                     <h:panelGroup id="display-fields">
-                        <dl class="dl-horizontal">
+                        <dl class="dl-horizontal admin-cms-media__file-metadata-list">
                             <!-- TITLE -->
                             <dt>#{msg.admin__media_title}:</dt>
                             <dd>#{media.getMetadataForLocale(item.locale).name}</dd>

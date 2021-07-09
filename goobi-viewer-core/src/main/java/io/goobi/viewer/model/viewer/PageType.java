@@ -363,7 +363,7 @@ public enum PageType {
      * @should return medatata page type if nothing else matches
      * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
-    public static PageType determinePageType(String docStructType, String mimeType, boolean anchorOrGroup, boolean hasImages,
+    public static PageType determinePageType(String docStructType, String mimeType, Boolean anchorOrGroup, Boolean hasImages,
             boolean pageResolverUrl) {
         // Determine preferred target for the docstruct
         //         logger.trace("determinePageType: docstrct: {} / mime type: {} / anchor: {} / images: {} / resolver: {}", docStructType, mimeType,
@@ -375,10 +375,10 @@ public enum PageType {
         if ("application".equals(mimeType)) {
             return PageType.viewMetadata;
         }
-        if (anchorOrGroup) {
+        if (Boolean.TRUE.equals(anchorOrGroup)) {
             return PageType.viewToc;
         }
-        if (hasImages) {
+        if (Boolean.TRUE.equals(hasImages)) {
             return PageType.viewObject;
         }
 

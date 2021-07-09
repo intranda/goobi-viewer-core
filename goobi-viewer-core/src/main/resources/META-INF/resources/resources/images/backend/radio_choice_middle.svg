@@ -1,0 +1,8 @@
+<svg width="30" height="500" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>Layer 1</title>
+  <path id="svg_1" stroke-miterlimit="10" stroke-width="6" stroke="#fff" fill="none" d="m20.3,21.19922l21.7,0m0,-21.2l0,100"/>
+  <path transform="rotate(-180, 12.3496, 250.066)" id="svg_2" stroke-miterlimit="10" fill="none" stroke-width="3" stroke="gray" d="m1.50023,454.65061l21.7,0m-0.14173,-454.64304l0.14173,500.11771"/>
+ </g>
+
+</svg>

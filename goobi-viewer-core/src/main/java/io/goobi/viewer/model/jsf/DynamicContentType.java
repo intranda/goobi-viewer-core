@@ -21,5 +21,6 @@ package io.goobi.viewer.model.jsf;
  */
 public enum DynamicContentType {
 
-    GEOMAP;
+    GEOMAP,
+    SLIDER;
 }

@@ -15,7 +15,9 @@
  */
 package io.goobi.viewer.model.citation;
 
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -29,6 +31,7 @@ import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.CSLNameBuilder;
 import de.undercouch.citeproc.csl.CSLType;
+import io.goobi.viewer.controller.DateTools;
 
 public class CitationDataProvider implements ItemDataProvider {
 
@@ -51,6 +54,7 @@ public class CitationDataProvider implements ItemDataProvider {
      * @param type
      * @return Created CSLItemData
      * @should add item data correctly
+     * @should parse years correctly
      */
     public CSLItemData addItemData(String id, Map<String, List<String>> fields, CSLType type) {
         CSLItemDataBuilder builder = new CSLItemDataBuilder().type(type).id(id);
@@ -98,7 +102,13 @@ public class CitationDataProvider implements ItemDataProvider {
                     builder.ISSN(fields.get(key).get(0));
                     break;
                 case ISSUED:
-                    builder.issued(new CSLDateBuilder().raw(fields.get(key).get(0)).build());
+                    // Use different method for year-only values (to avoid duplicates in APA6)
+                    try {
+                        DateTools.formatterYearOnly.parse(fields.get(key).get(0));
+                        builder.issued(Integer.valueOf(fields.get(key).get(0)));
+                    } catch (DateTimeParseException e) {
+                        builder.issued(new CSLDateBuilder().raw(fields.get(key).get(0)).build());
+                    }
                     break;
                 case LANGUAGE:
                     builder.language(fields.get(key).get(0));
@@ -133,8 +143,8 @@ public class CitationDataProvider implements ItemDataProvider {
      * @see de.undercouch.citeproc.ItemDataProvider#getIds()
      */
     @Override
-    public String[] getIds() {
-        return itemDataMap.keySet().toArray(new String[0]);
+    public Collection<String> getIds() {
+        return itemDataMap.keySet();
     }
 
 }

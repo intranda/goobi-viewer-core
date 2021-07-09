@@ -62,14 +62,14 @@
 		<view-id value="/browse.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-		<action onPostback="false">#{browseBean.initializeCollection('DC', 'FACET_DC')}</action>
+		<action onPostback="false">#{browseBean.initializeCollection('DC')}</action>
 		<action onPostback="false">#{browseBean.populateCollection('DC')}</action>
 	</url-mapping>
 	<url-mapping id="browseTopics">
 		<pattern value="/browseTopics/" />
 		<view-id value="/browse.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{browseBean.initializeCollection('MD_TOPIC', 'SORT_TOPIC')}</action>
+		<action onPostback="false">#{browseBean.initializeCollection('MD_TOPIC')}</action>
 		<action onPostback="false">#{browseBean.populateCollection('MD_TOPIC')}</action>
 		<!-- <action onPostback="false">#{browseBean.expandCollection(2)}</action> -->
 		<!-- <action onPostback="false">#{browseBean.collection.showAll()}</action> -->
@@ -77,7 +77,7 @@
 	<url-mapping id="browseHierarchy">
 		<pattern value="/browseHierarchy/" />
 		<view-id value="/browse.xhtml" />
-		<action onPostback="false">#{browseBean.initializeCollection('MD_HIERARCHY', 'MD_HIERARCHY')}</action>
+		<action onPostback="false">#{browseBean.initializeCollection('MD_HIERARCHY')}</action>
 		<action onPostback="false">#{browseBean.populateCollection('MD_HIERARCHY')}</action>
 		<!-- <action onPostback="false">#{browseBean.expandCollection(2)}</action> -->
 		<!-- <action onPostback="false">#{browseBean.collection.showAll()}</action> -->
@@ -337,6 +337,8 @@
     <url-mapping id="image1">
         <pattern value="/image/#{pi:activeDocumentBean.persistentIdentifier}/" />
         <view-id value="/viewObject.xhtml" />
+        <!-- TODO set representative page, if available -->
+        <action onPostback="false">#{activeDocumentBean.setImageToShow('1')}</action>
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
 	<url-mapping id="image2">
@@ -372,6 +374,8 @@
     <url-mapping id="object1">
         <pattern value="/object/#{pi:activeDocumentBean.persistentIdentifier}/" />
         <view-id value="/viewObject.xhtml" />
+        <!-- TODO set representative page, if available -->
+        <action onPostback="false">#{activeDocumentBean.setImageToShow('1')}</action>
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
 	<url-mapping id="object2">
@@ -456,6 +460,8 @@
     <url-mapping id="fulltext1">
         <pattern value="/fulltext/#{pi:activeDocumentBean.persistentIdentifier}/" />
         <view-id value="/viewFulltext.xhtml" />
+        <!-- TODO set representative page, if available -->
+        <action onPostback="false">#{activeDocumentBean.setImageToShow('1')}</action>
         <action onPostback="false">#{activeDocumentBean.openFulltext}</action>
     </url-mapping>
 	<url-mapping id="fulltext2">
@@ -600,6 +606,8 @@
     <url-mapping id="fullscreen1">
         <pattern value="/fullscreen/#{pi:activeDocumentBean.persistentIdentifier}/" />
         <view-id value="/viewObjectFullscreen.xhtml" />
+        <!-- TODO set representative page, if available -->
+        <action onPostback="false">#{activeDocumentBean.setImageToShow('1')}</action>
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
 	<url-mapping id="fullscreen2">
@@ -834,6 +842,11 @@
         <view-id value="/resources/admin/views/adminTranslationsEdit.xhtml" />
         <action onPostback="false">#{adminBean.lockTranslation}</action>
     </url-mapping>
+    <url-mapping id="adminEditTranslations2">
+        <pattern value="/admin/translations/edit/#{groupId:adminBean.currentTranslationGroupId}/#{currentTranslationKey:adminBean.currentTranslationMessageKey}/" />
+        <view-id value="/resources/admin/views/adminTranslationsEdit.xhtml" />
+        <action onPostback="false">#{adminBean.lockTranslation}</action>
+    </url-mapping>
 
     <!-- ADMIN STYLES FOR DEVS -->
     <url-mapping id="adminEditTranslations">
@@ -896,11 +909,14 @@
         <pattern value="/admin/cms/collections/" />
         <view-id value="/resources/cms/adminCmsCollections.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsCollectionsBean.currentTab.refresh(cmsCollectionsBean.solrField)}</action>
+        
     </url-mapping>
     <url-mapping id="adminCmsEditCollection">
-        <pattern value="/admin/cms/collections/edit/" />
+        <pattern value="/admin/cms/collections/edit/#{collectionName}/" />
         <view-id value="/resources/cms/adminCmsEditCollection.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsCollectionsBean.setCollectionName(collectionName)}</action>
     </url-mapping>
     <url-mapping id="adminCmsCategories">
         <pattern value="/admin/cms/categories/" />

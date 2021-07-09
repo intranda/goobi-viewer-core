@@ -16,15 +16,32 @@
 package io.goobi.viewer.model.translations.admin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 
-public class MessageEntryTest {
+public class MessageEntryTest extends AbstractTest {
+
+    /**
+     * @see MessageEntry#create(String,List)
+     * @verifies create MessageEntry correctly
+     */
+    @Test
+    public void create_shouldCreateMessageEntryCorrectly() throws Exception {
+        MessageEntry entry = MessageEntry.create("foo", Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN }));
+        Assert.assertNotNull(entry);
+        Assert.assertEquals("foo", entry.getKey());
+        Assert.assertEquals(2, entry.getValues().size());
+        Assert.assertEquals("en", entry.getValues().get(0).getLanguage());
+        Assert.assertEquals("de", entry.getValues().get(1).getLanguage());
+    }
 
     /**
      * @see MessageEntry#compareTo(MessageEntry)
@@ -89,5 +106,22 @@ public class MessageEntryTest {
         MessageEntry entry = new MessageEntry("key", values);
         Assert.assertEquals(2, entry.getValues().size());
         Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+    }
+
+    /**
+     * @see MessageEntry#getTranslationStatusForLanguage(String)
+     * @verifies return correct status for language
+     */
+    @Test
+    public void getTranslationStatusForLanguage_shouldRetutrnCorrectStatusForLanguage() throws Exception {
+        List<MessageValue> values = new ArrayList<>(2);
+        values.add(new MessageValue("en", "value", "value"));
+        values.add(new MessageValue("de", "wert zzz", "wert"));
+        values.add(new MessageValue("fr", "", ""));
+        MessageEntry entry = new MessageEntry("key", values);
+        Assert.assertEquals(3, entry.getValues().size());
+        Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatusForLanguage("en"));
+        Assert.assertEquals(TranslationStatus.PARTIAL, entry.getTranslationStatusForLanguage("de"));
+        Assert.assertEquals(TranslationStatus.NONE, entry.getTranslationStatusForLanguage("fr"));
     }
 }

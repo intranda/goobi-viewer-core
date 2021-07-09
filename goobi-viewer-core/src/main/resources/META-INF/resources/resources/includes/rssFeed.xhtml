@@ -3,14 +3,14 @@
                 xmlns:composite="http://xmlns.jcp.org/jsf/composite"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:p="http://primefaces.org/ui">
+                >
 
 	<composite:interface />
 
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displaySidebarRssFeed}">
-        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jquery.jfeed.js"></script>
-		<script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jquery.aRSSFeed.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/rssFeedLib/jquery.aRSSFeed.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/rssFeedLib/jquery.jfeed.js"></script>
 
         <div class="compName_rssFeed rss_wrapp men_wrapp rss_elem_wrapp sidebar-widget widget">
             <h3>

@@ -39,7 +39,7 @@
         } ).then( function() {
             return this.opts.page.getTextContent();
         }.bind( this ) ).then( function( textContent ) {
-            console.log( "viewport ", this.viewport );
+            //console.log( "viewport ", this.viewport );
             $( this.textLayer ).css( {
                 height: this.viewport.height + 'px',
                 width: this.viewport.width + 'px',

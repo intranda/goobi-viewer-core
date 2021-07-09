@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
@@ -30,6 +31,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -48,7 +50,11 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSlider;
+import io.goobi.viewer.model.iiif.search.parser.SolrSearchParser;
+import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -62,7 +68,6 @@ public class CMSSliderResource {
     /**
      * 
      */
-    private static final int MAX_SLIDER_ITEMS = 200;
 
     private static final Logger logger = LoggerFactory.getLogger(CMSSliderResource.class);
     
@@ -86,7 +91,7 @@ public class CMSSliderResource {
                 case COLLECTIONS:
                     return getCollections(slider.getCollections());
                 case RECORDS:
-                    return getRecords(slider.getSolrQuery(), MAX_SLIDER_ITEMS);
+                    return getRecords(slider.getSolrQuery(), slider.getMaxEntries(), slider.getSortField());
                 case PAGES:
                     return getPages(slider.getCategories());
                 case MEDIA:
@@ -171,7 +176,7 @@ public class CMSSliderResource {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private static List<URI> getRecords(String solrQuery, int maxResults) throws PresentationException, IndexUnreachableException {
+    private static List<URI> getRecords(String solrQuery, int maxResults, String sortField) throws PresentationException, IndexUnreachableException {
 
         //limit query to records only
         solrQuery = "+(" + solrQuery + ") +(ISWORK:* ISANCHOR:*)";
@@ -181,7 +186,9 @@ public class CMSSliderResource {
         if(urls == null) {
             return Collections.emptyList();
         }
-        SolrDocumentList solrDocs = DataManager.getInstance().getSearchIndex().search(solrQuery, 0, maxResults, null, null, Arrays.asList(SolrConstants.PI)).getResults();
+        
+        List<StringPair> sortFields = StringUtils.isBlank(sortField) ? null : SearchHelper.parseSortString(sortField, null);
+        SolrDocumentList solrDocs = DataManager.getInstance().getSearchIndex().search(solrQuery, 0, maxResults, sortFields, null, Arrays.asList(SolrConstants.PI)).getResults();
         for (SolrDocument doc : solrDocs) {
             String pi = (String) SolrTools.getSingleFieldValue(doc, SolrConstants.PI);
             URI uri = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST).params(pi).query("mode", "simple").buildURI();

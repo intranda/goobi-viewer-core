@@ -34,6 +34,8 @@ var viewerJS = ( function( viewer ) {
     };
     
     viewer.navigation = {
+    
+    
         /**
          * Method to initialize the viewer main navigation.
          * 
@@ -46,7 +48,7 @@ var viewerJS = ( function( viewer ) {
          * @param {String} config.closeMegaMenuSelector The selector for the close mega
          * menu element.
          */
-        init: function( config ) {
+        init : function( config ) {
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'viewer.navigation.init' );
@@ -54,10 +56,9 @@ var viewerJS = ( function( viewer ) {
                 console.log( 'viewer.navigation.init: config - ', config );
             }
             
-            $.extend( true, _defaults, config );
-            
+            config = $.extend( true, _defaults, config, {});
             // TRIGGER STANDARD MENU
-            $( _defaults.subMenuSelector ).on( 'click', function() {
+            $( config.subMenuSelector ).on( 'click', function() {
                 var currTrigger = $( this ); 
                 if( $(currTrigger).next( '.navigation__submenu' ).hasClass( 'in' ) ) {
                     //child menu is open
@@ -70,13 +71,14 @@ var viewerJS = ( function( viewer ) {
                     _calcSubMenuPosition( currTrigger.next( '.navigation__submenu' ) );
                 } else {
                     _resetMenus();
+                    // console.log("open submenu", currTrigger.parent());
                     currTrigger.parent().addClass( 'active' );
                     currTrigger.next( '.navigation__submenu' ).addClass( 'in' );
                 }
             } );
             
             // TRIGGER MEGA MENU
-            $( _defaults.megaMenuSelector ).on( 'click', function() {
+            $( config.megaMenuSelector ).on( 'click', function() {
                 _resetMenus();
                 
                 if ( $( this ).next( '.navigation__megamenu-wrapper' ).hasClass( 'in' ) ) {
@@ -91,7 +93,7 @@ var viewerJS = ( function( viewer ) {
                 }
             } );
             
-            $( _defaults.closeMegaMenuSelector ).on( 'click', function() {
+            $( config.closeMegaMenuSelector ).on( 'click', function() {
                 _resetMenus();
             } );
             
@@ -101,7 +103,7 @@ var viewerJS = ( function( viewer ) {
             
             // reset all menus by clicking on body
             $( 'body' ).on( 'click', function( event ) {
-                if ( event.target.id == 'navigation' || $( event.target ).closest( _defaults.navigationSelector ).length ) {
+                if ( event.target.id == 'navigation' || $( event.target ).closest( config.navigationSelector ).length ) {
                     return;
                 }
                 else {
@@ -109,7 +111,7 @@ var viewerJS = ( function( viewer ) {
                 }
             } );
         },
-    };
+     };
     
     /**
      * Method to reset all shown menus.

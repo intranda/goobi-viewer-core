@@ -170,11 +170,15 @@ var Crowdsourcing = ( function(crowdsourcing) {
     };
     
     crowdsourcing.Item.prototype.isPageAccessible = function(index) {
-    	let status = this.pageStatusMap.get(index);
-    	if(this.reviewMode) {
-    		return "review" == status;
-    	} else {
-    		return "annotate" == status || "blank" == status;
+    	if(!this.pageStatisticMode) {
+    		return index > -1 && index < this.canvases.length;
+    	} else {    	
+	    	let status = this.pageStatusMap.get(index);
+	    	if(this.reviewMode) {
+	    		return "review" == status;
+	    	} else {
+	    		return "annotate" == status || "blank" == status;
+	    	}
     	}
     };
     
@@ -357,6 +361,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
     * only delete from that page and/or question
     */
     crowdsourcing.Item.prototype.deleteAnnotations = function(save, pageId, questionId) {
+	    if(!save) {
+	    	return
+	    }
+    
         let questions = save.questions;
         if(questionId) {
             questions = questions.filter(q => q.id == questionId);

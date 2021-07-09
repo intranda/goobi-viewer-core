@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.faces.application.NavigationHandler;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,6 +42,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -771,6 +773,16 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         }
 
         return "";
+    }
+    
+    public boolean matchesPage(String page) {
+        if(StringUtils.isBlank(page)) {
+            return false;
+        } else if(hasCmsPage()) {
+            return NavigationHelper.getCMSPageNavigationId(getCmsPage()).equals(page);
+        } else {
+            return page.equals(getPageUrl()) || page.equals(getItemLabel());
+        }
     }
 
 }

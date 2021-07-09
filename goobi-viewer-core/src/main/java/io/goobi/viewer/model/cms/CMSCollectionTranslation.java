@@ -57,6 +57,18 @@ public class CMSCollectionTranslation extends Translation {
     }
 
     /**
+     * Cloning constructor
+     * @param tr
+     */
+    public CMSCollectionTranslation(CMSCollectionTranslation tr, CMSCollection owner) {
+        this.id = tr.id;
+        this.language = tr.language;
+        this.owner = owner;
+        this.tag = tr.tag;
+        this.value = tr.value;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>owner</code>.
      * </p>

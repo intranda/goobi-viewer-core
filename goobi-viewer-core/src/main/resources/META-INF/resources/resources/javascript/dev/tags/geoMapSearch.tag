@@ -6,7 +6,8 @@
 	<div ref="geocoder" class="geocoder"/>
 	<div class="geo-map__buttons-wrapper">
 	</div>
-	<div ref="map" class="geo-map"></div>
+	<div ref="map" class="geo-map">
+	</div>
 </div>
 
 
@@ -14,33 +15,44 @@
 
 this.on("mount", function() {
 	this.initMap();
-});
+}); 
 
 initMap() {
     //console.log("initializing geomap for search", this.refs.map);
     this.geoMap = new viewerJS.GeoMap({
         element : this.refs.map, 
-        allowMovingFeatures: false,
         language: viewerJS.translator.language,
-        popover: undefined,
-        emptyMarkerMessage: undefined,
-        popoverOnHover: false,
-        fixed: this.opts.inactive ? true : false
+        fixed: this.opts.inactive ? true : false,
+        layer: {
+	        allowMovingFeatures: false,
+	        popover: $("<div><p data-metadata='title'></p></div>"),
+	        popoverOnHover: true,
+	        emptyMarkerMessage: undefined,
+// 	        markerIcon: {
+// 	            shape: "circle",
+// 	            prefix: "fa",
+// 	            markerColor: "blue",
+// 	            iconColor: "white",
+// 	            icon: "fa-circle",
+// 	            svg: true
+// 	        },
+		    style: {
+				    fillOpacity: 0.02
+			}
+        }
     })
     let initialView = {
         zoom: 5,
         center: [11.073397, 49.451993] //long, lat
     };
-    this.geoMap.setMarkerIcon({
-        shape: "circle",
-        prefix: "fa",
-        markerColor: "blue",
-        iconColor: "white",
-        icon: "fa-circle",
-        svg: true
-    })
-    this.geoMap.init(initialView);
-    //console.log("geomap ", this.geoMap);
+    this.geoMap.init(initialView, this.opts.features);
+    this.drawLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
+   	    style : {
+         	fillColor : "#d9534f",
+         	color : "#d9534f",
+         	fillOpacity : 0.3,
+        	}
+    });
     if(!this.opts.inactive) {        
         let geocoderConfig = {};
         if(this.opts.search_placeholder) {
@@ -49,8 +61,48 @@ initMap() {
 	    this.geoMap.initGeocoder(this.refs.geocoder, geocoderConfig);
 	    this.initMapDraw();
     }
+    
+//     this.refs.toggleMarkers.addEventListener("click", () => {
+//         this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
+//     })
+    
+    
+    
+    this.geoMap.layers[0].onFeatureClick.subscribe(f => {
+        if(f.properties && f.properties.link) {
+           window.location.assign(f.properties.link);
+       }
+    })
+
+	if(this.opts.toggleFeatures) {   
+		let ToggleFeaturesControl = L.Control.extend({
+		    options: {
+		        position: "topleft"
+		    },
+		    onAdd: function(map) {
+		        let button  = this.opts.toggleFeatures;
+		        L.DomEvent.on(button, "dblclick" , (e) => {
+		            L.DomEvent.stopPropagation(e);
+		            e.stopPropagation();
+		            return false;
+		        });
+		        L.DomEvent.on(button, "click" , (e) => {
+		            this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
+		            L.DomEvent.stopPropagation(e);
+		            e.stopPropagation();
+		            return false;
+		        });
+		        return button;
+		    }.bind(this),
+		    onRemove: function(map) {
+		        
+		    }
+		})
+		let control = new ToggleFeaturesControl();
+		this.geoMap.map.addControl(control);
+	}
+    
     if(this.opts.area) {
-    	//console.log("area ", this.opts)
         let shape = this.opts.area;
         if(viewerJS.isString(shape)) {
             try {                
@@ -59,31 +111,20 @@ initMap() {
                 console.error("Unable to draw geomap area ", this.opts.area, ": cannot parse json");
             }
         }
-        //console.log("area to draw:", shape);
-        let layer;
+
+        let layer = undefined;
         switch(shape.type) {
             case "polygon":
-                layer = this.geoMap.drawPolygon(shape.vertices, {
-                	fillColor: '#3365a9',
-                    color: '#3365a9'
-                    }, true);
-                this.onLayerDrawn({layer: layer});
+                layer = this.drawLayer.drawPolygon(shape.vertices, true);
                 break;
             case "circle":
-                layer = this.geoMap.drawCircle(shape.center, shape.radius, {
-                	fillColor: '#3365a9',
-                    color: '#3365a9'
-                	}, true);
-                this.onLayerDrawn({layer: layer});
+                layer = this.drawLayer.drawCircle(shape.center, shape.radius, true);
                 break;
             case "rectangle":
-                layer = this.geoMap.drawRectangle([shape.vertices[0], shape.vertices[2]], {
-                	fillColor: '#3365a9',
-                    color: '#3365a9'
-                	}, true);
-                this.onLayerDrawn({layer: layer});
+                layer = this.drawLayer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
                 break;
         }
+        this.onLayerDrawn({layer: layer});
 
     }
 
@@ -92,6 +133,7 @@ initMap() {
 initMapDraw() {
     //console.log("init map draw");
     this.drawnItems = new L.FeatureGroup();
+    //this.drawnItems = this.drawLayer.locations;
     this.geoMap.map.addLayer(this.drawnItems);
     this.drawControl = new L.Control.Draw({
         edit: {
@@ -107,19 +149,13 @@ initMapDraw() {
     });
     this.drawControl.setDrawingOptions({
         rectangle: {
-        	shapeOptions: {
-            	color: '#3365a9'
-            }
+        	shapeOptions: this.drawLayer.config.style
         },
         circle: {
-        	shapeOptions: {
-            	color: '#3365a9'
-            }
+        	shapeOptions: this.drawLayer.config.style
         },
         polygon: {
-        	shapeOptions: {
-            	color: '#3365a9'
-            }
+        	shapeOptions: this.drawLayer.config.style
         }
     });
     
@@ -145,7 +181,6 @@ initMapDraw() {
 }
 
 onLayerDeleted(e) {
-    console.log("layer deleted ", e); 
     if(this.searchLayer) {
         this.drawnItems.removeLayer(this.searchLayer);
         this.searchLayer = undefined;

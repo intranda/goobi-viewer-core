@@ -2571,7 +2571,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getHierarchicalDrillDownFields() {
         return getLocalList("search.drillDown.hierarchicalField");
     }
-    
+
     public String getGeoDrillDownField() {
         return getLocalString("search.drillDown.geoField");
     }
@@ -4501,23 +4501,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isSearchInItemEnabled() {
         return getLocalBoolean("sidebar.searchInItem.visible", true);
-    }
-
-    /**
-     * <p>
-     * getDefaultBrowseIcon.
-     * </p>
-     *
-     * @param field a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getDefaultBrowseIcon(String field) {
-        HierarchicalConfiguration subConfig = getCollectionConfiguration(field);
-        if (subConfig != null) {
-            return subConfig.getString("defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
-        }
-
-        return getLocalString("collections.collection.defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
     }
 
     /**

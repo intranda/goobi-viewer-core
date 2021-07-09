@@ -1065,7 +1065,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public Map<String, CollectionResult> getColletionMap() throws IndexUnreachableException {
         if (dcStrings == null) {
             dcStrings =
-                    SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
+                    SearchHelper.findAllCollectionsFromField(collectionField, null, getSearchPrefix(), true, true,
                             DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         }
         return dcStrings;
@@ -1124,7 +1124,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         if (StringUtils.isBlank(getCollectionField())) {
             throw new PresentationException("No solr field provided to create collection view");
         }
-        CollectionView collection = initializeCollection(getCollectionField(), getCollectionField(), getFilterQuery(subThemeDiscriminatorValue));
+        CollectionView collection = initializeCollection(getCollectionField(), null, getFilterQuery(subThemeDiscriminatorValue));
         collection.setBaseElementName(getBaseCollection());
         collection.setBaseLevels(getCollectionBaseLevels());
         collection.setDisplayParentCollections(isCollectionDisplayParents());
@@ -1802,6 +1802,15 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
     public void setSlider(CMSSlider slider) {
         this.slider = slider;
+    }
+    
+    /**
+     * The item with itemId {@link CMSPage#TOPBAR_SLIDER_ID} should never occur in any contentItem lists
+     * 
+     * @return
+     */
+    public boolean appearInListings() {
+        return !CMSPage.TOPBAR_SLIDER_ID.equals(this.itemId);
     }
 
 }

@@ -293,7 +293,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     @Transient
     @JsonIgnore
-    private Integer pageCount = 0;
+    private Integer pageCount = null;
 
     /**
      * Empty constructor.
@@ -1615,6 +1615,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public CrowdsourcingStatus getRecordStatus(String pi) {
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CrowdsourcingStatus.ANNOTATE);
+    }
+    
+    public CrowdsourcingStatus getPageStatus(String pi, int page) {
+        return Optional.ofNullable(statistics.get(pi)).map(s -> s.getPageStatistics().get(pi + "_" + Integer.toString(page))).map(CampaignRecordPageStatistic::getStatus).orElse(CrowdsourcingStatus.ANNOTATE);
     }
 
     /**

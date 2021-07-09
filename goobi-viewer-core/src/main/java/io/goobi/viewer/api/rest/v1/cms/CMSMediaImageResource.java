@@ -19,6 +19,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,6 +38,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -59,6 +62,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @CORSBinding
 public class CMSMediaImageResource extends ImageResource {
 
+    private static final Logger logger = LoggerFactory.getLogger(CMSMediaImageResource.class);
     
     public CMSMediaImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
@@ -66,13 +70,20 @@ public class CMSMediaImageResource extends ImageResource {
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename) throws UnsupportedEncodingException {
         super(context, request, response, "", getMediaFileUrl(filename).toString());
         request.setAttribute("filename", this.imageURI.toString());
-        String requestUrl = request.getRequestURI();
-        filename = URLEncoder.encode(filename, "utf-8");
+        
+        filename = URLDecoder.decode(filename, "utf-8");
         String baseImageUrl = (ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE).replace("{filename}", filename);
+        
+        String requestUrl = request.getRequestURI();
+        requestUrl = URLDecoder.decode(requestUrl, "utf-8");
+        
         int baseStartIndex = requestUrl.indexOf(baseImageUrl);
         int baseEndIndex = baseStartIndex + baseImageUrl.length();
+        
         String imageRequestPath = requestUrl.substring(baseEndIndex);
-        this.resourceURI = URI.create(requestUrl.substring(0, baseEndIndex));
+        String resourceUrl = URLEncoder.encode(requestUrl.substring(0, baseEndIndex), "utf-8");
+        
+        this.resourceURI = URI.create(resourceUrl);
         
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         if(parts.size() == 4 ) {

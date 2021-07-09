@@ -249,10 +249,15 @@ public class CmsSliderEditBean implements Serializable {
         }
     }
 
-    public String getSliderSource() throws ContentNotFoundException, IllegalRequestException, PresentationException, IndexUnreachableException, JsonProcessingException {
+    public String getSliderSource() {
         if(this.selectedSlider != null) {            
-            List<URI> list = new CMSSliderResource(selectedSlider).getSlides();
-            return new ObjectMapper().writeValueAsString(list);
+            try {
+                List<URI> list = new CMSSliderResource(selectedSlider).getSlides();
+                return new ObjectMapper().writeValueAsString(list);
+            } catch (ContentNotFoundException | IllegalRequestException | PresentationException | IndexUnreachableException | JsonProcessingException e) {
+                logger.error("Unable to create slider source: {}", e.toString());
+                return "[]";
+            }
         } else {
             return "[]";
         }

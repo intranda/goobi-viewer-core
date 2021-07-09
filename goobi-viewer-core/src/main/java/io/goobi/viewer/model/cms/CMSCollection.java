@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,13 +47,13 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.viewer.BrowseElementInfo;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -64,11 +67,12 @@ import io.goobi.viewer.solr.SolrConstants;
  * @author Florian Alpers
  */
 @Entity
-@Table(name = "cms_collections")
-public class CMSCollection implements Comparable<CMSCollection>, BrowseElementInfo, CMSMediaHolder {
+@Table(name = "cms_collections", uniqueConstraints = { @UniqueConstraint(columnNames = { "solrField", "solrFieldValue" }) })
+public class CMSCollection implements Comparable<CMSCollection>, BrowseElementInfo, CMSMediaHolder, IPolyglott {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSCollection.class);
 
+    @Deprecated
     private static final String LABEL_TAG = "label";
     private static final String DESCRIPTION_TAG = "description";
 
@@ -98,13 +102,16 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     @PrivateOwned
     private List<CMSCollectionTranslation> translations = new ArrayList<>();
 
+    @Transient
+    private Locale selectedLocale = BeanUtils.getLocale();
+
     /**
      * <p>
      * Constructor for CMSCollection.
      * </p>
      */
     public CMSCollection() {
-
+        // TODO Is this in use?
     }
 
     /**
@@ -122,6 +129,22 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         }
         this.solrField = solrField;
         this.solrFieldValue = solrFieldValue;
+    }
+
+    /**
+     * Cloning constructor
+     * 
+     * @param orig
+     */
+    public CMSCollection(CMSCollection orig) {
+        this.solrField = orig.solrField;
+        this.solrFieldValue = orig.solrFieldValue;
+        this.id = orig.id;
+        this.collectionUrl = orig.collectionUrl;
+        this.mediaItem = orig.mediaItem;
+        this.representativeWorkPI = orig.representativeWorkPI;
+        this.selectedLocale = orig.selectedLocale;
+        this.translations = orig.translations.stream().map(tr -> new CMSCollectionTranslation(tr, this)).collect(Collectors.toList());
     }
 
     /**
@@ -203,39 +226,13 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * get the label for the given {@code language}, or an empty string if no matching label exists the language should be the language code of a
-     * {@link java.util.Locale} and is case insensitive
-     *
-     * @param language a {@link java.lang.String} object.
-     * @return The string value of the label of the given language, or an empty string
-     */
-    public String getLabel(String language) {
-        return getLabels().stream()
-                .filter(translation -> language.equalsIgnoreCase(translation.getLanguage()))
-                .filter(translation -> StringUtils.isNotBlank(translation.getValue()))
-                .findFirst()
-                .map(translation -> translation.getValue())
-                .orElse(ViewerResourceBundle.getTranslation(getSolrFieldValue(), null));
-    }
-
-    /**
      * get the label for the given {@code locale}, or an empty string if no matching label exists
      *
      * @param locale a {@link java.util.Locale} object.
      * @return The string value of the label of the given locale, or an empty string
      */
     public String getLabel(Locale locale) {
-        return getLabel(locale.getLanguage());
-    }
-
-    /**
-     * get the label for the current locale (given by {@link io.goobi.viewer.managedbeans.utils.BeanUtils#getLocale()}, or an empty string if no
-     * matching label exists
-     *
-     * @return The string value of the label of the current locale, or an empty string
-     */
-    public String getLabel() {
-        return getLabel(BeanUtils.getLocale());
+        return ViewerResourceBundle.getTranslation(getSolrFieldValue(), locale);
     }
 
     /**
@@ -260,6 +257,15 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      */
     public CMSCollectionTranslation getDescriptionAsTranslation(String language) {
         return getDescriptions().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().orElse(null);
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public CMSCollectionTranslation getDescriptionAsTranslation() {
+        // logger.trace("getDescriptionAsTranslation: {}", selectedLocale.getLanguage());
+        return getDescriptionAsTranslation(selectedLocale.getLanguage());
     }
 
     /**
@@ -308,7 +314,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @return The string value of the description of the current locale, or an empty string
      */
     public String getDescription() {
-        return getDescription(BeanUtils.getLocale());
+        return getDescription(selectedLocale);
     }
 
     /**
@@ -379,9 +385,48 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         if (obj != null && obj.getClass().equals(this.getClass())) {
             return getSolrField().equals(((CMSCollection) obj).getSolrField())
                     && getSolrFieldValue().equals(((CMSCollection) obj).getSolrFieldValue());
-        } else {
-            return false;
         }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @param other
+     * @return
+     */
+    public boolean contentEquals(CMSCollection other) {
+        return Objects.equals(this.mediaItem, other.mediaItem) &&
+                StringUtils.equals(this.representativeWorkPI, other.representativeWorkPI) &&
+                StringUtils.equals(this.solrField, other.solrField) &&
+                StringUtils.equals(this.collectionUrl, other.collectionUrl) &&
+                StringUtils.equals(this.solrFieldValue, other.solrFieldValue) &&
+                translationsEquals(this.translations, other.translations);
+    }
+
+    /**
+     * @param translations2
+     * @param translations3
+     * @return
+     */
+    private static boolean translationsEquals(List<CMSCollectionTranslation> tr1, List<CMSCollectionTranslation> tr2) {
+        if (tr1.size() == tr2.size()) {
+            for (CMSCollectionTranslation tr : tr1) {
+                CMSCollectionTranslation otr = tr2.stream()
+                        .filter(t -> StringUtils.equals(t.getTag(), tr.getTag()))
+                        .filter(t -> StringUtils.equals(t.getLanguage(), tr.getLanguage()))
+                        .findAny()
+                        .orElse(null);
+                if (otr == null && StringUtils.isNotBlank(tr.getValue())) {
+                    return false;
+                } else if (otr != null && !StringUtils.equals(otr.getValue(), tr.getValue())) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        return false;
     }
 
     /**
@@ -404,6 +449,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * </p>
      */
     public void populateDescriptions() {
+        logger.trace("populateDescriptions");
         List<String> languages = BeanUtils.getNavigationHelper().getSupportedLanguages();
         for (String language : languages) {
             if (getDescriptions().stream().noneMatch(description -> description.getLanguage().equalsIgnoreCase(language))) {
@@ -468,7 +514,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /** {@inheritDoc} */
     @Override
     public String getName() {
-        return getLabel();
+        return solrFieldValue;
     }
 
     /** {@inheritDoc} */
@@ -492,9 +538,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
             }
             URI uri = applicationUri.resolve(getCollectionUrl().replaceAll("^\\/", "").trim());
             return uri;
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /* (non-Javadoc)
@@ -531,10 +577,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @param solrFieldValue2
      * @return
      */
+    @Deprecated
     public static URI getDefaultIcon(String collectionName) {
-        return BeanUtils.getImageDeliveryBean()
-                .getThumbs()
-                .getThumbnailPath(DataManager.getInstance().getConfiguration().getDefaultBrowseIcon(collectionName));
+        return null;
     }
 
     /**
@@ -592,11 +637,11 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         if (labels.isEmpty()) {
             return ViewerResourceBundle.getTranslations(getSolrFieldValue());
         }
-        
+
         IMetadataValue value = new MultiLanguageMetadataValue(labels);
         return value;
     }
-    
+
     @Override
     public IMetadataValue getTranslationsForDescription() {
         Map<String, String> descriptions = getDescriptions().stream()
@@ -605,7 +650,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         if (descriptions.isEmpty()) {
             return null;
         }
-        
+
         IMetadataValue value = new MultiLanguageMetadataValue(descriptions);
         return value;
     }
@@ -628,10 +673,59 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         if (hasMediaItem()) {
             return new CategorizableTranslatedSelectable<CMSMediaItem>(mediaItem, true,
                     mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
-        } else {
-            return null;
         }
+
+        return null;
     }
-    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isComplete(java.util.Locale)
+     */
+    @Override
+    public boolean isComplete(Locale locale) {
+        return !isEmpty(locale);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isValid(java.util.Locale)
+     */
+    @Override
+    public boolean isValid(Locale locale) {
+        return !isEmpty(locale);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
+     */
+    @Override
+    public boolean isEmpty(Locale locale) {
+        if (locale == null) {
+            throw new IllegalArgumentException("locale may not be null");
+        }
+
+        CMSCollectionTranslation translation = getDescriptionAsTranslation(locale.getLanguage());
+        if (translation == null) {
+            return true;
+        }
+
+        return StringUtils.isBlank(translation.getValue());
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.translations.IPolyglott#getSelectedLocale()
+     */
+    @Override
+    public Locale getSelectedLocale() {
+        return selectedLocale;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.translations.IPolyglott#setSelectedLocale(java.util.Locale)
+     */
+    @Override
+    public void setSelectedLocale(Locale locale) {
+        logger.trace("setSelectedLocale: {}", locale);
+        this.selectedLocale = locale;
+    }
 
 }

@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.maps.GeoMap;
 
 /**
@@ -85,6 +86,29 @@ public class DynamicContentBuilder {
                     logger.error("Error retrieving content from DAO", e);
                 }
                 break;
+            case SLIDER:
+                String sliderId = content.getAttribute(0);
+                try {
+                    if (sliderId != null && sliderId.matches("\\d+")) {
+                        CMSSlider slider = DataManager.getInstance().getDao().getSlider(Long.parseLong(sliderId));
+                        if (slider != null) {
+                            composite = loadCompositeComponent(parent, "cmsSlider.xhtml", "components");
+                            composite.getAttributes().put("slider", slider);
+                            String linkTarget = content.getAttribute(1);
+                            if(StringUtils.isNotBlank(linkTarget)) {
+                                composite.getAttributes().put("linkTarget", linkTarget);
+                            } else {
+                                composite.getAttributes().put("linkTarget", "_blank");
+                            }
+                        } else {
+                            logger.error("Cannot build content. No item found with id = " + sliderId);
+                        }
+                    } else {
+                        logger.error("Cannot build content. Need item id as first attribute");
+                    }
+                } catch (NumberFormatException | DAOException e) {
+                    logger.error("Error retrieving content from DAO", e);
+                }
         }
         if (composite != null) {
             composite.setId(content.getId());
@@ -179,5 +203,12 @@ public class DynamicContentBuilder {
                 break;
         }
         return Optional.ofNullable(component);
+    }
+    
+    public DynamicContent createContent(String id, DynamicContentType type, String...attributes ) {
+            DynamicContent content = new DynamicContent(type);
+            content.setId(id);
+            content.setAttributes(attributes);
+            return content;
     }
 }

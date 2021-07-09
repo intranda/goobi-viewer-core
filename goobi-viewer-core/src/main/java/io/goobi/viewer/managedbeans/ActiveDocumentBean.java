@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -39,6 +41,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +54,7 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
@@ -72,6 +76,7 @@ import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
+import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -91,8 +96,8 @@ import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
@@ -157,7 +162,7 @@ public class ActiveDocumentBean implements Serializable {
 
     private String clearCacheMode;
 
-    private CMSSidebarElement mapWidget = null;
+    private Map<String, CMSSidebarElement> mapWidget = new HashMap<>();
 
     private int reloads = 0;
 
@@ -238,7 +243,6 @@ public class ActiveDocumentBean implements Serializable {
             prevHit = null;
             nextHit = null;
             group = false;
-            mapWidget = null; //mapWidget needs to be reset when PI changes
             clearCacheMode = null;
             prevDocstructUrlCache.clear();
             nextDocstructUrlCache.clear();
@@ -969,7 +973,7 @@ public class ActiveDocumentBean implements Serializable {
 
         int page;
         int page2 = Integer.MAX_VALUE;
-        logger.trace("given range: {}", pageOrderRange);
+        // logger.trace("given range: {}", pageOrderRange);
         if (pageOrderRange.contains("-")) {
             boolean firstMinus = false;
             boolean secondMinus = false;
@@ -1013,7 +1017,7 @@ public class ActiveDocumentBean implements Serializable {
             page2 = Integer.MAX_VALUE;
         }
         String range = page + (page2 != Integer.MAX_VALUE ? "-" + page2 : "");
-        logger.trace("final range: {}", range);
+        // logger.trace("final range: {}", range);
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                 .append('/')
                 .append(PageType.getByName(pageType).getName())
@@ -1126,7 +1130,7 @@ public class ActiveDocumentBean implements Serializable {
      * @should return correct range in double page mode if currently showing one page
      */
     public String getPageUrl(int step) throws IndexUnreachableException, DAOException {
-        logger.trace("getPageUrl: {}", step);
+        // logger.trace("getPageUrl: {}", step);
         if (viewManager == null) {
             return getPageUrl(imageToShow);
         }
@@ -1140,7 +1144,7 @@ public class ActiveDocumentBean implements Serializable {
 
         // Current image contains two pages
         if (viewManager.getCurrentPage().isDoubleImage()) {
-            logger.trace("{} is double page", viewManager.getCurrentPage().getOrder());
+            // logger.trace("{} is double page", viewManager.getCurrentPage().getOrder());
             if (step < 0) {
                 number = viewManager.getCurrentImageOrder() + 2 * step;
             } else {
@@ -1157,11 +1161,11 @@ public class ActiveDocumentBean implements Serializable {
 
         // Only go back one step unit at first
         if (currentLeftPage.isPresent()) {
-            logger.trace("{} is left page", currentLeftPage.get().getOrder());
+            // logger.trace("{} is left page", currentLeftPage.get().getOrder());
             number = currentLeftPage.get().getOrder() + step;
         } else if (currentRightPage.isPresent()) {
             // If only the right page is present, it's probably the first page - do not add step at this point
-            logger.trace("{} is right page", currentRightPage.get().getOrder());
+            // logger.trace("{} is right page", currentRightPage.get().getOrder());
             number = currentRightPage.get().getOrder();
         } else {
             number = viewManager.getCurrentImageOrder() + step;
@@ -2218,30 +2222,76 @@ public class ActiveDocumentBean implements Serializable {
         this.clearCacheMode = clearCacheMode;
     }
 
-    public CMSSidebarElement getMapWidget() throws PresentationException, DAOException {
-        if (this.mapWidget == null) {
-            this.mapWidget = generateMapWidget();
+    /**
+     * Get a CMSSidebarElement with a map containing all GeoMarkers for the current PI. The widget is stored in the bean, but refreshed each time the
+     * PI changes
+     * 
+     * @return
+     * @throws PresentationException
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    public synchronized CMSSidebarElement getMapWidget() throws PresentationException, DAOException, IndexUnreachableException {
+        CMSSidebarElement widget = this.mapWidget.get(getPersistentIdentifier());
+        if (widget == null) {
+            widget = generateMapWidget(getPersistentIdentifier());
+            this.mapWidget = Collections.singletonMap(getPersistentIdentifier(), widget);
         }
-        return this.mapWidget;
+        return widget;
     }
 
-    public CMSSidebarElement generateMapWidget() throws PresentationException, DAOException {
+    public CMSSidebarElement generateMapWidget(String pi) throws PresentationException {
         CMSSidebarElement widget = new CMSSidebarElement();
         widget.setType("widgetGeoMap");
         try {
-            if ("-".equals(getPersistentIdentifier())) {
+            if ("-".equals(pi)) {
                 return null;
             }
 
             GeoMap map = new GeoMap();
             map.setId(Long.MAX_VALUE);
-            map.setType(GeoMapType.SOLR_QUERY);
-            map.setShowPopover(false);
+            map.setType(GeoMapType.MANUAL);
+            map.setShowPopover(true);
             map.setMarkerTitleField(null);
-            map.setMarker("default");
-            map.setSolrQuery(String.format("PI:%s OR PI_TOPSTRUCT:%s", getPersistentIdentifier(), getPersistentIdentifier()));
+            //map.setMarker("default");
 
-            if (!map.getFeaturesAsString().equals("[]") || contentBean.hasGeoCoordinateAnnotations(getPersistentIdentifier())) {
+            String mainDocQuery = String.format("PI:%s", pi);
+            List<String> mainDocFields = PrettyUrlTools.getSolrFieldsToDeterminePageType();
+            SolrDocument mainDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(mainDocQuery, mainDocFields);
+            PageType pageType = PrettyUrlTools.getPreferredPageType(mainDoc);
+
+            String subDocQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:DOCSTRCT", pi);
+            List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
+            List<String> subDocFields = new ArrayList<>();
+            subDocFields.add(SolrConstants.LABEL);
+            subDocFields.add(SolrConstants.PI_TOPSTRUCT);
+            subDocFields.add(SolrConstants.THUMBPAGENO);
+            subDocFields.add(SolrConstants.LOGID);
+            subDocFields.add(SolrConstants.ISWORK);
+            subDocFields.addAll(coordinateFields);
+
+            String annotationQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:UGC +MD_COORDS:*", pi);
+            long numAnnotations = DataManager.getInstance().getSearchIndex().getHitCount(annotationQuery);
+            
+            SolrDocumentList subDocs = DataManager.getInstance().getSearchIndex().getDocs(subDocQuery, subDocFields);
+            if (subDocs != null) {
+                Collection<GeoMapFeature> features = new ArrayList<>();
+                for (SolrDocument solrDocument : subDocs) {
+                    List<GeoMapFeature> docFeatures = new ArrayList<GeoMapFeature>();
+                    for (String coordinateField : coordinateFields) {
+                        docFeatures.addAll(GeoMap.getGeojsonPoints(solrDocument, coordinateField, SolrConstants.LABEL, null));
+                    }
+                    if (!solrDocument.containsKey(SolrConstants.ISWORK)
+                            && !solrDocument.getFieldValue(SolrConstants.LOGID).equals(getViewManager().getLogId())) {
+                        docFeatures.forEach(f -> f.setLink(PrettyUrlTools.getRecordUrl(solrDocument, pageType)));
+                    }
+                    features.addAll(docFeatures);
+                }
+                if (!features.isEmpty()) {
+                    map.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
+                }
+            }
+            if(numAnnotations > 0 || !map.getFeatures().isEmpty()) {                
                 widget.setGeoMap(map);
             }
         } catch (IndexUnreachableException e) {
@@ -2345,7 +2395,7 @@ public class ActiveDocumentBean implements Serializable {
         if (PrettyContext.getCurrentInstance() != null && PrettyContext.getCurrentInstance().getCurrentMapping() != null) {
             return "pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId();
         }
-        
+
         return "";
     }
 }
