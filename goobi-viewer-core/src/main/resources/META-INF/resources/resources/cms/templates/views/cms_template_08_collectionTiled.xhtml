@@ -17,6 +17,7 @@
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
 			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
 			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+			<f:event type="preRenderView" listener="#{cmsDynamicContentBean.setCmsPage(cmsBean.currentPage)}" />
 		</f:metadata>
 	</ui:define>
 	
