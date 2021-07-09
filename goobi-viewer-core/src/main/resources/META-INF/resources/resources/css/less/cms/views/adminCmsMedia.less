@@ -356,6 +356,10 @@
 		flex-grow: 1;
 		padding-left: 10px;
 	}
+	&__file-metadata-list {
+		display: grid;
+		grid-template-columns: min-content 1fr;
+	}
 	&__file-metadata-view,
 	&__file-metadata-edit {
 		display: none;
@@ -368,12 +372,10 @@
 			margin: 0;
 			dt {
 				width: auto;
-				margin-right: 5px;
+				margin-right: 1rem;
 				text-align: left;
 			}
-			dd {
-				margin-left: auto;
-			}
+			dd {}
 		}
 	}
 	&__file-metadata-edit {}
