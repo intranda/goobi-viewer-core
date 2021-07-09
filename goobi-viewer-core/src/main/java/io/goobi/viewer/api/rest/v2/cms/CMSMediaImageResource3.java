@@ -19,6 +19,7 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_IMAGE;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -69,12 +70,13 @@ public class CMSMediaImageResource3 extends ImageResource {
         request.setAttribute(ImageResource.IIIF_VERSION, "3.0");
 
         String requestUrl = request.getRequestURI();
-        filename = URLEncoder.encode(filename, "utf-8");
-        String baseImageUrl = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
+        requestUrl = URLDecoder.decode(requestUrl, "utf-8");
+        filename = URLDecoder.decode(filename, "utf-8");
+        String baseImageUrl = (ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE).replace("{filename}", filename);
         String imageRequestPath = requestUrl.replace(baseImageUrl, "");
         int baseStartIndex = requestUrl.indexOf(baseImageUrl);
         int baseEndIndex = baseStartIndex + baseImageUrl.length();
-        this.resourceURI = URI.create(requestUrl.substring(0, baseEndIndex));
+        this.resourceURI = URI.create(URLEncoder.encode(requestUrl.substring(0, baseEndIndex), "utf-8"));
         
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         if(parts.size() == 4) {
