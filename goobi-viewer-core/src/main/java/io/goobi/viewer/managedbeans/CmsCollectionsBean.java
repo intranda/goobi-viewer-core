@@ -18,6 +18,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -212,6 +213,73 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
+     * 
+     * @param solrField
+     * @return
+     */
+    public boolean isDisplayImportDescriptionsWidget() {
+        for (String key : ViewerResourceBundle.getAllLocalKeys()) {
+            if (key.endsWith("_DESCRIPTION") && !key.startsWith("MD_")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public String importDescriptionsAction() throws DAOException {
+        if (StringUtils.isEmpty(solrField)) {
+            return "";
+        }
+
+        List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
+
+        // Collect descriptions from messages.properties
+        int stringCount = 0;
+        int collectionCount = 0;
+        for (String key : ViewerResourceBundle.getAllLocalKeys()) {
+            if (key.endsWith("_DESCRIPTION") && !key.startsWith("MD_")) {
+                String rawKey = key.replace("_DESCRIPTION", "");
+                CMSCollection collection = DataManager.getInstance().getDao().getCMSCollection(solrField, rawKey);
+                if (collection == null) {
+                    collection = new CMSCollection(solrField, rawKey);
+                    logger.trace("Created new collection: {}", collection.toString());
+                }
+                collection.populateDescriptions();
+
+                boolean dirty = false;
+                for (Locale locale : allLocales) {
+                    String value = ViewerResourceBundle.getTranslation(key, locale, false, false, false, false);
+                    if (StringUtils.isNotEmpty(value) && !key.equals(value)) {
+                        logger.trace("Found key: {}:{}", key, value);
+                        if (StringUtils.isEmpty(collection.getDescription(locale))) {
+                            collection.setDescription(value, locale.getLanguage());
+                            stringCount++;
+                            dirty = true;
+                            // Remove key from messages file
+                            ViewerResourceBundle.updateLocalMessageKey(key, null, locale.getLanguage());
+                        }
+                    }
+                }
+                if (dirty) {
+                    if (collection.getId() != null) {
+                        DataManager.getInstance().getDao().updateCMSCollection(collection);
+                    } else {
+                        DataManager.getInstance().getDao().addCMSCollection(collection);
+                    }
+                    collectionCount++;
+                    logger.trace("Saved collection: {}", collection.toString());
+                }
+            }
+        }
+
+        logger.trace("Updated {} description texts in {} collections.", stringCount, collectionCount);
+        Messages.info("Updated: " + stringCount);
+
+        return "";
+    }
+
+    /**
      * <p>
      * Getter for the field <code>currentCollection</code>.
      * </p>
@@ -256,6 +324,7 @@ public class CmsCollectionsBean implements Serializable {
         try {
             updateCollections();
             loadCollection(solrField);
+            currentTab.refresh(solrField);
         } catch (DAOException e) {
             logger.error(e.getMessage());
             collections = Collections.emptyList();

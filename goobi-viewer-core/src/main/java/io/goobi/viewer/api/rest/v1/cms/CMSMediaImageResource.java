@@ -19,6 +19,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,6 +38,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -59,6 +62,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @CORSBinding
 public class CMSMediaImageResource extends ImageResource {
 
+    private static final Logger logger = LoggerFactory.getLogger(CMSMediaImageResource.class);
     
     public CMSMediaImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
@@ -66,14 +70,23 @@ public class CMSMediaImageResource extends ImageResource {
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename) throws UnsupportedEncodingException {
         super(context, request, response, "", getMediaFileUrl(filename).toString());
         request.setAttribute("filename", this.imageURI.toString());
-        String requestUrl = request.getRequestURI();
-        String baseImageUrl = (ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE).replace("{filename}", filename);
+        
+        String baseImageUrl = (ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE).replace("{filename}", "");
+        String requestUrl = new String(request.getRequestURL());
+       
         int baseStartIndex = requestUrl.indexOf(baseImageUrl);
         int baseEndIndex = baseStartIndex + baseImageUrl.length();
+
         String imageRequestPath = requestUrl.substring(baseEndIndex);
-        this.resourceURI = URI.create(requestUrl.substring(0, baseEndIndex));
+        int parameterPathIndex = imageRequestPath.indexOf("/");
+        String imageParameterPath = "";
+        if(parameterPathIndex > 0 && parameterPathIndex < imageRequestPath.length()) {
+            imageParameterPath = imageRequestPath.substring(parameterPathIndex);
+            requestUrl = requestUrl.substring(0, baseEndIndex + parameterPathIndex);
+        }         
+        this.resourceURI = URI.create(requestUrl);
         
-        List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        List<String> parts = Arrays.stream(imageParameterPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         if(parts.size() == 4 ) {
             //image request
             request.setAttribute("iiif-info", false);

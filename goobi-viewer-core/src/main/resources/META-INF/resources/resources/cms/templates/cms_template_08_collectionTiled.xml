@@ -4,6 +4,9 @@
     <description>cms__template_08__description</description>
     <icon>cms_template_08_collectionTiled.png</icon>
     <html>cms_template_08_collectionTiled.xhtml</html>
+    <options>    
+        <topBarSlider>true</topBarSlider>
+    </options>
      <options>    
         <appliesToExpandedUrl>true</appliesToExpandedUrl>
     </options>

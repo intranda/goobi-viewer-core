@@ -41,6 +41,15 @@ public class CMSCollectionTreeTab implements IPolyglott {
     private Locale selectedLocale = BeanUtils.getLocale();
 
     public CMSCollectionTreeTab(String field) {
+        refresh(field);
+    }
+
+    /**
+     * Refreshes completion status for each tab.
+     * 
+     * @param field Solr field
+     */
+    public void refresh(String field) {
         List<TranslationGroup> groups = AdminBean.getTranslationGroupsForSolrFieldStatic(field);
         if (!groups.isEmpty() && !groups.get(0).getItems().isEmpty()) {
             for (Locale locale : getLocales()) {
@@ -98,5 +107,4 @@ public class CMSCollectionTreeTab implements IPolyglott {
     public void setSelectedLocale(Locale locale) {
         this.selectedLocale = locale;
     }
-
 }

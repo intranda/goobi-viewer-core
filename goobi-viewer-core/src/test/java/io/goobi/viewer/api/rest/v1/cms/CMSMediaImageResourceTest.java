@@ -18,6 +18,7 @@ package io.goobi.viewer.api.rest.v1.cms;
 import static org.junit.Assert.*;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,8 +31,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
+import io.goobi.viewer.model.cms.CMSMediaItem;
 
 /**
  * @author florian
@@ -76,11 +82,37 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
         String url = "https://viewer.goobi.io/api/v1/cms/media/files/" + filename;
         ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getRequestURI()).thenReturn(url);
+        Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(url));
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename);
         String resourceURI = resource.getResourceURI().toString();
         assertEquals(url, resourceURI);
+    }
+    
+    @Test
+    public void testUrlencoding() throws UnsupportedEncodingException {
+        
+        String filename = "ä (b) c";
+        String filenameEnc = URLEncoder.encode(filename, "utf-8");
+        CMSMediaItem media = new CMSMediaItem();
+        media.setFileName(filename);
+        String apiUrl = urls.getApiUrl();
+        ThumbnailHandler thumbs = new ThumbnailHandler(new IIIFUrlHandler(urls), DataManager.getInstance().getConfiguration(), null);
+        String imageUrl = thumbs.getThumbnailUrl(media, 100, 200);
+        System.out.println(imageUrl);
+        assertTrue(imageUrl.startsWith(apiUrl));
+        assertTrue(imageUrl + " should contain " + filenameEnc, imageUrl.contains(filenameEnc));
+        
+        ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(imageUrl));
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename);
+        String resourceURI = resource.getResourceURI().toString();
+        assertTrue(resourceURI.startsWith(apiUrl));
+        assertTrue(resourceURI + " should contain " + filenameEnc, resourceURI.contains(filenameEnc));
+        
+        
     }
 
 }
