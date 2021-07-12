@@ -60,6 +60,7 @@ import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSSlider.SourceType;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
+import io.goobi.viewer.model.cms.IRecordNote;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
@@ -2932,7 +2933,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         DataManager.getInstance().getDao().updateRecordNote(note);
 
-        CMSRecordNote pNote = DataManager.getInstance().getDao().getRecordNote(2l);
+        IRecordNote pNote = DataManager.getInstance().getDao().getRecordNote(2l);
         assertEquals(changed, note.getNoteTitle().getText(Locale.GERMAN));
         assertEquals("Notes 2", note.getNoteTitle().getText(Locale.ENGLISH));
         assertEquals(changed, note.getNoteText().getText(Locale.GERMAN));
@@ -2942,7 +2943,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testDeleteRecordNote() throws DAOException {
         assertEquals(3, DataManager.getInstance().getDao().getAllRecordNotes().size());
-        CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(2l);
+        IRecordNote note = DataManager.getInstance().getDao().getRecordNote(2l);
         DataManager.getInstance().getDao().deleteRecordNote(note);
         assertEquals(2, DataManager.getInstance().getDao().getAllRecordNotes().size());
         List<CMSRecordNote> remainingNotes = DataManager.getInstance().getDao().getAllRecordNotes();

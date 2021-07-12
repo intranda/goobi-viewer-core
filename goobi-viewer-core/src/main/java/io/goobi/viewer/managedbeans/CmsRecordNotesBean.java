@@ -50,6 +50,7 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
+import io.goobi.viewer.model.cms.IRecordNote;
 import io.goobi.viewer.model.cms.PageValidityStatus;
 import io.goobi.viewer.model.cms.Selectable;
 
@@ -140,7 +141,7 @@ public class CmsRecordNotesBean implements Serializable{
         }
     }
     
-    public boolean deleteNote(CMSRecordNote note) throws DAOException {
+    public boolean deleteNote(IRecordNote note) throws DAOException {
         if(note != null && note.getId() != null) {
             return DataManager.getInstance().getDao().deleteRecordNote(note);
         } else {

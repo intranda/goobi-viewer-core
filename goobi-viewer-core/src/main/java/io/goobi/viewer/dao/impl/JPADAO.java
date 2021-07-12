@@ -70,6 +70,7 @@ import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.IRecordNote;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -5100,7 +5101,7 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#addRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
      */
     @Override
-    public boolean addRecordNote(CMSRecordNote note) throws DAOException {
+    public boolean addRecordNote(IRecordNote note) throws DAOException {
         preQuery();
         try {
             getEntityManager().getTransaction().begin();
@@ -5132,12 +5133,12 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#deleteRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
      */
     @Override
-    public boolean deleteRecordNote(CMSRecordNote note) throws DAOException {
+    public boolean deleteRecordNote(IRecordNote note) throws DAOException {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
-            CMSRecordNote o = em.getReference(CMSRecordNote.class, note.getId());
+            IRecordNote o = em.getReference(CMSRecordNote.class, note.getId());
             em.remove(o);
             em.getTransaction().commit();
             return true;

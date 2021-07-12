@@ -37,9 +37,9 @@ import io.goobi.viewer.model.translations.TranslatedText;
  */
 @Entity
 @Table(name = "cms_record_notes")
-public class CMSRecordNote implements IRecordNote {
+public class CMSMultiRecordNote implements IRecordNote {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSRecordNote.class);
+    private static final Logger logger = LoggerFactory.getLogger(CMSMultiRecordNote.class);
 
     /**
      * Auto-generated database id
@@ -52,15 +52,8 @@ public class CMSRecordNote implements IRecordNote {
     /**
      * PI of the record this note relates to. Should be effectively final, but can't be for DAO campatibility
      */
-    @Column(name = "record_pi", nullable = false)
-    private String recordPi;
-
-    /**
-     * Title of the record this note relates to; used for searching in notes. This is mulitlangual since record titles may be multilangual too
-     */
-    @Column(name = "record_title", nullable = true, columnDefinition = "TEXT")
-    @Convert(converter = TranslatedTextConverter.class)
-    private TranslatedText recordTitle = new TranslatedText();
+    @Column(name = "query", nullable = false)
+    private String query;
 
     /**
      * Title of the note, plaintext
@@ -79,24 +72,23 @@ public class CMSRecordNote implements IRecordNote {
     @Column(name = "display_note", nullable = false, columnDefinition = "boolean default true")
     private boolean displayNote = true;
 
-    public CMSRecordNote() {
+    public CMSMultiRecordNote() {
     }
 
     /**
      * @param pi
      */
-    public CMSRecordNote(String pi) {
+    public CMSMultiRecordNote(String query) {
         this();
-        this.recordPi = pi;
+        this.query = query;
     }
 
     /**
      * @param o
      */
-    public CMSRecordNote(CMSRecordNote source) {
+    public CMSMultiRecordNote(CMSMultiRecordNote source) {
         this.id = source.id;
-        this.recordPi = source.recordPi;
-        this.recordTitle = new TranslatedText(source.recordTitle);
+        this.query = source.query;
         this.noteTitle = new TranslatedText(source.noteTitle);
         this.noteText = new TranslatedText(source.noteText);
         this.displayNote = source.displayNote;
@@ -124,7 +116,7 @@ public class CMSRecordNote implements IRecordNote {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CMSRecordNote other = (CMSRecordNote) obj;
+        CMSMultiRecordNote other = (CMSMultiRecordNote) obj;
         if (id == null) {
             if (other.id != null)
                 return false;
@@ -150,31 +142,17 @@ public class CMSRecordNote implements IRecordNote {
     }
 
     /**
-     * @return the recordPi
+     * @return the query
      */
-    public String getRecordPi() {
-        return recordPi;
+    public String getQuery() {
+        return query;
     }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.IRecordNote#setRecordPi(java.lang.String)
-     */
-    public void setRecordPi(String recordPi) {
-        this.recordPi = recordPi;
-    }
-
+    
     /**
-     * @return the recordTitle
+     * @param query the query to set
      */
-    public TranslatedText getRecordTitle() {
-        return recordTitle;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.IRecordNote#setRecordTitle(io.goobi.viewer.model.translations.TranslatedText)
-     */
-    public void setRecordTitle(TranslatedText recordTitle) {
-        this.recordTitle = recordTitle;
+    public void setQuery(String query) {
+        this.query = query;
     }
 
     /* (non-Javadoc)

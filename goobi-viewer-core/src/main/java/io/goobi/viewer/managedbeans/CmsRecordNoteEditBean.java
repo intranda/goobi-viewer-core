@@ -37,6 +37,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSRecordNote;
+import io.goobi.viewer.model.cms.IRecordNote;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.translations.IPolyglott;
@@ -64,7 +65,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     /**
      * @return the note
      */
-    public CMSRecordNote getNote() {
+    public IRecordNote getNote() {
         return note;
     }
 
@@ -285,7 +286,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      * @param note2
      * @return the given locale if texts are valid for the default locale, otherwise the default locale
      */
-    private static Locale setSelectedLocale(CMSRecordNote note, Locale locale, Locale defaultLocale) {
+    private static Locale setSelectedLocale(IRecordNote note, Locale locale, Locale defaultLocale) {
         if (note != null && locale != null && defaultLocale != null) {
             if (note.getNoteText().isValid(defaultLocale) && note.getNoteTitle().isValid(defaultLocale)) {
                 note.getNoteText().setSelectedLocale(locale);

@@ -38,6 +38,7 @@ import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.IRecordNote;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -2220,7 +2221,7 @@ public interface IDAO {
      * @param note
      * @return
      */
-    public boolean addRecordNote(CMSRecordNote note) throws DAOException;
+    public boolean addRecordNote(IRecordNote note) throws DAOException;
     
     /**
      * Updates an existing {@link CMSRecordNote}
@@ -2236,7 +2237,7 @@ public interface IDAO {
      * @param note
      * @return
      */
-    public boolean deleteRecordNote(CMSRecordNote note) throws DAOException;
+    public boolean deleteRecordNote(IRecordNote note) throws DAOException;
 
     public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException;
 
