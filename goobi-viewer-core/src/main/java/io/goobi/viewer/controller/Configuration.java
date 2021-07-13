@@ -3714,14 +3714,14 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getUserCommentsConditionalQuery.
+     * getUserCommentsCondition.
      * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
      */
-    public String getUserCommentsConditionalQuery() {
-        return getLocalString("userComments.conditionalQuery");
+    public String getUserCommentsCondition() {
+        return getLocalString("userComments.condition");
     }
 
     /**

@@ -1164,10 +1164,10 @@
 
     <!-- If enabled="true", the user comments functionality is enabled. Default is false. -->
 	<userComments enabled="true">
-		<!-- conditionalQuery: optional restriction of the user comments function 
+		<!-- condition: optional restriction of the user comments function 
 			(expressed as a Solr query) to records that match certain criteria. The criteria 
 			must apply to the root structure element of the record. -->
-		<conditionalQuery>DC:varia</conditionalQuery>
+		<condition>DC:varia</condition>
 		<!-- notifationEmailAddress: E-mail addresses to which notifications for 
 			new comments will be sent. Can be added multiple times for multiple recipients. -->
 		<notificationEmailAddress>notificationEmailAddress_1

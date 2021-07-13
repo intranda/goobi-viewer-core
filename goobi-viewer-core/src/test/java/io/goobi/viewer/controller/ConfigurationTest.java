@@ -1463,12 +1463,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getUserCommentsConditionalQuery()
+     * @see Configuration#getUserCommentsCondition()
      * @verifies return correct value
      */
     @Test
-    public void getUserCommentsConditionalQuery_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("DC:varia", DataManager.getInstance().getConfiguration().getUserCommentsConditionalQuery());
+    public void getUserCommentsCondition_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("DC:varia", DataManager.getInstance().getConfiguration().getUserCommentsCondition());
     }
 
     /**

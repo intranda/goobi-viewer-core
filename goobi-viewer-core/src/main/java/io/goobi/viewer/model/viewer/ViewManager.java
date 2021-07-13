@@ -2069,7 +2069,7 @@ public class ViewManager implements Serializable {
         }
 
         if (allowUserComments == null) {
-            String query = DataManager.getInstance().getConfiguration().getUserCommentsConditionalQuery();
+            String query = DataManager.getInstance().getConfiguration().getUserCommentsCondition();
             try {
                 if (StringUtils.isNotEmpty(query) && DataManager.getInstance()
                         .getSearchIndex()
