@@ -81,6 +81,7 @@ public class UrlRedirectFilter implements Filter {
             Optional<ViewerPath> currentPath = ViewerPathBuilder.createPath(httpRequest);
             if (currentPath.isPresent()) {
                 logger.trace("currentPath: {}", currentPath.get());
+                                
                 ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession());
                 if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "cms") && currentPath.get().getCmsPage() != null) {
                     if (currentPath.get().getCmsPage().isMayContainUrlParameters()
@@ -107,6 +108,8 @@ public class UrlRedirectFilter implements Filter {
 
         chain.doFilter(request, response);
     }
+
+
 
     /**
      * Firefox browser tries to precache all urls in links with rel="next" or rel="prefetch". This changes the session state and thus shall not pass

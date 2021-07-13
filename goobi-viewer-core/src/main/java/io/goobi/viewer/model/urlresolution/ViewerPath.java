@@ -338,8 +338,8 @@ public class ViewerPath implements Serializable {
      * @return The matching {@link io.goobi.viewer.model.viewer.PageType} or null if no PageType matches
      */
     public boolean matches(PageType pageType) {
-        if (getPageType() != null) {
-            return getPageType().matches(getPagePath());
+        if (pageType != null) {
+            return pageType.matches(getPagePath());
         }
         return false;
     }

@@ -1267,7 +1267,12 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public String getSortString() {
         if (StringUtils.isEmpty(sortString)) {
-            return "-";
+            String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
+            if("RANDOM".equalsIgnoreCase(defaultSortField)) {
+                setSortString(defaultSortField);
+            } else {                
+                return "-";
+            }
         }
 
         return sortString;
@@ -2430,7 +2435,7 @@ public class SearchBean implements SearchInterface, Serializable {
         //fallback
         return "pretty:search5";
     }
-
+    
     private URI getParameterPath(URI basePath) {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
         basePath = ViewerPathBuilder.resolve(basePath, "-");
