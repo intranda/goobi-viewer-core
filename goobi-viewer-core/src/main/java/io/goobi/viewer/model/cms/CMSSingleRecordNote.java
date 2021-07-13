@@ -39,7 +39,7 @@ public class CMSSingleRecordNote extends CMSRecordNote {
     private static final Logger logger = LoggerFactory.getLogger(CMSSingleRecordNote.class);
 
     /**
-     * PI of the record this note relates to. Should be effectively final, but can't be for DAO campatibility
+     * PI of the record this note relates to. Should be effectively final, but can't be for DAO compatibility
      */
     @Column(name = "record_pi")
     private String recordPi;
