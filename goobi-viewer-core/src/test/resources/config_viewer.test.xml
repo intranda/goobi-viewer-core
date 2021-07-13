@@ -1162,9 +1162,8 @@
 		<bookmarksEnabled>false</bookmarksEnabled>
 	</bookmarks>
 
-	<userComments>
-		<!-- If true, the user comments functionality is enabled. Default ist true. -->
-		<enabled>true</enabled>
+    <!-- If enabled="true", the user comments functionality is enabled. Default is false. -->
+	<userComments enabled="true">
 		<!-- conditionalQuery: optional restriction of the user comments function 
 			(expressed as a Solr query) to records that match certain criteria. The criteria 
 			must apply to the root structure element of the record. -->

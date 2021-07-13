@@ -3709,7 +3709,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isUserCommentsEnabled() {
-        return getLocalBoolean(("userComments.enabled"), false);
+        return getLocalBoolean(("userComments[@enabled]"), false);
     }
 
     /**
