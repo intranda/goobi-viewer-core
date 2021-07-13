@@ -17,10 +17,14 @@ package io.goobi.viewer.model.cms;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
 import org.slf4j.Logger;
@@ -37,7 +41,10 @@ import io.goobi.viewer.model.translations.TranslatedText;
  */
 @Entity
 @Table(name = "cms_record_notes")
-public class CMSRecordNote implements IRecordNote {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="note_type", 
+discriminatorType = DiscriminatorType.STRING)
+public abstract class CMSRecordNote {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSRecordNote.class);
 
@@ -48,19 +55,6 @@ public class CMSRecordNote implements IRecordNote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_record_note_id")
     private Long id;
-
-    /**
-     * PI of the record this note relates to. Should be effectively final, but can't be for DAO campatibility
-     */
-    @Column(name = "record_pi", nullable = false)
-    private String recordPi;
-
-    /**
-     * Title of the record this note relates to; used for searching in notes. This is mulitlangual since record titles may be multilangual too
-     */
-    @Column(name = "record_title", nullable = true, columnDefinition = "TEXT")
-    @Convert(converter = TranslatedTextConverter.class)
-    private TranslatedText recordTitle = new TranslatedText();
 
     /**
      * Title of the note, plaintext
@@ -87,7 +81,6 @@ public class CMSRecordNote implements IRecordNote {
      */
     public CMSRecordNote(String pi) {
         this();
-        this.recordPi = pi;
     }
 
     /**
@@ -95,8 +88,6 @@ public class CMSRecordNote implements IRecordNote {
      */
     public CMSRecordNote(CMSRecordNote source) {
         this.id = source.id;
-        this.recordPi = source.recordPi;
-        this.recordTitle = new TranslatedText(source.recordTitle);
         this.noteTitle = new TranslatedText(source.noteTitle);
         this.noteText = new TranslatedText(source.noteText);
         this.displayNote = source.displayNote;
@@ -136,7 +127,6 @@ public class CMSRecordNote implements IRecordNote {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.IRecordNote#getId()
      */
-    @Override
     public Long getId() {
         return id;
     }
@@ -144,43 +134,13 @@ public class CMSRecordNote implements IRecordNote {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.IRecordNote#setId(java.lang.Long)
      */
-    @Override
     public void setId(Long id) {
         this.id = id;
-    }
-
-    /**
-     * @return the recordPi
-     */
-    public String getRecordPi() {
-        return recordPi;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.IRecordNote#setRecordPi(java.lang.String)
-     */
-    public void setRecordPi(String recordPi) {
-        this.recordPi = recordPi;
-    }
-
-    /**
-     * @return the recordTitle
-     */
-    public TranslatedText getRecordTitle() {
-        return recordTitle;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.IRecordNote#setRecordTitle(io.goobi.viewer.model.translations.TranslatedText)
-     */
-    public void setRecordTitle(TranslatedText recordTitle) {
-        this.recordTitle = recordTitle;
     }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.IRecordNote#getNoteTitle()
      */
-    @Override
     public TranslatedText getNoteTitle() {
         return noteTitle;
     }
@@ -188,7 +148,6 @@ public class CMSRecordNote implements IRecordNote {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.IRecordNote#getNoteText()
      */
-    @Override
     public TranslatedText getNoteText() {
         return noteText;
     }
@@ -196,7 +155,6 @@ public class CMSRecordNote implements IRecordNote {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.IRecordNote#isDisplayNote()
      */
-    @Override
     public boolean isDisplayNote() {
         return displayNote;
     }
@@ -204,7 +162,6 @@ public class CMSRecordNote implements IRecordNote {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.IRecordNote#setDisplayNote(boolean)
      */
-    @Override
     public void setDisplayNote(boolean displayNote) {
         this.displayNote = displayNote;
     }

@@ -16,13 +16,11 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -38,21 +36,11 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
-import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
-import io.goobi.viewer.managedbeans.tabledata.TableDataSourceException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSPageTemplate;
+import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.model.cms.CMSRecordNote;
-import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
-import io.goobi.viewer.model.cms.IRecordNote;
-import io.goobi.viewer.model.cms.PageValidityStatus;
-import io.goobi.viewer.model.cms.Selectable;
+import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 
 /**
  * 
@@ -116,7 +104,7 @@ public class CmsRecordNotesBean implements Serializable{
      * @throws PresentationException 
      * @throws IndexUnreachableException 
      */
-    public String getThumbnailUrl(CMSRecordNote note) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    public String getThumbnailUrl(CMSSingleRecordNote note) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         if(StringUtils.isNotBlank(note.getRecordPi())) {
             return images.getThumbs().getThumbnailUrl(note.getRecordPi());
         } else {
@@ -133,7 +121,7 @@ public class CmsRecordNotesBean implements Serializable{
      * @throws PresentationException 
      * @throws IndexUnreachableException 
      */
-    public String getThumbnailUrl(CMSRecordNote note, int width, int height) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    public String getThumbnailUrl(CMSSingleRecordNote note, int width, int height) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         if(StringUtils.isNotBlank(note.getRecordPi())) {
             return images.getThumbs().getThumbnailUrl(note.getRecordPi(), width, height);
         } else {
@@ -141,7 +129,7 @@ public class CmsRecordNotesBean implements Serializable{
         }
     }
     
-    public boolean deleteNote(IRecordNote note) throws DAOException {
+    public boolean deleteNote(CMSRecordNote note) throws DAOException {
         if(note != null && note.getId() != null) {
             return DataManager.getInstance().getDao().deleteRecordNote(note);
         } else {
@@ -149,7 +137,7 @@ public class CmsRecordNotesBean implements Serializable{
         }
     }
     
-    public String getRecordUrl(CMSRecordNote note)  {
+    public String getRecordUrl(CMSSingleRecordNote note)  {
        if(note != null) {           
            return navigationHelper.getImageUrl() + "/" + note.getRecordPi() + "/";
        } else {
@@ -207,6 +195,9 @@ public class CmsRecordNotesBean implements Serializable{
     }
     
     public List<CMSRecordNote> getNotesForRecord(String pi) throws DAOException {
-        return DataManager.getInstance().getDao().getRecordNotesForPi(pi, true);
+        List<CMSRecordNote> notes = new ArrayList<>();
+        notes.addAll(DataManager.getInstance().getDao().getRecordNotesForPi(pi, true));
+        
+        return notes;
     }
 }

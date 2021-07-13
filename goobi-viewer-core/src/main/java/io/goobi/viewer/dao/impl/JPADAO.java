@@ -61,6 +61,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
@@ -68,9 +69,10 @@ import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
+import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
-import io.goobi.viewer.model.cms.IRecordNote;
+import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -5003,19 +5005,24 @@ public class JPADAO implements IDAO {
     public List<CMSRecordNote> getRecordNotes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
-        StringBuilder order = new StringBuilder();
+        
+        Map<String, Object> params = new HashMap<>();
+        Optional<String> filter = Optional.ofNullable(filters)
+                .flatMap(fs -> filters.values().stream().findAny())
+                .filter(f -> StringUtils.isNotBlank(f))
+                .map(f -> sanitizeQueryParam(f, true));
+        filter.ifPresent(f -> params.put("filter", f));
+        
         try {
-            Map<String, Object> params = new HashMap<>();
-            if (filters != null) {
-                String filterValue = filters.values().stream().findAny().orElse(null);
-                if (StringUtils.isNotBlank(filterValue)) {
-                    String filterString =
-                            " WHERE (UPPER(a.recordPi) LIKE :filter OR UPPER(a.recordTitle) LIKE :filter OR UPPER(a.noteTitle) LIKE :filter)";
-                    params.put("filter", sanitizeQueryParam(filterValue, true));
-                    sbQuery.append(filterString);
-                }
-            }
+            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
+            filter.ifPresent(f -> {
+                String filterString =
+                        " WHERE (UPPER(a.recordPi) LIKE :filter OR UPPER(a.recordTitle) LIKE :filter OR UPPER(a.noteTitle) LIKE :filter)";
+                sbQuery.append(filterString);
+            });
+
+
+            StringBuilder order = new StringBuilder();
             if (StringUtils.isNotEmpty(sortField)) {
                 order.append(" ORDER BY a.").append(sortField);
                 if (descending) {
@@ -5064,15 +5071,32 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<CMSRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException {
+    public List<CMSSingleRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException {
         preQuery();
-        String query = "SELECT a FROM CMSRecordNote a WHERE a.recordPi = :pi";
+        String query = "SELECT a FROM CMSSingleRecordNote a WHERE a.recordPi = :pi";
         if (displayedNotesOnly) {
             query += " AND a.displayNote = :display";
         }
         logger.trace(query);
         Query q = getEntityManager().createQuery(query.toString());
         q.setParameter("pi", pi);
+        if (displayedNotesOnly) {
+            q.setParameter("display", true);
+        }
+        q.setFlushMode(FlushModeType.COMMIT);
+        return q.getResultList();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSMultiRecordNote> getAllMultiRecordNotes(boolean displayedNotesOnly) throws DAOException {
+        preQuery();
+        String query = "SELECT a FROM CMSMultiRecordNote a";
+        if (displayedNotesOnly) {
+            query += " WHERE a.displayNote = :display";
+        }
+        logger.trace(query);
+        Query q = getEntityManager().createQuery(query.toString());
         if (displayedNotesOnly) {
             q.setParameter("display", true);
         }
@@ -5090,8 +5114,14 @@ public class JPADAO implements IDAO {
             CMSRecordNote o = getEntityManager().getReference(CMSRecordNote.class, id);
             if (o != null) {
                 getEntityManager().refresh(o);
+                if(o instanceof CMSMultiRecordNote) {
+                    return new CMSMultiRecordNote(o);
+                } else {                    
+                    return new CMSSingleRecordNote(o);
+                }
+            } else {
+                return null;
             }
-            return new CMSRecordNote(o);
         } catch (EntityNotFoundException e) {
             return null;
         }
@@ -5101,7 +5131,7 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#addRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
      */
     @Override
-    public boolean addRecordNote(IRecordNote note) throws DAOException {
+    public boolean addRecordNote(CMSRecordNote note) throws DAOException {
         preQuery();
         try {
             getEntityManager().getTransaction().begin();
@@ -5133,12 +5163,12 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#deleteRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
      */
     @Override
-    public boolean deleteRecordNote(IRecordNote note) throws DAOException {
+    public boolean deleteRecordNote(CMSRecordNote note) throws DAOException {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
-            IRecordNote o = em.getReference(CMSRecordNote.class, note.getId());
+            CMSRecordNote o = em.getReference(CMSRecordNote.class, note.getId());
             em.remove(o);
             em.getTransaction().commit();
             return true;
