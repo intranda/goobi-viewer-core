@@ -1454,21 +1454,21 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isUserCommentsEnabled()
+     * @see Configuration#isCommentsEnabled()
      * @verifies return correct value
      */
     @Test
     public void isUserCommentsEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isUserCommentsEnabled());
+        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isCommentsEnabled());
     }
 
     /**
-     * @see Configuration#getUserCommentsCondition()
+     * @see Configuration#getCommentsCondition()
      * @verifies return correct value
      */
     @Test
     public void getUserCommentsCondition_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("DC:varia", DataManager.getInstance().getConfiguration().getUserCommentsCondition());
+        Assert.assertEquals("DC:varia", DataManager.getInstance().getConfiguration().getCommentsCondition());
     }
 
     /**
@@ -1901,12 +1901,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getUserCommentsNotificationEmailAddresses()
+     * @see Configuration#getCommentsNotificationEmailAddresses()
      * @verifies return all configured elements
      */
     @Test
     public void getUserCommentsNotificationEmailAddresses_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getUserCommentsNotificationEmailAddresses().size());
+        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getCommentsNotificationEmailAddresses().size());
     }
 
     /**

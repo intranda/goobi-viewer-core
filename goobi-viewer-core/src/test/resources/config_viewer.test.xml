@@ -1163,7 +1163,7 @@
 	</bookmarks>
 
     <!-- If enabled="true", the user comments functionality is enabled. Default is false. -->
-	<userComments enabled="true">
+	<comments enabled="true">
 		<!-- condition: optional restriction of the user comments function 
 			(expressed as a Solr query) to records that match certain criteria. The criteria 
 			must apply to the root structure element of the record. -->
@@ -1174,7 +1174,7 @@
 		</notificationEmailAddress>
 		<notificationEmailAddress>notificationEmailAddress_2
 		</notificationEmailAddress>
-	</userComments>
+	</comments>
 
 	<cms>
 		<!-- useCustomNavBar: enables the use of a custom navigation navigation 

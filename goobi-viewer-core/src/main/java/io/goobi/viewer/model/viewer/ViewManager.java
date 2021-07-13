@@ -2064,12 +2064,12 @@ public class ViewManager implements Serializable {
      * @return a boolean.
      */
     public boolean isAllowUserComments() {
-        if (!DataManager.getInstance().getConfiguration().isUserCommentsEnabled()) {
+        if (!DataManager.getInstance().getConfiguration().isCommentsEnabled()) {
             return false;
         }
 
         if (allowUserComments == null) {
-            String query = DataManager.getInstance().getConfiguration().getUserCommentsCondition();
+            String query = DataManager.getInstance().getConfiguration().getCommentsCondition();
             try {
                 if (StringUtils.isNotEmpty(query) && DataManager.getInstance()
                         .getSearchIndex()

@@ -138,7 +138,7 @@ public class Comment implements Comparable<Comment> {
      * @return a boolean.
      */
     public static boolean sendEmailNotifications(Comment comment, String oldText, Locale locale) {
-        List<String> addresses = DataManager.getInstance().getConfiguration().getUserCommentsNotificationEmailAddresses();
+        List<String> addresses = DataManager.getInstance().getConfiguration().getCommentsNotificationEmailAddresses();
         if (addresses == null || addresses.isEmpty()) {
             return false;
         }
