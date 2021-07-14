@@ -359,7 +359,7 @@ public class CollectionView {
      */
     public void resetCollectionList() {
         synchronized (this) {
-            completeCollectionList = null;
+            completeCollectionList = new ArrayList<>();
         }
     }
 
