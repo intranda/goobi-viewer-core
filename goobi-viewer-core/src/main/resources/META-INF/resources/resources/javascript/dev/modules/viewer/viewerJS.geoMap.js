@@ -343,7 +343,6 @@ var viewerJS = ( function( viewer ) {
                 .subscribe(this.onFeatureMove);
                 rxjs.fromEvent(layer, "click").pipe(rxjs.operators.map(e => layer.feature)).subscribe(this.onFeatureClick);
 
-				console.log("init popover", feature.popover, this.config.emptyMarkerMessage); 
                 if(this.config.popover && feature.properties && (feature.properties.title || feature.properties.desc || this.config.emptyMarkerMessage)) {                    
                     if(this.config.popoverOnHover) {                    
                         rxjs.fromEvent(layer, "mouseover").subscribe(() => layer.openPopup());
@@ -381,7 +380,7 @@ var viewerJS = ( function( viewer ) {
             .sort( (f1,f2) => this.compareFeatures(f1,f2) )
             .forEach(feature => {
             	let type = feature.geometry.type;
-            	if(_debug)console.log("add feature for " + type, feature);
+            	console.log("add feature for " + type, feature);
             	this.addMarker(feature);
             })
         }
