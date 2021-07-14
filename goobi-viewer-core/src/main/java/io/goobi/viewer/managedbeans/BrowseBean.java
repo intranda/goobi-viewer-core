@@ -1026,14 +1026,6 @@ public class BrowseBean implements Serializable {
                 collectionName += ".";
             }
             collectionName += value;
-            if (collections.get(collectionField) != null) {
-                String translation = collections.get(collectionField).getTranslationForName(collectionValue);
-                if (translation != null) {
-                    sb.append(translation);
-                    continue;
-                }
-
-            }
             sb.append(ViewerResourceBundle.getTranslation(collectionName, null));
         }
 
