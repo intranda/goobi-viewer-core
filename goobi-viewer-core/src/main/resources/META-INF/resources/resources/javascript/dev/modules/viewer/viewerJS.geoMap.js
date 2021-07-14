@@ -343,7 +343,8 @@ var viewerJS = ( function( viewer ) {
                 .subscribe(this.onFeatureMove);
                 rxjs.fromEvent(layer, "click").pipe(rxjs.operators.map(e => layer.feature)).subscribe(this.onFeatureClick);
 
-                if(this.config.popover && feature.properties && (feature.properties.title || feature.properties.desc)) {                    
+				console.log("init popover", feature.popover, this.config.emptyMarkerMessage); 
+                if(this.config.popover && feature.properties && (feature.properties.title || feature.properties.desc || this.config.emptyMarkerMessage)) {                    
                     if(this.config.popoverOnHover) {                    
                         rxjs.fromEvent(layer, "mouseover").subscribe(() => layer.openPopup());
                         rxjs.fromEvent(layer, "mouseout").subscribe(() => layer.closePopup());
@@ -490,7 +491,6 @@ var viewerJS = ( function( viewer ) {
     
     viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function() {
         if(this.config.markerIcon && !jQuery.isEmptyObject(this.config.markerIcon)) {
-        console.log("use marker icon ", this.config.markerIcon);
             let icon = L.ExtraMarkers.icon(this.config.markerIcon);
         	icon.options.name = "";	//remove name property to avoid it being displayed on the map
             if(this.config.markerIcon.shadow === false) {                
@@ -513,7 +513,7 @@ var viewerJS = ( function( viewer ) {
     viewer.GeoMap.featureGroup.prototype.createPopup = function(marker) {
         let title = viewerJS.getMetadataValue(marker.feature.properties.title, this.config.language);
         let desc = viewerJS.getMetadataValue(marker.feature.properties.description, this.config.language);
-
+		console.log("create popup ", title, desc, marker); 
         if(this.config.popover && (title || desc) ) {
             let $popover = $(this.config.popover).clone();
             $popover.find("[data-metadata='title']").text(title);
