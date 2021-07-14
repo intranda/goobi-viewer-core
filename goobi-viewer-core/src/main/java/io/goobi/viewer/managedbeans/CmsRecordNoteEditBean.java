@@ -311,5 +311,12 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
 
         return locale;
     }
+    
+    public String getDefaultNoteType() {
+        return "SINGLE";
+    }
+    
+    public void setDefaultNoteType(String type) {
+    }
 
 }

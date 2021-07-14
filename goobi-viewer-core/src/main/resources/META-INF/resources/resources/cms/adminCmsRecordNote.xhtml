@@ -49,30 +49,63 @@
 									</span>
 								</h3>
 								<div class="admin__default-block">
-									<div class="form-group form-row">
-										<div class="col-4 control-label admin__form-label">
-											<label for="inputRecordIdentifier">#{msg.cms__record_notes__input_idenfier}:
+										<div class="col-12 control-label admin__form-label">
+											<label for="inputRecordIdentifier">#{msg.cms__record_notes__input_idenfier_or_query}:
 											</label>
 										</div>
-										<div
-											class="col-8 admin__form-input cms-module__option-control">
-		
-											<h:message for="inputRecordIdentifier"
-												errorClass="-validation-message -danger"></h:message>
-											<div class="-validation-mark">
-												<i class="fa fa-check" aria-hidden="true"></i> <i
-													class="fa fa-exclamation" aria-hidden="true"></i>
+									<div class="form-group admin__cms-edit-collection-connected-radio-buttons">
+	                            		<div class="connected-top">
+			                            	<div class="col-4 control-label admin__form-label">
+				                            	<h:selectOneRadio group="noteTypeSelect" value="#{noteType}" immediate="true" >
+				                                	<f:selectItem itemValue="" itemLabel="#{msg.cms__record_notes__type_record}" />
+				                                	<f:ajax render="@form" />
+				                            	</h:selectOneRadio>
+			                            	</div>
+			                            	<div class="col-8 admin__form-input cms-module__option-control">
+			
+												<h:message for="inputRecordIdentifier"
+													errorClass="-validation-message -danger"></h:message>
+												<div class="-validation-mark">
+													<i class="fa fa-check" aria-hidden="true"></i> <i
+														class="fa fa-exclamation" aria-hidden="true"></i>
+												</div>
+												<h:inputText id="inputRecordIdentifier" tabindex="1" disabled="#{noteType eq 'MULTI'}"
+													styleClass="form-control -validation-input" required="true"
+													requiredMessage="#{msg.info__input_required}"
+													validatorMessage="#{msg.pi_errNotFound}"
+													value="#{cmsRecordNoteEditBean.recordIdentifier}">
+													<f:validator validatorId="piInSolrValidator"
+														for="inputRecordIdentifier" />
+												</h:inputText>
+												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
 											</div>
-											<h:inputText id="inputRecordIdentifier" tabindex="1"
-												styleClass="form-control -validation-input" required="true"
-												requiredMessage="#{msg.info__input_required}"
-												validatorMessage="#{msg.pi_errNotFound}"
-												value="#{cmsRecordNoteEditBean.recordIdentifier}">
-												<f:validator validatorId="piInSolrValidator"
-													for="inputRecordIdentifier" />
-											</h:inputText>
-											<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
-										</div>
+		                            	</div>
+		                            	<div class="connected-bottom">
+		                            		<div class="col-4 control-label admin__form-label">
+				                            	<h:selectOneRadio group="noteTypeSelect" value="#{noteType}" immediate="true">
+				                                	<f:selectItem itemValue="MULTI" itemLabel="#{msg.cms__record_notes__type_query}" />
+				                                	<f:ajax render="@form" />
+				                            	</h:selectOneRadio>
+			                            	</div>
+			                            	<div class="col-8 admin__form-input cms-module__option-control">
+			
+												<h:message for="inputQuery"
+													errorClass="-validation-message -danger"></h:message>
+												<div class="-validation-mark">
+													<i class="fa fa-check" aria-hidden="true"></i> <i
+														class="fa fa-exclamation" aria-hidden="true"></i>
+												</div>
+												<h:inputText id="inputQuery" tabindex="1" disabled="#{noteType ne 'MULTI'}"
+													styleClass="form-control -validation-input" required="true"
+													requiredMessage="#{msg.info__input_required}"
+													validatorMessage="#{msg.pi_errNotFound}"
+													value="#{cmsRecordNoteEditBean.recordIdentifier}">
+													<f:validator validatorId="solrQueryValidator"
+														for="inputQuery" />
+												</h:inputText>
+												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
+											</div>
+		                            	</div>
 									</div>
 								</div>
 								

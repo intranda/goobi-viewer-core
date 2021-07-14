@@ -165,4 +165,9 @@ public abstract class CMSRecordNote {
     public void setDisplayNote(boolean displayNote) {
         this.displayNote = displayNote;
     }
+    
+    public static enum NoteType {
+        SINGLE,
+        MULTI;
+    }
 }
