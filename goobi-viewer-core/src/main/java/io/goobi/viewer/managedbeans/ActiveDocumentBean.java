@@ -2260,7 +2260,13 @@ public class ActiveDocumentBean implements Serializable {
             SolrDocument mainDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(mainDocQuery, mainDocFields);
             PageType pageType = PrettyUrlTools.getPreferredPageType(mainDoc);
 
-            String subDocQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:DOCSTRCT", pi);
+            boolean addMetadataFeatures = false;
+            String docTypeFilter = "+DOCTYPE:DOCSTRCT";
+            if(addMetadataFeatures) {
+                docTypeFilter = "+(DOCTYPE:DOCSTRCT DOCTYPE:METADATA)";
+            }
+            
+            String subDocQuery = String.format("+PI_TOPSTRUCT:%s " + docTypeFilter, pi);
             List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
             List<String> subDocFields = new ArrayList<>();
             subDocFields.add(SolrConstants.LABEL);
@@ -2268,6 +2274,8 @@ public class ActiveDocumentBean implements Serializable {
             subDocFields.add(SolrConstants.THUMBPAGENO);
             subDocFields.add(SolrConstants.LOGID);
             subDocFields.add(SolrConstants.ISWORK);
+            subDocFields.add(SolrConstants.DOCTYPE);
+            subDocFields.add("MD_VALUE");
             subDocFields.addAll(coordinateFields);
 
             String annotationQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:UGC +MD_COORDS:*", pi);
@@ -2279,10 +2287,12 @@ public class ActiveDocumentBean implements Serializable {
                 for (SolrDocument solrDocument : subDocs) {
                     List<GeoMapFeature> docFeatures = new ArrayList<GeoMapFeature>();
                     for (String coordinateField : coordinateFields) {
-                        docFeatures.addAll(GeoMap.getGeojsonPoints(solrDocument, coordinateField, SolrConstants.LABEL, null));
+                        String docType = solrDocument.getFieldValue(SolrConstants.DOCTYPE).toString();
+                        String labelField = "METADATA".equals(docType) ? "MD_VALUE" : SolrConstants.LABEL;
+                        docFeatures.addAll(GeoMap.getGeojsonPoints(solrDocument, coordinateField, labelField, null));
                     }
-                    if (!solrDocument.containsKey(SolrConstants.ISWORK)
-                            && !solrDocument.getFieldValue(SolrConstants.LOGID).equals(getViewManager().getLogId())) {
+                    if (!solrDocument.containsKey(SolrConstants.ISWORK) && solrDocument.getFieldValue(SolrConstants.DOCTYPE).equals("DOCSTRCT") &&                             
+                        !solrDocument.getFieldValue(SolrConstants.LOGID).equals(getViewManager().getLogId())) {
                         docFeatures.forEach(f -> f.setLink(PrettyUrlTools.getRecordUrl(solrDocument, pageType)));
                     }
                     features.addAll(docFeatures);

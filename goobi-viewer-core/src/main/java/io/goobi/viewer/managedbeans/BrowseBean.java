@@ -1015,13 +1015,6 @@ public class BrowseBean implements Serializable {
         }
         String[] valueSplit = collectionValue.split(separator);
         if (valueSplit.length == 0) {
-            if (collections.get(collectionField) != null) {
-                String translation = collections.get(collectionField).getTranslationForName(collectionValue);
-                if (translation != null) {
-                    return translation;
-                }
-
-            }
             return ViewerResourceBundle.getTranslation(collectionValue, null);
         }
 
@@ -1033,14 +1026,6 @@ public class BrowseBean implements Serializable {
                 collectionName += ".";
             }
             collectionName += value;
-            if (collections.get(collectionField) != null) {
-                String translation = collections.get(collectionField).getTranslationForName(collectionValue);
-                if (translation != null) {
-                    sb.append(translation);
-                    continue;
-                }
-
-            }
             sb.append(ViewerResourceBundle.getTranslation(collectionName, null));
         }
 
