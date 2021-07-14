@@ -378,25 +378,7 @@ public class Metadata implements Serializable {
                     break;
                 case TRANSLATEDFIELD:
                     // Values that are message keys (or collection names, etc.)
-                    
-                    // First, check whether translation from CMSCollection is available
-                    String translation = null;
-                    if (SolrConstants.DC.equals(label)) {
-                        BrowseBean browseBean = BeanUtils.getBrowseBean();
-                        if (browseBean != null) {
-                            try {
-                                translation = browseBean.getTranslationForCollectionName(label, value);
-                            } catch (DAOException e) {
-                                logger.error(e.getMessage(), e);
-                            }
-                        }
-                        logger.trace("translation: {}", translation);
-                    }
-                    if (translation != null) {
-                        value = translation;
-                    } else {
-                        value = ViewerResourceBundle.getTranslation(value, locale);
-                    }
+                    value = ViewerResourceBundle.getTranslation(value, locale);
                     // convert line breaks back to HTML
                     value = value.replace("&lt;br /&gt;", "<br />");
                     break;
