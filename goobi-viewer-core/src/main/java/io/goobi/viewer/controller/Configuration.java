@@ -51,6 +51,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -797,6 +798,33 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * 
+     * @return String
+     * @should return correct value
+     */
+    public String getSidebarWidgetUsageCitationRecordIntroText() {
+        return getLocalString("sidebar.sidebarWidgetUsage.citation[@recordIntroText]", "");
+    }
+
+    /**
+     * 
+     * @return String
+     * @should return correct value
+     */
+    public String getSidebarWidgetUsageCitationDocstructIntroText() {
+        return getLocalString("sidebar.sidebarWidgetUsage.citation[@docstructIntroText]", "");
+    }
+
+    /**
+     * 
+     * @return String
+     * @should return correct value
+     */
+    public String getSidebarWidgetUsageCitationImageIntroText() {
+        return getLocalString("sidebar.sidebarWidgetUsage.citation[@imageIntroText]", "");
+    }
+
+    /**
+     * 
      * @return List of available citation style names
      * @should return all configured values
      */
@@ -821,6 +849,36 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return new Metadata();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public List<CitationLink> getSidebarWidgetUsageCitationLinks() {
+
+        List<HierarchicalConfiguration> links = getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.citation.links.link");
+        if (links == null || links.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<CitationLink> ret = new ArrayList<>();
+        for (Iterator<HierarchicalConfiguration> it = links.iterator(); it.hasNext();) {
+            HierarchicalConfiguration sub = it.next();
+            String type = sub.getString("[@type]");
+            String level = sub.getString("[@for]");
+            String label = sub.getString("[@label]");
+            String field = sub.getString("[@field]");
+            String prefix = sub.getString("[@prefix]");
+            String suffix = sub.getString("[@suffix]");
+            try {
+                ret.add(new CitationLink(type, level, label).setField(field).setPrefix(prefix).setSuffix(suffix));
+            } catch (IllegalArgumentException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return ret;
     }
 
     /**

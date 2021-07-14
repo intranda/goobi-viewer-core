@@ -47,8 +47,8 @@ import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
-import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
@@ -1010,7 +1010,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getThumbnailImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getThumbnailImageAccessMaxWidth());
     }
-    
+
     @Test
     public void getUnzoomedImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth());
@@ -2891,7 +2891,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getSidebarWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText());
     }
-    
 
     /**
      * @see Configuration#isDisplaySidebarWidgetUsageCitation()
@@ -2900,6 +2899,33 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isDisplaySidebarWidgetUsageCitation_shouldReturnCorrectValue() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitation());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationDocstructIntroText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationDocstructIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("record intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecordIntroText());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationImageIntroText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationImageIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("docstruct intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationDocstructIntroText());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationRecordIntroText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationRecordIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("image intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationImageIntroText());
     }
 
     /**
