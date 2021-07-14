@@ -343,7 +343,9 @@ var viewerJS = ( function( viewer ) {
                 .subscribe(this.onFeatureMove);
                 rxjs.fromEvent(layer, "click").pipe(rxjs.operators.map(e => layer.feature)).subscribe(this.onFeatureClick);
 
-                if(this.config.popover && feature.properties && (feature.properties.title || feature.properties.desc || this.config.emptyMarkerMessage)) {                    
+				let title = viewerJS.getMetadataValue(feature.properties.title, this.config.language);
+       			let desc = viewerJS.getMetadataValue(feature.properties.description, this.config.language);                
+       			if(this.config.popover && feature.properties && (title || desc || this.config.emptyMarkerMessage)) {                    
                     if(this.config.popoverOnHover) {                    
                         rxjs.fromEvent(layer, "mouseover").subscribe(() => layer.openPopup());
                         rxjs.fromEvent(layer, "mouseout").subscribe(() => layer.closePopup());
@@ -380,7 +382,7 @@ var viewerJS = ( function( viewer ) {
             .sort( (f1,f2) => this.compareFeatures(f1,f2) )
             .forEach(feature => {
             	let type = feature.geometry.type;
-            	console.log("add feature for " + type, feature);
+            	if(_debug)console.log("add feature for " + type, feature);
             	this.addMarker(feature);
             })
         }
@@ -512,7 +514,6 @@ var viewerJS = ( function( viewer ) {
     viewer.GeoMap.featureGroup.prototype.createPopup = function(marker) {
         let title = viewerJS.getMetadataValue(marker.feature.properties.title, this.config.language);
         let desc = viewerJS.getMetadataValue(marker.feature.properties.description, this.config.language);
-		console.log("create popup ", title, desc, marker); 
         if(this.config.popover && (title || desc) ) {
             let $popover = $(this.config.popover).clone();
             $popover.find("[data-metadata='title']").text(title);
