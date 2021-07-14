@@ -12,38 +12,114 @@
 
 		<h4 id="titleCiteLinks" class="widget-usage__subtitle">#{msg.citeLinks}</h4>
 
-		<div class="widget-usage__citelinks">
-			<ui:fragment
-				rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
-				<a id="citeLinkWork"
-					class="badge badge-dark widget-usage__citelink-work"
-					data-copy="work-citelink"
-					data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkWork}"
-					data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
-					aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
-					#{msg.citeLinkWork} </a>
+        <!-- TODO display as overlay -->
+        <div class="widget-usage__citelinks">
+            <!-- RECORD -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
+                <h4 id="titleWork" class="widget-usage__subtitle">#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}</h4>
+                <h:outputText rendered="#{configurationBean.sidebarWidgetUsageCitationRecordIntroText != null}">
+                    #{configurationBean.sidebarWidgetUsageCitationRecordIntroText}
+                </h:outputText>
+			    <ui:repeat var="link" value="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')}">
+			        <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
+                        #{msg[link.label]}:
+                        <h:inputText value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
+                        <a id="citeLinkWork"
+                            class="badge badge-dark widget-usage__citelink-work"
+                            data-copy="work-citelink"
+                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                            aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+                            #{msg.copyUrl} </a>
+                        <br />
+                    </ui:fragment>
+                    <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
+                       #{msg.citation_internal}:
+				        <a id="citeLinkWork"
+                            class="badge badge-dark widget-usage__citelink-work"
+                            data-copy="work-citelink"
+                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                            aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+                            #{msg.copyUrl} </a>
+                        <br />
+                    </ui:fragment>
+			    </ui:repeat>
 			</ui:fragment>
-			<ui:fragment
-				rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage and !activeDocumentBean.viewManager.doublePageMode}">
-				<a id="citeLinkPage"
-					class="badge badge-dark widget-usage__citelink-page"
-					data-copy="page-citelink"
-					data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkPage}"
-					data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
-					aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
-					#{msg.citeLinkPage} </a>
-			</ui:fragment>
+            <!-- SUB-DOCSTRUCT -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkDocstruct}">
+                <h4 id="titlePage" class="widget-usage__subtitle" title="#{activeDocumentBean.viewManager.currentStructElement.label}">#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}</h4>
+                <h:outputText rendered="#{configurationBean.sidebarWidgetUsageCitationDocstructIntroText != null}">
+                    #{configurationBean.sidebarWidgetUsageCitationDocstructIntroText}
+                </h:outputText>
+                <ui:repeat var="link" value="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('docstruct')}">
+                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
+                        #{msg[link.label]}:
+                        <h:inputText value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
+                        <a id="citeLinkWork"
+                            class="badge badge-dark widget-usage__citelink-work"
+                            data-copy="work-citelink"
+                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                            aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+                            #{msg.copyUrl} </a>
+                        <br />
+                    </ui:fragment>
+                    <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
+                       #{msg.citation_internal}:
+                        <a id="citeLinkWork"
+                            class="badge badge-dark widget-usage__citelink-work"
+                            data-copy="work-citelink"
+                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                            aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+                            #{msg.copyUrl} </a>
+                        <br />
+                    </ui:fragment>
+                </ui:repeat>
+            </ui:fragment>
+            <!-- IMAGE -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage and !activeDocumentBean.viewManager.doublePageMode}">
+                <h4 id="titleImage" class="widget-usage__subtitle">#{msg.image}</h4>
+                <h:outputText rendered="sidebarWidgetUsageCitationImageIntroText != null}">
+                    #{configurationBean.sidebarWidgetUsageCitationImageIntroText}
+                </h:outputText>
+                <ui:repeat var="link" value="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')}">
+                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
+                        #{msg[link.label]}:
+                        <h:inputText value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
+                        <a id="citeLinkPage"
+                            class="badge badge-dark widget-usage__citelink-page"
+                            data-copy="page-citelink"
+                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                            aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
+                            #{msg.copyUrl} </a>
+                        <br />
+                    </ui:fragment>
+                    <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
+                       #{msg.citation_internal}:
+                        <a id="citeLinkPage"
+                            class="badge badge-dark widget-usage__citelink-page"
+                            data-copy="page-citelink"
+                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                            aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
+                            #{msg.copyUrl} </a>
+                        <br />
+                    </ui:fragment>
+                </ui:repeat>
+            </ui:fragment>
 		</div>
-		<ui:fragment
-			rendered="#{configurationBean.displaySidebarWidgetUsageCitation}">
+		
+		<ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitation}">
 			<!-- CITATION RECOMMENDATION -->
 			<ui:fragment
 				rendered="#{configurationBean.displaySidebarWidgetUsageCitation and fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0}">
 				<h4 id="titleCiteRecommendation" class="widget-usage__subtitle">#{msg.citeRecommendation__title}</h4>
 
 				<div class="widget-usage__citerecommendation">
-					<ui:fragment
-						rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
+					<ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
 						<h:form>
 							<div
 								class="custom-control custom-control--select widget-usage__citerecommendation-dropdown">

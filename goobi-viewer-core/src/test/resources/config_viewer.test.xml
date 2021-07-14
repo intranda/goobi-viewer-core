@@ -1005,9 +1005,9 @@
                     </metadata>
                 </source>
                 <links>
-                    <link type="URL" for="record" label="LABEL_URN" field="URN" prefix="https://nbn-resolving.org/" />
-                    <link type="URL" for="record" label="LABEL_HANDLE" field="MD_PI_HANDLE" prefix="https://hdl.handle.net/" />
-                    <link type="URL" for="record" label="LABEL_DOI" field="MD_PI_DOI" prefix="https://doi.org/" />
+                    <link type="URL" for="record" label="LABEL_URN" field="URN" prefix="https://nbn-resolving.org/" suffix="/" />
+                    <link type="INTERNAL" for="docstruct" label="LABEL_VIEWER_PURL" />
+                    <link type="INTERNAL" for="image" label="LABEL_VIEWER_PURL" />
                 </links>
             </citation>
         </sidebarWidgetUsage>

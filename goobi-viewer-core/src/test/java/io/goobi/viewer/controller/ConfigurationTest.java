@@ -35,6 +35,9 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.citation.CitationLink;
+import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
+import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
 import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -2936,6 +2939,34 @@ public class ConfigurationTest extends AbstractTest {
     public void getSidebarWidgetUsageCitationStyles_shouldReturnAllConfiguredValues() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
         Assert.assertEquals(3, result.size());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinks()
+     * @verifies return all configured values
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinks_shouldReturnAllConfiguredValues() throws Exception {
+        List<CitationLink> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks();
+        Assert.assertEquals(3, result.size());
+        {
+            CitationLink link = result.get(0);
+            Assert.assertEquals(CitationLinkType.URL, link.getType());
+            Assert.assertEquals(CitationLinkLevel.RECORD, link.getLevel());
+            Assert.assertEquals("LABEL_URN", link.getLabel());
+            Assert.assertEquals("URN", link.getField());
+            Assert.assertEquals("https://nbn-resolving.org/", link.getPrefix());
+            Assert.assertEquals("/", link.getSuffix());
+        }
+        {
+            CitationLink link = result.get(1);
+            Assert.assertEquals(CitationLinkType.INTERNAL, link.getType());
+            Assert.assertEquals(CitationLinkLevel.DOCSTRUCT, link.getLevel());
+        }
+        {
+            CitationLink link = result.get(2);
+            Assert.assertEquals(CitationLinkLevel.IMAGE, link.getLevel());
+        }
     }
 
     /**

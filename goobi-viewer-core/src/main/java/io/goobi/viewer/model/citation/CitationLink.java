@@ -15,6 +15,22 @@
  */
 package io.goobi.viewer.model.citation;
 
+import java.util.Collections;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.ConfigurationBean;
+import io.goobi.viewer.model.viewer.ViewManager;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+
 /**
  * 
  */
@@ -55,7 +71,7 @@ public class CitationLink {
          * @param name
          * @return
          */
-        protected static CitationLinkLevel getByName(String name) {
+        public static CitationLinkLevel getByName(String name) {
             if (name == null) {
                 return null;
             }
@@ -70,10 +86,13 @@ public class CitationLink {
         }
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(CitationLink.class);
+
     private final CitationLinkType type;
     private final CitationLinkLevel level;
     private final String label;
     private String field;
+    private String value;
     private String prefix;
     private String suffix;
 
@@ -93,6 +112,42 @@ public class CitationLink {
             throw new IllegalArgumentException("Unknown level: " + level);
         }
         this.label = label;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     * @should construct url correctly
+     */
+    public String getUrl(ViewManager viewManager) throws PresentationException, IndexUnreachableException, DAOException {
+        if (viewManager == null) {
+            return null;
+        }
+
+        if (CitationLinkType.INTERNAL.equals(type)) {
+            switch (level) {
+                case RECORD:
+                    return viewManager.getCiteLinkWork();
+                case DOCSTRUCT:
+                    return viewManager.getCiteLinkDocstruct();
+                case IMAGE:
+                    return viewManager.getCiteLinkPage();
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (prefix != null) {
+            sb.append(prefix);
+        }
+        sb.append(getValue(viewManager));
+        if (suffix != null) {
+            sb.append(suffix);
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -121,6 +176,48 @@ public class CitationLink {
      */
     public String getField() {
         return field;
+    }
+
+    /**
+     * @return the value
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getValue(ViewManager viewManager) throws IndexUnreachableException, PresentationException {
+        if (!CitationLinkType.URL.equals(type)) {
+            return null;
+        }
+
+        if (StringUtils.isEmpty(this.value)) {
+            logger.trace("Loading value: {}", field);
+            String query = null;
+            switch (level) {
+                case RECORD:
+                    query = SolrConstants.PI + ":" + viewManager.getPi();
+                    break;
+                case DOCSTRUCT:
+                    query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + viewManager.getPi() + " +" + SolrConstants.LOGID + ":" + viewManager.getLogId()
+                            + " +" + SolrConstants.DOCTYPE
+                            + ":" + DocType.DOCSTRCT.name();
+                    break;
+                case IMAGE:
+                    query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + viewManager.getPi() + " +" + SolrConstants.ORDER + ":"
+                            + viewManager.getCurrentImageOrder() + " +" + SolrConstants.DOCTYPE
+                            + ":" + DocType.PAGE.name();
+                    break;
+            }
+
+            SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(field));
+            if (doc == null) {
+                return null;
+            }
+
+            if (doc.get(field) != null) {
+                this.value = String.valueOf(doc.get(field));
+            }
+        }
+
+        return value;
     }
 
     /**

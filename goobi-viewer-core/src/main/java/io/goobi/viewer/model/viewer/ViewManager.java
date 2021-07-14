@@ -1389,17 +1389,18 @@ public class ViewManager implements Serializable {
     /**
      * 
      * @return Last page number
-     */    public int getLastPageOrder() {
+     */
+    public int getLastPageOrder() {
         if (pageLoader == null) {
             return -1;
         }
         return pageLoader.getLastPageOrder();
     }
 
-     /**
-      * 
-      * @return First page number
-      */
+    /**
+     * 
+     * @return First page number
+     */
     public int getFirstPageOrder() {
         if (pageLoader == null) {
             return -1;
@@ -3671,6 +3672,49 @@ public class ViewManager implements Serializable {
      */
     public boolean isDisplayCiteLinkWork() {
         return topStructElement != null;
+    }
+    
+    public String getCiteLinkDocstruct() throws IndexUnreachableException, DAOException, PresentationException {
+        if (topStructElement == null) {
+            return "";
+        }
+
+        String customPURL = topStructElement.getMetadataValue("MD_PURL");
+        if (StringUtils.isNotEmpty(customPURL)) {
+            return customPURL;
+        } else if (StringUtils.isNotBlank(topStructElement.getMetadataValue(SolrConstants.URN))) {
+            String urn = topStructElement.getMetadataValue(SolrConstants.URN);
+            return getPersistentUrl(urn);
+        } else {
+            StringBuilder url = new StringBuilder();
+            boolean anchorOrGroup = topStructElement.isAnchor() || topStructElement.isGroup();
+            PageType pageType = PageType.determinePageType(topStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
+            if (pageType == null) {
+                if (isHasPages()) {
+                    pageType = PageType.viewObject;
+                } else {
+                    pageType = PageType.viewMetadata;
+                }
+            }
+            url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+            url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/');
+            if (getRepresentativePage() != null) {
+                url.append(getRepresentativePage().getOrder()).append('/');
+            }
+            return url.toString();
+        }
+    }
+
+
+    /**
+     * <p>
+     * isDisplayCiteLinkDocstruct.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isDisplayCiteLinkDocstruct() {
+        return currentStructElement != null && currentStructElement != topStructElement;
     }
 
     /**

@@ -854,6 +854,7 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * 
      * @return
+     * @should return all configured values
      */
     public List<CitationLink> getSidebarWidgetUsageCitationLinks() {
 
