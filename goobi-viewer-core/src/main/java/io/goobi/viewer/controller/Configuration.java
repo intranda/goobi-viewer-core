@@ -3760,38 +3760,38 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isUserCommentsEnabled.
+     * isCommentsEnabled.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isUserCommentsEnabled() {
-        return getLocalBoolean(("userComments[@enabled]"), false);
+    public boolean isCommentsEnabled() {
+        return getLocalBoolean(("comments[@enabled]"), false);
     }
 
     /**
      * <p>
-     * getUserCommentsConditionalQuery.
+     * getCommentsCondition.
      * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
      */
-    public String getUserCommentsConditionalQuery() {
-        return getLocalString("userComments.conditionalQuery");
+    public String getCommentsCondition() {
+        return getLocalString("comments.condition");
     }
 
     /**
      * <p>
-     * getUserCommentsNotificationEmailAddresses.
+     * getCommentsNotificationEmailAddresses.
      * </p>
      *
      * @should return all configured elements
      * @return a {@link java.util.List} object.
      */
-    public List<String> getUserCommentsNotificationEmailAddresses() {
-        return getLocalList("userComments.notificationEmailAddress");
+    public List<String> getCommentsNotificationEmailAddresses() {
+        return getLocalList("comments.notificationEmailAddress");
     }
 
     /**
