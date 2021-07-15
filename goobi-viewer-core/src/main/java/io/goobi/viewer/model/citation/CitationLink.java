@@ -123,6 +123,7 @@ public class CitationLink {
      * @should construct url correctly
      */
     public String getUrl(ViewManager viewManager) throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("getUrl: {}/{}", level, field);
         if (viewManager == null) {
             return null;
         }
@@ -182,6 +183,9 @@ public class CitationLink {
      * @return the value
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should return correct value for record type
+     * @should return correct value for docstruct type
+     * @should return correct value for image type
      */
     public String getValue(ViewManager viewManager) throws IndexUnreachableException, PresentationException {
         if (!CitationLinkType.URL.equals(type)) {
@@ -189,7 +193,7 @@ public class CitationLink {
         }
 
         if (StringUtils.isEmpty(this.value)) {
-            logger.trace("Loading value: {}", field);
+            logger.trace("Loading value: {}/{}", level, field);
             String query = null;
             switch (level) {
                 case RECORD:

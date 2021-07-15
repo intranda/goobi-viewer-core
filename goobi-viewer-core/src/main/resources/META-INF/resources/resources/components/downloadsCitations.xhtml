@@ -20,7 +20,7 @@
                 <h:outputText rendered="#{configurationBean.sidebarWidgetUsageCitationRecordIntroText != null}">
                     #{configurationBean.sidebarWidgetUsageCitationRecordIntroText}
                 </h:outputText>
-			    <ui:repeat var="link" value="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')}">
+			    <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')}">
 			        <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
                         #{msg[link.label]}:
                         <h:inputText value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
@@ -44,7 +44,7 @@
                             #{msg.copyUrl} </a>
                         <br />
                     </ui:fragment>
-			    </ui:repeat>
+			    </c:forEach>
 			</ui:fragment>
             <!-- SUB-DOCSTRUCT -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkDocstruct}">
@@ -52,7 +52,7 @@
                 <h:outputText rendered="#{configurationBean.sidebarWidgetUsageCitationDocstructIntroText != null}">
                     #{configurationBean.sidebarWidgetUsageCitationDocstructIntroText}
                 </h:outputText>
-                <ui:repeat var="link" value="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('docstruct')}">
+                <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('docstruct')}">
                     <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
                         #{msg[link.label]}:
                         <h:inputText value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
@@ -76,7 +76,7 @@
                             #{msg.copyUrl} </a>
                         <br />
                     </ui:fragment>
-                </ui:repeat>
+                </c:forEach>
             </ui:fragment>
             <!-- IMAGE -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage and !activeDocumentBean.viewManager.doublePageMode}">
@@ -84,7 +84,7 @@
                 <h:outputText rendered="sidebarWidgetUsageCitationImageIntroText != null}">
                     #{configurationBean.sidebarWidgetUsageCitationImageIntroText}
                 </h:outputText>
-                <ui:repeat var="link" value="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')}">
+                <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')}">
                     <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
                         #{msg[link.label]}:
                         <h:inputText value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
@@ -108,7 +108,7 @@
                             #{msg.copyUrl} </a>
                         <br />
                     </ui:fragment>
-                </ui:repeat>
+                </c:forEach>
             </ui:fragment>
 		</div>
 		
