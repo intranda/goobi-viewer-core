@@ -1252,13 +1252,13 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isDisplayWidgetUsage.
+     * isDisplaySidebarWidgetUsageCitationRecommendation.
      * </p>
      *
      * @return a boolean.
      */
-    public boolean isDisplaySidebarWidgetUsageCitation() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitation();
+    public boolean isDisplaySidebarWidgetUsageCitationRecommendation() {
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationRecommendation();
     }
 
     /**
@@ -1291,32 +1291,32 @@ public class ConfigurationBean implements Serializable {
      * 
      * @return String
      */
-    public String getSidebarWidgetUsageCitationRecordIntroText() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecordIntroText();
+    public String getSidebarWidgetUsageCitationLinksRecordIntroText() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksRecordIntroText();
     }
 
     /**
      * 
      * @return String
      */
-    public String getSidebarWidgetUsageCitationDocstructIntroText() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationDocstructIntroText();
+    public String getSidebarWidgetUsageCitationLinksDocstructIntroText() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksDocstructIntroText();
     }
 
     /**
      * 
      * @return String
      */
-    public String getSidebarWidgetUsageCitationImageIntroText() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationImageIntroText();
+    public String getSidebarWidgetUsageCitationLinksImageIntroText() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksImageIntroText();
     }
 
     /**
      * 
      * @return List of available citation style names
      */
-    public List<String> getSidebarWidgetUsageCitationStyles() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+    public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
     }
 
     /**

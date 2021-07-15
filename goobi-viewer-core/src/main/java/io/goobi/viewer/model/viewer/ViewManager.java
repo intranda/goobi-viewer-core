@@ -3671,9 +3671,9 @@ public class ViewManager implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplayCiteLinkWork() {
-        return topStructElement != null;
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && topStructElement != null;
     }
-    
+
     public String getCiteLinkDocstruct() throws IndexUnreachableException, DAOException, PresentationException {
         if (topStructElement == null) {
             return "";
@@ -3705,7 +3705,6 @@ public class ViewManager implements Serializable {
         }
     }
 
-
     /**
      * <p>
      * isDisplayCiteLinkDocstruct.
@@ -3714,7 +3713,8 @@ public class ViewManager implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplayCiteLinkDocstruct() {
-        return currentStructElement != null && currentStructElement != topStructElement;
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && currentStructElement != null
+                && currentStructElement != topStructElement;
     }
 
     /**
@@ -3746,7 +3746,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {
-        return getCurrentPage() != null;
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && getCurrentPage() != null;
     }
 
     /**
@@ -3783,7 +3783,7 @@ public class ViewManager implements Serializable {
      */
     String getCitationString(String outputFormat) throws IOException, IndexUnreachableException, PresentationException {
         if (StringUtils.isEmpty(citationStyle)) {
-            List<String> availableStyles = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+            List<String> availableStyles = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
             if (availableStyles.isEmpty()) {
                 return "";
             }
@@ -3794,7 +3794,7 @@ public class ViewManager implements Serializable {
             citationProcessorWrapper = new CitationProcessorWrapper();
         }
         CSL processor = citationProcessorWrapper.getCitationProcessor(citationStyle);
-        Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationSource();
+        Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationSource();
         md.populate(topStructElement, BeanUtils.getLocale());
         for (MetadataValue val : md.getValues()) {
             if (!val.getCitationValues().isEmpty()) {

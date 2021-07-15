@@ -2896,39 +2896,49 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isDisplaySidebarWidgetUsageCitation()
+     * @see Configuration#isDisplaySidebarWidgetUsageCitationRecommendation()
      * @verifies return correct value
      */
     @Test
-    public void isDisplaySidebarWidgetUsageCitation_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitation());
+    public void isDisplaySidebarWidgetUsageCitationRecommendation_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationRecommendation());
     }
 
     /**
-     * @see Configuration#getSidebarWidgetUsageCitationDocstructIntroText()
+     * @see Configuration#isDisplaySidebarWidgetUsageCitationLinks()
      * @verifies return correct value
      */
     @Test
-    public void getSidebarWidgetUsageCitationDocstructIntroText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("record intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecordIntroText());
+    public void isDisplaySidebarWidgetUsageCitationLinks_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks());
     }
 
     /**
-     * @see Configuration#getSidebarWidgetUsageCitationImageIntroText()
+     * @see Configuration#getSidebarWidgetUsageCitationLinksDocstructIntroText()
      * @verifies return correct value
      */
     @Test
-    public void getSidebarWidgetUsageCitationImageIntroText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("docstruct intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationDocstructIntroText());
+    public void getSidebarWidgetUsageCitationLinksDocstructIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("record intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksRecordIntroText());
     }
 
     /**
-     * @see Configuration#getSidebarWidgetUsageCitationRecordIntroText()
+     * @see Configuration#getSidebarWidgetUsageCitationLinksImageIntroText()
      * @verifies return correct value
      */
     @Test
-    public void getSidebarWidgetUsageCitationRecordIntroText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("image intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationImageIntroText());
+    public void getSidebarWidgetUsageCitationLinksImageIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("docstruct intro text",
+                DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksDocstructIntroText());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinksRecordIntroText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinksRecordIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("image intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksImageIntroText());
     }
 
     /**
@@ -2936,8 +2946,8 @@ public class ConfigurationTest extends AbstractTest {
      * @verifies return all configured values
      */
     @Test
-    public void getSidebarWidgetUsageCitationStyles_shouldReturnAllConfiguredValues() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+    public void getSidebarWidgetUsageCitationRecommendationStyles_shouldReturnAllConfiguredValues() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
         Assert.assertEquals(3, result.size());
     }
 
