@@ -2421,6 +2421,7 @@ this.initMap = function() {
 	        popover: $("<div><p data-metadata='title'></p></div>"),
 	        popoverOnHover: true,
 	        emptyMarkerMessage: undefined,
+	        clusterMarkers: true,
 
 		    style: {
 				    fillOpacity: 0.02

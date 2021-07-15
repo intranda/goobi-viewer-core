@@ -386,7 +386,7 @@ public class CMSPageLanguageVersion {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return CMSPageLanguageVersion.class.getSimpleName() + ": " + getLanguage();
+        return CMSPageLanguageVersion.class.getSimpleName() + ": " + getLanguage() + "; Owner: " + this.getOwnerPage().toString();
     }
 
     /**
