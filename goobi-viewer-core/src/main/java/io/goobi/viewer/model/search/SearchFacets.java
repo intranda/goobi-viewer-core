@@ -55,7 +55,7 @@ public class SearchFacets implements Serializable {
     /** Currently applied facets. */
     private final List<IFacetItem> currentFacets = new ArrayList<>();
 
-    private final Map<String, Boolean> drillDownExpanded = new HashMap<>();
+    private final Map<String, Boolean> facetsExpanded = new HashMap<>();
 
     private final Map<String, String> minValues = new HashMap<>();
 
@@ -75,7 +75,7 @@ public class SearchFacets implements Serializable {
     public void resetAvailableFacets() {
         logger.trace("resetAvailableFacets");
         availableFacets.clear();
-        drillDownExpanded.clear();
+        facetsExpanded.clear();
     }
 
     /**
@@ -373,7 +373,7 @@ public class SearchFacets implements Serializable {
      */
     public void expandDrillDown(String field) {
         logger.trace("expandDrillDown: {}", field);
-        drillDownExpanded.put(field, true);
+        facetsExpanded.put(field, true);
     }
 
     /**
@@ -383,7 +383,7 @@ public class SearchFacets implements Serializable {
      */
     public void collapseDrillDown(String field) {
         logger.trace("collapseDrillDown: {}", field);
-        drillDownExpanded.put(field, false);
+        facetsExpanded.put(field, false);
     }
 
     /**
@@ -895,7 +895,7 @@ public class SearchFacets implements Serializable {
      * @return a boolean.
      */
     public boolean isDrillDownExpanded(String field) {
-        return drillDownExpanded.get(field) != null && drillDownExpanded.get(field);
+        return facetsExpanded.get(field) != null && facetsExpanded.get(field);
     }
 
     /**
