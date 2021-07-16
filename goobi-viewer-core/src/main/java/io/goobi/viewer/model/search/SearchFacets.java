@@ -341,7 +341,7 @@ public class SearchFacets implements Serializable {
         }
         // Remove currently used facets
         facetItems.removeAll(currentFacets);
-        int initial = DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
+        int initial = DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
         if (!isDrillDownExpanded(field) && initial != -1 && facetItems.size() > initial) {
             return facetItems.subList(0, initial);
         }
@@ -363,7 +363,7 @@ public class SearchFacets implements Serializable {
         if (isDrillDownExpanded(field) && availableFacets.get(field) != null) {
             return availableFacets.get(field).size();
         }
-        return DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
+        return DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
     }
 
     /**
@@ -401,7 +401,7 @@ public class SearchFacets implements Serializable {
      */
     public boolean isDisplayDrillDownExpandLink(String field) {
         List<IFacetItem> facetItems = availableFacets.get(field);
-        int expandSize = DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
+        int expandSize = DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
         if (facetItems != null && !isDrillDownExpanded(field) && expandSize > 0 && facetItems.size() > expandSize) {
             return true;
         }
@@ -535,7 +535,7 @@ public class SearchFacets implements Serializable {
                     facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
                 }
                 String facetField = facetLink.substring(0, facetLink.indexOf(":"));
-                if (facetField.equals(DataManager.getInstance().getConfiguration().getGeoDrillDownField())) {
+                if (facetField.equals(DataManager.getInstance().getConfiguration().getGeoFacetFields())) {
                     GeoFacetItem item = new GeoFacetItem(facetField);
                     item.setValue(facetLink.substring(facetLink.indexOf(":") + 1));
                     facetItems.add(item);
@@ -557,7 +557,7 @@ public class SearchFacets implements Serializable {
     static boolean isFieldHierarchical(String field) {
         //        logger.trace("isFieldHierarchical: {} ? {}", field,
         //                DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().contains(field));
-        return DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().contains(field);
+        return DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().contains(field);
     }
 
     /**
@@ -921,7 +921,7 @@ public class SearchFacets implements Serializable {
     public Map<String, List<IFacetItem>> getAllAvailableFacets() {
         Map<String, List<IFacetItem>> ret = new LinkedHashMap<>();
 
-        List<String> allDrillDownFields = DataManager.getInstance().getConfiguration().getAllDrillDownFields();
+        List<String> allDrillDownFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
         for (String field : allDrillDownFields) {
             if (availableFacets.containsKey(field)) {
                 ret.put(field, availableFacets.get(field));
@@ -941,7 +941,7 @@ public class SearchFacets implements Serializable {
     public List<String> getConfiguredSubelementFacetFields() {
         List<String> ret = new ArrayList<>();
 
-        for (String field : DataManager.getInstance().getConfiguration().getAllDrillDownFields()) {
+        for (String field : DataManager.getInstance().getConfiguration().getAllFacetFields()) {
             if (SolrConstants.DOCSTRCT_SUB.equals(field)) {
                 ret.add(SearchHelper.facetifyField(field));
             }
@@ -1114,7 +1114,7 @@ public class SearchFacets implements Serializable {
                 .filter(f -> f instanceof GeoFacetItem)
                 .map(f -> (GeoFacetItem) f)
                 .findAny()
-                .orElse(new GeoFacetItem(DataManager.getInstance().getConfiguration().getGeoDrillDownField()));
+                .orElse(new GeoFacetItem(DataManager.getInstance().getConfiguration().getGeoFacetFields()));
     }
 
     /**
@@ -1124,7 +1124,7 @@ public class SearchFacets implements Serializable {
      */
     public void setGeoFacetFeature(String feature) {
         GeoFacetItem item = getGeoFacetting();
-        item.setField(DataManager.getInstance().getConfiguration().getGeoDrillDownField());
+        item.setField(DataManager.getInstance().getConfiguration().getGeoFacetFields());
         if (StringUtils.isBlank(feature)) {
             this.currentFacets.remove(item);
         } else {

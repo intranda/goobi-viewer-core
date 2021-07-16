@@ -219,7 +219,7 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
      * @return a list of possible values for searchField for this widget
      */
     public List<String> getSearchFieldOptions() {
-        return DataManager.getInstance().getConfiguration().getAllDrillDownFields();
+        return DataManager.getInstance().getConfiguration().getAllFacetFields();
     }
 
 }

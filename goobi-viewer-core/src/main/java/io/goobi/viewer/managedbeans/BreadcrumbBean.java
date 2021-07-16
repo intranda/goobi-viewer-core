@@ -277,11 +277,11 @@ public class BreadcrumbBean implements Serializable {
         //        } else {
         facetString = StringTools.decodeUrl(facetString);
         List<String> facets =
-                SearchFacets.getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields());
+                SearchFacets.getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalFacetFields());
         if (facets.size() > 0) {
             String facet = facets.get(0);
             facets = SearchFacets.splitHierarchicalFacet(facet);
-            updateBreadcrumbsWithCurrentCollection(DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().get(0), facets,
+            updateBreadcrumbsWithCurrentCollection(DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().get(0), facets,
                     WEIGHT_SEARCH_RESULTS);
         } else {
             updateBreadcrumbsWithCurrentUrl("searchHitNavigation", WEIGHT_SEARCH_RESULTS);

@@ -2503,7 +2503,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 })
                         .limit(resultLimit > 0 ? resultLimit : resp.getFacetField(field).getValues().size())
                         .collect(Collectors.toMap(Count::getName, Count::getCount));
-        List<String> hierarchicalFields = DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields();
+        List<String> hierarchicalFields = DataManager.getInstance().getConfiguration().getHierarchicalFacetFields();
         Locale locale = null;
         NavigationHelper nh = BeanUtils.getNavigationHelper();
         if (nh != null) {
