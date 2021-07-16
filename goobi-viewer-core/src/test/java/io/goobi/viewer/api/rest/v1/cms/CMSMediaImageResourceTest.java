@@ -99,7 +99,7 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
         String apiUrl = urls.getApiUrl();
         ThumbnailHandler thumbs = new ThumbnailHandler(new IIIFUrlHandler(urls), DataManager.getInstance().getConfiguration(), null);
         String imageUrl = thumbs.getThumbnailUrl(media, 100, 200);
-        System.out.println(imageUrl);
+        //System.out.println(imageUrl);
         assertTrue(imageUrl.startsWith(apiUrl));
         assertTrue(imageUrl + " should contain " + filenameEnc, imageUrl.contains(filenameEnc));
         
