@@ -262,13 +262,13 @@ public final class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(fq);
-                 logger.trace("adding filter query: {}", fq);
+                 // logger.trace("adding filter query: {}", fq);
             }
         }
         if (params != null && !params.isEmpty()) {
             for (String key : params.keySet()) {
                 solrQuery.set(key, params.get(key));
-                logger.trace("&{}={}", key, params.get(key));
+                // logger.trace("&{}={}", key, params.get(key));
             }
         }
 
