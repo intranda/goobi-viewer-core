@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -121,11 +122,11 @@ public class XmlTools {
      *
      * @param doc a {@link org.jdom2.Document} object.
      * @param filePath a {@link java.lang.String} object.
-     * @should write file correctly
-     * @should throw FileNotFoundException if file is directory
      * @return a {@link java.io.File} object.
      * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
+     * @should write file correctly
+     * @should throw FileSystemException if file is directory
      */
     public static File writeXmlFile(Document doc, String filePath) throws FileNotFoundException, IOException {
         return FileTools.getFileFromString(getStringFromElement(doc, StringTools.DEFAULT_ENCODING), filePath, StringTools.DEFAULT_ENCODING, false);
