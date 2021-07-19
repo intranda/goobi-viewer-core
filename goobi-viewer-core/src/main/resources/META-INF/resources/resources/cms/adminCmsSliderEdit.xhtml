@@ -184,7 +184,7 @@
 															<f:selectItems 
 																value="#{cmsSliderEditBean.availableCollections}"
 																var="collection"
-																itemLabel="#{collection.label}"
+																itemLabel="#{collection.getLabel(navigationHelper.locale)}"
 																itemValue="#{collection.toString()}"
 															></f:selectItems>
 															<f:ajax event="change" render="previewSlider"/>
