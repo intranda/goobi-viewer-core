@@ -3782,6 +3782,22 @@ public class JPADAO implements IDAO {
         }
 
     }
+    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#checkAvailability()
+     */
+    @Override
+    public boolean checkAvailability() {
+        try {
+            preQuery();
+            return true;
+        } catch (DAOException e) {
+            logger.error(e.getMessage());
+        }
+        
+        return false;
+    }
 
     /*
      * (non-Javadoc)
@@ -5259,5 +5275,4 @@ public class JPADAO implements IDAO {
 
         return pageList;
     }
-
 }
