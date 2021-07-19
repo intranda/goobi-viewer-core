@@ -184,7 +184,7 @@
 															<f:selectItems 
 																value="#{cmsSliderEditBean.availableCollections}"
 																var="collection"
-																itemLabel="#{msg[collection]}"
+																itemLabel="#{msg[collection.solrFieldValue]}"
 																itemValue="#{collection.toString()}"
 															></f:selectItems>
 															<f:ajax event="change" render="previewSlider"/>
