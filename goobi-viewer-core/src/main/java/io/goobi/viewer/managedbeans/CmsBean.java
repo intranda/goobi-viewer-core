@@ -1587,6 +1587,7 @@ public class CmsBean implements Serializable {
                         }
                         return searchAction(item);
                     case SEARCH:
+                        navigationHelper.addSearchUrlWithCurrentSortStringToHistory();
                         if (searchBean != null) {
                             if (resetSearch) {
                                 //TODO: perform searchBean.resetSearchFilter herer instead of in pretty-config. Needs testing

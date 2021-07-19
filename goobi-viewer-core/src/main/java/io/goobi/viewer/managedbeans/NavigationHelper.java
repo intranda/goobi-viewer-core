@@ -1988,7 +1988,7 @@ public class NavigationHelper implements Serializable {
 
     private ViewerPath setupRandomSearchSeed(ViewerPath path) {
         String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
-        if(path.matches(PageType.search) && "RANDOM".equalsIgnoreCase(defaultSortField)) {
+        if("RANDOM".equalsIgnoreCase(defaultSortField)) {
             String parameterPath = path.getParameterPath().toString();
             if(StringUtils.isBlank(parameterPath) || parameterPath.matches("\\/?-\\/-\\/\\d+\\/-\\/-\\/?")) {
                 SearchBean sb = BeanUtils.getSearchBean();
