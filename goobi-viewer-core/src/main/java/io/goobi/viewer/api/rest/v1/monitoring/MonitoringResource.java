@@ -20,12 +20,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.FooterResource;
 import io.goobi.viewer.api.rest.model.MonitoringStatus;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -40,6 +42,8 @@ public class MonitoringResource {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
+    @Context
+    private ContainerRequestContext requestContext;
 
     /**
      * 
@@ -54,10 +58,14 @@ public class MonitoringResource {
     public MonitoringStatus checkServices() {
         logger.trace("checkServices");
         MonitoringStatus ret = new MonitoringStatus();
+        
+        // Check Solr
         if (!DataManager.getInstance().getSearchIndex().pingSolrIndex()) {
             ret.setSolr(MonitoringStatus.STATUS_ERROR);
             logger.warn("Solr monitoring check failed.");
         }
+        
+        // Check DB
         try {
             if (!DataManager.getInstance().getDao().checkAvailability()) {
                 ret.setDatabase(MonitoringStatus.STATUS_ERROR);
@@ -66,6 +74,14 @@ public class MonitoringResource {
         } catch (DAOException e) {
             ret.setDatabase(MonitoringStatus.STATUS_ERROR);
             logger.warn("DB monitoring check failed.");
+        }
+        
+        // Check image delivery
+        try {
+            new FooterResource(servletRequest).getImage(requestContext, servletRequest, "full", "100,", "0", "default", "jpg");
+        } catch (Exception e) {
+            ret.setImages(MonitoringStatus.STATUS_ERROR);
+            logger.warn("Image delivery monitoring check failed.");
         }
 
         return ret;
