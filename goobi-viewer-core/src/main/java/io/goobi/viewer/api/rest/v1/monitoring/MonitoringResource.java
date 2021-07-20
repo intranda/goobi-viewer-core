@@ -27,10 +27,10 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.FooterResource;
 import io.goobi.viewer.api.rest.model.MonitoringStatus;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -58,13 +58,13 @@ public class MonitoringResource {
     public MonitoringStatus checkServices() {
         logger.trace("checkServices");
         MonitoringStatus ret = new MonitoringStatus();
-        
+
         // Check Solr
         if (!DataManager.getInstance().getSearchIndex().pingSolrIndex()) {
             ret.setSolr(MonitoringStatus.STATUS_ERROR);
             logger.warn("Solr monitoring check failed.");
         }
-        
+
         // Check DB
         try {
             if (!DataManager.getInstance().getDao().checkAvailability()) {
@@ -75,10 +75,12 @@ public class MonitoringResource {
             ret.setDatabase(MonitoringStatus.STATUS_ERROR);
             logger.warn("DB monitoring check failed.");
         }
-        
+
         // Check image delivery
         try {
-            new FooterResource(servletRequest).getImage(requestContext, servletRequest, "full", "100,", "0", "default", "jpg");
+            //            new FooterResource(servletRequest).getImage(requestContext, servletRequest, "full", "100,", "0", "default", "jpg");
+            NetTools.getWebContentGET(
+                    DataManager.getInstance().getConfiguration().getRestApiUrl() + "records/-/files/footer/-/full/100,/0/default.jpg");
         } catch (Exception e) {
             ret.setImages(MonitoringStatus.STATUS_ERROR);
             logger.warn("Image delivery monitoring check failed.");
