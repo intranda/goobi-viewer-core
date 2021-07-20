@@ -168,7 +168,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isUserCommentsEnabled() {
-        return DataManager.getInstance().getConfiguration().isUserCommentsEnabled();
+        return DataManager.getInstance().getConfiguration().isCommentsEnabled();
     }
 
     /**

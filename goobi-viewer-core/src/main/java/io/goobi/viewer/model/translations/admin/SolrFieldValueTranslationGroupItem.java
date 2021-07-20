@@ -51,7 +51,7 @@ public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
     protected void loadEntries() throws PresentationException, IndexUnreachableException {
         QueryResponse qr = DataManager.getInstance()
                 .getSearchIndex()
-                .searchFacetsAndStatistics("*:*", null, Collections.singletonList(key), 0, false);
+                .searchFacetsAndStatistics("*:*", null, Collections.singletonList(key), 1, false);
         FacetField ff = qr.getFacetField(key);
         List<String> keys = new ArrayList<>(ff.getValueCount());
         for (Count value : ff.getValues()) {

@@ -282,8 +282,8 @@ public class SolrConstants {
     public static final String _NOESCAPE = "_NOESCAPE";
     /** Constant <code>_UNTOKENIZED="_UNTOKENIZED"</code> */
     public static final String _UNTOKENIZED = "_UNTOKENIZED";
-    /** Constant <code>_DRILLDOWN_SUFFIX="_DD"</code> */
-    public static final String _DRILLDOWN_SUFFIX = "_DD";
+    /** Constant <code>_FACETS_SUFFIX="_DD"</code> */
+    public static final String _FACETS_SUFFIX = "_DD";
     /** Constant <code>_METS="METS"</code> */
     public static final String _METS = "METS";
     /** Constant <code>_LIDO="LIDO"</code> */

@@ -17,6 +17,7 @@ package io.goobi.viewer.controller;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.FileSystemException;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
@@ -90,10 +91,10 @@ public class XmlToolsTest {
 
     /**
      * @see XmlTools#writeXmlFile(Document,String)
-     * @verifies throw FileNotFoundException if file is directory
+     * @verifies throw FileSystemException if file is directory
      */
-    @Test(expected = FileNotFoundException.class)
-    public void writeXmlFile_shouldThrowFileNotFoundExceptionIfFileIsDirectory() throws Exception {
+    @Test(expected = FileSystemException.class)
+    public void writeXmlFile_shouldThrowFileSystemExceptionIfFileIsDirectory() throws Exception {
         Document doc = new Document();
         doc.setRootElement(new Element("root"));
         XmlTools.writeXmlFile(doc, "target");
@@ -142,4 +143,5 @@ public class XmlToolsTest {
     public void readXmlFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
         XmlTools.readXmlFile("notfound.xml");
     }
+
 }

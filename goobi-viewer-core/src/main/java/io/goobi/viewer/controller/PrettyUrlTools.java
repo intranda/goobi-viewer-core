@@ -19,6 +19,9 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 
@@ -98,6 +101,18 @@ public class PrettyUrlTools {
                 PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getMappedURL(pi);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
+    
+    public static String getRelativePageUrl(String prettyId, Object... parameters) {
+        URL mappedUrl =
+                PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId)
+                .getPatternParser().getMappedURL(parameters);
+        return mappedUrl.toString();
+    }
+    
+    public static String getAbsolutePageUrl(String prettyId, Object... parameters) {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + getRelativePageUrl(prettyId, parameters);
+    }
+
     
     private static String getRecordURI(String pi, String imageNo, String logId, PageType pageType) {
         String prettyId = "";

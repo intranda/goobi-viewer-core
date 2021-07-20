@@ -58,6 +58,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileResourceManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -73,6 +74,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
+import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 import io.goobi.viewer.model.viewer.CollectionLabeledLink;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.LabeledLink;
@@ -1964,5 +1966,48 @@ public class NavigationHelper implements Serializable {
 
     public boolean isSolrIndexOnline() {
         return DataManager.getInstance().getSearchIndex().isSolrIndexOnline();
+    }
+    
+    /**
+     * If the current page url is a search page url without or with empty search parameters 
+     * replace {@link ViewHistory#getCurrentView(javax.servlet.ServletRequest)} with a search url containing the default 
+     * sort string.
+     * This is done so the view history contains the current random seed for random search list sorting and returning to the page
+     * yields the same ordering as the original call.
+     * Must be called in the pretty mappings for all search urls which deliver randomly sorted hitlists 
+     */
+    public void addSearchUrlWithCurrentSortStringToHistory() {
+        ViewHistory.getCurrentView(BeanUtils.getRequest())
+        .ifPresent(path -> {
+            ViewerPath sortStringPath = setupRandomSearchSeed(path);
+            if(sortStringPath != path) {
+                ViewHistory.setCurrentView(sortStringPath, BeanUtils.getSession());
+            }
+        });
+    }
+
+    private ViewerPath setupRandomSearchSeed(ViewerPath path) {
+        String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
+        if("RANDOM".equalsIgnoreCase(defaultSortField)) {
+            String parameterPath = path.getParameterPath().toString();
+            if(StringUtils.isBlank(parameterPath) || parameterPath.matches("\\/?-\\/-\\/\\d+\\/-\\/-\\/?")) {
+                SearchBean sb = BeanUtils.getSearchBean();
+                if(sb != null) { 
+                    String pageUrl = PrettyUrlTools.getRelativePageUrl("newSearch5", 
+                            sb.getFacets().getCurrentHierarchicalFacetString(), 
+                            sb.getExactSearchString(),
+                            sb.getCurrentPage(),
+                            sb.getSortString(),
+                            sb.getFacets().getCurrentFacetString());
+                    try {
+                        ViewerPath newPath = ViewerPathBuilder.createPath(path.getApplicationUrl(), path.getApplicationName(), pageUrl, path.getQueryString()).orElse(path);
+                        return newPath;
+                    } catch (DAOException e) {
+                        logger.error("Error creating search url with current random sort string", e);
+                    }
+                }
+            }
+        }
+        return path;
     }
 }

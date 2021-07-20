@@ -1776,6 +1776,7 @@ public class CmsBean implements Serializable {
         }
         if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
             ((SearchFunctionality) item.getFunctionality()).search(item.getOwnerPageLanguageVersion().getOwnerPage().getSubThemeDiscriminatorValue());
+            navigationHelper.addSearchUrlWithCurrentSortStringToHistory();
         } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
             Search search = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
             search.setQuery(item.getSolrQuery());

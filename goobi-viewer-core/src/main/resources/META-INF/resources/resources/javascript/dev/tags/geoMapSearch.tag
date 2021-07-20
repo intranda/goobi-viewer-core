@@ -28,6 +28,7 @@ initMap() {
 	        popover: $("<div><p data-metadata='title'></p></div>"),
 	        popoverOnHover: true,
 	        emptyMarkerMessage: undefined,
+	        clusterMarkers: true,
 // 	        markerIcon: {
 // 	            shape: "circle",
 // 	            prefix: "fa",

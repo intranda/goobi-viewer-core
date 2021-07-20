@@ -2554,8 +2554,8 @@ public final class SearchHelper {
      * @return a {@link java.util.List} object.
      */
     public static List<String> getAllFacetFields(List<String> hierarchicalFacetFields) {
-        List<String> facetFields = DataManager.getInstance().getConfiguration().getDrillDownFields();
-        Optional<String> geoFacetField = Optional.ofNullable(DataManager.getInstance().getConfiguration().getGeoDrillDownField());
+        List<String> facetFields = DataManager.getInstance().getConfiguration().getFacetFields();
+        Optional<String> geoFacetField = Optional.ofNullable(DataManager.getInstance().getConfiguration().getGeoFacetFields());
         List<String> allFacetFields = new ArrayList<>(hierarchicalFacetFields.size() + facetFields.size() + (geoFacetField.isPresent() ? 1 : 0));
         allFacetFields.addAll(hierarchicalFacetFields);
         allFacetFields.addAll(facetFields);

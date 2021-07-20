@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.archives;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -134,6 +135,20 @@ public class ArchiveTree implements Serializable {
     public List<ArchiveEntry> getTreeView() {
         return getTreeViewForGroup(DEFAULT_GROUP);
     }
+    
+    public List<ArchiveEntry> getFilteredTreeView(boolean searchActive) {
+        logger.debug("getFilteredTreeView");
+        List<ArchiveEntry> ret = new ArrayList<>();
+        
+        for(ArchiveEntry entry : getTreeView()) {
+            if(entry.isVisible()  && (!searchActive || entry.isDisplaySearch() )) {
+                ret.add(entry);
+            }
+        }
+        
+        logger.debug("getFilteredTreeView END");
+        return ret;
+    }
 
     /**
      *
@@ -208,6 +223,7 @@ public class ArchiveTree implements Serializable {
      * @return the selectedEntry
      */
     public ArchiveEntry getSelectedEntry() {
+        // logger.trace("getSelectedEntry");
         return selectedEntry;
     }
 

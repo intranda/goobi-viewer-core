@@ -1201,7 +1201,7 @@ public final class SolrSearchIndex {
      * @throws IndexUnreachableException
      * @should return correct values
      */
-    public Map<String, String> getLabelValuesForDrillDownField(String field, String labelField, Set<String> values)
+    public Map<String, String> getLabelValuesForFacetField(String field, String labelField, Set<String> values)
             throws PresentationException, IndexUnreachableException {
         if (field == null || labelField == null || values == null || values.isEmpty()) {
             return Collections.emptyMap();

@@ -431,15 +431,15 @@
                 <field>BOOL_PRIORITIZE</field>
             </static>
 		</sorting>
-		<drillDown>
+		<facets>
 			<hierarchicalField initialElementNumber="4" priorityValues="collection2;collection1">DC</hierarchicalField>
 			<field labelField="MD_FIELDLABEL" sortOrder="numerical">YEAR</field>
 			<hierarchicalField labelField="MD_FIRSTNAME" sortOrder="alphabetical">MD_CREATOR</hierarchicalField>
 			<field initialElementNumber="16" priorityValues="val1;val2;val3">MD_PLACEPUBLISH</field>
-			<!-- initialElementNumber: sets the initial number of drill-down elements 
+			<!-- initialElementNumber: sets the initial number of facet elements 
 				to be displayed (any field including DC). Default is 20. -->
 			<initialElementNumber>23</initialElementNumber>
-		</drillDown>
+		</facets>
 		<advanced>
 			<!-- Enables the advanced search (default is true) -->
 			<enabled>false</enabled>
@@ -1162,20 +1162,19 @@
 		<bookmarksEnabled>false</bookmarksEnabled>
 	</bookmarks>
 
-	<userComments>
-		<!-- If true, the user comments functionality is enabled. Default ist true. -->
-		<enabled>true</enabled>
-		<!-- conditionalQuery: optional restriction of the user comments function 
+    <!-- If enabled="true", the user comments functionality is enabled. Default is false. -->
+	<comments enabled="true">
+		<!-- condition: optional restriction of the user comments function 
 			(expressed as a Solr query) to records that match certain criteria. The criteria 
 			must apply to the root structure element of the record. -->
-		<conditionalQuery>DC:varia</conditionalQuery>
+		<condition>DC:varia</condition>
 		<!-- notifationEmailAddress: E-mail addresses to which notifications for 
 			new comments will be sent. Can be added multiple times for multiple recipients. -->
 		<notificationEmailAddress>notificationEmailAddress_1
 		</notificationEmailAddress>
 		<notificationEmailAddress>notificationEmailAddress_2
 		</notificationEmailAddress>
-	</userComments>
+	</comments>
 
 	<cms>
 		<!-- useCustomNavBar: enables the use of a custom navigation navigation 

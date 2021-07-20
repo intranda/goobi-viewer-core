@@ -1454,21 +1454,21 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isUserCommentsEnabled()
+     * @see Configuration#isCommentsEnabled()
      * @verifies return correct value
      */
     @Test
     public void isUserCommentsEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isUserCommentsEnabled());
+        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isCommentsEnabled());
     }
 
     /**
-     * @see Configuration#getUserCommentsConditionalQuery()
+     * @see Configuration#getCommentsCondition()
      * @verifies return correct value
      */
     @Test
-    public void getUserCommentsConditionalQuery_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("DC:varia", DataManager.getInstance().getConfiguration().getUserCommentsConditionalQuery());
+    public void getUserCommentsCondition_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("DC:varia", DataManager.getInstance().getConfiguration().getCommentsCondition());
     }
 
     /**
@@ -1715,12 +1715,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getAllDrillDownFields()
+     * @see Configuration#getAllFacetFields()
      * @verifies return correct order
      */
     @Test
-    public void getAllDrillDownFields_shouldReturnCorrectOrder() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getAllDrillDownFields();
+    public void getAllFacetFields_shouldReturnCorrectOrder() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getAllFacetFields();
         Assert.assertEquals(4, result.size());
         Assert.assertEquals("DC", result.get(0));
         Assert.assertEquals("YEAR", result.get(1));
@@ -1729,50 +1729,50 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getDrillDownFields()
+     * @see Configuration#getFacetFields()
      * @verifies return all values
      */
     @Test
-    public void getDrillDownFields_shouldReturnAllValues() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getDrillDownFields().size());
+    public void geFacetFields_shouldReturnAllValues() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getFacetFields().size());
     }
 
     /**
-     * @see Configuration#getHierarchicalDrillDownFields()
+     * @see Configuration#getHierarchicalFacetFields()
      * @verifies return all values
      */
     @Test
-    public void getHierarchicalDrillDownFields_shouldReturnAllValues() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().size());
+    public void getHierarchicalFacetFields_shouldReturnAllValues() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().size());
     }
 
     /**
-     * @see Configuration#getInitialDrillDownElementNumber()
+     * @see Configuration#getInitialFacetElementNumber()
      * @verifies return correct value
      */
     @Test
-    public void getInitialDrillDownElementNumber_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(SolrConstants.DC));
-        Assert.assertEquals(16, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("MD_PLACEPUBLISH"));
-        Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(null));
+    public void getInitialFacetElementNumber_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(SolrConstants.DC));
+        Assert.assertEquals(16, DataManager.getInstance().getConfiguration().getInitialFacetElementNumber("MD_PLACEPUBLISH"));
+        Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(null));
     }
 
     /**
-     * @see Configuration#getInitialDrillDownElementNumber(String)
+     * @see Configuration#getInitialFacetElementNumber(String)
      * @verifies return default value if field not found
      */
     @Test
-    public void getInitialDrillDownElementNumber_shouldReturnDefaultValueIfFieldNotFound() throws Exception {
-        Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("YEAR"));
+    public void getInitialFacetElementNumber_shouldReturnDefaultValueIfFieldNotFound() throws Exception {
+        Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getInitialFacetElementNumber("YEAR"));
     }
 
     /**
-     * @see Configuration#getPriorityValuesForDrillDownField(String)
+     * @see Configuration#getPriorityValuesForFacetField(String)
      * @verifies return return all configured elements for regular fields
      */
     @Test
-    public void getPriorityValuesForDrillDownField_shouldReturnReturnAllConfiguredElementsForRegularFields() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("MD_PLACEPUBLISH");
+    public void getPriorityValuesForFacetField_shouldReturnReturnAllConfiguredElementsForRegularFields() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField("MD_PLACEPUBLISH");
         Assert.assertNotNull(result);
         Assert.assertEquals(3, result.size());
         Assert.assertEquals("val1", result.get(0));
@@ -1781,12 +1781,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getPriorityValuesForDrillDownField(String)
+     * @see Configuration#getPriorityValuesForFacetField(String)
      * @verifies return return all configured elements for hierarchical fields
      */
     @Test
-    public void getPriorityValuesForDrillDownField_shouldReturnReturnAllConfiguredElementsForHierarchicalFields() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("DC");
+    public void getPriorityValuesForFacetField_shouldReturnReturnAllConfiguredElementsForHierarchicalFields() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField("DC");
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("collection2", result.get(0));
@@ -1794,22 +1794,22 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getLabelFieldForDrillDownField(String)
+     * @see Configuration#getLabelFieldForFacetField(String)
      * @verifies return correct value
      */
     @Test
-    public void getLabelFieldForDrillDownField_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("MD_FIELDLABEL", DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField(SolrConstants.YEAR));
-        Assert.assertEquals("MD_FIRSTNAME", DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField("MD_CREATOR"));
+    public void getLabelFieldForFacetField_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MD_FIELDLABEL", DataManager.getInstance().getConfiguration().getLabelFieldForFacetField(SolrConstants.YEAR));
+        Assert.assertEquals("MD_FIRSTNAME", DataManager.getInstance().getConfiguration().getLabelFieldForFacetField("MD_CREATOR"));
     }
 
     /**
-     * @see Configuration#getLabelFieldForDrillDownField(String)
+     * @see Configuration#getLabelFieldForFacetField(String)
      * @verifies return null if no value found
      */
     @Test
-    public void getLabelFieldForDrillDownField_shouldReturnNullIfNoValueFound() throws Exception {
-        Assert.assertNull(DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField("MD_PLACEPUBLISH"));
+    public void getLabelFieldForFacetField_shouldReturnNullIfNoValueFound() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getConfiguration().getLabelFieldForFacetField("MD_PLACEPUBLISH"));
     }
 
     @Test
@@ -1901,12 +1901,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getUserCommentsNotificationEmailAddresses()
+     * @see Configuration#getCommentsNotificationEmailAddresses()
      * @verifies return all configured elements
      */
     @Test
     public void getUserCommentsNotificationEmailAddresses_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getUserCommentsNotificationEmailAddresses().size());
+        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getCommentsNotificationEmailAddresses().size());
     }
 
     /**

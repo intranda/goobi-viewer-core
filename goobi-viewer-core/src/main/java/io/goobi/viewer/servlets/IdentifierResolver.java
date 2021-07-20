@@ -231,7 +231,7 @@ public class IdentifierResolver extends HttpServlet {
             // }
 
             String pi = (String) targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-            int page = 1;
+            int page = 0;
 
             // Deleted record check
             if (targetDoc.getFieldValue(SolrConstants.DATEDELETED) != null) {
@@ -291,7 +291,7 @@ public class IdentifierResolver extends HttpServlet {
                 return;
             }
 
-            String result = constructUrl(targetDoc, false);
+            String result = page == 0 ? constructUrl(targetDoc, false) : constructUrl(targetDoc, false, page);
             logger.trace("URL: {}", result);
 
             // 5. redirect or forward using the target field value

@@ -103,8 +103,9 @@
 	                   		fixed: false,
 	                   		layer: {
 		                   		allowMovingFeatures: false,
-		                   		popoverOnHover: false,
-		                   		clusterMarkers: false,
+		                   		popoverOnHover: true,
+		                   		popover: $("<div><p data-metadata='title'></p></div>"),
+		                   		clusterMarkers: true,
 		                   		style: {
 		                   		    fillOpacity: 0.02
 		                   		}
