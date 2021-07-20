@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLNonTransientConnectionException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -3790,9 +3791,9 @@ public class JPADAO implements IDAO {
     @Override
     public boolean checkAvailability() {
         try {
-            preQuery();
+            getRole(1);
             return true;
-        } catch (DAOException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage());
         }
         
