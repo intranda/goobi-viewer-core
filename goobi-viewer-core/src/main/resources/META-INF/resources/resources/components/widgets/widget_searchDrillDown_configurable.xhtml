@@ -64,21 +64,21 @@
                                         </ui:repeat>
                                     </ul>
 
-                                    <!-- EXPAND/COLLAPSE DRILLDOWN -->
-                                    <ui:fragment rendered="#{searchBean.facets.isDisplayDrillDownExpandLink(field)}">
+                                    <!-- EXPAND/COLLAPSE FACET -->
+                                    <ui:fragment rendered="#{searchBean.facets.isDisplayFacetExpandLink(field)}">
                                         <div class="widget-search-drilldown__collapse">
                                             <h:commandLink
-                                                action="#{searchBean.facets.expandDrillDown(field)}" title="#{msg.slideDown}">
+                                                action="#{searchBean.facets.expandFacet(field)}" title="#{msg.slideDown}">
                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-collapse-link" value="collapse-link" />
                                                 <f:ajax render="collectionDrillDownPanelGroup" />
                                             </h:commandLink>
                                         </div>
                                     </ui:fragment>
-                                    <ui:fragment rendered="#{searchBean.facets.isDisplayDrillDownCollapseLink(field)}">
+                                    <ui:fragment rendered="#{searchBean.facets.isDisplayFacetCollapseLink(field)}">
                                         <div class="widget-search-drilldown__collapse">
                                             <h:commandLink
-                                                action="#{searchBean.facets.collapseDrillDown(field)}" title="#{msg.slideUp}">
+                                                action="#{searchBean.facets.collapseFacet(field)}" title="#{msg.slideUp}">
                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-collapse-link" value="collapse-link" />
                                                 <f:ajax render="collectionDrillDownPanelGroup" />

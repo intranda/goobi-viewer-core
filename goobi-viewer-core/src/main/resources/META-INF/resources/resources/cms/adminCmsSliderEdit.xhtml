@@ -162,7 +162,7 @@
 												<div class="form-group form-row">
 													<div class="col-2 control-label admin__form-label">
 														<label for="collectionsSelect">
-															#{msg.cms_collections}: <span
+															#{msg.admin__cms_collections}: <span
 															class="admin__label-required-field">(#{msg.form__required_field})</span>
 														</label>
 													</div>
@@ -184,7 +184,7 @@
 															<f:selectItems 
 																value="#{cmsSliderEditBean.availableCollections}"
 																var="collection"
-																itemLabel="#{collection.label}"
+																itemLabel="#{msg[collection.solrFieldValue]}"
 																itemValue="#{collection.toString()}"
 															></f:selectItems>
 															<f:ajax event="change" render="previewSlider"/>

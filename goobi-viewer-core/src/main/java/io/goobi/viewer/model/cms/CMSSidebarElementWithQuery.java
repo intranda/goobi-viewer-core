@@ -214,12 +214,12 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
-     * Currently only used for configurable search drillDown. Return the configured drillDown fields
+     * Currently only used for configurable search facets. Return the configured facet fields
      * 
      * @return a list of possible values for searchField for this widget
      */
     public List<String> getSearchFieldOptions() {
-        return DataManager.getInstance().getConfiguration().getAllDrillDownFields();
+        return DataManager.getInstance().getConfiguration().getAllFacetFields();
     }
 
 }

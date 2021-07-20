@@ -2589,14 +2589,22 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the names of all configured drill-down fields in the order they appear in the list, no matter whether they're regular or hierarchical.
+     * Returns the names of all configured facet fields in the order they appear in the list, no matter whether they're regular or hierarchical.
      *
      * @return List of regular and hierarchical fields in the order in which they appear in the config file
      * @should return correct order
      */
-    public List<String> getAllDrillDownFields() {
-        HierarchicalConfiguration drillDown = getLocalConfigurationAt("search.drillDown");
-        List<ConfigurationNode> nodes = drillDown.getRootNode().getChildren();
+    public List<String> getAllFacetFields() {
+        HierarchicalConfiguration facets = getLocalConfigurationAt("search.facets");
+        if (facets == null) {
+            getLocalConfigurationAt("search.drillDown");
+            logger.warn("Old configuration found: search.drillDown; please update to search.facets");
+        }
+        if (facets == null) {
+            logger.warn("Config element not found: search.facets");
+            return Collections.emptyList();
+        }
+        List<ConfigurationNode> nodes = facets.getRootNode().getChildren();
         if (!nodes.isEmpty()) {
             List<String> ret = new ArrayList<>(nodes.size());
             for (ConfigurationNode node : nodes) {
@@ -2617,35 +2625,43 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getDrillDownFields.
+     * Returns a list containing all simple facet fields.
      * </p>
      *
      * @should return all values
      * @return a {@link java.util.List} object.
      */
-    public List<String> getDrillDownFields() {
-        return getLocalList("search.drillDown.field");
+    public List<String> getFacetFields() {
+        return getLocalList("search.facets.field");
     }
 
     /**
      * <p>
-     * getHierarchicalDrillDownFields.
+     * getHierarchicalFacetFields.
      * </p>
      *
      * @should return all values
      * @return a {@link java.util.List} object.
      */
-    public List<String> getHierarchicalDrillDownFields() {
-        return getLocalList("search.drillDown.hierarchicalField");
-    }
-
-    public String getGeoDrillDownField() {
-        return getLocalString("search.drillDown.geoField");
+    public List<String> getHierarchicalFacetFields() {
+        return getLocalList("search.facets.hierarchicalField");
     }
 
     /**
      * <p>
-     * getInitialDrillDownElementNumber.
+     * getGeoFacetFields.
+     * </p>
+     * 
+     * @should return all values
+     * @return a {@link java.util.List} object.
+     */
+    public String getGeoFacetFields() {
+        return getLocalString("search.facets.geoField");
+    }
+
+    /**
+     * <p>
+     * getInitialFacetElementNumber.
      * </p>
      *
      * @should return correct value
@@ -2653,16 +2669,16 @@ public final class Configuration extends AbstractConfiguration {
      * @param field a {@link java.lang.String} object.
      * @return a int.
      */
-    public int getInitialDrillDownElementNumber(String field) {
+    public int getInitialFacetElementNumber(String field) {
         if (StringUtils.isBlank(field)) {
-            return getLocalInt("search.drillDown.initialElementNumber", 3);
+            return getLocalInt("search.facets.initialElementNumber", 3);
         }
 
         String facetifiedField = SearchHelper.facetifyField(field);
         // Regular fields
-        List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        List<HierarchicalConfiguration> facetFields = getLocalConfigurationsAt("search.facets.field");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
                         || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2674,9 +2690,9 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
         // Hierarchical fields
-        drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
                         || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2688,7 +2704,6 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        // return getLocalInt("search.drillDown.initialElementNumber", 3);
         return -1;
     }
 
@@ -2708,9 +2723,9 @@ public final class Configuration extends AbstractConfiguration {
         String facetifiedField = SearchHelper.facetifyField(field);
 
         // Regular fields
-        List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        List<HierarchicalConfiguration> facetFields = getLocalConfigurationsAt("search.facets.field");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
                         || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2725,9 +2740,9 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
         // Hierarchical Field
-        drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
                         || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2746,14 +2761,14 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns a list of values to prioritize for the given drill-down field.
+     * Returns a list of values to prioritize for the given facet field.
      *
      * @param field a {@link java.lang.String} object.
      * @return List of priority values; empty list if none found for the given field
      * @should return return all configured elements for regular fields
      * @should return return all configured elements for hierarchical fields
      */
-    public List<String> getPriorityValuesForDrillDownField(String field) {
+    public List<String> getPriorityValuesForFacetField(String field) {
         if (StringUtils.isBlank(field)) {
             return Collections.emptyList();
         }
@@ -2761,9 +2776,9 @@ public final class Configuration extends AbstractConfiguration {
         String facetifiedField = SearchHelper.facetifyField(field);
 
         // Regular fields
-        List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        List<HierarchicalConfiguration> facetFields = getLocalConfigurationsAt("search.facets.field");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
                         || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2780,9 +2795,9 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         // Hierarchical Field
-        drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
                         || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2808,16 +2823,16 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @should return null if no value found
      */
-    public String getLabelFieldForDrillDownField(String facetField) {
+    public String getLabelFieldForFacetField(String facetField) {
         if (StringUtils.isBlank(facetField)) {
             return null;
         }
 
         String facetifiedField = SearchHelper.facetifyField(facetField);
         // Regular fields
-        List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        List<HierarchicalConfiguration> facetFields = getLocalConfigurationsAt("search.facets.field");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(facetField)
                         || fieldConfig.getRootNode().getValue().equals(facetField + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2829,9 +2844,9 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
         // Hierarchical fields
-        drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(facetField)
                         || fieldConfig.getRootNode().getValue().equals(facetField + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {

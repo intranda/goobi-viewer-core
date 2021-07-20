@@ -476,8 +476,8 @@ public class ViewerResourceBundle extends ResourceBundle {
         }
 
         // Remove trailing _DD (collection names for drill-down)
-        if (key.endsWith(SolrConstants._DRILLDOWN_SUFFIX)) {
-            String newKey = key.replace(SolrConstants._DRILLDOWN_SUFFIX, "");
+        if (key.endsWith(SolrConstants._FACETS_SUFFIX)) {
+            String newKey = key.replace(SolrConstants._FACETS_SUFFIX, "");
             if (bundle.containsKey(newKey)) {
                 return bundle.getString(newKey);
             }

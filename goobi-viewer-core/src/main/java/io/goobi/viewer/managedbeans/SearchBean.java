@@ -1268,9 +1268,9 @@ public class SearchBean implements SearchInterface, Serializable {
     public String getSortString() {
         if (StringUtils.isEmpty(sortString)) {
             String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
-            if("RANDOM".equalsIgnoreCase(defaultSortField)) {
+            if ("RANDOM".equalsIgnoreCase(defaultSortField)) {
                 setSortString(defaultSortField);
-            } else {                
+            } else {
                 return "-";
             }
         }
@@ -2435,7 +2435,7 @@ public class SearchBean implements SearchInterface, Serializable {
         //fallback
         return "pretty:search5";
     }
-    
+
     private URI getParameterPath(URI basePath) {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
         basePath = ViewerPathBuilder.resolve(basePath, "-");
@@ -2456,6 +2456,23 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * 
+     * @param field
+     * @param subQuery
+     * @param resultLimit
+     * @param reverseOrder
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @deprecated Use SearchBean.getStaticFacets(String, String, Integer, Boolean)
+     */
+    @Deprecated
+    public List<IFacetItem> getStaticDrillDown(String field, String subQuery, Integer resultLimit, final Boolean reverseOrder)
+            throws PresentationException, IndexUnreachableException {
+        return getStaticFacets(field, subQuery, resultLimit, reverseOrder);
+    }
+
+    /**
      * Returns a list of FilterLink elements for the given field over all documents in the index (optionally filtered by a subquery). Replaces the
      * method in the old TagLib class.
      *
@@ -2467,7 +2484,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public List<IFacetItem> getStaticDrillDown(String field, String subQuery, Integer resultLimit, final Boolean reverseOrder)
+    public List<IFacetItem> getStaticFacets(String field, String subQuery, Integer resultLimit, final Boolean reverseOrder)
             throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder(100);
         sbQuery.append(SearchHelper.ALL_RECORDS_QUERY)
@@ -2479,7 +2496,6 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             sbQuery.append(" AND (").append(subQuery).append(')');
         }
-        // logger.debug("getDrillDown query: " + query);
         field = SearchHelper.facetifyField(field);
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
@@ -2503,7 +2519,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 })
                         .limit(resultLimit > 0 ? resultLimit : resp.getFacetField(field).getValues().size())
                         .collect(Collectors.toMap(Count::getName, Count::getCount));
-        List<String> hierarchicalFields = DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields();
+        List<String> hierarchicalFields = DataManager.getInstance().getConfiguration().getHierarchicalFacetFields();
         Locale locale = null;
         NavigationHelper nh = BeanUtils.getNavigationHelper();
         if (nh != null) {
@@ -2662,13 +2678,13 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public List<String> getHitsLocations() {
-        if(this.currentSearch != null) {
+        if (this.currentSearch != null) {
             return this.currentSearch.getHitsLocationList().stream().map(l -> l.getGeoJson()).collect(Collectors.toList());
         } else {
             return Collections.emptyList();
         }
     }
-    
+
     public GeoMap getHitsMap() {
         GeoMap map = new GeoMap();
         map.setType(GeoMapType.MANUAL);

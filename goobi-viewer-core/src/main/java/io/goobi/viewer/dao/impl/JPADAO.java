@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLNonTransientConnectionException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -3782,6 +3783,22 @@ public class JPADAO implements IDAO {
         }
 
     }
+    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#checkAvailability()
+     */
+    @Override
+    public boolean checkAvailability() {
+        try {
+            getRole(1);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        
+        return false;
+    }
 
     /*
      * (non-Javadoc)
@@ -5259,5 +5276,4 @@ public class JPADAO implements IDAO {
 
         return pageList;
     }
-
 }

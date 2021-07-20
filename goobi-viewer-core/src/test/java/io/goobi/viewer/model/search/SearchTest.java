@@ -55,7 +55,7 @@ public class SearchTest extends AbstractTest {
         List<IArea> locs = Search.getLocations(fieldValue);
         assertEquals(5, locs.size());
         Location location = new Location(locs.get(0), "Label", URI.create("#"));
-        System.out.println(location.getGeoJson());
+        //System.out.println(location.getGeoJson());
     }
     
     @Test
@@ -65,6 +65,6 @@ public class SearchTest extends AbstractTest {
         List<IArea> locs = Search.getLocations(fieldValue);
         assertEquals(2, locs.size());
         Location location = new Location(locs.get(0), "Label", URI.create("#"));
-        System.out.println(location.getGeoJson());
+        //System.out.println(location.getGeoJson());
     }
 }
