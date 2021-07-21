@@ -23,6 +23,7 @@ import io.goobi.viewer.exceptions.DAOException;
 /**
  * extends cms_record_notes table by row 'note_type' which discriminates between the implementing classes.
  * Existing notes are set to note_type = 'SINGLE' 
+ * Also adds default values to columns which only exist for one implementing class and sets columntype if neccessary
  * 
  * 
  * @author florian
@@ -37,7 +38,12 @@ public class CMSRecordNoteUpdate implements IModelUpdate {
     @Override
     public boolean update(IDAO dao) throws DAOException, SQLException {
         dao.startTransaction();
-        int count = dao.createNativeQuery("UPDATE cms_record_notes SET note_type=\"SINGLE\" WHERE note_type IS NULL").executeUpdate();
+        dao.createNativeQuery("UPDATE cms_record_notes SET note_type=\"SINGLE\" WHERE note_type IS NULL").executeUpdate();
+        dao.createNativeQuery("ALTER TABLE cms_record_notes MODIFY record_title varchar(4096)").executeUpdate();
+        dao.createNativeQuery("ALTER TABLE cms_record_notes ALTER record_title SET DEFAULT ''").executeUpdate();
+        dao.createNativeQuery("ALTER TABLE cms_record_notes MODIFY query varchar(4096)").executeUpdate();
+        dao.createNativeQuery("ALTER TABLE cms_record_notes ALTER query SET DEFAULT ''").executeUpdate();
+        dao.createNativeQuery("ALTER TABLE cms_record_notes ALTER record_pi SET DEFAULT ''").executeUpdate();
         dao.commitTransaction();
         return true;
     }

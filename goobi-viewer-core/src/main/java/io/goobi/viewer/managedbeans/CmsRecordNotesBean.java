@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -197,7 +198,7 @@ public class CmsRecordNotesBean implements Serializable{
     public List<CMSRecordNote> getNotesForRecord(String pi) throws DAOException {
         List<CMSRecordNote> notes = new ArrayList<>();
         notes.addAll(DataManager.getInstance().getDao().getRecordNotesForPi(pi, true));
-        
+        notes.addAll(DataManager.getInstance().getDao().getAllMultiRecordNotes(true).stream().filter(note -> note.getRecords().contains(pi)).collect(Collectors.toList()));
         return notes;
     }
 }

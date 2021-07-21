@@ -63,7 +63,12 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     private Locale selectedLocale = BeanUtils.getLocale();
     private MetadataElement metadataElement = null;
     private String returnUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.adminCmsRecordNotes.getName();
-
+    
+    private String currentNoteType = RECORD_NOTE_TYPE_SINGLE;
+    
+    private static final String RECORD_NOTE_TYPE_SINGLE = "SINGLE"; 
+    private static final String RECORD_NOTE_TYPE_MULTI = "MULTI";
+    
     /**
      * @return the note
      */
@@ -311,12 +316,27 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
 
         return locale;
     }
-    
-    public String getDefaultNoteType() {
-        return "SINGLE";
+
+    /**
+     * @return the currentNoteType
+     */
+    public String getCurrentNoteType() {
+        return currentNoteType;
     }
     
-    public void setDefaultNoteType(String type) {
+    /**
+     * @param currentNoteType the currentNoteType to set
+     */
+    public void setCurrentNoteType(String currentNoteType) {
+        this.currentNoteType = currentNoteType;
+    }
+    
+    public boolean isMultiRecordNote() {
+        return this.note != null && this.note instanceof CMSMultiRecordNote;
+    }
+    
+    public boolean isSingleRecordNote() {
+        return this.note != null && this.note instanceof CMSSingleRecordNote;
     }
 
 }

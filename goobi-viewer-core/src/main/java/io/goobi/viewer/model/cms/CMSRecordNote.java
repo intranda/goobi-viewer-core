@@ -166,8 +166,8 @@ public abstract class CMSRecordNote {
         this.displayNote = displayNote;
     }
     
-    public static enum NoteType {
-        SINGLE,
-        MULTI;
-    }
+    public abstract boolean isSingleRecordNote();
+    public abstract boolean isMultiRecordNote();
+
+
 }

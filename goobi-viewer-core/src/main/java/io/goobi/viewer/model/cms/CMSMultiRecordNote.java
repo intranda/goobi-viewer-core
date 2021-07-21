@@ -15,20 +15,27 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.dao.converter.TranslatedTextConverter;
-import io.goobi.viewer.model.translations.TranslatedText;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget
@@ -48,6 +55,14 @@ public class CMSMultiRecordNote extends CMSRecordNote {
     @Column(name = "query", nullable = true)
     private String query;
 
+    /**
+     * A list of PIs for all accessible records matching the query. 
+     * If null, {@link #getRecords()} queries the solr and sets records to a list (non-null) containing the matching results.
+     * Reset to null when loaded for editing and when the query is changed
+     */
+    @Transient
+    private List<String> records = null;
+
     public CMSMultiRecordNote() {
     }
 
@@ -64,8 +79,8 @@ public class CMSMultiRecordNote extends CMSRecordNote {
      */
     public CMSMultiRecordNote(CMSRecordNote source) {
         super(source);
-        if(source instanceof CMSMultiRecordNote) {            
-            this.query = ((CMSMultiRecordNote)source).query;
+        if (source instanceof CMSMultiRecordNote) {
+            this.query = ((CMSMultiRecordNote) source).query;
         }
     }
 
@@ -75,12 +90,62 @@ public class CMSMultiRecordNote extends CMSRecordNote {
     public String getQuery() {
         return query;
     }
-    
+
     /**
      * @param query the query to set
      */
     public void setQuery(String query) {
+        if(!StringUtils.equals(query, this.query)) {            
+            this.records = null;
+        }
         this.query = query;
+    }
+
+    /**
+     * @return a list of PIs of all records matching the query
+     */
+    public List<String> getRecords() {
+        if (this.records == null) {
+            try {
+                this.records = searchRecords();
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error("Error querying records for MultiRecordNote", e);
+                return Collections.emptyList();
+            }
+        }
+        return this.records;
+    }
+
+    private List<String> searchRecords() throws PresentationException, IndexUnreachableException {
+        String solrQuery = "+(" + this.query + ") +(ISWORK:* ISANCHOR:*)";
+
+        List<String> pis = new ArrayList<>();
+
+        SolrDocumentList solrDocs = DataManager.getInstance()
+                .getSearchIndex()
+                .search(solrQuery, 0, Integer.MAX_VALUE, null, null, Arrays.asList(SolrConstants.PI))
+                .getResults();
+        for (SolrDocument doc : solrDocs) {
+            String pi = (String) SolrTools.getSingleFieldValue(doc, SolrConstants.PI);
+            pis.add(pi);
+        }
+        return pis;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSRecordNote#isSingleRecordNote()
+     */
+    @Override
+    public boolean isSingleRecordNote() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSRecordNote#isMultiRecordNote()
+     */
+    @Override
+    public boolean isMultiRecordNote() {
+        return true;
     }
 
 }

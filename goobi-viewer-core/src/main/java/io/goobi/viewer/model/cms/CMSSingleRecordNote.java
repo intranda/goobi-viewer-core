@@ -47,7 +47,7 @@ public class CMSSingleRecordNote extends CMSRecordNote {
     /**
      * Title of the record this note relates to; used for searching in notes. This is mulitlangual since record titles may be multilangual too
      */
-    @Column(name = "record_title", columnDefinition = "TEXT")
+    @Column(name = "record_title", columnDefinition = "varchar(4096)", nullable= true )
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText recordTitle = new TranslatedText();
 
@@ -99,6 +99,22 @@ public class CMSSingleRecordNote extends CMSRecordNote {
      */
     public void setRecordTitle(TranslatedText recordTitle) {
         this.recordTitle = recordTitle;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSRecordNote#isSingleRecordNote()
+     */
+    @Override
+    public boolean isSingleRecordNote() {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSRecordNote#isMultiRecordNote()
+     */
+    @Override
+    public boolean isMultiRecordNote() {
+        return false;
     }
 
 }
