@@ -45,7 +45,7 @@
 								</div>	    
 							</div>                    
 					 <h:inputText
-						 id="feedbackEmail" label="feedbackEmail" immediate="true" required="true" value="#{userBean.feedback.email}"
+						 id="feedbackEmail" label="feedbackEmail" immediate="true" required="true" value="#{userBean.feedback.senderAddress}"
 						 styleClass="form-control">
 						 <f:validator validatorId="emailValidator" for="feedbackEmail" />
 						 <f:ajax render="emailGroup" />
@@ -66,7 +66,7 @@
 								<div class="cms-module__option-message-mark">
 								    <i class="fa fa-check" aria-hidden="true"></i>
 								    <i class="fa fa-exclamation" aria-hidden="true"></i>
-								</div>	    
+								</div>
 							</div>                    
 					 <h:inputText
 						 id="feedbackEmail2" label="feedbackEmail2" immediate="true" required="true"  disabled="true" value="#{userBean.feedback.senderAddress}"

@@ -99,25 +99,24 @@ public class Feedback implements Serializable {
 
     /**
      * <p>
-     * Getter for the field <code>email</code>.
+     * Getter for the field <code>senderAddress</code>.
      * </p>
      *
-     * @return the email
+     * @return the senderAddress
      */
-    public String getEmail() {
+    public String getSenderAddress() {
         return senderAddress;
     }
 
     /**
      * <p>
-     * Setter for the field <code>email</code>.
+     * Setter for the field <code>senderAddress</code>.
      * </p>
      *
-     * @param email the email to set
+     * @param senderAddress the senderAddress to set
      */
-    public void setEmail(String email) {
-        // logger.trace("setEmail: {}", email);
-        this.senderAddress = email;
+    public void setSenderAddress(String senderAddress) {
+        this.senderAddress = senderAddress;
     }
 
     /**

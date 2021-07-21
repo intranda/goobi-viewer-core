@@ -788,7 +788,7 @@ public class UserBean implements Serializable {
         String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
         feedback = new Feedback();
         if (user != null) {
-            feedback.setEmail(user.getEmail());
+            feedback.setSenderAddress(user.getEmail());
         }
         if (StringUtils.isEmpty(url)) {
             url = navigationHelper.getCurrentPrettyUrl();
@@ -815,9 +815,9 @@ public class UserBean implements Serializable {
             logger.debug("Honeypot field entry: {}", lastName);
             return "";
         }
-        if (!EmailValidator.validateEmailAddress(this.feedback.getEmail())) {
+        if (!EmailValidator.validateEmailAddress(this.feedback.getSenderAddress())) {
             Messages.error("email_errlnvalid");
-            logger.debug("Invalid email: " + this.feedback.getEmail());
+            logger.debug("Invalid email: " + this.feedback.getSenderAddress());
             return "";
         }
         if (StringUtils.isBlank(feedback.getName())) {
@@ -836,13 +836,13 @@ public class UserBean implements Serializable {
             if (NetTools.postMail(Collections.singletonList(feedback.getRecipientAddress()),
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
                 // Send confirmation to sender
-                if (StringUtils.isNotEmpty(feedback.getEmail()) && !NetTools.postMail(Collections.singletonList(feedback.getEmail()),
+                if (StringUtils.isNotEmpty(feedback.getSenderAddress()) && !NetTools.postMail(Collections.singletonList(feedback.getSenderAddress()),
                         feedback.getEmailSubject("feedbackEmailSubjectSender"), feedback.getEmailBody("feedbackEmailBody"))) {
                     logger.warn("Could not send feedback confirmation to sender.");
                 }
                 Messages.info("feedbackSubmitted");
             } else {
-                logger.error("{} could not send feedback.", feedback.getEmail());
+                logger.error("{} could not send feedback.", feedback.getSenderAddress());
                 Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
                         .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
             }
