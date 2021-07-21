@@ -200,9 +200,7 @@ public class CitationLink {
                     query = SolrConstants.PI + ":" + viewManager.getPi();
                     break;
                 case DOCSTRUCT:
-                    query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + viewManager.getPi() + " +" + SolrConstants.LOGID + ":" + viewManager.getLogId()
-                            + " +" + SolrConstants.DOCTYPE
-                            + ":" + DocType.DOCSTRCT.name();
+                    query = "+" + SolrConstants.IDDOC + ":" + viewManager.getCurrentStructElement().getLuceneId();
                     break;
                 case IMAGE:
                     query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + viewManager.getPi() + " +" + SolrConstants.ORDER + ":"

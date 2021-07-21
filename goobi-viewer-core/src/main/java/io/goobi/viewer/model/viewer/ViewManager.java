@@ -3714,7 +3714,7 @@ public class ViewManager implements Serializable {
      */
     public boolean isDisplayCiteLinkDocstruct() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && currentStructElement != null
-                && currentStructElement != topStructElement;
+                && currentStructElement.getLuceneId() != topStructElement.getLuceneId();
     }
 
     /**
