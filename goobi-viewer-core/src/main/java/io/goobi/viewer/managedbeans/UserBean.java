@@ -200,7 +200,7 @@ public class UserBean implements Serializable {
             logFailedUserRegistration();
             logger.debug("E-mail could not be sent");
             Messages.error(ViewerResourceBundle.getTranslation("errSendEmail", null)
-                    .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                    .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
         } else {
             Messages.error("user_passwordMismatch");
         }
@@ -515,6 +515,7 @@ public class UserBean implements Serializable {
                 BeanUtils.getActiveDocumentBean().resetAccess();
                 BeanUtils.getSessionBean().cleanSessionObjects();
             } catch (Throwable e) {
+                logger.error(e.getMessage());
             }
 
             this.authenticationProviders = null;
@@ -625,7 +626,7 @@ public class UserBean implements Serializable {
             sb.append(ViewerResourceBundle.getTranslation("user_activationEmailBody", null)
                     .replace("{0}", baseUrl)
                     .replace("{1}", activationUrl)
-                    .replace("{2}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                    .replace("{2}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
 
             // Send
             try {
@@ -684,7 +685,7 @@ public class UserBean implements Serializable {
                     }
                 }
                 Messages.error(ViewerResourceBundle.getTranslation("user_retrieveAccountError", null)
-                        .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                        .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
                 return "userRetrieveAccount";
             }
 
@@ -732,7 +733,7 @@ public class UserBean implements Serializable {
                 }
             }
             Messages.error(ViewerResourceBundle.getTranslation("user_retrieveAccountError", null)
-                    .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                    .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
             return "user?faces-redirect=true";
         }
 
@@ -827,8 +828,12 @@ public class UserBean implements Serializable {
             Messages.error("errFeedbackMessageRequired");
             return "";
         }
+        if (StringUtils.isBlank(feedback.getRecipientAddress())) {
+            Messages.error("errFeedbackRecipientRequired");
+            return "";
+        }
         try {
-            if (NetTools.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
+            if (NetTools.postMail(Collections.singletonList(feedback.getRecipientAddress()),
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
                 // Send confirmation to sender
                 if (StringUtils.isNotEmpty(feedback.getEmail()) && !NetTools.postMail(Collections.singletonList(feedback.getEmail()),
@@ -839,16 +844,16 @@ public class UserBean implements Serializable {
             } else {
                 logger.error("{} could not send feedback.", feedback.getEmail());
                 Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                        .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                        .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
             }
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage(), e);
             Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                    .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                    .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
         } catch (MessagingException e) {
             logger.error(e.getMessage(), e);
             Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                    .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                    .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
         }
         return "";
     }

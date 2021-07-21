@@ -58,6 +58,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
@@ -672,7 +673,7 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         HierarchicalConfiguration usingTemplate = null;
-        HierarchicalConfiguration defaultTemplate = null;
+        //        HierarchicalConfiguration defaultTemplate = null;
         for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
             HierarchicalConfiguration subElement = it.next();
             if (subElement.getString("[@name]").equals(template)) {
@@ -3633,14 +3634,39 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getFeedbackEmailAddress.
+     * getFeedbackEmailAddresses.
      * </p>
      *
-     * @should return correct value
+     * @should return correct values
      * @return a {@link java.lang.String} object.
      */
-    public String getFeedbackEmailAddress() {
-        return getLocalString("user.feedbackEmailAddress");
+    public List<EmailRecipient> getFeedbackEmailRecipients() {
+        List<EmailRecipient> ret = new ArrayList<>();
+        List<HierarchicalConfiguration> licenseNodes = getLocalConfigurationsAt("user.feedbackEmailAddressList.address");
+        for (HierarchicalConfiguration node : licenseNodes) {
+            String address = node.getString(".", "");
+            if (StringUtils.isNotBlank(address)) {
+                String label = node.getString("[@label]", address);
+                boolean defaultRecipient = node.getBoolean("[@default]", false);
+                ret.add(new EmailRecipient(label, address, defaultRecipient));
+            }
+        }
+
+        return ret;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public String getDefaultFeedbackEmailAddress() {
+        for(EmailRecipient recipient : getFeedbackEmailRecipients()) {
+            if(recipient.isDefaultRecipient()) {
+                return recipient.getEmailAddress();
+            }
+        }
+        
+        return "<NOT CONFIGURED>";
     }
 
     /**
@@ -3899,7 +3925,7 @@ public final class Configuration extends AbstractConfiguration {
         for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
             HierarchicalConfiguration subElement = it.next();
             String templateName = subElement.getString("[@name]");
-            String groupBy = subElement.getString("[@groupBy]");
+            //            String groupBy = subElement.getString("[@groupBy]");
             if (templateName != null) {
                 if (templateName.equals(template)) {
                     usingTemplate = subElement;

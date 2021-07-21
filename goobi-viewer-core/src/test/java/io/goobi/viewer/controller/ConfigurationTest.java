@@ -41,14 +41,15 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.metadata.MetadataView;
+import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
-import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
@@ -261,12 +262,25 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getFeedbackEmailAddress()
-     * @verifies return correct value
+     * @see Configuration#getFeedbackEmailRecipients()
+     * @verifies return correct values
      */
     @Test
-    public void getFeedbackEmailAddress_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("feedbackEmailAddress_value", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress());
+    public void getFeedbackEmailRecipients_shouldReturnCorrectValues() throws Exception {
+        List<EmailRecipient> result = DataManager.getInstance().getConfiguration().getFeedbackEmailRecipients();
+        Assert.assertEquals(2, result.size());
+        {
+            EmailRecipient recipient = result.get(0);
+            Assert.assertEquals("Everyone", recipient.getLabel());
+            Assert.assertEquals("everyone@example.com", recipient.getEmailAddress());
+            Assert.assertTrue(recipient.isDefaultRecipient());
+        }
+        {
+            EmailRecipient recipient = result.get(1);
+            Assert.assertEquals("someone@example.com", recipient.getLabel()); // No label defined, using address
+            Assert.assertEquals("someone@example.com", recipient.getEmailAddress());
+            Assert.assertFalse(recipient.isDefaultRecipient());
+        }
     }
 
     /**
@@ -1010,7 +1024,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getThumbnailImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getThumbnailImageAccessMaxWidth());
     }
-    
+
     @Test
     public void getUnzoomedImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth());
@@ -2891,7 +2905,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getSidebarWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText());
     }
-    
 
     /**
      * @see Configuration#isDisplaySidebarWidgetUsageCitation()

@@ -37,6 +37,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.download.DownloadOption;
+import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PageType;
@@ -1359,6 +1360,14 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isAnonymousUserEmailAddressValid() {
         return EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public List<EmailRecipient> getFeedbackEmailRecipients() {
+        return DataManager.getInstance().getConfiguration().getFeedbackEmailRecipients();
     }
 
     /**

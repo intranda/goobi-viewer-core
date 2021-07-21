@@ -32,10 +32,11 @@ public class Feedback implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(Feedback.class);
 
     private String name;
-    private String email;
+    private String senderAddress;
     private String url;
     private String type;
     private String message;
+    private String recipientAddress;
 
     /**
      * <p>
@@ -62,7 +63,7 @@ public class Feedback implements Serializable {
         if (body != null) {
             body = body
                     .replace("{0}", name)
-                    .replace("{1}", email)
+                    .replace("{1}", senderAddress)
                     .replace("{2}", url)
                     .replace("{3}", message);
             // Feedback type only exists for crowdsourcing feedback
@@ -104,7 +105,7 @@ public class Feedback implements Serializable {
      * @return the email
      */
     public String getEmail() {
-        return email;
+        return senderAddress;
     }
 
     /**
@@ -116,7 +117,7 @@ public class Feedback implements Serializable {
      */
     public void setEmail(String email) {
         // logger.trace("setEmail: {}", email);
-        this.email = email;
+        this.senderAddress = email;
     }
 
     /**
@@ -183,5 +184,19 @@ public class Feedback implements Serializable {
      */
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    /**
+     * @return the recipientAddress
+     */
+    public String getRecipientAddress() {
+        return recipientAddress;
+    }
+
+    /**
+     * @param recipientAddress the recipientAddress to set
+     */
+    public void setRecipientAddress(String recipientAddress) {
+        this.recipientAddress = recipientAddress;
     }
 }
