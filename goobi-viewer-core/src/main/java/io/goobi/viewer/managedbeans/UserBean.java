@@ -830,6 +830,11 @@ public class UserBean implements Serializable {
         try {
             if (NetTools.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
+                // Send confirmation to sender
+                if (StringUtils.isNotEmpty(feedback.getEmail()) && !NetTools.postMail(Collections.singletonList(feedback.getEmail()),
+                        feedback.getEmailSubject("feedbackEmailSubjectSender"), feedback.getEmailBody("feedbackEmailBody"))) {
+                    logger.warn("Could not send feedback confirmation to sender.");
+                }
                 Messages.info("feedbackSubmitted");
             } else {
                 logger.error("{} could not send feedback.", feedback.getEmail());

@@ -1865,6 +1865,12 @@ public interface IDAO {
     public int changeCampaignStatisticContributors(User fromUser, User toUser) throws DAOException;
 
     // Misc
+    
+    /**
+     * 
+     * @return true if accessible; false otherwise
+     */
+    public boolean checkAvailability();
 
     /**
      * <p>

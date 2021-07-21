@@ -158,8 +158,9 @@
                             </ui:fragment>
                             
                             <!-- COLLECTION DESCRIPTION IMPORT -->
-                            <ui:fragment rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}">
-                                <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
+                            <h:panelGroup id="collectionImportWidget">
+                                <ui:fragment rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}">
+                                    <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
                                         <h3>#{msg.admin__cms_collections_import}</h3>
                                         <div class="admin__form-help-text in mb-2">
                                             #{msg.admin__cms_collections_import_desc}
@@ -168,11 +169,13 @@
                                             <h:commandButton
                                                 styleClass="btn btn--full"
                                                 value="#{msg.admin__cms_collections_import_start}"
-                                                action="#{cmsCollectionsBean.importDescriptionsAction}">
+                                                action="#{cmsCollectionsBean.importDescriptionsAction('DC')}">
+                                                <f:ajax render="collectionImportWidget" />
                                             </h:commandButton>
                                         </div>
-                                </h:form>
-                            </ui:fragment>
+                                    </h:form>
+                                </ui:fragment>
+                            </h:panelGroup>
                             
                             <!-- TRANSLATIONS -->
 							<ui:fragment rendered="#{userBean.admin and adminBean.displayTranslationsDashboardWidget}">
