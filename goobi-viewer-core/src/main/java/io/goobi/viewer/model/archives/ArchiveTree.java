@@ -234,6 +234,15 @@ public class ArchiveTree implements Serializable {
         logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getId() : null);
         this.selectedEntry = selectedEntry;
     }
+    
+    public void toggleSelectedEntry(ArchiveEntry selectedEntry) {
+        if(selectedEntry != null && selectedEntry.equals(this.selectedEntry)) {
+            this.selectedEntry = null;
+        } else {
+            this.selectedEntry = selectedEntry;
+        }
+    }
+
 
     /**
      * @return the trueRootElement

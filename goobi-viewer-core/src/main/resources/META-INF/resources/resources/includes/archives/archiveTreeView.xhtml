@@ -88,73 +88,65 @@
 									</ui:fragment>
 									
 									<!-- TITLE -->
-									<div class="archives-tree__list-expandable-title">
-											<ui:fragment rendered="#{entry.id == archiveBean.archiveTree.selectedEntry.id}">
-												<!-- <i class="fa fa-file-o -archives-selected" aria-hidden="true"></i> -->
+									<div class="archives-tree__list-expandable-title #{entry.id == archiveBean.archiveTree.selectedEntry.id ? '-archives-selected' : ''} #{entry.searchHit ? '-archives-search-hit':''}">
 												<span class="fa-stack" aria-hidden="true"><i
-													class="fa fa-file-o -archives-selected"></i><i
-													class="fa fa-stack-text -archives-selected">F</i></span>
+													class="fa fa-file-o"></i>
+													<i class="fa fa-stack-text">F</i></span>
 													<a class="archives-tree__selected" name="selected"></a>
-													<h:commandLink styleClass="archives-tree__active-title"
-														action="#{archiveBean.archiveTree.setSelectedEntry(null)}"
-													    value="#{entry.label}" pt:data-select-entry="">
-													    <f:ajax render="#{render}" />
-													</h:commandLink>
-											</ui:fragment>
-	                                        <ui:fragment rendered="#{entry.searchHit and entry.id != archiveBean.archiveTree.selectedEntry.id}">
-	                                            <span class="fa-stack" aria-hidden="true"><i
-	                                                class="fa fa-file-o -archives-selected"></i><i
-	                                                class="fa fa-stack-text -archives-selected">F</i></span>
-	                                            <h:commandLink styleClass="archives-tree__inactive-title"
-												action="#{archiveBean.archiveTree.setSelectedEntry(entry)}"
-													    value="#{entry.label}" style="color:#5BA2E5"
-													    pt:data-select-entry="#{entry.id}">
-													    <f:ajax render="#{render}" />
-												</h:commandLink>
-	                                        </ui:fragment>
-											<ui:fragment rendered="#{entry.id != archiveBean.archiveTree.selectedEntry.id and !entry.searchHit}">
-												<span class="fa-stack" aria-hidden="true"><i
-													class="fa fa-file-o"></i><i class="fa fa-stack-text">F</i></span>
 												<h:commandLink styleClass="archives-tree__inactive-title"
-												action="#{archiveBean.archiveTree.setSelectedEntry(entry)}"
+												action="#{archiveBean.archiveTree.toggleSelectedEntry(entry)}"
 													    value="#{entry.label}"
 													    pt:data-select-entry="#{entry.id}">
 													    <f:ajax render="#{render}" />
 												</h:commandLink>
-											</ui:fragment>
 									</div>
-									
-									<!-- METADATA -->
-									<ui:fragment rendered="#{view == 'archivetree' and entry.id == archiveBean.archiveTree.selectedEntry.id}">
-	
-										<h:panelGroup layout="block"
-											class="archives-tree__metadata-box"
-											id="metadata_#{status.count}">
-											<!-- Replacing this with c:forEach will result in getAllAreaLists() being called for each iteration -->
-											<ui:repeat var="field" value="#{entry.allAreaLists}">
-												<h:outputText rendered="#{field.filled}">
-													<div class="archives-tree__metadata-box-fields-row">
-														<div class="archives-tree__metadata-box-field-name">#{field.label}:</div>
-														<div class="archives-tree__metadata-box-field-value">#{field.value}</div>
-													</div>
-												</h:outputText>
-											</ui:repeat>
-											<div class="archives-tree__metadata-box-links">
-												<h:outputLink 
-													value="#{navigationHelper.applicationUrl}archives/?selected=#{entry.id}#selected">#{msg.archives__archiveView}</h:outputLink>
-												<!-- TODO view selection, representative page -->
-												<h:outputLink rendered="#{entry.associatedRecordPi != ''}"
-													value="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/1/">#{msg.archives__showRecord}</h:outputLink>
-											</div>
-										</h:panelGroup>
-									</ui:fragment>
+
 									</li>
 							</c:forEach>
 						</ul>
 					</nav>
+					
+					<!-- METADATA -->
+					<ui:fragment rendered="#{view == 'archivetree' and archiveBean.archiveTree.selectedEntry != null}">
+
+						<div data-metadata-id="id_#{archiveBean.archiveTree.selectedEntry.id}"
+							class="archives-tree__metadata-box">
+							<ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.allAreaLists}">
+								<h:outputText rendered="#{field.filled}">
+									<div class="archives-tree__metadata-box-fields-row">
+										<div class="archives-tree__metadata-box-field-name">#{field.label}:</div>
+										<div class="archives-tree__metadata-box-field-value">#{field.value}</div>
+									</div>
+								</h:outputText>
+							</ui:repeat>
+							<div class="archives-tree__metadata-box-links">
+								<h:outputLink 
+									value="#{navigationHelper.applicationUrl}archives/?selected=#{archiveBean.archiveTree.selectedEntry.id}#selected">#{msg.archives__archiveView}</h:outputLink>
+								<!-- TODO view selection, representative page -->
+								<h:outputLink rendered="#{archiveBean.archiveTree.selectedEntry.associatedRecordPi != ''}"
+									value="#{navigationHelper.objectUrl}/#{archiveBean.archiveTree.selectedEntry.associatedRecordPi}/1/">#{msg.archives__showRecord}</h:outputLink>
+							</div>
+						</div>
+					</ui:fragment>
+						<script>
+	
+						window.$metadata = $("[data-metadata-id]");
+						if(window.$metadata.length > 0) {
+						    window.metadataId = window.$metadata.attr("data-metadata-id");
+							console.log("metadata id = ", window.metadataId);
+							window.$activeEntry = $("[data-id='"+window.metadataId+"']");
+							console.log("active entry is ", window.$activeEntry);
+							window.$activeEntry.append(window.$metadata);
+						    
+						}
+						</script>
 				</h:panelGroup>
 			</h:panelGroup>
 		</h:form>
 	</div>
+
+
+
+	
 	<div id="AJAXLoader" class="archives-tree__loader"></div>
 </ui:composition>
