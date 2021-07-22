@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.cms;
 
+import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.DiscriminatorColumn;
@@ -27,6 +28,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.internal.jpa.parsing.GenerationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +74,7 @@ public abstract class CMSRecordNote {
 
     @Column(name = "display_note", nullable = false, columnDefinition = "boolean default true")
     private boolean displayNote = true;
-
+    
     public CMSRecordNote() {
     }
 
@@ -168,6 +170,6 @@ public abstract class CMSRecordNote {
     
     public abstract boolean isSingleRecordNote();
     public abstract boolean isMultiRecordNote();
-
+    public abstract boolean matchesFilter(String filter);
 
 }

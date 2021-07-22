@@ -4997,8 +4997,8 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getRecordNotes(int, int, java.lang.String, boolean, java.util.Map)
+    /**
+     * Implements filtering with java methods because filtering single-table inheritance objects does not work as expected
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -5006,40 +5006,17 @@ public class JPADAO implements IDAO {
             throws DAOException {
         preQuery();
         
-        Map<String, Object> params = new HashMap<>();
-        Optional<String> filter = Optional.ofNullable(filters)
-                .flatMap(fs -> filters.values().stream().findAny())
-                .filter(f -> StringUtils.isNotBlank(f))
-                .map(f -> sanitizeQueryParam(f, true));
-        filter.ifPresent(f -> params.put("filter", f));
-        
         try {
-            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
-            filter.ifPresent(f -> {
-                String filterString =
-                        " WHERE (UPPER(a.recordPi) LIKE :filter OR UPPER(a.recordTitle) LIKE :filter OR UPPER(a.noteTitle) LIKE :filter)";
-                sbQuery.append(filterString);
-            });
+        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");   
+        Query q = getEntityManager().createQuery(sbQuery.toString());
+        q.setFlushMode(FlushModeType.COMMIT);
+        List<CMSRecordNote> notes = ((List<CMSRecordNote>)q.getResultList()).stream()
+                .filter(n -> n.matchesFilter(filters.values().stream().findAny().orElse(null)))
+                .skip(first)
+                .limit(pageSize)
+                .collect(Collectors.toList());
 
-
-            StringBuilder order = new StringBuilder();
-            if (StringUtils.isNotEmpty(sortField)) {
-                order.append(" ORDER BY a.").append(sortField);
-                if (descending) {
-                    order.append(" DESC");
-                }
-            }
-            sbQuery.append(order);
-
-            logger.trace(sbQuery.toString());
-            Query q = getEntityManager().createQuery(sbQuery.toString());
-            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-            //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
-            q.setFirstResult(first);
-            q.setMaxResults(pageSize);
-            q.setFlushMode(FlushModeType.COMMIT);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-            return q.getResultList();
+            return notes;
         } catch (PersistenceException e) {
             logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
             return Collections.emptyList();

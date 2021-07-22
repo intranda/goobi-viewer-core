@@ -25,7 +25,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -150,6 +151,18 @@ public class CMSMultiRecordNote extends CMSRecordNote {
     @Override
     public boolean isMultiRecordNote() {
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSRecordNote#matchesFilter(java.lang.String)
+     */
+    @Override
+    public boolean matchesFilter(String filter) {
+        if(StringUtils.isNotBlank(filter)) {
+            return getNoteTitle().getValues().stream().map(pair -> pair.getValue()).anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase()));
+        } else {
+            return true;
+        }
     }
 
 }

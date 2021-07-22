@@ -64,7 +64,9 @@ public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testGetAllPaginatedData() {
         bean.getDataProvider().setEntriesPerPage(2);
-        assertEquals(3, bean.getDataProvider().getSizeOfDataList());
+        assertEquals(5, bean.getDataProvider().getSizeOfDataList());
+        assertEquals(2, bean.getDataProvider().getPaginatorList().size());
+        bean.getDataProvider().cmdMoveNext();
         assertEquals(2, bean.getDataProvider().getPaginatorList().size());
         bean.getDataProvider().cmdMoveNext();
         assertEquals(1, bean.getDataProvider().getPaginatorList().size());

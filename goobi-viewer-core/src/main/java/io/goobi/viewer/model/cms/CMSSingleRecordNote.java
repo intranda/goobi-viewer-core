@@ -20,10 +20,12 @@ import javax.persistence.Convert;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
@@ -115,6 +117,17 @@ public class CMSSingleRecordNote extends CMSRecordNote {
     @Override
     public boolean isMultiRecordNote() {
         return false;
+    }
+    
+    @Override
+    public boolean matchesFilter(String filter) {
+        if(StringUtils.isNotBlank(filter)) {
+            return getNoteTitle().getValues().stream().map(pair -> pair.getValue()).anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase())) ||
+                  getRecordPi().toLowerCase().contains(filter.toLowerCase()) || 
+                  getRecordTitle().getValues().stream().map(pair -> pair.getValue()).anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase()));
+        } else {
+            return true;
+        }
     }
 
 }
