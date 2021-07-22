@@ -64,7 +64,7 @@
 									data-id="id_#{entry.id}"
 									style="padding-left: #{entry.hierarchyLevel * indent}px">
 										<!-- EXPAND OPTION -->
-										<div class="archives-tree__expandable-icon #{entry.expanded == true ? 'expanded' : 'collapsed' }">
+										<div class="archives-tree__expandable-icon #{entry.expanded == true ? '-expanded' : '-collapsed' }">
 											<h:commandLink rendered="#{entry.hasChild}"
 												action="#{archiveBean.toggleEntryExpansion(entry)}">
 												<i class="fa fa-plus-square-o" aria-hidden="true"></i>
