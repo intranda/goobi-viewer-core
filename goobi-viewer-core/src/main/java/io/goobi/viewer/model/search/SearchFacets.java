@@ -604,7 +604,7 @@ public class SearchFacets implements Serializable {
                 }
             }
             if (fieldItem == null) {
-                if (fieldItem instanceof GeoFacetItem) {
+                if (DataManager.getInstance().getConfiguration().getGeoFacetFields().equals(field)){
                     fieldItem = new GeoFacetItem(field);
                     fieldItem.setValue(updateValue);
                 } else {
