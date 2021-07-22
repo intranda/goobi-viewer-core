@@ -117,7 +117,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
     }
 
     private List<String> searchRecords() throws PresentationException, IndexUnreachableException {
-        String solrQuery = "+(" + this.query + ") +(ISWORK:* ISANCHOR:*)";
+        String solrQuery = getQueryForSearch();
 
         List<String> pis = new ArrayList<>();
 
@@ -130,6 +130,10 @@ public class CMSMultiRecordNote extends CMSRecordNote {
             pis.add(pi);
         }
         return pis;
+    }
+
+    public String getQueryForSearch() {
+        return "+(" + this.query + ") +(ISWORK:* ISANCHOR:*)";
     }
 
     /* (non-Javadoc)

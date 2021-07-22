@@ -31,6 +31,8 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -339,4 +341,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         return this.note != null && this.note instanceof CMSSingleRecordNote;
     }
 
+    public String getSearchUrlForNote(CMSMultiRecordNote note)  {
+        String query = BeanUtils.escapeCriticalUrlChracters(note.getQueryForSearch());
+        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", query, "1", "-", "-");
+    }
 }

@@ -136,36 +136,38 @@
 								<h:form id="editRecordNote" prependId="false">
 									<div class="admin__record-notes-box-editable">
 									
-									<h3>#{msg.general}</h3>
-									
-									<div class="col-12 admin__default-block">
-										<div class="col-4 control-label admin__form-label">
-											<label for="inputRecordIdentifier">#{msg.cms__record_notes__type_query}:
-											</label>
-										</div>
-										<h:panelGroup layout="block" id="inputQueryGroup" class="col-8 admin__form-input cms-module__option-control">
-				
-											<h:message for="inputQuery2"
-												infoClass="-validation-message -success" 
-	                        					warnClass="-validation-message -warning"
-												errorClass="-validation-message -danger"></h:message>
-											<div class="-validation-mark">
-												<i class="fa fa-check" aria-hidden="true"></i> <i
-													class="fa fa-exclamation" aria-hidden="true"></i>
+									<ui:fragment rendered="#{cmsRecordNoteEditBean.isMultiRecordNote()}">
+										<h3>#{msg.general}</h3>
+										
+										<div class="col-12 admin__default-block">
+											<div class="col-4 control-label admin__form-label">
+												<label for="inputRecordIdentifier">#{msg.cms__record_notes__type_query}:
+												</label>
 											</div>
-											<h:inputText id="inputQuery2" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'MULTI'}"
-												styleClass="form-control -validation-input"
-												requiredMessage="#{msg.info__input_required}"
-												validatorMessage="#{msg.inline_help__solr_query_danger}"
-												value="#{cmsRecordNoteEditBean.recordQuery}">
-												<f:validator validatorId="solrQueryValidator"
-													for="inputQuery2" />
-													<f:ajax event="blur" render="inputQueryGroup"></f:ajax>
-											</h:inputText>
-											<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
-										</h:panelGroup>
-										<script>$(document).ready(() => $("#inputQuery2").trigger("blur"))</script>
-									</div>
+											<h:panelGroup layout="block" id="inputQueryGroup" class="col-8 admin__form-input cms-module__option-control">
+					
+												<h:message for="inputQuery2"
+													infoClass="-validation-message -success" 
+		                        					warnClass="-validation-message -warning"
+													errorClass="-validation-message -danger"></h:message>
+												<div class="-validation-mark">
+													<i class="fa fa-check" aria-hidden="true"></i> <i
+														class="fa fa-exclamation" aria-hidden="true"></i>
+												</div>
+												<h:inputText id="inputQuery2" tabindex="1"
+													styleClass="form-control -validation-input"
+													requiredMessage="#{msg.info__input_required}"
+													validatorMessage="#{msg.inline_help__solr_query_danger}"
+													value="#{note.query}">
+													<f:validator validatorId="solrQueryValidator"
+														for="inputQuery2" />
+														<f:ajax event="blur" execute="@this" render="inputQueryGroup noteInfoGroup"></f:ajax>
+												</h:inputText>
+												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
+											</h:panelGroup>
+											<script>$(document).ready(() => $("#inputQuery2").trigger("blur"))</script>
+										</div>
+									</ui:fragment>
 									
 									<h3>#{msg.cms__record_notes_edit_text__title}</h3>
 									
@@ -318,21 +320,15 @@
 								</ui:fragment>
 								
 								<ui:fragment rendered="#{cmsRecordNoteEditBean.isMultiRecordNote()}">
-								<div class="admin__default-block">
+								<h:panelGroup layout="block" id="noteInfoGroup" styleClass="admin__default-block">
 									<h2>#{msg.cms__record_notes_select_record__title}</h2>
 									<div class="admin__record-notes-info-box">
 										<h:outputFormat value="#{msg.cms__record_note__records_matching_query}">
 											<f:param value="#{note.records.size()}"></f:param>
 										</h:outputFormat>
-										<h:form>
-											<h:commandLink value="#{msg.cms__record_note__view_record_list}" aria-label="#{msg.cms__record_note__view_record_list}" action="#{searchBean.searchSimple()}">
-			                                	<f:setPropertyActionListener for="actionEvent" target="#{searchBean.activeSearchType}" value="0" />
-			                                	<f:setPropertyActionListener for="actionEvent" target="#{searchBean.exactSearchString}" value="#{note.query}" />
-		                                	</h:commandLink>
-										</h:form>
-										
+										<a href="#{cmsRecordNoteEditBean.getSearchUrlForNote(note)}" target="_goobi-viewer-record-note-search">#{msg.cms__record_note__view_record_list}</a>
 									</div>
-								</div>
+								</h:panelGroup>
 								</ui:fragment>
 								
 							<!-- SIDEBAR EOL -->
