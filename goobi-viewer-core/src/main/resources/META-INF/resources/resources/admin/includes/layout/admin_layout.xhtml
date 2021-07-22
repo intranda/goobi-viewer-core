@@ -61,12 +61,17 @@
 			<div class="admin__topbar-backend-right">
 	            <div class="admin__topbar-frontend-hotfolder">
 	            	<!-- COUNT FILES PROCESSING -->
+	            	<h:panelGroup id="hotfolderFileCountGroup">
                     <ui:fragment rendered="#{userBean.admin and adminBean.hotfolderFileCount > 0}">
 						<div class="admin__topbar-frontend-hotfolder-files-action">
 						    <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
 						    <span>#{adminBean.hotfolderFileCount}</span> <span>#{msg.admin__files_in_hotfolder}...</span>
 						</div>
 					</ui:fragment>
+					</h:panelGroup>
+					<f:websocket channel="hotfolderFileCount" scope="view">
+                        <f:ajax event="update" render="hotfolderFileCountGroup" />
+                    </f:websocket>
 	            </div>
 	            <!-- CHANGE LANGUAGE -->
 				<ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}">

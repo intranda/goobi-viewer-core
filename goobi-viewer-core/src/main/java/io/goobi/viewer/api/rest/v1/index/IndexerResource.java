@@ -38,6 +38,7 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.IndexerDataRequestParameters;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * Resource for communicating with the indexer process.
@@ -61,6 +62,7 @@ public class IndexerResource {
         try {
             DataManager.getInstance().setIndexerVersion(new ObjectMapper().writeValueAsString(params));
             DataManager.getInstance().setHotfolderFileCount(params.getHotfolderFileCount());
+            BeanUtils.getAdminBean().updateHotfolderFileCount();
             return new SuccessMessage(true);
         } catch (JsonProcessingException e) {
             logger.error(e.getMessage());
