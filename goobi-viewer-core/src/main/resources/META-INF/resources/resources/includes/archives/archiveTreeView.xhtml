@@ -63,29 +63,18 @@
 								<li class="archives-tree__entry #{entry.hasChild == true ? 'parent' : 'child' }"
 									data-id="id_#{entry.id}"
 									style="padding-left: #{entry.hierarchyLevel * indent}px">
-									<ui:fragment rendered="#{entry.hasChild}">
 										<!-- EXPAND OPTION -->
-										<div class="archives-tree__expandable-icon">
-													<h:commandLink rendered="#{!entry.expanded}"
-														action="#{archiveBean.expandEntry(entry)}">
-														<i class="fa fa-plus-square-o" aria-hidden="true"></i>
-														<f:passThroughAttribute name="aria-label"
-															value="#{msg.allOpen}" />
-														<f:passThroughAttribute name="data-expand-entry"
-															value="expanded" />
-														<f:ajax render="archivesForm" />
-													</h:commandLink>
-													<h:commandLink rendered="#{entry.expanded}"
-														action="#{archiveBean.collapseEntry(entry)}">
-														<i class="fa fa-minus-square-o" aria-hidden="true"></i>
-														<f:passThroughAttribute name="aria-label"
-															value="#{msg.all}" />
-														<f:passThroughAttribute name="data-expand-entry"
-															value="collapsed" />	
-														<f:ajax render="archivesForm" />
-													</h:commandLink>
+										<div class="archives-tree__expandable-icon #{entry.expanded == true ? 'expanded' : 'collapsed' }">
+											<h:commandLink rendered="#{entry.hasChild}"
+												action="#{archiveBean.toggleEntryExpansion(entry)}">
+												<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+												<f:passThroughAttribute name="aria-label"
+													value="#{msg.allOpen}" />
+												<f:passThroughAttribute name="data-expand-entry"
+													value="expanded" />
+												<f:ajax render="archivesForm" />
+											</h:commandLink>
 										</div>
-									</ui:fragment>
 									
 									<!-- TITLE -->
 									<div class="archives-tree__list-expandable-title #{entry.id == archiveBean.archiveTree.selectedEntry.id ? '-archives-selected' : ''} #{entry.searchHit ? '-archives-search-hit':''}">
