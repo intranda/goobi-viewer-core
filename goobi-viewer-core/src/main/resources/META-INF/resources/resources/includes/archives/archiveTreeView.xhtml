@@ -92,7 +92,9 @@
 												<span class="fa-stack" aria-hidden="true"><i
 													class="fa fa-file-o"></i>
 													<i class="fa fa-stack-text">F</i></span>
-													<a class="archives-tree__selected" name="selected"></a>
+													<ui:fragment rendered="#{entry.id == archiveBean.archiveTree.selectedEntry.id}">
+														<a class="archives-tree__selected" name="selected"></a>
+													</ui:fragment>
 												<h:commandLink styleClass="archives-tree__inactive-title"
 												action="#{archiveBean.archiveTree.toggleSelectedEntry(entry)}"
 													    value="#{entry.label}"
