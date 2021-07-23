@@ -77,7 +77,7 @@
 
                             <!-- INDIVIDUAL PAGE ROWS -->
                             <ui:repeat var="page" value="#{cmsBean.displayedPages}">
-                                <div class="row no-gutters admin__table-entry #{page.validityStatus == 'VALID' ? '' : 'invalid_template'}">
+                                <div class="row no-gutters admin__table-entry #{page.validityStatus == 'VALID' ? '' : 'invalid_template'} #{page.published == true ? '' : '-unpublished'}">
                                     <div class="col-6 d-flex">
                                         <ui:fragment rendered="#{page.validityStatus == 'VALID'}">
                                         	<div class="admin__table-img align-self-center">
@@ -113,6 +113,9 @@
                                     <div class="col-2 d-flex align-items-center align-content-center flex-wrap">
                                         <ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
                                         <span class="badge badge-warning">#{msg.admin__cms_static_page}</span>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{page.published == false}">
+                                        <span class="badge badge-warning">#{msg.admin__cms_page_draft}</span>
                                         </ui:fragment>
                                         <ui:repeat value="#{page.categories}" var="category">
                                             <div class="badge badge-violet">#{category.name}</div>
