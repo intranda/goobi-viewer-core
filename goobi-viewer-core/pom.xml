@@ -553,6 +553,11 @@
             <artifactId>rewrite-servlet</artifactId>
             <version>${prettyfaces.version}</version>
         </dependency>
+		<dependency>
+			<groupId>org.ocpsoft.rewrite</groupId>
+			<artifactId>rewrite-integration-faces</artifactId>
+			<version>${prettyfaces.version}</version>
+		</dependency>
         <dependency>
             <groupId>org.ocpsoft.rewrite</groupId>
             <artifactId>rewrite-config-prettyfaces</artifactId>
@@ -702,7 +707,8 @@
                                 <ignoredUnusedDeclaredDependency>org.glassfish.jersey.core:jersey-client</ignoredUnusedDeclaredDependency>
 
                                 <!-- rewrite-servlet is used by prettyfaces -->
-								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-servlet</ignoredUnusedDeclaredDependency>
+								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-integration-faces</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-servlet</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 						</configuration>
 					</execution>
