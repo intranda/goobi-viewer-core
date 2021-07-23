@@ -134,7 +134,7 @@
         <poi.version>5.0.0</poi.version>
         <prettyfaces.version>3.3.4-20120314</prettyfaces.version>
         <rome.version>1.16.0</rome.version>
-        <slf4j.version>1.7.31</slf4j.version>
+        <slf4j.version>1.7.32</slf4j.version>
         <solr.version>8.9.0</solr.version>
         <saml-client.version>4.0.0</saml-client.version>
         <swagger.version>2.1.10</swagger.version>
