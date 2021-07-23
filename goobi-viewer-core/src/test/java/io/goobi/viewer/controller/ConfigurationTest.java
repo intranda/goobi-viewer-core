@@ -1010,7 +1010,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getThumbnailImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getThumbnailImageAccessMaxWidth());
     }
-    
+
     @Test
     public void getUnzoomedImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth());
@@ -1041,6 +1041,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getWatermarkIdField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(Collections.singletonList("watermarkIdField_value"), DataManager.getInstance().getConfiguration().getWatermarkIdField());
+    }
+
+    /**
+     * @see Configuration#isWatermarkTextConfigurationEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isWatermarkTextConfigurationEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isWatermarkTextConfigurationEnabled());
     }
 
     /**
@@ -2891,7 +2900,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getSidebarWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText());
     }
-    
 
     /**
      * @see Configuration#isDisplaySidebarWidgetUsageCitation()

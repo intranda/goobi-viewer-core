@@ -3544,14 +3544,22 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @return true if enabled or not configured; false otherwise
+     * @should return correct value
+     */
+    public boolean isWatermarkTextConfigurationEnabled() {
+        return getLocalBoolean("viewer.watermarkTextConfiguration[@enabled]", true);
+    }
+
+    /**
      * Returns the preference order of data to be used as an image footer text.
      *
      * @should return all configured elements in the correct order
      * @return a {@link java.util.List} object.
      */
     public List<String> getWatermarkTextConfiguration() {
-        List<String> list = getLocalList("viewer.watermarkTextConfiguration.text");
-        return list;
+        return getLocalList("viewer.watermarkTextConfiguration.text");
     }
 
     /**
