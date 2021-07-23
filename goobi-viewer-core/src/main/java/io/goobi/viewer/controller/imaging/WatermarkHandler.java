@@ -37,7 +37,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -85,7 +84,8 @@ public class WatermarkHandler implements Serializable {
      * @param servletPath a {@link java.lang.String} object.
      */
     public WatermarkHandler(Configuration configuration, String servletPath) {
-        this.watermarkTextConfiguration = configuration.getWatermarkTextConfiguration();
+        this.watermarkTextConfiguration =
+                configuration.isWatermarkTextConfigurationEnabled() ? configuration.getWatermarkTextConfiguration() : Collections.emptyList();
         this.watermarkIdFields = configuration.getWatermarkIdField();
         this.servletPath = servletPath;
     }
@@ -131,35 +131,31 @@ public class WatermarkHandler implements Serializable {
             String format = DataManager.getInstance().getConfiguration().getWatermarkFormat();
 
             AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
-            if(urls != null) {
-                
+            if (urls != null) {
+
                 String url = urls.path(ApiUrls.RECORDS_FILES_FOOTER, ApiUrls.RECORDS_FILES_FOOTER_IIIF)
-                .params("-", "-",  "full", scale.toString(), "0", "default", format).build();
+                        .params("-", "-", "full", scale.toString(), "0", "default", format)
+                        .build();
                 StringBuilder urlBuilder = new StringBuilder(url);
-                
+
                 UrlParameterSeparator separator = new UrlParameterSeparator();
-                
+
                 watermarkId.ifPresent(footerId -> urlBuilder.append(separator.getChar()).append("watermarkId=").append(footerId));
                 watermarkText.ifPresent(text -> urlBuilder.append(separator.getChar()).append("watermarkText=").append(text));
-                
+
                 return Optional.of(urlBuilder.toString());
-                
-                
-            } else {
-                
-                StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-                
-                urlBuilder.append("footer/full/").append(scale.toString()).append("/0/default.").append(format);
-                
-                UrlParameterSeparator separator = new UrlParameterSeparator();
-                
-                watermarkId.ifPresent(footerId -> urlBuilder.append(separator.getChar()).append("watermarkId=").append(footerId));
-                watermarkText.ifPresent(text -> urlBuilder.append(separator.getChar()).append("watermarkText=").append(text));
-                
-                return Optional.of(urlBuilder.toString());
-                
+
             }
-            
+            StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
+
+            urlBuilder.append("footer/full/").append(scale.toString()).append("/0/default.").append(format);
+
+            UrlParameterSeparator separator = new UrlParameterSeparator();
+
+            watermarkId.ifPresent(footerId -> urlBuilder.append(separator.getChar()).append("watermarkId=").append(footerId));
+            watermarkText.ifPresent(text -> urlBuilder.append(separator.getChar()).append("watermarkText=").append(text));
+
+            return Optional.of(urlBuilder.toString());
         }
 
         return Optional.empty();

@@ -196,7 +196,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         this.fileName = determineFileName(filePath);
 
         if (watermarkTextConfiguration == null) {
-            watermarkTextConfiguration = DataManager.getInstance().getConfiguration().getWatermarkTextConfiguration();
+            watermarkTextConfiguration = DataManager.getInstance().getConfiguration().isWatermarkTextConfigurationEnabled()
+                    ? DataManager.getInstance().getConfiguration().getWatermarkTextConfiguration() : Collections.emptyList();
         }
     }
 
