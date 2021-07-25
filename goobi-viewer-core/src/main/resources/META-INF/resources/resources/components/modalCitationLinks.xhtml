@@ -38,7 +38,7 @@
 				            	<div class="widget-usage__citelinks-block">
 				                <h4 id="titleWork" class="widget-usage__citelinks-subtitle">#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}</h4>
 				                <h:outputText rendered="#{configurationBean.sidebarWidgetUsageCitationLinksRecordIntroText != null}">
-				                   <div class="widget-usage__citelinks-info-text">#{configurationBean.sidebarWidgetUsageCitationLinksRecordIntroText} Lorem Ipsum Demo Text</div>
+				                   <div class="widget-usage__citelinks-info-text">#{msg[configurationBean.sidebarWidgetUsageCitationLinksRecordIntroText]}</div>
 				                </h:outputText>
 							    <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')}">
 							        
