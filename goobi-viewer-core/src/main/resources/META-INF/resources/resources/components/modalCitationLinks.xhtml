@@ -80,7 +80,7 @@
 				                <div class="widget-usage__citelinks-block">
 				                <h4 id="titlePage" class="widget-usage__citelinks-subtitle" title="#{activeDocumentBean.viewManager.currentStructElement.label}">#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}</h4>
 				                <h:outputText rendered="#{configurationBean.sidebarWidgetUsageCitationLinksDocstructIntroText != null}">
-				                    <div class="widget-usage__citelinks-info-text">#{configurationBean.sidebarWidgetUsageCitationLinksDocstructIntroText}</div>
+				                    <div class="widget-usage__citelinks-info-text">#{msg[configurationBean.sidebarWidgetUsageCitationLinksDocstructIntroText]}</div>
 				                </h:outputText>
 				                <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('docstruct')}">
 				                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
@@ -119,7 +119,7 @@
 				                <div class="widget-usage__citelinks-block">
 				                <h4 id="titleImage" class="widget-usage__citelinks-subtitle">#{msg.image}</h4>
 				                <h:outputText rendered="sidebarWidgetUsageCitationLinksImageIntroText != null}">
-				                    <div class="widget-usage__citelinks-info-text">#{configurationBean.sidebarWidgetUsageCitationLinksImageIntroText}</div>
+				                    <div class="widget-usage__citelinks-info-text">#{msg[configurationBean.sidebarWidgetUsageCitationLinksImageIntroText]}</div>
 				                </h:outputText>
 				                <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')}">
 				                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
