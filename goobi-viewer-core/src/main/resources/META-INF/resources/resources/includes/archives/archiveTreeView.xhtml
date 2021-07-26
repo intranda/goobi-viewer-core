@@ -33,7 +33,7 @@
 				<h:panelGroup>
 
 					<!-- Call to trigger a noop ajax call to update the url of the page (to set the query "selected" to the correct record) -->
-					<h:commandScript name="updateUrl">
+					<h:commandScript id="url-updater" name="updateUrl">
 					</h:commandScript>
 					
 					<!-- EXPAND ALL -->
@@ -41,20 +41,11 @@
 						<h:commandLink
 							action="#{archiveBean.archiveTree.collapseAll(true)}"
 							title="#{msg.allClose}">#{msg.allClose}
-<!-- 							<i class="fa fa-minus-square-o" aria-hidden="true"></i> -->
 							<f:passThroughAttribute name="data-toggle" value="tooltip" />
 							<f:passThroughAttribute name="data-placement" value="top" />
 							<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
 							<f:ajax render="archivesForm" />
 						</h:commandLink>
-<!-- 						<h:commandLink action="#{archiveBean.archiveTree.expandAll}" -->
-<!-- 							title="#{msg.allOpen}"> -->
-<!-- 							<i class="fa fa-plus-square-o" aria-hidden="true"></i> -->
-<!-- 							<f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
-<!-- 							<f:passThroughAttribute name="data-placement" value="top" /> -->
-<!-- 							<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" /> -->
-<!-- 							<f:ajax render="#{render}" /> -->
-<!-- 						</h:commandLink> -->
 					</div>
 					<nav class="archives-tree__list">
 						<ul>

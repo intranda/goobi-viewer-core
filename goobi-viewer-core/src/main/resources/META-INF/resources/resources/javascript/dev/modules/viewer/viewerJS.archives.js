@@ -126,12 +126,13 @@ var viewerJS = ( function( viewer ) {
         				} else {
         					this.hideLoader("load_record_image");
         					$(".archives__object-image").show();
-        				}
+        				} 
         			})
         			.catch(error => {
+        			console.log("error", error);
+	        			this.hideLoader("load_record_image");
         				error.then( (e) => {
 	        				console.log("error loading record '" + recordPi + "'", e);
-	        				this.hideLoader("load_record_image");
 	        				//viewer.notifications.error(e.message);
         				});
         			});

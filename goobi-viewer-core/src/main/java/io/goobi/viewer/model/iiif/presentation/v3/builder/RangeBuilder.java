@@ -38,7 +38,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 public class RangeBuilder extends AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(RangeBuilder.class);
-    
+
     /**
      * @param apiUrlManager
      */
@@ -51,50 +51,53 @@ public class RangeBuilder extends AbstractBuilder {
 
         StructElement mainDocument = documents.get(0);
         List<StructElement> childDocuments = documents.subList(1, documents.size());
-        
+
         return build(mainDocument, childDocuments, logId);
     }
-    
-    public Range3 build(StructElement topElement, List<StructElement> structures, String logId) throws ContentNotFoundException, PresentationException {
-        
-        
-        structures.sort((s1,s2) -> Integer.compare(getFirstPageNo(s1), getFirstPageNo(s2)));
-        StructElement structElement = logId == null ? topElement : structures.stream().filter(s -> s.getLogid().equals(logId)).findAny().orElseThrow(() -> new ContentNotFoundException("Range not found"));
-        
-        if(structElement.getImageNumber() < 1 ||  structElement.getNumPages() < 1) {
-            throw new PresentationException(String.format("Illegal page count for struct element %s: First page = %d; num pages = %d", logId, structElement.getImageNumber(), structElement.getNumPages()));
-        }
-        
+
+    public Range3 build(StructElement topElement, List<StructElement> structures, String logId)
+            throws ContentNotFoundException, PresentationException {
+
+        structures.sort((s1, s2) -> Integer.compare(getFirstPageNo(s1), getFirstPageNo(s2)));
+        StructElement structElement = logId == null ? topElement
+                : structures.stream()
+                        .filter(s -> s.getLogid().equals(logId))
+                        .findAny()
+                        .orElseThrow(() -> new ContentNotFoundException("Range not found"));
+
         URI id = urls.path(ApiUrls.RECORDS_SECTIONS, ApiUrls.RECORDS_SECTIONS_RANGE).params(topElement.getPi(), structElement.getLogid()).buildURI();
         Range3 range = new Range3(id);
         range.setLabel(structElement.getMultiLanguageDisplayLabel());
 
         addMetadata(range, structElement);
-        
+
         List<StructElement> children = getChildStructs(structures, structElement);
- 
-        int firstPageNo = getFirstPageNo(structElement);
-        int lastPageNo = getLastPageNumber(structElement, children);
-        
-        //Add a start canvas to always have an image for the range
-        //If the first subrange starts at the same page as the range itself, it gets no canvas items on its own (they are all in the sub ranges)
-        URI startCanvasId = urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_CANVAS).params(topElement.getPi(), firstPageNo).buildURI();
-        range.setStart(new Canvas3(startCanvasId));
-        
-        for (int pageNo = firstPageNo; pageNo <= lastPageNo; pageNo++) {
-            URI canvasId = urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_CANVAS).params(topElement.getPi(), pageNo).buildURI();
-            Canvas3 canvas = new Canvas3(canvasId);
-            range.addItem(canvas);
+
+        if (structElement.getImageNumber() > 0 && structElement.getNumPages() > 0) {
+
+            int firstPageNo = getFirstPageNo(structElement);
+            int lastPageNo = getLastPageNumber(structElement, children);
+
+            //Add a start canvas to always have an image for the range
+            //If the first subrange starts at the same page as the range itself, it gets no canvas items on its own (they are all in the sub ranges)
+            URI startCanvasId = urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_CANVAS).params(topElement.getPi(), firstPageNo).buildURI();
+            range.setStart(new Canvas3(startCanvasId));
+
+            for (int pageNo = firstPageNo; pageNo <= lastPageNo; pageNo++) {
+                URI canvasId = urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_CANVAS).params(topElement.getPi(), pageNo).buildURI();
+                Canvas3 canvas = new Canvas3(canvasId);
+                range.addItem(canvas);
+            }
         }
-        
+
         for (StructElement child : children) {
-            try {                
+            try {
                 Range3 childRange = build(topElement, structures, child.getLogid());
                 range.addItem(childRange);
-            } catch(PresentationException e) {
+            } catch (PresentationException e) {
                 logger.warn(e.getMessage());
             }
-        } 
+        }
 
         return range;
     }
@@ -105,16 +108,16 @@ public class RangeBuilder extends AbstractBuilder {
 
     private int getLastPageNumber(StructElement structElement, List<StructElement> children) {
         int firstPageNo = getFirstPageNo(structElement);
-        int lastPageNo = firstPageNo + structElement.getNumPages() - 1;                
-        if(!children.isEmpty()) {
-            lastPageNo = children.get(0).getImageNumber() -1;
+        int lastPageNo = firstPageNo + structElement.getNumPages() - 1;
+        if (!children.isEmpty()) {
+            lastPageNo = children.get(0).getImageNumber() - 1;
         }
         return lastPageNo;
     }
 
     private void getNextSibling(List<StructElement> structures, StructElement structElement) {
         StructElement nextSibling = null;
-        if(structures.indexOf(structElement) < structures.size() - 1) {
+        if (structures.indexOf(structElement) < structures.size() - 1) {
             nextSibling = structures.get(structures.indexOf(structElement) + 1);
         }
     }
@@ -125,5 +128,5 @@ public class RangeBuilder extends AbstractBuilder {
                 .collect(Collectors.toList());
         return children;
     }
-    
+
 }
