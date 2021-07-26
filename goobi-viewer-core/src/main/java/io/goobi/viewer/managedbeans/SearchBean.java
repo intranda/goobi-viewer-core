@@ -2713,4 +2713,16 @@ public class SearchBean implements SearchInterface, Serializable {
     public String facetifyField(String fieldName) {
         return SearchHelper.facetifyField(fieldName);
     }
+    
+    public List<FacetItem> getFieldFacetValues(String field, int num) throws IndexUnreachableException, PresentationException {
+        num = num <= 0 ? Integer.MAX_VALUE : num;
+        String query = "+(ISWORK:* OR ISANCHOR:*) " + SearchHelper.getAllSuffixes();
+        QueryResponse response = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Collections.singletonList(field), 1, false);
+        return response.getFacetField(field).getValues().stream()
+                .map(count -> new FacetItem(count))
+                .sorted((f1,f2) -> Long.compare(f2.getCount(), f1.getCount()))
+                .limit(num)
+                .collect(Collectors.toList());
+    }
+    
 }
