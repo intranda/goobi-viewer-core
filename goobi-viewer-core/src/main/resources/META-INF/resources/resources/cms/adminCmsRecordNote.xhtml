@@ -49,66 +49,72 @@
 									</span>
 								</h3>
 								<div class="admin__default-block">
-										<div class="col-12 control-label admin__form-label">
+										<div>
 											<label for="inputRecordIdentifier">#{msg.cms__record_notes__input_idenfier_or_query}:
 											</label>
-											 TYPE:  #{cmsRecordNoteEditBean.currentNoteType}
+											 <!-- TYPE:  #{cmsRecordNoteEditBean.currentNoteType}  -->
 										</div>
-									<div class="form-group admin__cms-edit-collection-connected-radio-buttons">
+									<div class="form-group admin__record-notes-connected-area admin__cms-edit-collection-connected-radio-buttons">
 	                            		<div class="connected-top">
-			                            	<div class="col-4 control-label admin__form-label">
-				                            	<h:selectOneRadio group="noteTypeSelect" value="#{cmsRecordNoteEditBean.currentNoteType}" immediate="true" >
-				                                	<f:selectItem itemValue="SINGLE" itemLabel="#{msg.cms__record_notes__type_record}" />
-				                                	<f:ajax render="@form" />
-				                            	</h:selectOneRadio>
-			                            	</div>
-			                            	<div class="col-8 admin__form-input cms-module__option-control">
-			
-												<h:message for="inputRecordIdentifier"
-													errorClass="-validation-message -danger"></h:message>
-												<div class="-validation-mark">
-													<i class="fa fa-check" aria-hidden="true"></i> <i
-														class="fa fa-exclamation" aria-hidden="true"></i>
+	                            			<div class="form-row">
+				                            	<div data-target="isChecked" class="admin__record-notes-radio-select control-label admin__form-label">
+					                            	<h:selectOneRadio group="noteTypeSelect" value="#{cmsRecordNoteEditBean.currentNoteType}" immediate="true" >
+					                                	<f:selectItem itemValue="SINGLE" itemLabel="#{msg.cms__record_notes__type_record}" />
+					                                	<f:ajax render="@form" />
+					                            	</h:selectOneRadio>
+				                            	</div>
+				                            	<div class="admin__form-input cms-module__option-control">
+				
+													<h:message for="inputRecordIdentifier"
+														errorClass="-validation-message -danger"></h:message>
+													<div class="-validation-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
+													<h:inputText id="inputRecordIdentifier" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'SINGLE'}"
+														styleClass="form-control -validation-input"
+														requiredMessage="#{msg.info__input_required}"
+														validatorMessage="#{msg.pi_errNotFound}"
+														required="#{cmsRecordNoteEditBean.currentNoteType eq 'SINGLE'}"
+														value="#{cmsRecordNoteEditBean.recordIdentifier}">
+														<f:validator validatorId="piInSolrValidator"
+															for="inputRecordIdentifier" />
+													</h:inputText>
+													<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
 												</div>
-												<h:inputText id="inputRecordIdentifier" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'SINGLE'}"
-													styleClass="form-control -validation-input"
-													requiredMessage="#{msg.info__input_required}"
-													validatorMessage="#{msg.pi_errNotFound}"
-													required="#{cmsRecordNoteEditBean.currentNoteType eq 'SINGLE'}"
-													value="#{cmsRecordNoteEditBean.recordIdentifier}">
-													<f:validator validatorId="piInSolrValidator"
-														for="inputRecordIdentifier" />
-												</h:inputText>
-												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
 											</div>
 		                            	</div>
 		                            	<div class="connected-bottom">
-		                            		<div class="col-4 control-label admin__form-label">
-				                            	<h:selectOneRadio group="noteTypeSelect" value="#{cmsRecordNoteEditBean.currentNoteType}" immediate="true">
-				                                	<f:selectItem itemValue="MULTI" itemLabel="#{msg.cms__record_notes__type_query}" />
-				                                	<f:ajax render="@form" />
-				                            	</h:selectOneRadio>
-			                            	</div>
-			                            	<div class="col-8 admin__form-input cms-module__option-control">
-			
-												<h:message for="inputQuery"
-													infoClass="-validation-message -success" 
-		                        					warnClass="-validation-message -warning"
-													errorClass="-validation-message -danger"></h:message>
-												<div class="-validation-mark">
-													<i class="fa fa-check" aria-hidden="true"></i> <i
-														class="fa fa-exclamation" aria-hidden="true"></i>
+			                            	<div class="form-row">
+			                            		<div data-target="blurIfUnchecked" class="admin__record-notes-radio-select control-label admin__form-label">
+					                            	<h:selectOneRadio group="noteTypeSelect" value="#{cmsRecordNoteEditBean.currentNoteType}" immediate="true">
+					                                	<f:selectItem itemValue="MULTI" itemLabel="#{msg.cms__record_notes__type_query}" />
+					                                	<f:ajax render="@form" />
+					                            	</h:selectOneRadio>
+				                            	</div>
+				                            	<div class="admin__form-input cms-module__option-control">
+				
+													<h:message for="inputQuery"
+														infoClass="-validation-message -success" 
+			                        					warnClass="-validation-message -warning"
+														errorClass="-validation-message -danger"></h:message>
+													<div class="-validation-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
+													
+													<h:inputText id="inputQuery" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'MULTI'}"
+														styleClass="form-control -validation-input"
+														requiredMessage="#{msg.info__input_required}"
+														required="#{cmsRecordNoteEditBean.currentNoteType eq 'MULTI'}"
+														validatorMessage="#{msg.inline_help__solr_query_danger}"
+														value="#{cmsRecordNoteEditBean.recordQuery}">
+														
+														<f:validator validatorId="solrQueryValidator"
+															for="inputQuery" />
+													</h:inputText>
+													<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
 												</div>
-												<h:inputText id="inputQuery" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'MULTI'}"
-													styleClass="form-control -validation-input"
-													requiredMessage="#{msg.info__input_required}"
-													required="#{cmsRecordNoteEditBean.currentNoteType eq 'MULTI'}"
-													validatorMessage="#{msg.inline_help__solr_query_danger}"
-													value="#{cmsRecordNoteEditBean.recordQuery}">
-													<f:validator validatorId="solrQueryValidator"
-														for="inputQuery" />
-												</h:inputText>
-												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
 											</div>
 		                            	</div>
 									</div>
@@ -139,33 +145,53 @@
 									<ui:fragment rendered="#{cmsRecordNoteEditBean.isMultiRecordNote()}">
 										<h3>#{msg.general}</h3>
 										
-										<div class="col-12 admin__default-block">
-											<div class="col-4 control-label admin__form-label">
+										<div class="admin__default-block">
+										
+										<div class="form-group form-row">
+											<div class="col-2 control-label admin__form-label">
 												<label for="inputRecordIdentifier">#{msg.cms__record_notes__type_query}:
 												</label>
 											</div>
-											<h:panelGroup layout="block" id="inputQueryGroup" class="col-8 admin__form-input cms-module__option-control">
-					
-												<h:message for="inputQuery2"
-													infoClass="-validation-message -success" 
-		                        					warnClass="-validation-message -warning"
-													errorClass="-validation-message -danger"></h:message>
-												<div class="-validation-mark">
-													<i class="fa fa-check" aria-hidden="true"></i> <i
-														class="fa fa-exclamation" aria-hidden="true"></i>
+											
+											<div class="cms-module__option-control col-9 admin__form-input">
+											
+											<h:panelGroup id="inputQueryGroup">
+												
+												
+												
+												<div class="cms-module__option-message">
+												
+													<h:message for="inputQuery2"
+														infoClass="cms-module__option-message-status success"
+														warnClass="cms-module__option-message-status warning"
+														errorClass="cms-module__option-message-status danger" />
+														
+													<div class="cms-module__option-message-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
+													
 												</div>
-												<h:inputText id="inputQuery2" tabindex="1"
-													styleClass="form-control -validation-input"
-													requiredMessage="#{msg.info__input_required}"
-													validatorMessage="#{msg.inline_help__solr_query_danger}"
-													value="#{note.query}">
-													<f:validator validatorId="solrQueryValidator"
-														for="inputQuery2" />
-														<f:ajax event="blur" execute="@this" render="inputQueryGroup noteInfoGroup"></f:ajax>
-												</h:inputText>
+												
+												
+												
+												
+													<h:inputText id="inputQuery2" tabindex="1"
+														styleClass="form-control -validation-input"
+														requiredMessage="#{msg.info__input_required}"
+														value="#{note.query}">
+														<f:validator validatorId="solrQueryValidator"
+															for="inputQuery2" />
+															<f:ajax event="blur" execute="@this" render="inputQueryGroup noteInfoGroup"></f:ajax>
+													</h:inputText>
+												
 												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
 											</h:panelGroup>
-											<script>$(document).ready(() => $("#inputQuery2").trigger("blur"))</script>
+											</div>
+											<script>$(document).ready(
+												() => $("#inputQuery2").trigger("blur"))
+											</script>
+											</div>
 										</div>
 									</ui:fragment>
 									
@@ -326,7 +352,9 @@
 										<h:outputFormat value="#{msg.cms__record_note__records_matching_query}">
 											<f:param value="#{note.records.size()}"></f:param>
 										</h:outputFormat>
-										<a href="#{cmsRecordNoteEditBean.getSearchUrlForNote(note)}" target="_goobi-viewer-record-note-search">#{msg.cms__record_note__view_record_list}</a>
+										<ui:fragment rendered="#{not empty note.records}">
+											<a href="#{cmsRecordNoteEditBean.getSearchUrlForNote(note)}" target="_goobi-viewer-record-note-search">#{msg.cms__record_note__view_record_list}</a>
+										</ui:fragment> 
 									</div>
 								</h:panelGroup>
 								</ui:fragment>
@@ -337,6 +365,11 @@
 					</ui:fragment>
 				</div>
 			</h:panelGroup>
+	        <script>
+	        $( document ).ready(function() {
+				$("[data-target='isChecked'] input").prop("checked", true);
+	        });
+	        </script>
 		</f:view>
 		</div>
 	</ui:define>
