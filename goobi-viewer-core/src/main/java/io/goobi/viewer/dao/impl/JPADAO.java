@@ -5010,13 +5010,14 @@ public class JPADAO implements IDAO {
         StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");   
         Query q = getEntityManager().createQuery(sbQuery.toString());
         q.setFlushMode(FlushModeType.COMMIT);
-        List<CMSRecordNote> notes = ((List<CMSRecordNote>)q.getResultList()).stream()
-                .filter(n -> n.matchesFilter(filters.values().stream().findAny().orElse(null)))
-                .skip(first)
-                .limit(pageSize)
-                .collect(Collectors.toList());
-
-            return notes;
+        List<CMSRecordNote> notes = q.getResultList();
+            notes =  notes.stream()
+                    .filter(n -> filters == null || n.matchesFilter(filters.values().stream().findAny().orElse(null)))
+                    .skip(first)
+                    .limit(pageSize)
+                    .collect(Collectors.toList());
+    
+                return notes;
         } catch (PersistenceException e) {
             logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
             return Collections.emptyList();
