@@ -300,7 +300,7 @@ public class ArchiveEntry {
             return;
         }
 
-        parentNode.setVisible(visible);
+        parentNode.setVisible(true);
         parentNode.expand();
         parentNode.expandUp();
     }
@@ -672,6 +672,9 @@ public class ArchiveEntry {
      * @param visible the visible to set
      */
     public void setVisible(boolean visible) {
+        if(this.hierarchyLevel == 0) {
+            System.out.println("HALT");
+        }
         this.visible = visible;
     }
 
