@@ -78,7 +78,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         
         if(this.pageStatisticMode) {
 	        this.initWebSocket();
-        }
+        }        
         this.initKeyboardEvents();
         
         // console.log("initialized crowdsourcing item ", this);
@@ -112,7 +112,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Item.prototype.initWebSocket = function() {
  		this.socket = new viewerJS.WebSocket(window.location.host, window.currentPath, viewerJS.WebSocket.PATH_CAMPAIGN_SOCKET);
     	this.socket.onMessage.subscribe((event) => {
-    		// console.log("received message ", event.data);
+    		//console.log("received message ", event.data);
     		let data = JSON.parse(event.data);
     		if(data.status) {
     			this.handleMessage(data);
@@ -164,8 +164,12 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Item.prototype.buildPageStatusMap = function(locks) {
     	this.pageStatusMap = new Map();
     	this.canvases.forEach((canvas, index) => {
-    		let status = locks[index+1];
-    		this.pageStatusMap.set(index, status ? status.toLowerCase() : "blank");
+	    	if(this.pageStatisticMode) {
+	    		let status = locks[index+1];
+	    		this.pageStatusMap.set(index, status ? status.toLowerCase() : "blank");
+    		} else {
+    			this.pageStatusMap.set(index, this.reviewMode ?  "review" : "annotate" );
+    		}
     	});
     };
     
@@ -288,6 +292,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Item.prototype.initViewer = function(imageSource) {
         this.canvases = _getCanvasList(imageSource);
         this.currentCanvasIndex = Math.max(0, Math.min(this.currentCanvasIndex, this.canvases.length-1));
+        //build a simple page status map now that the canvas list is known
+        if(!this.pageStatisticMode) {
+        	this.buildPageStatusMap();
+        }
     }
     
     crowdsourcing.Item.prototype.loadImage = function(index, requireConfirmation) {
