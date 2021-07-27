@@ -1763,7 +1763,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span> show thumbs : {this.showThumbs} <imagecontrols if="{this.image}" image="{this.image}" imageindex="{this.opts.item.currentCanvasIndex}" imagecount="{this.opts.item.canvases.length}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_unfinished⁗)}</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_all⁗)}</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" imageindex="{this.opts.item.currentCanvasIndex}" imagecount="{this.opts.item.canvases.length}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_unfinished⁗)}</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_all⁗)}</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
 
 
 	this.on("updated", function() {
@@ -1906,7 +1906,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	this.getPageStatusMap = function() {
-		return this.opts.item.pageStatusMap;
+			return this.opts.item.pageStatusMap;
 	}.bind(this)
 
 	this.isShowThumbs = function() {
@@ -3629,7 +3629,6 @@ this.handleClickOnImage = function(event) {
 }.bind(this)
 
 this.getPageStatus = function(index) {
-    console.log("status map ", this.opts.statusmap);
 	if(this.opts.statusmap) {
 		return this.opts.statusmap.get(index);
 	}

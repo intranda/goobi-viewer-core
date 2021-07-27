@@ -10,7 +10,6 @@
 		<span if="{this.error}" class="loader_wrapper">
 			<span class="error_message">{this.error.message}</span>
 		</span>
-		
 		<imageControls if="{this.image}" 
 			image="{this.image}" 
 			imageindex="{this.opts.item.currentCanvasIndex}"
@@ -191,7 +190,7 @@
 	}
 	
 	getPageStatusMap() {
-		return this.opts.item.pageStatusMap;
+			return this.opts.item.pageStatusMap;
 	}
 	
 	isShowThumbs() {
