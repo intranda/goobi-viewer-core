@@ -94,10 +94,10 @@
 				                            	</div>
 				                            	<div class="admin__form-input cms-module__option-control">
 				
-													<h:message for="inputQuery"
+													<h:messages for="inputQuery"
 														infoClass="-validation-message -success" 
 			                        					warnClass="-validation-message -warning"
-														errorClass="-validation-message -danger"></h:message>
+														errorClass="-validation-message -danger" />
 													<div class="-validation-mark">
 														<i class="fa fa-check" aria-hidden="true"></i> <i
 															class="fa fa-exclamation" aria-hidden="true"></i>
@@ -149,7 +149,7 @@
 										
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
-												<label for="inputRecordIdentifier">#{msg.cms__record_notes__type_query}:
+												<label for="inputQuery2">#{msg.cms__record_notes__type_query}:
 												</label>
 											</div>
 											
@@ -157,11 +157,9 @@
 											
 											<h:panelGroup id="inputQueryGroup">
 												
-												
-												
 												<div class="cms-module__option-message">
 												
-													<h:message for="inputQuery2"
+													<h:messages for="inputQuery2"
 														infoClass="cms-module__option-message-status success"
 														warnClass="cms-module__option-message-status warning"
 														errorClass="cms-module__option-message-status danger" />
@@ -173,24 +171,18 @@
 													
 												</div>
 												
-												
-												
-												
 													<h:inputText id="inputQuery2" tabindex="1"
 														styleClass="form-control -validation-input"
 														requiredMessage="#{msg.info__input_required}"
 														value="#{note.query}">
-														<f:validator validatorId="solrQueryValidator"
-															for="inputQuery2" />
-															<f:ajax event="blur" execute="@this" render="inputQueryGroup noteInfoGroup"></f:ajax>
+														<f:validator validatorId="solrQueryValidator" for="inputQuery2" />
+														<f:ajax event="blur" render="inputQueryGroup" />
 													</h:inputText>
 												
 												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
 											</h:panelGroup>
 											</div>
-											<script>$(document).ready(
-												() => $("#inputQuery2").trigger("blur"))
-											</script>
+	
 											</div>
 										</div>
 									</ui:fragment>

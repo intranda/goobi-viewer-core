@@ -55,12 +55,14 @@ public class SolrQueryValidator implements Validator<String> {
         if (StringUtils.isEmpty(value)) {
             return;
         }
-
+        
+        logger.trace("clientId: {}", component.getClientId());
         try {
             long hits = getHitCount(value);
             logger.trace("{} hits", hits);
             if (hits == 0) {
                 String message = ViewerResourceBundle.getTranslation("inline_help__solr_query_warning", null).replace("{0}", String.valueOf(hits));
+                logger.trace(message);
                 Messages.warn(component.getClientId(), message);
             } else {
                 Messages.info(component.getClientId(), "");
