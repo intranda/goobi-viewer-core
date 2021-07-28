@@ -11,6 +11,7 @@
 
 	<composite:implementation>
 
+        <!-- CITATION LINKS -->
         <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks}">
             <h4 id="titleCiteLinks" class="widget-usage__subtitle">#{msg.citeLinks}</h4>
 
@@ -32,42 +33,40 @@
             <viewerComponent:modalCitationLinks id="citationLinksModal" />
 		</ui:fragment>
 
-		<ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationRecommendation}">
-			<!-- CITATION RECOMMENDATION -->
-			<ui:fragment rendered="#{fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0}">
-				<h4 id="titleCiteRecommendation" class="widget-usage__subtitle">#{msg.citeRecommendation__title}</h4>
+        <!-- CITATION RECOMMENDATION -->
+		<ui:fragment
+		    rendered="#{configurationBean.displaySidebarWidgetUsageCitationRecommendation and fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0}">
+			<h4 id="titleCiteRecommendation" class="widget-usage__subtitle">#{msg.citeRecommendation__title}</h4>
 
-				<div class="widget-usage__citerecommendation">
-						<h:form>
-							<div
-								class="custom-control custom-control--select widget-usage__citerecommendation-dropdown">
-								<h:selectOneMenu
-									value="#{activeDocumentBean.viewManager.citationStyle}"
-									immediate="true">
-									<f:selectItems var="style"
-										value="#{configurationBean.sidebarWidgetUsageCitationRecommendationStyles}"
-										itemLabel="#{msg['label__citation_style_'.concat(style)]}" />
-									<f:ajax render="@form" />
-								</h:selectOneMenu>
-							</div>
-							<div class="widget-usage__citerecommendation-text-wrapper">
-								<i class="fa fa-quote-right" aria-hidden="true"></i> <a
-									id="citeCopyText"
-									class="widget-usage__citerecommendation-copy-text"
-									data-copy="text-citelink"
-									data-clipboard-text="#{activeDocumentBean.viewManager.citationStringPlain}"
-									data-copy-done="#{msg.copyUrlDone}"
-									title="#{msg.citeRecommendation__copy_to_clipboard}"
-									aria-label="#{msg.citeRecommendation__copy_to_clipboard}">
-									<h:outputText id="citationStringOutput"
-										value="#{activeDocumentBean.viewManager.citationStringHtml}"
-										escape="false" />
-								</a>
-							</div>
-							<div class="widget-usage__citerecommendation-text-info">#{msg.citeRecommendation__text_info}</div>
-						</h:form>
-				</div>
-			</ui:fragment>
+			<div class="widget-usage__citerecommendation">
+				<h:form>
+					<div class="custom-control custom-control--select widget-usage__citerecommendation-dropdown">
+						<h:selectOneMenu
+							value="#{activeDocumentBean.viewManager.citationStyle}"
+							immediate="true">
+							<f:selectItems var="style"
+								value="#{configurationBean.sidebarWidgetUsageCitationRecommendationStyles}"
+								itemLabel="#{msg['label__citation_style_'.concat(style)]}" />
+								<f:ajax render="@form" />
+						</h:selectOneMenu>
+					</div>
+					<div class="widget-usage__citerecommendation-text-wrapper">
+						<i class="fa fa-quote-right" aria-hidden="true"></i>
+						<a id="citeCopyText"
+							class="widget-usage__citerecommendation-copy-text"
+							data-copy="text-citelink"
+							data-clipboard-text="#{activeDocumentBean.viewManager.citationStringPlain}"
+							data-copy-done="#{msg.copyUrlDone}"
+							title="#{msg.citeRecommendation__copy_to_clipboard}"
+							aria-label="#{msg.citeRecommendation__copy_to_clipboard}">
+							<h:outputText id="citationStringOutput"
+								value="#{activeDocumentBean.viewManager.citationStringHtml}"
+								escape="false" />
+						</a>
+					</div>
+					<div class="widget-usage__citerecommendation-text-info">#{msg.citeRecommendation__text_info}</div>
+				</h:form>
+			</div>
 		</ui:fragment>
 
 	</composite:implementation>
