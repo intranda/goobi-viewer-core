@@ -132,6 +132,7 @@ public class AccessConditionUtils {
      * @return Constructed query
      * @should use correct field name for AV files
      * @should use correct file name for text files
+     * @should adapt basic alto file name
      * @should escape file name for wildcard search correctly
      * @should work correctly with urls
      */
@@ -169,12 +170,16 @@ public class AccessConditionUtils {
                         .append("\")");
                 break;
             case "xml":
+                String altoFileName = "\"" + fileName + "\"";
+                if (!altoFileName.contains("/")) {
+                    // Basic file name with no alto folder path received
+                    altoFileName = "*/" + identifier + "/" + fileName;
+                }
                 sbQuery.append(" +(")
                         .append(SolrConstants.FILENAME_ALTO)
                         .append(':')
-                        .append("\"")
-                        .append(fileName)
-                        .append("\" ")
+                        .append(altoFileName)
+                        .append(" ")
                         .append("FILENAME_XML:\"")
                         .append(simpleFileName)
                         .append("\")");
