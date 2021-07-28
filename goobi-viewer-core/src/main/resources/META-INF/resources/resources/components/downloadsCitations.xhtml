@@ -14,7 +14,7 @@
 		<h4 id="titleCiteLinks" class="widget-usage__subtitle">#{msg.citeLinks}</h4>
 
 		<div class="widget-usage__citelinks" >
-		<span data-toggle="modal" data-backdrop="false" data-target="#citationLinksModal">
+		<span data-toggle="modal" data-backdrop="false" data-focus="false" data-target="#citationLinksModal">
 			<button title="#{msg.citeLinks__open_modal_tooltip}"
                     data-toggle="tooltip"
 					data-placement="top"
@@ -27,6 +27,7 @@
 		</span>
 		</div>
 		
+		<!-- MODAL FOR ALL COPY TO CLIPBOARD CITATION LINKS -->
 		<viewerComponent:modalCitationLinks id="citationLinksModal" />
 
 		<ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationRecommendation}">
