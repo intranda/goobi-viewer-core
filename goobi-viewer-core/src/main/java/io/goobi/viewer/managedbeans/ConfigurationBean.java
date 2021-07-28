@@ -1252,6 +1252,17 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
+     * isDisplaySidebarWidgetUsageCitationLinks.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isDisplaySidebarWidgetUsageCitationLinks() {
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks();
+    }
+
+    /**
+     * <p>
      * isDisplaySidebarWidgetUsageCitationRecommendation.
      * </p>
      *

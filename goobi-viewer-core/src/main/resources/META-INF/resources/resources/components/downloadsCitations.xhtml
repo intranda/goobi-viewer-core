@@ -11,24 +11,26 @@
 
 	<composite:implementation>
 
-		<h4 id="titleCiteLinks" class="widget-usage__subtitle">#{msg.citeLinks}</h4>
+        <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks}">
+            <h4 id="titleCiteLinks" class="widget-usage__subtitle">#{msg.citeLinks}</h4>
 
-		<div class="widget-usage__citelinks" >
-		<span data-toggle="modal" data-backdrop="false" data-focus="false" data-target="#citationLinksModal">
-			<button title="#{msg.citeLinks__open_modal_tooltip}"
+            <div class="widget-usage__citelinks" >
+            <span data-toggle="modal" data-backdrop="false" data-focus="false" data-target="#citationLinksModal">
+                <button title="#{msg.citeLinks__open_modal_tooltip}"
                     data-toggle="tooltip"
 					data-placement="top"
 					data-trigger="hover"
 					type="button" 
 					class="badge badge-dark widget-usage__open-modal"  
 					aria-label="Open Cite Links">
-			    <span>#{msg.citeLinks__open_modal}</span>
-			</button>
-		</span>
+                    <span>#{msg.citeLinks__open_modal}</span>
+                </button>
+            </span>
 		</div>
 		
-		<!-- MODAL FOR ALL COPY TO CLIPBOARD CITATION LINKS -->
-		<viewerComponent:modalCitationLinks id="citationLinksModal" />
+            <!-- MODAL FOR ALL COPY TO CLIPBOARD CITATION LINKS -->
+            <viewerComponent:modalCitationLinks id="citationLinksModal" />
+		</ui:fragment>
 
 		<ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationRecommendation}">
 			<!-- CITATION RECOMMENDATION -->
@@ -36,7 +38,6 @@
 				<h4 id="titleCiteRecommendation" class="widget-usage__subtitle">#{msg.citeRecommendation__title}</h4>
 
 				<div class="widget-usage__citerecommendation">
-					<ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
 						<h:form>
 							<div
 								class="custom-control custom-control--select widget-usage__citerecommendation-dropdown">
@@ -65,7 +66,6 @@
 							</div>
 							<div class="widget-usage__citerecommendation-text-info">#{msg.citeRecommendation__text_info}</div>
 						</h:form>
-					</ui:fragment>
 				</div>
 			</ui:fragment>
 		</ui:fragment>
