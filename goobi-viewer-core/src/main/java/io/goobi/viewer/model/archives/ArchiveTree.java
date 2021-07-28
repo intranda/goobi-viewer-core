@@ -71,11 +71,11 @@ public class ArchiveTree implements Serializable {
         
         setTrueRootElement(root);
 
-        // If root has just one child, use it as new root
-        if (root.getSubEntryList().size() == 1) {
-            root = root.getSubEntryList().get(0);
-            root.shiftHierarchy(-1);
-        }
+        //        // If root has just one child, use it as new root
+        //        if (root.getSubEntryList().size() == 1) {
+        //            root = root.getSubEntryList().get(0);
+        //            root.shiftHierarchy(-1);
+        //        }
 
         List<ArchiveEntry> tree = root.getAsFlatList(true);
         entryMap.put(DEFAULT_GROUP, tree);
@@ -234,6 +234,15 @@ public class ArchiveTree implements Serializable {
         logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getId() : null);
         this.selectedEntry = selectedEntry;
     }
+    
+    public void toggleSelectedEntry(ArchiveEntry selectedEntry) {
+        if(selectedEntry != null && selectedEntry.equals(this.selectedEntry)) {
+            this.selectedEntry = null;
+        } else {
+            this.selectedEntry = selectedEntry;
+        }
+    }
+
 
     /**
      * @return the trueRootElement

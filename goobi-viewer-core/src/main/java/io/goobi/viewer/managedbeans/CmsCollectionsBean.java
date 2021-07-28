@@ -227,7 +227,8 @@ public class CmsCollectionsBean implements Serializable {
         return false;
     }
 
-    public String importDescriptionsAction() throws DAOException {
+    public String importDescriptionsAction(String solrField) throws DAOException {
+        logger.trace("importDescriptionsAction: {}", solrField);
         if (StringUtils.isEmpty(solrField)) {
             return "";
         }
@@ -256,9 +257,9 @@ public class CmsCollectionsBean implements Serializable {
                             collection.setDescription(value, locale.getLanguage());
                             stringCount++;
                             dirty = true;
-                            // Remove key from messages file
-                            ViewerResourceBundle.updateLocalMessageKey(key, null, locale.getLanguage());
                         }
+                        // Remove key from messages file
+                        ViewerResourceBundle.updateLocalMessageKey(key, null, locale.getLanguage());
                     }
                 }
                 if (dirty) {

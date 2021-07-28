@@ -1047,6 +1047,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isWatermarkTextConfigurationEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isWatermarkTextConfigurationEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isWatermarkTextConfigurationEnabled());
+    }
+
+    /**
      * @see Configuration#getWatermarkTextConfiguration()
      * @verifies return all configured elements in the correct order
      */

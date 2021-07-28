@@ -318,12 +318,12 @@
 			based on image properties. Default is false. -->
 		<forceJpegConversion>true</forceJpegConversion>
 
-		<!-- watermarkTextConfiguration: Watermark text source. The order of <text> 
-			elements is the order in which each source will be checked. "URN" and "PURL" 
-			are reserved keywords for URN and PURL, items starting with "SOLR:" must 
-			be followed by an existing Solr field name, all other text will be written 
-			as is. -->
-		<watermarkTextConfiguration>
+    <!-- watermarkTextConfiguration: Watermark text source. The order of 
+        <text> elements is the order in which each source will be checked. "URN" 
+        and "PURL" are reserved keywords for URN and PURL, items starting with "SOLR:" 
+        must be followed by an existing Solr field name, all other text will be written 
+        as is. Only used when enabled="true" (default is true). -->
+		<watermarkTextConfiguration enabled="false">
 			<text>solr:MD_ACCESSCONDITIONCOPYRIGHT</text>
 			<text>urn</text>
 			<text>purl</text>
