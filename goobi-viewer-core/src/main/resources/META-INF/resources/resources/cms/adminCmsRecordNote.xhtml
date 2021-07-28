@@ -57,7 +57,7 @@
 									<div class="form-group admin__record-notes-connected-area admin__cms-edit-collection-connected-radio-buttons">
 	                            		<div class="connected-top">
 	                            			<div class="form-row">
-				                            	<div data-target="isChecked" class="admin__record-notes-radio-select control-label admin__form-label">
+				                            	<div data-target="#{cmsRecordNoteEditBean.currentNoteType == 'SINGLE' ? 'isChecked' : 'blurIfUnchecked'}" class="admin__record-notes-radio-select control-label admin__form-label">
 					                            	<h:selectOneRadio group="noteTypeSelect" value="#{cmsRecordNoteEditBean.currentNoteType}" immediate="true" >
 					                                	<f:selectItem itemValue="SINGLE" itemLabel="#{msg.cms__record_notes__type_record}" />
 					                                	<f:ajax render="@form" />
@@ -86,7 +86,7 @@
 		                            	</div>
 		                            	<div class="connected-bottom">
 			                            	<div class="form-row">
-			                            		<div data-target="blurIfUnchecked" class="admin__record-notes-radio-select control-label admin__form-label">
+			                            		<div data-target="#{cmsRecordNoteEditBean.currentNoteType == 'MULTI' ? 'isChecked' : 'blurIfUnchecked'}" class="admin__record-notes-radio-select control-label admin__form-label">
 					                            	<h:selectOneRadio group="noteTypeSelect" value="#{cmsRecordNoteEditBean.currentNoteType}" immediate="true">
 					                                	<f:selectItem itemValue="MULTI" itemLabel="#{msg.cms__record_notes__type_query}" />
 					                                	<f:ajax render="@form" />
@@ -94,7 +94,7 @@
 				                            	</div>
 				                            	<div class="admin__form-input cms-module__option-control">
 				
-													<h:messages for="inputQuery"
+													<h:message for="inputQuery"
 														infoClass="-validation-message -success" 
 			                        					warnClass="-validation-message -warning"
 														errorClass="-validation-message -danger" />
@@ -151,6 +151,7 @@
 											<div class="col-2 control-label admin__form-label">
 												<label for="inputQuery2">#{msg.cms__record_notes__type_query}:
 												</label>
+												<span class="admin__label-required-field">(#{msg.form__required_field})</span>
 											</div>
 											
 											<div class="cms-module__option-control col-9 admin__form-input">
@@ -174,6 +175,7 @@
 													<h:inputText id="inputQuery2" tabindex="1"
 														styleClass="form-control -validation-input"
 														requiredMessage="#{msg.info__input_required}"
+														required="#{cmsRecordNoteEditBean.currentNoteType eq 'MULTI'}"
 														value="#{note.query}">
 														<f:validator validatorId="solrQueryValidator" for="inputQuery2" />
 														<f:ajax event="blur" render="inputQueryGroup" />
@@ -182,9 +184,9 @@
 												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
 											</h:panelGroup>
 											</div>
-	
 											</div>
 										</div>
+										<script>$(document).ready(() => $("#inputQuery2").trigger("blur"))</script>
 									</ui:fragment>
 									
 									<h3>#{msg.cms__record_notes_edit_text__title}</h3>
@@ -358,9 +360,13 @@
 				</div>
 			</h:panelGroup>
 	        <script>
-	        $( document ).ready(function() {
+	        
+	        viewerJS.jsfAjax.success.pipe(rxjs.operators.merge(rxjs.fromEvent(window, "load")))
+	        .subscribe(e => {
+	            console.log("set checkboxes");
 				$("[data-target='isChecked'] input").prop("checked", true);
-	        });
+				$("[data-target='blurIfUnchecked'] input").prop("checked", false);
+	        })
 	        </script>
 		</f:view>
 		</div>
