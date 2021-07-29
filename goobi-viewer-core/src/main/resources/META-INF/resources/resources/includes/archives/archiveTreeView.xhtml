@@ -33,7 +33,7 @@
 				<h:panelGroup>
 
 					<!-- Call to trigger a noop ajax call to update the url of the page (to set the query "selected" to the correct record) -->
-					<h:commandScript name="updateUrl">
+					<h:commandScript id="url-updater" name="updateUrl">
 					</h:commandScript>
 					
 					<!-- EXPAND ALL -->
@@ -41,20 +41,11 @@
 						<h:commandLink
 							action="#{archiveBean.archiveTree.collapseAll(true)}"
 							title="#{msg.allClose}">#{msg.allClose}
-<!-- 							<i class="fa fa-minus-square-o" aria-hidden="true"></i> -->
 							<f:passThroughAttribute name="data-toggle" value="tooltip" />
 							<f:passThroughAttribute name="data-placement" value="top" />
 							<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
 							<f:ajax render="archivesForm" />
 						</h:commandLink>
-<!-- 						<h:commandLink action="#{archiveBean.archiveTree.expandAll}" -->
-<!-- 							title="#{msg.allOpen}"> -->
-<!-- 							<i class="fa fa-plus-square-o" aria-hidden="true"></i> -->
-<!-- 							<f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
-<!-- 							<f:passThroughAttribute name="data-placement" value="top" /> -->
-<!-- 							<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" /> -->
-<!-- 							<f:ajax render="#{render}" /> -->
-<!-- 						</h:commandLink> -->
 					</div>
 					<nav class="archives-tree__list">
 						<ul>
@@ -63,36 +54,27 @@
 								<li class="archives-tree__entry #{entry.hasChild == true ? 'parent' : 'child' }"
 									data-id="id_#{entry.id}"
 									style="padding-left: #{entry.hierarchyLevel * indent}px">
-									<ui:fragment rendered="#{entry.hasChild}">
 										<!-- EXPAND OPTION -->
-										<div class="archives-tree__expandable-icon">
-													<h:commandLink rendered="#{!entry.expanded}"
-														action="#{archiveBean.expandEntry(entry)}">
-														<i class="fa fa-plus-square-o" aria-hidden="true"></i>
-														<f:passThroughAttribute name="aria-label"
-															value="#{msg.allOpen}" />
-														<f:passThroughAttribute name="data-expand-entry"
-															value="expanded" />
-														<f:ajax render="archivesForm" />
-													</h:commandLink>
-													<h:commandLink rendered="#{entry.expanded}"
-														action="#{archiveBean.collapseEntry(entry)}">
-														<i class="fa fa-minus-square-o" aria-hidden="true"></i>
-														<f:passThroughAttribute name="aria-label"
-															value="#{msg.all}" />
-														<f:passThroughAttribute name="data-expand-entry"
-															value="collapsed" />	
-														<f:ajax render="archivesForm" />
-													</h:commandLink>
+										<div class="archives-tree__expandable-icon #{entry.expanded == true ? '-expanded' : '-collapsed' }">
+											<h:commandLink rendered="#{entry.hasChild}"
+												action="#{archiveBean.toggleEntryExpansion(entry)}">
+												<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+												<f:passThroughAttribute name="aria-label"
+													value="#{msg.allOpen}" />
+												<f:passThroughAttribute name="data-expand-entry"
+													value="expanded" />
+												<f:ajax render="archivesForm" />
+											</h:commandLink>
 										</div>
-									</ui:fragment>
 									
 									<!-- TITLE -->
 									<div class="archives-tree__list-expandable-title #{entry.id == archiveBean.archiveTree.selectedEntry.id ? '-archives-selected' : ''} #{entry.searchHit ? '-archives-search-hit':''}">
 												<span class="fa-stack" aria-hidden="true"><i
 													class="fa fa-file-o"></i>
 													<i class="fa fa-stack-text">F</i></span>
-													<a class="archives-tree__selected" name="selected"></a>
+													<ui:fragment rendered="#{entry.id == archiveBean.archiveTree.selectedEntry.id}">
+														<a class="archives-tree__selected" name="selected"></a>
+													</ui:fragment>
 												<h:commandLink styleClass="archives-tree__inactive-title"
 												action="#{archiveBean.archiveTree.toggleSelectedEntry(entry)}"
 													    value="#{entry.label}"
