@@ -341,6 +341,7 @@ public class UserBean implements Serializable {
                         logger.error("Could not update user in DB.");
                     }
                     setUser(user);
+                    createFeedback();
                     if (request != null && request.getSession(false) != null) {
                         request.getSession(false).setAttribute("user", user);
                     }
@@ -416,6 +417,7 @@ public class UserBean implements Serializable {
 
         user.setTranskribusSession(null);
         setUser(null);
+        createFeedback();
         password = null;
         if (loggedInProvider != null) {
             loggedInProvider.logout();
@@ -525,7 +527,6 @@ public class UserBean implements Serializable {
             }
 
             this.authenticationProviders = null;
-
         }
     }
 
@@ -794,6 +795,7 @@ public class UserBean implements Serializable {
         feedback = new Feedback();
         if (user != null) {
             feedback.setSenderAddress(user.getEmail());
+            feedback.setName(user.getDisplayName());
         }
         
         String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
@@ -868,6 +870,8 @@ public class UserBean implements Serializable {
             Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
                     .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
         }
+        //eventually always create a new feedback object to erase prior inputs
+        createFeedback();
         return "";
     }
 

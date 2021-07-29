@@ -55,7 +55,7 @@
 										<h:inputText id="feedbackName" styleClass="form-control"
 											value="#{userBean.feedback.name}" required="true"
 											requiredMessage="#{msg.errFeedbackNameRequired}"
-											aria-labelledby="labelFeedbackName">
+											aria-labelledby="labelFeedbackName" pt:data-require-input-text="feedbackInput">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="labelFeedbackName" />
 										</h:inputText>
@@ -94,7 +94,7 @@
 											</div>
 										</div>
 										<h:inputText id="feedbackEmail" label="feedbackEmail"
-											immediate="true" required="true"
+											immediate="true" required="true" pt:data-require-input-text="feedbackInput"
 											value="#{userBean.feedback.senderAddress}" styleClass="form-control">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="labelFeedbackEmail" />
@@ -122,7 +122,7 @@
 											</div>
 										</div>
 										<h:inputText id="feedbackEmail2" label="feedbackEmail2"
-											immediate="true" required="true" disabled="true"
+											immediate="true" required="true" disabled="true" pt:data-require-input-text="feedbackInput"
 											value="#{userBean.feedback.senderAddress}" styleClass="form-control">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="labelFeedbackEmail2" />
@@ -144,6 +144,7 @@
 										<h:inputTextarea id="feedbackMessage"
 											styleClass="form-control"
 											value="#{userBean.feedback.message}" required="true"
+											pt:data-require-input-text="feedbackInput"
 											requiredMessage="#{msg.errFeedbackMessageRequired}">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="labelFeedbackMessage" />
@@ -166,6 +167,7 @@
 												errorClass="cms-module__option-message-status danger" />
 											<h:inputSecret id="feedbackSecurityQuestion"
 												styleClass="form-control" pt:autocomplete="new-password"
+												pt:data-require-input-text="feedbackInput"
 												value="#{userBean.securityAnswer}" required="true"
 												requiredMessage="#{msg.user__security_question_required_msg}" />
 										</div>
@@ -177,7 +179,7 @@
 							<div class="form-group form-row feedback-modal__action">
 								<div class="col-sm-12 d-flex justify-content-end">
 									<h:commandButton styleClass="btn btn--full"
-										value="#{msg.submit}"
+										value="#{msg.submit}" pt:data-require-input="feedbackInput"
 										action="#{userBean.submitFeedbackAction(true)}" />
 								</div>
 							</div>
