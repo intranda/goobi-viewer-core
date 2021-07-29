@@ -26,7 +26,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.ConfigurationBean;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -95,6 +94,7 @@ public class CitationLink {
     private String value;
     private String prefix;
     private String suffix;
+    private boolean appendImageNumberToSuffix = false;
 
     /**
      * 
@@ -120,7 +120,10 @@ public class CitationLink {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
-     * @should construct url correctly
+     * @should construct internal record url correctly
+     * @should construct internal docstruct url correctly
+     * @should construct internal image url correctly
+     * @should construct external url correctly
      */
     public String getUrl(ViewManager viewManager) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("getUrl: {}/{}", level, field);
@@ -146,6 +149,9 @@ public class CitationLink {
         sb.append(getValue(viewManager));
         if (suffix != null) {
             sb.append(suffix);
+            if (appendImageNumberToSuffix) {
+                sb.append(viewManager.getCurrentImageOrder());
+            }
         }
 
         return sb.toString();
@@ -262,4 +268,21 @@ public class CitationLink {
         this.suffix = suffix;
         return this;
     }
+
+    /**
+     * @return the appendImageNumberToSuffix
+     */
+    public boolean isAppendImageNumberToSuffix() {
+        return appendImageNumberToSuffix;
+    }
+
+    /**
+     * @param appendImageNumberToSuffix the appendImageNumberToSuffix to set
+     * @return this
+     */
+    public CitationLink setAppendImageNumberToSuffix(boolean appendImageNumberToSuffix) {
+        this.appendImageNumberToSuffix = appendImageNumberToSuffix;
+        return this;
+    }
+
 }

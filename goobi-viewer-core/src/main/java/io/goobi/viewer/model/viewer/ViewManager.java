@@ -3675,20 +3675,20 @@ public class ViewManager implements Serializable {
     }
 
     public String getCiteLinkDocstruct() throws IndexUnreachableException, DAOException, PresentationException {
-        if (topStructElement == null) {
+        if (currentStructElement == null) {
             return "";
         }
 
-        String customPURL = topStructElement.getMetadataValue("MD_PURL");
+        String customPURL = currentStructElement.getMetadataValue("MD_PURL");
         if (StringUtils.isNotEmpty(customPURL)) {
             return customPURL;
-        } else if (StringUtils.isNotBlank(topStructElement.getMetadataValue(SolrConstants.URN))) {
-            String urn = topStructElement.getMetadataValue(SolrConstants.URN);
+        } else if (StringUtils.isNotBlank(currentStructElement.getMetadataValue(SolrConstants.URN))) {
+            String urn = currentStructElement.getMetadataValue(SolrConstants.URN);
             return getPersistentUrl(urn);
         } else {
             StringBuilder url = new StringBuilder();
-            boolean anchorOrGroup = topStructElement.isAnchor() || topStructElement.isGroup();
-            PageType pageType = PageType.determinePageType(topStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
+            boolean anchorOrGroup = currentStructElement.isAnchor() || currentStructElement.isGroup();
+            PageType pageType = PageType.determinePageType(currentStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
             if (pageType == null) {
                 if (isHasPages()) {
                     pageType = PageType.viewObject;
@@ -3698,8 +3698,15 @@ public class ViewManager implements Serializable {
             }
             url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
             url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/');
-            if (getRepresentativePage() != null) {
-                url.append(getRepresentativePage().getOrder()).append('/');
+            if (currentStructElement.getImageNumber() > 0) {
+                // First page of the docstruct
+                url.append(currentStructElement.getImageNumber()).append('/');
+            } else{
+                // Current page
+                url.append(getCurrentImageOrder()).append('/');
+            }
+            if (StringUtils.isNotEmpty(currentStructElement.getLogid())) {
+                url.append(currentStructElement.getLogid()).append('/');
             }
             return url.toString();
         }

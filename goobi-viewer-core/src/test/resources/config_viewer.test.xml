@@ -1009,7 +1009,7 @@
             <citationLinks display="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
                 <!-- links: Citation link configurations. -->
                 <links>
-                    <link type="URL" for="record" label="LABEL_URN" field="URN" prefix="https://nbn-resolving.org/" suffix="/" />
+                    <link type="URL" for="record" label="LABEL_URN" field="URN" prefix="https://nbn-resolving.org/" suffix="/" appendImageNumberToSuffix="true" />
                     <link type="INTERNAL" for="docstruct" label="LABEL_VIEWER_PURL" />
                     <link type="INTERNAL" for="image" label="LABEL_VIEWER_PURL" />
                 </links>
