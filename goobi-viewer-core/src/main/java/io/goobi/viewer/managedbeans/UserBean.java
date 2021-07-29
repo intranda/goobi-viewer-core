@@ -32,6 +32,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -126,6 +127,11 @@ public class UserBean implements Serializable {
     public UserBean() {
         // the emptiness inside
         this.authenticationProvider = getLocalAuthenticationProvider();
+    }
+    
+    @PostConstruct
+    public void init() {
+        createFeedback();        
     }
 
     /**
@@ -785,11 +791,12 @@ public class UserBean implements Serializable {
         securityAnswer = null;
         securityQuestion = null;
 
-        String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
         feedback = new Feedback();
         if (user != null) {
             feedback.setSenderAddress(user.getEmail());
         }
+        
+        String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
         if (StringUtils.isEmpty(url)) {
             url = navigationHelper.getCurrentPrettyUrl();
         }
@@ -803,7 +810,7 @@ public class UserBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String submitFeedbackAction() {
+    public String submitFeedbackAction(boolean setCurrentUrl) {
         // Check whether the security question has been answered correct, if configured
         if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
             Messages.error("user__security_question_wrong");
@@ -832,6 +839,12 @@ public class UserBean implements Serializable {
             Messages.error("errFeedbackRecipientRequired");
             return "";
         }
+        
+        //set current url to feedback
+        if(setCurrentUrl && navigationHelper != null) {
+            feedback.setUrl(navigationHelper.getCurrentPrettyUrl());
+        }
+        
         try {
             if (NetTools.postMail(Collections.singletonList(feedback.getRecipientAddress()),
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
