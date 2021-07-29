@@ -47,36 +47,40 @@ import io.goobi.viewer.model.translations.TranslatedText;
 public class TranslatedTextConverter implements AttributeConverter<TranslatedText, String> {
 
     private final ObjectMapper mapper = new ObjectMapper();
-    
+
     private Collection<Locale> configuredLocales;
-    
-    
+
     public TranslatedTextConverter() {
         configuredLocales = null;
     }
-    
+
     public TranslatedTextConverter(Collection<Locale> locales) {
         this.configuredLocales = locales;
     }
 
-    
     /* (non-Javadoc)
      * @see javax.persistence.AttributeConverter#convertToDatabaseColumn(java.lang.Object)
      */
     @Override
     public String convertToDatabaseColumn(TranslatedText attribute) {
-        if(attribute.hasTranslations()) {            
-            try {
-                Map<String, String> map = attribute.toMap().entrySet().stream()
-                        .collect(Collectors.toMap(e -> e.getKey().getLanguage(), e -> StringEscapeUtils.escapeHtml4(e.getValue())));
-                MultiLanguageMetadataValue v = new MultiLanguageMetadataValue(map);
-                String s = mapper.writeValueAsString(attribute);
-                return s;
-            } catch (JsonProcessingException e1) {
-                throw new IllegalArgumentException("Cannot convert " + attribute + " to String");
+        if (attribute != null) {
+            if (attribute.hasTranslations()) {
+                try {
+                    Map<String, String> map = attribute.toMap()
+                            .entrySet()
+                            .stream()
+                            .collect(Collectors.toMap(e -> e.getKey().getLanguage(), e -> StringEscapeUtils.escapeHtml4(e.getValue())));
+                    MultiLanguageMetadataValue v = new MultiLanguageMetadataValue(map);
+                    String s = mapper.writeValueAsString(attribute);
+                    return s;
+                } catch (JsonProcessingException e1) {
+                    throw new IllegalArgumentException("Cannot convert " + attribute + " to String");
+                }
+            } else {
+                return attribute.getValue().orElse(null);
             }
         } else {
-            return attribute.getValue().orElse(null);
+            return null;
         }
     }
 
@@ -86,40 +90,40 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
     @Override
     public TranslatedText convertToEntityAttribute(String dbData) {
         TranslatedText attribute = new TranslatedText(getConfiguredLocales());
-        if(StringUtils.isBlank(dbData)) {
+        if (StringUtils.isBlank(dbData)) {
             return attribute;
-        } else 
-        try {
-            IMetadataValue v = mapper.readValue(dbData, IMetadataValue.class);
-            for (Locale locale : getConfiguredLocales()) {
-                String s = v.getValue(locale).orElse("");
-                s = StringEscapeUtils.unescapeHtml4(s);
-                if(StringUtils.isNotBlank(s)) {
-                    attribute.setText(s, locale);
+        } else
+            try {
+                IMetadataValue v = mapper.readValue(dbData, IMetadataValue.class);
+                for (Locale locale : getConfiguredLocales()) {
+                    String s = v.getValue(locale).orElse("");
+                    s = StringEscapeUtils.unescapeHtml4(s);
+                    if (StringUtils.isNotBlank(s)) {
+                        attribute.setText(s, locale);
+                    }
                 }
+                return attribute;
+            } catch (JsonProcessingException e) {
+                //assume a single language text
+                attribute = new TranslatedText(dbData);
+                return attribute;
             }
-            return attribute;
-        } catch (JsonProcessingException e) {
-            //assume a single language text
-            attribute = new TranslatedText(dbData);
-            return attribute;
-        }
-//            throw new IllegalArgumentException("Cannot convert " + dbData + " to value", e);
-//        }
+        //            throw new IllegalArgumentException("Cannot convert " + dbData + " to value", e);
+        //        }
     }
-    
+
     private Collection<Locale> getConfiguredLocales() {
-        if(this.configuredLocales == null) {
+        if (this.configuredLocales == null) {
             try {
                 this.configuredLocales = IPolyglott.getLocalesStatic();
-            } catch(Throwable e) {
+            } catch (Throwable e) {
                 //too early?
                 return Collections.emptyList();
             }
         }
         return this.configuredLocales;
     }
-    
+
     private Collection<String> getConfiguredLanguages() {
         return getConfiguredLocales().stream().map(Locale::getLanguage).collect(Collectors.toList());
     }

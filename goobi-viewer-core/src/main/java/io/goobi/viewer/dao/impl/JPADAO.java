@@ -62,6 +62,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
@@ -69,8 +70,10 @@ import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
+import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -5011,44 +5014,27 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getRecordNotes(int, int, java.lang.String, boolean, java.util.Map)
+    /**
+     * Implements filtering with java methods because filtering single-table inheritance objects does not work as expected
      */
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSRecordNote> getRecordNotes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
-        StringBuilder order = new StringBuilder();
+        
         try {
-            Map<String, Object> params = new HashMap<>();
-            if (filters != null) {
-                String filterValue = filters.values().stream().findAny().orElse(null);
-                if (StringUtils.isNotBlank(filterValue)) {
-                    String filterString =
-                            " WHERE (UPPER(a.recordPi) LIKE :filter OR UPPER(a.recordTitle) LIKE :filter OR UPPER(a.noteTitle) LIKE :filter)";
-                    params.put("filter", sanitizeQueryParam(filterValue, true));
-                    sbQuery.append(filterString);
-                }
-            }
-            if (StringUtils.isNotEmpty(sortField)) {
-                order.append(" ORDER BY a.").append(sortField);
-                if (descending) {
-                    order.append(" DESC");
-                }
-            }
-            sbQuery.append(order);
-
-            logger.trace(sbQuery.toString());
-            Query q = getEntityManager().createQuery(sbQuery.toString());
-            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-            //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
-            q.setFirstResult(first);
-            q.setMaxResults(pageSize);
-            q.setFlushMode(FlushModeType.COMMIT);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-            return q.getResultList();
+        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");   
+        Query q = getEntityManager().createQuery(sbQuery.toString());
+        q.setFlushMode(FlushModeType.COMMIT);
+        List<CMSRecordNote> notes = q.getResultList();
+            notes =  notes.stream()
+                    .filter(n -> filters == null || n.matchesFilter(filters.values().stream().findAny().orElse(null)))
+                    .skip(first)
+                    .limit(pageSize)
+                    .collect(Collectors.toList());
+    
+                return notes;
         } catch (PersistenceException e) {
             logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
             return Collections.emptyList();
@@ -5080,15 +5066,32 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<CMSRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException {
+    public List<CMSSingleRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException {
         preQuery();
-        String query = "SELECT a FROM CMSRecordNote a WHERE a.recordPi = :pi";
+        String query = "SELECT a FROM CMSSingleRecordNote a WHERE a.recordPi = :pi";
         if (displayedNotesOnly) {
             query += " AND a.displayNote = :display";
         }
         logger.trace(query);
         Query q = getEntityManager().createQuery(query.toString());
         q.setParameter("pi", pi);
+        if (displayedNotesOnly) {
+            q.setParameter("display", true);
+        }
+        q.setFlushMode(FlushModeType.COMMIT);
+        return q.getResultList();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSMultiRecordNote> getAllMultiRecordNotes(boolean displayedNotesOnly) throws DAOException {
+        preQuery();
+        String query = "SELECT a FROM CMSMultiRecordNote a";
+        if (displayedNotesOnly) {
+            query += " WHERE a.displayNote = :display";
+        }
+        logger.trace(query);
+        Query q = getEntityManager().createQuery(query.toString());
         if (displayedNotesOnly) {
             q.setParameter("display", true);
         }
@@ -5106,8 +5109,14 @@ public class JPADAO implements IDAO {
             CMSRecordNote o = getEntityManager().getReference(CMSRecordNote.class, id);
             if (o != null) {
                 getEntityManager().refresh(o);
+                if(o instanceof CMSMultiRecordNote) {
+                    return new CMSMultiRecordNote(o);
+                } else {                    
+                    return new CMSSingleRecordNote(o);
+                }
+            } else {
+                return null;
             }
-            return new CMSRecordNote(o);
         } catch (EntityNotFoundException e) {
             return null;
         }
