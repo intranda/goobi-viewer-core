@@ -15,11 +15,12 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSRecordNote;
+import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
@@ -65,7 +67,7 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void testChangeLanguage() {
-        CMSRecordNote note = new CMSRecordNote("PI1");
+        CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         bean.setNote(note);
  
         note.getNoteText().setText(englishText);
@@ -94,7 +96,7 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         bean.setSelectedLocale(Locale.GERMAN);
         
         //note only has german text
-        CMSRecordNote note = new CMSRecordNote("PI1");
+        CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         note.getNoteText().setText(germanText, Locale.GERMAN);
         note.getNoteTitle().setText(germanText, Locale.GERMAN);
         
@@ -147,7 +149,7 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     
     @Test
     public void testTranslationEmpyIfNoFieldsFilled() {
-        CMSRecordNote note = new CMSRecordNote("PI1");
+        CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         TranslatedText title = note.getNoteTitle();
         TranslatedText text = note.getNoteText();
         bean.setNote(note);
@@ -164,7 +166,7 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     
     @Test
     public void testTranslationNotCompleteIfNotAllFieldsFilled() {
-        CMSRecordNote note = new CMSRecordNote("PI1");
+        CMSRecordNote note = new CMSSingleRecordNote("PI1");
         TranslatedText title = note.getNoteTitle();
         TranslatedText text = note.getNoteText();
         bean.setNote(note);
@@ -182,7 +184,7 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     
     @Test
     public void testTranslationCompleteIfSameFieldsFillesAsInDefaultLanguage() {
-        CMSRecordNote note = new CMSRecordNote("PI1");
+        CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         TranslatedText title = note.getNoteTitle();
         TranslatedText text = note.getNoteText();
         bean.setNote(note);
@@ -199,7 +201,7 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     
     @Test
     public void testTranslationCompleteIfAllFieldsFilled() {
-        CMSRecordNote note = new CMSRecordNote("PI1");
+        CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         TranslatedText title = note.getNoteTitle();
         TranslatedText text = note.getNoteText();
         bean.setNote(note);

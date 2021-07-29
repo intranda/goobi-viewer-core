@@ -30,12 +30,14 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
+import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -2201,7 +2203,16 @@ public interface IDAO {
      * @return
      * @throws DAOException
      */
-    public List<CMSRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException;
+    public List<CMSSingleRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException;
+
+    /**
+     * Get all {@link CMSMultiRecordNote}s. To find notes relating to record, all notes must be check for matching query
+     * 
+     * @param displayedNotesOnly
+     * @return
+     * @throws DAOException
+     */
+    public List<CMSMultiRecordNote> getAllMultiRecordNotes(boolean displayedNotesOnly) throws DAOException;
 
     
     /**

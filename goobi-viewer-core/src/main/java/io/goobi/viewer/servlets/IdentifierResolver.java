@@ -155,6 +155,8 @@ public class IdentifierResolver extends HttpServlet {
             }
             return;
         }
+        
+        logger.trace("output: {}", request.getQueryString());
 
         // Parse optional additional field/value pairs
         Map<Integer, String> moreFields = new HashMap<>();
@@ -267,7 +269,7 @@ public class IdentifierResolver extends HttpServlet {
             // Custom page, if parameter given
             if (request.getParameter(PAGE_PARAMETER) != null) {
                 page = Integer.valueOf(request.getParameter(PAGE_PARAMETER));
-            }
+             }
 
             // If the user has no listing privilege for this record, act as if it does not exist
             boolean access;
