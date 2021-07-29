@@ -993,20 +993,29 @@
                     <option label="label__download_option_large_4096" format="jpg" boxSizeInPixel="4096" />
                 </downloadOptions>
             </page>
-            <citation display="false">
+            <citationRecommendation display="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
                 <!-- Available citation styles (supported by citeproc) -->
                 <styles>
                     <style>modern-language-association</style>
                     <style>apa</style>
                     <style>harvard</style>
                 </styles>
+                <!-- Metadata source mapping for citations. Please refer to the citeproc documentation for available "dest" values. -->
                 <source>
                     <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
                         <param type="field" key="LABEL" />
                         <param type="translatedfield" key="ACCESSCONDITION" />
                     </metadata>
                 </source>
-            </citation>
+            </citationRecommendation>
+            <citationLinks display="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
+                <!-- links: Citation link configurations. -->
+                <links>
+                    <link type="URL" for="record" label="LABEL_URN" field="URN" prefix="https://nbn-resolving.org/" suffix="/" appendImageNumberToSuffix="true" />
+                    <link type="INTERNAL" for="docstruct" label="LABEL_VIEWER_PURL" />
+                    <link type="INTERNAL" for="image" label="LABEL_VIEWER_PURL" />
+                </links>
+            </citationLinks>
         </sidebarWidgetUsage>
 
 		<!-- page: if false, the image view is hidden -->

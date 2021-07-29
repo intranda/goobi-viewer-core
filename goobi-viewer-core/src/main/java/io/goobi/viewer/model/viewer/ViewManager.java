@@ -1389,17 +1389,18 @@ public class ViewManager implements Serializable {
     /**
      * 
      * @return Last page number
-     */    public int getLastPageOrder() {
+     */
+    public int getLastPageOrder() {
         if (pageLoader == null) {
             return -1;
         }
         return pageLoader.getLastPageOrder();
     }
 
-     /**
-      * 
-      * @return First page number
-      */
+    /**
+     * 
+     * @return First page number
+     */
     public int getFirstPageOrder() {
         if (pageLoader == null) {
             return -1;
@@ -3670,7 +3671,57 @@ public class ViewManager implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplayCiteLinkWork() {
-        return topStructElement != null;
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && topStructElement != null;
+    }
+
+    public String getCiteLinkDocstruct() throws IndexUnreachableException, DAOException, PresentationException {
+        if (currentStructElement == null) {
+            return "";
+        }
+
+        String customPURL = currentStructElement.getMetadataValue("MD_PURL");
+        if (StringUtils.isNotEmpty(customPURL)) {
+            return customPURL;
+        } else if (StringUtils.isNotBlank(currentStructElement.getMetadataValue(SolrConstants.URN))) {
+            String urn = currentStructElement.getMetadataValue(SolrConstants.URN);
+            return getPersistentUrl(urn);
+        } else {
+            StringBuilder url = new StringBuilder();
+            boolean anchorOrGroup = currentStructElement.isAnchor() || currentStructElement.isGroup();
+            PageType pageType = PageType.determinePageType(currentStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
+            if (pageType == null) {
+                if (isHasPages()) {
+                    pageType = PageType.viewObject;
+                } else {
+                    pageType = PageType.viewMetadata;
+                }
+            }
+            url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+            url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/');
+            if (currentStructElement.getImageNumber() > 0) {
+                // First page of the docstruct
+                url.append(currentStructElement.getImageNumber()).append('/');
+            } else{
+                // Current page
+                url.append(getCurrentImageOrder()).append('/');
+            }
+            if (StringUtils.isNotEmpty(currentStructElement.getLogid())) {
+                url.append(currentStructElement.getLogid()).append('/');
+            }
+            return url.toString();
+        }
+    }
+
+    /**
+     * <p>
+     * isDisplayCiteLinkDocstruct.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isDisplayCiteLinkDocstruct() {
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && currentStructElement != null
+                && currentStructElement.getLuceneId() != topStructElement.getLuceneId();
     }
 
     /**
@@ -3702,7 +3753,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {
-        return getCurrentPage() != null;
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && getCurrentPage() != null;
     }
 
     /**
@@ -3739,7 +3790,7 @@ public class ViewManager implements Serializable {
      */
     String getCitationString(String outputFormat) throws IOException, IndexUnreachableException, PresentationException {
         if (StringUtils.isEmpty(citationStyle)) {
-            List<String> availableStyles = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+            List<String> availableStyles = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
             if (availableStyles.isEmpty()) {
                 return "";
             }
@@ -3750,7 +3801,7 @@ public class ViewManager implements Serializable {
             citationProcessorWrapper = new CitationProcessorWrapper();
         }
         CSL processor = citationProcessorWrapper.getCitationProcessor(citationStyle);
-        Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationSource();
+        Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationSource();
         md.populate(topStructElement, BeanUtils.getLocale());
         for (MetadataValue val : md.getValues()) {
             if (!val.getCitationValues().isEmpty()) {

@@ -35,6 +35,9 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.citation.CitationLink;
+import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
+import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
 import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -2916,12 +2919,49 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isDisplaySidebarWidgetUsageCitation()
+     * @see Configuration#isDisplaySidebarWidgetUsageCitationRecommendation()
      * @verifies return correct value
      */
     @Test
-    public void isDisplaySidebarWidgetUsageCitation_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitation());
+    public void isDisplaySidebarWidgetUsageCitationRecommendation_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationRecommendation());
+    }
+
+    /**
+     * @see Configuration#isDisplaySidebarWidgetUsageCitationLinks()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplaySidebarWidgetUsageCitationLinks_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinksDocstructIntroText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinksDocstructIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("record intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksRecordIntroText());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinksImageIntroText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinksImageIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("docstruct intro text",
+                DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksDocstructIntroText());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinksRecordIntroText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinksRecordIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("image intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksImageIntroText());
     }
 
     /**
@@ -2929,9 +2969,38 @@ public class ConfigurationTest extends AbstractTest {
      * @verifies return all configured values
      */
     @Test
-    public void getSidebarWidgetUsageCitationStyles_shouldReturnAllConfiguredValues() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+    public void getSidebarWidgetUsageCitationRecommendationStyles_shouldReturnAllConfiguredValues() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
         Assert.assertEquals(3, result.size());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinks()
+     * @verifies return all configured values
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinks_shouldReturnAllConfiguredValues() throws Exception {
+        List<CitationLink> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks();
+        Assert.assertEquals(3, result.size());
+        {
+            CitationLink link = result.get(0);
+            Assert.assertEquals(CitationLinkType.URL, link.getType());
+            Assert.assertEquals(CitationLinkLevel.RECORD, link.getLevel());
+            Assert.assertEquals("LABEL_URN", link.getLabel());
+            Assert.assertEquals("URN", link.getField());
+            Assert.assertEquals("https://nbn-resolving.org/", link.getPrefix());
+            Assert.assertEquals("/", link.getSuffix());
+            Assert.assertTrue(link.isAppendImageNumberToSuffix());
+        }
+        {
+            CitationLink link = result.get(1);
+            Assert.assertEquals(CitationLinkType.INTERNAL, link.getType());
+            Assert.assertEquals(CitationLinkLevel.DOCSTRUCT, link.getLevel());
+        }
+        {
+            CitationLink link = result.get(2);
+            Assert.assertEquals(CitationLinkLevel.IMAGE, link.getLevel());
+        }
     }
 
     /**
