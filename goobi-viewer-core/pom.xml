@@ -533,6 +533,11 @@
 			<artifactId>org.apache.oltu.oauth2.client</artifactId>
 			<version>${oauth.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.omnifaces</groupId>
+            <artifactId>omnifaces</artifactId>
+            <version>3.11.1</version>
+        </dependency>
 		<dependency>
 			<groupId>com.github.librepdf</groupId>
 			<artifactId>openpdf</artifactId>

@@ -6,6 +6,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"   
     xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:o="http://omnifaces.org/ui"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -69,9 +70,12 @@
 						</div>
 					</ui:fragment>
 					</h:panelGroup>
-					<f:websocket channel="hotfolderFileCount" scope="view">
+<!-- 					<f:websocket channel="hotfolderFileCount" scope="view"> -->
+<!--                         <f:ajax event="update" render="hotfolderFileCountGroup" /> -->
+<!--                     </f:websocket> -->
+                    <o:socket channel="hotfolderFileCount">
                         <f:ajax event="update" render="hotfolderFileCountGroup" />
-                    </f:websocket>
+                    </o:socket>
 	            </div>
 	            <!-- CHANGE LANGUAGE -->
 				<ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}">
