@@ -130,7 +130,7 @@ public class CMSPageTemplate implements Serializable {
                 if (options != null) {
                     template.setDisplaySortingField(parseBoolean(options.getChildText("useSorterField")));
                     template.setAppliesToExpandedUrl(parseBoolean(options.getChildText("appliesToExpandedUrl"), true));
-                    template.setMayHaveTopBarSlider(parseBoolean(options.getChildText("topBarSlider"), true));
+                    template.setMayHaveTopBarSlider(parseBoolean(options.getChildText("topBarSlider"), false));
                 }
                 template.validate();
                 return template;
