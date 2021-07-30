@@ -19,8 +19,8 @@
     "grunt-sync": "^0.8.2",
     "less-plugin-autoprefix": "^2.0.0",
     "michelangelo": "^0.8.0",
-    "pdfjs-dist": "^2.8.335",
-    "webpack": "5.42.0"
+    "pdfjs-dist": "^2.9.359",
+    "webpack": "5.47.1"
   },
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "*",

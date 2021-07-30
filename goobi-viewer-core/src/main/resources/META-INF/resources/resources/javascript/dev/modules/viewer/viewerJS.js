@@ -91,6 +91,9 @@ var viewerJS = (function () {
 	    
 	    viewerJS.initWidgetUsage();
 
+       viewerJS.initFragmentActions();
+       
+       viewerJS.initRequiredInputs();
        
         // init bookmarks if enabled
         if ( bookmarksEnabled ) { 
@@ -455,6 +458,54 @@ var viewerJS = (function () {
     	}
     }
 
+	viewer.initFragmentActions = function() {
+		window.onhashchange = () => viewer.handleFragmentAction();
+		viewer.handleFragmentAction();
+	}
+	
+	viewer.handleFragmentAction = function() {
+		let hash = location.hash;
+		if(hash) {
+			switch(hash) {
+				case "#feedback":
+					$('#feedbackModal').modal();
+					$('#feedbackModal').on('hidden.bs.modal', function (e) {
+						history.replaceState({}, '', window.location.href.replace("#feedback", ""));
+					})
+			}
+		}
+	}
+	
+	viewer.initRequiredInputs = function() {
+	
+		let $requireElements = $("[data-require-input]");
+		
+		$requireElements.each((index, element) => {
+			let $ele = $(element);
+			$ele.attr("disabled", "disabled");
+			let id = $(element).attr("data-require-input");
+			let $texts = $("[data-require-input-text='" + id + "']");
+			$texts.on("change", (e) => {
+				console.log("require element text change", e);
+				let filled = true;
+				$texts.each((index, element) => {
+					let text = $(element).val();
+					console.log("check text value ", text);
+					if(!text) {
+						filled = false;
+						return false;
+					}
+				});
+				if(filled) {
+					$ele.removeAttr("disabled");
+				} else {
+					$ele.attr("disabled", "disabled");
+				}
+							
+			}); 
+		});
+	
+	}
 
     // init bootstrap 4 popovers
 	$(document).ready(function(){

@@ -94,6 +94,7 @@ public class CitationLink {
     private String value;
     private String prefix;
     private String suffix;
+    private boolean topstructValueFallback = false;
     private boolean appendImageNumberToSuffix = false;
 
     /**
@@ -192,6 +193,7 @@ public class CitationLink {
      * @should return correct value for record type
      * @should return correct value for docstruct type
      * @should return correct value for image type
+     * @should fall back to topstruct value correctly
      */
     public String getValue(ViewManager viewManager) throws IndexUnreachableException, PresentationException {
         if (!CitationLinkType.URL.equals(type)) {
@@ -222,6 +224,12 @@ public class CitationLink {
 
             if (doc.get(field) != null) {
                 this.value = String.valueOf(doc.get(field));
+            } else if (topstructValueFallback && !CitationLinkLevel.RECORD.equals(level)) {
+                query = SolrConstants.PI + ":" + viewManager.getPi();
+                doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(field));
+                if (doc != null && doc.get(field) != null) {
+                    this.value = String.valueOf(doc.get(field));
+                }
             }
         }
 
@@ -266,6 +274,22 @@ public class CitationLink {
      */
     public CitationLink setSuffix(String suffix) {
         this.suffix = suffix;
+        return this;
+    }
+
+    /**
+     * @return the topstructValueFallback
+     */
+    public boolean isTopstructValueFallback() {
+        return topstructValueFallback;
+    }
+
+    /**
+     * @param topstructValueFallback the topstructValueFallback to set
+     * @return this
+     */
+    public CitationLink setTopstructValueFallback(boolean topstructValueFallback) {
+        this.topstructValueFallback = topstructValueFallback;
         return this;
     }
 

@@ -147,8 +147,10 @@
 		<smtpSenderName>smtpSenderName_value</smtpSenderName>
 		<smtpSecurity>smtpSecurity_value</smtpSecurity>
 		<smtpPort>25</smtpPort>
-		<feedbackEmailAddress>feedbackEmailAddress_value
-		</feedbackEmailAddress>
+        <feedbackEmailAddressList>
+            <address label="Everyone" default="true">everyone@example.com</address>
+            <address>someone@example.com</address>
+        </feedbackEmailAddressList>
 		
         <!-- anonymousUserEmailAddress: A user with this email address will be automatically created by the application.
             It will as an anonymous owner of user-created date in case the original user is deleted and their public data is kept. -->
@@ -1009,7 +1011,8 @@
             <citationLinks display="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
                 <!-- links: Citation link configurations. -->
                 <links>
-                    <link type="URL" for="record" label="LABEL_URN" field="URN" prefix="https://nbn-resolving.org/" suffix="/" appendImageNumberToSuffix="true" />
+                    <link type="URL" for="record" label="LABEL_URN" field="URN" prefix="https://nbn-resolving.org/" suffix="/"
+                        topstructValueFallback="true" appendImageNumberToSuffix="true" />
                     <link type="INTERNAL" for="docstruct" label="LABEL_VIEWER_PURL" />
                     <link type="INTERNAL" for="image" label="LABEL_VIEWER_PURL" />
                 </links>
