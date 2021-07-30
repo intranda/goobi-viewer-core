@@ -927,6 +927,10 @@ public final class Configuration extends AbstractConfiguration {
 
         return ret;
     }
+    
+    public boolean isDisplayWidgetUsageDownloadOptions()  {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.downloadOptions[@display]", true);
+    }
 
     /**
      * Returns the list of structure elements allowed to be shown in calendar view
