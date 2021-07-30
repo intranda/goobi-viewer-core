@@ -142,7 +142,6 @@ public class ViewManager implements Serializable {
     private String pi;
     private Boolean accessPermissionPdf = null;
     private Boolean allowUserComments = null;
-    private String persistentUrl = null;
     private List<StructElementStub> docHierarchy = null;
     private String mainMimeType = null;
     private Boolean filesOnly = null;
@@ -1219,7 +1218,6 @@ public class ViewManager implements Serializable {
             currentImageOrder = pageLoader.getLastPageOrder();
         }
         this.currentImageOrder = currentImageOrder;
-        persistentUrl = null;
 
         if (StringUtils.isEmpty(logId)) {
             Long iddoc = pageLoader.getOwnerIddocForPage(currentImageOrder);
@@ -1389,17 +1387,18 @@ public class ViewManager implements Serializable {
     /**
      * 
      * @return Last page number
-     */    public int getLastPageOrder() {
+     */
+    public int getLastPageOrder() {
         if (pageLoader == null) {
             return -1;
         }
         return pageLoader.getLastPageOrder();
     }
 
-     /**
-      * 
-      * @return First page number
-      */
+    /**
+     * 
+     * @return First page number
+     */
     public int getFirstPageOrder() {
         if (pageLoader == null) {
             return -1;
@@ -2369,76 +2368,16 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * <p>
-     * Getter for the field <code>persistentUrl</code>.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     * @deprecated Use <code>getCiteLinkWork()</code>
      */
-    public String getPersistentUrl() throws IndexUnreachableException, DAOException {
-        PhysicalElement currentPage = getCurrentPage();
-        if (topStructElement != null) {
-            String customPURL = topStructElement.getMetadataValue("MD_PURL");
-            if (StringUtils.isNotEmpty(customPURL)) {
-                return customPURL;
-            }
-        }
-        String urn = currentPage != null ? currentPage.getUrn() : null;
-        if (urn == null && currentStructElement != null) {
-            urn = currentStructElement.getMetadataValue(SolrConstants.URN);
-        }
-
-        if (persistentUrl == null) {
-            persistentUrl = getPersistentUrl(urn);
-        }
-        return persistentUrl;
-    }
-
-    /**
-     * Returns the PURL for the current page (either via the URN resolver or a pretty URL)
-     *
-     * @return PURL for the current page
-     * @should generate purl via urn correctly
-     * @should generate purl without urn correctly
-     * @param urn a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public String getPersistentUrl(String urn) throws IndexUnreachableException {
-        String persistentUrl = "";
-        StringBuilder url = new StringBuilder();
-        if (StringUtils.isNotEmpty(urn) && !urn.equalsIgnoreCase("NULL")) {
-            // URN-based PURL
-            if (urn.startsWith("http:") || urn.startsWith("https:")) {
-                // URN is full URL
-                persistentUrl = urn;
-            } else {
-                // Just the URN
-                url.append(DataManager.getInstance().getConfiguration().getUrnResolverUrl()).append(urn);
-                persistentUrl = url.toString();
-            }
-        } else {
-            // Prefer configured target page type for the docstruct type
-            PageType pageType = null;
-            if (topStructElement != null) {
-                boolean anchorOrGroup = topStructElement.isAnchor() || topStructElement.isGroup();
-                pageType = PageType.determinePageType(topStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
-            }
-            if (pageType == null) {
-                if (isHasPages()) {
-                    pageType = PageType.viewImage;
-                } else {
-                    pageType = PageType.viewMetadata;
-                }
-            }
-            url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-            url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/').append(currentImageOrder).append('/');
-            persistentUrl = url.toString();
-        }
-        logger.trace("PURL: {}", persistentUrl);
-
-        return persistentUrl;
+    @Deprecated
+    public String getPersistentUrl() throws IndexUnreachableException, DAOException, PresentationException {
+        return getCiteLinkWork();
     }
 
     /**
@@ -3626,40 +3565,40 @@ public class ViewManager implements Serializable {
      *
      * @return A persistent link to the current work
      *
-     *         TODO: additional urn-resolving logic
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @should return correct url
      */
     public String getCiteLinkWork() throws IndexUnreachableException, DAOException, PresentationException {
         if (topStructElement == null) {
             return "";
         }
 
+        // Prefer custom PURL in MD_PURL, if available
         String customPURL = topStructElement.getMetadataValue("MD_PURL");
         if (StringUtils.isNotEmpty(customPURL)) {
             return customPURL;
-        } else if (StringUtils.isNotBlank(topStructElement.getMetadataValue(SolrConstants.URN))) {
-            String urn = topStructElement.getMetadataValue(SolrConstants.URN);
-            return getPersistentUrl(urn);
-        } else {
-            StringBuilder url = new StringBuilder();
-            boolean anchorOrGroup = topStructElement.isAnchor() || topStructElement.isGroup();
-            PageType pageType = PageType.determinePageType(topStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
-            if (pageType == null) {
-                if (isHasPages()) {
-                    pageType = PageType.viewObject;
-                } else {
-                    pageType = PageType.viewMetadata;
-                }
-            }
-            url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-            url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/');
-            if (getRepresentativePage() != null) {
-                url.append(getRepresentativePage().getOrder()).append('/');
-            }
-            return url.toString();
         }
+
+        // Build URL
+        StringBuilder url = new StringBuilder();
+        boolean anchorOrGroup = topStructElement.isAnchor() || topStructElement.isGroup();
+        PageType pageType = PageType.determinePageType(topStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
+        if (pageType == null) {
+            if (isHasPages()) {
+                pageType = PageType.viewObject;
+            } else {
+                pageType = PageType.viewMetadata;
+            }
+        }
+        url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+        url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/');
+        if (getRepresentativePage() != null) {
+            url.append(getRepresentativePage().getOrder()).append('/');
+        }
+
+        return url.toString();
     }
 
     /**
@@ -3670,7 +3609,63 @@ public class ViewManager implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplayCiteLinkWork() {
-        return topStructElement != null;
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && topStructElement != null;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @should return correct url
+     */
+    public String getCiteLinkDocstruct() throws IndexUnreachableException {
+        if (currentStructElement == null) {
+            return "";
+        }
+
+        // Prefer custom PURL in MD_PURL, if available
+        String customPURL = currentStructElement.getMetadataValue("MD_PURL");
+        if (StringUtils.isNotEmpty(customPURL)) {
+            return customPURL;
+        }
+
+        // Build URL
+        StringBuilder url = new StringBuilder();
+        boolean anchorOrGroup = currentStructElement.isAnchor() || currentStructElement.isGroup();
+        PageType pageType = PageType.determinePageType(currentStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
+        if (pageType == null) {
+            if (isHasPages()) {
+                pageType = PageType.viewObject;
+            } else {
+                pageType = PageType.viewMetadata;
+            }
+        }
+        url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+        url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/');
+        if (currentStructElement.getImageNumber() > 0) {
+            // First page of the docstruct
+            url.append(currentStructElement.getImageNumber()).append('/');
+        } else {
+            // Current page
+            url.append(getCurrentImageOrder()).append('/');
+        }
+        if (StringUtils.isNotEmpty(currentStructElement.getLogid())) {
+            url.append(currentStructElement.getLogid()).append('/');
+        }
+
+        return url.toString();
+    }
+
+    /**
+     * <p>
+     * isDisplayCiteLinkDocstruct.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isDisplayCiteLinkDocstruct() {
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && currentStructElement != null
+                && currentStructElement.getLuceneId() != topStructElement.getLuceneId();
     }
 
     /**
@@ -3681,6 +3676,7 @@ public class ViewManager implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return correct url
      */
     public String getCiteLinkPage() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
@@ -3688,8 +3684,20 @@ public class ViewManager implements Serializable {
             return "";
         }
 
-        String urn = currentPage.getUrn();
-        return getPersistentUrl(urn);
+        // Build URL
+        StringBuilder url = new StringBuilder();
+        PageType pageType = null;
+        if (topStructElement != null) {
+            boolean anchorOrGroup = topStructElement.isAnchor() || topStructElement.isGroup();
+            pageType = PageType.determinePageType(topStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
+        }
+        if (pageType == null) {
+            pageType = PageType.viewObject;
+        }
+        url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+        url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/').append(currentPage.getOrder()).append('/');
+
+        return url.toString();
     }
 
     /**
@@ -3702,7 +3710,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {
-        return getCurrentPage() != null;
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && getCurrentPage() != null;
     }
 
     /**
@@ -3739,7 +3747,7 @@ public class ViewManager implements Serializable {
      */
     String getCitationString(String outputFormat) throws IOException, IndexUnreachableException, PresentationException {
         if (StringUtils.isEmpty(citationStyle)) {
-            List<String> availableStyles = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+            List<String> availableStyles = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
             if (availableStyles.isEmpty()) {
                 return "";
             }
@@ -3750,7 +3758,7 @@ public class ViewManager implements Serializable {
             citationProcessorWrapper = new CitationProcessorWrapper();
         }
         CSL processor = citationProcessorWrapper.getCitationProcessor(citationStyle);
-        Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationSource();
+        Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationSource();
         md.populate(topStructElement, BeanUtils.getLocale());
         for (MetadataValue val : md.getValues()) {
             if (!val.getCitationValues().isEmpty()) {

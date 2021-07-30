@@ -51,6 +51,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -791,8 +792,8 @@ public final class Configuration extends AbstractConfiguration {
      * @return Boolean value
      * @should return correct value
      */
-    public boolean isDisplaySidebarWidgetUsageCitation() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.citation[@display]", true);
+    public boolean isDisplaySidebarWidgetUsageCitationRecommendation() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.citationRecommendation[@display]", true);
     }
 
     /**
@@ -800,18 +801,18 @@ public final class Configuration extends AbstractConfiguration {
      * @return List of available citation style names
      * @should return all configured values
      */
-    public List<String> getSidebarWidgetUsageCitationStyles() {
-        return getLocalList("sidebar.sidebarWidgetUsage.citation.styles.style", Collections.emptyList());
+    public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {
+        return getLocalList("sidebar.sidebarWidgetUsage.citationRecommendation.styles.style", Collections.emptyList());
     }
 
     /**
      * 
      * @return
      */
-    public Metadata getSidebarWidgetUsageCitationSource() {
+    public Metadata getSidebarWidgetUsageCitationRecommendationSource() {
         HierarchicalConfiguration sub = null;
         try {
-            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citation.source.metadata");
+            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citationRecommendation.source.metadata");
         } catch (IllegalArgumentException e) {
             // no or multiple occurrences 
         }
@@ -821,6 +822,76 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return new Metadata();
+    }
+
+    /**
+     * 
+     * @return Boolean value
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarWidgetUsageCitationLinks() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.citationLinks[@display]", true);
+    }
+
+    /**
+     * 
+     * @return String
+     * @should return correct value
+     */
+    public String getSidebarWidgetUsageCitationLinksRecordIntroText() {
+        return getLocalString("sidebar.sidebarWidgetUsage.citationLinks[@recordIntroText]", "");
+    }
+
+    /**
+     * 
+     * @return String
+     * @should return correct value
+     */
+    public String getSidebarWidgetUsageCitationLinksDocstructIntroText() {
+        return getLocalString("sidebar.sidebarWidgetUsage.citationLinks[@docstructIntroText]", "");
+    }
+
+    /**
+     * 
+     * @return String
+     * @should return correct value
+     */
+    public String getSidebarWidgetUsageCitationLinksImageIntroText() {
+        return getLocalString("sidebar.sidebarWidgetUsage.citationLinks[@imageIntroText]", "");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return all configured values
+     */
+    public List<CitationLink> getSidebarWidgetUsageCitationLinks() {
+        List<HierarchicalConfiguration> links = getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.citationLinks.links.link");
+        if (links == null || links.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<CitationLink> ret = new ArrayList<>();
+        for (Iterator<HierarchicalConfiguration> it = links.iterator(); it.hasNext();) {
+            HierarchicalConfiguration sub = it.next();
+            String type = sub.getString("[@type]");
+            String level = sub.getString("[@for]");
+            String label = sub.getString("[@label]");
+            String field = sub.getString("[@field]");
+            String prefix = sub.getString("[@prefix]");
+            String suffix = sub.getString("[@suffix]");
+            boolean appendImageNumberToSuffix = sub.getBoolean("[@appendImageNumberToSuffix]", false);
+            try {
+                ret.add(new CitationLink(type, level, label).setField(field)
+                        .setPrefix(prefix)
+                        .setSuffix(suffix)
+                        .setAppendImageNumberToSuffix(appendImageNumberToSuffix));
+            } catch (IllegalArgumentException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return ret;
     }
 
     /**
