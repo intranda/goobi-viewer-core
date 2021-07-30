@@ -880,11 +880,13 @@ public final class Configuration extends AbstractConfiguration {
             String field = sub.getString("[@field]");
             String prefix = sub.getString("[@prefix]");
             String suffix = sub.getString("[@suffix]");
+            boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
             boolean appendImageNumberToSuffix = sub.getBoolean("[@appendImageNumberToSuffix]", false);
             try {
                 ret.add(new CitationLink(type, level, label).setField(field)
                         .setPrefix(prefix)
                         .setSuffix(suffix)
+                        .setTopstructValueFallback(topstructValueFallback)
                         .setAppendImageNumberToSuffix(appendImageNumberToSuffix));
             } catch (IllegalArgumentException e) {
                 logger.error(e.getMessage());

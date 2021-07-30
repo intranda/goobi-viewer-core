@@ -2976,6 +2976,7 @@ public class ConfigurationTest extends AbstractTest {
             Assert.assertEquals("URN", link.getField());
             Assert.assertEquals("https://nbn-resolving.org/", link.getPrefix());
             Assert.assertEquals("/", link.getSuffix());
+            Assert.assertTrue(link.isTopstructValueFallback());
             Assert.assertTrue(link.isAppendImageNumberToSuffix());
         }
         {

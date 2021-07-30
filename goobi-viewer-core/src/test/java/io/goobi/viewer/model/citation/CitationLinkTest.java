@@ -123,4 +123,18 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
         CitationLink link = new CitationLink("url", "image", "foo").setField(SolrConstants.ORDER);
         Assert.assertEquals("10", link.getValue(viewManager));
     }
+
+    /**
+     * @see CitationLink#getValue(ViewManager)
+     * @verifies fall back to topstruct value correctly
+     */
+    @Test
+    public void getValue_shouldFallBackToTopstructValueCorrectly() throws Exception {
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        Assert.assertNotNull(viewManager);
+        viewManager.setCurrentImageOrder(10);
+
+        CitationLink link = new CitationLink("url", "image", "foo").setField(SolrConstants.PI).setTopstructValueFallback(true);
+        Assert.assertEquals(PI_KLEIUNIV, link.getValue(viewManager));
+    }
 }
