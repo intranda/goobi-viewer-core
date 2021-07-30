@@ -486,7 +486,7 @@ public abstract class DownloadJob implements Serializable {
                 body = ViewerResourceBundle.getTranslation("downloadErrorBody", null);
                 if (body != null) {
                     body = body.replace("{0}", pi);
-                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress());
+                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress());
                     body = body.replace("{2}", getType().toUpperCase());
                 }
                 break;

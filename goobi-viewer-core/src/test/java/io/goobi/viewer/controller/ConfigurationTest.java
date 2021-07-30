@@ -44,6 +44,7 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.metadata.MetadataView;
+import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
@@ -264,12 +265,25 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getFeedbackEmailAddress()
-     * @verifies return correct value
+     * @see Configuration#getFeedbackEmailRecipients()
+     * @verifies return correct values
      */
     @Test
-    public void getFeedbackEmailAddress_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("feedbackEmailAddress_value", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress());
+    public void getFeedbackEmailRecipients_shouldReturnCorrectValues() throws Exception {
+        List<EmailRecipient> result = DataManager.getInstance().getConfiguration().getFeedbackEmailRecipients();
+        Assert.assertEquals(2, result.size());
+        {
+            EmailRecipient recipient = result.get(0);
+            Assert.assertEquals("Everyone", recipient.getLabel());
+            Assert.assertEquals("everyone@example.com", recipient.getEmailAddress());
+            Assert.assertTrue(recipient.isDefaultRecipient());
+        }
+        {
+            EmailRecipient recipient = result.get(1);
+            Assert.assertEquals("someone@example.com", recipient.getLabel()); // No label defined, using address
+            Assert.assertEquals("someone@example.com", recipient.getEmailAddress());
+            Assert.assertFalse(recipient.isDefaultRecipient());
+        }
     }
 
     /**
