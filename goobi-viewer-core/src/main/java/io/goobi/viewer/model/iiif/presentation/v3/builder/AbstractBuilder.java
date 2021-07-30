@@ -123,11 +123,11 @@ public abstract class AbstractBuilder {
      */
     public AbstractBuilder(AbstractApiUrlManager apiUrlManager) {
         if (apiUrlManager == null) {
-            apiUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
+            apiUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v2).orElse(null);
         }
         this.urls = apiUrlManager;
-
-        this.thumbs = new ThumbnailHandler(new IIIFUrlHandler(this.urls), DataManager.getInstance().getConfiguration(),
+        AbstractApiUrlManager contentUrls = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(this.urls);
+        this.thumbs = new ThumbnailHandler(new IIIFUrlHandler(contentUrls), DataManager.getInstance().getConfiguration(),
                 ImageDeliveryBean.getStaticImagesPath(this.urls != null ? this.urls.getApplicationUrl() : "",
                         DataManager.getInstance().getConfiguration().getTheme()));
 
