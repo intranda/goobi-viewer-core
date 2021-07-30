@@ -450,7 +450,6 @@ var viewerJS = (function () {
     		$widgetTitles.each((index,element) => {
     			let $title = $(element);
     			let $options = $title.next("div").children();
-    			console.log("check" , $title, $title.next("div"), $options);
     			if($options.length == 0) {
     				$title.hide();
     			}
@@ -466,12 +465,17 @@ var viewerJS = (function () {
 	viewer.handleFragmentAction = function() {
 		let hash = location.hash;
 		if(hash) {
-			switch(hash) {
+			let hashName = hash.replace(/=.*/, "");
+			switch(hashName) {
 				case "#feedback":
 					$('#feedbackModal').modal();
 					$('#feedbackModal').on('hidden.bs.modal', function (e) {
 						history.replaceState({}, '', window.location.href.replace("#feedback", ""));
 					})
+					break;
+				case "#?page":
+					let url = location.href.replace("#?page", "&page");
+					location.replace(url);
 			}
 		}
 	}
@@ -486,11 +490,9 @@ var viewerJS = (function () {
 			let id = $(element).attr("data-require-input");
 			let $texts = $("[data-require-input-text='" + id + "']");
 			$texts.on("change", (e) => {
-				console.log("require element text change", e);
 				let filled = true;
 				$texts.each((index, element) => {
 					let text = $(element).val();
-					console.log("check text value ", text);
 					if(!text) {
 						filled = false;
 						return false;
