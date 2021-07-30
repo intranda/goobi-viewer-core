@@ -29,6 +29,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.CMSRecordNote;
+import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 
 /**
  * @author florian
@@ -63,7 +64,9 @@ public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testGetAllPaginatedData() {
         bean.getDataProvider().setEntriesPerPage(2);
-        assertEquals(3, bean.getDataProvider().getSizeOfDataList());
+        assertEquals(5, bean.getDataProvider().getSizeOfDataList());
+        assertEquals(2, bean.getDataProvider().getPaginatorList().size());
+        bean.getDataProvider().cmdMoveNext();
         assertEquals(2, bean.getDataProvider().getPaginatorList().size());
         bean.getDataProvider().cmdMoveNext();
         assertEquals(1, bean.getDataProvider().getPaginatorList().size());
@@ -86,7 +89,7 @@ public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
     
     @Test
     public void testGetThumbnailUrl() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        CMSRecordNote note = new CMSRecordNote("PI1");
+        CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         String url = bean.getThumbnailUrl(note, 333, 444);
         String reference = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF).params("PI1", "full", "!333,444", "0", "default", "jpg").build();
         assertEquals(reference, url);

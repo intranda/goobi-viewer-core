@@ -130,7 +130,7 @@ public class TextResourceBuilder {
 
     public String getAltoDocument(String pi, String fileName) throws PresentationException,
             IndexUnreachableException, ContentNotFoundException {
-
+        // logger.trace("getAltoDocument: {}/{}", pi, fileName);
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder(),
                 DataManager.getInstance().getConfiguration().getAltoFolder(), fileName);
 

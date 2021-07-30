@@ -40,6 +40,10 @@
 		z-index: 1001;
 		cursor: pointer;
 		.widget-geofacetting__action-expand {
+      // Do not apply button styles in webkit browsers
+      // (this element has a type="button" attribute, 
+      // which makes webkit style it as a button, if not unset)
+      -webkit-appearance: unset;
 			color: @white;
 			&:hover {
 				color: @white;

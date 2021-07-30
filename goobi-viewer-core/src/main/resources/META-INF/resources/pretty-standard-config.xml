@@ -885,10 +885,11 @@
         <action onPostback="false">#{cmsBean.loadTemplates}</action>
     </url-mapping>
     <url-mapping id="adminCmsEditPage">
-        <pattern value="/admin/cms/pages/edit/#{selectedPageId:cmsBean.selectedPageId}/" />
+        <pattern value="/admin/cms/pages/edit/#{selectedPageId}/" />
         <view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
         <action onPostback="false">#{cmsBean.setEditMode(true)}</action>
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsBean.setSelectedPageId(selectedPageId)}</action>
     </url-mapping>
     <url-mapping id="adminCmsNewPage">
         <pattern value="/admin/cms/pages/new/" />

@@ -14,7 +14,6 @@ For ambigious sources, the additional opts.type property determines how the sour
 -->
 
 <thumbnails>
-
 		<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? 'selected' : ''} {getPageStatus(index)}" each="{canvas, index in thumbnails}">
 			<a class="thumbnails-image-link" href="{getLink(canvas)}"  onclick="{handleClickOnImage}">
 				<img class="thumbnails-image" alt="{getValue(canvas.label)}" src="{getImage(canvas)}" loading="lazy" />

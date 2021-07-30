@@ -518,6 +518,9 @@ public class SearchQueryItem implements Serializable {
                             value = value.substring(1);
                         } else if (moreThanOneValue) {
                             switch (this.field) {
+                                // TODO: allow OR for FULLTEXT?
+                                //                                case SolrConstants.FULLTEXT:
+                                //                                case SolrConstants.UGCTERMS:
                                 case ADVANCED_SEARCH_ALL_FIELDS:
                                     sbItem.append(" OR ");
                                     break;

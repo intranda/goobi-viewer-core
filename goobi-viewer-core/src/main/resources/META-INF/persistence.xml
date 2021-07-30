@@ -52,6 +52,8 @@
 		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
 		<class>io.goobi.viewer.dao.converter.StringListConverter</class>
 		<class>io.goobi.viewer.model.cms.CMSRecordNote</class>
+		<class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
+		<class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSlider</class>
 	
 
@@ -129,6 +131,8 @@
 		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
 		<class>io.goobi.viewer.dao.converter.StringListConverter</class>
 		<class>io.goobi.viewer.model.cms.CMSRecordNote</class>
+		<class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
+		<class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSlider</class>
 		
 		<properties>

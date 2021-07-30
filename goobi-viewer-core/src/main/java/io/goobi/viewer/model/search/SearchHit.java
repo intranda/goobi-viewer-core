@@ -519,7 +519,7 @@ public class SearchHit implements Comparable<SearchHit> {
             return;
         }
 
-        logger.trace("{} child hits found for {}", childDocs.size(), pi);
+        logger.trace("{} child hit(s) found for {}", childDocs.size(), pi);
         if (number + skip > childDocs.size()) {
             number = childDocs.size() - skip;
         }
@@ -537,9 +537,9 @@ public class SearchHit implements Comparable<SearchHit> {
             boolean acccessDeniedType = false;
             switch (docType) {
                 case PAGE:
+                    String altoFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO);
+                    String plaintextFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
                     try {
-                        String altoFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO);
-                        String plaintextFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
                         if (StringUtils.isNotBlank(plaintextFilename)) {
                             boolean access = AccessConditionUtils.checkAccess(request, "text", pi, plaintextFilename, false);
                             if (access) {
@@ -556,7 +556,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             }
                         }
                     } catch (FileNotFoundException e) {
-                        logger.error(e.getMessage());
+                        logger.error("{}: {}", e.getMessage(), StringUtils.isNotBlank(plaintextFilename) ? plaintextFilename : altoFilename);
                     } catch (IOException e) {
                         logger.error(e.getMessage(), e);
                     }

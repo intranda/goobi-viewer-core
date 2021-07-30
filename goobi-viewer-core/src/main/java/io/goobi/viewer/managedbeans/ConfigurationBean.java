@@ -16,6 +16,8 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,7 +38,10 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.citation.CitationLink;
+import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.download.DownloadOption;
+import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PageType;
@@ -1248,13 +1253,24 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isDisplayWidgetUsage.
+     * isDisplaySidebarWidgetUsageCitationLinks.
      * </p>
      *
      * @return a boolean.
      */
-    public boolean isDisplaySidebarWidgetUsageCitation() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitation();
+    public boolean isDisplaySidebarWidgetUsageCitationLinks() {
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks();
+    }
+
+    /**
+     * <p>
+     * isDisplaySidebarWidgetUsageCitationRecommendation.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isDisplaySidebarWidgetUsageCitationRecommendation() {
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationRecommendation();
     }
 
     /**
@@ -1273,6 +1289,10 @@ public class ConfigurationBean implements Serializable {
     public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
         return DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
     }
+    
+    public boolean isDisplaySidebarWidgetUsagePageDownloadOptions() {
+        return DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions();
+    }
 
     /**
      * 
@@ -1285,10 +1305,59 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * 
+     * @return String
+     */
+    public String getSidebarWidgetUsageCitationLinksRecordIntroText() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksRecordIntroText();
+    }
+
+    /**
+     * 
+     * @return String
+     */
+    public String getSidebarWidgetUsageCitationLinksDocstructIntroText() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksDocstructIntroText();
+    }
+
+    /**
+     * 
+     * @return String
+     */
+    public String getSidebarWidgetUsageCitationLinksImageIntroText() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksImageIntroText();
+    }
+
+    /**
+     * 
      * @return List of available citation style names
      */
-    public List<String> getSidebarWidgetUsageCitationStyles() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+    public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
+    }
+
+    /**
+     * @param levelName
+     * @return List of configured citation links
+     */
+    public List<CitationLink> getSidebarWidgetUsageCitationLinksForLevel(String levelName) {
+        if (StringUtils.isEmpty(levelName)) {
+            return Collections.emptyList();
+        }
+
+        CitationLinkLevel level = CitationLinkLevel.getByName(levelName);
+        if (level == null) {
+            logger.warn("Unknown citation link level: {}", levelName);
+            return Collections.emptyList();
+        }
+
+        List<CitationLink> ret = new ArrayList<>();
+        for (CitationLink link : DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks()) {
+            if (level.equals(link.getLevel())) {
+                ret.add(link);
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -1359,6 +1428,14 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isAnonymousUserEmailAddressValid() {
         return EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public List<EmailRecipient> getFeedbackEmailRecipients() {
+        return DataManager.getInstance().getConfiguration().getFeedbackEmailRecipients();
     }
 
     /**

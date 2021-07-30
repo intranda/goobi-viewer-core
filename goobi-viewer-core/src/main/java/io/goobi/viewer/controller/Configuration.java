@@ -51,6 +51,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -58,6 +59,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
@@ -672,7 +674,7 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         HierarchicalConfiguration usingTemplate = null;
-        HierarchicalConfiguration defaultTemplate = null;
+        //        HierarchicalConfiguration defaultTemplate = null;
         for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
             HierarchicalConfiguration subElement = it.next();
             if (subElement.getString("[@name]").equals(template)) {
@@ -791,8 +793,8 @@ public final class Configuration extends AbstractConfiguration {
      * @return Boolean value
      * @should return correct value
      */
-    public boolean isDisplaySidebarWidgetUsageCitation() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.citation[@display]", true);
+    public boolean isDisplaySidebarWidgetUsageCitationRecommendation() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.citationRecommendation[@display]", true);
     }
 
     /**
@@ -800,18 +802,18 @@ public final class Configuration extends AbstractConfiguration {
      * @return List of available citation style names
      * @should return all configured values
      */
-    public List<String> getSidebarWidgetUsageCitationStyles() {
-        return getLocalList("sidebar.sidebarWidgetUsage.citation.styles.style", Collections.emptyList());
+    public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {
+        return getLocalList("sidebar.sidebarWidgetUsage.citationRecommendation.styles.style", Collections.emptyList());
     }
 
     /**
      * 
      * @return
      */
-    public Metadata getSidebarWidgetUsageCitationSource() {
+    public Metadata getSidebarWidgetUsageCitationRecommendationSource() {
         HierarchicalConfiguration sub = null;
         try {
-            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citation.source.metadata");
+            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citationRecommendation.source.metadata");
         } catch (IllegalArgumentException e) {
             // no or multiple occurrences 
         }
@@ -821,6 +823,78 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return new Metadata();
+    }
+
+    /**
+     * 
+     * @return Boolean value
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarWidgetUsageCitationLinks() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.citationLinks[@display]", true);
+    }
+
+    /**
+     * 
+     * @return String
+     * @should return correct value
+     */
+    public String getSidebarWidgetUsageCitationLinksRecordIntroText() {
+        return getLocalString("sidebar.sidebarWidgetUsage.citationLinks[@recordIntroText]", "");
+    }
+
+    /**
+     * 
+     * @return String
+     * @should return correct value
+     */
+    public String getSidebarWidgetUsageCitationLinksDocstructIntroText() {
+        return getLocalString("sidebar.sidebarWidgetUsage.citationLinks[@docstructIntroText]", "");
+    }
+
+    /**
+     * 
+     * @return String
+     * @should return correct value
+     */
+    public String getSidebarWidgetUsageCitationLinksImageIntroText() {
+        return getLocalString("sidebar.sidebarWidgetUsage.citationLinks[@imageIntroText]", "");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return all configured values
+     */
+    public List<CitationLink> getSidebarWidgetUsageCitationLinks() {
+        List<HierarchicalConfiguration> links = getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.citationLinks.links.link");
+        if (links == null || links.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<CitationLink> ret = new ArrayList<>();
+        for (Iterator<HierarchicalConfiguration> it = links.iterator(); it.hasNext();) {
+            HierarchicalConfiguration sub = it.next();
+            String type = sub.getString("[@type]");
+            String level = sub.getString("[@for]");
+            String label = sub.getString("[@label]");
+            String field = sub.getString("[@field]");
+            String prefix = sub.getString("[@prefix]");
+            String suffix = sub.getString("[@suffix]");
+            boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
+            boolean appendImageNumberToSuffix = sub.getBoolean("[@appendImageNumberToSuffix]", false);
+            try {
+                ret.add(new CitationLink(type, level, label).setField(field)
+                        .setPrefix(prefix)
+                        .setSuffix(suffix)
+                        .setTopstructValueFallback(topstructValueFallback)
+                        .setAppendImageNumberToSuffix(appendImageNumberToSuffix));
+            } catch (IllegalArgumentException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -852,6 +926,10 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return ret;
+    }
+    
+    public boolean isDisplayWidgetUsageDownloadOptions()  {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.downloadOptions[@display]", true);
     }
 
     /**
@@ -1046,10 +1124,10 @@ public final class Configuration extends AbstractConfiguration {
      *
      * @param field a {@link java.lang.String} object.
      * @param name a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      * @should return correct field for collection
      * @should give priority to exact matches
      * @should return hyphen if collection not found
-     * @return a {@link java.lang.String} object.
      */
     public String getCollectionDefaultSortField(String field, String name) {
         HierarchicalConfiguration collection = getCollectionConfiguration(field);
@@ -3641,14 +3719,39 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getFeedbackEmailAddress.
+     * getFeedbackEmailAddresses.
      * </p>
      *
-     * @should return correct value
+     * @should return correct values
      * @return a {@link java.lang.String} object.
      */
-    public String getFeedbackEmailAddress() {
-        return getLocalString("user.feedbackEmailAddress");
+    public List<EmailRecipient> getFeedbackEmailRecipients() {
+        List<EmailRecipient> ret = new ArrayList<>();
+        List<HierarchicalConfiguration> licenseNodes = getLocalConfigurationsAt("user.feedbackEmailAddressList.address");
+        for (HierarchicalConfiguration node : licenseNodes) {
+            String address = node.getString(".", "");
+            if (StringUtils.isNotBlank(address)) {
+                String label = node.getString("[@label]", address);
+                boolean defaultRecipient = node.getBoolean("[@default]", false);
+                ret.add(new EmailRecipient(label, address, defaultRecipient));
+            }
+        }
+
+        return ret;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public String getDefaultFeedbackEmailAddress() {
+        for(EmailRecipient recipient : getFeedbackEmailRecipients()) {
+            if(recipient.isDefaultRecipient()) {
+                return recipient.getEmailAddress();
+            }
+        }
+        
+        return "<NOT CONFIGURED>";
     }
 
     /**
@@ -3907,7 +4010,7 @@ public final class Configuration extends AbstractConfiguration {
         for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
             HierarchicalConfiguration subElement = it.next();
             String templateName = subElement.getString("[@name]");
-            String groupBy = subElement.getString("[@groupBy]");
+            //            String groupBy = subElement.getString("[@groupBy]");
             if (templateName != null) {
                 if (templateName.equals(template)) {
                     usingTemplate = subElement;

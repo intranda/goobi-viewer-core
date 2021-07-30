@@ -518,6 +518,7 @@ public class Metadata implements Serializable {
      * @param applicationUrl Application root URL for hyperlinks; only the values will be included if url is null
      * @return
      * @should build value correctly
+     * @should add configured collection sort field
      */
     static String buildHierarchicalValue(String field, String value, Locale locale, String applicationUrl) {
         String[] valueSplit = value.split("[.]");
@@ -535,8 +536,18 @@ public class Metadata implements Serializable {
             // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
             displayValue = StringEscapeUtils.escapeHtml4(displayValue);
             if (applicationUrl != null) {
-                sbFullValue.append("<a href=\"").append(applicationUrl).append(PageType.browse.getName()).append("/-/1/-/");
-                if (field != null) {
+                sbFullValue.append("<a href=\"").append(applicationUrl).append(PageType.browse.getName()).append("/-/1/");
+                String sortField = "-";
+                // Use configured collection sorting field, if available
+                if(StringUtils.isNotEmpty(field)) {
+                    String defaultSortField = DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(field, value);
+                    if(StringUtils.isNotEmpty(defaultSortField)) {
+                        sortField = defaultSortField;
+                    }
+                    
+                }
+                sbFullValue.append(sortField).append('/');
+                if(StringUtils.isNotEmpty(field)) {
                     sbFullValue.append(field).append(':');
                 }
                 sbFullValue.append(sbHierarchy.toString()).append("/\">").append(displayValue).append("</a>");

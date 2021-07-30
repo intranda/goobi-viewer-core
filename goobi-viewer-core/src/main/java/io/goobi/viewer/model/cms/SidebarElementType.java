@@ -38,7 +38,8 @@ public enum SidebarElementType {
     workCount("widgetWorkCount"),
     searchDrillDownTopics("widgetSearchDrillDownTopics"),
     cmsPageLinks("widgetCmsPageLinks", Category.pageLinks),
-    geoMap("widgetGeoMap", Category.geoMap);
+    geoMap("widgetGeoMap", Category.geoMap),
+    fieldFacets("widgetFieldFacets", Category.fieldQuery);
 
     private final String label;
     private final Category type;

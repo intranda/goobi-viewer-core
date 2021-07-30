@@ -1,0 +1,167 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface />
+
+    <composite:implementation>
+    
+    <ui:fragment>
+
+		<!-- MODAL -->
+		<div class="modal fade" id="#{cc.attrs.id}" tabindex="-1"
+			role="dialog"
+			aria-labelledby="#{termsOfUseBean.getTitleForDisplay()}"
+			aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered widget-usage__citelinks-box" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h2 class="modal-title">#{msg.citeLinks}</h2>
+						<button type="button" class="fancy-close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">x</span>
+						</button>
+					</div>
+					<div class="modal-body">
+				        <div>
+				        
+				            <!-- RECORD -->
+				            <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
+				            	<div class="widget-usage__citelinks-block">
+				                <h4 id="titleWork" class="widget-usage__citelinks-subtitle">#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}</h4>
+				                <h:outputText rendered="#{configurationBean.sidebarWidgetUsageCitationLinksRecordIntroText != null}">
+				                   <div class="widget-usage__citelinks-info-text">#{msg[configurationBean.sidebarWidgetUsageCitationLinksRecordIntroText]}:</div>
+				                </h:outputText>
+							    <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')}">
+							        
+							        <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
+				                         <div class="widget-usage__citelinks-row">
+				                         <div class="widget-usage__citelinks-label">#{msg[link.label]}:</div>
+				                         <div class="widget-usage__citelinks-input-wrapper">
+				                        <h:inputText styleClass="widget-usage__citelinks-input" value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
+				                        <a id="citeLinkWork"
+				                            class="widget-usage__citelink-work widget-usage__citelinks-copy-to-clipboard"
+				                            data-copy="work-citelink"
+				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+				                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+				                            aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+				                            <i class="fa fa-clipboard" aria-hidden="true"></i></a>
+				                        </div>
+				                        </div>
+				                    </ui:fragment>
+				                    
+				                    <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
+					                       <div class="widget-usage__citelinks-row -internal">
+					                       <div class="widget-usage__citelinks-internal">#{msg.label__citation_link_internal}:</div>
+									        <a id="citeLinkWork"
+					                            class="widget-usage__citelink-work widget-usage__citelinks-copy-to-clipboard"
+					                            data-copy="work-citelink"
+					                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+					                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+					                            aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+					                           <i class="fa fa-clipboard" aria-hidden="true"></i></a>
+					                        </div>
+				                    </ui:fragment>
+				                    
+							    </c:forEach>
+							    </div>
+							</ui:fragment>
+							
+				            <!-- SUB-DOCSTRUCT -->
+				            <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkDocstruct}">
+				                <div class="widget-usage__citelinks-block">
+				                <h4 id="titlePage" class="widget-usage__citelinks-subtitle" title="#{activeDocumentBean.viewManager.currentStructElement.label}">#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}</h4>
+				                <h:outputText rendered="#{configurationBean.sidebarWidgetUsageCitationLinksDocstructIntroText != null}">
+				                    <div class="widget-usage__citelinks-info-text">#{msg[configurationBean.sidebarWidgetUsageCitationLinksDocstructIntroText]}:</div>
+				                </h:outputText>
+				                <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('docstruct')}">
+				                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
+				                         <div class="widget-usage__citelinks-row">
+				                         <div class="widget-usage__citelinks-label">#{msg[link.label]}:</div>
+				                        	<div class="widget-usage__citelinks-input-wrapper">
+				                        <h:inputText styleClass="widget-usage__citelinks-input" value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
+				                        <a id="citeLinkWork"
+				                            class="widget-usage__citelink-work widget-usage__citelinks-copy-to-clipboard"
+				                            data-copy="work-citelink"
+				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+				                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+				                            aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+				                            <i class="fa fa-clipboard" aria-hidden="true"></i></a>
+				                        </div>
+				                        </div>
+				                    </ui:fragment>
+				                    <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
+				                       <div class="widget-usage__citelinks-row -internal">
+				                       <div class="widget-usage__citelinks-internal">#{msg.label__citation_link_internal}:</div>
+				                        <a id="citeLinkWork"
+				                            class="widget-usage__citelink-work widget-usage__citelinks-copy-to-clipboard"
+				                            data-copy="work-citelink"
+				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+				                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+				                            aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+				                            <i class="fa fa-clipboard" aria-hidden="true"></i></a>
+				                       </div>
+				                    </ui:fragment>
+				                </c:forEach>
+				                </div>
+				            </ui:fragment>
+				
+				            <!-- IMAGE -->
+				            <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage and !activeDocumentBean.viewManager.doublePageMode}">
+				                <div class="widget-usage__citelinks-block">
+				                <h4 id="titleImage" class="widget-usage__citelinks-subtitle">#{msg.image}</h4>
+				                <h:outputText rendered="sidebarWidgetUsageCitationLinksImageIntroText != null}">
+				                    <div class="widget-usage__citelinks-info-text">#{msg[configurationBean.sidebarWidgetUsageCitationLinksImageIntroText]}:</div>
+				                </h:outputText>
+				                <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')}">
+				                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
+				                        <div class="widget-usage__citelinks-row">
+				                        <div class="widget-usage__citelinks-label">#{msg[link.label]}:</div>
+				                        <div class="widget-usage__citelinks-input-wrapper">
+				                        <h:inputText styleClass="widget-usage__citelinks-input" value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
+				                        <a id="citeLinkPage"
+				                            class="widget-usage__citelink-page widget-usage__citelinks-copy-to-clipboard"
+				                            data-copy="page-citelink"
+				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+				                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+				                            aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
+				                            <i class="fa fa-clipboard" aria-hidden="true"></i></a>
+				                        </div>
+				                        </div>
+				                    </ui:fragment>
+				                    <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
+				                      <div class="widget-usage__citelinks-row -internal">
+				                      <div class="widget-usage__citelinks-internal">#{msg.label__citation_link_internal}:</div>
+				                        <a id="citeLinkPage"
+				                            class="widget-usage__citelink-page widget-usage__citelinks-copy-to-clipboard"
+				                            data-copy="page-citelink"
+				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
+				                            data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+				                            aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
+				                            <i class="fa fa-clipboard" aria-hidden="true"></i></a>
+				                        </div>
+				                    </ui:fragment>
+				                </c:forEach>
+				                </div>
+				            </ui:fragment>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="widget-usage__citelinks-alt-backdrop" data-dismiss="modal"></div>
+		</div>
+		
+
+
+</ui:fragment>
+
+	</composite:implementation>
+</ui:composition>

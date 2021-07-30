@@ -88,7 +88,12 @@ var viewerJS = (function () {
 	    
 	    //init toggle hide/show
 	    viewerJS.toggle.init();
+	    
+	    viewerJS.initWidgetUsage();
 
+       viewerJS.initFragmentActions();
+       
+       viewerJS.initRequiredInputs();
        
         // init bookmarks if enabled
         if ( bookmarksEnabled ) { 
@@ -437,7 +442,70 @@ var viewerJS = (function () {
     viewer.getRestApiUrl = function () {
         return restURL.replace("/rest", "/api/v1");
     }
+    
+    viewer.initWidgetUsage = function() {
+    	let $widgetUsage = $(".widget-usage");
+    	if($widgetUsage.length > 0) {
+    		let $widgetTitles = $widgetUsage.find(".widget-usage__subtitle");
+    		$widgetTitles.each((index,element) => {
+    			let $title = $(element);
+    			let $options = $title.next("div").children();
+    			console.log("check" , $title, $title.next("div"), $options);
+    			if($options.length == 0) {
+    				$title.hide();
+    			}
+    		});
+    	}
+    }
 
+	viewer.initFragmentActions = function() {
+		window.onhashchange = () => viewer.handleFragmentAction();
+		viewer.handleFragmentAction();
+	}
+	
+	viewer.handleFragmentAction = function() {
+		let hash = location.hash;
+		if(hash) {
+			switch(hash) {
+				case "#feedback":
+					$('#feedbackModal').modal();
+					$('#feedbackModal').on('hidden.bs.modal', function (e) {
+						history.replaceState({}, '', window.location.href.replace("#feedback", ""));
+					})
+			}
+		}
+	}
+	
+	viewer.initRequiredInputs = function() {
+	
+		let $requireElements = $("[data-require-input]");
+		
+		$requireElements.each((index, element) => {
+			let $ele = $(element);
+			$ele.attr("disabled", "disabled");
+			let id = $(element).attr("data-require-input");
+			let $texts = $("[data-require-input-text='" + id + "']");
+			$texts.on("change", (e) => {
+				console.log("require element text change", e);
+				let filled = true;
+				$texts.each((index, element) => {
+					let text = $(element).val();
+					console.log("check text value ", text);
+					if(!text) {
+						filled = false;
+						return false;
+					}
+				});
+				if(filled) {
+					$ele.removeAttr("disabled");
+				} else {
+					$ele.attr("disabled", "disabled");
+				}
+							
+			}); 
+		});
+	
+	}
 
     // init bootstrap 4 popovers
 	$(document).ready(function(){
@@ -458,6 +526,9 @@ var viewerJS = (function () {
     
 })(jQuery);
   
+	// overriding enforceFocus for bootstrao modals in general - important: This might be a problem for accessibility
+	// $.fn.modal.Constructor.prototype._enforceFocus = function() {};
+
 	//reset global bootstrap boundary of tooltips to window
     if($.fn.tooltip.Constructor) {        
         $.fn.tooltip.Constructor.Default.boundary = "window";

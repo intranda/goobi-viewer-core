@@ -35,20 +35,24 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.citation.CitationLink;
+import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
+import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
 import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.metadata.MetadataView;
+import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
-import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
@@ -261,12 +265,25 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getFeedbackEmailAddress()
-     * @verifies return correct value
+     * @see Configuration#getFeedbackEmailRecipients()
+     * @verifies return correct values
      */
     @Test
-    public void getFeedbackEmailAddress_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("feedbackEmailAddress_value", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress());
+    public void getFeedbackEmailRecipients_shouldReturnCorrectValues() throws Exception {
+        List<EmailRecipient> result = DataManager.getInstance().getConfiguration().getFeedbackEmailRecipients();
+        Assert.assertEquals(2, result.size());
+        {
+            EmailRecipient recipient = result.get(0);
+            Assert.assertEquals("Everyone", recipient.getLabel());
+            Assert.assertEquals("everyone@example.com", recipient.getEmailAddress());
+            Assert.assertTrue(recipient.isDefaultRecipient());
+        }
+        {
+            EmailRecipient recipient = result.get(1);
+            Assert.assertEquals("someone@example.com", recipient.getLabel()); // No label defined, using address
+            Assert.assertEquals("someone@example.com", recipient.getEmailAddress());
+            Assert.assertFalse(recipient.isDefaultRecipient());
+        }
     }
 
     /**
@@ -2902,12 +2919,49 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isDisplaySidebarWidgetUsageCitation()
+     * @see Configuration#isDisplaySidebarWidgetUsageCitationRecommendation()
      * @verifies return correct value
      */
     @Test
-    public void isDisplaySidebarWidgetUsageCitation_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitation());
+    public void isDisplaySidebarWidgetUsageCitationRecommendation_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationRecommendation());
+    }
+
+    /**
+     * @see Configuration#isDisplaySidebarWidgetUsageCitationLinks()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplaySidebarWidgetUsageCitationLinks_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinksDocstructIntroText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinksDocstructIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("record intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksRecordIntroText());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinksImageIntroText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinksImageIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("docstruct intro text",
+                DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksDocstructIntroText());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinksRecordIntroText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinksRecordIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("image intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksImageIntroText());
     }
 
     /**
@@ -2915,9 +2969,39 @@ public class ConfigurationTest extends AbstractTest {
      * @verifies return all configured values
      */
     @Test
-    public void getSidebarWidgetUsageCitationStyles_shouldReturnAllConfiguredValues() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+    public void getSidebarWidgetUsageCitationRecommendationStyles_shouldReturnAllConfiguredValues() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
         Assert.assertEquals(3, result.size());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinks()
+     * @verifies return all configured values
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinks_shouldReturnAllConfiguredValues() throws Exception {
+        List<CitationLink> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks();
+        Assert.assertEquals(3, result.size());
+        {
+            CitationLink link = result.get(0);
+            Assert.assertEquals(CitationLinkType.URL, link.getType());
+            Assert.assertEquals(CitationLinkLevel.RECORD, link.getLevel());
+            Assert.assertEquals("LABEL_URN", link.getLabel());
+            Assert.assertEquals("URN", link.getField());
+            Assert.assertEquals("https://nbn-resolving.org/", link.getPrefix());
+            Assert.assertEquals("/", link.getSuffix());
+            Assert.assertTrue(link.isTopstructValueFallback());
+            Assert.assertTrue(link.isAppendImageNumberToSuffix());
+        }
+        {
+            CitationLink link = result.get(1);
+            Assert.assertEquals(CitationLinkType.INTERNAL, link.getType());
+            Assert.assertEquals(CitationLinkLevel.DOCSTRUCT, link.getLevel());
+        }
+        {
+            CitationLink link = result.get(2);
+            Assert.assertEquals(CitationLinkLevel.IMAGE, link.getLevel());
+        }
     }
 
     /**
