@@ -2122,6 +2122,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
         return selectableCategories;
     }
+    
+    public void resetSelectableCategories() {
+        this.selectableCategories = null;
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.misc.Harvestable#getPi()

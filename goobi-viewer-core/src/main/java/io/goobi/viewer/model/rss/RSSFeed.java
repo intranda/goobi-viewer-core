@@ -57,6 +57,7 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -77,7 +78,7 @@ public class RSSFeed {
             SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.IDDOC_PARENT,
             SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.NUMVOLUMES,
             SolrConstants.PERSON_ONEFIELD,
-            SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER, SolrConstants.THUMBNAIL,
+            SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER, SolrConstants.THUMBNAIL, SolrConstants.THUMBPAGENO,
             SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
 
     /**
@@ -224,6 +225,7 @@ public class RSSFeed {
             String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
             String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
+            int pageNo = getRepresentativePageNumber(doc);
 
             for (String field : FIELDS) {
                 Object value = doc.getFirstValue(field);
@@ -319,7 +321,7 @@ public class RSSFeed {
                 placeAndTime = new StringBuilder(placeAndTime).append("<br />").toString();
             }
 
-            String recordUrl = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, 1, null, pageType);
+            String recordUrl = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, pageNo, null, pageType);
 
             String imageUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight);
 
@@ -373,6 +375,23 @@ public class RSSFeed {
         //
 
         return feed;
+    }
+
+    /**
+     * @param doc
+     * @return
+     */
+    private static int getRepresentativePageNumber(SolrDocument doc) {
+        if(doc.containsKey(SolrConstants.THUMBPAGENO)) {
+            Integer pageNo = SolrTools.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO);
+            if(pageNo != null) {
+                return pageNo;
+            } else {
+                return 1;
+            }
+        } else {
+            return 1;
+        }
     }
 
     /**
@@ -489,6 +508,7 @@ public class RSSFeed {
             String bookSeries = "";
             String shelfmark = "";
 
+            int pageNo = getRepresentativePageNumber(doc);
             int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
             int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
             boolean hasImages = SolrTools.isHasImages(doc);
@@ -580,7 +600,7 @@ public class RSSFeed {
                 }
             }
 
-            String link = createLink(rootPath, pi, pageType);
+            String link = createLink(rootPath, pi, pageNo, pageType);
 
             description.setImage(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight));
 
@@ -650,9 +670,9 @@ public class RSSFeed {
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String createLink(String rootPath, String pi, PageType pageType) {
+    public static String createLink(String rootPath, String pi, int pageNo, PageType pageType) {
         StringBuilder link = new StringBuilder();
-        link.append(rootPath).append('/').append(pageType.getName()).append('/').append(pi).append('/').append("1").append('/');
+        link.append(rootPath).append('/').append(pageType.getName()).append('/').append(pi).append('/').append(pageNo).append('/');
         return link.toString();
     }
 

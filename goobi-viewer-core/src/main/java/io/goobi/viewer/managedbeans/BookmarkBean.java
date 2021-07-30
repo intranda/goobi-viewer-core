@@ -851,7 +851,7 @@ public class BookmarkBean implements Serializable {
             } catch (UnsupportedEncodingException | MessagingException e) {
                 logger.error(e.getMessage(), e);
                 Messages.error(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ERROR, null)
-                        .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                        .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
             }
         });
     }

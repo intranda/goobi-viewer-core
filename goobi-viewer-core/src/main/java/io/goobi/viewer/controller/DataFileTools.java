@@ -381,6 +381,7 @@ public class DataFileTools {
     public static String loadFulltext(String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords,
             HttpServletRequest request)
             throws FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        // logger.trace("loadFulltext: {}/{}", altoFilePath, fulltextFilePath);
         TextResourceBuilder builder = new TextResourceBuilder();
         if (fulltextFilePath != null) {
             // Plain full-text file
@@ -444,6 +445,7 @@ public class DataFileTools {
         if (altoFilePath == null) {
             return null;
         }
+        // logger.trace("loadAlto: {}", altoFilePath);
 
         String filename = FileTools.getFilenameFromPathString(altoFilePath);
         String pi = FileTools.getBottomFolderFromPathString(altoFilePath);
@@ -459,7 +461,11 @@ public class DataFileTools {
                     .map(urls -> {
                         return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build();
                     })
-                    .map(url -> NetTools.callUrlGET(url))
+                    .map(url -> {
+                        String[] u = NetTools.callUrlGET(url);
+                        // logger.trace(u[1]);
+                        return u;
+                    })
                     .filter(array -> Integer.parseInt(array[0]) < 400)
                     .map(array -> array[1])
                     .orElseThrow(() -> new ContentNotFoundException("Resource not found"));

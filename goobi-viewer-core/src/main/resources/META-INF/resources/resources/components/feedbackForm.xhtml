@@ -45,7 +45,7 @@
 								</div>	    
 							</div>                    
 					 <h:inputText
-						 id="feedbackEmail" label="feedbackEmail" immediate="true" required="true" value="#{userBean.feedback.email}"
+						 id="feedbackEmail" label="feedbackEmail" immediate="true" required="true" value="#{userBean.feedback.senderAddress}"
 						 styleClass="form-control">
 						 <f:validator validatorId="emailValidator" for="feedbackEmail" />
 						 <f:ajax render="emailGroup" />
@@ -66,19 +66,29 @@
 								<div class="cms-module__option-message-mark">
 								    <i class="fa fa-check" aria-hidden="true"></i>
 								    <i class="fa fa-exclamation" aria-hidden="true"></i>
-								</div>	    
+								</div>
 							</div>                    
 					 <h:inputText
-						 id="feedbackEmail2" label="feedbackEmail2" immediate="true" required="true"  disabled="true" value="#{userBean.feedback.email}"
+						 id="feedbackEmail2" label="feedbackEmail2" immediate="true" required="true"  disabled="true" value="#{userBean.feedback.senderAddress}"
 						 styleClass="form-control">
 						 <f:passThroughAttribute name="aria-labelledby" value="labelFeedbackEmail2"/>
 						 <f:validator validatorId="emailValidator" for="feedbackEmail2" />
 						 <f:ajax render="emailGroup2" />
 					 </h:inputText>
 	                  </div>
-	                </h:panelGroup>	                
-	                
-
+	                </h:panelGroup>
+	            
+	            <!-- RECIPIENT -->    
+                <div class="form-group form-row">
+                    <label id="labelFeedbackRecipient" for="feedbackRecipient" class="col-lg-3 control-label">#{msg.recipient}:</label>
+                    <div class="col-12 col-lg-9">
+					   <h:selectOneMenu id="feedbackRecipient" value="#{userBean.feedback.recipientAddress}" immediate="true">
+					       <f:selectItems var="recipient" value="#{configurationBean.feedbackEmailRecipients}"
+					           itemLabel="#{recipient.label}" itemValue="#{recipient.emailAddress}">
+					       </f:selectItems>
+					   </h:selectOneMenu>
+                    </div>
+                </div>
 	                
                 <!-- URL -->
 				<div class="form-group form-row hidden">

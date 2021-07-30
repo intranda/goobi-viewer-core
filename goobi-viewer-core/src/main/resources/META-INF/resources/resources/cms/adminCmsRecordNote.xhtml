@@ -26,7 +26,7 @@
 
 		<f:view contentType="text/html" encoding="utf-8">
 
-			<h:panelGroup layout="block" rendered="#{userBean.user.cmsAdmin}">
+			<h:panelGroup id="mainGroup" layout="block" rendered="#{userBean.user.cmsAdmin}">
 				<!-- TITLE -->
 				<div class="admin__title-bar">
 					<h2 class="admin__title">#{cmsRecordNoteEditBean.newNote ? msg.cms__record_notes__add_note : msg.cms__record_notes_edit__title}</h2>
@@ -49,30 +49,74 @@
 									</span>
 								</h3>
 								<div class="admin__default-block">
-									<div class="form-group form-row">
-										<div class="col-4 control-label admin__form-label">
-											<label for="inputRecordIdentifier">#{msg.cms__record_notes__input_idenfier}:
+										<div>
+											<label for="inputRecordIdentifier">#{msg.cms__record_notes__input_idenfier_or_query}:
 											</label>
+											 <!-- TYPE:  #{cmsRecordNoteEditBean.currentNoteType}  -->
 										</div>
-										<div
-											class="col-8 admin__form-input cms-module__option-control">
-		
-											<h:message for="inputRecordIdentifier"
-												errorClass="-validation-message -danger"></h:message>
-											<div class="-validation-mark">
-												<i class="fa fa-check" aria-hidden="true"></i> <i
-													class="fa fa-exclamation" aria-hidden="true"></i>
+									<div class="form-group admin__record-notes-connected-area admin__cms-edit-collection-connected-radio-buttons">
+	                            		<div class="connected-top">
+	                            			<div class="form-row">
+				                            	<div data-target="#{cmsRecordNoteEditBean.currentNoteType == 'SINGLE' ? 'isChecked' : 'blurIfUnchecked'}" class="admin__record-notes-radio-select control-label admin__form-label">
+					                            	<h:selectOneRadio group="noteTypeSelect" value="#{cmsRecordNoteEditBean.currentNoteType}" immediate="true" >
+					                                	<f:selectItem itemValue="SINGLE" itemLabel="#{msg.cms__record_notes__type_record}" />
+					                                	<f:ajax render="@form" />
+					                            	</h:selectOneRadio>
+				                            	</div>
+				                            	<div class="admin__form-input cms-module__option-control">
+				
+													<h:message for="inputRecordIdentifier"
+														errorClass="-validation-message -danger"></h:message>
+													<div class="-validation-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
+													<h:inputText id="inputRecordIdentifier" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'SINGLE'}"
+														styleClass="form-control -validation-input"
+														requiredMessage="#{msg.info__input_required}"
+														validatorMessage="#{msg.pi_errNotFound}"
+														required="#{cmsRecordNoteEditBean.currentNoteType eq 'SINGLE'}"
+														value="#{cmsRecordNoteEditBean.recordIdentifier}">
+														<f:validator validatorId="piInSolrValidator"
+															for="inputRecordIdentifier" />
+													</h:inputText>
+													<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
+												</div>
 											</div>
-											<h:inputText id="inputRecordIdentifier" tabindex="1"
-												styleClass="form-control -validation-input" required="true"
-												requiredMessage="#{msg.info__input_required}"
-												validatorMessage="#{msg.pi_errNotFound}"
-												value="#{cmsRecordNoteEditBean.recordIdentifier}">
-												<f:validator validatorId="piInSolrValidator"
-													for="inputRecordIdentifier" />
-											</h:inputText>
-											<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
-										</div>
+		                            	</div>
+		                            	<div class="connected-bottom">
+			                            	<div class="form-row">
+			                            		<div data-target="#{cmsRecordNoteEditBean.currentNoteType == 'MULTI' ? 'isChecked' : 'blurIfUnchecked'}" class="admin__record-notes-radio-select control-label admin__form-label">
+					                            	<h:selectOneRadio group="noteTypeSelect" value="#{cmsRecordNoteEditBean.currentNoteType}" immediate="true">
+					                                	<f:selectItem itemValue="MULTI" itemLabel="#{msg.cms__record_notes__type_query}" />
+					                                	<f:ajax render="@form" />
+					                            	</h:selectOneRadio>
+				                            	</div>
+				                            	<div class="admin__form-input cms-module__option-control">
+				
+													<h:message for="inputQuery"
+														infoClass="-validation-message -success" 
+			                        					warnClass="-validation-message -warning"
+														errorClass="-validation-message -danger" />
+													<div class="-validation-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
+													
+													<h:inputText id="inputQuery" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'MULTI'}"
+														styleClass="form-control -validation-input"
+														requiredMessage="#{msg.info__input_required}"
+														required="#{cmsRecordNoteEditBean.currentNoteType eq 'MULTI'}"
+														validatorMessage="#{msg.inline_help__solr_query_danger}"
+														value="#{cmsRecordNoteEditBean.recordQuery}">
+														
+														<f:validator validatorId="solrQueryValidator"
+															for="inputQuery" />
+													</h:inputText>
+													<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
+												</div>
+											</div>
+		                            	</div>
 									</div>
 								</div>
 								
@@ -84,7 +128,7 @@
 									</a> 
 									<h:commandButton class="btn btn--default" tabindex="2"
 									onclick="viewerJS.showLoader()" value="#{msg.button__continue}">
-										<f:ajax render="@all" execute="@form" onevent="viewerJS.initTinyMCE"></f:ajax>
+										<f:ajax render="mainGroup" execute="@form" onevent="viewerJS.initTinyMCE"></f:ajax>
 									</h:commandButton>
 									
 								</div>
@@ -97,7 +141,56 @@
 							<div class="admin__content-main -sticky -refreshHCsticky">
 								<h:form id="editRecordNote" prependId="false">
 									<div class="admin__record-notes-box-editable">
+									
+									<ui:fragment rendered="#{cmsRecordNoteEditBean.isMultiRecordNote()}">
+										<h3>#{msg.general}</h3>
+										
+										<div class="admin__default-block">
+										
+										<div class="form-group form-row">
+											<div class="col-2 control-label admin__form-label">
+												<label for="inputQuery2">#{msg.cms__record_notes__type_query}:
+												</label>
+												<span class="admin__label-required-field">(#{msg.form__required_field})</span>
+											</div>
+											
+											<div class="cms-module__option-control col-9 admin__form-input">
+											
+											<h:panelGroup id="inputQueryGroup">
+												
+												<div class="cms-module__option-message">
+												
+													<h:messages for="inputQuery2"
+														infoClass="cms-module__option-message-status success"
+														warnClass="cms-module__option-message-status warning"
+														errorClass="cms-module__option-message-status danger" />
+														
+													<div class="cms-module__option-message-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
+													
+												</div>
+												
+													<h:inputText id="inputQuery2" tabindex="1"
+														styleClass="form-control -validation-input"
+														requiredMessage="#{msg.info__input_required}"
+														required="#{cmsRecordNoteEditBean.currentNoteType eq 'MULTI'}"
+														value="#{note.query}">
+														<f:validator validatorId="solrQueryValidator" for="inputQuery2" />
+														<f:ajax event="blur" render="inputQueryGroup" />
+													</h:inputText>
+												
+												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
+											</h:panelGroup>
+											</div>
+											</div>
+										</div>
+										<script>$(document).ready(() => $("#inputQuery2").trigger("blur"))</script>
+									</ui:fragment>
+									
 									<h3>#{msg.cms__record_notes_edit_text__title}</h3>
+									
 										<div class="admin__language-tabs">
 											<viewerComponent:localeSelector
 												object="#{cmsRecordNoteEditBean}" />
@@ -189,9 +282,12 @@
 				
 										<a class="btn btn--cancel"
 											href="#{cmsRecordNoteEditBean.returnUrl}">#{msg.button__abort}
-										</a> <a class="btn btn--default mr-2" target="_blank"
-											href="#{cmsRecordNotesBean.getRecordUrl(note)}">#{msg.show}
-										</a>
+										</a> 
+										<ui:fragment rendered="#{cmsRecordNoteEditBean.isSingleRecordNote()}">										
+											<a class="btn btn--default mr-2" target="_blank"
+												href="#{cmsRecordNotesBean.getRecordUrl(note)}">#{msg.show}
+											</a>
+										</ui:fragment>
 										<button class="btn btn--success"
 											jsf:action="#{cmsRecordNoteEditBean.save()}">
 											#{msg.button__save}
@@ -222,6 +318,7 @@
 								</div>
 							
 								<!-- RECORD INFOS -->
+								<ui:fragment rendered="#{cmsRecordNoteEditBean.isSingleRecordNote()}">
 								<div class="admin__default-block">
 									<h2>#{msg.cms__record_notes_select_record__title}</h2>
 									<div class="admin__record-notes-info-box">
@@ -240,6 +337,34 @@
 										</div>
 									</div>
 								</div>
+								</ui:fragment>
+								
+								<ui:fragment rendered="#{cmsRecordNoteEditBean.isMultiRecordNote()}">
+								<h:panelGroup layout="block" id="noteInfoGroup" styleClass="admin__default-block">
+									<h2>#{msg.cms__record_notes_select_record__title}</h2>
+									<div class="admin__record-notes-info-box">
+										<h:outputFormat value="#{msg.cms__record_note__records_matching_query}">
+											<f:param value="#{note.records.size()}"></f:param>
+										</h:outputFormat>
+										<ui:fragment rendered="#{not empty note.records}">
+											<a href="#{cmsRecordNoteEditBean.getSearchUrlForNote(note)}" target="_goobi-viewer-record-note-search">#{msg.cms__record_note__view_record_list}</a>
+										</ui:fragment> 
+									</div>
+								</h:panelGroup>
+								</ui:fragment>
+								
+								<div class="admin__default-block">
+									<h2>#{msg.cms__record_notes_text_editor_hints__title}</h2>
+									<div class="admin__record-notes-info-box">
+										#{msg.cms__record_notes_text_editor_hints__text}
+									</div>
+									<div class="admin__record-notes-info-box">
+										<dl>
+											<dt>#fragment</dt>
+											<dd>#{msg.cms__record_notes_text_editor_hints__hint_fragment}</dd>
+										</dl>
+									</div>
+								</div>
 								
 							<!-- SIDEBAR EOL -->
 							</div>
@@ -247,6 +372,15 @@
 					</ui:fragment>
 				</div>
 			</h:panelGroup>
+	        <script>
+	        
+	        viewerJS.jsfAjax.success.pipe(rxjs.operators.merge(rxjs.fromEvent(window, "load")))
+	        .subscribe(e => {
+	            console.log("set checkboxes");
+				$("[data-target='isChecked'] input").prop("checked", true);
+				$("[data-target='blurIfUnchecked'] input").prop("checked", false);
+	        })
+	        </script>
 		</f:view>
 		</div>
 	</ui:define>

@@ -26,11 +26,6 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.openmrs.generatetestcases.bddBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
 			<name>org.eclipse.m2e.core.maven2Builder</name>
 			<arguments>
 			</arguments>
@@ -41,18 +36,10 @@
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 		<nature>org.eclipse.jem.workbench.JavaEMFNature</nature>
-		<nature>org.openmrs.generatetestcases.bddNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.wst.common.modulecore.ModuleCoreNature</nature>
 		<nature>net.sourceforge.pmd.eclipse.plugin.pmdNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>config_viewer.xml</name>
-			<type>1</type>
-			<location>/opt/digiverso/viewer/config/config_viewer.xml</location>
-		</link>
-	</linkedResources>
 	<filteredResources>
 		<filter>
 			<id>1550063420904</id>

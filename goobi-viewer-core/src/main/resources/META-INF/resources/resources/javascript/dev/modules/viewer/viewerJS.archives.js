@@ -124,14 +124,28 @@ var viewerJS = ( function( viewer ) {
 					        	} 
 				        	});
         				} else {
-        					this.hideLoader("load_record_image");
-        					$(".archives__object-image").show();
-        				}
+        					let thumbnail = viewerJS.iiif.getId(manifest.thumbnail[0]);
+	        				if(thumbnail) {
+	        					$(".archives__object-image").find("img").on("load", () => {
+	        						this.hideLoader("load_record_image");
+		        					$(".archives__object-image").show();
+	        					});
+	        					$(".archives__object-image").find("img").on("error", () => {
+	        						this.hideLoader("load_record_image");
+	        						$(".archives__object-image").hide();
+	        					});
+	        					let imageSource = $(".archives__object-image").find("img").attr("src", "bla");
+	        				} else {
+	        					this.hideLoader("load_record_image");
+	        					$(".archives__object-image").hide();
+	        				}
+	        			}
         			})
         			.catch(error => {
+        			console.log("error", error);
+	        			this.hideLoader("load_record_image");
         				error.then( (e) => {
 	        				console.log("error loading record '" + recordPi + "'", e);
-	        				this.hideLoader("load_record_image");
 	        				//viewer.notifications.error(e.message);
         				});
         			});

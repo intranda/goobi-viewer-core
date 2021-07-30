@@ -212,23 +212,37 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getPersistentUrl(String)
-     * @verifies generate purl via urn correctly
+     * @see ViewManager#getCiteLinkDocstruct()
+     * @verifies return correct url
      */
     @Test
-    public void getPersistentUrl_shouldGeneratePurlViaUrnCorrectly() throws Exception {
-        StructElement se = new StructElement();
-        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
-        String purl = viewManager.getPersistentUrl("urn:nbn:foo:bar-1234");
-        Assert.assertEquals("urnResolver_valueurn:nbn:foo:bar-1234", purl);
+    public void getCiteLinkDocstruct_shouldReturnCorrectUrl() throws Exception {
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        viewManager.setCurrentImageOrder(10);
+
+        String purl = viewManager.getCiteLinkDocstruct();
+        Assert.assertEquals("/object/" + PI_KLEIUNIV + "/5/LOG_0003/", purl);
     }
 
     /**
-     * @see ViewManager#getPersistentUrl(String)
-     * @verifies generate purl without urn correctly
+     * @see ViewManager#getCiteLinkPage()
+     * @verifies return correct url
      */
     @Test
-    public void getPersistentUrl_shouldGeneratePurlWithoutUrnCorrectly() throws Exception {
+    public void getCiteLinkPage_shouldReturnCorrectUrl() throws Exception {
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
+        viewManager.setCurrentImageOrder(2);
+
+        String purl = viewManager.getCiteLinkPage();
+        Assert.assertEquals("/object/" + PI_KLEIUNIV + "/2/", purl);
+    }
+
+    /**
+     * @see ViewManager#getCiteLinkWork()
+     * @verifies return correct url
+     */
+    @Test
+    public void getCiteLinkWork_shouldReturnCorrectUrl() throws Exception {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
@@ -236,18 +250,10 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
 
-        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
-        try {
-            viewManager.setCurrentImageOrderString("1-2");
-        } catch (IDDOCNotFoundException e) {
-        }
-        Assert.assertEquals(docstructType, viewManager.getTopStructElement().getDocStructType());
-        Assert.assertEquals(pi, viewManager.getPi());
-        Assert.assertEquals(1, viewManager.getCurrentImageOrder());
-        //        Assert.assertEquals("1-2", viewManager.getCurrentPageOrderRange());
+        ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV);
 
-        String purl = viewManager.getPersistentUrl(null);
-        Assert.assertEquals("/toc/PPN123/1/", purl);
+        String purl = viewManager.getCiteLinkWork();
+        Assert.assertEquals("/object/" + PI_KLEIUNIV + "/1/", purl);
     }
 
     /**

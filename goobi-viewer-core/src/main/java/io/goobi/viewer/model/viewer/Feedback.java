@@ -32,10 +32,11 @@ public class Feedback implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(Feedback.class);
 
     private String name;
-    private String email;
+    private String senderAddress;
     private String url;
     private String type;
     private String message;
+    private String recipientAddress;
 
     /**
      * <p>
@@ -62,7 +63,7 @@ public class Feedback implements Serializable {
         if (body != null) {
             body = body
                     .replace("{0}", name)
-                    .replace("{1}", email)
+                    .replace("{1}", senderAddress)
                     .replace("{2}", url)
                     .replace("{3}", message);
             // Feedback type only exists for crowdsourcing feedback
@@ -98,25 +99,24 @@ public class Feedback implements Serializable {
 
     /**
      * <p>
-     * Getter for the field <code>email</code>.
+     * Getter for the field <code>senderAddress</code>.
      * </p>
      *
-     * @return the email
+     * @return the senderAddress
      */
-    public String getEmail() {
-        return email;
+    public String getSenderAddress() {
+        return senderAddress;
     }
 
     /**
      * <p>
-     * Setter for the field <code>email</code>.
+     * Setter for the field <code>senderAddress</code>.
      * </p>
      *
-     * @param email the email to set
+     * @param senderAddress the senderAddress to set
      */
-    public void setEmail(String email) {
-        // logger.trace("setEmail: {}", email);
-        this.email = email;
+    public void setSenderAddress(String senderAddress) {
+        this.senderAddress = senderAddress;
     }
 
     /**
@@ -183,5 +183,19 @@ public class Feedback implements Serializable {
      */
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    /**
+     * @return the recipientAddress
+     */
+    public String getRecipientAddress() {
+        return recipientAddress;
+    }
+
+    /**
+     * @param recipientAddress the recipientAddress to set
+     */
+    public void setRecipientAddress(String recipientAddress) {
+        this.recipientAddress = recipientAddress;
     }
 }

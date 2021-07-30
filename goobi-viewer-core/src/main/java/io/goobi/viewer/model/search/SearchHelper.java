@@ -2186,7 +2186,7 @@ public final class SearchHelper {
                 if (item.getField() == null) {
                     continue;
                 }
-                logger.trace("item field: " + item.getField());
+                logger.trace("item field: {}", item.getField());
                 // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't
                 // return every single doc
                 switch (item.getField()) {

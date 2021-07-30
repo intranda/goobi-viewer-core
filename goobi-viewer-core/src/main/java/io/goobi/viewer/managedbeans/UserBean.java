@@ -32,6 +32,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -127,6 +128,11 @@ public class UserBean implements Serializable {
         // the emptiness inside
         this.authenticationProvider = getLocalAuthenticationProvider();
     }
+    
+    @PostConstruct
+    public void init() {
+        createFeedback();        
+    }
 
     /**
      * Required setter for ManagedProperty injection
@@ -200,7 +206,7 @@ public class UserBean implements Serializable {
             logFailedUserRegistration();
             logger.debug("E-mail could not be sent");
             Messages.error(ViewerResourceBundle.getTranslation("errSendEmail", null)
-                    .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                    .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
         } else {
             Messages.error("user_passwordMismatch");
         }
@@ -335,6 +341,7 @@ public class UserBean implements Serializable {
                         logger.error("Could not update user in DB.");
                     }
                     setUser(user);
+                    createFeedback();
                     if (request != null && request.getSession(false) != null) {
                         request.getSession(false).setAttribute("user", user);
                     }
@@ -410,6 +417,7 @@ public class UserBean implements Serializable {
 
         user.setTranskribusSession(null);
         setUser(null);
+        createFeedback();
         password = null;
         if (loggedInProvider != null) {
             loggedInProvider.logout();
@@ -515,10 +523,10 @@ public class UserBean implements Serializable {
                 BeanUtils.getActiveDocumentBean().resetAccess();
                 BeanUtils.getSessionBean().cleanSessionObjects();
             } catch (Throwable e) {
+                logger.error(e.getMessage());
             }
 
             this.authenticationProviders = null;
-
         }
     }
 
@@ -625,7 +633,7 @@ public class UserBean implements Serializable {
             sb.append(ViewerResourceBundle.getTranslation("user_activationEmailBody", null)
                     .replace("{0}", baseUrl)
                     .replace("{1}", activationUrl)
-                    .replace("{2}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                    .replace("{2}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
 
             // Send
             try {
@@ -684,7 +692,7 @@ public class UserBean implements Serializable {
                     }
                 }
                 Messages.error(ViewerResourceBundle.getTranslation("user_retrieveAccountError", null)
-                        .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                        .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
                 return "userRetrieveAccount";
             }
 
@@ -732,7 +740,7 @@ public class UserBean implements Serializable {
                 }
             }
             Messages.error(ViewerResourceBundle.getTranslation("user_retrieveAccountError", null)
-                    .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                    .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
             return "user?faces-redirect=true";
         }
 
@@ -784,11 +792,13 @@ public class UserBean implements Serializable {
         securityAnswer = null;
         securityQuestion = null;
 
-        String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
         feedback = new Feedback();
         if (user != null) {
-            feedback.setEmail(user.getEmail());
+            feedback.setSenderAddress(user.getEmail());
+            feedback.setName(user.getDisplayName());
         }
+        
+        String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
         if (StringUtils.isEmpty(url)) {
             url = navigationHelper.getCurrentPrettyUrl();
         }
@@ -802,7 +812,7 @@ public class UserBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String submitFeedbackAction() {
+    public String submitFeedbackAction(boolean setCurrentUrl) {
         // Check whether the security question has been answered correct, if configured
         if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
             Messages.error("user__security_question_wrong");
@@ -814,9 +824,9 @@ public class UserBean implements Serializable {
             logger.debug("Honeypot field entry: {}", lastName);
             return "";
         }
-        if (!EmailValidator.validateEmailAddress(this.feedback.getEmail())) {
+        if (!EmailValidator.validateEmailAddress(this.feedback.getSenderAddress())) {
             Messages.error("email_errlnvalid");
-            logger.debug("Invalid email: " + this.feedback.getEmail());
+            logger.debug("Invalid email: " + this.feedback.getSenderAddress());
             return "";
         }
         if (StringUtils.isBlank(feedback.getName())) {
@@ -827,24 +837,41 @@ public class UserBean implements Serializable {
             Messages.error("errFeedbackMessageRequired");
             return "";
         }
+        if (StringUtils.isBlank(feedback.getRecipientAddress())) {
+            Messages.error("errFeedbackRecipientRequired");
+            return "";
+        }
+        
+        //set current url to feedback
+        if(setCurrentUrl && navigationHelper != null) {
+            feedback.setUrl(navigationHelper.getCurrentPrettyUrl());
+        }
+        
         try {
-            if (NetTools.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
+            if (NetTools.postMail(Collections.singletonList(feedback.getRecipientAddress()),
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
+                // Send confirmation to sender
+                if (StringUtils.isNotEmpty(feedback.getSenderAddress()) && !NetTools.postMail(Collections.singletonList(feedback.getSenderAddress()),
+                        feedback.getEmailSubject("feedbackEmailSubjectSender"), feedback.getEmailBody("feedbackEmailBody"))) {
+                    logger.warn("Could not send feedback confirmation to sender.");
+                }
                 Messages.info("feedbackSubmitted");
             } else {
-                logger.error("{} could not send feedback.", feedback.getEmail());
+                logger.error("{} could not send feedback.", feedback.getSenderAddress());
                 Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                        .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                        .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
             }
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage(), e);
             Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                    .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                    .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
         } catch (MessagingException e) {
             logger.error(e.getMessage(), e);
             Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                    .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                    .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
         }
+        //eventually always create a new feedback object to erase prior inputs
+        createFeedback();
         return "";
     }
 

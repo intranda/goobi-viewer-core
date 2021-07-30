@@ -158,21 +158,22 @@
                             </ui:fragment>
                             
                             <!-- COLLECTION DESCRIPTION IMPORT -->
-                            <ui:fragment rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}">
-                                <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
+                            <h:panelGroup layout="block" rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}" id="collectionImportWidget" styleClass="admin__boxed-entry -no-actions -w33 -danger" >
+                                    <h:form prependId="false">
                                         <h3>#{msg.admin__cms_collections_import}</h3>
                                         <div class="admin__form-help-text in mb-2">
                                             #{msg.admin__cms_collections_import_desc}
                                         </div>
-                                        <div class="col-12 d-flex justify-content-center">
+                                        <div class="col-12 mt-3 d-flex justify-content-center">
                                             <h:commandButton
                                                 styleClass="btn btn--full"
                                                 value="#{msg.admin__cms_collections_import_start}"
-                                                action="#{cmsCollectionsBean.importDescriptionsAction}">
+                                                action="#{cmsCollectionsBean.importDescriptionsAction('DC')}">
+                                                <f:ajax render="collectionImportWidget" />
                                             </h:commandButton>
                                         </div>
-                                </h:form>
-                            </ui:fragment>
+                                    </h:form>
+                            </h:panelGroup>
                             
                             <!-- TRANSLATIONS -->
 							<ui:fragment rendered="#{userBean.admin and adminBean.displayTranslationsDashboardWidget}">

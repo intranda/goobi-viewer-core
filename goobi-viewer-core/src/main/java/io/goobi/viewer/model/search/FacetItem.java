@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -101,6 +103,11 @@ public class FacetItem implements Serializable, IFacetItem {
         setLink(link.trim());
     }
 
+    public FacetItem(Count count) {
+        this(count.getFacetField().getName(), count.getFacetField().getName() + ":" + count.getName(), count.getName(), Messages.translate(count.getName(), BeanUtils.getLocale()), count.getCount(), false);
+    }
+
+    
     /**
      * Internal constructor.
      * 

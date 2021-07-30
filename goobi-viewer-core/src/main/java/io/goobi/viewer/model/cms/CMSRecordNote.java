@@ -15,14 +15,20 @@
  */
 package io.goobi.viewer.model.cms;
 
+import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Convert;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.internal.jpa.parsing.GenerationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +43,10 @@ import io.goobi.viewer.model.translations.TranslatedText;
  */
 @Entity
 @Table(name = "cms_record_notes")
-public class CMSRecordNote {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="note_type", 
+discriminatorType = DiscriminatorType.STRING)
+public abstract class CMSRecordNote {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSRecordNote.class);
 
@@ -48,19 +57,6 @@ public class CMSRecordNote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_record_note_id")
     private Long id;
-
-    /**
-     * PI of the record this note relates to. Should be effectively final, but can't be for DAO campatibility
-     */
-    @Column(name = "record_pi", nullable = false)
-    private String recordPi;
-
-    /**
-     * Title of the record this note relates to; used for searching in notes. This is mulitlangual since record titles may be multilangual too
-     */
-    @Column(name = "record_title", nullable = true, columnDefinition = "TEXT")
-    @Convert(converter = TranslatedTextConverter.class)
-    private TranslatedText recordTitle = new TranslatedText();
 
     /**
      * Title of the note, plaintext
@@ -78,7 +74,7 @@ public class CMSRecordNote {
 
     @Column(name = "display_note", nullable = false, columnDefinition = "boolean default true")
     private boolean displayNote = true;
-
+    
     public CMSRecordNote() {
     }
 
@@ -87,7 +83,6 @@ public class CMSRecordNote {
      */
     public CMSRecordNote(String pi) {
         this();
-        this.recordPi = pi;
     }
 
     /**
@@ -95,8 +90,6 @@ public class CMSRecordNote {
      */
     public CMSRecordNote(CMSRecordNote source) {
         this.id = source.id;
-        this.recordPi = source.recordPi;
-        this.recordTitle = new TranslatedText(source.recordTitle);
         this.noteTitle = new TranslatedText(source.noteTitle);
         this.noteText = new TranslatedText(source.noteText);
         this.displayNote = source.displayNote;
@@ -133,73 +126,50 @@ public class CMSRecordNote {
         return true;
     }
 
-    /**
-     * @return the id
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.IRecordNote#getId()
      */
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.IRecordNote#setId(java.lang.Long)
      */
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the recordPi
-     */
-    public String getRecordPi() {
-        return recordPi;
-    }
-
-    /**
-     * @param recordPi the recordPi to set
-     */
-    public void setRecordPi(String recordPi) {
-        this.recordPi = recordPi;
-    }
-
-    /**
-     * @return the recordTitle
-     */
-    public TranslatedText getRecordTitle() {
-        return recordTitle;
-    }
-
-    /**
-     * @param recordTitle the recordTitle to set
-     */
-    public void setRecordTitle(TranslatedText recordTitle) {
-        this.recordTitle = recordTitle;
-    }
-
-    /**
-     * @return the noteTitle
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.IRecordNote#getNoteTitle()
      */
     public TranslatedText getNoteTitle() {
         return noteTitle;
     }
 
-    /**
-     * @return the noteText
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.IRecordNote#getNoteText()
      */
     public TranslatedText getNoteText() {
         return noteText;
     }
 
-    /**
-     * @return the displayŃote
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.IRecordNote#isDisplayNote()
      */
     public boolean isDisplayNote() {
         return displayNote;
     }
 
-    /**
-     * @param displayŃote the displayŃote to set
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.IRecordNote#setDisplayNote(boolean)
      */
     public void setDisplayNote(boolean displayNote) {
         this.displayNote = displayNote;
     }
+    
+    public abstract boolean isSingleRecordNote();
+    public abstract boolean isMultiRecordNote();
+    public abstract boolean matchesFilter(String filter);
+
 }

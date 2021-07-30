@@ -1906,7 +1906,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	this.getPageStatusMap = function() {
-		return this.opts.item.pageStatusMap;
+			return this.opts.item.pageStatusMap;
 	}.bind(this)
 
 	this.isShowThumbs = function() {

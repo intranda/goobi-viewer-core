@@ -210,9 +210,12 @@
     
     <cms_page_template_enabled cms_page_template_enabled_id="1" template_id="template_disabled" enabled="false" />
     
-    <cms_record_notes cms_record_note_id="1" record_pi="PI1" record_title="Titel 1" note_title="{&quot;en&quot;: &quot;Notes 1&quot;, &quot;de&quot;: &quot;Bemerkungen 1&quot;}" note_text="{&quot;en&quot;: &quot;&lt;p&gt;First paragraph&lt;/p&gt;&quot;, &quot;de&quot; : &quot;&lt;p&gt;Erster Paragraph&lt;/p&gt;&quot;}" display_note="true" ></cms_record_notes>
-    <cms_record_notes cms_record_note_id="2" record_pi="PI1" record_title="Titel 1" note_title="{&quot;en&quot;: &quot;Notes 2&quot;, &quot;de&quot;: &quot;Bemerkungen 2&quot;}" note_text="lorem ipsum" display_note="false"></cms_record_notes>
-    <cms_record_notes cms_record_note_id="3" record_pi="PI2" record_title="Titel 2" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen 3&quot;}" note_text="loram ipsum" display_note="true"></cms_record_notes>
+    <cms_record_notes note_type="SINGLE" cms_record_note_id="1" record_pi="PI1" record_title="Titel 1" note_title="{&quot;en&quot;: &quot;Notes 1&quot;, &quot;de&quot;: &quot;Bemerkungen 1&quot;}" note_text="{&quot;en&quot;: &quot;&lt;p&gt;First paragraph&lt;/p&gt;&quot;, &quot;de&quot; : &quot;&lt;p&gt;Erster Paragraph&lt;/p&gt;&quot;}" display_note="true" ></cms_record_notes>
+    <cms_record_notes note_type="SINGLE" cms_record_note_id="2" record_pi="PI1" record_title="Titel 1" note_title="{&quot;en&quot;: &quot;Notes 2&quot;, &quot;de&quot;: &quot;Bemerkungen 2&quot;}" note_text="lorem ipsum" display_note="false"></cms_record_notes>
+    <cms_record_notes note_type="SINGLE" cms_record_note_id="3" record_pi="PI2" record_title="Titel 2" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen 3&quot;}" note_text="loram ipsum" display_note="true"></cms_record_notes>
+    <cms_record_notes note_type="MULTI" cms_record_note_id="4" query="PI:mnha*" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen MNHA&quot;}" note_text="loram ipsum" display_note="true"></cms_record_notes>
+    <cms_record_notes note_type="MULTI" cms_record_note_id="5"  query="DC:dctext*" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen OCR&quot;}" note_text="loram ipsum" display_note="false"></cms_record_notes>
+    
     
     <download_jobs download_job_id="1" type="pdf" identifier="187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118a" pi="PI_1"
         status="WAITING" last_requested="2016-06-01 00:00:00" ttl="3600" />
