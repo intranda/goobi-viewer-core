@@ -1120,10 +1120,10 @@ public final class Configuration extends AbstractConfiguration {
      *
      * @param field a {@link java.lang.String} object.
      * @param name a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      * @should return correct field for collection
      * @should give priority to exact matches
      * @should return hyphen if collection not found
-     * @return a {@link java.lang.String} object.
      */
     public String getCollectionDefaultSortField(String field, String name) {
         HierarchicalConfiguration collection = getCollectionConfiguration(field);
