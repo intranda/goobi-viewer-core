@@ -151,9 +151,7 @@
 		                          value="#{navigationHelper.objectUrl}/#{archiveBean.displayEntry.associatedRecordPi}/1/">
 		                              <!-- TODO less trivial image display -->
 		                              <div class="archives__object-image-overlay"></div>
-		                               <c:if test="#{archiveBean.displayEntry.associatedRecordPi != null}">
-			                              <img src="#{imageDelivery.thumbs.getThumbnailUrl(archiveBean.displayEntry.associatedRecordPi)}" />
-		                              </c:if>
+			                          <img/> <!-- set src from javascript -->
 		                              <div class="archives__object-image-hover-text">#{msg.archives__showRecord}</div>
 		                              <div class="archives__object-image-hover-icon">
 		                              	<i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i>
