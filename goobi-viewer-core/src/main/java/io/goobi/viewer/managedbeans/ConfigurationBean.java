@@ -1288,6 +1288,10 @@ public class ConfigurationBean implements Serializable {
     public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
         return DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
     }
+    
+    public boolean isDisplaySidebarWidgetUsagePageDownloadOptions() {
+        return DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions();
+    }
 
     /**
      * 

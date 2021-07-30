@@ -88,6 +88,8 @@ var viewerJS = (function () {
 	    
 	    //init toggle hide/show
 	    viewerJS.toggle.init();
+	    
+	    viewerJS.initWidgetUsage();
 
        
         // init bookmarks if enabled
@@ -436,6 +438,21 @@ var viewerJS = (function () {
     
     viewer.getRestApiUrl = function () {
         return restURL.replace("/rest", "/api/v1");
+    }
+    
+    viewer.initWidgetUsage = function() {
+    	let $widgetUsage = $(".widget-usage");
+    	if($widgetUsage.length > 0) {
+    		let $widgetTitles = $widgetUsage.find(".widget-usage__subtitle");
+    		$widgetTitles.each((index,element) => {
+    			let $title = $(element);
+    			let $options = $title.next("div").children();
+    			console.log("check" , $title, $title.next("div"), $options);
+    			if($options.length == 0) {
+    				$title.hide();
+    			}
+    		});
+    	}
     }
 
 
