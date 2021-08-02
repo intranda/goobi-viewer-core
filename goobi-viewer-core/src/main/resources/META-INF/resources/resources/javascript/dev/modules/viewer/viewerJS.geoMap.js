@@ -64,22 +64,6 @@ var viewerJS = ( function( viewer ) {
 
     }
     
-    // Helper fn: returns true if OS is iOS
-    viewer.iOS = function() {
-      return [
-          'iPad Simulator',
-          'iPhone Simulator',
-          'iPod Simulator',
-          'iPad',
-          'iPhone',
-          'iPod'
-        ].includes(navigator.platform)
-        // iPad on iOS 13 detection
-        || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
-    }
-  
-    console.log('is iOS: ', viewer.iOS())
-    
     viewer.GeoMap.prototype.init = function(view, features) {
        
        if(_debug)console.log("init geomap with", view, features);
