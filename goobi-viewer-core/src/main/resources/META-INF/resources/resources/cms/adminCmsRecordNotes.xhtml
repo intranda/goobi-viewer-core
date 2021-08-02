@@ -93,6 +93,9 @@
                                                 <ui:fragment rendered="#{note.isSingleRecordNote()}">
                                                 	<a class="admin__table-action-link" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(note)}">#{msg.show}</a>
                                                 </ui:fragment>
+                                                <ui:fragment rendered="#{note.isMultiRecordNote()}">
+													<a href="#{cmsRecordNotesBean.getSearchUrlForNote(note)}" class="admin__table-action-link" target="_blank">#{msg.show}</a>
+												</ui:fragment> 
                                                 <!-- DELETE -->
                                                 <h:commandLink 
                                                 	styleClass="admin__table-action-link -redlink" 

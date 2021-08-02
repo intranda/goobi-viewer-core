@@ -341,8 +341,4 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         return this.note != null && this.note instanceof CMSSingleRecordNote;
     }
 
-    public String getSearchUrlForNote(CMSMultiRecordNote note)  {
-        String query = BeanUtils.escapeCriticalUrlChracters(note.getQueryForSearch());
-        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", query, "1", "-", "-");
-    }
 }
