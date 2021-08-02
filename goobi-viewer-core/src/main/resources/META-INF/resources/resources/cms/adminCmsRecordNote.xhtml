@@ -283,11 +283,6 @@
 										<a class="btn btn--cancel"
 											href="#{cmsRecordNoteEditBean.returnUrl}">#{msg.button__abort}
 										</a> 
-										<ui:fragment rendered="#{cmsRecordNoteEditBean.isSingleRecordNote()}">										
-											<a class="btn btn--default mr-2" target="_blank"
-												href="#{cmsRecordNotesBean.getRecordUrl(note)}">#{msg.show}
-											</a>
-										</ui:fragment>
 										<button class="btn btn--success"
 											jsf:action="#{cmsRecordNoteEditBean.save()}">
 											#{msg.button__save}
@@ -317,39 +312,57 @@
 
 								</div>
 							
-								<!-- RECORD INFOS -->
+								<!-- RECORD INFOS + DISPLAY LINK -->
 								<ui:fragment rendered="#{cmsRecordNoteEditBean.isSingleRecordNote()}">
-								<div class="admin__default-block">
-									<h2>#{msg.cms__record_notes_select_record__title}</h2>
-									<div class="admin__record-notes-info-box">
-										<div class="admin__record-notes-image-wrapper">
-											<img class="admin__record-notes-image"
-												alt="#{note.recordTitle.getValue(navigationHelper.locale).orElse('')}"
-												title="#{note.recordTitle.getValue(navigationHelper.locale).orElse('')}"
-												src="#{cmsRecordNotesBean.getThumbnailUrl(note, 350, 420)}" />
+									
+									<h:panelGroup layout="block" id="noteInfoShowRecord" styleClass="admin__default-block">
+										<h2>#{msg.show}</h2>
+										<div class="admin__form-help-text in mb-4 admin__record-notes-info-box">
+											<span>#{msg.cms__record_notes_select_record__show_title}</span>
 										</div>
-										<div class="admin__record-notes-metadata">
-											<ui:include
-												src="/resources/includes/metadata/metadataElement.xhtml">
-												<ui:param name="metadataElement"
-													value="#{cmsRecordNoteEditBean.metadataElement}" />
-											</ui:include>
+											<div class="row">
+												<div class="col-12 d-flex justify-content-center">
+													<a class="btn btn--default" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(note)}">#{msg.show}</a>
+					                            </div>
+											</div>
+									</h:panelGroup>								
+									
+									<div class="admin__default-block">
+										<h2>#{msg.cms__record_notes_select_record__title}</h2>
+										<div class="admin__record-notes-info-box">
+											<div class="admin__record-notes-image-wrapper">
+												<img class="admin__record-notes-image"
+													alt="#{note.recordTitle.getValue(navigationHelper.locale).orElse('')}"
+													title="#{note.recordTitle.getValue(navigationHelper.locale).orElse('')}"
+													src="#{cmsRecordNotesBean.getThumbnailUrl(note, 350, 420)}" />
+											</div>
+											<div class="admin__record-notes-metadata">
+												<ui:include
+													src="/resources/includes/metadata/metadataElement.xhtml">
+													<ui:param name="metadataElement"
+														value="#{cmsRecordNoteEditBean.metadataElement}" />
+												</ui:include>
+											</div>
 										</div>
 									</div>
-								</div>
-								</ui:fragment>
+								</ui:fragment>								
+								
 								
 								<ui:fragment rendered="#{cmsRecordNoteEditBean.isMultiRecordNote()}">
 								<h:panelGroup layout="block" id="noteInfoGroup" styleClass="admin__default-block">
-									<h2>#{msg.cms__record_notes_select_record__title}</h2>
-									<div class="admin__record-notes-info-box">
+									<h2>#{msg.show}</h2>
+									<div class="admin__form-help-text in mb-4 admin__record-notes-info-box">
 										<h:outputFormat value="#{msg.cms__record_note__records_matching_query}">
 											<f:param value="#{note.records.size()}"></f:param>
 										</h:outputFormat>
-										<ui:fragment rendered="#{not empty note.records}">
-											<a href="#{cmsRecordNotesBean.getSearchUrlForNote(note)}" target="_goobi-viewer-record-note-search">#{msg.cms__record_note__view_record_list}</a>
-										</ui:fragment> 
 									</div>
+									<ui:fragment rendered="#{not empty note.records}">
+										<div class="row">
+											<div class="col-12 d-flex justify-content-center">
+												<a href="#{cmsRecordNotesBean.getSearchUrlForNote(note)}" target="_goobi-viewer-record-note-search" class="btn btn--default">#{msg.show}</a>
+				                            </div>
+										</div>
+									</ui:fragment>
 								</h:panelGroup>
 								</ui:fragment>
 								
