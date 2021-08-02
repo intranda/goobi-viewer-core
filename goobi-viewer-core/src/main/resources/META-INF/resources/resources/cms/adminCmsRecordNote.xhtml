@@ -347,7 +347,7 @@
 											<f:param value="#{note.records.size()}"></f:param>
 										</h:outputFormat>
 										<ui:fragment rendered="#{not empty note.records}">
-											<a href="#{cmsRecordNoteEditBean.getSearchUrlForNote(note)}" target="_goobi-viewer-record-note-search">#{msg.cms__record_note__view_record_list}</a>
+											<a href="#{cmsRecordNotesBean.getSearchUrlForNote(note)}" target="_goobi-viewer-record-note-search">#{msg.cms__record_note__view_record_list}</a>
 										</ui:fragment> 
 									</div>
 								</h:panelGroup>
