@@ -805,8 +805,8 @@ public class UserBean implements Serializable {
                 .map(map -> map.get("referer"))
                 .orElse(null);
         if (StringUtils.isEmpty(url)) {
-            url = navigationHelper.getCurrentPrettyUrl();
-            feedback.setUrl(url);
+            Optional.ofNullable(navigationHelper).map(NavigationHelper::getCurrentPrettyUrl)
+            .ifPresent(u -> feedback.setUrl(u));
         }
     }
 
