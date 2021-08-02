@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -798,11 +799,15 @@ public class UserBean implements Serializable {
             feedback.setName(user.getDisplayName());
         }
         
-        String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
+        String url = Optional.ofNullable(FacesContext.getCurrentInstance())
+                .map(FacesContext::getExternalContext)
+                .map(ExternalContext::getRequestHeaderMap)
+                .map(map -> map.get("referer"))
+                .orElse(null);
         if (StringUtils.isEmpty(url)) {
             url = navigationHelper.getCurrentPrettyUrl();
+            feedback.setUrl(url);
         }
-        feedback.setUrl(url);
     }
 
     /**
