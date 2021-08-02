@@ -219,7 +219,7 @@ moveFeature(feature) {
  * Remove a marker. If the marker exists as an annotation, it is removed as well
  */
 removeFeature(feature) {
-    this.geoMap.removeMarker(feature);
+    this.geoMap.layers[0].removeMarker(feature);
 	let annotation = this.getAnnotation(feature.id);
     if(annotation) {      
 	    this.question.deleteAnnotation(annotation);
