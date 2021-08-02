@@ -1076,6 +1076,14 @@
 		padding: 0 2rem;
 		transition: all 0.2s ease;
 		cursor: default;
+		.activeLang {
+			font-weight: 700;
+			&:after {
+				font: normal normal normal 14px/1 FontAwesome;
+				content: "\f00c";
+				margin-left: .7rem;
+			}
+		}
 		&:hover {
 			background: #235396;
 			text-decoration: none;
