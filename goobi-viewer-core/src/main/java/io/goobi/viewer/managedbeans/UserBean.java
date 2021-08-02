@@ -129,10 +129,10 @@ public class UserBean implements Serializable {
         // the emptiness inside
         this.authenticationProvider = getLocalAuthenticationProvider();
     }
-    
+
     @PostConstruct
     public void init() {
-        createFeedback();        
+        createFeedback();
     }
 
     /**
@@ -798,7 +798,7 @@ public class UserBean implements Serializable {
             feedback.setSenderAddress(user.getEmail());
             feedback.setName(user.getDisplayName());
         }
-        
+
         String url = Optional.ofNullable(FacesContext.getCurrentInstance())
                 .map(FacesContext::getExternalContext)
                 .map(ExternalContext::getRequestHeaderMap)
@@ -846,12 +846,12 @@ public class UserBean implements Serializable {
             Messages.error("errFeedbackRecipientRequired");
             return "";
         }
-        
+
         //set current url to feedback
-        if(setCurrentUrl && navigationHelper != null) {
+        if (setCurrentUrl && navigationHelper != null) {
             feedback.setUrl(navigationHelper.getCurrentPrettyUrl());
         }
-        
+
         try {
             if (NetTools.postMail(Collections.singletonList(feedback.getRecipientAddress()),
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
