@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
+import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.BookmarkBean;
 import io.goobi.viewer.managedbeans.BrowseBean;
 import io.goobi.viewer.managedbeans.CalendarBean;
@@ -300,6 +301,18 @@ public class BeanUtils {
             }
         }
         return navigationHelper;
+    }
+    
+
+    /**
+     * <p>
+     * getAdminBean.
+     * </p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.AdminBean} object.
+     */
+    public static AdminBean getAdminBean() {
+        return (AdminBean) getBeanByName("adminBean", AdminBean.class);
     }
 
     /**

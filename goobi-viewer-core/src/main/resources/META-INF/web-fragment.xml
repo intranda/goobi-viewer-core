@@ -17,6 +17,10 @@
         <param-value>true</param-value>
     </context-param>
     <context-param>
+        <param-name>javax.faces.ENABLE_WEBSOCKET_ENDPOINT</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
         <param-name>com.sun.faces.allowTextChildren</param-name>
         <param-value>true</param-value>
     </context-param>
@@ -32,6 +36,16 @@
          Remove once the widgets are able to use the client's time zone. -->
     <context-param>
         <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <!-- Programmatic setting of the com.ocpsoft.pretty.CONFIG_FILES value no longer seems to work with current Rewrite versions -->
+    <context-param>
+        <param-name>com.ocpsoft.pretty.CONFIG_FILES</param-name>
+        <param-value>resources/themes/theme-url-mappings.xml, pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml</param-value>
+    </context-param>
+    <!-- OmniFaces Websocket -->
+    <context-param>
+        <param-name>org.omnifaces.SOCKET_ENDPOINT_ENABLED</param-name>
         <param-value>true</param-value>
     </context-param>
 

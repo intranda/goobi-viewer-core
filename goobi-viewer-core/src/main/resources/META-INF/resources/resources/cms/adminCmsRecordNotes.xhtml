@@ -72,6 +72,11 @@
                                            		<img alt="#{note.recordPi}" title="#{note.recordPi}"
                                            			src="#{cmsRecordNotesBean.getThumbnailUrl(note, 160, 160)}" />
                                        		</ui:fragment>
+                                       		<ui:fragment rendered="#{note.isMultiRecordNote()}">
+                                       			<div class="admin__record-notes-solr-query-img">
+                                           			<i class="fa fa-tasks"></i>
+                                           		</div>
+                                       		</ui:fragment>
                                            </div>
 
                                         <div class="admin__table-data">
