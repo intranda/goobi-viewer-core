@@ -128,10 +128,10 @@ public class UserBean implements Serializable {
         // the emptiness inside
         this.authenticationProvider = getLocalAuthenticationProvider();
     }
-    
+
     @PostConstruct
     public void init() {
-        createFeedback();        
+        createFeedback();
     }
 
     /**
@@ -797,12 +797,14 @@ public class UserBean implements Serializable {
             feedback.setSenderAddress(user.getEmail());
             feedback.setName(user.getDisplayName());
         }
-        
-        String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
-        if (StringUtils.isEmpty(url)) {
-            url = navigationHelper.getCurrentPrettyUrl();
+
+        if (FacesContext.getCurrentInstance() != null) {
+            String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
+            if (StringUtils.isEmpty(url)) {
+                url = navigationHelper.getCurrentPrettyUrl();
+            }
+            feedback.setUrl(url);
         }
-        feedback.setUrl(url);
     }
 
     /**
@@ -841,12 +843,12 @@ public class UserBean implements Serializable {
             Messages.error("errFeedbackRecipientRequired");
             return "";
         }
-        
+
         //set current url to feedback
-        if(setCurrentUrl && navigationHelper != null) {
+        if (setCurrentUrl && navigationHelper != null) {
             feedback.setUrl(navigationHelper.getCurrentPrettyUrl());
         }
-        
+
         try {
             if (NetTools.postMail(Collections.singletonList(feedback.getRecipientAddress()),
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
