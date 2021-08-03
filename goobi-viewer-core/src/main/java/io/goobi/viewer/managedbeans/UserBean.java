@@ -64,6 +64,7 @@ import io.goobi.viewer.filters.LoginFilter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
@@ -798,6 +799,7 @@ public class UserBean implements Serializable {
             feedback.setSenderAddress(user.getEmail());
             feedback.setName(user.getDisplayName());
         }
+        feedback.setRecipientAddress(DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress());
 
         String url = Optional.ofNullable(FacesContext.getCurrentInstance())
                 .map(FacesContext::getExternalContext)
@@ -864,16 +866,16 @@ public class UserBean implements Serializable {
             } else {
                 logger.error("{} could not send feedback.", feedback.getSenderAddress());
                 Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                        .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
+                        .replace("{0}", feedback.getRecipientAddress()));
             }
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage(), e);
             Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                    .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
+                    .replace("{0}", feedback.getRecipientAddress()));
         } catch (MessagingException e) {
             logger.error(e.getMessage(), e);
             Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                    .replace("{0}", DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()));
+                    .replace("{0}", feedback.getRecipientAddress()));
         }
         //eventually always create a new feedback object to erase prior inputs
         createFeedback();
