@@ -282,11 +282,17 @@
 															<b>#{termsOfUseBean.getTitleForDisplay()}</b>
 														</div>
 														<div class="col-12 mb-1 pr-0">
-															<textarea class="user-login-modal__terms-text mb-3"
-																readonly="true">
-																<h:outputText value="#{termsOfUseBean.getDescriptionForDisplay()}"
-																	escape="false" />
-															</textarea>
+														
+														<!-- FAKE TEXTBOX SO HTML CAN BE USED -->
+														
+														<div class="user-login-modal__terms-text">
+															<h:outputText value="#{termsOfUseBean.getDescriptionForDisplay()}" escape="false" />
+														</div>
+														
+																
+<!-- 															<textarea class="user-login-modal__terms-text mb-3" -->
+<!-- 																readonly="true"> -->
+<!-- 															</textarea> -->
 														</div>
 														<div id="createAccountAcceptTerms" class="col-12 d-flex align-items-center admin__form-input user-login-modal__terms-accept">
 															<label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
