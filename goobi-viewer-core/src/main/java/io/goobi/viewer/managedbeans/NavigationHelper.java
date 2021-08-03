@@ -907,10 +907,17 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getCurrentPrettyUrl() {
-        FacesContext context = FacesContext.getCurrentInstance();
-        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-        URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-        return ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + url.toURL();
+        Optional<HttpServletRequest> request = Optional.ofNullable(FacesContext.getCurrentInstance())
+        .map(context -> context.getExternalContext())
+        .map(ExternalContext::getRequest)
+        .map(o -> (HttpServletRequest)o);
+        
+        Optional<URL> requestUrl = request
+        .map(r -> PrettyContext.getCurrentInstance(r))
+        .map(PrettyContext::getRequestURL);
+        
+        return request.map(r -> ServletUtils.getServletPathWithHostAsUrlFromRequest(r)).orElse("")
+                + requestUrl.map(URL::toURL).orElse("");
     }
 
     /**
