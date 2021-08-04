@@ -46,6 +46,8 @@ var viewerJS = (function () {
 
     var viewer = {};
     viewer.initialized = new rxjs.Subject();
+    
+    
 
     viewer.init = function (config) {
         if (_debug) {
@@ -482,14 +484,23 @@ var viewerJS = (function () {
 			let hashName = hash.replace(/=.*/, "");
 			switch(hashName) {
 				case "#feedback":
+					
 					$('#feedbackModal').modal();
 					$('#feedbackModal').on('hidden.bs.modal', function (e) {
 						history.replaceState({}, '', window.location.href.replace("#feedback", ""));
 					})
 					break;
 				case "#?page":
-					let url = location.href.replace("#?page", "&page");
-					location.replace(url);
+					// SHOW LOADER BEFORE REDIRECT
+					$("[data-loader='fullOverlay']").show();
+					$("html").addClass('modal-open');
+					// SHOW THE LOADER FOR SOME TIME TO AVOID UNWANTED FLASHING OF HALF TRANSPARENT BACKDROP
+					// THEN REDIRECT
+					setTimeout(function(){
+						let url = location.href.replace("#?page", "&page");
+						location.replace(url);
+					}, 1400);
+
 			}
 		}
 	}
@@ -542,6 +553,10 @@ var viewerJS = (function () {
     
 })(jQuery);
   
+	// loading screen while page redirect
+
+	
+
 	// overriding enforceFocus for bootstrao modals in general - important: This might be a problem for accessibility
 	// $.fn.modal.Constructor.prototype._enforceFocus = function() {};
 

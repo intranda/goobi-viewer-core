@@ -76,6 +76,15 @@ var viewerJS = ( function( viewer ) {
                 console.log( 'viewer.helper.getRemoteData: url = ', url );
             }
             
+            //alternative using fetch
+            /*var promise = fetch(decodeURI(url),  {
+            	headers: {
+				  'Content-Type': 'application/json'
+				},
+            })
+            .then(resp => resp.json());*/
+            
+            
             var promise = Q( $.ajax( {
                 url: decodeURI( url ),
                 type: "GET",
