@@ -43,8 +43,8 @@
     </ui:define>
 
     <ui:define name="sidebar">
-        <!-- OPTIONAL DRILLDOWN HEADING -->
-        <div class="search-list__drilldown-heading">
+        <!-- OPTIONAL FACETS HEADING -->
+        <div class="search-list__facets-heading">
             <h3>#{msg.searchListOptionalHeading}</h3>
         </div>
         
@@ -52,7 +52,7 @@
         
         <widgetComponent:widget_geoFacetting />
         
-        <widgetComponent:widget_searchDrillDown />
+        <widgetComponent:widget_searchFacets />
 
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">

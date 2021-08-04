@@ -15,21 +15,19 @@
     </composite:interface>
 
     <composite:implementation>
-        <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null}">
-            <h:panelGroup
-                rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() != null}">
-                <div id="searchListDrillDownWrapper" class="widget-search-drilldown #{cc.attrs.widget.cssClass}">
+        <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetFieldDrillDown' or cc.attrs.widget.type == null}">
+                <div id="searchListDrillDownWrapper" class="widget-search-facets #{cc.attrs.widget.cssClass}">
                     <h:form id="searchListDrillDownForm" prependId="false">
-                        <!-- FACETS -->
-                        <c:forEach var="field" items="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}" varStatus="status">
-                            <h:panelGroup id="collectionDrillDownPanelGroup_#{status.index}"
-                                rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and field.key != 'YEAR' and field.key != 'WKT_COORDS' and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getCurrentFacetsForField(field.key)) > 0)}">
+                        <!-- DRILL DOWN -->
+                        <ui:param name="field" value="#{cc.attrs.widget.searchField}"></ui:param>
+                            <h:panelGroup id="collectionDrillDownPanelGroup"
+                                rendered="#{!searchBean.facets.isHasWrongLanguageCode(field, navigationHelper.localeString) and field != 'YEAR' and (searchBean.facets.isFacetListSizeSufficient(field) or fn:length(searchBean.facets.getCurrentFacetsForField(field)) > 0)}">
                                 <div class="widget widget-search-drilldown__collection">
-                                    <h3><span>#{msg[field.key.concat('_DD')]}</span></h3>
+                                    <h3><span>#{msg[field.concat('_DD')]}</span></h3>
                                     
                                     <!-- FILTER FACETS -->
                                     <div class="widget-search-drilldown__filter">
-                                        <input type="text" id="collectionDrillDownFilter_#{status.index}" tabindex="-1" class="widget-search-drilldown__filter-input -no-outline" placeholder="#{msg.placeholder__filter_search_results}" aria-label="#{msg.placeholder__filter_search_results}"/>
+                                        <input type="text" id="collectionDrillDownFilter" tabindex="-1" class="widget-search-drilldown__filter-input -no-outline" placeholder="#{msg.placeholder__filter_search_results}" aria-label="#{msg.placeholder__filter_search_results}"/>
                                         <button type="button" class="btn btn--clean" data-toggle="filter-input" aria-label="#{msg.placeholder__filter_search_results}">
                                         	<i class="fa fa-search" aria-hidden="true"></i>
                                         </button>
@@ -37,7 +35,7 @@
                                         
                                     <ul>
                                         <!-- ACTIVE FACETS -->
-                                        <ui:repeat value="#{searchBean.facets.getCurrentFacetsForField(field.key)}" var="facet">
+                                        <ui:repeat value="#{searchBean.facets.getCurrentFacetsForField(field)}" var="facet">
                                             <li class="active">
                                                 <h:commandLink action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
                                                     <div class="row">
@@ -48,18 +46,18 @@
                                                     </div>
                                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                     <f:passThroughAttribute name="data-placement" value="top" />
-                                                    <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{msg[facet.label]}" />
+                                                    <f:passThroughAttribute name="aria-label" value="#{msg[field.concat('_DD')]}: #{msg[facet.label]}" />
                                                 </h:commandLink>
                                             </li>
                                         </ui:repeat>
                                         
                                         <!-- AVAILABLE FACETS -->
-                                        <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
+                                        <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field)}" var="facet">
                                             <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
                                                 <li>
                                                     <h:outputLink value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
                                                         #{msg[facet.label]} (#{facet.count})
-                                                        <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{msg[facet.label]}" />
+                                                        <f:passThroughAttribute name="aria-label" value="#{msg[field.concat('_DD')]}: #{msg[facet.label]}" />
                                                     </h:outputLink>
                                                 </li>
                                             </ui:fragment>
@@ -67,32 +65,30 @@
                                     </ul>
 
                                     <!-- EXPAND/COLLAPSE FACET -->
-                                    <ui:fragment rendered="#{searchBean.facets.isDisplayFacetExpandLink(field.key)}">
+                                    <ui:fragment rendered="#{searchBean.facets.isDisplayFacetExpandLink(field)}">
                                         <div class="widget-search-drilldown__collapse">
                                             <h:commandLink
-                                                action="#{searchBean.facets.expandFacet(field.key)}" title="#{msg.slideDown}">
+                                                action="#{searchBean.facets.expandFacet(field)}" title="#{msg.slideDown}">
                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i>
-                                                <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
-                                                <f:ajax render="collectionDrillDownPanelGroup_#{status.index}" />
+                                                <f:passThroughAttribute name="data-collapse-link" value="collapse-link" />
+                                                <f:ajax render="collectionDrillDownPanelGroup" />
                                             </h:commandLink>
                                         </div>
                                     </ui:fragment>
-                                    <ui:fragment rendered="#{searchBean.facets.isDisplayFacetCollapseLink(field.key)}">
+                                    <ui:fragment rendered="#{searchBean.facets.isDisplayFacetCollapseLink(field)}">
                                         <div class="widget-search-drilldown__collapse">
                                             <h:commandLink
-                                                action="#{searchBean.facets.collapseFacet(field.key)}" title="#{msg.slideUp}">
+                                                action="#{searchBean.facets.collapseFacet(field)}" title="#{msg.slideUp}">
                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
-                                                <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
-                                                <f:ajax render="collectionDrillDownPanelGroup_#{status.index}" />
+                                                <f:passThroughAttribute name="data-collapse-link" value="collapse-link" />
+                                                <f:ajax render="collectionDrillDownPanelGroup" />
                                             </h:commandLink>
                                         </div>
                                     </ui:fragment> 
                                 </div>
                             </h:panelGroup>
-                        </c:forEach>
                     </h:form>
                 </div>
-            </h:panelGroup>
 
             <h:panelGroup
                 rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() == null}">

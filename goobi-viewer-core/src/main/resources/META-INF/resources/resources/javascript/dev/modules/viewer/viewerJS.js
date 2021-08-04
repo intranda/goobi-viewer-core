@@ -182,7 +182,7 @@ var viewerJS = (function () {
             $(href).collapse('show');
         });
 
-        // init search drilldown filter
+        // init search facets filter
         if (_defaults.activateDrilldownFilter) {
             this.initDrillDownFilters();
             this.jsfAjax.success.subscribe(e => {
@@ -413,12 +413,12 @@ var viewerJS = (function () {
     }
 
     viewer.initDrillDownFilters = function () {
-        var $drilldowns = $('.widget-search-drilldown__collection');
+        var $facets = $('.widget-search-facets__collection');
 
-        $drilldowns.each(function () {
+        $facets.each(function () {
             var filterConfig = {
-                wrapper: $(this).find('.widget-search-drilldown__filter'),
-                input: $(this).find('.widget-search-drilldown__filter-input'),
+                wrapper: $(this).find('.widget-search-facets__filter'),
+                input: $(this).find('.widget-search-facets__filter-input'),
                 elements: $(this).find('li a')
             }
 
