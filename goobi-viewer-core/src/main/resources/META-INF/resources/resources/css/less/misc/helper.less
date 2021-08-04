@@ -2,6 +2,36 @@
    CSS Helper Classes
    ==============================================================*/
 
+
+
+[data-loader="fullOverlay"] {
+	display: none;
+}
+
+.ajax-loader__overlay-wrapper {
+	z-index: 50000;
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	
+}
+.ajax-loader__overlay {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.ajax-loader__animated-image {
+	z-index: 5001;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 180px;
+}
+
 .-feedback-form-link {
 	cursor: pointer;
 }
