@@ -89,7 +89,7 @@
 					</nav>
 					
 					<!-- METADATA -->
-					<ui:fragment rendered="#{view == 'archivetree' and archiveBean.archiveTree.selectedEntry != null}">
+					<ui:fragment rendered="#{view == 'archivetree' and archiveBean.archiveTree.selectedEntry != null and archiveBean.archiveTree.selectedEntry.visible}">
 
 						<div data-metadata-id="id_#{archiveBean.archiveTree.selectedEntry.id}"
 							class="archives-tree__metadata-box">

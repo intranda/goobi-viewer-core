@@ -148,13 +148,6 @@ public class CitationLink {
             sb.append(prefix);
         }
         sb.append(getValue(viewManager));
-        if (suffix != null) {
-            sb.append(suffix);
-            if (appendImageNumberToSuffix) {
-                sb.append(viewManager.getCurrentImageOrder());
-            }
-        }
-
         return sb.toString();
     }
 
@@ -229,6 +222,9 @@ public class CitationLink {
                 doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(field));
                 if (doc != null && doc.get(field) != null) {
                     this.value = String.valueOf(doc.get(field));
+                    if(StringUtils.isNotBlank(this.suffix)) {
+                        this.value = this.value + this.suffix + viewManager.getCurrentImageOrder();
+                    }
                 }
             }
         }
