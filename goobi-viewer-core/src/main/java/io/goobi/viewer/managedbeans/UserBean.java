@@ -441,7 +441,8 @@ public class UserBean implements Serializable {
         } catch (ServletException e) {
             logger.error(e.getMessage(), e);
         }
-        request.getSession(false).invalidate();
+        HttpSession session = request.getSession(false);
+        session.invalidate();
         return redirectUrl;
     }
 
