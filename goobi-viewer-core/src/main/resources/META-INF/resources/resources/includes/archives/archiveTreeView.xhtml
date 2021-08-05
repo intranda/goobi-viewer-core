@@ -11,6 +11,7 @@
 	Also, only if the view is 'archivetree' the metadata of an entry will be rendered within the tree -->
 	<c:set var="view" value="#{view != null ? view : 'archivetree'}" scope="view"></c:set>
 	
+	<!-- Changed render @all to archivesForm to avoid reloads of surrounding layout elements + performance advantage  -->
 	<c:set var="render" value="#{render != null ? render : 'archivesForm'}" scope="request"></c:set>
 	
 	
