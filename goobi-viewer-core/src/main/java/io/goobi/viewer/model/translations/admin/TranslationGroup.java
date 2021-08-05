@@ -15,21 +15,15 @@
  */
 package io.goobi.viewer.model.translations.admin;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +39,8 @@ public class TranslationGroup {
     public enum TranslationGroupType {
         SOLR_FIELD_NAMES,
         SOLR_FIELD_VALUES,
-        CORE_STRINGS;
+        CORE_STRINGS,
+        LOCAL_STRINGS;
 
         /**
          * 
@@ -543,7 +538,7 @@ public class TranslationGroup {
             if (!value.isDirty()) {
                 continue;
             }
-            
+
             ViewerResourceBundle.updateLocalMessageKey(selectedEntry.getKey(), value.getValue(), value.getLanguage());
             value.resetDirtyStatus();
         }
