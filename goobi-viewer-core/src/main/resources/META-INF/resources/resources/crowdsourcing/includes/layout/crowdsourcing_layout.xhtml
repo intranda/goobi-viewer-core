@@ -3,7 +3,8 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" 
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
@@ -39,12 +40,14 @@
                 <!-- PAGE HEADER TOP ACTIONS -->            
                 <div class="crowdsourcing-annotations__top-actions">
                     <!-- CHANGE LOCAL -->
-                    <div id="changeLocalWrapper" class="crowdsourcing-annotations__top-actions-language">
-                    	<button type="button" class="btn btn--clean" data-toggle="local" aria-label="#{msg.aria_label__switch_language}">
-                    		#{msg['changeLocal_' += navigationHelper.localeString]}
-                    	</button>
-                        <viewerComponent:changeLocal toggleLanguage="false" showFlags="false" />
-                    </div>
+                    <ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}">
+	                    <div id="changeLocalWrapper" class="crowdsourcing-annotations__top-actions-language">
+	                    	<button type="button" class="btn btn--clean" data-toggle="local" aria-label="#{msg.aria_label__switch_language}">
+	                    		#{msg['changeLocal_' += navigationHelper.localeString]}
+	                    	</button>
+	                        <viewerComponent:changeLocal toggleLanguage="false" showFlags="false" />
+	                    </div>
+	                </ui:fragment>
                     <!-- LOGIN NAVIGATION -->
                     <div class="crowdsourcing-annotations__top-actions-login">
                         <viewerComponent:loginNavigation />
