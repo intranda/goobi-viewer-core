@@ -51,6 +51,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -58,6 +59,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
@@ -672,7 +674,7 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         HierarchicalConfiguration usingTemplate = null;
-        HierarchicalConfiguration defaultTemplate = null;
+        //        HierarchicalConfiguration defaultTemplate = null;
         for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
             HierarchicalConfiguration subElement = it.next();
             if (subElement.getString("[@name]").equals(template)) {
@@ -791,8 +793,8 @@ public final class Configuration extends AbstractConfiguration {
      * @return Boolean value
      * @should return correct value
      */
-    public boolean isDisplaySidebarWidgetUsageCitation() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.citation[@display]", true);
+    public boolean isDisplaySidebarWidgetUsageCitationRecommendation() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.citationRecommendation[@display]", true);
     }
 
     /**
@@ -800,18 +802,18 @@ public final class Configuration extends AbstractConfiguration {
      * @return List of available citation style names
      * @should return all configured values
      */
-    public List<String> getSidebarWidgetUsageCitationStyles() {
-        return getLocalList("sidebar.sidebarWidgetUsage.citation.styles.style", Collections.emptyList());
+    public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {
+        return getLocalList("sidebar.sidebarWidgetUsage.citationRecommendation.styles.style", Collections.emptyList());
     }
 
     /**
      * 
      * @return
      */
-    public Metadata getSidebarWidgetUsageCitationSource() {
+    public Metadata getSidebarWidgetUsageCitationRecommendationSource() {
         HierarchicalConfiguration sub = null;
         try {
-            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citation.source.metadata");
+            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citationRecommendation.source.metadata");
         } catch (IllegalArgumentException e) {
             // no or multiple occurrences 
         }
@@ -821,6 +823,78 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return new Metadata();
+    }
+
+    /**
+     * 
+     * @return Boolean value
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarWidgetUsageCitationLinks() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.citationLinks[@display]", true);
+    }
+
+    /**
+     * 
+     * @return String
+     * @should return correct value
+     */
+    public String getSidebarWidgetUsageCitationLinksRecordIntroText() {
+        return getLocalString("sidebar.sidebarWidgetUsage.citationLinks[@recordIntroText]", "");
+    }
+
+    /**
+     * 
+     * @return String
+     * @should return correct value
+     */
+    public String getSidebarWidgetUsageCitationLinksDocstructIntroText() {
+        return getLocalString("sidebar.sidebarWidgetUsage.citationLinks[@docstructIntroText]", "");
+    }
+
+    /**
+     * 
+     * @return String
+     * @should return correct value
+     */
+    public String getSidebarWidgetUsageCitationLinksImageIntroText() {
+        return getLocalString("sidebar.sidebarWidgetUsage.citationLinks[@imageIntroText]", "");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return all configured values
+     */
+    public List<CitationLink> getSidebarWidgetUsageCitationLinks() {
+        List<HierarchicalConfiguration> links = getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.citationLinks.links.link");
+        if (links == null || links.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<CitationLink> ret = new ArrayList<>();
+        for (Iterator<HierarchicalConfiguration> it = links.iterator(); it.hasNext();) {
+            HierarchicalConfiguration sub = it.next();
+            String type = sub.getString("[@type]");
+            String level = sub.getString("[@for]");
+            String label = sub.getString("[@label]");
+            String field = sub.getString("[@field]");
+            String prefix = sub.getString("[@prefix]");
+            String suffix = sub.getString("[@suffix]");
+            boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
+            boolean appendImageNumberToSuffix = sub.getBoolean("[@appendImageNumberToSuffix]", false);
+            try {
+                ret.add(new CitationLink(type, level, label).setField(field)
+                        .setPrefix(prefix)
+                        .setSuffix(suffix)
+                        .setTopstructValueFallback(topstructValueFallback)
+                        .setAppendImageNumberToSuffix(appendImageNumberToSuffix));
+            } catch (IllegalArgumentException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -852,6 +926,10 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return ret;
+    }
+    
+    public boolean isDisplayWidgetUsageDownloadOptions()  {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.downloadOptions[@display]", true);
     }
 
     /**
@@ -1046,10 +1124,10 @@ public final class Configuration extends AbstractConfiguration {
      *
      * @param field a {@link java.lang.String} object.
      * @param name a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      * @should return correct field for collection
      * @should give priority to exact matches
      * @should return hyphen if collection not found
-     * @return a {@link java.lang.String} object.
      */
     public String getCollectionDefaultSortField(String field, String name) {
         HierarchicalConfiguration collection = getCollectionConfiguration(field);
@@ -2522,14 +2600,22 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the names of all configured drill-down fields in the order they appear in the list, no matter whether they're regular or hierarchical.
+     * Returns the names of all configured facet fields in the order they appear in the list, no matter whether they're regular or hierarchical.
      *
      * @return List of regular and hierarchical fields in the order in which they appear in the config file
      * @should return correct order
      */
-    public List<String> getAllDrillDownFields() {
-        HierarchicalConfiguration drillDown = getLocalConfigurationAt("search.drillDown");
-        List<ConfigurationNode> nodes = drillDown.getRootNode().getChildren();
+    public List<String> getAllFacetFields() {
+        HierarchicalConfiguration facets = getLocalConfigurationAt("search.facets");
+        if (facets == null) {
+            getLocalConfigurationAt("search.drillDown");
+            logger.warn("Old configuration found: search.drillDown; please update to search.facets");
+        }
+        if (facets == null) {
+            logger.warn("Config element not found: search.facets");
+            return Collections.emptyList();
+        }
+        List<ConfigurationNode> nodes = facets.getRootNode().getChildren();
         if (!nodes.isEmpty()) {
             List<String> ret = new ArrayList<>(nodes.size());
             for (ConfigurationNode node : nodes) {
@@ -2550,35 +2636,43 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getDrillDownFields.
+     * Returns a list containing all simple facet fields.
      * </p>
      *
      * @should return all values
      * @return a {@link java.util.List} object.
      */
-    public List<String> getDrillDownFields() {
-        return getLocalList("search.drillDown.field");
+    public List<String> getFacetFields() {
+        return getLocalList("search.facets.field");
     }
 
     /**
      * <p>
-     * getHierarchicalDrillDownFields.
+     * getHierarchicalFacetFields.
      * </p>
      *
      * @should return all values
      * @return a {@link java.util.List} object.
      */
-    public List<String> getHierarchicalDrillDownFields() {
-        return getLocalList("search.drillDown.hierarchicalField");
-    }
-
-    public String getGeoDrillDownField() {
-        return getLocalString("search.drillDown.geoField");
+    public List<String> getHierarchicalFacetFields() {
+        return getLocalList("search.facets.hierarchicalField");
     }
 
     /**
      * <p>
-     * getInitialDrillDownElementNumber.
+     * getGeoFacetFields.
+     * </p>
+     * 
+     * @should return all values
+     * @return a {@link java.util.List} object.
+     */
+    public String getGeoFacetFields() {
+        return getLocalString("search.facets.geoField");
+    }
+
+    /**
+     * <p>
+     * getInitialFacetElementNumber.
      * </p>
      *
      * @should return correct value
@@ -2586,16 +2680,16 @@ public final class Configuration extends AbstractConfiguration {
      * @param field a {@link java.lang.String} object.
      * @return a int.
      */
-    public int getInitialDrillDownElementNumber(String field) {
+    public int getInitialFacetElementNumber(String field) {
         if (StringUtils.isBlank(field)) {
-            return getLocalInt("search.drillDown.initialElementNumber", 3);
+            return getLocalInt("search.facets.initialElementNumber", 3);
         }
 
         String facetifiedField = SearchHelper.facetifyField(field);
         // Regular fields
-        List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        List<HierarchicalConfiguration> facetFields = getLocalConfigurationsAt("search.facets.field");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
                         || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2607,9 +2701,9 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
         // Hierarchical fields
-        drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
                         || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2621,7 +2715,6 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        // return getLocalInt("search.drillDown.initialElementNumber", 3);
         return -1;
     }
 
@@ -2641,9 +2734,9 @@ public final class Configuration extends AbstractConfiguration {
         String facetifiedField = SearchHelper.facetifyField(field);
 
         // Regular fields
-        List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        List<HierarchicalConfiguration> facetFields = getLocalConfigurationsAt("search.facets.field");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
                         || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2658,9 +2751,9 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
         // Hierarchical Field
-        drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
                         || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2679,14 +2772,14 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns a list of values to prioritize for the given drill-down field.
+     * Returns a list of values to prioritize for the given facet field.
      *
      * @param field a {@link java.lang.String} object.
      * @return List of priority values; empty list if none found for the given field
      * @should return return all configured elements for regular fields
      * @should return return all configured elements for hierarchical fields
      */
-    public List<String> getPriorityValuesForDrillDownField(String field) {
+    public List<String> getPriorityValuesForFacetField(String field) {
         if (StringUtils.isBlank(field)) {
             return Collections.emptyList();
         }
@@ -2694,9 +2787,9 @@ public final class Configuration extends AbstractConfiguration {
         String facetifiedField = SearchHelper.facetifyField(field);
 
         // Regular fields
-        List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        List<HierarchicalConfiguration> facetFields = getLocalConfigurationsAt("search.facets.field");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
                         || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2713,9 +2806,9 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         // Hierarchical Field
-        drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
                         || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2741,16 +2834,16 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @should return null if no value found
      */
-    public String getLabelFieldForDrillDownField(String facetField) {
+    public String getLabelFieldForFacetField(String facetField) {
         if (StringUtils.isBlank(facetField)) {
             return null;
         }
 
         String facetifiedField = SearchHelper.facetifyField(facetField);
         // Regular fields
-        List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        List<HierarchicalConfiguration> facetFields = getLocalConfigurationsAt("search.facets.field");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(facetField)
                         || fieldConfig.getRootNode().getValue().equals(facetField + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -2762,9 +2855,9 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
         // Hierarchical fields
-        drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
-        if (drillDownFields != null && !drillDownFields.isEmpty()) {
-            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+        facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
+        if (facetFields != null && !facetFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : facetFields) {
                 if (fieldConfig.getRootNode().getValue().equals(facetField)
                         || fieldConfig.getRootNode().getValue().equals(facetField + SolrConstants._UNTOKENIZED)
                         || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
@@ -3529,14 +3622,22 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @return true if enabled or not configured; false otherwise
+     * @should return correct value
+     */
+    public boolean isWatermarkTextConfigurationEnabled() {
+        return getLocalBoolean("viewer.watermarkTextConfiguration[@enabled]", true);
+    }
+
+    /**
      * Returns the preference order of data to be used as an image footer text.
      *
      * @should return all configured elements in the correct order
      * @return a {@link java.util.List} object.
      */
     public List<String> getWatermarkTextConfiguration() {
-        List<String> list = getLocalList("viewer.watermarkTextConfiguration.text");
-        return list;
+        return getLocalList("viewer.watermarkTextConfiguration.text");
     }
 
     /**
@@ -3618,14 +3719,39 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getFeedbackEmailAddress.
+     * getFeedbackEmailAddresses.
      * </p>
      *
-     * @should return correct value
+     * @should return correct values
      * @return a {@link java.lang.String} object.
      */
-    public String getFeedbackEmailAddress() {
-        return getLocalString("user.feedbackEmailAddress");
+    public List<EmailRecipient> getFeedbackEmailRecipients() {
+        List<EmailRecipient> ret = new ArrayList<>();
+        List<HierarchicalConfiguration> licenseNodes = getLocalConfigurationsAt("user.feedbackEmailAddressList.address");
+        for (HierarchicalConfiguration node : licenseNodes) {
+            String address = node.getString(".", "");
+            if (StringUtils.isNotBlank(address)) {
+                String label = node.getString("[@label]", address);
+                boolean defaultRecipient = node.getBoolean("[@default]", false);
+                ret.add(new EmailRecipient(label, address, defaultRecipient));
+            }
+        }
+
+        return ret;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public String getDefaultFeedbackEmailAddress() {
+        for(EmailRecipient recipient : getFeedbackEmailRecipients()) {
+            if(recipient.isDefaultRecipient()) {
+                return recipient.getEmailAddress();
+            }
+        }
+        
+        return "<NOT CONFIGURED>";
     }
 
     /**
@@ -3702,38 +3828,38 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isUserCommentsEnabled.
+     * isCommentsEnabled.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isUserCommentsEnabled() {
-        return getLocalBoolean(("userComments.enabled"), false);
+    public boolean isCommentsEnabled() {
+        return getLocalBoolean(("comments[@enabled]"), false);
     }
 
     /**
      * <p>
-     * getUserCommentsConditionalQuery.
+     * getCommentsCondition.
      * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
      */
-    public String getUserCommentsConditionalQuery() {
-        return getLocalString("userComments.conditionalQuery");
+    public String getCommentsCondition() {
+        return getLocalString("comments.condition");
     }
 
     /**
      * <p>
-     * getUserCommentsNotificationEmailAddresses.
+     * getCommentsNotificationEmailAddresses.
      * </p>
      *
      * @should return all configured elements
      * @return a {@link java.util.List} object.
      */
-    public List<String> getUserCommentsNotificationEmailAddresses() {
-        return getLocalList("userComments.notificationEmailAddress");
+    public List<String> getCommentsNotificationEmailAddresses() {
+        return getLocalList("comments.notificationEmailAddress");
     }
 
     /**
@@ -3884,7 +4010,7 @@ public final class Configuration extends AbstractConfiguration {
         for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
             HierarchicalConfiguration subElement = it.next();
             String templateName = subElement.getString("[@name]");
-            String groupBy = subElement.getString("[@groupBy]");
+            //            String groupBy = subElement.getString("[@groupBy]");
             if (templateName != null) {
                 if (templateName.equals(template)) {
                     usingTemplate = subElement;

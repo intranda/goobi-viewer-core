@@ -1670,7 +1670,7 @@ this.moveFeature = function(feature) {
 }.bind(this)
 
 this.removeFeature = function(feature) {
-    this.geoMap.removeMarker(feature);
+    this.geoMap.layers[0].removeMarker(feature);
 	let annotation = this.getAnnotation(feature.id);
     if(annotation) {
 	    this.question.deleteAnnotation(annotation);

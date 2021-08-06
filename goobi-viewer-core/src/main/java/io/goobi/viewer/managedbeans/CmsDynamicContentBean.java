@@ -17,12 +17,13 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 
-import javax.enterprise.context.SessionScoped;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.jboss.weld.exceptions.IllegalStateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.jsf.DynamicContent;
@@ -37,6 +38,8 @@ import io.goobi.viewer.model.jsf.DynamicContentType;
 @ViewScoped
 public class CmsDynamicContentBean implements Serializable{
 
+    private static final Logger logger = LoggerFactory.getLogger(CmsDynamicContentBean.class);
+    
     private static final long serialVersionUID = 644204008911471246L;
     private HtmlPanelGroup topBarGroup = null;
     private CMSPage cmsPage = null;
@@ -47,7 +50,11 @@ public class CmsDynamicContentBean implements Serializable{
     
     public HtmlPanelGroup getTopBarContent() {
         if (topBarGroup == null) {
-            loadTopBarContent();
+            try {                
+                loadTopBarContent();
+            } catch(IllegalStateException e) {
+                logger.error("Error initializing topbar content: " + e.toString());
+            }
         }
         return topBarGroup;
     }
@@ -59,9 +66,6 @@ public class CmsDynamicContentBean implements Serializable{
         this.topBarGroup = topBarGroup;
     }
 
-    /**
-     * 
-     */
     private void loadTopBarContent() {
         
         this.topBarGroup = new HtmlPanelGroup();

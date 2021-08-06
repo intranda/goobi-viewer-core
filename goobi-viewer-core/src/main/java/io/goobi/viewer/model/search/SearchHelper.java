@@ -2186,7 +2186,7 @@ public final class SearchHelper {
                 if (item.getField() == null) {
                     continue;
                 }
-                logger.trace("item field: " + item.getField());
+                logger.trace("item field: {}", item.getField());
                 // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't
                 // return every single doc
                 switch (item.getField()) {
@@ -2554,8 +2554,8 @@ public final class SearchHelper {
      * @return a {@link java.util.List} object.
      */
     public static List<String> getAllFacetFields(List<String> hierarchicalFacetFields) {
-        List<String> facetFields = DataManager.getInstance().getConfiguration().getDrillDownFields();
-        Optional<String> geoFacetField = Optional.ofNullable(DataManager.getInstance().getConfiguration().getGeoDrillDownField());
+        List<String> facetFields = DataManager.getInstance().getConfiguration().getFacetFields();
+        Optional<String> geoFacetField = Optional.ofNullable(DataManager.getInstance().getConfiguration().getGeoFacetFields());
         List<String> allFacetFields = new ArrayList<>(hierarchicalFacetFields.size() + facetFields.size() + (geoFacetField.isPresent() ? 1 : 0));
         allFacetFields.addAll(hierarchicalFacetFields);
         allFacetFields.addAll(facetFields);

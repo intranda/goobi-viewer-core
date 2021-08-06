@@ -2,14 +2,9 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('feedback', false, true)}" />
-			<f:viewAction action="#{userBean.createFeedback}" />
-		</f:metadata>
-	</ui:define>
 
 	<composite:interface />
     <composite:implementation>
@@ -37,15 +32,33 @@
 							prependId="false">
 							<div id="feedback" class="feedback-modal">
 
+								<!-- RECIPIENT -->    
+								<ui:fragment rendered="#{configurationBean.feedbackEmailRecipients.size() gt 1}">
+				                <div class="form-group form-row">
+				                    <label id="labelFeedbackRecipient" for="feedbackRecipient" class="col-lg-3 control-label">#{msg.recipient}:</label>
+				                    <div class="col-12 col-lg-9">
+									   <h:selectOneMenu styleClass="custom-control custom-control--select feedback-modal__recipient-dropdown" id="feedbackRecipient" value="#{userBean.feedback.recipientAddress}" immediate="true">
+									       <f:selectItems var="recipient" value="#{configurationBean.feedbackEmailRecipients}"
+									           itemLabel="#{recipient.label}" itemValue="#{recipient.emailAddress}">
+									       </f:selectItems>
+									   </h:selectOneMenu>
+				                    </div>
+				                </div>
+				                </ui:fragment>
+
 								<!-- NAME -->
 								<div class="form-group form-row">
 									<label id="labelFeedbackName" for="feedbackName"
-										class="col-lg-3 control-label">#{msg.name}:</label>
+										class="col-lg-3 control-label">
+										<span class="feedback-modal__label-span">#{msg.name}:</span>
+										<span class="feedback-modal__label-required-field">(#{msg.form__required_field})</span>
+									</label>
+									
 									<div class="col-12 col-lg-9">
 										<h:inputText id="feedbackName" styleClass="form-control"
 											value="#{userBean.feedback.name}" required="true"
 											requiredMessage="#{msg.errFeedbackNameRequired}"
-											aria-labelledby="labelFeedbackName">
+											aria-labelledby="labelFeedbackName" pt:data-require-input-text="feedbackInput">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="labelFeedbackName" />
 										</h:inputText>
@@ -68,7 +81,10 @@
 								<h:panelGroup rendered="#{!userBean.loggedIn}" layout="block"
 									styleClass="form-group form-row" id="emailGroup">
 									<label id="labelFeedbackEmail" for="feedbackEmail"
-										class="col-lg-3 control-label">#{msg.email}:</label>
+										class="col-lg-3 control-label">
+										<span class="feedback-modal__label-span">#{msg.email}:</span>
+										<span class="feedback-modal__label-required-field">(#{msg.form__required_field})</span>
+									</label>
 									<div class="cms-module__option-control col-12 col-lg-9">
 										<div class="cms-module__option-message">
 											<h:messages for="feedbackEmail"
@@ -82,8 +98,8 @@
 											</div>
 										</div>
 										<h:inputText id="feedbackEmail" label="feedbackEmail"
-											immediate="true" required="true"
-											value="#{userBean.feedback.email}" styleClass="form-control">
+											immediate="true" required="true" pt:data-require-input-text="feedbackInput"
+											value="#{userBean.feedback.senderAddress}" styleClass="form-control">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="labelFeedbackEmail" />
 											<f:validator validatorId="emailValidator" for="feedbackEmail" />
@@ -110,8 +126,8 @@
 											</div>
 										</div>
 										<h:inputText id="feedbackEmail2" label="feedbackEmail2"
-											immediate="true" required="true" disabled="true"
-											value="#{userBean.feedback.email}" styleClass="form-control">
+											immediate="true" required="true" disabled="true" pt:data-require-input-text="feedbackInput"
+											value="#{userBean.feedback.senderAddress}" styleClass="form-control">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="labelFeedbackEmail2" />
 											<f:validator validatorId="emailValidator"
@@ -121,28 +137,19 @@
 									</div>
 								</h:panelGroup>
 
-								<!-- URL -->
-								<div class="form-group form-row hidden">
-									<label id="labelFeedbackURL" for="feedbackURL"
-										class="col-lg-3 control-label">URL:</label>
-									<div class="col-12 col-lg-9">
-										<h:inputText id="feedbackURL" styleClass="form-control"
-											value="#{userBean.feedback.url}" required="true"
-											disabled="true">
-											<f:passThroughAttribute name="aria-labelledby"
-												value="labelFeedbackURL" />
-										</h:inputText>
-									</div>
-								</div>
-
 								<!-- MESSAGE -->
 								<div class="form-group form-row">
 									<label id="labelFeedbackMessage" for="feedbackMessage"
-										class="col-lg-3 control-label">#{msg.message}:</label>
+										class="col-lg-3 control-label">
+										<span class="feedback-modal__label-span">#{msg.message}:</span>
+										<span class="feedback-modal__label-required-field">(#{msg.form__required_field})</span>
+										</label>
+									
 									<div class="col-12 col-lg-9">
 										<h:inputTextarea id="feedbackMessage"
 											styleClass="form-control"
 											value="#{userBean.feedback.message}" required="true"
+											pt:data-require-input-text="feedbackInput"
 											requiredMessage="#{msg.errFeedbackMessageRequired}">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="labelFeedbackMessage" />
@@ -164,7 +171,8 @@
 												warnClass="cms-module__option-message-status warning"
 												errorClass="cms-module__option-message-status danger" />
 											<h:inputSecret id="feedbackSecurityQuestion"
-												styleClass="form-control" autocomplete="off"
+												styleClass="form-control" pt:autocomplete="new-password"
+												pt:data-require-input-text="feedbackInput"
 												value="#{userBean.securityAnswer}" required="true"
 												requiredMessage="#{msg.user__security_question_required_msg}" />
 										</div>
@@ -176,8 +184,8 @@
 							<div class="form-group form-row feedback-modal__action">
 								<div class="col-sm-12 d-flex justify-content-end">
 									<h:commandButton styleClass="btn btn--full"
-										value="#{msg.submit}"
-										action="#{userBean.submitFeedbackAction}" />
+										value="#{msg.submit}" pt:data-require-input="feedbackInput"
+										action="#{userBean.submitFeedbackAction(true)}" />
 								</div>
 							</div>
 

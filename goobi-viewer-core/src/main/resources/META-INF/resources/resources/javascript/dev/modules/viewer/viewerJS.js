@@ -46,6 +46,8 @@ var viewerJS = (function () {
 
     var viewer = {};
     viewer.initialized = new rxjs.Subject();
+    
+    
 
     viewer.init = function (config) {
         if (_debug) {
@@ -88,7 +90,12 @@ var viewerJS = (function () {
 	    
 	    //init toggle hide/show
 	    viewerJS.toggle.init();
+	    
+	    viewerJS.initWidgetUsage();
 
+       viewerJS.initFragmentActions();
+       
+       viewerJS.initRequiredInputs();
        
         // init bookmarks if enabled
         if ( bookmarksEnabled ) { 
@@ -433,11 +440,99 @@ var viewerJS = (function () {
     		
     	});
     }
+
+    // Helper fn: returns true if OS is iOS
+    viewer.iOS = function() {
+      return [
+          'iPad Simulator',
+          'iPhone Simulator',
+          'iPod Simulator',
+          'iPad',
+          'iPhone',
+          'iPod'
+        ].includes(navigator.platform)
+        // iPad on iOS 13 detection
+        || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+    }
     
     viewer.getRestApiUrl = function () {
         return restURL.replace("/rest", "/api/v1");
     }
+    
+    viewer.initWidgetUsage = function() {
+    	let $widgetUsage = $(".widget-usage");
+    	if($widgetUsage.length > 0) {
+    		let $widgetTitles = $widgetUsage.find(".widget-usage__subtitle");
+    		$widgetTitles.each((index,element) => {
+    			let $title = $(element);
+    			let $options = $title.next("div").children();
+    			if($options.length == 0) {
+    				$title.hide();
+    			}
+    		});
+    	}
+    }
 
+	viewer.initFragmentActions = function() {
+		window.onhashchange = () => viewer.handleFragmentAction();
+		viewer.handleFragmentAction();
+	}
+	
+	viewer.handleFragmentAction = function() {
+		let hash = location.hash;
+		if(hash) {
+			let hashName = hash.replace(/=.*/, "");
+			switch(hashName) {
+				case "#feedback":
+					
+					$('#feedbackModal').modal();
+					$('#feedbackModal').on('hidden.bs.modal', function (e) {
+						history.replaceState({}, '', window.location.href.replace("#feedback", ""));
+					})
+					break;
+				case "#?page":
+					// SHOW LOADER BEFORE REDIRECT
+					$("[data-loader='fullOverlay']").show();
+					$("html").addClass('modal-open');
+					// SHOW THE LOADER FOR SOME TIME TO AVOID UNWANTED FLASHING OF HALF TRANSPARENT BACKDROP
+					// THEN REDIRECT
+					setTimeout(function(){
+						let url = location.href.replace("#?page", "&page");
+						location.replace(url);
+					}, 1400);
+
+			}
+		}
+	}
+	
+	viewer.initRequiredInputs = function() {
+	
+		let $requireElements = $("[data-require-input]");
+		
+		$requireElements.each((index, element) => {
+			let $ele = $(element);
+			$ele.attr("disabled", "disabled");
+			let id = $(element).attr("data-require-input");
+			let $texts = $("[data-require-input-text='" + id + "']");
+			$texts.on("change paste keyup cut", (e) => {
+				let filled = true;
+				$texts.each((index, element) => {
+					let text = $(element).val();
+					if(!text) {
+						filled = false;
+						return false;
+					}
+				});
+				if(filled) {
+					$ele.removeAttr("disabled");
+				} else {
+					$ele.attr("disabled", "disabled");
+				}
+							
+			}); 
+		});
+	
+	}
 
     // init bootstrap 4 popovers
 	$(document).ready(function(){
@@ -458,6 +553,13 @@ var viewerJS = (function () {
     
 })(jQuery);
   
+	// loading screen while page redirect
+
+	
+
+	// overriding enforceFocus for bootstrao modals in general - important: This might be a problem for accessibility
+	// $.fn.modal.Constructor.prototype._enforceFocus = function() {};
+
 	//reset global bootstrap boundary of tooltips to window
     if($.fn.tooltip.Constructor) {        
         $.fn.tooltip.Constructor.Default.boundary = "window";

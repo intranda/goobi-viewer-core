@@ -50,12 +50,14 @@ import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSMediaItemMetadata;
+import io.goobi.viewer.model.cms.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
+import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSSlider.SourceType;
 import io.goobi.viewer.model.cms.CMSStaticPage;
@@ -2882,7 +2884,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testGetAllRecordNotes() throws DAOException {
         List<CMSRecordNote> notes = DataManager.getInstance().getDao().getAllRecordNotes();
-        assertEquals(3, notes.size());
+        assertEquals(5, notes.size());
 
     }
 
@@ -2890,13 +2892,13 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void testGetCMSRecordNotesPaginated() throws DAOException {
         List<CMSRecordNote> notesP1 = DataManager.getInstance().getDao().getRecordNotes(0, 2, null, false, null);
         assertEquals(2, notesP1.size());
-        List<CMSRecordNote> notesP2 = DataManager.getInstance().getDao().getRecordNotes(2, 2, null, false, null);
+        List<CMSRecordNote> notesP2 = DataManager.getInstance().getDao().getRecordNotes(4, 2, null, false, null);
         assertEquals(1, notesP2.size());
     }
 
     @Test
     public void testGetCMSRecordNote() throws DAOException {
-        CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(1l);
+        CMSSingleRecordNote note = (CMSSingleRecordNote) DataManager.getInstance().getDao().getRecordNote(1l);
         assertNotNull(note);
         assertEquals("PI1", note.getRecordPi());
         assertEquals("Titel 1", note.getRecordTitle().getText());
@@ -2909,18 +2911,31 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testAddCMSRecordNote() throws DAOException {
 
-        CMSRecordNote note = new CMSRecordNote();
+        CMSSingleRecordNote note = new CMSSingleRecordNote();
         note.getRecordTitle().setSelectedLocale(Locale.GERMAN);
         note.setRecordPi(pi);
         note.getRecordTitle().setText(title);
 
         assertTrue(DataManager.getInstance().getDao().addRecordNote(note));
         assertNotNull(note.getId());
-        CMSRecordNote pNote = DataManager.getInstance().getDao().getRecordNote(note.getId());
+        CMSSingleRecordNote pNote = (CMSSingleRecordNote)DataManager.getInstance().getDao().getRecordNote(note.getId());
         assertNotNull(pNote);
         pNote.getRecordTitle().setSelectedLocale(Locale.GERMAN);
         assertEquals(title, pNote.getRecordTitle().getText());
         assertEquals(title, pNote.getRecordTitle().getText(Locale.GERMAN));
+    }
+    
+    @Test
+    public void testAddCMSMultiRecordNote() throws DAOException {
+
+        CMSMultiRecordNote note = new CMSMultiRecordNote();
+        note.setQuery("DC:dc3d");
+
+        assertTrue(DataManager.getInstance().getDao().addRecordNote(note));
+        assertNotNull(note.getId());
+        CMSMultiRecordNote pNote = (CMSMultiRecordNote)DataManager.getInstance().getDao().getRecordNote(note.getId());
+        assertNotNull(pNote);
+        assertEquals("DC:dc3d", pNote.getQuery());
     }
 
     @Test
@@ -2941,10 +2956,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void testDeleteRecordNote() throws DAOException {
-        assertEquals(3, DataManager.getInstance().getDao().getAllRecordNotes().size());
+        assertEquals(5, DataManager.getInstance().getDao().getAllRecordNotes().size());
         CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(2l);
         DataManager.getInstance().getDao().deleteRecordNote(note);
-        assertEquals(2, DataManager.getInstance().getDao().getAllRecordNotes().size());
+        assertEquals(4, DataManager.getInstance().getDao().getAllRecordNotes().size());
         List<CMSRecordNote> remainingNotes = DataManager.getInstance().getDao().getAllRecordNotes();
         assertNull(DataManager.getInstance().getDao().getRecordNote(2l));
 
@@ -2955,6 +2970,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(2, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", false).size());
         assertEquals(1, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", true).size());
         assertEquals(0, DataManager.getInstance().getDao().getRecordNotesForPi("PI5", false).size());
+    }
+    
+    @Test
+    public void testGetAllMultiRecordNotes() throws DAOException {
+        assertEquals(1, DataManager.getInstance().getDao().getAllMultiRecordNotes(true).size());
+        assertEquals(2, DataManager.getInstance().getDao().getAllMultiRecordNotes(false).size());
     }
 
     @Test

@@ -34,6 +34,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -43,6 +44,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
+import org.omnifaces.cdi.Push;
+import org.omnifaces.cdi.PushContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,6 +100,10 @@ public class AdminBean implements Serializable {
     private static final Object TRANSLATION_LOCK = new Object();
 
     private static String translationGroupsEditorSession = null;
+    
+    @Inject
+    @Push
+    PushContext hotfolderFileCount;
 
     private TableDataProvider<User> lazyModelUsers;
     private TableDataProvider<Comment> lazyModelComments;
@@ -2037,6 +2044,14 @@ public class AdminBean implements Serializable {
     public static void setTranslationGroupsEditorSession(String translationGroupsEditorSession) {
         logger.trace("setTranslationGroupsEditorSession: {}", translationGroupsEditorSession);
         AdminBean.translationGroupsEditorSession = translationGroupsEditorSession;
+    }
+    
+    /**
+     * 
+     */
+    public void updateHotfolderFileCount() {
+        logger.trace("updateHotfolderFileCount");
+        hotfolderFileCount.send("update");
     }
 
     /**

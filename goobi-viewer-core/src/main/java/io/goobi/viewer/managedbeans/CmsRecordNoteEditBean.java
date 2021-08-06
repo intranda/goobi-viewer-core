@@ -31,11 +31,16 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.model.cms.CMSMultiRecordNote;
+import io.goobi.viewer.model.cms.CMSRecordNote;
+import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.toc.TocMaker;
@@ -60,7 +65,12 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     private Locale selectedLocale = BeanUtils.getLocale();
     private MetadataElement metadataElement = null;
     private String returnUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.adminCmsRecordNotes.getName();
-
+    
+    private String currentNoteType = RECORD_NOTE_TYPE_SINGLE;
+    
+    private static final String RECORD_NOTE_TYPE_SINGLE = "SINGLE"; 
+    private static final String RECORD_NOTE_TYPE_MULTI = "MULTI";
+    
     /**
      * @return the note
      */
@@ -93,11 +103,19 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     public void setRecordIdentifier(String pi) {
-        setNote(new CMSRecordNote(pi));
+        setNote(new CMSSingleRecordNote(pi));
+    }
+    
+    public void setRecordQuery(String query) {
+        setNote(new CMSMultiRecordNote(query));
     }
 
     public String getRecordIdentifier() {
-        return Optional.ofNullable(this.note).map(CMSRecordNote::getRecordPi).orElse("");
+        return Optional.ofNullable(this.note).filter(note -> note instanceof CMSSingleRecordNote).map(n -> ((CMSSingleRecordNote)note).getRecordPi()).orElse("");
+    }
+    
+    public String getRecordQuery() {
+        return Optional.ofNullable(this.note).filter(note -> note instanceof CMSMultiRecordNote).map(n -> ((CMSMultiRecordNote)note).getQuery()).orElse("");
     }
 
     /**
@@ -165,12 +183,13 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     public MetadataElement getMetadataElement() {
-        if (this.metadataElement == null && this.note != null) {
+        if (this.metadataElement == null && this.note != null && this.note instanceof CMSSingleRecordNote) {
+            CMSSingleRecordNote note = (CMSSingleRecordNote)this.note;
             try {
-                this.metadataElement = loadMetadataElement(this.note.getRecordPi(), 0);
+                this.metadataElement = loadMetadataElement(note.getRecordPi(), 0);
             } catch (PresentationException | IndexUnreachableException | DAOException e) {
-                logger.error("Unable to reetrive metadata elemement for {}. Reason: {}", this.note.getRecordTitle().getText(), e.getMessage());
-                Messages.error(null, "Unable to reetrive metadata elemement for {}. Reason: {}", this.note.getRecordTitle().getText(), e.getMessage());
+                logger.error("Unable to reetrive metadata elemement for {}. Reason: {}", note.getRecordTitle().getText(), e.getMessage());
+                Messages.error(null, "Unable to reetrive metadata elemement for {}. Reason: {}", note.getRecordTitle().getText(), e.getMessage());
             }
         }
         return this.metadataElement;
@@ -194,8 +213,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
             return null;
         }
 
-        if (this.note != null) {
-            this.note.setRecordTitle(createRecordTitle(solrDoc));
+        if (this.note != null && note instanceof CMSSingleRecordNote) {
+            ((CMSSingleRecordNote) this.note).setRecordTitle(createRecordTitle(solrDoc));
         }
         StructElement structElement = new StructElement(solrDoc);
         return new MetadataElement().init(structElement, index, BeanUtils.getLocale()).setSelectedRecordLanguage(getSelectedLocale().getLanguage());
@@ -298,6 +317,28 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         }
 
         return locale;
+    }
+
+    /**
+     * @return the currentNoteType
+     */
+    public String getCurrentNoteType() {
+        return currentNoteType;
+    }
+    
+    /**
+     * @param currentNoteType the currentNoteType to set
+     */
+    public void setCurrentNoteType(String currentNoteType) {
+        this.currentNoteType = currentNoteType;
+    }
+    
+    public boolean isMultiRecordNote() {
+        return this.note != null && this.note instanceof CMSMultiRecordNote;
+    }
+    
+    public boolean isSingleRecordNote() {
+        return this.note != null && this.note instanceof CMSSingleRecordNote;
     }
 
 }

@@ -155,6 +155,8 @@ public class IdentifierResolver extends HttpServlet {
             }
             return;
         }
+        
+        logger.trace("output: {}", request.getQueryString());
 
         // Parse optional additional field/value pairs
         Map<Integer, String> moreFields = new HashMap<>();
@@ -231,7 +233,7 @@ public class IdentifierResolver extends HttpServlet {
             // }
 
             String pi = (String) targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-            int page = 1;
+            int page = 0;
 
             // Deleted record check
             if (targetDoc.getFieldValue(SolrConstants.DATEDELETED) != null) {
@@ -267,7 +269,7 @@ public class IdentifierResolver extends HttpServlet {
             // Custom page, if parameter given
             if (request.getParameter(PAGE_PARAMETER) != null) {
                 page = Integer.valueOf(request.getParameter(PAGE_PARAMETER));
-            }
+             }
 
             // If the user has no listing privilege for this record, act as if it does not exist
             boolean access;
@@ -291,7 +293,7 @@ public class IdentifierResolver extends HttpServlet {
                 return;
             }
 
-            String result = constructUrl(targetDoc, false);
+            String result = page == 0 ? constructUrl(targetDoc, false) : constructUrl(targetDoc, false, page);
             logger.trace("URL: {}", result);
 
             // 5. redirect or forward using the target field value

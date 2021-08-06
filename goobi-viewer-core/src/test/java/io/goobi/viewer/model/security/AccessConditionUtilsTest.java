@@ -326,6 +326,20 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
                     result);
         }
     }
+    
+
+    /**
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
+     * @verifies adapt basic alto file name
+     */
+    @Test
+    public void generateAccessCheckQuery_shouldAdaptBasicAltoFileName() throws Exception {
+        String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.xml");
+        Assert.assertEquals(
+                "+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME_ALTO
+                        + ":*/PPN123456789/00000001.xml FILENAME_XML:\"00000001.xml\")",
+                result);
+    }
 
     /**
      * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
@@ -333,10 +347,8 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      */
     @Test
     public void generateAccessCheckQuery_shouldEscapeFileNameForWildcardSearchCorrectly() throws Exception {
-        {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001 (1)");
             Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result);
-        }
     }
 
     /**

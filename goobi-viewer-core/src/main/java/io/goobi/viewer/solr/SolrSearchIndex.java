@@ -168,7 +168,7 @@ public final class SolrSearchIndex {
 
         return client;
     }
-    
+
     /**
      * 
      * @return true if test query executes without errors; false otherwise
@@ -242,7 +242,7 @@ public final class SolrSearchIndex {
         if (facetFields != null && !facetFields.isEmpty()) {
             for (String facetField : facetFields) {
                 if (StringUtils.isNotEmpty(facetField)) {
-                    logger.trace("facet field: {}", facetField);
+                    // logger.trace("facet field: {}", facetField);
                     solrQuery.addFacetField(facetField);
                     // TODO only do this once, perhaps?
                     if (StringUtils.isNotEmpty(facetSort)) {
@@ -262,13 +262,13 @@ public final class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(fq);
-                 logger.trace("adding filter query: {}", fq);
+                // logger.trace("adding filter query: {}", fq);
             }
         }
         if (params != null && !params.isEmpty()) {
             for (String key : params.keySet()) {
                 solrQuery.set(key, params.get(key));
-                logger.trace("&{}={}", key, params.get(key));
+                // logger.trace("&{}={}", key, params.get(key));
             }
         }
 
@@ -437,7 +437,7 @@ public final class SolrSearchIndex {
      */
     public SolrDocument getFirstDoc(String query, List<String> fieldList, List<StringPair> sortFields)
             throws PresentationException, IndexUnreachableException {
-        logger.trace("getFirstDoc: {}", query);
+        // logger.trace("getFirstDoc: {}", query);
         SolrDocumentList hits = search(query, 0, 1, sortFields, null, fieldList).getResults();
         if (hits.getNumFound() > 0) {
             return hits.get(0);
@@ -1201,7 +1201,7 @@ public final class SolrSearchIndex {
      * @throws IndexUnreachableException
      * @should return correct values
      */
-    public Map<String, String> getLabelValuesForDrillDownField(String field, String labelField, Set<String> values)
+    public Map<String, String> getLabelValuesForFacetField(String field, String labelField, Set<String> values)
             throws PresentationException, IndexUnreachableException {
         if (field == null || labelField == null || values == null || values.isEmpty()) {
             return Collections.emptyMap();

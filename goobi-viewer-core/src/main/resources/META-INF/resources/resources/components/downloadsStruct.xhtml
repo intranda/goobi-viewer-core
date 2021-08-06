@@ -13,9 +13,7 @@
  
                     <!-- STRUCT ELEMENT -->
 					<ui:fragment
-						rendered="#{(activeDocumentBean.viewManager.currentStructElementIddoc != activeDocumentBean.viewManager.topDocumentIddoc) 
-							and ((activeDocumentBean.viewManager.currentStructElement.accessPermissionDownloadMetadata)
-						    or (!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf))}">
+						rendered="#{activeDocumentBean.viewManager.currentStructElementIddoc != activeDocumentBean.viewManager.topDocumentIddoc}">
 						<h4 id="titlePage" class="widget-usage__subtitle" title="#{activeDocumentBean.viewManager.currentStructElement.label}">#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}</h4>
 
 						<!-- STRUCT ELEMENT DOWNLOADS -->

@@ -99,6 +99,16 @@ public class MetadataTest extends AbstractTest {
     }
 
     /**
+     * @see Metadata#buildHierarchicalValue(String,String,Locale,String)
+     * @verifies add configured collection sort field
+     */
+    @Test
+    public void buildHierarchicalValue_shouldAddConfiguredCollectionSortField() throws Exception {
+        String value = Metadata.buildHierarchicalValue("DC", "collection1", null, "http://localhost:8080/");
+        Assert.assertEquals("<a href=\"http://localhost:8080/browse/-/1/SORT_TITLE/DC:collection1/\">collection1</a>", value);
+    }
+
+    /**
      * @see Metadata#isBlank()
      * @verifies return true if all paramValues are empty
      */

@@ -98,7 +98,11 @@ var viewerJS = ( function( viewer ) {
             doubleClickZoom: !this.config.fixed,
             scrollWheelZoom: !this.config.fixed,
             dragging: !this.config.fixed,    
-            keyboard: !this.config.fixed
+            keyboard: !this.config.fixed,
+            // Fix desktop safari browsers: 
+            // disabling the tap option shows popups when clicking on geoMap markers in safari
+            // it should however be set to true when a mobile version of Safari is used
+            tap: viewer.iOS() ? true : false
         });
         
         let defer = Q.defer();
@@ -407,7 +411,7 @@ var viewerJS = ( function( viewer ) {
     		return 0;
     	} else {
     		let polygon = L.polygon(feature.geometry.coordinates);
-    		return this.getArea(polygon.getBounds());
+    		return this.geoMap.getDiameter(polygon.getBounds());
     	}
     }
 
@@ -531,15 +535,16 @@ var viewerJS = ( function( viewer ) {
     	if(!bounds || !bounds.isValid()) {
     		return 0;
     	} else {
-		    return this.map.distance(bounds.getSouthWest(), bounds.getNorthEast())
+		    let diameter = this.map.distance(bounds.getSouthWest(), bounds.getNorthEast());
+		    return diameter;
     	}
     }
     
-    viewer.GeoMap.featureGroup.prototype.getArea = function(bounds) {
+    viewer.GeoMap.featureGroup.prototype.getArea = function(bounds, feature) {
     	if(!bounds || !bounds.isValid()) {
     		return 0;
     	} else {
-		    return this.geoMap.map.distance(bounds.getSouthWest(), bounds.getNorthWest()) * this.geoMap.map.distance(bounds.getSouthWest(), bounds.getSouthEast())
+		    let area = this.geoMap.map.distance(bounds.getSouthWest(), bounds.getNorthWest()) * this.geoMap.map.distance(bounds.getSouthWest(), bounds.getSouthEast())
     	}
     }
     

@@ -22,7 +22,10 @@ import java.util.List;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
-public class MessagesTranslationGroupItem extends TranslationGroupItem {
+/**
+ * Group item for core messages.
+ */
+public class CoreMessagesTranslationGroupItem extends TranslationGroupItem {
 
     /**
      * Protected constructor.
@@ -30,7 +33,7 @@ public class MessagesTranslationGroupItem extends TranslationGroupItem {
      * @param key
      * @param regex
      */
-    protected MessagesTranslationGroupItem(String key, boolean regex) {
+    protected CoreMessagesTranslationGroupItem(String key, boolean regex) {
         super(key, regex);
     }
 

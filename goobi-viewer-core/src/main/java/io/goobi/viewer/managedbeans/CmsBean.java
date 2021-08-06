@@ -1234,10 +1234,6 @@ public class CmsBean implements Serializable {
      */
     public void setSelectedPage(CMSPage currentPage) throws DAOException {
         if (currentPage != null) {
-
-            if (this.selectedPage != null && currentPage.getId() != null && currentPage.getId().equals(this.selectedPage.getId())) {
-                //same page, don't change
-            } else {
                 if (currentPage.getId() != null) {
                     //get page from DAO
                     this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
@@ -1257,7 +1253,6 @@ public class CmsBean implements Serializable {
                 }
                 this.selectedPage.createMissingLanguageVersions(getAllLocales());
                 logger.debug("Selected page: {}", currentPage);
-            }
         } else {
             this.selectedPage = null;
         }
@@ -1776,6 +1771,7 @@ public class CmsBean implements Serializable {
         }
         if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
             ((SearchFunctionality) item.getFunctionality()).search(item.getOwnerPageLanguageVersion().getOwnerPage().getSubThemeDiscriminatorValue());
+            navigationHelper.addSearchUrlWithCurrentSortStringToHistory();
         } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
             Search search = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
             search.setQuery(item.getSolrQuery());

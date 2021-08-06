@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pretty-config xmlns="http://ocpsoft.com/prettyfaces/3.3.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://ocpsoft.com/prettyfaces/3.3.3 http://ocpsoft.com/xml/ns/prettyfaces/ocpsoft-pretty-faces-3.3.3.xsd">
+<pretty-config xmlns="http://ocpsoft.com/prettyfaces/3.5.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://ocpsoft.com/prettyfaces/3.5.0 http://ocpsoft.com/xml/ns/prettyfaces/ocpsoft-pretty-faces-3.5.0.xsd">
 
 	<rewrite match="/;jsessionid=\w+" substitute="/" />
 	<rewrite match="/melody/?" substitute="/monitoring?main" />
@@ -182,6 +182,7 @@
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
 		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
 	</url-mapping>
 	<url-mapping id="searchadvanced">
 		<pattern value="/searchadvanced/" />
@@ -263,12 +264,14 @@
         <view-id value="/searchList.xhtml" />
         <action onPostback="false">#{searchBean.search}</action>
         <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
+        <action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
     </url-mapping>
 	<url-mapping id="newSearch3">
 		<pattern value="/search/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.searchString}/#{page:searchBean.currentPage}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
+		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="newSearch4">
@@ -276,18 +279,21 @@
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
+		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="newSearch5">
 		<pattern value="/search/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="search6">
 		<pattern value="/search/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	
@@ -336,7 +342,7 @@
 	<!-- IMAGE -->
     <url-mapping id="image1">
         <pattern value="/image/#{pi:activeDocumentBean.persistentIdentifier}/" />
-        <view-id value="/viewObject.xhtml" />
+		<view-id value="/viewObject.xhtml" />
         <!-- TODO set representative page, if available -->
         <action onPostback="false">#{activeDocumentBean.setImageToShow('1')}</action>
         <action onPostback="false">#{activeDocumentBean.open}</action>
@@ -879,10 +885,11 @@
         <action onPostback="false">#{cmsBean.loadTemplates}</action>
     </url-mapping>
     <url-mapping id="adminCmsEditPage">
-        <pattern value="/admin/cms/pages/edit/#{selectedPageId:cmsBean.selectedPageId}/" />
+        <pattern value="/admin/cms/pages/edit/#{selectedPageId}/" />
         <view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
         <action onPostback="false">#{cmsBean.setEditMode(true)}</action>
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsBean.setSelectedPageId(selectedPageId)}</action>
     </url-mapping>
     <url-mapping id="adminCmsNewPage">
         <pattern value="/admin/cms/pages/new/" />

@@ -142,17 +142,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-sm-1 mb-3">
+                                    <div class="col-6 col-sm-1 mb-3 d-flex align-items-center">
                                         <!-- ADD / REMOVE -->
-                                        <div class="search-advanced__input-col">
-                                            <h:commandLink role="button" title="#{msg.searchAdvanved_deleteSelection}" action="#{queryGroup.removeQueryItem(queryItem)}">
+                                        <div class="search-advanced__input-col search-advanced__additional-wrapper">
+                                            <h:commandLink role="button" title="#{msg.searchAdvanved_deleteSelection}" action="#{queryGroup.removeQueryItem(queryItem)}" styleClass="search-advanced__additional-action">
                                                 <i class="fa fa-times-circle" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                 <f:passThroughAttribute name="data-placement" value="top" />
                                                 <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_deleteSelection}" />
                                                 <f:ajax render="@form" />
                                             </h:commandLink>
-                                            <h:commandLink role="button" title="#{msg.searchAdvanved_addSelection}" action="#{queryGroup.addNewQueryItem}"
+                                            <h:commandLink role="button" title="#{msg.searchAdvanved_addSelection}" action="#{queryGroup.addNewQueryItem}" styleClass="search-advanced__additional-action"
                                                 disabled="#{fn:length(queryGroup.queryItems) != status.count}">
                                                 <i class="fa fa-plus-square-o" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-toggle" value="tooltip" />

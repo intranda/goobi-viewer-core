@@ -105,6 +105,7 @@ var viewerJS = ( function( viewer ) {
         				//console.log("loaded manifest ", manifest);
         				//if the manifest contains struct elements, show them as thumbnail gallery
         				if(manifest.structures && manifest.structures.length > 1) {
+        				console.log("Show structure images");
 				        	riot.mount(".archives__object-thumbnails", "thumbnails", {
 					        	language : currentLang, 
 					        	type: "structures",
@@ -124,14 +125,30 @@ var viewerJS = ( function( viewer ) {
 					        	} 
 				        	});
         				} else {
-        					this.hideLoader("load_record_image");
-        					$(".archives__object-image").show();
-        				}
+        					let thumbnail = viewerJS.iiif.getId(manifest.thumbnail[0]);
+        					console.log("show thumbnail", thumbnail);
+	        				if(thumbnail) {
+	        				let $img = $(".archives__object-image").find("img");
+	        					$img.on("load", () => {
+	        						this.hideLoader("load_record_image");
+		        					$(".archives__object-image").show();
+	        					});
+	        					$img.on("error", () => {
+	        						this.hideLoader("load_record_image");
+	        						$(".archives__object-image").hide();
+	        					});
+	        					$img.attr("src", thumbnail);
+	        				} else {
+	        					this.hideLoader("load_record_image");
+	        					$(".archives__object-image").hide();
+	        				}
+	        			}
         			})
         			.catch(error => {
+        			console.log("error", error);
+	        			this.hideLoader("load_record_image");
         				error.then( (e) => {
 	        				console.log("error loading record '" + recordPi + "'", e);
-	        				this.hideLoader("load_record_image");
 	        				//viewer.notifications.error(e.message);
         				});
         			});

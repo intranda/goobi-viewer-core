@@ -47,7 +47,7 @@
 
                                 <!-- IMAGE -->
                                 <ui:fragment
-                                    rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
+                                    rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload and configurationBean.displaySidebarWidgetUsagePageDownloadOptions}">
                                     <h:commandButton
                                         id="downloadImageButton"
                                         class="badge badge-dark widget-usage__page-download-jpeg"
@@ -118,6 +118,8 @@
 									       #{msg.fulltext} </a>
                                     </ui:fragment>
                                 </ui:fragment>
+                                
+                                <!-- PURL -->
 
 							</ui:fragment>
 						</div>

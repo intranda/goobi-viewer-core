@@ -38,6 +38,8 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.IndexerDataRequestParameters;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.managedbeans.AdminBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * Resource for communicating with the indexer process.
@@ -61,13 +63,20 @@ public class IndexerResource {
         try {
             DataManager.getInstance().setIndexerVersion(new ObjectMapper().writeValueAsString(params));
             DataManager.getInstance().setHotfolderFileCount(params.getHotfolderFileCount());
+            AdminBean ab = BeanUtils.getAdminBean();
+            if (ab != null) {
+                ab.updateHotfolderFileCount();
+            } else {
+                logger.warn("AdminBean null");
+            }
+
             return new SuccessMessage(true);
         } catch (JsonProcessingException e) {
             logger.error(e.getMessage());
             throw new IllegalRequestException("Cannot parse request body to json ", e);
         }
     }
-    
+
     @GET
     @Path("/version")
     @Produces({ MediaType.APPLICATION_JSON })

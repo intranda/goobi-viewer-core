@@ -252,7 +252,7 @@ public class RecordFileResource {
             logger.error(String.format("Cannot check fulltext access for pi %s and file %s: %s", pi, filename, e.toString()));
         }
         if (!access) {
-            throw new ServiceNotAllowedException("Access to fulltext file " + pi + "/" + filename + " not allowed");
+            throw new ServiceNotAllowedException("Access to fulltext file '" + pi + "/" + filename + "' not allowed");
         }
     }
 

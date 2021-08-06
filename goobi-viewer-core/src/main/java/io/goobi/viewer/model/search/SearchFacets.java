@@ -55,7 +55,7 @@ public class SearchFacets implements Serializable {
     /** Currently applied facets. */
     private final List<IFacetItem> currentFacets = new ArrayList<>();
 
-    private final Map<String, Boolean> drillDownExpanded = new HashMap<>();
+    private final Map<String, Boolean> facetsExpanded = new HashMap<>();
 
     private final Map<String, String> minValues = new HashMap<>();
 
@@ -75,7 +75,7 @@ public class SearchFacets implements Serializable {
     public void resetAvailableFacets() {
         logger.trace("resetAvailableFacets");
         availableFacets.clear();
-        drillDownExpanded.clear();
+        facetsExpanded.clear();
     }
 
     /**
@@ -341,8 +341,8 @@ public class SearchFacets implements Serializable {
         }
         // Remove currently used facets
         facetItems.removeAll(currentFacets);
-        int initial = DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
-        if (!isDrillDownExpanded(field) && initial != -1 && facetItems.size() > initial) {
+        int initial = DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
+        if (!isFacetExpanded(field) && initial != -1 && facetItems.size() > initial) {
             return facetItems.subList(0, initial);
         }
 
@@ -351,43 +351,45 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * If the drill-down for given field is expanded, return the size of the facet, otherwise the initial (collapsed) number of elements as
+     * If the facet for given field is expanded, return the size of the facet, otherwise the initial (collapsed) number of elements as
      * configured.
      *
      * @should return full facet size if expanded
      * @should return default if collapsed
      * @param field a {@link java.lang.String} object.
      * @return a int.
+     * @deprecated Check whether still in use
      */
-    public int getDrillDownElementDisplayNumber(String field) {
-        if (isDrillDownExpanded(field) && availableFacets.get(field) != null) {
+    @Deprecated
+    public int getFacetElementDisplayNumber(String field) {
+        if (isFacetExpanded(field) && availableFacets.get(field) != null) {
             return availableFacets.get(field).size();
         }
-        return DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
+        return DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
     }
 
     /**
-     * Sets the expanded flag to <code>true</code> for the given drill-down field.
+     * Sets the expanded flag to <code>true</code> for the given facet field.
      *
      * @param field a {@link java.lang.String} object.
      */
-    public void expandDrillDown(String field) {
-        logger.trace("expandDrillDown: {}", field);
-        drillDownExpanded.put(field, true);
+    public void expandFacet(String field) {
+        logger.trace("expandFacet: {}", field);
+        facetsExpanded.put(field, true);
     }
 
     /**
-     * Sets the expanded flag to <code>false</code> for the given drill-down field.
+     * Sets the expanded flag to <code>false</code> for the given facet field.
      *
      * @param field a {@link java.lang.String} object.
      */
-    public void collapseDrillDown(String field) {
-        logger.trace("collapseDrillDown: {}", field);
-        drillDownExpanded.put(field, false);
+    public void collapseFacet(String field) {
+        logger.trace("collapseFacet: {}", field);
+        facetsExpanded.put(field, false);
     }
 
     /**
-     * Returns true if the "(more)" link is to be displayed for a drill-down box. This is the case if the facet has more elements than the initial
+     * Returns true if the "(more)" link is to be displayed for a facet box. This is the case if the facet has more elements than the initial
      * number of displayed elements and the facet hasn't been manually expanded yet.
      *
      * @param field a {@link java.lang.String} object.
@@ -399,10 +401,10 @@ public class SearchFacets implements Serializable {
      * @should return false if facet smaller than default
      * @return a boolean.
      */
-    public boolean isDisplayDrillDownExpandLink(String field) {
+    public boolean isDisplayFacetExpandLink(String field) {
         List<IFacetItem> facetItems = availableFacets.get(field);
-        int expandSize = DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
-        if (facetItems != null && !isDrillDownExpanded(field) && expandSize > 0 && facetItems.size() > expandSize) {
+        int expandSize = DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
+        if (facetItems != null && !isFacetExpanded(field) && expandSize > 0 && facetItems.size() > expandSize) {
             return true;
         }
 
@@ -411,14 +413,14 @@ public class SearchFacets implements Serializable {
 
     /**
      * <p>
-     * isDisplayDrillDownCollapseLink.
+     * isDisplayFacetCollapseLink.
      * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean isDisplayDrillDownCollapseLink(String field) {
-        return isDrillDownExpanded(field);
+    public boolean isDisplayFacetCollapseLink(String field) {
+        return isFacetExpanded(field);
     }
 
     /**
@@ -535,7 +537,7 @@ public class SearchFacets implements Serializable {
                     facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
                 }
                 String facetField = facetLink.substring(0, facetLink.indexOf(":"));
-                if (facetField.equals(DataManager.getInstance().getConfiguration().getGeoDrillDownField())) {
+                if (facetField.equals(DataManager.getInstance().getConfiguration().getGeoFacetFields())) {
                     GeoFacetItem item = new GeoFacetItem(facetField);
                     item.setValue(facetLink.substring(facetLink.indexOf(":") + 1));
                     facetItems.add(item);
@@ -556,8 +558,7 @@ public class SearchFacets implements Serializable {
      */
     static boolean isFieldHierarchical(String field) {
         //        logger.trace("isFieldHierarchical: {} ? {}", field,
-        //                DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().contains(field));
-        return DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().contains(field);
+        return DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().contains(field);
     }
 
     /**
@@ -603,7 +604,8 @@ public class SearchFacets implements Serializable {
                 }
             }
             if (fieldItem == null) {
-                if (fieldItem instanceof GeoFacetItem) {
+                String geoFacetField = DataManager.getInstance().getConfiguration().getGeoFacetFields();
+                if (geoFacetField != null && geoFacetField.equals(field)){
                     fieldItem = new GeoFacetItem(field);
                     fieldItem.setValue(updateValue);
                 } else {
@@ -887,27 +889,27 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * Returns true if the value for the given field type in <code>drillDownExpanded</code> has been previously set to true.
+     * Returns true if the value for the given field type in <code>facetsExpanded</code> has been previously set to true.
      *
      * @param field a {@link java.lang.String} object.
      * @should return false if value null
      * @should return true if value true
      * @return a boolean.
      */
-    public boolean isDrillDownExpanded(String field) {
-        return drillDownExpanded.get(field) != null && drillDownExpanded.get(field);
+    public boolean isFacetExpanded(String field) {
+        return facetsExpanded.get(field) != null && facetsExpanded.get(field);
     }
 
     /**
      * <p>
-     * isDrillDownCollapsed.
+     * isFacetCollapsed.
      * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean isDrillDownCollapsed(String field) {
-        return !isDrillDownExpanded(field);
+    public boolean isFacetCollapsed(String field) {
+        return !isFacetExpanded(field);
     }
 
     /**
@@ -921,8 +923,8 @@ public class SearchFacets implements Serializable {
     public Map<String, List<IFacetItem>> getAllAvailableFacets() {
         Map<String, List<IFacetItem>> ret = new LinkedHashMap<>();
 
-        List<String> allDrillDownFields = DataManager.getInstance().getConfiguration().getAllDrillDownFields();
-        for (String field : allDrillDownFields) {
+        List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
+        for (String field : allFacetFields) {
             if (availableFacets.containsKey(field)) {
                 ret.put(field, availableFacets.get(field));
             }
@@ -941,7 +943,7 @@ public class SearchFacets implements Serializable {
     public List<String> getConfiguredSubelementFacetFields() {
         List<String> ret = new ArrayList<>();
 
-        for (String field : DataManager.getInstance().getConfiguration().getAllDrillDownFields()) {
+        for (String field : DataManager.getInstance().getConfiguration().getAllFacetFields()) {
             if (SolrConstants.DOCSTRCT_SUB.equals(field)) {
                 ret.add(SearchHelper.facetifyField(field));
             }
@@ -1114,7 +1116,7 @@ public class SearchFacets implements Serializable {
                 .filter(f -> f instanceof GeoFacetItem)
                 .map(f -> (GeoFacetItem) f)
                 .findAny()
-                .orElse(new GeoFacetItem(DataManager.getInstance().getConfiguration().getGeoDrillDownField()));
+                .orElse(new GeoFacetItem(DataManager.getInstance().getConfiguration().getGeoFacetFields()));
     }
 
     /**
@@ -1124,7 +1126,7 @@ public class SearchFacets implements Serializable {
      */
     public void setGeoFacetFeature(String feature) {
         GeoFacetItem item = getGeoFacetting();
-        item.setField(DataManager.getInstance().getConfiguration().getGeoDrillDownField());
+        item.setField(DataManager.getInstance().getConfiguration().getGeoFacetFields());
         if (StringUtils.isBlank(feature)) {
             this.currentFacets.remove(item);
         } else {

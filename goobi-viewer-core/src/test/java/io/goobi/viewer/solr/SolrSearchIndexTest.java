@@ -243,15 +243,15 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrSearchIndex#getLabelValuesForDrillDownField(String,String,Set)
+     * @see SolrSearchIndex#getLabelValuesForFacetField(String,String,Set)
      * @verifies return correct values
      */
     @Test
-    public void getLabelValuesForDrillDownField_shouldReturnCorrectValues() throws Exception {
+    public void getLabelValuesForFacetField_shouldReturnCorrectValues() throws Exception {
         String[] values = new String[] { "Groos, Karl", "Schubert, Otto", "Heinse, Gottlob Heinrich" };
         Map<String, String> result = DataManager.getInstance()
                 .getSearchIndex()
-                .getLabelValuesForDrillDownField("MD_AUTHOR", "MD_FIRSTNAME", new HashSet<>(Arrays.asList(values)));
+                .getLabelValuesForFacetField("MD_AUTHOR", "MD_FIRSTNAME", new HashSet<>(Arrays.asList(values)));
         Assert.assertEquals(3, result.size());
         Assert.assertEquals("Karl", result.get("MD_AUTHOR:Groos, Karl"));
         Assert.assertEquals("Otto", result.get("MD_AUTHOR:Schubert, Otto"));

@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -101,6 +103,11 @@ public class FacetItem implements Serializable, IFacetItem {
         setLink(link.trim());
     }
 
+    public FacetItem(Count count) {
+        this(count.getFacetField().getName(), count.getFacetField().getName() + ":" + count.getName(), count.getName(), Messages.translate(count.getName(), BeanUtils.getLocale()), count.getCount(), false);
+    }
+
+    
     /**
      * Internal constructor.
      * 
@@ -208,16 +215,16 @@ public class FacetItem implements Serializable, IFacetItem {
             Map<String, String> labelMap) {
         // logger.trace("generateFilterLinkList: {}", field);
         List<IFacetItem> retList = new ArrayList<>();
-        List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField(field);
+        List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField(field);
         Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
 
         // If a separate label field configured for fieldName, load all values and add them to labelMap
-        String labelField = DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField(field);
+        String labelField = DataManager.getInstance().getConfiguration().getLabelFieldForFacetField(field);
         if (labelField != null && labelMap != null) {
             try {
                 labelMap.putAll(DataManager.getInstance()
                         .getSearchIndex()
-                        .getLabelValuesForDrillDownField(field, labelField, values.keySet()));
+                        .getLabelValuesForFacetField(field, labelField, values.keySet()));
             } catch (PresentationException e) {
                 logger.debug(e.getMessage());
             } catch (IndexUnreachableException e) {
@@ -239,7 +246,7 @@ public class FacetItem implements Serializable, IFacetItem {
             }
 
             if (StringUtils.isEmpty(field)) {
-                label = new StringBuilder(value).append(SolrConstants._DRILLDOWN_SUFFIX).toString();
+                label = new StringBuilder(value).append(SolrConstants._FACETS_SUFFIX).toString();
             }
             String linkValue = value;
             if (field.endsWith(SolrConstants._UNTOKENIZED)) {
@@ -350,7 +357,7 @@ public class FacetItem implements Serializable, IFacetItem {
         for (Object value : keys) {
             String label = String.valueOf(value);
             if (StringUtils.isEmpty(field)) {
-                label += SolrConstants._DRILLDOWN_SUFFIX;
+                label += SolrConstants._FACETS_SUFFIX;
             }
             String link = StringUtils.isNotEmpty(field) ? field + ":" + ClientUtils.escapeQueryChars(String.valueOf(value)) : String.valueOf(value);
             retList.add(new FacetItem(field, link, label, ViewerResourceBundle.getTranslation(label, locale), values.get(String.valueOf(value)),

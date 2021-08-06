@@ -300,7 +300,7 @@ public class ArchiveEntry {
             return;
         }
 
-        parentNode.setVisible(visible);
+        parentNode.setVisible(true);
         parentNode.expand();
         parentNode.expandUp();
     }

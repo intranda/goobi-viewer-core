@@ -175,6 +175,16 @@ public class ArchiveBean implements Serializable {
         return ret;
     }
 
+    
+    public void toggleEntryExpansion(ArchiveEntry entry) {
+        if(entry.isExpanded())  {
+            collapseEntry(entry);
+        } else {
+            expandEntry(entry);
+        }
+    }
+
+    
     /**
      * <p>
      * expandEntry.

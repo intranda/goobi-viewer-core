@@ -35,20 +35,24 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.citation.CitationLink;
+import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
+import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
 import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.metadata.MetadataView;
+import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
-import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
@@ -261,12 +265,25 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getFeedbackEmailAddress()
-     * @verifies return correct value
+     * @see Configuration#getFeedbackEmailRecipients()
+     * @verifies return correct values
      */
     @Test
-    public void getFeedbackEmailAddress_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("feedbackEmailAddress_value", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress());
+    public void getFeedbackEmailRecipients_shouldReturnCorrectValues() throws Exception {
+        List<EmailRecipient> result = DataManager.getInstance().getConfiguration().getFeedbackEmailRecipients();
+        Assert.assertEquals(2, result.size());
+        {
+            EmailRecipient recipient = result.get(0);
+            Assert.assertEquals("Everyone", recipient.getLabel());
+            Assert.assertEquals("everyone@example.com", recipient.getEmailAddress());
+            Assert.assertTrue(recipient.isDefaultRecipient());
+        }
+        {
+            EmailRecipient recipient = result.get(1);
+            Assert.assertEquals("someone@example.com", recipient.getLabel()); // No label defined, using address
+            Assert.assertEquals("someone@example.com", recipient.getEmailAddress());
+            Assert.assertFalse(recipient.isDefaultRecipient());
+        }
     }
 
     /**
@@ -1010,7 +1027,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getThumbnailImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getThumbnailImageAccessMaxWidth());
     }
-    
+
     @Test
     public void getUnzoomedImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth());
@@ -1041,6 +1058,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getWatermarkIdField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(Collections.singletonList("watermarkIdField_value"), DataManager.getInstance().getConfiguration().getWatermarkIdField());
+    }
+
+    /**
+     * @see Configuration#isWatermarkTextConfigurationEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isWatermarkTextConfigurationEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isWatermarkTextConfigurationEnabled());
     }
 
     /**
@@ -1454,21 +1480,21 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isUserCommentsEnabled()
+     * @see Configuration#isCommentsEnabled()
      * @verifies return correct value
      */
     @Test
     public void isUserCommentsEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isUserCommentsEnabled());
+        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isCommentsEnabled());
     }
 
     /**
-     * @see Configuration#getUserCommentsConditionalQuery()
+     * @see Configuration#getCommentsCondition()
      * @verifies return correct value
      */
     @Test
-    public void getUserCommentsConditionalQuery_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("DC:varia", DataManager.getInstance().getConfiguration().getUserCommentsConditionalQuery());
+    public void getUserCommentsCondition_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("DC:varia", DataManager.getInstance().getConfiguration().getCommentsCondition());
     }
 
     /**
@@ -1715,12 +1741,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getAllDrillDownFields()
+     * @see Configuration#getAllFacetFields()
      * @verifies return correct order
      */
     @Test
-    public void getAllDrillDownFields_shouldReturnCorrectOrder() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getAllDrillDownFields();
+    public void getAllFacetFields_shouldReturnCorrectOrder() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getAllFacetFields();
         Assert.assertEquals(4, result.size());
         Assert.assertEquals("DC", result.get(0));
         Assert.assertEquals("YEAR", result.get(1));
@@ -1729,50 +1755,50 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getDrillDownFields()
+     * @see Configuration#getFacetFields()
      * @verifies return all values
      */
     @Test
-    public void getDrillDownFields_shouldReturnAllValues() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getDrillDownFields().size());
+    public void geFacetFields_shouldReturnAllValues() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getFacetFields().size());
     }
 
     /**
-     * @see Configuration#getHierarchicalDrillDownFields()
+     * @see Configuration#getHierarchicalFacetFields()
      * @verifies return all values
      */
     @Test
-    public void getHierarchicalDrillDownFields_shouldReturnAllValues() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().size());
+    public void getHierarchicalFacetFields_shouldReturnAllValues() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().size());
     }
 
     /**
-     * @see Configuration#getInitialDrillDownElementNumber()
+     * @see Configuration#getInitialFacetElementNumber()
      * @verifies return correct value
      */
     @Test
-    public void getInitialDrillDownElementNumber_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(SolrConstants.DC));
-        Assert.assertEquals(16, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("MD_PLACEPUBLISH"));
-        Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(null));
+    public void getInitialFacetElementNumber_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(SolrConstants.DC));
+        Assert.assertEquals(16, DataManager.getInstance().getConfiguration().getInitialFacetElementNumber("MD_PLACEPUBLISH"));
+        Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(null));
     }
 
     /**
-     * @see Configuration#getInitialDrillDownElementNumber(String)
+     * @see Configuration#getInitialFacetElementNumber(String)
      * @verifies return default value if field not found
      */
     @Test
-    public void getInitialDrillDownElementNumber_shouldReturnDefaultValueIfFieldNotFound() throws Exception {
-        Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("YEAR"));
+    public void getInitialFacetElementNumber_shouldReturnDefaultValueIfFieldNotFound() throws Exception {
+        Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getInitialFacetElementNumber("YEAR"));
     }
 
     /**
-     * @see Configuration#getPriorityValuesForDrillDownField(String)
+     * @see Configuration#getPriorityValuesForFacetField(String)
      * @verifies return return all configured elements for regular fields
      */
     @Test
-    public void getPriorityValuesForDrillDownField_shouldReturnReturnAllConfiguredElementsForRegularFields() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("MD_PLACEPUBLISH");
+    public void getPriorityValuesForFacetField_shouldReturnReturnAllConfiguredElementsForRegularFields() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField("MD_PLACEPUBLISH");
         Assert.assertNotNull(result);
         Assert.assertEquals(3, result.size());
         Assert.assertEquals("val1", result.get(0));
@@ -1781,12 +1807,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getPriorityValuesForDrillDownField(String)
+     * @see Configuration#getPriorityValuesForFacetField(String)
      * @verifies return return all configured elements for hierarchical fields
      */
     @Test
-    public void getPriorityValuesForDrillDownField_shouldReturnReturnAllConfiguredElementsForHierarchicalFields() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("DC");
+    public void getPriorityValuesForFacetField_shouldReturnReturnAllConfiguredElementsForHierarchicalFields() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField("DC");
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("collection2", result.get(0));
@@ -1794,22 +1820,22 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getLabelFieldForDrillDownField(String)
+     * @see Configuration#getLabelFieldForFacetField(String)
      * @verifies return correct value
      */
     @Test
-    public void getLabelFieldForDrillDownField_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("MD_FIELDLABEL", DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField(SolrConstants.YEAR));
-        Assert.assertEquals("MD_FIRSTNAME", DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField("MD_CREATOR"));
+    public void getLabelFieldForFacetField_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MD_FIELDLABEL", DataManager.getInstance().getConfiguration().getLabelFieldForFacetField(SolrConstants.YEAR));
+        Assert.assertEquals("MD_FIRSTNAME", DataManager.getInstance().getConfiguration().getLabelFieldForFacetField("MD_CREATOR"));
     }
 
     /**
-     * @see Configuration#getLabelFieldForDrillDownField(String)
+     * @see Configuration#getLabelFieldForFacetField(String)
      * @verifies return null if no value found
      */
     @Test
-    public void getLabelFieldForDrillDownField_shouldReturnNullIfNoValueFound() throws Exception {
-        Assert.assertNull(DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField("MD_PLACEPUBLISH"));
+    public void getLabelFieldForFacetField_shouldReturnNullIfNoValueFound() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getConfiguration().getLabelFieldForFacetField("MD_PLACEPUBLISH"));
     }
 
     @Test
@@ -1901,12 +1927,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getUserCommentsNotificationEmailAddresses()
+     * @see Configuration#getCommentsNotificationEmailAddresses()
      * @verifies return all configured elements
      */
     @Test
     public void getUserCommentsNotificationEmailAddresses_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getUserCommentsNotificationEmailAddresses().size());
+        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getCommentsNotificationEmailAddresses().size());
     }
 
     /**
@@ -2891,15 +2917,51 @@ public class ConfigurationTest extends AbstractTest {
     public void getSidebarWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText());
     }
-    
 
     /**
-     * @see Configuration#isDisplaySidebarWidgetUsageCitation()
+     * @see Configuration#isDisplaySidebarWidgetUsageCitationRecommendation()
      * @verifies return correct value
      */
     @Test
-    public void isDisplaySidebarWidgetUsageCitation_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitation());
+    public void isDisplaySidebarWidgetUsageCitationRecommendation_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationRecommendation());
+    }
+
+    /**
+     * @see Configuration#isDisplaySidebarWidgetUsageCitationLinks()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplaySidebarWidgetUsageCitationLinks_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinksDocstructIntroText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinksDocstructIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("record intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksRecordIntroText());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinksImageIntroText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinksImageIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("docstruct intro text",
+                DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksDocstructIntroText());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinksRecordIntroText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinksRecordIntroText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("image intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksImageIntroText());
     }
 
     /**
@@ -2907,9 +2969,39 @@ public class ConfigurationTest extends AbstractTest {
      * @verifies return all configured values
      */
     @Test
-    public void getSidebarWidgetUsageCitationStyles_shouldReturnAllConfiguredValues() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+    public void getSidebarWidgetUsageCitationRecommendationStyles_shouldReturnAllConfiguredValues() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
         Assert.assertEquals(3, result.size());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationLinks()
+     * @verifies return all configured values
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationLinks_shouldReturnAllConfiguredValues() throws Exception {
+        List<CitationLink> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks();
+        Assert.assertEquals(3, result.size());
+        {
+            CitationLink link = result.get(0);
+            Assert.assertEquals(CitationLinkType.URL, link.getType());
+            Assert.assertEquals(CitationLinkLevel.RECORD, link.getLevel());
+            Assert.assertEquals("LABEL_URN", link.getLabel());
+            Assert.assertEquals("URN", link.getField());
+            Assert.assertEquals("https://nbn-resolving.org/", link.getPrefix());
+            Assert.assertEquals("/", link.getSuffix());
+            Assert.assertTrue(link.isTopstructValueFallback());
+            Assert.assertTrue(link.isAppendImageNumberToSuffix());
+        }
+        {
+            CitationLink link = result.get(1);
+            Assert.assertEquals(CitationLinkType.INTERNAL, link.getType());
+            Assert.assertEquals(CitationLinkLevel.DOCSTRUCT, link.getLevel());
+        }
+        {
+            CitationLink link = result.get(2);
+            Assert.assertEquals(CitationLinkLevel.IMAGE, link.getLevel());
+        }
     }
 
     /**
