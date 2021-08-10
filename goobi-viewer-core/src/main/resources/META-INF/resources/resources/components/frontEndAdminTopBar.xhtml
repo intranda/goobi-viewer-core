@@ -18,20 +18,20 @@
     <ui:fragment rendered="#{userBean.admin}">
     
    	<!-- ADMIN FRONTEND TOPBAR (ACTION MENU) -->
-   	<div class="admin__topbar-frontend" role="navigation" aria-label="#{msg.aria_label__nav_main}">
+   	<div class="admin__topbar-frontend" role="navigation">
    	
    		<!-- LOGO MENU -->
-   		<div class="admin__topbar-frontend-logo-menu -dropdown" aria-label="Topbar logo menu">
-   			<div class="admin__topbar-frontend-logo" aria-label="Topbar logo">
+   		<div class="admin__topbar-frontend-logo-menu -dropdown">
+   			<div class="admin__topbar-frontend-logo">
 				<ui:include src="/resources/images/goobi_logo.svg" alt="Goobi Viewer"/>
 			</div>
-   			<ul class="admin__topbar-frontend-dropdown" aria-label="Topbar logo menu dropdown">
-    			<li><a href="https://goobi.io" target="_blank" rel="noopener">#{msg.admin__about_goobi}</a></li>
-    			<li><a href="https://docs.goobi.io/" target="_blank" rel="noopener">#{msg.admin__documentation}</a></li>
-    			<li><a href="https://community.goobi.io/" target="_blank" rel="noopener">#{msg.admin__community}</a></li>
-    			<li><a href="https://github.com/intranda/" target="_blank" rel="noopener">#{msg.admin__sourcecode}</a></li>
-    			<li><a href="https://www.intranda.com/contact/" target="_blank" rel="noopener">#{msg.admin__support}</a></li>
-   			</ul>
+      <ul class="admin__topbar-frontend-dropdown"> 
+        <li><a href="https://goobi.io" target="_blank" rel="noopener">#{msg.admin__about_goobi}</a></li>
+        <li><a href="https://docs.goobi.io/" target="_blank" rel="noopener">#{msg.admin__documentation}</a></li>
+        <li><a href="https://community.goobi.io/" target="_blank" rel="noopener">#{msg.admin__community}</a></li>
+        <li><a href="https://github.com/intranda/" target="_blank" rel="noopener">#{msg.admin__sourcecode}</a></li>
+        <li><a href="https://www.intranda.com/contact/" target="_blank" rel="noopener">#{msg.admin__support}</a></li>
+      </ul>
    		</div>
 
 		<!-- GO TO ADMIN AREA DASHBOARD -->
