@@ -228,7 +228,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return the path to the local config_viewer.xml file.
      */
     public String getConfigLocalPath() {
-        String configLocalPath = config.getString("configFolder", "/opt/digiverso/config/");
+        String configLocalPath = config.getString("configFolder", "/opt/digiverso/viewer/config/");
         if (!configLocalPath.endsWith("/")) {
             configLocalPath += "/";
         }
