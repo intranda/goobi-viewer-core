@@ -130,11 +130,12 @@ public class BreadcrumbBean implements Serializable {
             if (breadcrumbs.isEmpty()) {
                 resetBreadcrumbs();
             }
-            // logger.trace("Adding breadcrumb: {} ({})", newLink.getUrl(), newLink.getWeight());
+            logger.trace("Adding breadcrumb: {} ({})", newLink.getUrl(), newLink.getWeight());
             // Determine the position at which to add the new link
             int position = breadcrumbs.size();
             for (int i = 0; i < breadcrumbs.size(); ++i) {
                 LabeledLink link = breadcrumbs.get(i);
+                logger.trace("existing breadcrumb: {}", link.toString());
                 if (link.getWeight() >= newLink.getWeight()) {
                     position = i;
                     break;
@@ -143,8 +144,7 @@ public class BreadcrumbBean implements Serializable {
             try {
                 // To avoid duplicate breadcrumbs while flipping pages, the LabeledLink.equals() method will prevent multiple breadcrumbs with the same name
                 if (breadcrumbs.contains(newLink)) {
-                    logger.trace("Breadcrumb '{}' is already in the list.", newLink);
-                    return;
+                    logger.trace("Breadcrumb is already in the list: '{}'", newLink);
                 }
                 breadcrumbs.add(position, newLink);
             } finally {
@@ -271,10 +271,7 @@ public class BreadcrumbBean implements Serializable {
      * @param facetString a {@link java.lang.String} object.
      */
     public void updateBreadcrumbsForSearchHits(String facetString) {
-        //        if (!facets.getCurrentHierarchicalFacets().isEmpty()) {
-        //            updateBreadcrumbsWithCurrentUrl(facets.getCurrentHierarchicalFacets().get(0).getValue().replace("*", ""),
-        //                    NavigationHelper.WEIGHT_ACTIVE_COLLECTION);
-        //        } else {
+        logger.trace("updateBreadcrumbsForSearchHits: {}", facetString);
         facetString = StringTools.decodeUrl(facetString);
         List<String> facets =
                 SearchFacets.getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalFacetFields());
@@ -286,7 +283,6 @@ public class BreadcrumbBean implements Serializable {
         } else {
             updateBreadcrumbsWithCurrentUrl("searchHitNavigation", WEIGHT_SEARCH_RESULTS);
         }
-        //        }
     }
 
     /**
@@ -298,7 +294,7 @@ public class BreadcrumbBean implements Serializable {
      */
     private void updateBreadcrumbsWithCurrentCollection(String field, List<String> subItems, int weight) {
         logger.trace("updateBreadcrumbsWithCurrentCollection: {} ({})", field, weight);
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        //        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         updateBreadcrumbs(new LabeledLink("browseCollection", getBrowseUrl() + '/', WEIGHT_BROWSE));
         updateBreadcrumbs(new CompoundLabeledLink("browseCollection", "", field, subItems, weight));
     }
@@ -310,8 +306,10 @@ public class BreadcrumbBean implements Serializable {
      * @param weight The weight of the link.
      */
     void updateBreadcrumbsWithCurrentUrl(String name, int weight) {
+        logger.trace("updateBreadcrumbsWithCurrentUrl: {} / {}", name, weight);
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
+        logger.trace("URL: {}", url.toString());
         updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
     }
 
@@ -402,6 +400,7 @@ public class BreadcrumbBean implements Serializable {
      */
     public void addRecordBreadcrumbs(ViewManager viewManager, IMetadataValue name, URL url)
             throws IndexUnreachableException, PresentationException, DAOException {
+        logger.trace("addRecordBreadcrumbs: {}", url);
         // Add collection hierarchy to breadcrumbs, if the record only belongs to one collection
         String collectionHierarchyField = DataManager.getInstance().getConfiguration().getCollectionHierarchyField();
         if (collectionHierarchyField != null) {
@@ -465,6 +464,7 @@ public class BreadcrumbBean implements Serializable {
                 } else {
                     flattenedLinks.add(labeledLink);
                 }
+                logger.trace("breadcrumb: {}", labeledLink);
             }
             // logger.trace("getBreadcrumbs: {}", flattenedLinks.toString());
             return flattenedLinks;

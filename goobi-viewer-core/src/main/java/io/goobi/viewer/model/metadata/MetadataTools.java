@@ -572,23 +572,23 @@ public class MetadataTools {
 
     /**
      * 
-     * @param iddoc owner IDDOC
+     * @param ownerIddoc owner IDDOC
      * @param subQuery Optional additional subQuery for filtering
      * @return SolrDocumentList
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @should return grouped metadata docs correctly
      */
-    public static SolrDocumentList getGroupedMetadata(String iddoc, String subQuery) throws PresentationException, IndexUnreachableException {
-        if (StringUtils.isEmpty(iddoc)) {
-            throw new IllegalArgumentException("iddoc may not be null or empty");
+    public static SolrDocumentList getGroupedMetadata(String ownerIddoc, String subQuery) throws PresentationException, IndexUnreachableException {
+        if (StringUtils.isEmpty(ownerIddoc)) {
+            throw new IllegalArgumentException("ownerIddoc may not be null or empty");
         }
 
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append('+')
                 .append(SolrConstants.IDDOC_OWNER)
                 .append(':')
-                .append(iddoc)
+                .append(ownerIddoc)
                 .append(" +")
                 .append(SolrConstants.DOCTYPE)
                 .append(':')

@@ -126,8 +126,6 @@ public class ActiveDocumentBean implements Serializable {
     private ImageDeliveryBean imageDelivery;
     @Inject
     private BreadcrumbBean breadcrumbBean;
-    @Inject
-    private ContentBean contentBean;
 
     /** URL parameter 'action'. */
     private String action = "";
@@ -274,7 +272,7 @@ public class ActiveDocumentBean implements Serializable {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             } catch (RecordNotFoundException | RecordDeletedException | RecordLimitExceededException e) {
                 if (e.getMessage() != null && !"null".equals(e.getMessage())) {
-                    logger.warn(e.getMessage());
+                    logger.warn("{}: {}", e.getClass().getName(), e.getMessage());
                 }
             } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
                 logger.error(e.getMessage(), e);
@@ -2262,10 +2260,10 @@ public class ActiveDocumentBean implements Serializable {
 
             boolean addMetadataFeatures = false;
             String docTypeFilter = "+DOCTYPE:DOCSTRCT";
-            if(addMetadataFeatures) {
+            if (addMetadataFeatures) {
                 docTypeFilter = "+(DOCTYPE:DOCSTRCT DOCTYPE:METADATA)";
             }
-            
+
             String subDocQuery = String.format("+PI_TOPSTRUCT:%s " + docTypeFilter, pi);
             List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
             List<String> subDocFields = new ArrayList<>();
@@ -2280,7 +2278,7 @@ public class ActiveDocumentBean implements Serializable {
 
             String annotationQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:UGC +MD_COORDS:*", pi);
             long numAnnotations = DataManager.getInstance().getSearchIndex().getHitCount(annotationQuery);
-            
+
             SolrDocumentList subDocs = DataManager.getInstance().getSearchIndex().getDocs(subDocQuery, subDocFields);
             if (subDocs != null) {
                 Collection<GeoMapFeature> features = new ArrayList<>();
@@ -2291,8 +2289,8 @@ public class ActiveDocumentBean implements Serializable {
                         String labelField = "METADATA".equals(docType) ? "MD_VALUE" : SolrConstants.LABEL;
                         docFeatures.addAll(GeoMap.getGeojsonPoints(solrDocument, coordinateField, labelField, null));
                     }
-                    if (!solrDocument.containsKey(SolrConstants.ISWORK) && solrDocument.getFieldValue(SolrConstants.DOCTYPE).equals("DOCSTRCT") &&                             
-                        !solrDocument.getFieldValue(SolrConstants.LOGID).equals(getViewManager().getLogId())) {
+                    if (!solrDocument.containsKey(SolrConstants.ISWORK) && solrDocument.getFieldValue(SolrConstants.DOCTYPE).equals("DOCSTRCT") &&
+                            !solrDocument.getFieldValue(SolrConstants.LOGID).equals(getViewManager().getLogId())) {
                         docFeatures.forEach(f -> f.setLink(PrettyUrlTools.getRecordUrl(solrDocument, pageType)));
                     }
                     features.addAll(docFeatures);
@@ -2301,7 +2299,7 @@ public class ActiveDocumentBean implements Serializable {
                     map.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
                 }
             }
-            if(numAnnotations > 0 || !map.getFeatures().isEmpty()) {                
+            if (numAnnotations > 0 || !map.getFeatures().isEmpty()) {
                 widget.setGeoMap(map);
             }
         } catch (IndexUnreachableException e) {

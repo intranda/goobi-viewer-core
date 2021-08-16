@@ -42,6 +42,7 @@ import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
+import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.misc.EmailRecipient;
@@ -3092,5 +3093,38 @@ public class ConfigurationTest extends AbstractTest {
             Assert.assertEquals("desc__translation_group_2", group.getDescription());
             Assert.assertEquals(2, group.getItems().size());
         }
+    }
+
+    /**
+     * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean)
+     * @verifies load parameters correctly
+     */
+    @Test
+    public void getMetadataFromSubnodeConfig_shouldLoadParametersCorrectly() throws Exception {
+        HierarchicalConfiguration metadataConfig =
+                DataManager.getInstance().getConfiguration().getLocalConfigurationAt("metadata.metadataView(1).template(0).metadata(1)");
+        Assert.assertNotNull(metadataConfig);
+        Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig, false);
+        Assert.assertNotNull(md);
+        Assert.assertEquals(5, md.getParams().size());
+        Assert.assertEquals("EVENTTYPE", md.getParams().get(0).getKey());
+        Assert.assertEquals(MetadataParameterType.FIELD, md.getParams().get(0).getType());
+    }
+
+    /**
+     * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean)
+     * @verifies load child metadata configurations recursively
+     */
+    @Test
+    public void getMetadataFromSubnodeConfig_shouldLoadChildMetadataConfigurationsRecursively() throws Exception {
+        HierarchicalConfiguration metadataConfig =
+                DataManager.getInstance().getConfiguration().getLocalConfigurationAt("metadata.metadataView(1).template(0).metadata(1)");
+        Assert.assertNotNull(metadataConfig);
+        Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig, false);
+        Assert.assertNotNull(md);
+        Assert.assertEquals(1, md.getChildMetadata().size());
+        Metadata childMd = md.getChildMetadata().get(0);
+        Assert.assertEquals("MD_ARTIST", childMd.getLabel());
+        Assert.assertEquals(7, childMd.getParams().size());
     }
 }

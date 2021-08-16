@@ -656,6 +656,22 @@
                         <replace string="foo">bar</replace>
                     </param>
                 </metadata>
+                <metadata label="MD_EVENT" value="MASTERVALUE_EVENT" group="true" type="3">
+                    <param type="field" key="EVENTTYPE" />
+                    <param type="field" key="MD_MATERIAL" />
+                    <param type="field" key="MD_CITATION_CATALOGUE" value="MASTERVALUE_CITATION_CATALOGUE" />
+                    <param type="field" key="MD_CITATION_ILLUSTRATION" value="MASTERVALUE_CITATION_ILLUSTRATION" />
+                    <param type="field" key="MD_VALUE" value="MASTERVALUE_CITATION_LINKTORECORD" condition="PI:{0}" />
+                    <metadata label="MD_ARTIST" value="MASTERVALUE_WIKINORM" group="true">
+                        <param type="field" key="MD_NAME" />
+                        <param type="field" key="MD_MATERIAL" />
+                        <param type="field" key="MD_STARTDATE" />
+                        <param type="field" key="MD_ENDDATE" />
+                        <param type="field" key="MD_URI_GETTY" value="MASTERVALUE_URI_GETTY" />
+                        <param type="field" key="MD_URI_SIKART" value="MASTERVALUE_URI_SIKART" />
+                        <param type="normdatauri" key="NORM_URI"/>
+                    </metadata>
+                </metadata>
             </template>
         </metadataView>
 

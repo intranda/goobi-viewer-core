@@ -566,6 +566,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return the resulting {@link Metadata} instance
      * @should load parameters correctly
      * @should load replace rules correctly
+     * @should load child metadata configurations recursively
      */
     static Metadata getMetadataFromSubnodeConfig(HierarchicalConfiguration sub, boolean topstructValueFallbackDefaultValue) {
         if (sub == null) {
@@ -653,9 +654,19 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        return new Metadata(label, masterValue, type, paramList, group, number)
+        Metadata ret = new Metadata(label, masterValue, type, paramList, group, number)
                 .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
                 .setCitationTemplate(citationTemplate);
+
+        // Recursively add nested metadata configurations
+        List<HierarchicalConfiguration> children = sub.configurationsAt("metadata");
+        if (children != null && !children.isEmpty()) {
+            for (HierarchicalConfiguration child : children) {
+                ret.getChildMetadata().add(getMetadataFromSubnodeConfig(child, topstructValueFallbackDefaultValue));
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -927,8 +938,8 @@ public final class Configuration extends AbstractConfiguration {
 
         return ret;
     }
-    
-    public boolean isDisplayWidgetUsageDownloadOptions()  {
+
+    public boolean isDisplayWidgetUsageDownloadOptions() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage.page.downloadOptions[@display]", true);
     }
 
@@ -3739,18 +3750,18 @@ public final class Configuration extends AbstractConfiguration {
 
         return ret;
     }
-    
+
     /**
      * 
      * @return
      */
     public String getDefaultFeedbackEmailAddress() {
-        for(EmailRecipient recipient : getFeedbackEmailRecipients()) {
-            if(recipient.isDefaultRecipient()) {
+        for (EmailRecipient recipient : getFeedbackEmailRecipients()) {
+            if (recipient.isDefaultRecipient()) {
                 return recipient.getEmailAddress();
             }
         }
-        
+
         return "<NOT CONFIGURED>";
     }
 

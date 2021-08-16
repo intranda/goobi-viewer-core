@@ -43,11 +43,9 @@ import de.intranda.digiverso.normdataimporter.model.NormData;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
-import io.goobi.viewer.managedbeans.BrowseBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -84,6 +82,7 @@ public class Metadata implements Serializable {
     private String ownerDocstrctType;
     private String citationTemplate;
     private CitationProcessorWrapper citationProcessorWrapper;
+    private final List<Metadata> childMetadata = new ArrayList<>();
 
     /**
      * <p>
@@ -539,15 +538,15 @@ public class Metadata implements Serializable {
                 sbFullValue.append("<a href=\"").append(applicationUrl).append(PageType.browse.getName()).append("/-/1/");
                 String sortField = "-";
                 // Use configured collection sorting field, if available
-                if(StringUtils.isNotEmpty(field)) {
+                if (StringUtils.isNotEmpty(field)) {
                     String defaultSortField = DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(field, value);
-                    if(StringUtils.isNotEmpty(defaultSortField)) {
+                    if (StringUtils.isNotEmpty(defaultSortField)) {
                         sortField = defaultSortField;
                     }
-                    
+
                 }
                 sbFullValue.append(sortField).append('/');
-                if(StringUtils.isNotEmpty(field)) {
+                if (StringUtils.isNotEmpty(field)) {
                     sbFullValue.append(field).append(':');
                 }
                 sbFullValue.append(sbHierarchy.toString()).append("/\">").append(displayValue).append("</a>");
@@ -651,7 +650,15 @@ public class Metadata implements Serializable {
 
         // Grouped metadata
         if (group) {
-            return populateGroup(se, locale);
+            if (se.getMetadataFields().get(label) == null) {
+                // If there is no plain value in the docstruct doc, then there shouldn't be a metadata Solr doc. In this case save time by skipping this field.
+                return false;
+            }
+            if (se.getMetadataFields().get(SolrConstants.IDDOC) == null || se.getMetadataFields().get(SolrConstants.IDDOC).isEmpty()) {
+                return false;
+            }
+            String iddoc = String.valueOf(se.getLuceneId());
+            return populateGroup(se, iddoc, locale);
         }
 
         // Regular, atomic metadata
@@ -746,24 +753,19 @@ public class Metadata implements Serializable {
     /**
      * 
      * @param se
+     * @param ownerIddoc Owner IDDOC
      * @param locale
      * @return
      * @throws IndexUnreachableException
      */
-    boolean populateGroup(StructElement se, Locale locale) throws IndexUnreachableException {
+    boolean populateGroup(StructElement se, String ownerIddoc, Locale locale) throws IndexUnreachableException {
         boolean found = false;
 
-        // Metadata grouped in an own Solr document
-        if (se.getMetadataFields().get(label) == null) {
-            // If there is no plain value in the docstruct doc, then there shouldn't be a metadata Solr doc. In this case save time by skipping this field.
-            return false;
-        }
-        if (se.getMetadataFields().get(SolrConstants.IDDOC) == null || se.getMetadataFields().get(SolrConstants.IDDOC).isEmpty()) {
-            return false;
-        }
-        String iddoc = se.getMetadataFields().get(SolrConstants.IDDOC).get(0);
         try {
-            SolrDocumentList groupedMdList = MetadataTools.getGroupedMetadata(iddoc, '+' + SolrConstants.LABEL + ":" + label);
+            SolrDocumentList groupedMdList = MetadataTools.getGroupedMetadata(ownerIddoc, '+' + SolrConstants.LABEL + ":" + label);
+            if (groupedMdList == null || groupedMdList.isEmpty()) {
+                return false;
+            }
             int count = 0;
             for (SolrDocument doc : groupedMdList) {
                 Map<String, List<String>> groupFieldMap = new HashMap<>();
@@ -811,7 +813,6 @@ public class Metadata implements Serializable {
                             }
                             values.add(value);
                         }
-                        //                        String paramValue = sbValue.toString();
                         if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
                             if (doc.getFieldValue("NORM_TYPE") != null) {
                                 options.put("NORM_TYPE", SolrTools.getSingleFieldStringValue(doc, "NORM_TYPE"));
@@ -827,6 +828,9 @@ public class Metadata implements Serializable {
                     }
                 }
                 count++;
+
+                // Nested metadata groups
+                populateGroup(se, (String) doc.getFieldValue(SolrConstants.IDDOC), locale);
             }
             // logger.trace("GROUP QUERY END");
         } catch (PresentationException e) {
@@ -959,6 +963,21 @@ public class Metadata implements Serializable {
      */
     public void setCitationProcessorWrapper(CitationProcessorWrapper citationProcessorWrapper) {
         this.citationProcessorWrapper = citationProcessorWrapper;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean isHasChildren() {
+        return !childMetadata.isEmpty();
+    }
+
+    /**
+     * @return the childMetadata
+     */
+    public List<Metadata> getChildMetadata() {
+        return childMetadata;
     }
 
     /**
