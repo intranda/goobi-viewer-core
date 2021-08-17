@@ -151,7 +151,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
             for (Metadata md : metadata) {
                 StructElement se = new StructElement();
                 se.setMetadataFields(SolrTools.getFieldValueMap(doc));
-                md.populate(se, locale);
+                md.populate(se, String.valueOf(se.getLuceneId()), locale);
                 if (md.getValues() != null && !md.getValues().isEmpty()) {
                     logger.trace("{}: {}", md.getLabel(), SolrTools.getFieldValueMap(doc).toString());
                 }

@@ -596,6 +596,7 @@ public class MetadataTools {
         if (StringUtils.isNotEmpty(subQuery)) {
             sbQuery.append(' ').append(subQuery);
         }
+        // logger.trace("getGroupedMetadata query: {}", sbQuery.toString());
         return DataManager.getInstance().getSearchIndex().search(sbQuery.toString());
     }
 }

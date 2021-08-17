@@ -68,7 +68,7 @@ public class Metadata implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(Metadata.class);
 
     /** ID of the owning StructElement. Used for constructing unique value IDs, where required. */
-    private String ownerId;
+    private String ownerIddoc;
     /** Label from messages.properties. */
     private final String label;
     /** Value from messages.properties (with placeholders) */
@@ -82,6 +82,7 @@ public class Metadata implements Serializable {
     private String ownerDocstrctType;
     private String citationTemplate;
     private CitationProcessorWrapper citationProcessorWrapper;
+    private Metadata parentMetadata;
     private final List<Metadata> childMetadata = new ArrayList<>();
 
     /**
@@ -90,7 +91,7 @@ public class Metadata implements Serializable {
      * </p>
      */
     public Metadata() {
-        this.ownerId = "";
+        this.ownerIddoc = "";
         this.label = "";
         this.masterValue = "";
         this.type = 0;
@@ -103,16 +104,16 @@ public class Metadata implements Serializable {
      * Constructor for Metadata.
      * </p>
      *
-     * @param ownerId
+     * @param ownerIddoc
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
      * @param paramValue a {@link java.lang.String} object.
      */
-    public Metadata(String ownerId, String label, String masterValue, String paramValue) {
-        this.ownerId = ownerId;
+    public Metadata(String ownerIddoc, String label, String masterValue, String paramValue) {
+        this.ownerIddoc = ownerIddoc;
         this.label = label;
         this.masterValue = masterValue;
-        values.add(new MetadataValue(ownerId + "_" + 0, masterValue));
+        values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue));
         if (paramValue != null) {
             values.get(0).getParamValues().add(new ArrayList<>());
             values.get(0).getParamValues().get(0).add(paramValue);
@@ -133,12 +134,12 @@ public class Metadata implements Serializable {
      * @param paramValue a {@link java.lang.String} object.
      * @param locale
      */
-    public Metadata(String ownerId, String label, String masterValue, MetadataParameter param, String paramValue, Locale locale) {
-        this.ownerId = ownerId;
+    public Metadata(String ownerIddoc, String label, String masterValue, MetadataParameter param, String paramValue, Locale locale) {
+        this.ownerIddoc = ownerIddoc;
         this.label = label;
         this.masterValue = masterValue;
         params.add(param);
-        values.add(new MetadataValue(ownerId + "_" + 0, masterValue));
+        values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue));
         if (paramValue != null) {
             setParamValue(0, 0, Collections.singletonList(paramValue), label, null, null, null, locale);
             //            values.get(0).getParamValues().add(new ArrayList<>());
@@ -329,7 +330,7 @@ public class Metadata implements Serializable {
 
         // Adopt indexes to list sizes, if necessary
         while (values.size() - 1 < valueIndex) {
-            values.add(new MetadataValue(ownerId + "_" + valueIndex, masterValue));
+            values.add(new MetadataValue(ownerIddoc + "_" + valueIndex, masterValue));
         }
         MetadataValue mdValue = values.get(valueIndex);
         mdValue.setGroupType(groupType);
@@ -622,16 +623,17 @@ public class Metadata implements Serializable {
      *
      * @param locale a {@link java.util.Locale} object.
      * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param ownerIddoc IDDOC of the owner document (either docstruct or parent metadata)
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should use default value of no value found
      */
-    public boolean populate(StructElement se, Locale locale) throws IndexUnreachableException, PresentationException {
+    public boolean populate(StructElement se, String ownerIddoc, Locale locale) throws IndexUnreachableException, PresentationException {
         if (se == null) {
             return false;
         }
-        ownerId = String.valueOf(se.getLuceneId());
+        this.ownerIddoc = ownerIddoc;
         ownerDocstrctType = se.getDocStructType();
 
         if (StringUtils.isNotEmpty(citationTemplate)) {
@@ -650,15 +652,15 @@ public class Metadata implements Serializable {
 
         // Grouped metadata
         if (group) {
-            if (se.getMetadataFields().get(label) == null) {
-                // If there is no plain value in the docstruct doc, then there shouldn't be a metadata Solr doc. In this case save time by skipping this field.
+            if (se.getMetadataFields().get(label) == null && parentMetadata == null) {
+                // If there is no plain value in the docstruct doc or this is a child metadata, then there shouldn't be a metadata Solr doc. In this case save time by skipping this field.
                 return false;
             }
-            if (se.getMetadataFields().get(SolrConstants.IDDOC) == null || se.getMetadataFields().get(SolrConstants.IDDOC).isEmpty()) {
-                return false;
-            }
-            String iddoc = String.valueOf(se.getLuceneId());
-            return populateGroup(se, iddoc, locale);
+            //            if (se.getMetadataFields().get(SolrConstants.IDDOC) == null || se.getMetadataFields().get(SolrConstants.IDDOC).isEmpty()) {
+            //                return false;
+            //            }
+
+            return populateGroup(se, ownerIddoc, locale);
         }
 
         // Regular, atomic metadata
@@ -747,18 +749,21 @@ public class Metadata implements Serializable {
         }
 
         return found;
-
     }
 
     /**
      * 
-     * @param se
-     * @param ownerIddoc Owner IDDOC
+     * @param se {@link StructElement}
+     * @param ownerIddoc Owner IDDOC (either docstruct or parent metadata)
      * @param locale
      * @return
      * @throws IndexUnreachableException
      */
     boolean populateGroup(StructElement se, String ownerIddoc, Locale locale) throws IndexUnreachableException {
+        if (ownerIddoc == null) {
+            return false;
+        }
+
         boolean found = false;
 
         try {
@@ -768,6 +773,7 @@ public class Metadata implements Serializable {
             }
             int count = 0;
             for (SolrDocument doc : groupedMdList) {
+                String mdDocIddoc = null;
                 Map<String, List<String>> groupFieldMap = new HashMap<>();
                 // Collect values for all fields in this metadata doc
                 for (String fieldName : doc.getFieldNames()) {
@@ -782,7 +788,10 @@ public class Metadata implements Serializable {
                         values.add(value);
                     } else if (doc.getFieldValue(fieldName) instanceof Collection) {
                         values.addAll(SolrTools.getMetadataValues(doc, fieldName));
-
+                    }
+                    // Collect IDDOC value for use as owner IDDOC for child metadata
+                    if (fieldName.equals(SolrConstants.IDDOC)) {
+                        mdDocIddoc = (String) doc.getFieldValue(fieldName);
                     }
                 }
                 String groupType = null;
@@ -827,10 +836,19 @@ public class Metadata implements Serializable {
                         setParamValue(count, i, Collections.singletonList(""), null, null, null, groupType, locale);
                     }
                 }
-                count++;
+                // Set value IDDOC
+                if (mdDocIddoc != null && values.size() > count) {
+                    values.get(count).setIddoc(mdDocIddoc);
 
-                // Nested metadata groups
-                populateGroup(se, (String) doc.getFieldValue(SolrConstants.IDDOC), locale);
+                    if (!getChildMetadata().isEmpty()) {
+                        for (Metadata child : getChildMetadata()) {
+                            logger.trace("populating child metadata: {}", child.getLabel());
+                            child.populate(se, mdDocIddoc, locale);
+                        }
+                    }
+                }
+
+                count++;
             }
             // logger.trace("GROUP QUERY END");
         } catch (PresentationException e) {
@@ -964,7 +982,21 @@ public class Metadata implements Serializable {
     public void setCitationProcessorWrapper(CitationProcessorWrapper citationProcessorWrapper) {
         this.citationProcessorWrapper = citationProcessorWrapper;
     }
-    
+
+    /**
+     * @return the parentMetadata
+     */
+    public Metadata getParentMetadata() {
+        return parentMetadata;
+    }
+
+    /**
+     * @param parentMetadata the parentMetadata to set
+     */
+    public void setParentMetadata(Metadata parentMetadata) {
+        this.parentMetadata = parentMetadata;
+    }
+
     /**
      * 
      * @return

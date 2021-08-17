@@ -662,7 +662,9 @@ public final class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration> children = sub.configurationsAt("metadata");
         if (children != null && !children.isEmpty()) {
             for (HierarchicalConfiguration child : children) {
-                ret.getChildMetadata().add(getMetadataFromSubnodeConfig(child, topstructValueFallbackDefaultValue));
+                Metadata childMetadata = getMetadataFromSubnodeConfig(child, topstructValueFallbackDefaultValue);
+                childMetadata.setParentMetadata(ret);
+                ret.getChildMetadata().add(childMetadata);
             }
         }
 

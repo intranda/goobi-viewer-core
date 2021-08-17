@@ -39,6 +39,23 @@
                                                     </h:outputFormat>
                                                     <br />
                                                 </ui:repeat>
+                                                <!-- Nested child metadata -->
+                                                <ui:repeat var="child" value="#{metadata.childMetadata}">
+                                                    <dt title="#{msg[child.label]}">
+                                                        <h:outputText value="#{msg[child.label]}:" escape="false" />
+                                                    </dt>
+                                                    <ui:repeat value="#{child.values}" var="cval">
+                                                        <h:panelGroup rendered="#{!metadata.blank}">
+                                                            <h:outputFormat value="#{msg[cval.masterValue]}" escape="false">
+                                                                <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                                    <f:param value="#{cval.getParamLabelWithColon(ind)}" />
+                                                                    <f:param value="#{cval.getComboValueShort(ind)}" />
+                                                                </c:forEach>
+                                                            </h:outputFormat>
+                                                            <br />
+                                                        </h:panelGroup>
+                                                    </ui:repeat>
+                                                </ui:repeat>
                                             </dd>
                                         </h:panelGroup>
     

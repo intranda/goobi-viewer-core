@@ -206,7 +206,7 @@ public class MetadataElement {
 
         for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(metadataViewIndex, se.getDocStructType())) {
             try {
-                if (!metadata.populate(se, sessionLocale)) {
+                if (!metadata.populate(se, String.valueOf(se.getLuceneId()), sessionLocale)) {
                     continue;
                 }
                 if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
@@ -237,7 +237,7 @@ public class MetadataElement {
         // The component is only rendered if sidebarMetadataList != null
         sidebarMetadataList = new ArrayList<>(sidebarMetadataTempList.size());
         for (Metadata metadata : sidebarMetadataTempList) {
-            if (!metadata.populate(se, sessionLocale)) {
+            if (!metadata.populate(se, String.valueOf(se.getLuceneId()), sessionLocale)) {
                 continue;
             }
             if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {

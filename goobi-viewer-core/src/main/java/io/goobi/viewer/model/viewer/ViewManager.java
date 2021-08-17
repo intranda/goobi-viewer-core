@@ -3759,7 +3759,7 @@ public class ViewManager implements Serializable {
         }
         CSL processor = citationProcessorWrapper.getCitationProcessor(citationStyle);
         Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationSource();
-        md.populate(topStructElement, BeanUtils.getLocale());
+        md.populate(topStructElement, String.valueOf(topStructElement.getLuceneId()), BeanUtils.getLocale());
         for (MetadataValue val : md.getValues()) {
             if (!val.getCitationValues().isEmpty()) {
                 Citation citation = new Citation(pi, processor, citationProcessorWrapper.getCitationItemDataProvider(),

@@ -55,7 +55,10 @@ public class MetadataValue implements Serializable {
     private final List<String> paramUrls = new ArrayList<>();
     private final Map<String, String> normDataUrls = new HashMap<>();
     private final Map<String, List<String>> citationValues = new HashMap<>();
+    /** Unique ID for citation item generation */
     private String id;
+    /** IDDOC of the grouped metadata Solr doc. */
+    private String iddoc;
     private String masterValue;
     private String groupType;
     private String docstrct = null;
@@ -333,6 +336,22 @@ public class MetadataValue implements Serializable {
             return paramValues.get(index).get(0);
         }
         return "";
+    }
+    
+    
+
+    /**
+     * @return the iddoc
+     */
+    public String getIddoc() {
+        return iddoc;
+    }
+
+    /**
+     * @param iddoc the iddoc to set
+     */
+    public void setIddoc(String iddoc) {
+        this.iddoc = iddoc;
     }
 
     /**
