@@ -96,10 +96,10 @@
 							class="archives-tree__metadata-box">
 							<ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.allAreaLists}">
 								<h:outputText rendered="#{field.filled}">
-									<div class="archives-tree__metadata-box-fields-row">
+<!-- 									<div class="archives-tree__metadata-box-fields-row"> -->
 										<div class="archives-tree__metadata-box-field-name">#{msg[field.label]}:</div>
 										<div class="archives-tree__metadata-box-field-value">#{field.value}</div>
-									</div>
+<!-- 									</div> -->
 								</h:outputText>
 							</ui:repeat>
 							<div class="archives-tree__metadata-box-links">
