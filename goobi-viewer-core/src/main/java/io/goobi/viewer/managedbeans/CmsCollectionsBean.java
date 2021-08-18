@@ -182,8 +182,11 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
+     * Returns the {@link MessageEntry} representing existing translations for the current value of <code>solrFieldValue</code>. Use for the info
+     * widget in the collection administration.
      * 
-     * @return
+     * @return {@link MessageEntry} containing the translations for <code>solrFieldValue</code>; empty {@link MessageEntry} if none found
+     * @should return empty MessageEntry if none found
      */
     public MessageEntry getMessageEntryForFieldValue() {
         List<TranslationGroup> groups = AdminBean.getTranslationGroupsForSolrFieldStatic(solrField);
@@ -198,6 +201,7 @@ public class CmsCollectionsBean implements Serializable {
                 try {
                     for (MessageEntry entry : item.getEntries()) {
                         if (entry.getKey().equals(solrFieldValue)) {
+                            logger.trace(entry.getKey());
                             return entry;
                         }
 
@@ -209,7 +213,8 @@ public class CmsCollectionsBean implements Serializable {
             }
         }
 
-        return null;
+        // Return new MessageEntry containing empty values for each language
+        return MessageEntry.create(solrFieldValue, ViewerResourceBundle.getAllLocales());
     }
 
     /**
