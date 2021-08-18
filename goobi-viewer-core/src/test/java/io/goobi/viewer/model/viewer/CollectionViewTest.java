@@ -30,7 +30,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -38,13 +38,13 @@ import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class CollectionViewTest extends AbstractDatabaseEnabledTest {
+public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
 
     List<String> collections;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        AbstractDatabaseEnabledTest.setUpClass();
+        AbstractDatabaseAndSolrEnabledTest.setUpClass();
         // Initialize the instance with a custom config file
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
