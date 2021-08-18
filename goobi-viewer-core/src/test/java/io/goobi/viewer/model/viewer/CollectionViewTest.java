@@ -91,13 +91,13 @@ public class CollectionViewTest extends AbstractDatabaseEnabledTest {
         assertTrue(allElements.get(12).getName() == "c.d.a");
     }
 
-    @Test
-    public void testExpandCollection() throws IndexUnreachableException, IllegalRequestException {
-        CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
-        collection.setBaseElementName("c.c");
-        collection.populateCollectionList();
-        List<HierarchicalBrowseDcElement> topElements = new ArrayList<>(collection.getVisibleDcElements());
-    }
+//    @Test
+//    public void testExpandCollection() throws IndexUnreachableException, IllegalRequestException {
+//        CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
+//        collection.setBaseElementName("c.c");
+//        collection.populateCollectionList();
+//        List<HierarchicalBrowseDcElement> topElements = new ArrayList<>(collection.getVisibleDcElements());
+//    }
 
     /**
      * @return
