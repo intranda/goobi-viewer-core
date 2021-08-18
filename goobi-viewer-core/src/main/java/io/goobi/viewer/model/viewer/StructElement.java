@@ -928,7 +928,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     return SolrTools.getSingleFieldStringValue(pages.get(0), field);
                 }
             } catch (NullPointerException | NumberFormatException e) {
-                logger.trace(e.getMessage());
+                // logger.trace(e.getMessage());
             }
         }
 
