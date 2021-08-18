@@ -615,6 +615,12 @@ public final class SearchHelper {
         return Collections.emptyMap();
     }
 
+    /**
+     * 
+     * @param facetResults
+     * @param splittingChar
+     * @return
+     */
     private static Map<String, CollectionResult> createCollectionResults(FacetField facetResults, String splittingChar) {
         Map<String, CollectionResult> ret = new HashMap<>();
         for (Count count : facetResults.getValues()) {

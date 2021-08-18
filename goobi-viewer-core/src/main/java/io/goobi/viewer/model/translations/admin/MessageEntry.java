@@ -44,7 +44,14 @@ public class MessageEntry implements Comparable<MessageEntry> {
      * @should create MessageEntry correctly
      */
     public static MessageEntry create(String key, List<Locale> allLocales) {
-        List<MessageValue> values = new ArrayList<>(ViewerResourceBundle.getAllLocales().size());
+        if (key == null) {
+            throw new IllegalArgumentException("key may not be null");
+        }
+        if (allLocales == null) {
+            throw new IllegalArgumentException("allLocales may not be null");
+        }
+
+        List<MessageValue> values = new ArrayList<>(allLocales.size());
         for (Locale locale : allLocales) {
             String translation = ViewerResourceBundle.getTranslation(key, locale, false, false, false, false);
             String globalTranslation = ViewerResourceBundle.getTranslation(key, locale, false, false, true, false);

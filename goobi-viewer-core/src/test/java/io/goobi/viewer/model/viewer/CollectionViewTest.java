@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,8 +35,6 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.search.CollectionResult;
-import io.goobi.viewer.model.viewer.CollectionView;
-import io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -117,4 +116,16 @@ public class CollectionViewTest extends AbstractDatabaseEnabledTest {
         };
     }
 
+    /**
+     * @see CollectionView#getCollectionUrl(HierarchicalBrowseDcElement,String,String)
+     * @verifies return identifier resolver url if single record and pi known
+     */
+    @Test
+    public void getCollectionUrl_shouldReturnIdentifierResolverUrlIfSingleRecordAndPiKnown() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("collections.redirectToWork", true);
+        CollectionView col = new CollectionView("foo", getTestProvider());
+        HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("bar", 1, "foo", null);
+        element.setSingleRecordPi("PI123");
+        Assert.assertEquals("/piresolver?id=PI123", col.getCollectionUrl(element));
+    }
 }
