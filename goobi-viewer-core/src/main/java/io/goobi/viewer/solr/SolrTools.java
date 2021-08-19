@@ -629,7 +629,6 @@ public class SolrTools {
         for (Count count : ff.getValues()) {
             ret.add(count.getName());
         }
-        ff.get
 
         return Collections.emptySet();
     }
