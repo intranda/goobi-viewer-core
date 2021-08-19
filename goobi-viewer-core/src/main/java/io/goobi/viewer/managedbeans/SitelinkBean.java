@@ -18,22 +18,17 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
-import org.apache.solr.client.solrj.response.FacetField;
-import org.apache.solr.client.solrj.response.FacetField.Count;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -69,48 +64,8 @@ public class SitelinkBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<String> getAvailableValues() throws PresentationException, IndexUnreachableException {
-        return getAvailableValuesForField(DataManager.getInstance().getConfiguration().getSitelinksField(),
+        return SolrTools.getAvailableValuesForField(DataManager.getInstance().getConfiguration().getSitelinksField(),
                 DataManager.getInstance().getConfiguration().getSitelinksFilterQuery());
-    }
-
-    /**
-     * <p>
-     * getAvailableValuesForField.
-     * </p>
-     *
-     * @param field a {@link java.lang.String} object.
-     * @param filterQuery a {@link java.lang.String} object.
-     * @return List of facet values for the given field and query
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @should return all existing values for the given field
-     */
-    public List<String> getAvailableValuesForField(String field, String filterQuery) throws PresentationException, IndexUnreachableException {
-        if (field == null) {
-            throw new IllegalArgumentException("field may not be null");
-        }
-        if (filterQuery == null) {
-            throw new IllegalArgumentException("filterQuery may not be null");
-        }
-
-        filterQuery = SearchHelper.buildFinalQuery(filterQuery, false);
-        QueryResponse qr =
-                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(field), 1, false);
-        if (qr != null) {
-            FacetField facet = qr.getFacetField(field);
-            if (facet != null) {
-                List<String> ret = new ArrayList<>(facet.getValueCount());
-                for (Count count : facet.getValues()) {
-                    // Skip inverted values
-                    if (!StringTools.checkValueEmptyOrInverted(count.getName())) {
-                        ret.add(count.getName());
-                    }
-                }
-                return ret;
-            }
-        }
-
-        return Collections.emptyList();
     }
 
     /**
