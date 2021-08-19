@@ -644,7 +644,7 @@ public class SolrTools {
                     // Skip inverted values
                     if (!StringTools.checkValueEmptyOrInverted(count.getName())) {
                         ret.add(count.getName());
-                        logger.trace(count.getName());
+                        // logger.trace(count.getName());
                     }
                 }
                 return ret;
