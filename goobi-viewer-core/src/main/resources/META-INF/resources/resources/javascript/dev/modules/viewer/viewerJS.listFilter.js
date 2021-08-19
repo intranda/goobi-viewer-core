@@ -55,10 +55,10 @@ var viewerJS = (function (viewer) {
         		$input.val( '' ).trigger( 'input' );
         	}
         } );
-        $( 'body' ).on( 'click', '.widget-search-drilldown__collection h3', function( event ) {
+        $( 'body' ).on( 'click', '.widget-search-facets__collection h3', function( event ) {
         	event.stopImmediatePropagation();
         	
-        	var $input = $( this ).parent().find( '.widget-search-drilldown__filter-input' );
+        	var $input = $( this ).parent().find( '.widget-search-facets__filter-input' );
         	
         	_resetFilters();
         	
@@ -70,19 +70,19 @@ var viewerJS = (function (viewer) {
         } );
 
         // reset filter on esc
-        $( 'body' ).on( 'keyup', '.widget-search-drilldown__filter-input', function( event ) {
+        $( 'body' ).on( 'keyup', '.widget-search-facets__filter-input', function( event ) {
         	switch ( event.keyCode ) {
 	        	case 27:
 	        		$( this ).removeClass( 'in' ).val( '' ).trigger( 'input' );
-	        		$( this ).parents( '.widget-search-drilldown__collection' ).find( 'li' ).show();
+	        		$( this ).parents( '.widget-search-facets__collection' ).find( 'li' ).show();
 	        		break;
         	}
         } );
         
         // reset filter on body click
         $( 'body' ).on( 'click', function( event ) {
-        	if ( $( '.widget-search-drilldown__filter-input' ).hasClass( 'in' ) ) {
-        		if ( event.target.id == 'searchListDrillDownWrapper' || $( event.target ).closest( '#searchListDrillDownWrapper' ).length ) {
+        	if ( $( '.widget-search-facets__filter-input' ).hasClass( 'in' ) ) {
+        		if ( event.target.id == 'searchListFacetsWrapper' || $( event.target ).closest( '#searchListFacetsWrapper' ).length ) {
                     return;
                 }
                 else {
@@ -101,10 +101,10 @@ var viewerJS = (function (viewer) {
     		console.log( 'EXECUTE: _resetFilters' );
     	}
     	
-    	$( '.widget-search-drilldown__filter-input' ).each( function() {
+    	$( '.widget-search-facets__filter-input' ).each( function() {
     		if ( $( this ).hasClass( 'in' ) ) {
     			$( this ).removeClass( 'in' ).val( '' ).trigger( 'input' );
-    			$( this ).parents( '.widget-search-drilldown__collection' ).find( 'li' ).show();
+    			$( this ).parents( '.widget-search-facets__collection' ).find( 'li' ).show();
     		}
     	} );
     }

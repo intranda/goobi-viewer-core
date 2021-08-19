@@ -19,15 +19,15 @@
     <composite:implementation>
         <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetFieldFacets' or cc.attrs.widget.type == null}">
                 <div id="searchListFacetsWrapper" class="widget-search-facets #{cc.attrs.widget.cssClass}">
-                    <h:form id="searchListDrillDownForm" prependId="false">
+                    <h:form id="searchListFacetsForm" prependId="false">
                         <!-- DRILL DOWN -->
                         <ui:param name="field" value="#{cc.attrs.widget.searchField}"></ui:param>
-                                 <div class="widget widget-search-drilldown__collection">
+                                 <div class="widget widget-search-facets__collection">
                                     <h3><span>#{msg[field.concat('_DD')]}</span></h3>
                                     
                                     <!-- FILTER FACETS -->
-                                    <div class="widget-search-drilldown__filter">
-                                        <input type="text" id="collectionDrillDownFilter" tabindex="-1" class="widget-search-drilldown__filter-input -no-outline" placeholder="#{msg.placeholder__filter_search_results}" aria-label="#{msg.placeholder__filter_search_results}"/>
+                                    <div class="widget-search-facets__filter">
+                                        <input type="text" id="collectionFacetsFilter" tabindex="-1" class="widget-search-facets__filter-input -no-outline" placeholder="#{msg.placeholder__filter_search_results}" aria-label="#{msg.placeholder__filter_search_results}"/>
                                         <button type="button" class="btn btn--clean" data-toggle="filter-input" aria-label="#{msg.placeholder__filter_search_results}">
                                         	<i class="fa fa-search" aria-hidden="true"></i>
                                         </button>

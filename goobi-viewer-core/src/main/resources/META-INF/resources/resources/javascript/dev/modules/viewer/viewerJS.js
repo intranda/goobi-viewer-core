@@ -40,7 +40,7 @@ var viewerJS = (function () {
         widgetNerSidebarRight: false,
         accessDeniedImage: '',
         notFoundImage: '',
-        activateDrilldownFilter: true
+        activateFacetsFilter: true
     };
     
 
@@ -183,12 +183,12 @@ var viewerJS = (function () {
         });
 
         // init search facets filter
-        if (_defaults.activateDrilldownFilter) {
-            this.initDrillDownFilters();
+        if (_defaults.activateFacetsFilter) {
+            this.initFacetsFilters();
             this.jsfAjax.success.subscribe(e => {
             	let collapseLink = $(e.source).attr("data-collapse-link");
             	if(collapseLink) {
-            		this.initDrillDownFilters();
+            		this.initFacetsFilters();
             	}
         	});
         }
@@ -412,7 +412,7 @@ var viewerJS = (function () {
         sessionStorage.setItem('scrollPositions', JSON.stringify(scrollPositions));
     }
 
-    viewer.initDrillDownFilters = function () {
+    viewer.initFacetsFilters = function () {
         var $facets = $('.widget-search-facets__collection');
 
         $facets.each(function () {
