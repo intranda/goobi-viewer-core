@@ -40,7 +40,7 @@ var viewerJS = (function () {
         widgetNerSidebarRight: false,
         accessDeniedImage: '',
         notFoundImage: '',
-        activateDrilldownFilter: true
+        activateFacetsFilter: true
     };
     
 
@@ -184,13 +184,13 @@ var viewerJS = (function () {
             $(href).collapse('show');
         });
 
-        // init search drilldown filter
-        if (_defaults.activateDrilldownFilter) {
-            this.initDrillDownFilters();
+        // init search facets filter
+        if (_defaults.activateFacetsFilter) {
+            this.initFacetsFilters();
             this.jsfAjax.success.subscribe(e => {
             	let collapseLink = $(e.source).attr("data-collapse-link");
             	if(collapseLink) {
-            		this.initDrillDownFilters();
+            		this.initFacetsFilters();
             	}
         	});
         }
@@ -414,13 +414,13 @@ var viewerJS = (function () {
         sessionStorage.setItem('scrollPositions', JSON.stringify(scrollPositions));
     }
 
-    viewer.initDrillDownFilters = function () {
-        var $drilldowns = $('.widget-search-drilldown__collection');
+    viewer.initFacetsFilters = function () {
+        var $facets = $('.widget-search-facets__collection');
 
-        $drilldowns.each(function () {
+        $facets.each(function () {
             var filterConfig = {
-                wrapper: $(this).find('.widget-search-drilldown__filter'),
-                input: $(this).find('.widget-search-drilldown__filter-input'),
+                wrapper: $(this).find('.widget-search-facets__filter'),
+                input: $(this).find('.widget-search-facets__filter-input'),
                 elements: $(this).find('li a')
             }
 

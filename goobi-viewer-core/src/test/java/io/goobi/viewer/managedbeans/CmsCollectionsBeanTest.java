@@ -22,6 +22,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean.CMSCollectionImageMode;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.translations.admin.MessageEntry;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -103,5 +104,19 @@ public class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.solrField = SolrConstants.DC; // Do not use the setter, that'd require more test infrastructure
         bean.setSolrFieldValue("dcmetadata");
         Assert.assertTrue(bean.isDisplayTranslationWidgetEdit());
+    }
+
+    /**
+     * @see CmsCollectionsBean#getMessageEntryForFieldValue()
+     * @verifies return empty MessageEntry if none found
+     */
+    @Test
+    public void getMessageEntryForFieldValue_shouldReturnEmptyMessageEntryIfNoneFound() throws Exception {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        bean.solrField = "foo";
+        bean.setSolrFieldValue("bar");
+        MessageEntry entry = bean.getMessageEntryForFieldValue();
+        Assert.assertNotNull(entry);
+        Assert.assertEquals(2, entry.getValues().size());
     }
 }

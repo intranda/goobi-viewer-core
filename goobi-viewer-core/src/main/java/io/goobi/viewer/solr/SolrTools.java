@@ -23,16 +23,21 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -47,6 +52,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -605,6 +611,27 @@ public class SolrTools {
         }
 
         return conditions.trim();
+    }
+
+    public static Set<String> getExistingSubthemes() throws PresentationException, IndexUnreachableException {
+        String subthemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+        if (StringUtils.isEmpty(subthemeDiscriminatorField)) {
+            return Collections.emptySet();
+        }
+        QueryResponse qr = DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(SolrConstants.PI + ":*", null, Collections.singletonList(subthemeDiscriminatorField), 1, false);
+        FacetField ff = qr.getFacetField(subthemeDiscriminatorField);
+        if (ff == null) {
+            return Collections.emptySet();
+        }
+        Set<String> ret = new HashSet<>(ff.getValueCount());
+        for (Count count : ff.getValues()) {
+            ret.add(count.getName());
+        }
+        ff.get
+
+        return Collections.emptySet();
     }
 
     /**
