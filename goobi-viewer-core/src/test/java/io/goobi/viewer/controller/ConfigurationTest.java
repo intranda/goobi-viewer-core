@@ -3077,4 +3077,13 @@ public class ConfigurationTest extends AbstractTest {
             Assert.assertEquals(2, group.getItems().size());
         }
     }
+
+    /**
+     * @see Configuration#isPageBrowseEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isPageBrowseEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isPageBrowseEnabled());
+    }
 }

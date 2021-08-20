@@ -4534,9 +4534,10 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isPageBrowseEnabled() {
-        return getLocalBoolean("viewer.pageBrowse.enabled", false);
+        return getLocalBoolean("viewer.pageBrowse[@enabled]", false);
     }
 
     /**

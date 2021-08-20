@@ -226,9 +226,8 @@
 	</epub>
 
 	<viewer>
-
-		<pageBrowse>
-			<enabled>true</enabled>
+        <!-- pageBrowse/@enabled: if true, page browsing through the record in different steps is allowed. Default is false. -->
+		<pageBrowse enabled="true">
 			<pageBrowseStep>0</pageBrowseStep>
 			<pageBrowseStep>5</pageBrowseStep>
 			<pageBrowseStep>10</pageBrowseStep>
