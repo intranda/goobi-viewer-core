@@ -2690,7 +2690,7 @@ public class CmsBean implements Serializable {
         this.selectedMediaHolder.ifPresent(contentItem -> {
             String filter = contentItem.getMediaFilter();
             if (StringUtils.isBlank(filter)) {
-                filter = CmsMediaBean.getImageFilter();
+                filter = "(" + CmsMediaBean.getImageFilter() + ")|(" + CmsMediaBean.getVideoFilter() + ")";
             }
             cmsMediaBean.setFilenameFilter(filter);
             if (contentItem.hasMediaItem()) {

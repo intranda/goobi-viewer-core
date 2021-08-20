@@ -30,6 +30,8 @@ public class GeoMapFeature {
     private String description;
     private String link;
     private String json;
+    //This is used to identify the feature with a certain document, specifically a LOGID of a TOC element
+    private String documentId = null;
 
     public GeoMapFeature() {
     }
@@ -82,6 +84,20 @@ public class GeoMapFeature {
     public void setLink(String link) {
         this.link = link;
     }
+    
+    /**
+     * @param documentId the documentId to set
+     */
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
+    
+    /**
+     * @return the documentId
+     */
+    public String getDocumentId() {
+        return documentId;
+    }
 
     /**
      * @return the json
@@ -112,6 +128,9 @@ public class GeoMapFeature {
         }
         if (StringUtils.isNotBlank(this.link)) {
             properties.append("link", this.link);
+        }
+        if (StringUtils.isNotBlank(this.documentId)) {
+            properties.append("documentId", this.documentId);
         }
         return object;
     }

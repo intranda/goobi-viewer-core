@@ -55,7 +55,14 @@
 				
 				<ui:fragment rendered="#{cmsPage.hasContent('image01')}">
                     <figure class="tpl-simple__image">
-    					<img src="#{cmsPage.getContent('image01')}" class="img-fluid" title="#{cmsPage.getMediaName('image01')}" />
+                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cmsPage.getContentItem('image01').mediaItem)}">
+	    					<img src="#{cmsPage.getContent('image01')}" class="img-fluid" title="#{cmsPage.getMediaName('image01')}" />
+                    	</ui:fragment>
+                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cmsPage.getContentItem('image01').mediaItem)}">
+	    					<video src="#{cmsPage.getContent('image01')}" class="img-fluid" title="#{cmsPage.getMediaName('image01')}">
+	    						<source src="#{cmsPage.getContent('image01')}"/>
+	    					</video>
+                    	</ui:fragment>
                         <figcaption>
                             #{cmsPage.getMediaDescription('image01')}
                         </figcaption>

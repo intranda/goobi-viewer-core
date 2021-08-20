@@ -1376,7 +1376,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String removeFacetAction(String facetQuery) {
-
+        //reset the search result list to page one since the result list will necessarily change when removing the facet
+        setCurrentPage(1);
         //redirect to current cms page if this action takes place on a cms page
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
