@@ -104,7 +104,7 @@ public class BrowseBean implements Serializable {
     private int currentPage = -1;
 
     private Map<String, CollectionView> collections = new HashMap<>();
-    private String collectionField;
+    private String collectionField = SolrConstants.DC;
 
     /**
      * Empty constructor.

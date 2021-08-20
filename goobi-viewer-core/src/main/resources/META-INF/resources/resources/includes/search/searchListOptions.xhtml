@@ -32,8 +32,8 @@
 	        </h:panelGroup>
 	
 	        <!-- SAVE SEARCH -->
-	        <h:panelGroup rendered="#{userBean.loggedIn and searchBean.searchSavingEnabled and !searchBean.currentSearch.saved}">
-	            <viewerComponent:searchSaveDialog />
+	        <h:panelGroup prependId="false" rendered="#{userBean.loggedIn and searchBean.searchSavingEnabled and !searchBean.currentSearch.saved}">
+	            <viewerComponent:searchSaveDialog prependId="false" />
 	        </h:panelGroup>
 	
 	        <!-- SEARCH EXPORT -->

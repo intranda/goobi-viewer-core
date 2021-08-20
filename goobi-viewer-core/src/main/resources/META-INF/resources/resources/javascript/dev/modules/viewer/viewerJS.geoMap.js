@@ -276,6 +276,7 @@ var viewerJS = ( function( viewer ) {
             style: {
             	stroke: true,
             	color: '#3388ff',
+            	highlightColor: '#d9534f',
             	wight: 3,
             	opactity: 1.0,
             	fill: true,
@@ -321,7 +322,14 @@ var viewerJS = ( function( viewer ) {
         this.locations = L.geoJSON([], {
             
             style: function(feature) {
-            	return this.config.style;
+            	if(feature.properties && feature.properties.highlighted) {
+					let style = $.extend(true, {}, this.config.style);
+					style.color = this.config.style.highlightColor;
+            		console.log("get style for feature", feature, style, this.config.style);
+					return style;       		
+            	} else {
+	            	return this.config.style;
+            	}
             }.bind(this),
             
             pointToLayer: function(geoJsonPoint, latlng) {
@@ -356,7 +364,8 @@ var viewerJS = ( function( viewer ) {
                     }
                     layer.bindPopup(() => this.createPopup(layer),{
                     	closeButton: !this.config.popoverOnHover,
-                    	autoPan: false
+                    	autoPan: false,
+                    	closeOnClick: false,
                     });
                 }
             	this.markers.push(layer);    

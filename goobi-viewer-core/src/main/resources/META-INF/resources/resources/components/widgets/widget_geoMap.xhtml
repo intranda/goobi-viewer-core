@@ -14,6 +14,8 @@
     	<composite:attribute name="title" required="false" default="#{cc.attrs.widget.geoMap.title}" />
     	<composite:attribute name="showAnnotations" type="java.lang.Boolean" required="false" default="false"/>
     	<composite:attribute name="popoverOnHover" type="java.lang.Boolean" required="false" default="false"/>
+    	<composite:attribute name="popoverClass" required="false" default="geomap_popover"/>
+    	<composite:attribute name="highlightDocumentId" required="false" default=""/>
     </composite:interface>
 
     <composite:implementation>
@@ -33,15 +35,11 @@
                     </h3>
 
                     <!-- MAP -->
-                    <viewerComponent:geoMap 
-                    showPopover="true" popoverOnHover="#{cc.attrs.popoverOnHover}"
+                    <viewerComponent:geoMap highlightDocumentId="#{cc.attrs.highlightDocumentId}"
+                    showPopover="true" popoverOnHover="#{cc.attrs.popoverOnHover}" popoverClass="#{cc.attrs.popoverClass}"
                     showAnnotations="#{cc.attrs.showAnnotations}" geoMap="#{cc.attrs.widget.geoMap}" linkToSearch="#{cc.attrs.linkToSearch}" mapId="widget_geoMap_#{cc.attrs.widget.geoMapId}"></viewerComponent:geoMap>
                 </div>
             </h:panelGroup>
-<!--             <popover id="geoMapPopoverTemplate_#{cc.attrs.widget.geoMapId}"> -->
-<!--            		<h4 data-metadata="title"></h4> -->
-<!--            		<span data-metadata="description"></span> -->
-<!--            	</popover> -->
             <script type="text/javascript">	  
           //<![CDATA[
             $("#widgetGeoMap_#{cc.attrs.widget.geoMapId}").show();

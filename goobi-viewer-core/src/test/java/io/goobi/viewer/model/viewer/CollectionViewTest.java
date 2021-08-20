@@ -125,7 +125,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         DataManager.getInstance().getConfiguration().overrideValue("collections.redirectToWork", true);
         CollectionView col = new CollectionView("foo", getTestProvider());
         HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("bar", 1, "foo", null);
-        element.setSingleRecordPi("PI123");
-        Assert.assertEquals("/piresolver?id=PI123", col.getCollectionUrl(element));
+        element.setSingleRecordUrl("/object/PI123/1/LOG_0001/");
+        Assert.assertEquals("/object/PI123/1/LOG_0001/", col.getCollectionUrl(element));
     }
 }

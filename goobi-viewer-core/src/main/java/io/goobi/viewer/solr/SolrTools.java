@@ -23,12 +23,10 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
@@ -49,11 +47,13 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -613,24 +613,61 @@ public class SolrTools {
         return conditions.trim();
     }
 
-    public static Set<String> getExistingSubthemes() throws PresentationException, IndexUnreachableException {
-        String subthemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
-        if (StringUtils.isEmpty(subthemeDiscriminatorField)) {
-            return Collections.emptySet();
+    /**
+     * <p>
+     * getAvailableValuesForField.
+     * </p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @param filterQuery a {@link java.lang.String} object.
+     * @return List of facet values for the given field and query
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return all existing values for the given field
+     */
+    public static List<String> getAvailableValuesForField(String field, String filterQuery) throws PresentationException, IndexUnreachableException {
+        if (field == null) {
+            throw new IllegalArgumentException("field may not be null");
         }
-        QueryResponse qr = DataManager.getInstance()
-                .getSearchIndex()
-                .searchFacetsAndStatistics(SolrConstants.PI + ":*", null, Collections.singletonList(subthemeDiscriminatorField), 1, false);
-        FacetField ff = qr.getFacetField(subthemeDiscriminatorField);
-        if (ff == null) {
-            return Collections.emptySet();
-        }
-        Set<String> ret = new HashSet<>(ff.getValueCount());
-        for (Count count : ff.getValues()) {
-            ret.add(count.getName());
+        if (filterQuery == null) {
+            throw new IllegalArgumentException("filterQuery may not be null");
         }
 
-        return Collections.emptySet();
+        filterQuery = SearchHelper.buildFinalQuery(filterQuery, false);
+        QueryResponse qr =
+                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(field), 1, false);
+        if (qr != null) {
+            FacetField facet = qr.getFacetField(field);
+            if (facet != null) {
+                List<String> ret = new ArrayList<>(facet.getValueCount());
+                for (Count count : facet.getValues()) {
+                    // Skip inverted values
+                    if (!StringTools.checkValueEmptyOrInverted(count.getName())) {
+                        ret.add(count.getName());
+                        // logger.trace(count.getName());
+                    }
+                }
+                return ret;
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * 
+     * @return List of existing values for the configured subtheme discriminator field
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should return correct values
+     */
+    public static List<String> getExistingSubthemes() throws PresentationException, IndexUnreachableException {
+        String subthemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+        if (StringUtils.isEmpty(subthemeDiscriminatorField)) {
+            return Collections.emptyList();
+        }
+
+        return getAvailableValuesForField(subthemeDiscriminatorField, SolrConstants.PI + ":*");
     }
 
     /**

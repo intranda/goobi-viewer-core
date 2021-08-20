@@ -28,7 +28,7 @@
                         <!-- TODO record already added to Transkribus -->
                         <h:panelGroup rendered="#{configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS'}">
                             <li>
-                                <a href="#" data-toggle="modal" data-target="#transkribusModal"> #{msg.transkribus_add} </a>
+                                <a href="#" data-toggle="modal" data-target="#transkribusModal" data-backdrop="false"> #{msg.transkribus_add} </a>
 
                                 <!-- TRANSKRIBUS MODAL -->
                                 <div class="modal fade" id="transkribusModal" tabindex="-1" role="dialog" aria-labelledby="transkribusModalLabel">
@@ -66,6 +66,7 @@
                                             </div>
                                         </div>
                                     </div>
+									<div class="alt-backdrop" data-dismiss="modal"></div>
                                 </div>
                             </li>
                         </h:panelGroup>

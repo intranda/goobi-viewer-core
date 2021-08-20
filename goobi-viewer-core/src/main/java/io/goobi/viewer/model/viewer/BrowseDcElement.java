@@ -45,7 +45,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     private final String field;
     public final String splittingChar;
     private long number;
-    private String singleRecordPi = null;
+    private String singleRecordUrl = null;
     private String sortField = "-";
     private boolean showSubElements = false;
     private boolean hasSubelements = false;
@@ -277,17 +277,17 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * @return the singleRecordPi
+     * @return the singleRecordUrl
      */
-    public String getSingleRecordPi() {
-        return singleRecordPi;
+    public String getSingleRecordUrl() {
+        return singleRecordUrl;
     }
 
     /**
-     * @param singleRecordPi the singleRecordPi to set
+     * @param singleRecordUrl the singleRecordUrl to set
      */
-    public void setSingleRecordPi(String singleRecordPi) {
-        this.singleRecordPi = singleRecordPi;
+    public void setSingleRecordUrl(String singleRecordUrl) {
+        this.singleRecordUrl = singleRecordUrl;
     }
 
     /**

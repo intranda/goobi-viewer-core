@@ -38,6 +38,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
+import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -126,9 +127,9 @@ public class CollectionView {
                         SolrDocument doc = DataManager.getInstance()
                                 .getSearchIndex()
                                 .getFirstDoc("+" + SolrConstants.PI + ":* +" + field + ":\"" + dcName + "\"",
-                                        Collections.singletonList(SolrConstants.PI));
-                        if (doc != null && doc.getFieldValue(SolrConstants.PI) != null) {
-                            dc.setSingleRecordPi((String) doc.getFieldValue(SolrConstants.PI));
+                                        null);
+                        if (doc != null) {
+                            dc.setSingleRecordUrl(IdentifierResolver.constructUrl(doc, false));
                         }
                     }
                     int collectionLevel = dc.getLevel();
@@ -969,10 +970,12 @@ public class CollectionView {
             return ret;
         } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
             // Link directly to single record, if record PI known
-            if (collection.getSingleRecordPi() != null) {
-                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/piresolver?id=")
-                        .append(collection.getSingleRecordPi())
-                        .toString();
+            if (collection.getSingleRecordUrl() != null) {
+
+                //                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/piresolver?id=")
+                //                        .append(collection.getSingleRecordPi())
+                //                        .toString();
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + collection.getSingleRecordUrl();
             }
             return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                     .append("/browse/")

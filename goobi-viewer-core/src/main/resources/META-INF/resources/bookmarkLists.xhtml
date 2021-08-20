@@ -4,14 +4,13 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	
+
 	template="/resources/themes/#{navigationHelper.theme}/template.html"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-	<composite:interface>
-	</composite:interface>
+	<composite:interface />
 
     <ui:define name="metadata">
         <f:metadata>
@@ -24,7 +23,7 @@
         <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
 
-    <ui:define name="content">    
+    <ui:define name="content">
         <div id="userBookmarkLists" class="user-bookshelves">
             <h2>#{msg.bookmarkList_bookmarkLists}</h2>
 
@@ -48,25 +47,29 @@
                         </div>
                     </h:form>
                 </h:panelGroup>
-                
+
             </h:panelGroup>
         </div>
-        
+
         <script type="text/javascript">
         	viewerJS.clipboard.init();
             function onClickCopy(target) {
         	    $(target).css("cursor", "default");
         	}
         </script>
-        
+
 	</ui:define>
 
     <ui:define name="sidebar">
+        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+            <widgetComponent:widget_browsing />
+        </h:panelGroup>
+
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
             </c:forEach>
         </c:forEach>
 	</ui:define>
-	
+
 </ui:composition>

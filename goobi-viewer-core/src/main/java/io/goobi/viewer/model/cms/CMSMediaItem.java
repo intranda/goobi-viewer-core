@@ -81,9 +81,11 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     public static final String CONTENT_TYPE_PDF = "application/pdf";
     /** Constant <code>CONTENT_TYPE_GIF="application/gif"</code> */
     public static final String CONTENT_TYPE_GIF = "image/gif";
-    /** Constant <code>CONTENT_TYPE_MP4="video/mp4"</code> */
-    public static final String CONTENT_TYPE_MP4 = "video/mp4";
-
+    /** Constant <code>CONTENT_TYPE_VIDEO="video"</code> */
+    public static final String CONTENT_TYPE_VIDEO = "video";
+    /** Constant <code>CONTENT_TYPE_AUDIO="audio"</code> */
+    public static final String CONTENT_TYPE_AUDIO = "audio";
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_media_item_id")
@@ -138,7 +140,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         this.displayOrder = orig.displayOrder;
         this.categories = new ArrayList<>(orig.getCategories());
         this.lastModifiedTime = orig.lastModifiedTime;
-
+        
         for (CMSMediaItemMetadata origMetadata : orig.metadata) {
             CMSMediaItemMetadata copy = new CMSMediaItemMetadata(origMetadata);
             this.metadata.add(copy);
@@ -216,7 +218,16 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                 return CONTENT_TYPE_GIF;
             case "mp4":
             case "mpeg4":
-                return CONTENT_TYPE_MP4;
+            case "avi":
+            case "mov":
+            case "wmv":
+               return CONTENT_TYPE_VIDEO;
+            case "mp3":
+            case "mpeg":
+            case "wav":
+            case "ogg":
+            case "wma":
+                return CONTENT_TYPE_AUDIO;
             default:
                 return "";
         }

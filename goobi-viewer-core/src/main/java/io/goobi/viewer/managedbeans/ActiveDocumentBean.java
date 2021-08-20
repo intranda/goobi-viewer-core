@@ -126,6 +126,8 @@ public class ActiveDocumentBean implements Serializable {
     private ImageDeliveryBean imageDelivery;
     @Inject
     private BreadcrumbBean breadcrumbBean;
+    @Inject
+    private ContentBean contentBean;
 
     /** URL parameter 'action'. */
     private String action = "";
@@ -2289,10 +2291,12 @@ public class ActiveDocumentBean implements Serializable {
                         String labelField = "METADATA".equals(docType) ? "MD_VALUE" : SolrConstants.LABEL;
                         docFeatures.addAll(GeoMap.getGeojsonPoints(solrDocument, coordinateField, labelField, null));
                     }
-                    if (!solrDocument.containsKey(SolrConstants.ISWORK) && solrDocument.getFieldValue(SolrConstants.DOCTYPE).equals("DOCSTRCT") &&
-                            !solrDocument.getFieldValue(SolrConstants.LOGID).equals(getViewManager().getLogId())) {
+                    if (!solrDocument.containsKey(SolrConstants.ISWORK) && solrDocument.getFieldValue(SolrConstants.DOCTYPE).equals("DOCSTRCT")) {
                         docFeatures.forEach(f -> f.setLink(PrettyUrlTools.getRecordUrl(solrDocument, pageType)));
+                    } else {
+                        docFeatures.forEach(f -> f.setLink(null));
                     }
+                    docFeatures.forEach(f -> f.setDocumentId((String)solrDocument.getFieldValue(SolrConstants.LOGID)));
                     features.addAll(docFeatures);
                 }
                 if (!features.isEmpty()) {

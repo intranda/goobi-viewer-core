@@ -8,14 +8,10 @@
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	template="/resources/themes/#{navigationHelper.theme}/template.html">
 
-	<composite:interface></composite:interface>
-
 	<ui:define name="metadata">
 		<f:metadata>
-			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPage('annotations', false, true)}" />
-			<f:event type="preRenderView"
-				listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.annotations,1)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('annotations', false, true)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.annotations,1)}" />
 		</f:metadata>
 	</ui:define>
 
@@ -74,7 +70,7 @@
 											colHeading="#{msg.date}"
 											list="#{userDataBean.lazyModelAnnotations}" />
 									</div>
-									
+
 									<!-- REVIEW STATE COL -->
 									<div class="col-1 d-none d-lg-flex" style="justify-content: center;">
 									        <span class="admin__sorting-table-heading">#{msg.label__crowdsourcing_review}</span>
@@ -128,7 +124,7 @@
 							</div>
 						</div>
 						<script>
-						$(document).ready(() => {						    
+						$(document).ready(() => {
                             riot.mount( "annotationBody", {
                                 currentlang: "#{navigationHelper.localeString}",
                                 resturl: "#{configurationBean.restApiUrlV1}",
@@ -140,8 +136,6 @@
 				</div>
 			</h:panelGroup>
 		</div>
-
-
 	</ui:define>
 
 	<ui:define name="sidebar">
