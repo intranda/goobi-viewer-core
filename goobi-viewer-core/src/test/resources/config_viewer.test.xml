@@ -764,10 +764,8 @@
 		</calendarDocstructTypes>
 
 		<!-- browsingMenu: configuration of the browsing section (Stoebern) -->
-		<browsingMenu>
-			<!-- enabled: if false, the browsing section is hidden -->
-			<enabled>false</enabled>
-
+        <!-- @enabled: if false, the browsing section is hidden -->
+		<browsingMenu enabled="false">
 			<!-- hitsPerPage: defines the maximum number of hits that are displayed 
 				per page -->
 			<hitsPerPage>19</hitsPerPage>

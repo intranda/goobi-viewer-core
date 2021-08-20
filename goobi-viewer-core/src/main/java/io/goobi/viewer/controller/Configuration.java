@@ -951,7 +951,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isBrowsingMenuEnabled() {
-        return getLocalBoolean("metadata.browsingMenu.enabled", false);
+        return getLocalBoolean("metadata.browsingMenu[@enabled]", false);
     }
 
     /**
