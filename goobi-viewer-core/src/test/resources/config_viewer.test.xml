@@ -951,23 +951,23 @@
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
 	
-		<!-- sidebarWidgetDownloads: If true, the download widget within a records 
+		<!-- @enabled: If true, the download widget within a records 
 			view for additional files from the source directory is displayed. Default 
 			is true. -->
-		<sidebarWidgetDownloads visible="true" introductionText="MASTERVALUE_DOWNLOADS_INTRO">
-	
+		<sidebarWidgetDownloads enabled="true" introductionText="MASTERVALUE_DOWNLOADS_INTRO">
 			<!-- hideFileRegex: If a regular expression is defined, files matching 
 				it are hidden from the widget display. The download is still possible. -->
 			<hideFileRegex>(wug_.*|AK_.*)</hideFileRegex>
 		</sidebarWidgetDownloads>
 	
-	    <!-- sidebarBrowsingTerms: If true, the sidebar term browsing widget it displayed. Default is true. -->
-        <sidebarBrowsingTerms display="false" />
+	    <!-- @enabled: If true, the sidebar term browsing widget it displayed. Default is true. -->
+        <sidebarBrowsingTerms enabled="false" />
         
-        <!-- sidebarBrowsingTerms: If true, the sidebar RSS widget it displayed. Default is true. -->
-        <sidebarRssFeed display="false" />
+        <!-- @enabled: If true, the sidebar RSS widget it displayed. Default is true. -->
+        <sidebarRssFeed enabled="false" />
 
-        <sidebarWidgetUsage display="false" introductionText="MASTERVALUE_USAGE_INTRO">
+        <!-- @enabled: Show or hide the widget including download links for record and page while viewing the object -->
+        <sidebarWidgetUsage enabled="false" introductionText="MASTERVALUE_USAGE_INTRO">
             <page>
                 <downloadOptions>
                 <!-- Each option contains a label and a format. The label is translated via the messages. 
@@ -1008,35 +1008,25 @@
             </citationLinks>
         </sidebarWidgetUsage>
 
-		<!-- page: if false, the image view is hidden -->
-		<page>
-			<visible>false</visible>
-		</page>
+		<!-- @enabled: if false, the image view is hidden -->
+		<page enabled="false" />
 
-		<!-- calendar: if false, the calendar view link is hidden -->
-		<calendar>
-			<visible>false</visible>
-		</calendar>
+		<!-- @enabled: if false, the calendar view link is hidden -->
+		<calendar enabled="false" />
 
-		<!-- toc: if false, the TOC link is hidden (This is the link to the TOC 
+		<!-- @enabled: if false, the TOC link is hidden (This is the link to the TOC 
 			page in the work menu, not the sidebar TOC component!) -->
-		<toc>
-			<visible>false</visible>
-		</toc>
+		<toc enabled="false" />
 
-		<!-- thumbs: if false, the thumbnail view is hidden -->
-		<thumbs>
-			<visible>false</visible>
-		</thumbs>
+		<!-- @enabled: if false, the thumbnail view is hidden -->
+		<thumbs enabled="false" />
 
-        <!-- searchInItem: if false, no widget for searching in the currently show record will be displayed. Default is true. -->
-		<searchInItem>
-			<visible>false</visible>
-		</searchInItem>
+        <!-- @enabled: if false, no widget for searching in the currently show record will be displayed. Default is true. -->
+		<searchInItem enabled="false" />
 
-		<metadata>
+        <!-- @enabled -->
+		<metadata enabled="false">
 			<!-- metadata: if false, the bibliographic data view is hidden -->
-			<visible>false</visible>
 			<!-- showEventMetadata: if false, the event metadata of LIDO records is 
 				hidden (default is true) -->
 			<showEventMetadata>false</showEventMetadata>
@@ -1044,16 +1034,12 @@
             <showRecordLabelIfNoOtherViews>true</showRecordLabelIfNoOtherViews>
 		</metadata>
 
-		<!-- fulltext: if false, the fulltext view is hidden -->
-		<fulltext>
-			<visible>false</visible>
-		</fulltext>
+		<!-- @enabled: if false, the fulltext view is hidden -->
+		<fulltext enabled="false" />
 
 		<!-- sidebarToc: configuration of the sidebar TOC component -->
-		<sidebarToc>
-			<!-- visible: if false, the sidebar toc is hidden -->
-			<visible>false</visible>
-			
+        <!-- @enabled: if false, the sidebar toc is hidden -->
+		<sidebarToc enabled="false">
 			<!-- visibleInFullscreen: If false, the sidebar TOC element won't be visible in the full-screen sidebar accordion -->
             <visibleInFullscreen>false</visibleInFullscreen>
 
@@ -1079,10 +1065,8 @@
 			</collapseLengthThreshold>
 		</sidebarToc>
 		
-        <!-- opac: If true, the OPAC link from the current record will be displayed. Default is false. -->
-        <opac>
-            <visible>true</visible>
-        </opac>
+        <!-- @enabled: If true, the OPAC link from the current record will be displayed. Default is false. -->
+        <opac enabled="true" />
 	</sidebar>
 
 
