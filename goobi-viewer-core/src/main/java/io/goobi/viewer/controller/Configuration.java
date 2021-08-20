@@ -2893,7 +2893,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSortingEnabled() {
-        return getLocalBoolean("search.sorting.enabled", true);
+        return getLocalBoolean("search.sorting[@enabled]", true);
     }
 
     /**

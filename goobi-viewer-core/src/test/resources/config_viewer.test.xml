@@ -407,10 +407,8 @@
 			<filter>filter_FIELD2</filter>
 			<filter>filter_FIELD3</filter>
 		</filters>
-		<sorting>
-			<!-- enabled: if false, the option to sort search hits is hidden (since 
-				2.0) -->
-			<enabled>false</enabled>
+		<!-- @enabled: if false, the option to sort search hits is hidden (since 2.0) -->
+        <sorting enabled="false">
 			<!-- Fields used for sorting. Fields must be configured as 'multiValued="false"' 
 				in the Solr schema. -->
 			<!-- defaultSortField: Field used for initial sorting. Multiple semicolon-separated 
