@@ -199,4 +199,25 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
         Assert.assertEquals("value_B", map.get("field_B").get(0).getValue("fr").orElse(map.get("field_B").get(0).getValue().orElse("")));
     }
 
+    /**
+     * @see SolrTools#getAvailableValuesForField(String,String)
+     * @verifies return all existing values for the given field
+     */
+    @Test
+    public void getAvailableValuesForField_shouldReturnAllExistingValuesForTheGivenField() throws Exception {
+        List<String> values = SolrTools.getAvailableValuesForField("MD_YEARPUBLISH", SolrConstants.ISWORK + ":true");
+        Assert.assertFalse(values.isEmpty());
+    }
+
+    /**
+     * @see SolrTools#getExistingSubthemes()
+     * @verifies return correct values
+     */
+    @Test
+    public void getExistingSubthemes_shouldReturnCorrectValues() throws Exception {
+        List<String> result = SolrTools.getExistingSubthemes();
+        Assert.assertEquals(2, result.size());
+        Assert.assertTrue(result.contains("subtheme1"));
+        Assert.assertTrue(result.contains("subtheme2"));
+    }
 }

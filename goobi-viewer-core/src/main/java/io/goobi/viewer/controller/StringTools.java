@@ -29,10 +29,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -544,6 +542,7 @@ public class StringTools {
      * @return true if value null, empty or starts with 0x1; false otherwise
      * @should return true if value null or empty
      * @should return true if value starts with 0x1
+     * @should return true if value starts with #1;
      * @should return false otherwise
      */
     public static boolean checkValueEmptyOrInverted(String value) {
@@ -551,7 +550,7 @@ public class StringTools {
             return true;
         }
 
-        return value.charAt(0) == 0x1;
+        return value.charAt(0) == 0x01 || value.startsWith("#1;");
     }
 
     /**
