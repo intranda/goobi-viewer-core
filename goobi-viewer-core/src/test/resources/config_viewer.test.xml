@@ -497,8 +497,7 @@
 		<aggregateHits>false</aggregateHits>
 		<!-- displayAdditionalMetadata: Add relevant metadata fields and values 
 			to the search hits if they contain requested search terms. Default is enabled=true. -->
-		<displayAdditionalMetadata>
-			<enabled>false</enabled>
+		<displayAdditionalMetadata enabled="false">
 			<!-- ignoreField: Fields that add no value to the search hits but take 
 				up space (e.g. PI_TOPSTRUCT, DOCSTRCT) can be configured to not be added 
 				as additional metadata. This element can be repeated. -->

@@ -1522,7 +1522,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isDisplayAdditionalMetadataEnabled() {
-        return getLocalBoolean("search.displayAdditionalMetadata.enabled", true);
+        return getLocalBoolean("search.displayAdditionalMetadata[@enabled]", true);
     }
 
     /**
