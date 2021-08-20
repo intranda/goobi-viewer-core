@@ -54,12 +54,12 @@
                 </ui:fragment>
 				
 				<ui:fragment rendered="#{cmsPage.hasContent('image01')}">
-                    <figure class="tpl-simple__image">
+                    <figure class="tpl-simple__media">
                     	<ui:fragment rendered="#{cmsMediaBean.isImage(cmsPage.getContentItem('image01').mediaItem)}">
 	    					<img src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cmsPage.getMedia('image01').alternativeText}" title="#{cmsPage.getMediaName('image01')}" />
                     	</ui:fragment>
                     	<ui:fragment rendered="#{cmsMediaBean.isVideo(cmsPage.getContentItem('image01').mediaItem)}">
-	    					<video autoplay="autoplay" controls="controls" class="img-fluid" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cmsPage.getMediaName('image01')}">
+	    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cmsPage.getMediaName('image01')}">
 	    						<source src="#{cmsPage.getContent('image01')}"/>
 	    					</video>
                     	</ui:fragment>

@@ -53,7 +53,7 @@
                     <ui:fragment rendered="#{cmsPage.hasContent('image')}">
 	                    <div class="tpl-faq-single__image" >
 	                        <figure class="tpl-faq-single__image">
-	                            <img title="#{cmsPage.getMediaName('image')}" src="#{cmsPage.getContent('image')}" class="img-responsive" alt="#{cmsPage.getMediaName('image')}" />
+	                            <img title="#{cmsPage.getMediaName('image')}" src="#{cmsPage.getContent('image')}" class="img-responsive" alt="#{cmsPage.getMedia('image').alternativeText}" />
 	                            <figcaption>
 	                                #{cmsPage.getMediaDescription('image')}
 	                            </figcaption>
