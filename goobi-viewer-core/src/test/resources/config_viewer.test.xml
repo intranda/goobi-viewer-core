@@ -1245,10 +1245,8 @@
 
 
 	<!-- PIWIK-CONFIGURATION -->
-	<piwik>
-		<!-- If true, piwik code will be insert into page. Default is false. -->
-		<enabled>true</enabled>
-
+    <!-- @enabled: If true, piwik code will be insert into page. Default is false. -->
+	<piwik enabled="true">
 		<!-- BaseURL of the piwik script without "http://"! -->
 		<baseURL>baseURL_value</baseURL>
 

@@ -4204,7 +4204,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isPiwikTrackingEnabled() {
-        return getLocalBoolean("piwik.enabled", false);
+        return getLocalBoolean("piwik[@enabled]", false);
     }
 
     /**
