@@ -82,6 +82,7 @@
                                 type="button"
                                 class="btn btn--icon my-searches__delete-button"
                                 data-toggle="modal"
+                                data-backdrop="false"
                                 title="#{msg.delete}">
                                 <i class="fa fa-trash-o" aria-hidden="true"></i>
                             </button>
@@ -90,16 +91,16 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
+                                            <h4 class="modal-title">#{msg.user_mySearches}</h4>
                                             <button
                                                 type="button"
-                                                class="close"
+                                                class="fancy-close"
                                                 data-dismiss="modal">
                                                 <span aria-hidden="true">
                                                     <h:outputText value="&amp;times;" escape="false" />
                                                 </span>
                                                 <span class="sr-only">Close</span>
                                             </button>
-                                            <h4 class="modal-title">#{msg.user_mySearches}</h4>
                                         </div>
                                         <div class="modal-body">
                                             <p>"#{search.name}" #{msg.delete}?</p>
@@ -116,6 +117,7 @@
                                         </div>
                                     </div>
                                 </div>
+								<div class="alt-backdrop" data-dismiss="modal"></div>
                             </div>
                         </h:column>
                     </h:dataTable>
