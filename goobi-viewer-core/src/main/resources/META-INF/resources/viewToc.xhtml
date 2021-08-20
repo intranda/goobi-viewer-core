@@ -6,23 +6,25 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     template="/resources/themes/#{navigationHelper.theme}/template.html"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('toc')}" />
         </f:metadata>
-    </ui:define> 
-	
-	<ui:define name="head">		
+    </ui:define>
+
+	<ui:define name="head">
 		<f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"
-                rendered="#{configurationBean.addDublinCoreMetaTags}" />
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}"
-                rendered="#{configurationBean.addHighwirePressMetaTags}" />			
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" rendered="#{configurationBean.addDublinCoreMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" rendered="#{configurationBean.addHighwirePressMetaTags}" />
 		</f:view>
 	</ui:define>
+
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
 
     <ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
@@ -30,7 +32,7 @@
             <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
                 <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
             </h:panelGroup>
-            
+
 			<div id="viewToc" class="view-toc">
 				<!-- TITLE -->
 				<ui:include src="/resources/includes/title.xhtml">
@@ -38,12 +40,12 @@
 					<ui:param name="pdf" value="true" />
 					<ui:param name="purl" value="true" />
 				</ui:include>
-				
+
 				<div class="toc">
 					<h:form id="tocForm" prependId="false">
 						<!-- MULTI VOLUME TOC -->
 						<h:panelGroup rendered="#{activeDocumentBean.anchor or activeDocumentBean.group}">
-							
+
 							<div class="toc_metadata">
 								<ui:include
 									src="/resources/includes/metadata/metadataElement.xhtml">
@@ -51,7 +53,7 @@
 										value="#{metadataBean.getTopMetadataElement(0)}" />
 								</ui:include>
 							</div>
-							
+
 							<div class="toc__multi-volume">
 								<ui:repeat var="group" value="#{activeDocumentBean.toc.groupNames}">
 									<!-- MV GROUP -->
@@ -64,14 +66,14 @@
                                                 #{msg[group]}
                                             </h4>
 										</div>
-                                        
+
                                         <!-- MV ELEMENT -->
                                         <ui:repeat var="tocElement" value="#{activeDocumentBean.toc.getTreeViewForGroup(group)}">
                                             <div class="toc__mv-element level-#{tocElement.level}">
                                                 <h:panelGroup rendered="#{tocElement.pageNo == null}">
                                                     <h4>#{tocElement.label}</h4>
                                                 </h:panelGroup>
-        
+
                                                 <div class="row">
                                                     <div class="col-12 col-sm-8 col-md-9">
                                                         <!-- MV TITLE -->
@@ -96,18 +98,18 @@
                                                     <div class="col-6 col-sm-2 col-md-1">
                                                         <!-- MV IMAGE -->
                                                         <div class="toc__mv-element-img text-center">
-                                                            
+
                                                             <h:outputLink rendered="#{tocElement.thumbnailUrl != null and configurationBean.showThumbnailsInToc()}" value="#{tocElement.url}">
-                                                                <img data-src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}" 
+                                                                <img data-src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}"
                                                                 data-viewer-thumbnail="thumbnail"/>
                                                             </h:outputLink>
                                                         </div>
                                                     </div>
-                                                </div>  
+                                                </div>
                                             </div>
                                         </ui:repeat>
 								    </h:panelGroup>
-                                    
+
                                     <!-- MV FLAT -->
                                     <h:panelGroup rendered="#{group == '_DEFAULT'}">
     									<!-- MV ELEMENT -->
@@ -116,7 +118,7 @@
         										<h:panelGroup rendered="#{tocElement.pageNo == null}">
         											<h4>#{tocElement.label}</h4>
         										</h:panelGroup>
-    	
+
     											<div class="row">
     												<div class="col-6 col-sm-8 col-md-9">
     													<!-- MV TITLE -->
@@ -147,10 +149,10 @@
     														</h:outputLink>
     													</div>
     												</div>
-    											</div>	
+    											</div>
     										</div>
     									</ui:repeat>
-                                    </h:panelGroup>								    
+                                    </h:panelGroup>
 								</ui:repeat>
 
 								<viewerComponent:simplePaginator itemCount="#{activeDocumentBean.toc.numPages}" itemActive="#{activeDocumentBean.toc.currentPage}"
@@ -233,26 +235,26 @@
 																	<h:panelGroup rendered="#{tocElement.pageNo == null}">
 																		<li>#{tocElement.pageNoLabel}</li>
 																	</h:panelGroup>
-	
+
 																	<!-- PDF DOWNLOAD -->
 																	<h:panelGroup rendered="#{tocElement.pageNo != null and tocElement.accessPermissionPdf}">
 																		<h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
 																			<li>
-																				<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.label__pdf_download}"> 
+																				<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.label__pdf_download}">
 																					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 																				</a>
 																			</li>
 																		</h:panelGroup>
 																		<h:panelGroup rendered="#{configurationBean.generatePdfInTaskManager}">
 																			<li>
-																				<a 
-																					href="#" 
-																					class="download-modal" 
-																					data-type="pdf" 
-																					data-title="#{tocElement.label}" 
-																					data-id="#{tocElement.logId}" 
-																					data-pi="#{tocElement.topStructPi}" 
-																					title="#{msg.label__pdf_download}"> 
+																				<a
+																					href="#"
+																					class="download-modal"
+																					data-type="pdf"
+																					data-title="#{tocElement.label}"
+																					data-id="#{tocElement.logId}"
+																					data-pi="#{tocElement.topStructPi}"
+																					title="#{msg.label__pdf_download}">
 																					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 																				</a>
 																			</li>
@@ -289,7 +291,7 @@
 													</div>
 													<div class="col-12 col-sm-4 col-md-3">
 														<!-- NUMBER -->
-														<div class="toc__list-full-number text-right"> 
+														<div class="toc__list-full-number text-right">
 															<ul>
 																<h:panelGroup rendered="#{tocElement.label != null}">
 																	<li>
@@ -311,14 +313,14 @@
 																	</h:panelGroup>
 																	<h:panelGroup rendered="#{configurationBean.generatePdfInTaskManager}">
 																		<li>
-																			<a 
-																				href="#" 
-																				class="download-modal" 
-																				data-type="pdf" 
-																				data-title="#{tocElement.label}" 
-																				data-id="#{tocElement.logId}" 
-																				data-pi="#{tocElement.topStructPi}" 
-																				title="#{msg.label__pdf_download}"> 
+																			<a
+																				href="#"
+																				class="download-modal"
+																				data-type="pdf"
+																				data-title="#{tocElement.label}"
+																				data-id="#{tocElement.logId}"
+																				data-pi="#{tocElement.topStructPi}"
+																				title="#{msg.label__pdf_download}">
 																				<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 																			</a>
 																		</li>
@@ -337,34 +339,34 @@
 					</h:form>
 				</div>
 			</div>
-            
+
             <h:panelGroup rendered="#{userBean.loggedIn}">
                 <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
-            </h:panelGroup>            
-            
+            </h:panelGroup>
+
             <script type="text/javascript">
                 $( '[data-toggle="mv-element"]' ).on( "click", function() {
                     var currBtn = $( this );
-                    
+
                     currBtn.toggleClass( "active" );
                     currBtn.parents().next( ".toc__mv-element" ).slideToggle( {
                         duration: 0,
                         start: function() {
-                            currBtn.prev().toggleClass( "inactive" );                        
+                            currBtn.prev().toggleClass( "inactive" );
                         }
                     } );
                 } );
-                
+
                  $( '[data-iddoc*="iddoc"] a' ).on( "click", function( event ) {
                      event.preventDefault();
-                     
+
                      var currIdDoc = $( this ).parents( "li" ).attr( "data-iddoc" );
                      var currUrl = $( this ).attr( "href" );
-                     
+
                      sessionStorage.setItem( "currIdDoc", currIdDoc );
                      location.href = currUrl;
                  } );
-            
+
                 var downloadModalConfig = {
                 	downloadBtn: $( ".download-modal" ),
                     path: "#{navigationHelper.applicationUrl}",
@@ -389,7 +391,7 @@
                         saveBtn: "#{msg.downloadGenerateFile}",
                     }
                 };
-            
+
                 viewerJS.downloadModal.init( downloadModalConfig );
             </script>
 		</f:view>
@@ -397,37 +399,34 @@
 
     <ui:define name="sidebar">
         <widgetComponent:widget_views pageType="toc" />
-        
+
         <widgetComponent:widget_searchInCurrentItem />
-        
+
         <widgetComponent:widget_archives />
-        
+
         <widgetComponent:widget_nerFacetting />
-        
+
         <widgetComponent:widget_searchResultNavigation />
-        
+
         <widgetComponent:widget_metadata />
-        
+
         <widgetComponent:widget_geoMap widget="#{activeDocumentBean.mapWidget}" title="#{msg.NORM_LOCATION}" allowFullscreen="false" linkToSearch="false" />
-        
+
         <widgetComponent:widget_usage />
-        
+
         <widgetComponent:widget_relatedGroups />
 
         <widgetComponent:widget_download />
-        
+
         <widgetComponent:widget_versionHistory />
-        
+
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
             </c:forEach>
         </c:forEach>
-        
+
         <widgetComponent:widget_userInteractions />
     </ui:define>
-    
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
+
 </ui:composition>

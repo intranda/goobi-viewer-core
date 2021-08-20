@@ -1,7 +1,12 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:composite="http://xmlns.jcp.org/jsf/composite" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" template="/resources/themes/#{navigationHelper.theme}/template.html">
-
-	<composite:interface />
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/template.html">
 
 	<ui:define name="metadata">
 		<f:metadata>
@@ -33,7 +38,7 @@
 									    validator="#{bookmarkBean.validateName}" required="true" requiredMessage="#{msg.bookmarkList_bookmarkListNameFailure}" />
 								</div>
 							</div>
-							
+
 							<!-- DESCRIPTION -->
 							<div class="form-group form-row">
 								<label for="editBookmarkListDescription" class="col-sm-2 control-label">#{msg.description}:</label>
@@ -41,8 +46,8 @@
 									<h:inputTextarea id="editBookmarkListDescription" styleClass="form-control" value="#{bookmarkBean.currentBookmarkList.description}" />
 								</div>
 							</div>
-		
-							<!-- PUBLIC -->	
+
+							<!-- PUBLIC -->
 							<div class="form-group form-row">
 								<label for="editBookmarkListPublic" class="col-sm-2 control-label">#{msg.bookmarkList_public}:</label>
 								<div class="col-sm-10">
@@ -54,7 +59,7 @@
 									</div>
 								</div>
 							</div>
-							
+
 							<!-- SHARES -->
 							<ui:fragment rendered="#{!userBean.user.allUserGroups.isEmpty()}">
 							    <div class="form-group form-row">
@@ -82,10 +87,14 @@
 	</ui:define>
 
 	<ui:define name="sidebar">
+		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+			<widgetComponent:widget_browsing />
+		</h:panelGroup>
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
             </c:forEach>
         </c:forEach>
 	</ui:define>
+
 </ui:composition>
