@@ -538,7 +538,7 @@ public class IIIFSearchBuilder {
 
         AnnotationResultList results = new AnnotationResultList();
         try {
-            List<SolrDocument> docList = new OpenAnnotationBuilder(urls).getAnnotationDocuments(query, request);
+            List<SolrDocument> docList = new OpenAnnotationBuilder(urls).getAnnotationDocuments(queryBuilder.toString(), request);
             if (firstHitIndex < docList.size()) {
                 List<SolrDocument> filteredDocList = docList.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, docList.size()));
                 for (SolrDocument doc : filteredDocList) {
