@@ -1667,7 +1667,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isCalendarSearchEnabled() {
-        return getLocalBoolean("search.calendar.enabled", true);
+        return getLocalBoolean("search.calendar[@enabled]", true);
     }
 
     /**

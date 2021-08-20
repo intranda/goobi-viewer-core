@@ -476,10 +476,8 @@
                 maximum number defined in SolrSearchIndex.MAX_HITS. Default is 108. -->
             <hits>120</hits>
 		</timeline>
-		<calendar>
-			<!-- Enables the calendar search (default is true) -->
-			<enabled>false</enabled>
-		</calendar>
+        <!-- Enables the calendar search (default is true) -->
+		<calendar enabled="false" />
 		<!-- searchSavingEnabled: Allow users to save executed searches to a list 
 			for later re-use. Default is true. -->
 		<searchSavingEnabled>false</searchSavingEnabled>
