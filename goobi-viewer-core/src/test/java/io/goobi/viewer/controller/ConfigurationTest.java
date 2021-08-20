@@ -25,10 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,19 +60,6 @@ public class ConfigurationTest extends AbstractTest {
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationTest.class);
 
     public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
 
     /**
      * @see Configuration#getBreadcrumbsClipping()
@@ -3092,5 +3076,14 @@ public class ConfigurationTest extends AbstractTest {
             Assert.assertEquals("desc__translation_group_2", group.getDescription());
             Assert.assertEquals(2, group.getItems().size());
         }
+    }
+
+    /**
+     * @see Configuration#isPageBrowseEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isPageBrowseEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isPageBrowseEnabled());
     }
 }

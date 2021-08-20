@@ -728,7 +728,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isDisplaySidebarBrowsingTerms() {
-        return getLocalBoolean("sidebar.sidebarBrowsingTerms[@display]", true);
+        return getLocalBoolean("sidebar.sidebarBrowsingTerms[@enabled]", true);
     }
 
     /**
@@ -740,7 +740,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isDisplaySidebarRssFeed() {
-        return getLocalBoolean("sidebar.sidebarRssFeed[@display]", true);
+        return getLocalBoolean("sidebar.sidebarRssFeed[@enabled]", true);
     }
 
     /**
@@ -752,7 +752,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isDisplaySidebarWidgetDownloads() {
-        return getLocalBoolean("sidebar.sidebarWidgetDownloads[@visible]", false);
+        return getLocalBoolean("sidebar.sidebarWidgetDownloads[@enabled]", false);
     }
 
     /**
@@ -785,7 +785,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isDisplayWidgetUsage() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage[@display]", true);
+        return getLocalBoolean("sidebar.sidebarWidgetUsage[@enabled]", true);
     }
 
     /**
@@ -951,7 +951,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isBrowsingMenuEnabled() {
-        return getLocalBoolean("metadata.browsingMenu.enabled", false);
+        return getLocalBoolean("metadata.browsingMenu[@enabled]", false);
     }
 
     /**
@@ -1448,7 +1448,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isAdvancedSearchEnabled() {
-        return getLocalBoolean("search.advanced.enabled", true);
+        return getLocalBoolean("search.advanced[@enabled]", true);
     }
 
     /**
@@ -1522,7 +1522,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isDisplayAdditionalMetadataEnabled() {
-        return getLocalBoolean("search.displayAdditionalMetadata.enabled", true);
+        return getLocalBoolean("search.displayAdditionalMetadata[@enabled]", true);
     }
 
     /**
@@ -1655,7 +1655,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isTimelineSearchEnabled() {
-        return getLocalBoolean("search.timeline.enabled", true);
+        return getLocalBoolean("search.timeline[@enabled]", true);
     }
 
     /**
@@ -1667,7 +1667,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isCalendarSearchEnabled() {
-        return getLocalBoolean("search.calendar.enabled", true);
+        return getLocalBoolean("search.calendar[@enabled]", true);
     }
 
     /**
@@ -2367,7 +2367,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarPageViewLinkVisible() {
-        return getLocalBoolean("sidebar.page.visible", true);
+        return getLocalBoolean("sidebar.page[@enabled]", true);
     }
 
     /**
@@ -2379,7 +2379,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarCalendarViewLinkVisible() {
-        return getLocalBoolean("sidebar.calendar.visible", true);
+        return getLocalBoolean("sidebar.calendar[@enabled]", true);
     }
 
     /**
@@ -2392,7 +2392,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarTocViewLinkVisible() {
-        return getLocalBoolean("sidebar.toc.visible", true);
+        return getLocalBoolean("sidebar.toc[@enabled]", true);
     }
 
     /**
@@ -2404,7 +2404,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarThumbsViewLinkVisible() {
-        return getLocalBoolean("sidebar.thumbs.visible", true);
+        return getLocalBoolean("sidebar.thumbs[@enabled]", true);
     }
 
     /**
@@ -2416,7 +2416,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarMetadataViewLinkVisible() {
-        return getLocalBoolean("sidebar.metadata.visible", true);
+        return getLocalBoolean("sidebar.metadata[@enabled]", true);
     }
 
     /**
@@ -2452,7 +2452,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarFulltextLinkVisible() {
-        return getLocalBoolean("sidebar.fulltext.visible", true);
+        return getLocalBoolean("sidebar.fulltext[@enabled]", true);
     }
 
     /**
@@ -2465,7 +2465,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarTocWidgetVisible() {
-        return this.getLocalBoolean("sidebar.sidebarToc.visible", true);
+        return this.getLocalBoolean("sidebar.sidebarToc[@enabled]", true);
     }
 
     /**
@@ -2490,7 +2490,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarOpacLinkVisible() {
-        return this.getLocalBoolean("sidebar.opac.visible", false);
+        return this.getLocalBoolean("sidebar.opac[@enabled]", false);
     }
 
     /**
@@ -2893,7 +2893,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSortingEnabled() {
-        return getLocalBoolean("search.sorting.enabled", true);
+        return getLocalBoolean("search.sorting[@enabled]", true);
     }
 
     /**
@@ -4204,7 +4204,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isPiwikTrackingEnabled() {
-        return getLocalBoolean("piwik.enabled", false);
+        return getLocalBoolean("piwik[@enabled]", false);
     }
 
     /**
@@ -4534,9 +4534,10 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isPageBrowseEnabled() {
-        return getLocalBoolean("viewer.pageBrowse.enabled", false);
+        return getLocalBoolean("viewer.pageBrowse[@enabled]", false);
     }
 
     /**
@@ -4626,7 +4627,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSearchInItemEnabled() {
-        return getLocalBoolean("sidebar.searchInItem.visible", true);
+        return getLocalBoolean("sidebar.searchInItem[@enabled]", true);
     }
 
     /**
@@ -4638,7 +4639,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSearchExcelExportEnabled() {
-        return getLocalBoolean("search.export.excel.enabled", false);
+        return getLocalBoolean("search.export.excel[@enabled]", false);
     }
 
     /**

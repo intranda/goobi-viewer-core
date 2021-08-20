@@ -226,9 +226,8 @@
 	</epub>
 
 	<viewer>
-
-		<pageBrowse>
-			<enabled>true</enabled>
+        <!-- pageBrowse/@enabled: if true, page browsing through the record in different steps is allowed. Default is false. -->
+		<pageBrowse enabled="true">
 			<pageBrowseStep>0</pageBrowseStep>
 			<pageBrowseStep>5</pageBrowseStep>
 			<pageBrowseStep>10</pageBrowseStep>
@@ -408,10 +407,8 @@
 			<filter>filter_FIELD2</filter>
 			<filter>filter_FIELD3</filter>
 		</filters>
-		<sorting>
-			<!-- enabled: if false, the option to sort search hits is hidden (since 
-				2.0) -->
-			<enabled>false</enabled>
+		<!-- @enabled: if false, the option to sort search hits is hidden (since 2.0) -->
+        <sorting enabled="false">
 			<!-- Fields used for sorting. Fields must be configured as 'multiValued="false"' 
 				in the Solr schema. -->
 			<!-- defaultSortField: Field used for initial sorting. Multiple semicolon-separated 
@@ -442,9 +439,8 @@
 				to be displayed (any field including DC). Default is 20. -->
 			<initialElementNumber>23</initialElementNumber>
 		</facets>
-		<advanced>
-			<!-- Enables the advanced search (default is true) -->
-			<enabled>false</enabled>
+		<!-- @enabled: Enables the advanced search (default is true) -->
+        <advanced enabled="false">
 			<!-- advancedSearchDefaultItemNumber: number of advanced search items 
 				to be rendered by default. Default is 2. -->
 			<defaultItemNumber>3</defaultItemNumber>
@@ -463,9 +459,8 @@
 				<field>MD_FOO_LANG_ES</field>
 			</searchFields>
 		</advanced>
-		<timeline>
-			<!-- Enables the timeline search (default is true) -->
-			<enabled>false</enabled>
+        <!-- @enabled: Enables the timeline search (default is true) -->
+        <timeline enabled="false">
 			<!-- Moegliche Werte fuer Startjahr und Endjahr sind ganze Jahre (auch 
 				Minus) sowie fuer Startjahr weiter der Wert MIN und fuer Endjahr der Wert 
 				MAX. Bei MIN wird das kleinste verfuegbare Jahr aus dem solrIndex als Startwert 
@@ -476,10 +471,8 @@
                 maximum number defined in SolrSearchIndex.MAX_HITS. Default is 108. -->
             <hits>120</hits>
 		</timeline>
-		<calendar>
-			<!-- Enables the calendar search (default is true) -->
-			<enabled>false</enabled>
-		</calendar>
+        <!-- Enables the calendar search (default is true) -->
+		<calendar enabled="false" />
 		<!-- searchSavingEnabled: Allow users to save executed searches to a list 
 			for later re-use. Default is true. -->
 		<searchSavingEnabled>false</searchSavingEnabled>
@@ -499,8 +492,7 @@
 		<aggregateHits>false</aggregateHits>
 		<!-- displayAdditionalMetadata: Add relevant metadata fields and values 
 			to the search hits if they contain requested search terms. Default is enabled=true. -->
-		<displayAdditionalMetadata>
-			<enabled>false</enabled>
+		<displayAdditionalMetadata enabled="false">
 			<!-- ignoreField: Fields that add no value to the search hits but take 
 				up space (e.g. PI_TOPSTRUCT, DOCSTRCT) can be configured to not be added 
 				as additional metadata. This element can be repeated. -->
@@ -535,9 +527,8 @@
 		</versioning>
 		<!-- Search export settings -->
 		<export>
-			<excel>
-				<!-- enabled: If true, Excel (.xlsx) export is enabled (default is false). -->
-				<enabled>true</enabled>
+            <!-- enabled: If true, Excel (.xlsx) export is enabled (default is false). -->
+			<excel enabled="true">
 				<!-- field: Solr fields to put into the export sheet. One element per 
 					field. -->
 				<field>PI</field>
@@ -768,10 +759,8 @@
 		</calendarDocstructTypes>
 
 		<!-- browsingMenu: configuration of the browsing section (Stoebern) -->
-		<browsingMenu>
-			<!-- enabled: if false, the browsing section is hidden -->
-			<enabled>false</enabled>
-
+        <!-- @enabled: if false, the browsing section is hidden -->
+		<browsingMenu enabled="false">
 			<!-- hitsPerPage: defines the maximum number of hits that are displayed 
 				per page -->
 			<hitsPerPage>19</hitsPerPage>
@@ -962,23 +951,23 @@
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
 	
-		<!-- sidebarWidgetDownloads: If true, the download widget within a records 
+		<!-- @enabled: If true, the download widget within a records 
 			view for additional files from the source directory is displayed. Default 
 			is true. -->
-		<sidebarWidgetDownloads visible="true" introductionText="MASTERVALUE_DOWNLOADS_INTRO">
-	
+		<sidebarWidgetDownloads enabled="true" introductionText="MASTERVALUE_DOWNLOADS_INTRO">
 			<!-- hideFileRegex: If a regular expression is defined, files matching 
 				it are hidden from the widget display. The download is still possible. -->
 			<hideFileRegex>(wug_.*|AK_.*)</hideFileRegex>
 		</sidebarWidgetDownloads>
 	
-	    <!-- sidebarBrowsingTerms: If true, the sidebar term browsing widget it displayed. Default is true. -->
-        <sidebarBrowsingTerms display="false" />
+	    <!-- @enabled: If true, the sidebar term browsing widget it displayed. Default is true. -->
+        <sidebarBrowsingTerms enabled="false" />
         
-        <!-- sidebarBrowsingTerms: If true, the sidebar RSS widget it displayed. Default is true. -->
-        <sidebarRssFeed display="false" />
+        <!-- @enabled: If true, the sidebar RSS widget it displayed. Default is true. -->
+        <sidebarRssFeed enabled="false" />
 
-        <sidebarWidgetUsage display="false" introductionText="MASTERVALUE_USAGE_INTRO">
+        <!-- @enabled: Show or hide the widget including download links for record and page while viewing the object -->
+        <sidebarWidgetUsage enabled="false" introductionText="MASTERVALUE_USAGE_INTRO">
             <page>
                 <downloadOptions>
                 <!-- Each option contains a label and a format. The label is translated via the messages. 
@@ -1019,35 +1008,25 @@
             </citationLinks>
         </sidebarWidgetUsage>
 
-		<!-- page: if false, the image view is hidden -->
-		<page>
-			<visible>false</visible>
-		</page>
+		<!-- @enabled: if false, the image view is hidden -->
+		<page enabled="false" />
 
-		<!-- calendar: if false, the calendar view link is hidden -->
-		<calendar>
-			<visible>false</visible>
-		</calendar>
+		<!-- @enabled: if false, the calendar view link is hidden -->
+		<calendar enabled="false" />
 
-		<!-- toc: if false, the TOC link is hidden (This is the link to the TOC 
+		<!-- @enabled: if false, the TOC link is hidden (This is the link to the TOC 
 			page in the work menu, not the sidebar TOC component!) -->
-		<toc>
-			<visible>false</visible>
-		</toc>
+		<toc enabled="false" />
 
-		<!-- thumbs: if false, the thumbnail view is hidden -->
-		<thumbs>
-			<visible>false</visible>
-		</thumbs>
+		<!-- @enabled: if false, the thumbnail view is hidden -->
+		<thumbs enabled="false" />
 
-        <!-- searchInItem: if false, no widget for searching in the currently show record will be displayed. Default is true. -->
-		<searchInItem>
-			<visible>false</visible>
-		</searchInItem>
+        <!-- @enabled: if false, no widget for searching in the currently show record will be displayed. Default is true. -->
+		<searchInItem enabled="false" />
 
-		<metadata>
+        <!-- @enabled -->
+		<metadata enabled="false">
 			<!-- metadata: if false, the bibliographic data view is hidden -->
-			<visible>false</visible>
 			<!-- showEventMetadata: if false, the event metadata of LIDO records is 
 				hidden (default is true) -->
 			<showEventMetadata>false</showEventMetadata>
@@ -1055,16 +1034,12 @@
             <showRecordLabelIfNoOtherViews>true</showRecordLabelIfNoOtherViews>
 		</metadata>
 
-		<!-- fulltext: if false, the fulltext view is hidden -->
-		<fulltext>
-			<visible>false</visible>
-		</fulltext>
+		<!-- @enabled: if false, the fulltext view is hidden -->
+		<fulltext enabled="false" />
 
 		<!-- sidebarToc: configuration of the sidebar TOC component -->
-		<sidebarToc>
-			<!-- visible: if false, the sidebar toc is hidden -->
-			<visible>false</visible>
-			
+        <!-- @enabled: if false, the sidebar toc is hidden -->
+		<sidebarToc enabled="false">
 			<!-- visibleInFullscreen: If false, the sidebar TOC element won't be visible in the full-screen sidebar accordion -->
             <visibleInFullscreen>false</visibleInFullscreen>
 
@@ -1090,10 +1065,8 @@
 			</collapseLengthThreshold>
 		</sidebarToc>
 		
-        <!-- opac: If true, the OPAC link from the current record will be displayed. Default is false. -->
-        <opac>
-            <visible>true</visible>
-        </opac>
+        <!-- @enabled: If true, the OPAC link from the current record will be displayed. Default is false. -->
+        <opac enabled="true" />
 	</sidebar>
 
 
@@ -1251,10 +1224,8 @@
 
 
 	<!-- PIWIK-CONFIGURATION -->
-	<piwik>
-		<!-- If true, piwik code will be insert into page. Default is false. -->
-		<enabled>true</enabled>
-
+    <!-- @enabled: If true, piwik code will be insert into page. Default is false. -->
+	<piwik enabled="true">
 		<!-- BaseURL of the piwik script without "http://"! -->
 		<baseURL>baseURL_value</baseURL>
 
