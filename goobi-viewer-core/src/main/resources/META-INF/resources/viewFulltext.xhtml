@@ -5,7 +5,7 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	template="/resources/themes/#{navigationHelper.theme}/template.html"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
 	<ui:define name="metadata">
@@ -13,41 +13,43 @@
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('fulltext')}" />
 		</f:metadata>
 	</ui:define>
-	
-	<ui:define name="head">		
+
+	<ui:define name="head">
 		<f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"
-                rendered="#{configurationBean.addDublinCoreMetaTags}" />
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}"
-                rendered="#{configurationBean.addHighwirePressMetaTags}" />			
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" rendered="#{configurationBean.addDublinCoreMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" rendered="#{configurationBean.addHighwirePressMetaTags}" />
 		</f:view>
 	</ui:define>
-	
+
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+
 	<ui:define name="content">
-		<f:view contentType="text/html" encoding="utf-8">		
+		<f:view contentType="text/html" encoding="utf-8">
             <!-- reCAPTCHA API -->
             <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
                 <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
             </h:panelGroup>
-        		
+
 			<div id="view_fulltext" class="view-fulltext">
-				
+
 				<ui:include src="/resources/includes/title.xhtml">
 					<ui:param name="structure" value="false" />
 					<ui:param name="purl" value="true" />
 				</ui:include>
 
-                
+
                     <!-- TODO: Komponente durch imageControls.xhtml ersetzen -->
                     <viewerComponent:imageControls />
-                    
+
                 <h:form id="viewFulltextForm" prependId="false">
                     <div id="view_fulltext_wrapp" class="view-fulltext__wrapper">
 						<ui:include src="/resources/includes/object/fulltext.xhtml" />
                     </div>
-                    
+
                     <div class="clearfix"></div>
-                    
+
                     <ui:fragment rendered="#{!activeDocumentBean.viewManager.belowFulltextThreshold}">
                         <viewerComponent:simplePaginator itemCount="#{activeDocumentBean.viewManager.imagesCount}"
                             itemActive="#{activeDocumentBean.viewManager.currentImageOrderForPaginator}"
@@ -56,7 +58,7 @@
                 </h:form>
             </div>
 		</f:view>
-        
+
         <h:panelGroup rendered="#{userBean.loggedIn}">
             <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
         </h:panelGroup>
@@ -66,7 +68,7 @@
                 path: "#{request.contextPath}"
             };
             viewerJS.nerFulltext.init( nerConfig );
-            
+
             var downloadModalConfig = {
                 	downloadBtn: $( ".download-modal" ),
                     path: "#{navigationHelper.applicationUrl}",
@@ -91,7 +93,7 @@
                         saveBtn: "#{msg.downloadGenerateFile}",
                     }
                 };
-            
+
                 viewerJS.downloadModal.init( downloadModalConfig );
         </script>
 	</ui:define>
@@ -100,25 +102,25 @@
         <widgetComponent:widget_views pageType="fulltext" />
 
         <widgetComponent:widget_searchInCurrentItem />
-        
+
         <widgetComponent:widget_archives />
 
         <widgetComponent:widget_nerFacetting />
-        
+
         <widgetComponent:widget_searchResultNavigation />
-        
+
         <widgetComponent:widget_metadata />
-        
+
         <widgetComponent:widget_geoMap widget="#{activeDocumentBean.mapWidget}" title="#{msg.NORM_LOCATION}" allowFullscreen="false" linkToSearch="false" />
-        
+
         <widgetComponent:widget_usage />
-        
+
         <widgetComponent:widget_relatedGroups />
-        
+
         <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" />
 
         <widgetComponent:widget_download />
-        
+
         <widgetComponent:widget_versionHistory />
 
         <c:forEach var="module" items="#{configurationBean.modules}">
@@ -126,11 +128,8 @@
                 <ui:include src="/#{contribution}" />
             </c:forEach>
         </c:forEach>
-        
+
         <widgetComponent:widget_userInteractions />
     </ui:define>
 
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
 </ui:composition>

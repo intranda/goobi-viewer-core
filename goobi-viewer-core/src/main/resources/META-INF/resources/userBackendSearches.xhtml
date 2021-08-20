@@ -8,26 +8,26 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-	<composite:interface />
-
 	<ui:define name="metadata">
 		<f:metadata>
-			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPage('mysearches', false, true)}" />
-			<f:event type="preRenderView"
-				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.user_mySearches,1)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('user_mySearches', false, true)}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.user_mySearches,1)}" />
 		</f:metadata>
+	</ui:define>
+
+	<ui:define name="breadcrumbs">
+		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
 	</ui:define>
 
 	<ui:define name="content">
         <div id="mySearches" class="my-searches">
             <h2>#{msg.user_mySearches}</h2>
-            
+
             <!-- WARNING IF NO SEARCHES EXISTS -->
             <h:panelGroup rendered="#{userDataBean.searches.isEmpty()}">
                 <div class="alert alert-warning" role="alert">#{msg.searches_noSearchesWarning}</div>
             </h:panelGroup>
-            
+
             <!-- SAVED SEARCHES -->
             <h:panelGroup rendered="#{!userDataBean.searches.isEmpty()}">
                 <h:form id="mySearchesForm" prependId="false">
@@ -139,12 +139,11 @@
 			});
 		</script>
 	</ui:define>
-	
+
 	<ui:define name="sidebar">
 		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
 			<widgetComponent:widget_browsing />
 		</h:panelGroup>
-        
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
@@ -152,7 +151,4 @@
         </c:forEach>
 	</ui:define>
 
-	<ui:define name="breadcrumbs">
-		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
-	</ui:define>
 </ui:composition>
