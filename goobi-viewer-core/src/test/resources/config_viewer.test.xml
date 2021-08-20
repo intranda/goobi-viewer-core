@@ -459,9 +459,8 @@
 				<field>MD_FOO_LANG_ES</field>
 			</searchFields>
 		</advanced>
-		<timeline>
-			<!-- Enables the timeline search (default is true) -->
-			<enabled>false</enabled>
+        <!-- @enabled: Enables the timeline search (default is true) -->
+        <timeline enabled="false">
 			<!-- Moegliche Werte fuer Startjahr und Endjahr sind ganze Jahre (auch 
 				Minus) sowie fuer Startjahr weiter der Wert MIN und fuer Endjahr der Wert 
 				MAX. Bei MIN wird das kleinste verfuegbare Jahr aus dem solrIndex als Startwert 

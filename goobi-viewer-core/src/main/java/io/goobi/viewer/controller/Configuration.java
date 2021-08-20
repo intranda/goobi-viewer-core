@@ -1655,7 +1655,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isTimelineSearchEnabled() {
-        return getLocalBoolean("search.timeline.enabled", true);
+        return getLocalBoolean("search.timeline[@enabled]", true);
     }
 
     /**
