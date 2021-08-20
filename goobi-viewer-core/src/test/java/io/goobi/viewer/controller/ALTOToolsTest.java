@@ -81,16 +81,6 @@ public class ALTOToolsTest extends AbstractTest {
 
     }
 
-    //    @Test
-    //    public void testNERTags() throws IOException, JDOMException {
-    //        File testFile = new File("src/test/resources/data/altoWithTags.xml");
-    //            String altoString = FileUtils.readFileToString(testFile);
-    //            List<NERTag> tags = ALTOTools.getNERTags(altoString, null);
-    //            for (NERTag nerTag : tags) {
-    //                System.out.println(nerTag);
-    //            }
-    //    }
-
     @Test
     public void testGetWordCoords() throws IOException {
         File testFile = new File("src/test/resources/data/sample_alto.xml");
@@ -214,5 +204,5 @@ public class ALTOToolsTest extends AbstractTest {
         Assert.assertNotNull(text);
         Assert.assertTrue(text.length() > 100);
     }
-    
+
 }
