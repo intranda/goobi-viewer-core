@@ -12,6 +12,8 @@
             <f:event type="preRenderView" listener="#{searchBean.resetActiveSearchType}" />
             <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
             <f:event type="preRenderView" listener="#{searchBean.facets.resetSliderRange}" />
+            <f:event type="preRenderView" listener="#{browseBean.initializeCollection(browseBean.collectionField)}" />
+            <f:event type="preRenderView" listener="#{browseBean.populateCollection(browseBean.collectionField)}" />
         </f:metadata>
     </ui:define>
 
@@ -25,7 +27,7 @@
                 </p>
             </h:panelGroup>
             
-            <viewerComponent:collectionView id="collection" collection="#{browseBean.dcCollection}" />
+            <viewerComponent:collectionView id="collection" collection="#{browseBean.getCollection(browseBean.collectionField)}" />
         </div>
     </ui:define>
 
