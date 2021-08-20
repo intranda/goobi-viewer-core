@@ -8,7 +8,6 @@
 	<composite:interface />
 
     <composite:implementation>
-        <ui:fragment rendered="#{configurationBean.displaySidebarRssFeed}">
         <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/rssFeedLib/jquery.aRSSFeed.js"></script>
         <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/rssFeedLib/jquery.jfeed.js"></script>
 
@@ -36,6 +35,5 @@
 				$(".rss-wrapp").aRSSFeed();
 			});
 		</script>
-		</ui:fragment>
     </composite:implementation>
 </ui:composition>
