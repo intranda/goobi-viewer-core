@@ -439,9 +439,8 @@
 				to be displayed (any field including DC). Default is 20. -->
 			<initialElementNumber>23</initialElementNumber>
 		</facets>
-		<advanced>
-			<!-- Enables the advanced search (default is true) -->
-			<enabled>false</enabled>
+		<!-- @enabled: Enables the advanced search (default is true) -->
+        <advanced enabled="false">
 			<!-- advancedSearchDefaultItemNumber: number of advanced search items 
 				to be rendered by default. Default is 2. -->
 			<defaultItemNumber>3</defaultItemNumber>

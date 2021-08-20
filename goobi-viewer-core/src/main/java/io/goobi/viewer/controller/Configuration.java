@@ -1448,7 +1448,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isAdvancedSearchEnabled() {
-        return getLocalBoolean("search.advanced.enabled", true);
+        return getLocalBoolean("search.advanced[@enabled]", true);
     }
 
     /**
