@@ -4,18 +4,14 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	
 	template="/resources/themes/#{navigationHelper.theme}/template.html"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-
-	<composite:interface>
-	</composite:interface>
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('userBookmarkLists', true, true)}" /> 
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('userBookmarkLists', true, true)}" />
             <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.userLoggedIn,'user',1)}" />
 			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.bookmarkList_bookmarkLists,'bookmarks',2)}" />
         </f:metadata>
@@ -25,7 +21,7 @@
         <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
 
-    <ui:define name="content">    
+    <ui:define name="content">
         <div id="userBookmarkLists" class="user-bookmark">
             <h2>#{msg.bookmarkList_bookmarkLists}</h2>
 
@@ -35,7 +31,7 @@
 					<h:outputText value="#{msg.errFunctionalityDisabled}" />
 				</div>
 			</h:panelGroup>
-			
+
 
 
 			<h:panelGroup rendered="#{configurationBean.bookmarksEnabled}">
@@ -58,17 +54,17 @@
 											<f:passThroughAttribute name="aria-label" value="#{msg.bookmarkList_addNewBookmarkList}"></f:passThroughAttribute>
 										</h:commandLink>
 									</div>
-								</div>						
+								</div>
 							</h:form>
 						</div>
 					</div>
 				</div>
-			
+
 				<!-- WARNING IF NO BOOKMARK LIST EXISTS -->
 				<h:panelGroup rendered="#{bookmarkBean.getBookmarkListsForUser(userBean.user).isEmpty()}">
 					<div class="alert alert-warning" role="alert">#{msg.bookmarkList_noBookmarkListsWarning}</div>
 				</h:panelGroup>
-				
+
 				<!-- USER BOOKMARK LISTS -->
 				<h:panelGroup rendered="#{!bookmarkBean.getBookmarkListsForUser(userBean.user).isEmpty()}">
 					<h:form id="userBookmarkListsForm" styleClass="bookmarklist_form" prependId="false">
@@ -79,7 +75,7 @@
 						</div>
 					</h:form>
 				</h:panelGroup>
-				
+
 				<!-- BOOKMARK LISTS SHARED WITH THIS USER -->
                 <h:panelGroup rendered="#{!bookmarkBean.getBookmarkListsSharedWithUser(userBean.user).isEmpty()}">
                     <h3>#{msg.bookmarkList_otherBookmarkLists}</h3>
@@ -92,7 +88,7 @@
                         </div>
                     </h:form>
                 </h:panelGroup>
-                
+
                 <!-- PUBLIC BOOKMARK LISTS -->
                 <h:panelGroup rendered="#{!bookmarkBean.publicBookmarkLists.isEmpty()}">
                     <h3>#{msg.bookmarkList_publicBookmarkLists}</h3>
@@ -105,22 +101,24 @@
                         </div>
                     </h:form>
                 </h:panelGroup>
-                
+
             </h:panelGroup>
         </div>
-        
+
         <script type="text/javascript">
         	viewerJS.clipboard.init();
         </script>
-        
 	</ui:define>
 
-    <ui:define name="sidebar">
+	<ui:define name="sidebar">
+		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+			<widgetComponent:widget_browsing />
+		</h:panelGroup>
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
             </c:forEach>
         </c:forEach>
 	</ui:define>
-	
+
 </ui:composition>

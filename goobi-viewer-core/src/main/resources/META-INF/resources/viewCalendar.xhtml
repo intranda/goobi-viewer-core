@@ -6,23 +6,25 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     template="/resources/themes/#{navigationHelper.theme}/template.html"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('calendar')}" />
         </f:metadata>
-    </ui:define> 
-	
-	<ui:define name="head">		
+    </ui:define>
+
+	<ui:define name="head">
 		<f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"
-                rendered="#{configurationBean.addDublinCoreMetaTags}" />
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}"
-                rendered="#{configurationBean.addHighwirePressMetaTags}" />			
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" rendered="#{configurationBean.addDublinCoreMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" rendered="#{configurationBean.addHighwirePressMetaTags}" />
 		</f:view>
 	</ui:define>
+
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
 
     <ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
@@ -81,7 +83,7 @@
                                                 </div>
 
                                                 <!-- MONTH WEEKS -->
-                                                
+
                                                 <ui:repeat var="week" value="#{month.weeksOfMonth}">
                                                     <div class="search-calendar__month-week clearfix">
                                                         <ui:repeat var="day" value="#{week.daysOfWeek}">
@@ -118,7 +120,7 @@
 						    indexResourceUrl: "#{navigationHelper.applicationUrl}api/v1/index/query/",
 						    popoverTitle: "#{activeDocumentBean.titleBarLabel}",
 						};
-                        
+
                         viewerJS.calendarPopover.init( calendarPopoverConfig );
                     </script>
             </div>
@@ -127,35 +129,32 @@
 
     <ui:define name="sidebar">
         <widgetComponent:widget_views pageType="toc" />
-        
+
         <widgetComponent:widget_searchInCurrentItem />
-        
+
         <widgetComponent:widget_archives />
-        
+
         <widgetComponent:widget_nerFacetting />
-        
+
         <widgetComponent:widget_searchResultNavigation />
-        
+
         <widgetComponent:widget_metadata />
-        
+
         <widgetComponent:widget_usage />
-        
+
         <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" />
 
         <widgetComponent:widget_download />
-        
+
         <widgetComponent:widget_versionHistory />
-        
+
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
             </c:forEach>
         </c:forEach>
-        
+
         <widgetComponent:widget_userInteractions />
     </ui:define>
-    
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
+
 </ui:composition>

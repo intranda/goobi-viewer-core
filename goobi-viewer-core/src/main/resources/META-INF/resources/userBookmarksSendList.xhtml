@@ -8,8 +8,7 @@
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-    
-    <!-- METADATA -->
+
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('userBookmarksListSendList', true, false)}" />
@@ -17,13 +16,11 @@
 			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.bookmarkList_session_mail_sendList,2)}" />
 		</f:metadata>
     </ui:define>
-    
-    <!-- BREADCRUMBS -->
+
     <ui:define name="breadcrumbs">
         <ui:include src="resources/includes/breadcrumbs.xhtml" />
     </ui:define>
-    
-    <!-- CONTENT -->
+
     <ui:define name="content">
         <f:view
             contentType="text/html"
@@ -62,18 +59,9 @@
             </div>
         </f:view>
     </ui:define>
-    
-    <!-- SIDEBAR -->
-    <ui:define name="sidebar">
-        <c:forEach var="module" items="#{configurationBean.modules}">
-            <c:forEach var="contribution" items="#{module.sidebarContributions}">
-                <ui:include src="/#{contribution}" />
-            </c:forEach>
-        </c:forEach>
-    </ui:define>
-    
-    <!--  RSS FEED -->
+
     <ui:define name="rssFeed">
         <ui:include src="resources/includes/rssFeed.xhtml" />
     </ui:define>
+
 </ui:composition>

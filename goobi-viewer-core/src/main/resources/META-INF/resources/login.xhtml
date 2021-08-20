@@ -5,21 +5,17 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	
 	template="/resources/themes/#{navigationHelper.theme}/templateBlank.html"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     lang="#{navigationHelper.localeString}">
-		
-	<!-- METADATA -->
+
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:viewParam name="from" value="#{userBean.redirectUrl}" />
 		</f:metadata>
 	</ui:define>
-	    
 
- 	<ui:define name="content">    
-
+ 	<ui:define name="content">
 		<!-- LOGIN MODAL  -->
 		<main id="login-body">
 			<viewerComponent:modalUserLogin id="loginComponent" ariaHidden="false" >
@@ -30,7 +26,6 @@
     	<script>
     		viewerJS.userLogin.init();
 		</script>
-
 	</ui:define>
 
-</ui:composition>	
+</ui:composition>
