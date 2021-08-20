@@ -69,7 +69,7 @@ public class RSSFeed {
     /**
      * 
      */
-    private static final String DATE_FORMAT_STRING = "dd.MM.yyyy, hh:mm:ss";
+    private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
 
     private static final Logger logger = LoggerFactory.getLogger(RSSFeed.class);
 
