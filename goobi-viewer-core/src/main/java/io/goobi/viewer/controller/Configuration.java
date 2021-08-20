@@ -4638,7 +4638,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSearchExcelExportEnabled() {
-        return getLocalBoolean("search.export.excel.enabled", false);
+        return getLocalBoolean("search.export.excel[@enabled]", false);
     }
 
     /**

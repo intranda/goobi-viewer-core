@@ -532,9 +532,8 @@
 		</versioning>
 		<!-- Search export settings -->
 		<export>
-			<excel>
-				<!-- enabled: If true, Excel (.xlsx) export is enabled (default is false). -->
-				<enabled>true</enabled>
+            <!-- enabled: If true, Excel (.xlsx) export is enabled (default is false). -->
+			<excel enabled="true">
 				<!-- field: Solr fields to put into the export sheet. One element per 
 					field. -->
 				<field>PI</field>
