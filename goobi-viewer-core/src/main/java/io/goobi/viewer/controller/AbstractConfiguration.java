@@ -295,6 +295,6 @@ public abstract class AbstractConfiguration {
      * @param value New value to set
      */
     public void overrideValue(String property, Object value) {
-        getConfigLocal().setProperty(property, value);
+        getConfig().setProperty(property, value);
     }
 }

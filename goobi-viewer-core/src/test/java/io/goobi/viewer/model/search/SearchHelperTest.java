@@ -1277,7 +1277,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateQueryParams_shouldReturnEmptyMapIfSearchHitAggregationOn() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("search.aggregateHits", true);
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAggregateHits());
+        
         Map<String, String> params = SearchHelper.generateQueryParams();
+        Assert.assertNotNull(params);
+        Assert.assertEquals(0, params.size());
     }
 
     /**

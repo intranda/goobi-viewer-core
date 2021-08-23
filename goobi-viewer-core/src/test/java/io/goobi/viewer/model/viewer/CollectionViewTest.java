@@ -123,6 +123,8 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getCollectionUrl_shouldReturnIdentifierResolverUrlIfSingleRecordAndPiKnown() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("collections.redirectToWork", true);
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
+        
         CollectionView col = new CollectionView("foo", getTestProvider());
         HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("bar", 1, "foo", null);
         element.setSingleRecordUrl("/object/PI123/1/LOG_0001/");

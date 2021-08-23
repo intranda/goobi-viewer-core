@@ -445,8 +445,8 @@ public class BasexEADParser {
             }
             configuredFields = new ArrayList<>(configurations.size());
             for (HierarchicalConfiguration<ImmutableNode> hc : configurations) {
-                ArchiveMetadataField field = new ArchiveMetadataField(hc.getString("[@label]"), hc.getInt("[@type]"), hc.getString("[@xpath]"),
-                        hc.getString("[@xpathType]", "element"));
+                ArchiveMetadataField field = new ArchiveMetadataField(hc.getString("@label"), hc.getInt("@type"), hc.getString("@xpath"),
+                        hc.getString("@xpathType", "element"));
                 configuredFields.add(field);
             }
         } catch (Exception e) {

@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -31,8 +30,6 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.managedbeans.ContextMocker;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
@@ -207,7 +204,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
             doc.setField(SolrConstants.LABEL, "label");
             doc.setField("MD_CREATOR", "creator");
             String label = TocMaker.buildLabel(doc, null).getValue().orElse("");
-            Assert.assertEquals("label/creator", label);
+            Assert.assertEquals("label / creator", label);
         }
         {
             SolrDocument doc = new SolrDocument();

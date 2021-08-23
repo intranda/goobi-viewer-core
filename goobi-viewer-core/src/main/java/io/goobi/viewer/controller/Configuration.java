@@ -113,7 +113,7 @@ public final class Configuration extends AbstractConfiguration {
                 new ReloadingFileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
                         .configure(new Parameters().properties()
                                 .setFileName(configFilePath)
-                                .setListDelimiterHandler(new DefaultListDelimiterHandler('&')) // TODO Why '&'?
+                                .setListDelimiterHandler(new DefaultListDelimiterHandler(','))
                                 .setThrowExceptionOnMissing(false));
         if (builder.getFileHandler().getFile().exists()) {
             try {
@@ -3555,11 +3555,11 @@ public final class Configuration extends AbstractConfiguration {
     public Map<Integer, List<Integer>> getTileSizes(PageType view, ImageType image) throws ViewerConfigurationException {
         Map<Integer, List<Integer>> map = new HashMap<>();
         List<HierarchicalConfiguration<ImmutableNode>> sizes = getZoomImageViewConfig(view, image).configurationsAt("tileSize");
-        if (sizes != null) {
+        if (sizes != null && !sizes.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> sizeConfig : sizes) {
                 int size = sizeConfig.getInt("size", 0);
                 String[] resolutionString = sizeConfig.getStringArray("scaleFactors");
-                List<Integer> resolutions = new ArrayList<>();
+                List<Integer> resolutions = new ArrayList<>(resolutionString.length);
                 for (String res : resolutionString) {
                     try {
                         int resolution = Integer.parseInt(res);

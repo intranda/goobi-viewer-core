@@ -231,6 +231,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Override config setting so that localhost doesn't get full access
         DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
 
         adb.update();
         Assert.assertTrue(adb.isRecordLoaded());
@@ -250,6 +251,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Override config setting so that localhost doesn't get full access
         DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
 
         adb.update();
         Assert.fail();

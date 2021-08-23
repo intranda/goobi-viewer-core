@@ -2204,6 +2204,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getImageViewTileSizesTest() throws ViewerConfigurationException {
         Map<Integer, List<Integer>> tiles = DataManager.getInstance().getConfiguration().getTileSizes();
         Assert.assertEquals(512, tiles.keySet().iterator().next(), 0);
+        Assert.assertEquals(3, tiles.get(512).size());
         Assert.assertEquals(1, tiles.get(512).get(0), 0);
         Assert.assertEquals(2, tiles.get(512).get(1), 0);
         Assert.assertEquals(3, tiles.get(512).get(2), 0);
@@ -2213,6 +2214,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getFullscreenTileSizesTest() throws ViewerConfigurationException {
         Map<Integer, List<Integer>> tiles = DataManager.getInstance().getConfiguration().getTileSizes(PageType.viewFullscreen, null);
         Assert.assertEquals(1024, tiles.keySet().iterator().next(), 0);
+        Assert.assertEquals(3, tiles.get(1024).size());
         Assert.assertEquals(2, tiles.get(1024).get(0), 0);
         Assert.assertEquals(4, tiles.get(1024).get(1), 0);
         Assert.assertEquals(8, tiles.get(1024).get(2), 0);
@@ -2387,18 +2389,18 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("MD_NOSUCHFIELD"));
     }
 
-//    @Test
-//    public void testBrokenConfig() {
-//        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer_broken.test.xml"));
-//        String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
-//        Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
-//        String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
-//        Assert.assertEquals(viewerHome, "src/test/resources/data/viewer/");
-//        String dataRepositories = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-//        Assert.assertEquals(dataRepositories, "src/test/resources/data/viewer/data/");
-//        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-//
-//    }
+    //    @Test
+    //    public void testBrokenConfig() {
+    //        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer_broken.test.xml"));
+    //        String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
+    //        Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
+    //        String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
+    //        Assert.assertEquals(viewerHome, "src/test/resources/data/viewer/");
+    //        String dataRepositories = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+    //        Assert.assertEquals(dataRepositories, "src/test/resources/data/viewer/data/");
+    //        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
+    //
+    //    }
 
     /**
      * @see Configuration#getTranskribusDefaultCollection()
@@ -3079,7 +3081,7 @@ public class ConfigurationTest extends AbstractTest {
             Assert.assertEquals(2, group.getItems().size());
         }
     }
-    
+
     /**
      * @see Configuration#isPageBrowseEnabled()
      * @verifies return correct value
@@ -3088,7 +3090,6 @@ public class ConfigurationTest extends AbstractTest {
     public void isPageBrowseEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isPageBrowseEnabled());
     }
-    
 
     /**
      * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean)
