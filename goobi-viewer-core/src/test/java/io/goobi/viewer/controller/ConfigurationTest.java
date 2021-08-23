@@ -2389,18 +2389,18 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("MD_NOSUCHFIELD"));
     }
 
-    //    @Test
-    //    public void testBrokenConfig() {
-    //        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer_broken.test.xml"));
-    //        String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
-    //        Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
-    //        String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
-    //        Assert.assertEquals(viewerHome, "src/test/resources/data/viewer/");
-    //        String dataRepositories = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-    //        Assert.assertEquals(dataRepositories, "src/test/resources/data/viewer/data/");
-    //        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-    //
-    //    }
+    @Test
+    public void testBrokenConfig() {
+        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer_broken.test.xml"));
+        String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
+        Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
+        String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
+        Assert.assertEquals(viewerHome, "src/test/resources/data/viewer/");
+        String dataRepositories = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+        Assert.assertEquals(dataRepositories, "src/test/resources/data/viewer/data/");
+        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
+
+    }
 
     /**
      * @see Configuration#getTranskribusDefaultCollection()
