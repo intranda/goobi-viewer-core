@@ -40,6 +40,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
@@ -71,6 +72,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
+import io.goobi.viewer.model.cms.CMSContentItemTemplate;
 import io.goobi.viewer.model.cms.CMSMediaHolder;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
@@ -463,7 +465,8 @@ public class CmsBean implements Serializable {
                         .distinct()
                         .collect(Collectors.toList());
         for (CMSContentItem pageItem : allPageItems) {
-            if (template.getContentItem(pageItem.getItemId()) == null) {
+            CMSContentItemTemplate templateItem = template.getContentItem(pageItem.getItemId());
+            if (templateItem == null || ObjectUtils.notEqual(templateItem.getType(), pageItem.getType())) {
                 logger.debug("remove content item "  + pageItem.getItemId());
                 //if not, remove them
                 page.removeContentItem(pageItem.getItemId());
