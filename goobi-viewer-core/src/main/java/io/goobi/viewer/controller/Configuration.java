@@ -2726,44 +2726,13 @@ public final class Configuration extends AbstractConfiguration {
      * @param field a {@link java.lang.String} object.
      * @return a int.
      */
-    public int getInitialFacetElementNumber(String field) {
-        if (StringUtils.isBlank(field)) {
+    public int getInitialFacetElementNumber(String facetField) {
+        if (StringUtils.isBlank(facetField)) {
             return getLocalInt("search.facets.initialElementNumber", 3);
         }
 
-        String facetifiedField = SearchHelper.facetifyField(field);
-        // Regular fields
-        List<HierarchicalConfiguration<ImmutableNode>> facetFields = getLocalConfigurationsAt("search.facets.field");
-        if (facetFields != null && !facetFields.isEmpty()) {
-            for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString(".", "");
-                if (nodeText.equals(field)
-                        || nodeText.equals(field + SolrConstants._UNTOKENIZED)
-                        || nodeText.equals(facetifiedField)) {
-                    try {
-                        return fieldConfig.getInt("[@initialElementNumber]");
-                    } catch (ConversionException | NoSuchElementException e) {
-                    }
-                }
-            }
-        }
-        // Hierarchical fields
-        facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
-        if (facetFields != null && !facetFields.isEmpty()) {
-            for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString(".", "");
-                if (nodeText.equals(field)
-                        || nodeText.equals(field + SolrConstants._UNTOKENIZED)
-                        || nodeText.equals(facetifiedField)) {
-                    try {
-                        return fieldConfig.getInt("[@initialElementNumber]");
-                    } catch (ConversionException | NoSuchElementException e) {
-                    }
-                }
-            }
-        }
-
-        return -1;
+        String value = getPropertyForFacetField(facetField, "[@initialElementNumber]", "-1");
+        return Integer.valueOf(value);
     }
 
     /**
@@ -2771,54 +2740,11 @@ public final class Configuration extends AbstractConfiguration {
      * getSortOrder.
      * </p>
      *
-     * @param field a {@link java.lang.String} object.
+     * @param facetField a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getSortOrder(String field) {
-        if (StringUtils.isBlank(field)) {
-            return "default";
-        }
-
-        String facetifiedField = SearchHelper.facetifyField(field);
-
-        // Regular fields
-        List<HierarchicalConfiguration<ImmutableNode>> facetFields = getLocalConfigurationsAt("search.facets.field");
-        if (facetFields != null && !facetFields.isEmpty()) {
-            for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString(".", "");
-                if (nodeText.equals(field)
-                        || nodeText.equals(field + SolrConstants._UNTOKENIZED)
-                        || nodeText.equals(facetifiedField)) {
-                    try {
-                        String sortOrder = fieldConfig.getString("[@sortOrder]");
-                        if (sortOrder != null) {
-                            return sortOrder;
-                        }
-                    } catch (ConversionException | NoSuchElementException e) {
-                    }
-                }
-            }
-        }
-        // Hierarchical Field
-        facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
-        if (facetFields != null && !facetFields.isEmpty()) {
-            for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString(".", "");
-                if (nodeText.equals(field)
-                        || nodeText.equals(field + SolrConstants._UNTOKENIZED)
-                        || nodeText.equals(facetifiedField)) {
-                    try {
-                        String sortOrder = fieldConfig.getString("[@sortOrder]");
-                        if (sortOrder != null) {
-                            return sortOrder;
-                        }
-                    } catch (ConversionException | NoSuchElementException e) {
-                    }
-                }
-            }
-        }
-
-        return "default";
+    public String getSortOrder(String facetField) {
+        return getPropertyForFacetField(facetField, "[@sortOrder]", "default");
     }
 
     /**
@@ -2834,49 +2760,10 @@ public final class Configuration extends AbstractConfiguration {
             return Collections.emptyList();
         }
 
-        String facetifiedField = SearchHelper.facetifyField(field);
+        String priorityValues = getPropertyForFacetField(field, "[@priorityValues]", "");
+        String[] priorityValuesSplit = priorityValues.split(";");
 
-        // Regular fields
-        List<HierarchicalConfiguration<ImmutableNode>> facetFields = getLocalConfigurationsAt("search.facets.field");
-        if (facetFields != null && !facetFields.isEmpty()) {
-            for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString(".", "");
-                if (nodeText.equals(field)
-                        || nodeText.equals(field + SolrConstants._UNTOKENIZED)
-                        || nodeText.equals(facetifiedField)) {
-                    try {
-                        String priorityValues = fieldConfig.getString("[@priorityValues]");
-                        if (StringUtils.isNotEmpty(priorityValues)) {
-                            String[] priorityValuesSplit = priorityValues.split(";");
-                            return Arrays.asList(priorityValuesSplit);
-                        }
-                    } catch (ConversionException | NoSuchElementException e) {
-                    }
-                }
-            }
-        }
-
-        // Hierarchical Field
-        facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
-        if (facetFields != null && !facetFields.isEmpty()) {
-            for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString(".", "");
-                if (nodeText.equals(field)
-                        || nodeText.equals(field + SolrConstants._UNTOKENIZED)
-                        || nodeText.equals(facetifiedField)) {
-                    try {
-                        String priorityValues = fieldConfig.getString("[@priorityValues]");
-                        if (StringUtils.isNotEmpty(priorityValues)) {
-                            String[] priorityValuesSplit = priorityValues.split(";");
-                            return Arrays.asList(priorityValuesSplit);
-                        }
-                    } catch (ConversionException | NoSuchElementException e) {
-                    }
-                }
-            }
-        }
-
-        return Collections.emptyList();
+        return Arrays.asList(priorityValuesSplit);
     }
 
     /**
@@ -2887,8 +2774,20 @@ public final class Configuration extends AbstractConfiguration {
      * @should return null if no value found
      */
     public String getLabelFieldForFacetField(String facetField) {
+        return getPropertyForFacetField(facetField, "[@labelField]", null);
+    }
+
+    /**
+     * Boilerplate code for retrieving values from regular and hierarchical facet field configurations.
+     * 
+     * @param facetField Facet field
+     * @param property Element or attribute name to check
+     * @param defaultValue Value that is returned if none was found
+     * @return Found value or defaultValue
+     */
+    String getPropertyForFacetField(String facetField, String property, String defaultValue) {
         if (StringUtils.isBlank(facetField)) {
-            return null;
+            return defaultValue;
         }
 
         String facetifiedField = SearchHelper.facetifyField(facetField);
@@ -2900,9 +2799,9 @@ public final class Configuration extends AbstractConfiguration {
                 if (nodeText.equals(facetField)
                         || nodeText.equals(facetField + SolrConstants._UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
-                    try {
-                        return fieldConfig.getString("[@labelField]");
-                    } catch (ConversionException | NoSuchElementException e) {
+                    String ret = fieldConfig.getString(property);
+                    if (ret != null) {
+                        return ret;
                     }
                 }
             }
@@ -2916,14 +2815,18 @@ public final class Configuration extends AbstractConfiguration {
                         || nodeText.equals(facetField + SolrConstants._UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
                     try {
-                        return fieldConfig.getString("[@labelField]");
+                        return fieldConfig.getString(property);
                     } catch (ConversionException | NoSuchElementException e) {
+                    }
+                    String ret = fieldConfig.getString(property);
+                    if (ret != null) {
+                        return ret;
                     }
                 }
             }
         }
 
-        return null;
+        return defaultValue;
     }
 
     /**
