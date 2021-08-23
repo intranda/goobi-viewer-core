@@ -22,9 +22,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.apache.commons.configuration2.HierarchicalConfiguration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.tree.ImmutableNode;
+import org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.jdom2.Attribute;
@@ -429,21 +430,21 @@ public class BasexEADParser {
      * @return
      * @throws ConfigurationException
      */
-    public BasexEADParser readConfiguration(HierarchicalConfiguration metadataConfig) throws ConfigurationException {
+    public BasexEADParser readConfiguration(HierarchicalConfiguration<ImmutableNode> metadataConfig) throws ConfigurationException {
         if (metadataConfig == null) {
             throw new ConfigurationException("No basexMetadata configurations found");
         }
 
-        metadataConfig.setListDelimiter('&');
+        // metadataConfig.setListDelimiter('&');
         metadataConfig.setExpressionEngine(new XPathExpressionEngine());
 
         try {
-            List<HierarchicalConfiguration> configurations = metadataConfig.configurationsAt("/metadata");
+            List<HierarchicalConfiguration<ImmutableNode>> configurations = metadataConfig.configurationsAt("/metadata");
             if (configurations == null) {
                 throw new ConfigurationException("No basexMetadata configurations found");
             }
             configuredFields = new ArrayList<>(configurations.size());
-            for (HierarchicalConfiguration hc : configurations) {
+            for (HierarchicalConfiguration<ImmutableNode> hc : configurations) {
                 ArchiveMetadataField field = new ArchiveMetadataField(hc.getString("[@label]"), hc.getInt("[@type]"), hc.getString("[@xpath]"),
                         hc.getString("[@xpathType]", "element"));
                 configuredFields.add(field);

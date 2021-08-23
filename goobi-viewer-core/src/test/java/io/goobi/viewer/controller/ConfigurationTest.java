@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration2.HierarchicalConfiguration;
+import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -3095,7 +3096,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getMetadataFromSubnodeConfig_shouldLoadParametersCorrectly() throws Exception {
-        HierarchicalConfiguration metadataConfig =
+        HierarchicalConfiguration<ImmutableNode> metadataConfig =
                 DataManager.getInstance().getConfiguration().getLocalConfigurationAt("metadata.metadataView(1).template(0).metadata(1)");
         Assert.assertNotNull(metadataConfig);
         Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig, false);
@@ -3111,7 +3112,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getMetadataFromSubnodeConfig_shouldLoadChildMetadataConfigurationsRecursively() throws Exception {
-        HierarchicalConfiguration metadataConfig =
+        HierarchicalConfiguration<ImmutableNode> metadataConfig =
                 DataManager.getInstance().getConfiguration().getLocalConfigurationAt("metadata.metadataView(1).template(0).metadata(1)");
         Assert.assertNotNull(metadataConfig);
         Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig, false);
