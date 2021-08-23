@@ -896,11 +896,11 @@
 
 		<!-- labelConfig: Layout configuration for the label of TOC elements. The 
 			configuration is analogous to a metadata template. -->
-		<labelConfig xml:space="preserve">
+		<labelConfig>
 			<template name="_DEFAULT">
 				<metadata label="" value="{LABEL}{MD_CREATOR}">
 					<param type="field" key="LABEL" />
-					<param xml:space="preserve" type="field" key="MD_CREATOR" prefix=" / " />
+					<param type="field" key="MD_CREATOR" prefix=" / " />
 				</metadata>
 			</template>
 			<template name="PeriodicalVolume">

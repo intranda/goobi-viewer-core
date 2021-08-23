@@ -43,6 +43,7 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.event.Event;
 import org.apache.commons.configuration2.event.EventListener;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
@@ -115,6 +116,12 @@ public final class Configuration extends AbstractConfiguration {
                                 .setListDelimiterHandler(new DefaultListDelimiterHandler('&')) // TODO Why '&'?
                                 .setThrowExceptionOnMissing(false));
         if (builder.getFileHandler().getFile().exists()) {
+            try {
+                builder.getConfiguration();
+                logger.info("Default configuration file '{}' loaded.", builder.getFileHandler().getFile().getAbsolutePath());
+            } catch (ConfigurationException e) {
+                logger.error(e.getMessage(), e);
+            }
             builder.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
                     new EventListener() {
 
@@ -125,7 +132,6 @@ public final class Configuration extends AbstractConfiguration {
                             }
                         }
                     });
-            logger.error("Default configuration file '{}' loaded.", builder.getFileHandler().getFile().getAbsolutePath());
         } else {
             logger.error("Default configuration file not found: {}", Paths.get(configFilePath).toAbsolutePath());
         }
@@ -138,18 +144,24 @@ public final class Configuration extends AbstractConfiguration {
                                 .setFileName(fileLocal.getAbsolutePath())
                                 .setListDelimiterHandler(new DefaultListDelimiterHandler('&')) // TODO Why '&'?
                                 .setThrowExceptionOnMissing(false));
+        if (builder.getFileHandler().getFile().exists()) {
+            try {
+                builder.getConfiguration();
+                logger.info("Local configuration file '{}' loaded.", fileLocal.getAbsolutePath());
+            } catch (ConfigurationException e) {
+                logger.error(e.getMessage(), e);
+            }
+            builderLocal.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
+                    new EventListener() {
 
-        builderLocal.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
-                new EventListener() {
-
-                    @Override
-                    public void onEvent(Event event) {
-                        if (builderLocal.getReloadingController().checkForReloading(null)) {
-                            //
+                        @Override
+                        public void onEvent(Event event) {
+                            if (builderLocal.getReloadingController().checkForReloading(null)) {
+                                //
+                            }
                         }
-                    }
-                });
-        logger.info("Local configuration file '{}' loaded.", fileLocal.getAbsolutePath());
+                    });
+        }
 
         // Load stopwords
         try {
@@ -2605,7 +2617,11 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isTocTreeView(String docStructType) {
-        HierarchicalConfiguration<ImmutableNode> hc = getLocalConfigurationAt("toc.useTreeView");
+        List<HierarchicalConfiguration<ImmutableNode>> hcList = getLocalConfigurationsAt("toc.useTreeView");
+        if (hcList == null || hcList.isEmpty()) {
+            return false;
+        }
+        HierarchicalConfiguration<ImmutableNode> hc = hcList.get(0);
         String docStructTypes = hc.getString("[@showDocStructs]");
         boolean allowed = hc.getBoolean(".");
         if (!allowed) {
@@ -2635,34 +2651,33 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct order
      */
     public List<String> getAllFacetFields() {
-        HierarchicalConfiguration<ImmutableNode> facets = getLocalConfigurationAt("search.facets");
-        if (facets == null) {
+        List<HierarchicalConfiguration<ImmutableNode>> facets = getLocalConfigurationsAt("search.facets");
+        if (facets == null || facets.isEmpty()) {
             getLocalConfigurationAt("search.drillDown");
             logger.warn("Old configuration found: search.drillDown; please update to search.facets");
         }
-        if (facets == null) {
+        if (facets == null || facets.isEmpty()) {
             logger.warn("Config element not found: search.facets");
             return Collections.emptyList();
         }
         List<HierarchicalConfiguration<ImmutableNode>> nodes =
-                facets.childConfigurationsAt(".");
-        if (!nodes.isEmpty()) {
-            List<String> ret = new ArrayList<>(nodes.size());
-            for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
-                String nodeText = node.getString("[.]", "");
-                switch (nodeText) {
-                    case "field":
-                    case "hierarchicalField":
-                    case "geoField":
-                        ret.add(nodeText);
-                        break;
-                }
-            }
-
-            return ret;
+                facets.get(0).childConfigurationsAt("");
+        if (nodes.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        return Collections.emptyList();
+        List<String> ret = new ArrayList<>(nodes.size());
+        for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
+            switch (node.getRootElementName()) {
+                case "field":
+                case "hierarchicalField":
+                case "geoField":
+                    ret.add(node.getString("."));
+                    break;
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -2721,7 +2736,7 @@ public final class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration<ImmutableNode>> facetFields = getLocalConfigurationsAt("search.facets.field");
         if (facetFields != null && !facetFields.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString("[.]", "");
+                String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(field)
                         || nodeText.equals(field + SolrConstants._UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
@@ -2736,7 +2751,7 @@ public final class Configuration extends AbstractConfiguration {
         facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
         if (facetFields != null && !facetFields.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString("[.]", "");
+                String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(field)
                         || nodeText.equals(field + SolrConstants._UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
@@ -2770,7 +2785,7 @@ public final class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration<ImmutableNode>> facetFields = getLocalConfigurationsAt("search.facets.field");
         if (facetFields != null && !facetFields.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString("[.]", "");
+                String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(field)
                         || nodeText.equals(field + SolrConstants._UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
@@ -2788,7 +2803,7 @@ public final class Configuration extends AbstractConfiguration {
         facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
         if (facetFields != null && !facetFields.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString("[.]", "");
+                String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(field)
                         || nodeText.equals(field + SolrConstants._UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
@@ -2825,7 +2840,7 @@ public final class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration<ImmutableNode>> facetFields = getLocalConfigurationsAt("search.facets.field");
         if (facetFields != null && !facetFields.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString("[.]", "");
+                String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(field)
                         || nodeText.equals(field + SolrConstants._UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
@@ -2845,7 +2860,7 @@ public final class Configuration extends AbstractConfiguration {
         facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
         if (facetFields != null && !facetFields.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString("[.]", "");
+                String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(field)
                         || nodeText.equals(field + SolrConstants._UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
@@ -2881,7 +2896,7 @@ public final class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration<ImmutableNode>> facetFields = getLocalConfigurationsAt("search.facets.field");
         if (facetFields != null && !facetFields.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString("[.]", "");
+                String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(facetField)
                         || nodeText.equals(facetField + SolrConstants._UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
@@ -2896,7 +2911,7 @@ public final class Configuration extends AbstractConfiguration {
         facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
         if (facetFields != null && !facetFields.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString("[.]", "");
+                String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(facetField)
                         || nodeText.equals(facetField + SolrConstants._UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
@@ -4779,10 +4794,14 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct values
      */
     public String getIIIFMetadataLabel(String field) {
-        HierarchicalConfiguration<ImmutableNode> fieldsConfig = getLocalConfigurationAt("webapi.iiif.metadataFields");
-        List<HierarchicalConfiguration<ImmutableNode>> fields = fieldsConfig.childConfigurationsAt("[.]");
+        List<HierarchicalConfiguration<ImmutableNode>> fieldsConfig = getLocalConfigurationsAt("webapi.iiif.metadataFields");
+        if (fieldsConfig == null || fieldsConfig.isEmpty()) {
+            return "";
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> fields = fieldsConfig.get(0).childConfigurationsAt("");
         for (HierarchicalConfiguration<ImmutableNode> fieldNode : fields) {
-            String value = fieldNode.getString("[.]");
+            String value = fieldNode.getString(".");
             if (value != null && value.equals(field)) {
                 return fieldNode.getString("[@label]", "");
             }

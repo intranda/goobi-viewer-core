@@ -423,7 +423,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(2, params.size());
         Assert.assertEquals("LABEL", params.get(0).getKey());
         Assert.assertEquals("MD_CREATOR", params.get(1).getKey());
-        Assert.assertEquals("/", params.get(1).getPrefix());
+        Assert.assertEquals(" / ", params.get(1).getPrefix());
     }
 
     /**
@@ -2387,18 +2387,18 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("MD_NOSUCHFIELD"));
     }
 
-    @Test
-    public void testBrokenConfig() {
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer_broken.test.xml"));
-        String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
-        Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
-        String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
-        Assert.assertEquals(viewerHome, "src/test/resources/data/viewer/");
-        String dataRepositories = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-        Assert.assertEquals(dataRepositories, "src/test/resources/data/viewer/data/");
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-
-    }
+//    @Test
+//    public void testBrokenConfig() {
+//        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer_broken.test.xml"));
+//        String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
+//        Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
+//        String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
+//        Assert.assertEquals(viewerHome, "src/test/resources/data/viewer/");
+//        String dataRepositories = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+//        Assert.assertEquals(dataRepositories, "src/test/resources/data/viewer/data/");
+//        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
+//
+//    }
 
     /**
      * @see Configuration#getTranskribusDefaultCollection()
@@ -3112,10 +3112,11 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getMetadataFromSubnodeConfig_shouldLoadChildMetadataConfigurationsRecursively() throws Exception {
-        HierarchicalConfiguration<ImmutableNode> metadataConfig =
-                DataManager.getInstance().getConfiguration().getLocalConfigurationAt("metadata.metadataView(1).template(0).metadata(1)");
+        List<HierarchicalConfiguration<ImmutableNode>> metadataConfig =
+                DataManager.getInstance().getConfiguration().getLocalConfigurationsAt("metadata.metadataView(1).template(0).metadata(1)");
         Assert.assertNotNull(metadataConfig);
-        Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig, false);
+        Assert.assertFalse(metadataConfig.isEmpty());
+        Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig.get(0), false);
         Assert.assertNotNull(md);
         Assert.assertEquals(1, md.getChildMetadata().size());
         Metadata childMd = md.getChildMetadata().get(0);

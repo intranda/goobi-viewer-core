@@ -38,24 +38,30 @@ public abstract class AbstractConfiguration {
     protected ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
     protected ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builderLocal;
 
+    /**
+     * 
+     * @return {@link XMLConfiguration} that is synced with the current state of the config file
+     */
     protected XMLConfiguration getConfig() {
         try {
-            XMLConfiguration ret = builder.getConfiguration();
-            return ret;
+            return builder.getConfiguration();
         } catch (ConfigurationException e) {
-            logger.error(e.getMessage(), e);
+            logger.error(e.getMessage());
         }
 
         return new XMLConfiguration();
     }
 
+    /**
+     * 
+     * @return {@link XMLConfiguration} that is synced with the current state of the config file
+     */
     protected XMLConfiguration getConfigLocal() {
         if (builderLocal != null) {
             try {
-                XMLConfiguration ret = builderLocal.getConfiguration();
-                return ret;
+                return builderLocal.getConfiguration();
             } catch (ConfigurationException e) {
-                logger.error(e.getMessage());
+                // logger.error(e.getMessage());
             }
         }
 
@@ -265,17 +271,21 @@ public abstract class AbstractConfiguration {
      * @return a {@link org.apache.commons.configuration.HierarchicalConfiguration} object.
      */
     protected HierarchicalConfiguration<ImmutableNode> getLocalConfigurationAt(String inPath) {
-        HierarchicalConfiguration<ImmutableNode> ret = null;
+        List<HierarchicalConfiguration<ImmutableNode>> ret = null;
         try {
-            ret = getConfigLocal().configurationAt(inPath);
+            ret = getConfigLocal().configurationsAt(inPath);
             if (ret == null || ret.isEmpty()) {
                 throw new IllegalArgumentException();
             }
         } catch (IllegalArgumentException e) {
-            ret = getConfig().configurationAt(inPath);
+            ret = getConfig().configurationsAt(inPath);
         }
 
-        return ret;
+        if (ret != null && !ret.isEmpty()) {
+            return ret.get(0);
+        }
+
+        return null;
     }
 
     /**
