@@ -184,7 +184,7 @@
         <fullAccessForLocalhost>true</fullAccessForLocalhost>
     </accessConditions>
 
-	<reCaptcha show="false">
+	<reCaptcha enabled="false">
 		<provider name="Google" siteKey="6LetEyITAAAAAEAj7NTxgRXR6S_uhZrk9rn5HyB3" />
 	</reCaptcha>
 
@@ -969,7 +969,7 @@
         <!-- @enabled: Show or hide the widget including download links for record and page while viewing the object -->
         <sidebarWidgetUsage enabled="false" introductionText="MASTERVALUE_USAGE_INTRO">
             <page>
-                <downloadOptions>
+                <downloadOptions enabled="false">
                 <!-- Each option contains a label and a format. The label is translated via the messages. 
                     The format can take the values supported by the ContentServer, for example "pdf", "tif", 
                     "jpg" or "png". If the static string "MASTER" is used, the format is dynamically set to 
@@ -982,7 +982,7 @@
                     <option label="label__download_option_large_4096" format="jpg" boxSizeInPixel="4096" />
                 </downloadOptions>
             </page>
-            <citationRecommendation display="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
+            <citationRecommendation enabled="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
                 <!-- Available citation styles (supported by citeproc) -->
                 <styles>
                     <style>modern-language-association</style>
@@ -997,7 +997,7 @@
                     </metadata>
                 </source>
             </citationRecommendation>
-            <citationLinks display="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
+            <citationLinks enabled="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
                 <!-- links: Citation link configurations. -->
                 <links>
                     <link type="URL" for="record" label="LABEL_URN" field="URN" prefix="https://nbn-resolving.org/" suffix="/"
@@ -1141,11 +1141,8 @@
 		<displaySearchRssLinks>false</displaySearchRssLinks>
 	</rss>
 
-	<bookmarks>
-		<!-- bookmarksEnabled: if false, no links to bookmark administration 
-			are displayed (default is true) -->
-		<bookmarksEnabled>false</bookmarksEnabled>
-	</bookmarks>
+    <!-- bookmarks/@enabled: if false, no links to bookmark administration are displayed (default is true) -->
+	<bookmarks enabled="false" />
 
     <!-- If enabled="true", the user comments functionality is enabled. Default is false. -->
 	<comments enabled="true">
@@ -1285,16 +1282,16 @@
 				at all and the label subnode can be used to configure an individual label 
 				for the link. These labels are translated if translations exist. -->
 			<rendering>
-				<viewer visible="true">
+				<viewer enabled="false">
 					<label>Goobi Viewer</label>
 				</viewer>
-				<pdf visible="true">
+				<pdf enabled="false">
 					<label>PDF</label>
 				</pdf>
-				<plaintext visible="true">
+				<plaintext enabled="false">
 					<label>Fulltext</label>
 				</plaintext>
-				<alto visible="true">
+				<alto enabled="false">
 					<label>ALTO</label>
 				</alto>
 			</rendering>

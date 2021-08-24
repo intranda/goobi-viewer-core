@@ -794,7 +794,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isDisplaySidebarWidgetUsageCitationRecommendation() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.citationRecommendation[@display]", true);
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.citationRecommendation[@enabled]", true);
     }
 
     /**
@@ -831,7 +831,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isDisplaySidebarWidgetUsageCitationLinks() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.citationLinks[@display]", true);
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.citationLinks[@enabled]", true);
     }
 
     /**
@@ -928,8 +928,13 @@ public final class Configuration extends AbstractConfiguration {
         return ret;
     }
     
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
     public boolean isDisplayWidgetUsageDownloadOptions()  {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.downloadOptions[@display]", true);
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.downloadOptions[@enabled]", true);
     }
 
     /**
@@ -3763,7 +3768,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isBookmarksEnabled() {
-        return getLocalBoolean("bookmarks.bookmarksEnabled", true);
+        return getLocalBoolean("bookmarks[@enabled]", true);
     }
 
     /**
@@ -4615,7 +4620,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isUseReCaptcha() {
-        return getLocalBoolean("reCaptcha[@show]", true);
+        return getLocalBoolean("reCaptcha[@enabled]", true);
     }
 
     /**
@@ -4858,12 +4863,22 @@ public final class Configuration extends AbstractConfiguration {
         return provider;
     }
 
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
     public boolean isVisibleIIIFRenderingPDF() {
-        return getLocalBoolean("webapi.iiif.rendering.pdf[@visible]", true);
+        return getLocalBoolean("webapi.iiif.rendering.pdf[@enabled]", true);
     }
 
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
     public boolean isVisibleIIIFRenderingViewer() {
-        return getLocalBoolean("webapi.iiif.rendering.viewer[@visible]", true);
+        return getLocalBoolean("webapi.iiif.rendering.viewer[@enabled]", true);
     }
 
     public String getLabelIIIFRenderingPDF() {
@@ -4874,12 +4889,22 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalString("webapi.iiif.rendering.viewer.label", null);
     }
 
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
     public boolean isVisibleIIIFRenderingPlaintext() {
-        return getLocalBoolean("webapi.iiif.rendering.plaintext[@visible]", true);
+        return getLocalBoolean("webapi.iiif.rendering.plaintext[@enabled]", true);
     }
 
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
     public boolean isVisibleIIIFRenderingAlto() {
-        return getLocalBoolean("webapi.iiif.rendering.alto[@visible]", true);
+        return getLocalBoolean("webapi.iiif.rendering.alto[@enabled]", true);
     }
 
     public String getLabelIIIFRenderingPlaintext() {
