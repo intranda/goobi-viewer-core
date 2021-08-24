@@ -126,6 +126,9 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @Test
     public void getValidViewerRenderingUrl() {
+        DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.viewer[@enabled]", true);
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
+
         ApiUrls urls = new ApiUrls("https://viewer.goobi.io/api/v1/");
         ManifestBuilder builder = new ManifestBuilder(urls);
         Manifest2 manifest = new Manifest2(URI.create(urls.getApiUrl() + "/" + PI + "/manifest"));
