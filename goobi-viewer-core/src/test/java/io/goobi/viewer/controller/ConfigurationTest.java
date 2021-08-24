@@ -2901,6 +2901,16 @@ public class ConfigurationTest extends AbstractTest {
     public void getSidebarWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText());
     }
+    
+
+    /**
+     * @see Configuration#isDisplayWidgetUsageDownloadOptions()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplayWidgetUsageDownloadOptions_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions());
+    }
 
     /**
      * @see Configuration#isDisplaySidebarWidgetUsageCitationRecommendation()
@@ -3085,5 +3095,41 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isPageBrowseEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isPageBrowseEnabled());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingAlto()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingAlto_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingPDF()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingPDF_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingPlaintext()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingPlaintext_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingViewer()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingViewer_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
     }
 }
