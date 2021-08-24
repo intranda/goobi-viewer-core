@@ -840,18 +840,29 @@ public class ThumbnailHandler {
     public String getThumbnailUrl(Optional<CMSMediaItem> optional, int width, int height) {
         return optional.map(item -> {
             try {
+                String contentType = item.getContentType();
                 String filename = item.getFileName();
-                String size = getSize(width, height);
-                ImageFileFormat format = ImageFileFormat.JPG;
-                ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
-                if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg|gif).*)")) { //match any image-mimetype except jpg and png
-                    format = formatType;
-                }
                 String imageApiUrl = getCMSMediaImageApiUrl(filename);
-                String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, RegionRequest.FULL, Scale.getScaleMethod(size), Rotation.NONE,
-                        Colortype.DEFAULT, format);
-                url += "?updated=" + item.getLastModifiedTime();
-                return url;
+                switch(contentType) {
+                    case CMSMediaItem.CONTENT_TYPE_VIDEO:
+                    case CMSMediaItem.CONTENT_TYPE_AUDIO:
+                    case CMSMediaItem.CONTENT_TYPE_PDF:
+                    case CMSMediaItem.CONTENT_TYPE_XML:
+                        return imageApiUrl;
+                    case CMSMediaItem.CONTENT_TYPE_GIF:
+                        return imageApiUrl + "/full.gif";
+                    default:
+                        String size = getSize(width, height);
+                        ImageFileFormat format = ImageFileFormat.JPG;
+                        ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
+                        if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg|gif).*)")) { //match any image-mimetype except jpg and png
+                            format = formatType;
+                        }
+                        String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, RegionRequest.FULL, Scale.getScaleMethod(size), Rotation.NONE,
+                                Colortype.DEFAULT, format);
+                        url += "?updated=" + item.getLastModifiedTime();
+                        return url;
+                }
             } catch (IllegalRequestException | ServiceNotImplementedException e) {
                 logger.error(e.toString(), e);
                 return "";
