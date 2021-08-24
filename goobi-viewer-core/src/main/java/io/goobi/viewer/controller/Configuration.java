@@ -2761,6 +2761,9 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         String priorityValues = getPropertyForFacetField(field, "[@priorityValues]", "");
+        if (priorityValues == null) {
+            return Collections.emptyList();
+        }
         String[] priorityValuesSplit = priorityValues.split(";");
 
         return Arrays.asList(priorityValuesSplit);
@@ -2814,10 +2817,6 @@ public final class Configuration extends AbstractConfiguration {
                 if (nodeText.equals(facetField)
                         || nodeText.equals(facetField + SolrConstants._UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
-                    try {
-                        return fieldConfig.getString(property);
-                    } catch (ConversionException | NoSuchElementException e) {
-                    }
                     String ret = fieldConfig.getString(property);
                     if (ret != null) {
                         return ret;
