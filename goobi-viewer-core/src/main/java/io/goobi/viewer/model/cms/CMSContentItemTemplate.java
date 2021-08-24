@@ -31,6 +31,7 @@ public class CMSContentItemTemplate extends CMSContentItem {
     private int order = 0;
     private boolean mandatory = false;
     private boolean preview = false;
+    private boolean ignoreCollectionHierarchy = false;
 
     /**
      * <p>
@@ -166,5 +167,18 @@ public class CMSContentItemTemplate extends CMSContentItem {
     @Override
     public String getItemLabel() {
         return this.itemLabel;
+    }
+    
+    /**
+     * @return the ignoreCollectionHierarchy
+     */
+    public boolean isIgnoreCollectionHierarchy() {
+        return ignoreCollectionHierarchy;
+    }
+    /**
+     * @param ignoreCollectionHierarchy the ignoreCollectionHierarchy to set
+     */
+    public void setIgnoreCollectionHierarchy(boolean ignoreCollectionHierarchy) {
+        this.ignoreCollectionHierarchy = ignoreCollectionHierarchy;
     }
 }

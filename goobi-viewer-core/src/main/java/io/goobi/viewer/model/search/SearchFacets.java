@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,6 +40,10 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
+import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.CMSSidebarElement;
+import io.goobi.viewer.model.cms.CMSSidebarElementWithQuery;
+import io.goobi.viewer.model.cms.SidebarElementType;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -924,6 +929,8 @@ public class SearchFacets implements Serializable {
         Map<String, List<IFacetItem>> ret = new LinkedHashMap<>();
 
         List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
+
+        
         for (String field : allFacetFields) {
             if (availableFacets.containsKey(field)) {
                 ret.put(field, availableFacets.get(field));

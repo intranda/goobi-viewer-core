@@ -226,7 +226,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     private String baseCollection = null;
 
     /** Comma separated list of collection names to ignore for display */
-    @Column(name = "ignore_collections")
+    @Column(name = "ignore_collections", columnDefinition = "LONGTEXT")
     private String ignoreCollections = null;
 
     /** Comma separated list of metadata field names to display in overview pages **/
@@ -1085,9 +1085,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list = list.stream()
                 .filter(c -> StringUtils.isBlank(getBaseCollection()) || c.startsWith(getBaseCollection() + "."))
-                .filter(c -> StringUtils.isBlank(getBaseCollection()) ? !c.contains(".") : !c.replace(getBaseCollection() + ".", "").contains("."))
+                .filter(c -> (isIgnoreHierarchy()) ? true : ( StringUtils.isBlank(getBaseCollection()) ? !c.contains(".") : !c.replace(getBaseCollection() + ".", "").contains(".") ))
                 .collect(Collectors.toList());
-        //        list.add(0, "");
         Collections.sort(list);
         return list;
     }
@@ -1129,11 +1128,20 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         collection.setBaseLevels(getCollectionBaseLevels());
         collection.setDisplayParentCollections(isCollectionDisplayParents());
         collection.setIgnore(getIgnoreCollectionsAsList());
-        if (isCollectionOpenExpanded()) {
+        if(isIgnoreHierarchy()) {
+            collection.setIgnoreHierarchy(true);
+        } else if (isCollectionOpenExpanded()) {
             collection.setShowAllHierarchyLevels(true);
         }
         collection.populateCollectionList();
         return collection;
+    }
+
+    /**
+     * @return
+     */
+    private boolean isIgnoreHierarchy() {
+        return getItemTemplate().isIgnoreCollectionHierarchy();
     }
 
     /**

@@ -2907,6 +2907,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isDisplayWidgetUsageDownloadOptions()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplayWidgetUsageDownloadOptions_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions());
+    }
+
+    /**
      * @see Configuration#isDisplaySidebarWidgetUsageCitationRecommendation()
      * @verifies return correct value
      */
@@ -3125,5 +3134,41 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("MD_ARTIST", childMd.getLabel());
         Assert.assertTrue(childMd.isGroup());
         Assert.assertEquals(7, childMd.getParams().size());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingAlto()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingAlto_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingPDF()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingPDF_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingPlaintext()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingPlaintext_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingViewer()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingViewer_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
     }
 }
