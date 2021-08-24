@@ -337,7 +337,7 @@ var viewerJS = ( function( viewer ) {
             	$( '[data-toggle="tooltip"]' ).tooltip( 'dispose' );
             }
 
-            // enable BS popovers
+            // enable bootstrap popovers
             $( '[data-toggle="popover"]' ).popover( {
             	placement: 'auto bottom',
 	            trigger: 'hover',
@@ -345,7 +345,8 @@ var viewerJS = ( function( viewer ) {
             } );
 
 			// append all bootstrap modals to body
-			  $('.modal').appendTo("body") 
+			  $('.modal').not('user-login-modal').appendTo("body");
+		
 
         },
         
