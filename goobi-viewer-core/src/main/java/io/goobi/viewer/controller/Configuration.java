@@ -5287,4 +5287,8 @@ public final class Configuration extends AbstractConfiguration {
 
         return ret;
     }
+
+    public boolean isDisplayAnnotationTextInImage() {
+        return getLocalBoolean("webGuiDisplay.displayAnnotationTextInImage", true);
+    }
 }

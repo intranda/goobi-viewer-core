@@ -1459,4 +1459,8 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDocstructNavigationEnabled()
                 && !DataManager.getInstance().getConfiguration().getDocstructNavigationTypes(template, fallbackToDefaultTemplate).isEmpty();
     }
+    
+    public boolean isDisplayAnnotationTextInImage() {
+        return DataManager.getInstance().getConfiguration().isDisplayAnnotationTextInImage();
+    }
 }
