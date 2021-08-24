@@ -62,6 +62,7 @@ public class CollectionView {
     private boolean showAllHierarchyLevels = false;
     private boolean displayParentCollections = true;
     private String searchUrl = "";
+    boolean ignoreHierarchy = false;
 
     private List<String> ignoreList = new ArrayList<>();
 
@@ -132,18 +133,23 @@ public class CollectionView {
                             dc.setSingleRecordUrl(IdentifierResolver.constructUrl(doc, false));
                         }
                     }
-                    int collectionLevel = dc.getLevel();
-                    if (collectionLevel > 0 && lastElement != null) {
-                        while (lastElement != null && lastElement.getLevel() >= collectionLevel) {
-                            lastElement = lastElement.getParent();
-                        }
-                        if (lastElement != null) {
-                            lastElement.addChild(dc);
-                        }
-                    } else {
+                    
+                    if(ignoreHierarchy) {
                         completeCollectionList.add(dc);
+                    } else {                        
+                        int collectionLevel = dc.getLevel();
+                        if (collectionLevel > 0 && lastElement != null) {
+                            while (lastElement != null && lastElement.getLevel() >= collectionLevel) {
+                                lastElement = lastElement.getParent();
+                            }
+                            if (lastElement != null) {
+                                lastElement.addChild(dc);
+                            }
+                        } else {
+                            completeCollectionList.add(dc);
+                        }
+                        lastElement = dc;
                     }
-                    lastElement = dc;
                 }
                 //            Collections.sort(completeCollectionList);
                 calculateVisibleDcElements();
@@ -1129,4 +1135,17 @@ public class CollectionView {
         this.searchUrl = searchUrl;
     }
 
+    /**
+     * @return the ignoreHierarchy
+     */
+    public boolean isIgnoreHierarchy() {
+        return ignoreHierarchy;
+    }
+    
+    /**
+     * @param ignoreHierarchy the ignoreHierarchy to set
+     */
+    public void setIgnoreHierarchy(boolean ignoreHierarchy) {
+        this.ignoreHierarchy = ignoreHierarchy;
+    }
 }

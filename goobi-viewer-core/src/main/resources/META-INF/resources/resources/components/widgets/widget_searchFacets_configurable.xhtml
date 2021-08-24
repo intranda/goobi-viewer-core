@@ -20,9 +20,8 @@
                     <h:form id="searchListFacetsForm" prependId="false">
                         <!-- DRILL DOWN -->
                         <ui:param name="field" value="#{cc.attrs.widget.searchField}"></ui:param>
-                            <h:panelGroup id="collectionFacetsPanelGroup"
-                                rendered="#{!searchBean.facets.isHasWrongLanguageCode(field, navigationHelper.localeString) and field != 'YEAR' and (searchBean.facets.isFacetListSizeSufficient(field) or fn:length(searchBean.facets.getCurrentFacetsForField(field)) > 0)}">
-                                <div class="widget widget-search-facets__collection">
+                            <h:panelGroup id="collectionFacetsPanelGroup">
+                               <div class="widget widget-search-facets__collection">
                                     <h3><span>#{msg[field.concat('_DD')]}</span></h3>
                                     
                                     <!-- FILTER FACETS -->
