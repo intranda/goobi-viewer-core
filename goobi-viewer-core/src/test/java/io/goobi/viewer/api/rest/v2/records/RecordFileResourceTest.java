@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
+import io.goobi.viewer.controller.DataManager;
 
 /**
  * @author florian
@@ -163,6 +164,11 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
     
     @Test
     public void testEscapeFilenamesInUrls() {
+        DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.viewer[@enabled]", true);
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
+        DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.pdf[@enabled]", true);
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF());
+        
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(PI_SPACE_IN_FILENAME, "1").build();
         try (Response response = target(url)
                 .request()

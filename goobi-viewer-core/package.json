@@ -20,7 +20,7 @@
     "less-plugin-autoprefix": "^2.0.0",
     "michelangelo": "^0.8.0",
     "pdfjs-dist": "^2.9.359",
-    "webpack": "5.48.0"
+    "webpack": "5.51.1"
   },
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "*",
