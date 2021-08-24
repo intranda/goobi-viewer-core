@@ -118,6 +118,7 @@
         <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
         <!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
         <javax.jstl.version>1.2</javax.jstl.version>
+        <jaxb-runtime.version>2.3.5</jaxb-runtime.version>
         <jdom2.version>2.0.6</jdom2.version>
         <jersey.version>2.34</jersey.version>
         <jersey-guava.version>2.26-b03</jersey-guava.version>
@@ -487,7 +488,12 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>${javax.jstl.version}</version>
-		</dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>${jaxb-runtime.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -711,6 +717,9 @@
 								
 								<!-- jersey client is falsely declared as unused blocking maven install (windows developer system only) -->
                                 <ignoredUnusedDeclaredDependency>org.glassfish.jersey.core:jersey-client</ignoredUnusedDeclaredDependency>
+
+								<!-- jaxb-runtime needs to be available to remove the warning "JAXBContext implementation could not be found. WADL feature is disabled" during tomcat startup -->
+                                <ignoredUnusedDeclaredDependency>org.glassfish.jaxb:jaxb-runtime</ignoredUnusedDeclaredDependency>
 
                                 <!-- rewrite-servlet is used by prettyfaces -->
 								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-integration-faces</ignoredUnusedDeclaredDependency>
