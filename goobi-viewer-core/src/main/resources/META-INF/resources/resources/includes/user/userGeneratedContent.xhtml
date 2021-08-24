@@ -77,6 +77,20 @@
 								</li>
 							</h:panelGroup>
 							
+							<h:panelGroup rendered="#{content.type == 'GEOLOCATION'}">
+								<li id="words-#{content.id}">
+									<dl class="dl-horizontal">
+										<dt>
+											<i class="fa fa-map" aria-hidden="true"></i>
+										</dt>
+										<dd>
+										<div id="annotation_body_#{content.id}" class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(content.annotationBody.toString())}</div>
+										<annotationBody annotationid="#{content.id}" contentid="annotation_body_#{content.id}"/>
+										</dd>
+									</dl>
+								</li>
+							</h:panelGroup>
+							
 						</h:panelGroup>
 						
 						<script type="text/javascript">
