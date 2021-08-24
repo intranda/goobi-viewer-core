@@ -78,17 +78,19 @@
 	                  </div>
 	                </h:panelGroup>
 	            
-	            <!-- RECIPIENT -->    
+	            <!-- RECIPIENT -->
+	            <ui:fragment rendered="#{configurationBean.feedbackEmailRecipients.size() gt 1}">    
                 <div class="form-group form-row">
                     <label id="labelFeedbackRecipient" for="feedbackRecipient" class="col-lg-3 control-label">#{msg.recipient}:</label>
                     <div class="col-12 col-lg-9">
-					   <h:selectOneMenu id="feedbackRecipient" value="#{userBean.feedback.recipientAddress}" immediate="true">
+					   <h:selectOneMenu id="feedbackRecipient" value="#{userBean.feedback.recipientAddress}" immediate="true" styleClass="custom-control custom-control--select feedback-modal__recipient-dropdown">
 					       <f:selectItems var="recipient" value="#{configurationBean.feedbackEmailRecipients}"
 					           itemLabel="#{recipient.label}" itemValue="#{recipient.emailAddress}">
 					       </f:selectItems>
 					   </h:selectOneMenu>
                     </div>
                 </div>
+                </ui:fragment>
 	                
                 <!-- URL -->
 				<div class="form-group form-row hidden">
