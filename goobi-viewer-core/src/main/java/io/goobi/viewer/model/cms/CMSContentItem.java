@@ -30,7 +30,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,6 +49,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -57,6 +60,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.RandomComparator;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -811,7 +815,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      */
     public List<CMSPage> getNestedPages() throws DAOException {
         if (nestedPages == null) {
-            return loadNestedPages();
+            nestedPages = loadNestedPages();
         }
         return nestedPages;
     }
@@ -823,7 +827,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      *
      * @return nestedPages in a random order
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @deprecated use {@link CMSContentItemTemplate#isRandomizeItems()} instead
      */
+    @Deprecated
     public List<CMSPage> getNestedPagesShuffled() throws DAOException {
         List<CMSPage> ret = new ArrayList<>(getNestedPages());
         Collections.shuffle(ret);
@@ -841,10 +847,11 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      */
     public List<CMSPage> getNestedPages(CMSCategory category) throws DAOException {
         if (nestedPages == null) {
-            return loadNestedPages();
+            nestedPages = loadNestedPages();
         }
         List<CMSPage> pages = nestedPages.stream()
-                .filter(page -> page.getCategories() != null && page.getCategories().contains(category))
+                .filter(CMSPage::isPublished)
+                .filter(child -> this.getCategories().isEmpty() || !CollectionUtils.intersection(this.getCategories(), child.getCategories()).isEmpty())
                 .collect(Collectors.toList());
         return pages;
     }
@@ -862,30 +869,24 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     private List<CMSPage> loadNestedPages() throws DAOException {
         int size = getElementsPerPage();
         int offset = getListOffset();
-
-        List<CMSPage> allPages = new ArrayList<>();
-        if (getCategories().isEmpty()) {
-            allPages = DataManager.getInstance().getDao().getAllCMSPages();
-        } else {
-            for (CMSCategory category : getCategories()) {
-                allPages.addAll(DataManager.getInstance().getDao().getCMSPagesByCategory(category));
-            }
+        
+        AtomicInteger totalPages = new AtomicInteger(0);
+        Stream<CMSPage> nestedPagesStream = DataManager.getInstance().getDao().getAllCMSPages().stream()
+                .filter(CMSPage::isPublished)
+                .filter(child -> getCategories().isEmpty() || !CollectionUtils.intersection(getCategories(), child.getCategories()).isEmpty())
+                .peek(child -> totalPages.incrementAndGet());
+        
+       
+        if(isRandomizeItems()) {
+            nestedPagesStream = nestedPagesStream.sorted(new RandomComparator<CMSPage>());
         }
-
-        nestedPages = new ArrayList<>();
-        int counter = 0;
-        Collections.sort(allPages, new CMSPage.PageComparator());
-        for (CMSPage cmsPage : allPages) {
-            if (cmsPage.isPublished() && !nestedPages.contains(cmsPage)) {
-                counter++;
-                if (!isPaginated()) {
-                    nestedPages.add(cmsPage);
-                } else if (counter > offset && counter <= size + offset) {
-                    nestedPages.add(cmsPage);
-                }
-            }
+        if(isPaginated()) {    
+            nestedPagesStream = nestedPagesStream.skip(offset).limit(size);
         }
-        setNestedPagesCount((int) Math.ceil(counter / (double) size));
+        
+        List<CMSPage> nestedPages = nestedPagesStream.collect(Collectors.toList());
+        setNestedPagesCount((int) Math.ceil((totalPages.intValue()) / (double) size));
+
         return nestedPages;
     }
 
@@ -1824,6 +1825,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     
     public boolean isShowHitListOptions() {
         return getItemTemplate().isHitListOptions();
+    }
+    
+    public boolean isRandomizeItems() {
+        return getItemTemplate().isRandomizeItems();
     }
 
 }

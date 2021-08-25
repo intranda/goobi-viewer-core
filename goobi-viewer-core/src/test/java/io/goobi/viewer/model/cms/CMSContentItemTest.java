@@ -18,7 +18,9 @@ package io.goobi.viewer.model.cms;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import javax.faces.context.ExternalContext;
 
@@ -28,6 +30,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 
 /**

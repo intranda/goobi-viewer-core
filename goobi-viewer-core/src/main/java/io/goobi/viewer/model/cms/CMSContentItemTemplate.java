@@ -36,6 +36,7 @@ public class CMSContentItemTemplate extends CMSContentItem {
      * For SOLRQUERY items: If true, show number of hits and sort order options on page and hide them in cms backend
      */
     boolean hitListOptions = false;
+    boolean randomizeItems = false;
 
     /**
      * <p>
@@ -198,5 +199,19 @@ public class CMSContentItemTemplate extends CMSContentItem {
      */
     public void setHitListOptions(boolean hitListOptions) {
         this.hitListOptions = hitListOptions;
+    }
+
+    /**
+     * @param radomizeItems the radomizeItems to set
+     */
+    public void setRandomizeItems(boolean radomizeItems) {
+        this.randomizeItems = radomizeItems;
+    }
+    
+    /**
+     * 
+     */
+    public boolean isRandomizeItems() {
+        return this.randomizeItems;
     }
 }
