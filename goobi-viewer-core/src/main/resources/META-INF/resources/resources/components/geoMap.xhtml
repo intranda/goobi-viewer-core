@@ -71,7 +71,7 @@
 	        	if(highlightDocumentId) {
 	        	    features.filter(f => f.properties.documentId == highlightDocumentId).forEach(f => f.properties.highlighted = true);
 	        	}
-	        	console.log("init features", highlightDocumentId, features.filter(f => f.properties.documentId == highlightDocumentId));
+	        	// console.log("init features", highlightDocumentId, features.filter(f => f.properties.documentId == highlightDocumentId));
             	layer.init(features, true);
             	
             	// console.log("Show annotations: " + #{cc.attrs.showAnnotations});

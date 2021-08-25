@@ -3071,7 +3071,6 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
 
     this.on( 'mount', function() {
 		this.style = this.opts.styles.get(this.opts.style);
-    	console.log(this.style);
 
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
