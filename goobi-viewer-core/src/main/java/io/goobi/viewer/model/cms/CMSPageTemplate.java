@@ -115,6 +115,8 @@ public class CMSPageTemplate implements Serializable {
                     item.setInlineHelp(eleContentItem.getAttributeValue("inlinehelp"));
                     item.setPreview(Boolean.parseBoolean(eleContentItem.getAttributeValue("preview")));
                     item.setIgnoreCollectionHierarchy(Boolean.parseBoolean(eleContentItem.getAttributeValue("ignoreHierarchy")));
+                    item.setHitListOptions(Boolean.parseBoolean(eleContentItem.getAttributeValue("hitListOptions")));
+
                     if (eleContentItem.getAttribute("order") != null) {
                         try {
                             int order = Integer.parseInt(eleContentItem.getAttributeValue("order"));

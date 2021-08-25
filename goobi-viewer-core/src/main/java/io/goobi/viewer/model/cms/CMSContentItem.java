@@ -540,6 +540,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return the elementsPerPage
      */
     public int getElementsPerPage() {
+        if (getType().equals(CMSContentItemType.SEARCH) || (getType().equals(CMSContentItemType.SOLRQUERY) && isShowHitListOptions())) {
+            return ((SearchFunctionality) getFunctionality()).getHitsPerPage();
+        }
         return elementsPerPage;
     }
 
@@ -604,14 +607,12 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>
-     * Getter for the field <code>solrSortFields</code>.
-     * </p>
+     * Get sort fields from searchBean if type is SEARCH or if type is SOLRQUERY and 'hitListOptions' is true
      *
      * @return the solrSortFields
      */
     public String getSolrSortFields() {
-        if (getType().equals(CMSContentItemType.SEARCH)) {
+        if (getType().equals(CMSContentItemType.SEARCH) || (getType().equals(CMSContentItemType.SOLRQUERY) && isShowHitListOptions())) {
             return ((SearchFunctionality) getFunctionality()).getSortString();
         }
         return solrSortFields;
@@ -775,7 +776,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return a int.
      */
     public int getListOffset() {
-        return (getListPage() - 1) * elementsPerPage;
+        return (getListPage() - 1) * getElementsPerPage();
     }
 
     /**
@@ -1819,6 +1820,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      */
     public boolean appearInListings() {
         return !CMSPage.TOPBAR_SLIDER_ID.equals(this.itemId);
+    }
+    
+    public boolean isShowHitListOptions() {
+        return getItemTemplate().isHitListOptions();
     }
 
 }
