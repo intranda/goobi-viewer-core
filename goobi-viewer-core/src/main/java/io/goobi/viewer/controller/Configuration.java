@@ -301,9 +301,10 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isRememberImageZoom() {
-        return getLocalBoolean("viewer.rememberImageZoom", false);
+        return getLocalBoolean("viewer.rememberImageZoom[@enabled]", false);
     }
 
     /**
@@ -312,9 +313,10 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isRememberImageRotation() {
-        return getLocalBoolean("viewer.rememberImageRotation", false);
+        return getLocalBoolean("viewer.rememberImageRotation[@enabled]", false);
     }
 
     /**
@@ -1984,7 +1986,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isUserRegistrationEnabled() {
-        return getLocalBoolean("user.userRegistrationEnabled", true);
+        return getLocalBoolean("user.registration[@enabled]", true);
     }
 
     /**
@@ -3230,7 +3232,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getMultivolumeThumbnailWidth() {
-        return getLocalInt("toc.multiVolumeThumbnailsWidth", 50);
+        return getLocalInt("toc.multiVolumeThumbnails.width", 50);
     }
 
     /**
@@ -3242,7 +3244,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getMultivolumeThumbnailHeight() {
-        return getLocalInt("toc.multiVolumeThumbnailsHeight", 60);
+        return getLocalInt("toc.multiVolumeThumbnails.height", 60);
     }
 
     /**
@@ -4161,7 +4163,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean showThumbnailsInToc() {
-        return this.getLocalBoolean("toc.multiVolumeThumbnailsEnabled", true);
+        return this.getLocalBoolean("toc.multiVolumeThumbnails[@enabled]", true);
     }
 
     /**
@@ -4246,7 +4248,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSearchSavingEnabled() {
-        return getLocalBoolean("search.searchSavingEnabled", true);
+        return getLocalBoolean("search.searchSaving[@enabled]", true);
     }
 
     /**
