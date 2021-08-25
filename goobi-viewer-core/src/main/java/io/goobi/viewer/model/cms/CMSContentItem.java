@@ -1824,11 +1824,11 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
     
     public boolean isShowHitListOptions() {
-        return getItemTemplate().isHitListOptions();
+        return Optional.ofNullable(getItemTemplate()).map(CMSContentItemTemplate::isHitListOptions).orElse(false);
     }
     
     public boolean isRandomizeItems() {
-        return getItemTemplate().isRandomizeItems();
+        return Optional.ofNullable(getItemTemplate()).map(CMSContentItemTemplate::isRandomizeItems).orElse(false);
     }
 
 }
