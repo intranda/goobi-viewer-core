@@ -2056,7 +2056,7 @@ public final class Configuration extends AbstractConfiguration {
             String endpoint = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@endpoint]", null);
             String image = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@image]", null);
             String type = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@type]", "");
-            boolean visible = myConfigToUse.getBoolean("user.authenticationProviders.provider(" + i + ")[@show]", true);
+            boolean visible = myConfigToUse.getBoolean("user.authenticationProviders.provider(" + i + ")[@enabled]", true);
             String clientId = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientId]", null);
             String clientSecret = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientSecret]", null);
             String idpMetadataUrl = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@idpMetadataUrl]", null);
@@ -5035,7 +5035,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isAddCORSHeader() {
-        return getLocalBoolean("webapi.cors[@use]", false);
+        return getLocalBoolean("webapi.cors[@enabled]", false);
     }
 
     /**
