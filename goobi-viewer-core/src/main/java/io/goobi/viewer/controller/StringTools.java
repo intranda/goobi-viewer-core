@@ -69,8 +69,6 @@ public class StringTools {
     /** Constant <code>DEFAULT_ENCODING="UTF-8"</code> */
     public static final String DEFAULT_ENCODING = "UTF-8";
 
-
-
     /**
      * <p>
      * encodeUrl.
@@ -320,6 +318,26 @@ public class StringTools {
         }
 
         return string;
+    }
+
+    /**
+     * Checks whether given string already contains URL-encoded characters.
+     * 
+     * @param s String to check
+     * @param charset Charset for URL decoding
+     * @return true if decoded string differs from original; false otherwise
+     * @throws UnsupportedEncodingException
+     * @should return true if string contains url encoded characters
+     * @should return false if string not encoded
+     * 
+     */
+    public static boolean isStringUrlEncoded(String s, String charset) throws UnsupportedEncodingException {
+        if (StringUtils.isEmpty(s)) {
+            return false;
+        }
+
+        String decoded = URLDecoder.decode(s, charset);
+        return !s.equals(decoded);
     }
 
     /**
@@ -576,6 +594,5 @@ public class StringTools {
 
         return ret;
     }
-    
 
 }
