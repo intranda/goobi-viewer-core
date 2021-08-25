@@ -309,6 +309,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String searchSimpleSetFacets(String facetString) {
+        // logger.trace("searchSimpleSetFacets:{}", facetString);
         facets.resetCurrentFacetString();
         facets.setCurrentFacetString(facetString);
         return searchSimple(true, false);
@@ -956,7 +957,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param inSearchString the searchString to set
      */
     void generateSimpleSearchString(String inSearchString) {
-        logger.trace("setSearchStringKeepCurrentPage: {}", inSearchString);
+        logger.trace("generateSimpleSearchString: {}", inSearchString);
         logger.trace("currentSearchFilter: {}", currentSearchFilter.getLabel());
         if (inSearchString == null) {
             inSearchString = "";
@@ -1174,12 +1175,14 @@ public class SearchBean implements SearchInterface, Serializable {
         if (searchStringInternal.length() == 0) {
             return "-";
         }
+       // logger.trace("getExactSearchString: {}", searchStringInternal);
         String ret = BeanUtils.escapeCriticalUrlChracters(searchStringInternal);
-        try {
-            ret = URLEncoder.encode(ret, URL_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage());
-        }
+//        try {
+//            ret = URLEncoder.encode(ret, URL_ENCODING);
+//            logger.trace("getExactSearchString (url encoded): {}", ret);
+//        } catch (UnsupportedEncodingException e) {
+//            logger.error(e.getMessage());
+//        }
         return ret;
     }
 
