@@ -431,10 +431,10 @@ public class CmsMediaBean implements Serializable {
         switch(item.getContentType()) {
             case CMSMediaItem.CONTENT_TYPE_PDF:
             case CMSMediaItem.CONTENT_TYPE_XML:
+            case CMSMediaItem.CONTENT_TYPE_SVG:
                 return ThumbnailHandler.getCMSMediaImageApiUrl(item.getFileName());
             case CMSMediaItem.CONTENT_TYPE_GIF:
                 return ThumbnailHandler.getCMSMediaImageApiUrl(item.getFileName()) + "/full.gif";
-            case CMSMediaItem.CONTENT_TYPE_SVG:
             default:
                 return BeanUtils.getImageDeliveryBean()
                 .getThumbs()
@@ -678,7 +678,7 @@ public class CmsMediaBean implements Serializable {
      * @return a regex matching only filenames ending with one of the supported image format suffixes
      */
     public static String getImageFilter() {
-        return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2)";
+        return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2|svg)";
     }
     
     public static String getVideoFilter() {

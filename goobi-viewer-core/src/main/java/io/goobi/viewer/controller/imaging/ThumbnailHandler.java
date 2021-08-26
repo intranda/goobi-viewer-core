@@ -857,6 +857,7 @@ public class ThumbnailHandler {
                     case CMSMediaItem.CONTENT_TYPE_AUDIO:
                     case CMSMediaItem.CONTENT_TYPE_PDF:
                     case CMSMediaItem.CONTENT_TYPE_XML:
+                    case CMSMediaItem.CONTENT_TYPE_SVG:
                         return imageApiUrl;
                     case CMSMediaItem.CONTENT_TYPE_GIF:
                         return imageApiUrl + "/full.gif";
