@@ -84,6 +84,7 @@ public class Metadata implements Serializable {
     private CitationProcessorWrapper citationProcessorWrapper;
     private Metadata parentMetadata;
     private final List<Metadata> childMetadata = new ArrayList<>();
+    private int indentation = 0;
 
     /**
      * <p>
@@ -1010,6 +1011,23 @@ public class Metadata implements Serializable {
      */
     public List<Metadata> getChildMetadata() {
         return childMetadata;
+    }
+
+    /**
+     * @return the indentation
+     */
+    public int getIndentation() {
+        return indentation;
+    }
+
+    /**
+     * @param indentation the indentation to set
+     * @return this
+     * 
+     */
+    public Metadata setIndentation(int indentation) {
+        this.indentation = indentation;
+        return this;
     }
 
     /**

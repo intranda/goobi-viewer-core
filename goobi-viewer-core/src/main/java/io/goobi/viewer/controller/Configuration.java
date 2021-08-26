@@ -44,7 +44,6 @@ import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.event.Event;
 import org.apache.commons.configuration2.event.EventListener;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -579,7 +578,7 @@ public final class Configuration extends AbstractConfiguration {
         for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = elements.iterator(); it.hasNext();) {
             HierarchicalConfiguration<ImmutableNode> sub = it.next();
 
-            Metadata md = getMetadataFromSubnodeConfig(sub, topstructValueFallbackDefaultValue);
+            Metadata md = getMetadataFromSubnodeConfig(sub, topstructValueFallbackDefaultValue, 0);
             if (md != null) {
                 ret.add(md);
             }
@@ -593,12 +592,14 @@ public final class Configuration extends AbstractConfiguration {
      * 
      * @param sub The subnode configuration
      * @param topstructValueFallbackDefaultValue
+     * @param indentation
      * @return the resulting {@link Metadata} instance
      * @should load parameters correctly
      * @should load replace rules correctly
      * @should load child metadata configurations recursively
      */
-    static Metadata getMetadataFromSubnodeConfig(HierarchicalConfiguration<ImmutableNode> sub, boolean topstructValueFallbackDefaultValue) {
+    static Metadata getMetadataFromSubnodeConfig(HierarchicalConfiguration<ImmutableNode> sub, boolean topstructValueFallbackDefaultValue,
+            int indentation) {
         if (sub == null) {
             throw new IllegalArgumentException("sub may not be null");
         }
@@ -686,13 +687,14 @@ public final class Configuration extends AbstractConfiguration {
 
         Metadata ret = new Metadata(label, masterValue, type, paramList, group, number)
                 .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
-                .setCitationTemplate(citationTemplate);
+                .setCitationTemplate(citationTemplate)
+                .setIndentation(indentation);
 
         // Recursively add nested metadata configurations
         List<HierarchicalConfiguration<ImmutableNode>> children = sub.configurationsAt("metadata");
         if (children != null && !children.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> child : children) {
-                Metadata childMetadata = getMetadataFromSubnodeConfig(child, topstructValueFallbackDefaultValue);
+                Metadata childMetadata = getMetadataFromSubnodeConfig(child, topstructValueFallbackDefaultValue, indentation + 1);
                 childMetadata.setParentMetadata(ret);
                 ret.getChildMetadata().add(childMetadata);
             }
@@ -861,7 +863,7 @@ public final class Configuration extends AbstractConfiguration {
             // no or multiple occurrences 
         }
         if (sub != null) {
-            Metadata md = getMetadataFromSubnodeConfig(sub, false);
+            Metadata md = getMetadataFromSubnodeConfig(sub, false, 0);
             return md;
         }
 
@@ -970,13 +972,13 @@ public final class Configuration extends AbstractConfiguration {
 
         return ret;
     }
-    
+
     /**
      * 
      * @return
      * @should return correct value
      */
-    public boolean isDisplayWidgetUsageDownloadOptions()  {
+    public boolean isDisplayWidgetUsageDownloadOptions() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage.page.downloadOptions[@enabled]", true);
     }
 

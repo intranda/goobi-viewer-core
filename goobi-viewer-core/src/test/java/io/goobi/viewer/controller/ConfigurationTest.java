@@ -3100,7 +3100,7 @@ public class ConfigurationTest extends AbstractTest {
         HierarchicalConfiguration<ImmutableNode> metadataConfig =
                 DataManager.getInstance().getConfiguration().getLocalConfigurationAt("metadata.metadataView(1).template(0).metadata(1)");
         Assert.assertNotNull(metadataConfig);
-        Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig, false);
+        Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig, false, 0);
         Assert.assertNotNull(md);
         Assert.assertEquals(5, md.getParams().size());
         Assert.assertEquals("EVENTTYPE", md.getParams().get(0).getKey());
@@ -3117,10 +3117,12 @@ public class ConfigurationTest extends AbstractTest {
                 DataManager.getInstance().getConfiguration().getLocalConfigurationsAt("metadata.metadataView(1).template(0).metadata(1)");
         Assert.assertNotNull(metadataConfig);
         Assert.assertFalse(metadataConfig.isEmpty());
-        Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig.get(0), false);
+        Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig.get(0), false, 0);
         Assert.assertNotNull(md);
+        Assert.assertEquals(0, md.getIndentation());
         Assert.assertEquals(1, md.getChildMetadata().size());
         Metadata childMd = md.getChildMetadata().get(0);
+        Assert.assertEquals(1, childMd.getIndentation());
         Assert.assertEquals(md, childMd.getParentMetadata());
         Assert.assertEquals("MD_ARTIST", childMd.getLabel());
         Assert.assertTrue(childMd.isGroup());
