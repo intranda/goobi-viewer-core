@@ -137,7 +137,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      */
     public WebAnnotation createUGCWebAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
         String id = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_ANNOTATION_ID)).map(Object::toString)
-                .map(i -> i.startsWith("annotation_") ? i : ("annotation_" + i))
+                .map(i -> i.replace("annotation_", ""))
                 .orElse((String)doc.getFieldValue(SolrConstants.IDDOC));
         Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
         String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse(null);

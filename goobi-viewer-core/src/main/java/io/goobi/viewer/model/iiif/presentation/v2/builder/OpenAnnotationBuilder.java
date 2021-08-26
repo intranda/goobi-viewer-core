@@ -136,10 +136,12 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
      * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
      */
     public OpenAnnotation createUGCOpenAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
-        String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse("");
+        String id = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_ANNOTATION_ID)).map(Object::toString)
+                .map(i -> i.replace("annotation_", ""))
+                .orElse((String)doc.getFieldValue(SolrConstants.IDDOC));
         Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
         String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse(null);
-        URI annoURI = getRestBuilder().getAnnotationURI(iddoc);
+        URI annoURI = getRestBuilder().getAnnotationURI(id);
 
         OpenAnnotation anno = new OpenAnnotation(annoURI);
 
