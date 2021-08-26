@@ -17,7 +17,7 @@
 
     this.on( 'mount', function() {
 		this.style = this.opts.styles.get(this.opts.style);
-    	console.log(this.style);
+//    	console.log(this.style);
 //     	console.log("mounting 'slider.tag' ", this.opts, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);

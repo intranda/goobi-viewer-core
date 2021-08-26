@@ -309,6 +309,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String searchSimpleSetFacets(String facetString) {
+        // logger.trace("searchSimpleSetFacets:{}", facetString);
         facets.resetCurrentFacetString();
         facets.setCurrentFacetString(facetString);
         return searchSimple(true, false);
@@ -330,12 +331,12 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String searchAdvanced(boolean resetParameters) {
         logger.trace("searchAdvanced");
-        
+
         // Search result URL is not yet available here, do not set breadcrumb
         //        if (breadcrumbBean != null) {
         //            breadcrumbBean.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
         //        }
-        
+
         resetSearchResults();
         if (resetParameters) {
             resetSearchParameters();
@@ -956,7 +957,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param inSearchString the searchString to set
      */
     void generateSimpleSearchString(String inSearchString) {
-        logger.trace("setSearchStringKeepCurrentPage: {}", inSearchString);
+        logger.trace("generateSimpleSearchString: {}", inSearchString);
         logger.trace("currentSearchFilter: {}", currentSearchFilter.getLabel());
         if (inSearchString == null) {
             inSearchString = "";
@@ -1174,12 +1175,17 @@ public class SearchBean implements SearchInterface, Serializable {
         if (searchStringInternal.length() == 0) {
             return "-";
         }
+        logger.trace("getExactSearchString: {}", searchStringInternal);
         String ret = BeanUtils.escapeCriticalUrlChracters(searchStringInternal);
-        try {
-            ret = URLEncoder.encode(ret, URL_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage());
-        }
+        //        try {
+        //            if (!StringTools.isStringUrlEncoded(ret, URL_ENCODING)) {
+        //                logger.trace("url encoding: " + ret);
+        //                ret = URLEncoder.encode(ret, URL_ENCODING);
+        //                logger.trace("encoded: " + ret);
+        //            }
+        //        } catch (UnsupportedEncodingException e) {
+        //            logger.error(e.getMessage());
+        //        }
         return ret;
     }
 
@@ -2719,13 +2725,22 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public List<FacetItem> getFieldFacetValues(String field, int num) throws IndexUnreachableException, PresentationException {
+        return getFieldFacetValues(field, num, "");
+    }
+    
+    public List<FacetItem> getFieldFacetValues(String field, int num, String filterQuery) throws IndexUnreachableException, PresentationException {
         num = num <= 0 ? Integer.MAX_VALUE : num;
         String query = "+(ISWORK:* OR ISANCHOR:*) " + SearchHelper.getAllSuffixes();
+        if(StringUtils.isNotBlank(filterQuery)) {
+            query += " +(" + filterQuery + ")";
+        }
         QueryResponse response =
                 DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Collections.singletonList(field), 1, false);
+        List values = response.getFacetField(field).getValues();
         return response.getFacetField(field)
                 .getValues()
                 .stream()
+                .filter(count -> !StringTools.checkValueEmptyOrInverted(count.getName()))
                 .map(count -> new FacetItem(count))
                 .sorted((f1, f2) -> Long.compare(f2.getCount(), f1.getCount()))
                 .limit(num)

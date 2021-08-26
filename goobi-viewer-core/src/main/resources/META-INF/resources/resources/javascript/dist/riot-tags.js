@@ -5,7 +5,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         if(this.opts.fileTypes) {
             this.fileTypes = this.opts.fileTypes;
         } else {
-        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf';
+        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg';
         }
         this.isDragover = false;
 
@@ -3071,7 +3071,6 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
 
     this.on( 'mount', function() {
 		this.style = this.opts.styles.get(this.opts.style);
-    	console.log(this.style);
 
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);

@@ -2438,15 +2438,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isTranskribusEnabled());
     }
 
-    @Test
-    public void isRememberImageRotation_test() {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isRememberImageRotation());
-    }
-
-    @Test
-    public void isRememberImageZoom_test() {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isRememberImageZoom());
-    }
 
     /**
      * @see Configuration#getDocstructTargetPageType(String)
@@ -3170,5 +3161,23 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isVisibleIIIFRenderingViewer_shouldReturnCorrectValue() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
+    }
+
+    /**
+     * @see Configuration#isRememberImageRotation()
+     * @verifies return correct value
+     */
+    @Test
+    public void isRememberImageRotation_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isRememberImageRotation());
+    }
+
+    /**
+     * @see Configuration#isRememberImageZoom()
+     * @verifies return correct value
+     */
+    @Test
+    public void isRememberImageZoom_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isRememberImageZoom());
     }
 }

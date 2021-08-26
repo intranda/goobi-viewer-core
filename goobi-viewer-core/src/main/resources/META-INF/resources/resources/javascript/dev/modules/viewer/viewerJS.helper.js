@@ -345,7 +345,7 @@ var viewerJS = ( function( viewer ) {
             } );
 
 			// append all bootstrap modals to body
-			  $('.modal').not('user-login-modal').appendTo("body");
+			  $('.modal').not('.user-login-modal').appendTo("body");
 		
 
         },

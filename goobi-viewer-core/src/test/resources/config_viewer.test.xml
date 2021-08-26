@@ -107,10 +107,10 @@
 	</urls>
 
 	<user>
-		<!-- userRegistrationEnabled: If false, widgets for user registration / 
-			password retrieval are hidden. Default is true. -->
-		<userRegistrationEnabled>false</userRegistrationEnabled>
-		<!-- TODO -->
+		<!-- registration/@enabled: If false, widgets for user registration / password retrieval are hidden. Default is true. -->
+		<registration enabled="false" />
+		
+        <!-- TODO -->
         <securityQuestions>
             <question key="user__security_question__1">
                 <allowedAnswer>foo</allowedAnswer>
@@ -128,7 +128,7 @@
         <authenticationProviders>
             <provider type="openId" name="Google" endpoint="https://accounts.google.com/o/oauth2/auth" clientId="id_google" clientSecret="secret_google" image="google.png" />
             <provider type="openId" name="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="id_facebook" clientSecret="secret_facebook" image="facebook.png" />
-            <provider show="false" type="openId" name="incomplete" endpoint="https://graph.facebook.com/oauth"
+            <provider enabled="false" type="openId" name="incomplete" endpoint="https://graph.facebook.com/oauth"
                 clientId="" image="facebook.png" />
             <provider type="userPassword" name="VuFind" label="VuFind-label" endpoint="https://vuFind.example/Api/User/Auth" image="vufind.png" timeout="7000">
                 <addUserToGroup>vuFindUsers</addUserToGroup>
@@ -291,9 +291,12 @@
 				<url>https?://exteral/.*\.tif</url>
 			</restrictedUrls>
 		</externalContent>
+        
+        <!-- rememberImageZoom/@enabled: if true, the image zoom is saved in the user session and persistent during browsing -->
+        <rememberImageZoom enabled="true" />
 
-		<rememberImageZoom>true</rememberImageZoom>
-		<rememberImageRotation>true</rememberImageRotation>
+        <!-- rememberImageRotation/@enabled: if true, the image rotation is saved in the user session and persistent during browsing -->
+        <rememberImageRotation enabled="true" />
 
 		<!-- max. allowed values for ContentServer arguments, higher values than 
 			these will be reduced to the values defined here -->
@@ -473,9 +476,11 @@
 		</timeline>
         <!-- Enables the calendar search (default is true) -->
 		<calendar enabled="false" />
-		<!-- searchSavingEnabled: Allow users to save executed searches to a list 
+        
+		<!-- searchSaving/@enabled: Allow users to save executed searches to a list 
 			for later re-use. Default is true. -->
-		<searchSavingEnabled>false</searchSavingEnabled>
+		<searchSaving enabled="false" />
+        
 		<!-- boostTopLevelDocstructs: If true, anchors receive a factor 10 boost, 
 			volumes and standalone records a factor 5 boost. This results in anchors 
 			appearing on top, followed by other records, followed by lower level docstructs, 
@@ -870,13 +875,12 @@
 	</metadata>
 
 	<toc>
-		<!-- multiVolumeThumbnailsWidth|Height: size settings for multivolume TOC 
-			thumbnails -->
-		<multiVolumeThumbnailsWidth>12</multiVolumeThumbnailsWidth>
-		<multiVolumeThumbnailsHeight>13</multiVolumeThumbnailsHeight>
-		<!-- Whether to display thumbnails of contained works in anchor toc. Default 
-			is "true" -->
-		<multiVolumeThumbnailsEnabled>false</multiVolumeThumbnailsEnabled>
+        <!-- multiVolumeThumbnails/@enabled: Whether to display thumbnails of contained works in anchor toc. Default is "true" -->
+        <multiVolumeThumbnails enabled="false">
+            <!-- width|height: size settings for multivolume TOC  thumbnails -->
+            <width>12</width>
+            <height>13</height>
+        </multiVolumeThumbnails>
 
 		<!-- voumeSortFields: Solr fields by which the volumes in an anchor TOC 
 			shall be sorted. Custom templates can be defined for anchor docstruc types, 
@@ -1328,7 +1332,7 @@
         
            <!-- If @use is 'true' add a Access-Control-Allow-Origin Header with this value to all REST-api calls
                 referencing the @CORSBinding annotation -->        
-           <cors use="true">*</cors>
+           <cors enabled="true">*</cors>
 	</webapi>
 
     <embedding>

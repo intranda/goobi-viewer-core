@@ -328,9 +328,10 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isRememberImageZoom() {
-        return getLocalBoolean("viewer.rememberImageZoom", false);
+        return getLocalBoolean("viewer.rememberImageZoom[@enabled]", false);
     }
 
     /**
@@ -339,9 +340,10 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isRememberImageRotation() {
-        return getLocalBoolean("viewer.rememberImageRotation", false);
+        return getLocalBoolean("viewer.rememberImageRotation[@enabled]", false);
     }
 
     /**
@@ -2025,7 +2027,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isUserRegistrationEnabled() {
-        return getLocalBoolean("user.userRegistrationEnabled", true);
+        return getLocalBoolean("user.registration[@enabled]", true);
     }
 
     /**
@@ -2097,7 +2099,7 @@ public final class Configuration extends AbstractConfiguration {
             String endpoint = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@endpoint]", null);
             String image = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@image]", null);
             String type = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@type]", "");
-            boolean visible = myConfigToUse.getBoolean("user.authenticationProviders.provider(" + i + ")[@show]", true);
+            boolean visible = myConfigToUse.getBoolean("user.authenticationProviders.provider(" + i + ")[@enabled]", true);
             String clientId = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientId]", null);
             String clientSecret = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientSecret]", null);
             String idpMetadataUrl = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@idpMetadataUrl]", null);
@@ -3186,7 +3188,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getMultivolumeThumbnailWidth() {
-        return getLocalInt("toc.multiVolumeThumbnailsWidth", 50);
+        return getLocalInt("toc.multiVolumeThumbnails.width", 50);
     }
 
     /**
@@ -3198,7 +3200,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getMultivolumeThumbnailHeight() {
-        return getLocalInt("toc.multiVolumeThumbnailsHeight", 60);
+        return getLocalInt("toc.multiVolumeThumbnails.height", 60);
     }
 
     /**
@@ -4117,7 +4119,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean showThumbnailsInToc() {
-        return this.getLocalBoolean("toc.multiVolumeThumbnailsEnabled", true);
+        return this.getLocalBoolean("toc.multiVolumeThumbnails[@enabled]", true);
     }
 
     /**
@@ -4202,7 +4204,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSearchSavingEnabled() {
-        return getLocalBoolean("search.searchSavingEnabled", true);
+        return getLocalBoolean("search.searchSaving[@enabled]", true);
     }
 
     /**
@@ -4995,7 +4997,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isAddCORSHeader() {
-        return getLocalBoolean("webapi.cors[@use]", false);
+        return getLocalBoolean("webapi.cors[@enabled]", false);
     }
 
     /**

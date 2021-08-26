@@ -2233,10 +2233,10 @@ public class ActiveDocumentBean implements Serializable {
      */
     public synchronized CMSSidebarElement getMapWidget() throws PresentationException, DAOException, IndexUnreachableException {
         CMSSidebarElement widget = this.mapWidget.get(getPersistentIdentifier());
-        if (widget == null) {
+//        if (widget == null) {
             widget = generateMapWidget(getPersistentIdentifier());
             this.mapWidget = Collections.singletonMap(getPersistentIdentifier(), widget);
-        }
+//        }
         return widget;
     }
 

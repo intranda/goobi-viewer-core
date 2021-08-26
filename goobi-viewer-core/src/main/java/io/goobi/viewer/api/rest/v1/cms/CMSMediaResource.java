@@ -195,6 +195,31 @@ public class CMSMediaResource {
     }
     
     @GET
+    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_SVG)
+    @Produces("image/svg+xml")
+    @CORSBinding
+    public static StreamingOutput getSvgContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
+            throws ContentNotFoundException, DAOException {
+        String decFilename = StringTools.decodeUrl(filename);
+        Path path = Paths.get(
+                DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
+                decFilename);
+        if (Files.exists(path)) {
+            return new StreamingOutput() {
+
+                @Override
+                public void write(OutputStream out) throws IOException, WebApplicationException {
+                    try (InputStream in = Files.newInputStream(path)) {
+                        IOUtils.copy(in, out);
+                    }
+                }
+            };
+        }
+        throw new ContentNotFoundException("File " + path + " not found in file system");
+    }
+    
+    @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
     public String serveVideoContent(@PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
