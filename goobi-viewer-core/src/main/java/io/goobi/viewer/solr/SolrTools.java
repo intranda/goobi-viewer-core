@@ -126,8 +126,13 @@ public class SolrTools {
      * @param fieldValue a {@link java.lang.Object} object.
      * @return a {@link java.lang.String} object.
      */
-    @SuppressWarnings("unchecked")
     public static String getAsString(Object fieldValue) {
+        return getAsString(fieldValue, "\n");
+    }
+        
+        
+    @SuppressWarnings("unchecked")
+    public static String getAsString(Object fieldValue, String separator) {
         if (fieldValue == null) {
             return null;
         }
@@ -137,7 +142,7 @@ public class SolrTools {
             StringBuilder sb = new StringBuilder();
             List<Object> list = (List<Object>) fieldValue;
             for (Object object : list) {
-                sb.append("\n").append(getAsString(object));
+                sb.append(separator).append(getAsString(object));
             }
             return sb.toString().trim();
         } else {

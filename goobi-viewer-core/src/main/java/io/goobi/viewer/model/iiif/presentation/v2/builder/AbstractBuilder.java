@@ -443,7 +443,7 @@ public abstract class AbstractBuilder {
                 Map<String, List<String>> mds = main.getMetadataFields();
                 for (String eventField : event.getFieldNames()) {
                     Collection<Object> fieldValues = event.getFieldValues(eventField);
-                    List<String> fieldValueList = fieldValues.stream().map(Object::toString).collect(Collectors.toList());
+                    List<String> fieldValueList = fieldValues.stream().map(SolrTools::getAsString).collect(Collectors.toList());
                     // add the event field twice to the md-list: Once for unspecified event type and
                     // once for the specific event type
                     mds.put("/" + eventField, fieldValueList);
@@ -503,21 +503,6 @@ public abstract class AbstractBuilder {
             return ele;
         }
         return null;
-    }
-
-    /**
-     * @param doc
-     * @return
-     */
-    protected static String readSolrField(SolrDocument doc, Object fieldValue) {
-        String text;
-        Object textObject = Optional.ofNullable(fieldValue).orElse("");
-        if (textObject != null && textObject instanceof Collection) {
-            text = (String) ((Collection) textObject).stream().map(Object::toString).collect(Collectors.joining(", "));
-        } else {
-            text = Optional.ofNullable(textObject).map(Object::toString).orElse("");
-        }
-        return text;
     }
 
     /**
