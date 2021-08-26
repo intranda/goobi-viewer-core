@@ -1175,17 +1175,17 @@ public class SearchBean implements SearchInterface, Serializable {
         if (searchStringInternal.length() == 0) {
             return "-";
         }
-         logger.trace("getExactSearchString: {}", searchStringInternal);
+        logger.trace("getExactSearchString: {}", searchStringInternal);
         String ret = BeanUtils.escapeCriticalUrlChracters(searchStringInternal);
-        try {
-            if (!StringTools.isStringUrlEncoded(ret, URL_ENCODING)) {
-                logger.trace("url encoding: " + ret);
-                ret = URLEncoder.encode(ret, URL_ENCODING);
-                logger.trace("encoded: " + ret);
-            }
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage());
-        }
+        //        try {
+        //            if (!StringTools.isStringUrlEncoded(ret, URL_ENCODING)) {
+        //                logger.trace("url encoding: " + ret);
+        //                ret = URLEncoder.encode(ret, URL_ENCODING);
+        //                logger.trace("encoded: " + ret);
+        //            }
+        //        } catch (UnsupportedEncodingException e) {
+        //            logger.error(e.getMessage());
+        //        }
         return ret;
     }
 
