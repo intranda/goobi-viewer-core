@@ -138,7 +138,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     public OpenAnnotation createUGCOpenAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
         String id = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_ANNOTATION_ID)).map(SolrTools::getAsString)
                 .map(i -> i.replace("annotation_", ""))
-                .orElse((String)doc.getFieldValue(SolrConstants.IDDOC));
+                .orElse(doc.getFieldValue(SolrConstants.IDDOC).toString());
         Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
         String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(SolrTools::getAsString).orElse(null);
         URI annoURI = getRestBuilder().getAnnotationURI(id);
