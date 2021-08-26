@@ -1172,12 +1172,14 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @param filterQuery
      */
     private CollectionView initializeCollection(final String collectionField, final String facetField, final String filterQuery) {
-        CollectionView collection = new CollectionView(collectionField, new BrowseDataProvider() {
+        // Use FACET_* instead of MD_*, otherwise the hierarchy may be broken
+        String useCollectionField = SearchHelper.facetifyField(collectionField);
+        CollectionView collection = new CollectionView(useCollectionField, new BrowseDataProvider() {
             @Override
             public Map<String, CollectionResult> getData() throws IndexUnreachableException {
                 Map<String, CollectionResult> dcStrings =
-                        SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true,
-                                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+                        SearchHelper.findAllCollectionsFromField(useCollectionField, facetField, filterQuery, true, true,
+                                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(useCollectionField));
                 return dcStrings;
             }
         });
