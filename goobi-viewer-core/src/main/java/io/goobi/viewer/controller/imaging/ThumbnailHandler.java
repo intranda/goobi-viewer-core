@@ -741,13 +741,13 @@ public class ThumbnailHandler {
                         case "video":
                         case "text":
                             thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
-                            if (StringUtils.isEmpty(thumbnailUrl)) {
+                            if (StringUtils.isEmpty(thumbnailUrl) || !isImageMimeType(thumbnailUrl)) {
                                 thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
                             }
                             break;
                         case "audio":
                             thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
-                            if (StringUtils.isEmpty(thumbnailUrl)) {
+                            if (StringUtils.isEmpty(thumbnailUrl) || !isImageMimeType(thumbnailUrl)) {
                                 thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
                             }
                             break;
@@ -763,6 +763,15 @@ public class ThumbnailHandler {
             }
         }
         return thumbnailUrl;
+    }
+
+    /**
+     * @param thumbnailUrl
+     * @return
+     */
+    private boolean isImageMimeType(String thumbnailUrl) {
+       ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(thumbnailUrl);
+       return format != null;
     }
 
     private static Optional<DocType> getDocType(StructElement structElement) {
