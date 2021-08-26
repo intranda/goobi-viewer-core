@@ -2725,13 +2725,22 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public List<FacetItem> getFieldFacetValues(String field, int num) throws IndexUnreachableException, PresentationException {
+        return getFieldFacetValues(field, num, "");
+    }
+    
+    public List<FacetItem> getFieldFacetValues(String field, int num, String filterQuery) throws IndexUnreachableException, PresentationException {
         num = num <= 0 ? Integer.MAX_VALUE : num;
         String query = "+(ISWORK:* OR ISANCHOR:*) " + SearchHelper.getAllSuffixes();
+        if(StringUtils.isNotBlank(filterQuery)) {
+            query += " +(" + filterQuery + ")";
+        }
         QueryResponse response =
                 DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Collections.singletonList(field), 1, false);
+        List values = response.getFacetField(field).getValues();
         return response.getFacetField(field)
                 .getValues()
                 .stream()
+                .filter(count -> !StringTools.checkValueEmptyOrInverted(count.getName()))
                 .map(count -> new FacetItem(count))
                 .sorted((f1, f2) -> Long.compare(f2.getCount(), f1.getCount()))
                 .limit(num)
