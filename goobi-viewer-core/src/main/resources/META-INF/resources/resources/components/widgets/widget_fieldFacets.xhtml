@@ -35,7 +35,7 @@
                                         
                                     <ul>
                                         <!-- AVAILABLE FACETS -->
-                                        <ui:repeat value="#{searchBean.getFieldFacetValues(field, cc.attrs.widget.resultDisplayLimit)}" var="facet">
+                                        <ui:repeat value="#{searchBean.getFieldFacetValues(field, cc.attrs.widget.resultDisplayLimit, cc.attrs.widget.additionalQuery)}" var="facet">
                                                 <li>
                                                     <h:outputLink value="#{navigationHelper.searchUrl}/-/-/1/-/#{facet.urlEscapedLink}/">
                                                         #{msg[facet.label]} (#{facet.count})

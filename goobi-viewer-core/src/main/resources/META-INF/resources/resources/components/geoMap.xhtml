@@ -45,10 +45,8 @@
 // 	           		}
            		}
            	});
-           	$(document).ready(() => {   
-            	let view = #{cc.attrs.geoMap.initialView};
-            	let features = #{cc.attrs.geoMap.featuresAsString};
-            	geoMap.init(view);
+        	function initMap(view, features, $geoAnnotationMarker) {
+        	    geoMap.init(view);
             	let layer = new viewerJS.GeoMap.featureGroup(geoMap, {
             	    markerIcon: #{cc.attrs.geoMap.markerAsJSON}
             	})
@@ -76,7 +74,7 @@
             	
             	// console.log("Show annotations: " + #{cc.attrs.showAnnotations});
             	if(#{cc.attrs.showAnnotations}) {            	    
-            	 $("[data-geomap-feature]").each((index, ele) => {
+            	    $geoAnnotationMarker.each((index, ele) => {
                      let featureString = $(ele).attr("data-geomap-feature");
                      if(featureString) {
                          let feature = JSON.parse(featureString);
@@ -90,6 +88,17 @@
                      }
                  });
                  geoMap.setView(geoMap.getViewAroundFeatures(layer.getFeatures()));
+            	}
+        	}
+           	$(document).ready(() => {   
+            	let view = #{cc.attrs.geoMap.initialView};
+            	let features = #{cc.attrs.geoMap.featuresAsString};
+            	let $geoAnnotationMarker = $("[data-geomap-feature]")
+            	
+            	if(features.length > 0 || $geoAnnotationMarker.length > 0) {
+            	    initMap(view, features, $geoAnnotationMarker)
+            	} else {
+            	    $("##{cc.attrs.mapId}").parent().hide();
             	}
             })
 		    
