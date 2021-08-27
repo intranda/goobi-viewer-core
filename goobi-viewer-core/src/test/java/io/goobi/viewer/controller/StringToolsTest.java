@@ -209,15 +209,6 @@ public class StringToolsTest {
     public void checkValueEmptyOrInverted_shouldReturnTrueIfValueStartsWith0x1() throws Exception {
         Assert.assertTrue(StringTools.checkValueEmptyOrInverted("oof"));
     }
-    
-    /**
-     * @see StringTools#checkValueEmptyOrInverted(String)
-     * @verifies return true if value starts with #1;
-     */
-    @Test
-    public void checkValueEmptyOrInverted_shouldReturnTrueIfValueStartsWith1() throws Exception {
-        Assert.assertTrue(StringTools.checkValueEmptyOrInverted("#1;oof"));
-    }
 
     /**
      * @see StringTools#checkValueEmptyOrInverted(String)
