@@ -2734,10 +2734,10 @@ public class SearchBean implements SearchInterface, Serializable {
         if(StringUtils.isNotBlank(filterQuery)) {
             query += " +(" + filterQuery + ")";
         }
+        String facetField = SearchHelper.facetifyField(field);
         QueryResponse response =
-                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Collections.singletonList(field), 1, false);
-        List values = response.getFacetField(field).getValues();
-        return response.getFacetField(field)
+                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Collections.singletonList(facetField), 1, false);
+        return response.getFacetField(facetField)
                 .getValues()
                 .stream()
                 .filter(count -> !StringTools.checkValueEmptyOrInverted(count.getName()))
