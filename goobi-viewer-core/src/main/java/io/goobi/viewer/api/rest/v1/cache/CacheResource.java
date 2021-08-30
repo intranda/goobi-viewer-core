@@ -70,12 +70,12 @@ public class CacheResource {
         if(pdf != null) {
             JSONObject jPdf = new JSONObject();
             jPdf.append("objects", pdf.getElementsInCache());
-            jCaches.append("content", jPdf);
+            jCaches.append("pdf", jPdf);
         }
         if(thumbs != null) {
             JSONObject jThumbs = new JSONObject();
             jThumbs.append("objects", thumbs.getElementsInCache());
-            jCaches.append("content", jThumbs);
+            jCaches.append("thumbnails", jThumbs);
         }
         return jCaches.toString();
     }
