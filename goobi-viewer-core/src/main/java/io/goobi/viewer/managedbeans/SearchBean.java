@@ -277,6 +277,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param resetFacets a boolean.
      * @return Target URL
      * @should not reset facets if resetFacets false
+     * @should not produce results if search terms not in index
      */
     public String searchSimple(boolean resetParameters, boolean resetFacets) {
         logger.trace("searchSimple");

@@ -772,6 +772,24 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchBean#searchSimple(boolean,boolean)
+     * @verifies not produce results if search terms not in index
+     */
+    @Test
+    public void searchSimple_shouldNotProduceResultsIfSearchTermsNotInIndex() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setNavigationHelper(new NavigationHelper());
+
+        // Simulate search execution via the quick search widget
+        sb.setInvisibleSearchString("1234xyz");
+        sb.searchSimple(true, false);
+        sb.setExactSearchString(sb.getExactSearchString()); // TODO The double escaping that breaks the search cannot be reproduced with way, unfortunately - this test always passes
+        sb.search();
+
+        Assert.assertEquals(0, sb.getCurrentSearch().getHitsCount());
+    }
+
+    /**
      * @see SearchBean#getExactSearchString()
      * @verifies not url escape string
      */
