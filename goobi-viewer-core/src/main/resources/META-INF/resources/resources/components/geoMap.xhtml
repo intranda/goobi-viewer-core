@@ -45,7 +45,7 @@
 // 	           		}
            		}
            	});
-        	function initMap(view, features, $geoAnnotationMarker) {
+        	function initMap(view, features) {
         	    geoMap.init(view);
             	let layer = new viewerJS.GeoMap.featureGroup(geoMap, {
             	    markerIcon: #{cc.attrs.geoMap.markerAsJSON}
@@ -72,32 +72,15 @@
 	        	}
 	        	// console.log("init features", highlightDocumentId, features.filter(f => f.properties.documentId == highlightDocumentId));
             	layer.init(features, true);
-            	
-            	// console.log("Show annotations: " + #{cc.attrs.showAnnotations});
-            	if(#{cc.attrs.showAnnotations}) {            	    
-            	    $geoAnnotationMarker.each((index, ele) => {
-                     let featureString = $(ele).attr("data-geomap-feature");
-                     if(featureString) {
-                         let feature = JSON.parse(featureString);
-                         layer.addMarker(feature);
-                         $(ele).parent().on("mouseenter",  () => {
-                             layer.highlightMarker(feature);
-                         });
-                         $(ele).parent().on("mouseleave",  () => {
-                             layer.highlightMarker(null);
-                         });
-                     }
-                 });
+
                  geoMap.setView(geoMap.getViewAroundFeatures(layer.getFeatures()));
-            	}
         	}
            	$(document).ready(() => {   
             	let view = #{cc.attrs.geoMap.initialView};
             	let features = #{cc.attrs.geoMap.featuresAsString};
-            	let $geoAnnotationMarker = $("[data-geomap-feature]")
             	
-            	if(features.length > 0 || $geoAnnotationMarker.length > 0) {
-            	    initMap(view, features, $geoAnnotationMarker)
+            	if(features.length > 0 ) {
+            	    initMap(view, features)
             	} else {
             	    $("##{cc.attrs.mapId}").parent().hide();
             	}

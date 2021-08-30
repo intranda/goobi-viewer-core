@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -98,6 +99,7 @@ import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
@@ -2278,12 +2280,19 @@ public class ActiveDocumentBean implements Serializable {
             subDocFields.add("MD_VALUE");
             subDocFields.addAll(coordinateFields);
 
-            String annotationQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:UGC +MD_COORDS:*", pi);
-            long numAnnotations = DataManager.getInstance().getSearchIndex().getHitCount(annotationQuery);
+            Collection<GeoMapFeature> features = new ArrayList<>();
             
+            String annotationQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:UGC +MD_COORDS:*", pi);
+            SolrDocumentList annoDocs = DataManager.getInstance().getSearchIndex().getDocs(annotationQuery, Arrays.asList("MD_COORDS", "MD_BODY", "MD_ANNOTATION_ID", "MD_VALUE"));
+            if(annoDocs != null) {
+                for (SolrDocument solrDocument : annoDocs) {
+                    GeoMapFeature feature = new GeoMapFeature(SolrTools.getAsString(solrDocument.getFieldValue("MD_BODY")));
+                    features.add(feature);
+                }
+            }
+
             SolrDocumentList subDocs = DataManager.getInstance().getSearchIndex().getDocs(subDocQuery, subDocFields);
             if (subDocs != null) {
-                Collection<GeoMapFeature> features = new ArrayList<>();
                 for (SolrDocument solrDocument : subDocs) {
                     List<GeoMapFeature> docFeatures = new ArrayList<GeoMapFeature>();
                     for (String coordinateField : coordinateFields) {
@@ -2299,11 +2308,9 @@ public class ActiveDocumentBean implements Serializable {
                     docFeatures.forEach(f -> f.setDocumentId((String)solrDocument.getFieldValue(SolrConstants.LOGID)));
                     features.addAll(docFeatures);
                 }
-                if (!features.isEmpty()) {
-                    map.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
-                }
             }
-            if(numAnnotations > 0 || !map.getFeatures().isEmpty()) {                
+            if (!features.isEmpty()) {
+                map.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
                 widget.setGeoMap(map);
             }
         } catch (IndexUnreachableException e) {
