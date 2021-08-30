@@ -62,6 +62,7 @@
                                     
                                                 <!-- Nested child 1 metadata -->
                                                 <ui:repeat var="child" value="#{metadata.childMetadata}">
+                                                    <h:panelGroup rendered="#{!child.blank}">
                                                     <div class="metadata__element-level-#{child.indentation}">
                                                     <dl class="dl-horizontal metadata__element-dl">
                                                         <dt title="#{msg[child.label]}">
@@ -84,6 +85,7 @@
                                                     
                                                     <!-- Nested child 2 metadata -->
                                                     <ui:repeat var="child2" value="#{child.childMetadata}">
+                                                        <h:panelGroup rendered="#{!child2.blank}">
                                                         <div class="metadata__level-#{child2.indentation}">
                                                             <dt title="#{msg[child2.label]}">
                                                                 <h:outputText value="#{msg[child2.label]}:" escape="false" />
@@ -100,7 +102,9 @@
                                                                 </h:panelGroup>
                                                             </ui:repeat>
                                                         </div>
+                                                        </h:panelGroup>
                                                     </ui:repeat>
+                                                    </h:panelGroup>
                                                 </ui:repeat>
                                     
                                     
