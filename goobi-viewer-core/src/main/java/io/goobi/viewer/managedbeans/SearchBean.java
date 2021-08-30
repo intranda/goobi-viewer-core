@@ -1169,7 +1169,10 @@ public class SearchBean implements SearchInterface, Serializable {
         }
     }
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc}
+     * @should escape critical chars
+     * @should not url escape string
+     */
     @Override
     public String getExactSearchString() {
         if (searchStringInternal.length() == 0) {
