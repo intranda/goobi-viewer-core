@@ -10,13 +10,17 @@
     <composite:implementation>
 
 			<!-- Modal -->
-		<div class="modal fade view-feedback-modal show" id="feedbackModal"
-			tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+		<div 
+      class="modal fade view-feedback-modal show" 
+      id="feedbackModal"
+			tabindex="-1" 
+      role="dialog" 
+      aria-label="#msg.feedbackTitle"
 			aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h2 class="modal-title" id="exampleModalLongTitle">#{msg.feedbackTitle}</h2>
+						<h2 class="modal-title">#{msg.feedbackTitle}</h2>
 						<button type="button" class="fancy-close" data-dismiss="modal"
 							aria-label="Close">
 							<span aria-hidden="true">x</span>
@@ -161,7 +165,7 @@
 								<ui:fragment
 									rendered="#{userBean.resetSecurityQuestion() and userBean.securityQuestion != null}">
 									<div class="form-group form-row mb-0">
-										<label for="feedbackSecurityQuestion"
+										<label id="feedbackSecurityQuestion" for="feedbackSecurityQuestion"
 											class="col-lg-3 control-label">#{msg.user__security_question}:</label>
 										<div class="col-12 col-12 col-lg-9 composite-control pt-0">
 											<span class="control-label d-block pb-1">#{msg[userBean.securityQuestion.questionKey]}:</span>
@@ -174,7 +178,9 @@
 												styleClass="form-control" pt:autocomplete="new-password"
 												pt:data-require-input-text="feedbackInput"
 												value="#{userBean.securityAnswer}" required="true"
-												requiredMessage="#{msg.user__security_question_required_msg}" />
+												requiredMessage="#{msg.user__security_question_required_msg}">
+                        <f:passThroughAttribute name="aria-labelledby" value="feedbackSecurityQuestion" />
+                      </h:inputSecret>
 										</div>
 									</div>
 								</ui:fragment>
