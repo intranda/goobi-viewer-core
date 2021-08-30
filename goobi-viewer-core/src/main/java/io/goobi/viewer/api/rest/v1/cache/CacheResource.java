@@ -20,6 +20,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -28,10 +29,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.solr.common.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentServerCacheException;
 import de.unigoettingen.sub.commons.util.CacheUtils;
+import de.unigoettingen.sub.commons.util.ContentServerCache;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.model.IResponseMessage;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
@@ -49,6 +53,33 @@ public class CacheResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Return information about internal cache status", tags = { "cache" })
+    public String getCacheInfo() throws ContentServerCacheException {
+        ContentServerCache content = ContentServerCache.getContentCache();
+        ContentServerCache pdf = ContentServerCache.getPdfCache();
+        ContentServerCache thumbs = ContentServerCache.getThumbnailCache();
+        
+        JSONObject jCaches = new JSONObject();
+        if(content != null) {
+            JSONObject jContent = new JSONObject();
+            jContent.append("objects", content.getElementsInCache());
+            jCaches.append("content", jContent);
+        }
+        if(pdf != null) {
+            JSONObject jPdf = new JSONObject();
+            jPdf.append("objects", pdf.getElementsInCache());
+            jCaches.append("content", jPdf);
+        }
+        if(thumbs != null) {
+            JSONObject jThumbs = new JSONObject();
+            jThumbs.append("objects", thumbs.getElementsInCache());
+            jCaches.append("content", jThumbs);
+        }
+        return jCaches.toString();
+    }
+    
     /**
      * 
      * @param content
