@@ -23,7 +23,7 @@
                         <ui:repeat value="#{metadataElement.metadataList}" var="metadata">
                             <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
                                 <!-- TODO: status.index > 0 should indent the block to the right -->
-                                <div class="metadata__element_level-#{metadata.indentation}">
+                                <div class="metadata__element-level-#{metadata.indentation}">
                                     <dl class="dl-horizontal metadata__element-dl">
                                         <dt title="#{msg[metadata.label]}">
                                             <h:outputText value="#{msg[metadata.label]}:" escape="false" />
@@ -59,25 +59,27 @@
                                             </dd>
                                         </h:panelGroup>
                                     </dl>
-                                </div>
-                                
+                                    
                                                 <!-- Nested child 1 metadata -->
                                                 <ui:repeat var="child" value="#{metadata.childMetadata}">
-                                                    <div class="metadata__element_level-#{child.indentation}">
+                                                    <div class="metadata__element-level-#{child.indentation}">
+                                                    <dl class="dl-horizontal metadata__element-dl">
                                                         <dt title="#{msg[child.label]}">
                                                             <h:outputText value="#{msg[child.label]}:" escape="false" />
                                                         </dt>
                                                         <ui:repeat value="#{child.values}" var="cval">
                                                             <h:panelGroup rendered="#{!child.blank}">
+                                                                <dd>
                                                                 <h:outputFormat value="#{msg[cval.masterValue]}" escape="false">
-                                                                    <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
-                                                                        <f:param value="#{cval.getParamLabelWithColon(ind)}" />
-                                                                        <f:param value="#{cval.getComboValueShort(ind)}" />
-                                                                    </c:forEach>
+	                                                                    <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+	                                                                        <f:param value="#{cval.getParamLabelWithColon(ind)}" />
+	                                                                        <f:param value="#{cval.getComboValueShort(ind)}" />
+	                                                                    </c:forEach>
                                                                 </h:outputFormat>
-                                                                <br />
+                                                                	</dd>
                                                             </h:panelGroup>
                                                         </ui:repeat>
+                                                        </dl>
                                                     </div>
                                                     
                                                     <!-- Nested child 2 metadata -->
@@ -100,6 +102,11 @@
                                                         </div>
                                                     </ui:repeat>
                                                 </ui:repeat>
+                                    
+                                    
+                                </div>
+                                
+
                                                 
                             </h:panelGroup>
                         </ui:repeat>
