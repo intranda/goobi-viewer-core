@@ -23,7 +23,7 @@
                         <ui:repeat value="#{metadataElement.metadataList}" var="metadata">
                             <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
                                 <!-- TODO: status.index > 0 should indent the block to the right -->
-                                <div class="metadata__element_level-#{status.index}">
+                                <div class="metadata__element_level-#{metadata.indentation}">
                                     <dl class="dl-horizontal metadata__element-dl">
                                         <dt title="#{msg[metadata.label]}">
                                             <h:outputText value="#{msg[metadata.label]}:" escape="false" />
