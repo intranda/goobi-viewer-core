@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -210,7 +211,6 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(SolrConstants.DC, item3.getField());
         Assert.assertEquals("b", item3.getValue());
     }
-    
 
     /**
      * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
@@ -418,7 +418,6 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
                 bean.getFacets().getCurrentFacetString());
     }
-    
 
     /**
      * @see SearchBean#generateAdvancedSearchString(boolean)
@@ -429,7 +428,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchBean bean = new SearchBean();
         bean.resetAdvancedSearchParameters(1, 2);
         bean.setAdvancedSearchGroupOperator(1);
-        
+
         bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;");
 
         SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
@@ -452,7 +451,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
                 bean.getFacets().getCurrentFacetString());
     }
-    
+
     /**
      * @see SearchBean#generateAdvancedSearchString(boolean)
      * @verifies not replace obsolete facets with duplicates
@@ -462,9 +461,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchBean bean = new SearchBean();
         bean.resetAdvancedSearchParameters(1, 2);
         bean.setAdvancedSearchGroupOperator(1);
-        
+
         // Current facets are DC:foo and DC:bar
-        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;" +  SolrConstants.DC + ":bar;;");
+        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
 
         // Passing DC:foo and DC:foo from the advanced search
         SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
@@ -489,8 +488,6 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
                 bean.getFacets().getCurrentFacetString());
     }
 
-    
-
     /**
      * @see SearchBean#generateAdvancedSearchString(boolean)
      * @verifies remove facets that are not matched among query items
@@ -501,11 +498,10 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.resetAdvancedSearchParameters(1, 1);
         bean.setAdvancedSearchGroupOperator(1);
 
-        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;" +  SolrConstants.DC + ":bar;;");
+        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
         Assert.assertEquals(2, bean.getFacets().getCurrentFacets().size());
         Assert.assertTrue(bean.getFacets().getCurrentFacets().get(0).isHierarchial());
-        
-        
+
         SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
         {
             SearchQueryItem item = group.getQueryItems().get(0);
@@ -773,5 +769,27 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.getFacets().setCurrentFacetString("foo:bar");
         sb.searchSimple(true, false);
         Assert.assertEquals(URLEncoder.encode("foo:bar;;", SearchBean.URL_ENCODING), sb.getFacets().getCurrentFacetString());
+    }
+
+    /**
+     * @see SearchBean#getExactSearchString()
+     * @verifies not url escape string
+     */
+    @Test
+    public void getExactSearchString_shouldNotUrlEscapeString() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setExactSearchString("PI:*");
+        Assert.assertEquals("PI:*", sb.getExactSearchString());
+    }
+
+    /**
+     * @see SearchBean#getExactSearchString()
+     * @verifies escape critical chars
+     */
+    @Test
+    public void getExactSearchString_shouldEscapeCriticalChars() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setExactSearchString("PI:foo/bar");
+        Assert.assertEquals("PI:foo" + BeanUtils.SLASH_REPLACEMENT + "bar", sb.getExactSearchString());
     }
 }
