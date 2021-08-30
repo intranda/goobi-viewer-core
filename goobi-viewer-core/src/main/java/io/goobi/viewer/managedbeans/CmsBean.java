@@ -1781,12 +1781,12 @@ public class CmsBean implements Serializable {
         } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
             Search search = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
             search.setQuery(item.getSolrQuery());
-            if (StringUtils.isNotBlank(item.getSolrSortFields())) {
+            if (StringUtils.isNotBlank(item.getSolrSortFields()) && !item.getSolrSortFields().equals("-")) {
                 search.setSortString(item.getSolrSortFields());
                 searchBean.setSortString(item.getSolrSortFields());
             }
             //NOTE: Cannot sort by multivalued fields like DC.
-            if (StringUtils.isNotBlank(item.getGroupBy())) {
+            if (StringUtils.isNotBlank(item.getGroupBy()) && !item.getGroupBy().equals("-")) {
                 String sortString = search.getSortString() == null ? "" : search.getSortString().replace("-", "");
                 sortString = item.getGroupBy() + ";" + sortString;
                 search.setSortString(sortString);
