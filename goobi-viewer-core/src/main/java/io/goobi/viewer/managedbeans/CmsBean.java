@@ -1786,7 +1786,7 @@ public class CmsBean implements Serializable {
                 searchBean.setSortString(item.getSolrSortFields());
             }
             //NOTE: Cannot sort by multivalued fields like DC.
-            if (StringUtils.isNotBlank(item.getGroupBy())) {
+            if (StringUtils.isNotBlank(item.getGroupBy()) && !item.getGroupBy().equals("-")) {
                 String sortString = search.getSortString() == null ? "" : search.getSortString().replace("-", "");
                 sortString = item.getGroupBy() + ";" + sortString;
                 search.setSortString(sortString);
