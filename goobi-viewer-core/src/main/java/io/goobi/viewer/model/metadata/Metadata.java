@@ -68,7 +68,7 @@ public class Metadata implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(Metadata.class);
 
     /** ID of the owning StructElement. Used for constructing unique value IDs, where required. */
-    private String ownerIddoc;
+    private String ownerStructElementIddoc;
     /** Label from messages.properties. */
     private final String label;
     /** Value from messages.properties (with placeholders) */
@@ -92,7 +92,7 @@ public class Metadata implements Serializable {
      * </p>
      */
     public Metadata() {
-        this.ownerIddoc = "";
+        this.ownerStructElementIddoc = "";
         this.label = "";
         this.masterValue = "";
         this.type = 0;
@@ -111,7 +111,7 @@ public class Metadata implements Serializable {
      * @param paramValue a {@link java.lang.String} object.
      */
     public Metadata(String ownerIddoc, String label, String masterValue, String paramValue) {
-        this.ownerIddoc = ownerIddoc;
+        this.ownerStructElementIddoc = ownerIddoc;
         this.label = label;
         this.masterValue = masterValue;
         values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue));
@@ -136,7 +136,7 @@ public class Metadata implements Serializable {
      * @param locale
      */
     public Metadata(String ownerIddoc, String label, String masterValue, MetadataParameter param, String paramValue, Locale locale) {
-        this.ownerIddoc = ownerIddoc;
+        this.ownerStructElementIddoc = ownerIddoc;
         this.label = label;
         this.masterValue = masterValue;
         params.add(param);
@@ -302,6 +302,26 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * 
+     * @param ownerIddoc
+     * @return Sublist of all values that belong to <code>ownerIddoc</code>; all values if <code>ownerIddoc</code> null
+     */
+    public List<MetadataValue> getValuesForOwner(String ownerIddoc) {
+        if (ownerIddoc == null) {
+            return values;
+        }
+
+        List<MetadataValue> ret = new ArrayList<>(values.size());
+        for (MetadataValue value : values) {
+            if (ownerIddoc.equals(value.getOwnerIddoc())) {
+                ret.add(value);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * <p>
      * setParamValue.
      * </p>
@@ -331,11 +351,13 @@ public class Metadata implements Serializable {
 
         // Adopt indexes to list sizes, if necessary
         while (values.size() - 1 < valueIndex) {
-            values.add(new MetadataValue(ownerIddoc + "_" + valueIndex, masterValue));
+            MetadataValue mdValue = new MetadataValue(ownerStructElementIddoc + "_" + valueIndex, masterValue);
+            values.add(mdValue);
         }
         MetadataValue mdValue = values.get(valueIndex);
         mdValue.setGroupType(groupType);
         mdValue.setDocstrct(ownerDocstrctType);
+        mdValue.setOwnerIddoc(ownerStructElementIddoc);
         if (StringUtils.isNotEmpty(citationTemplate) && citationProcessorWrapper != null) {
             try {
                 mdValue.setCitationProcessor(citationProcessorWrapper.getCitationProcessor(citationTemplate));
@@ -599,11 +621,20 @@ public class Metadata implements Serializable {
      * @should return false if at least one paramValue is not empty
      */
     public boolean isBlank() {
+        return isBlank(null);
+    }
+
+    /**
+     * 
+     * @param ownerIddoc
+     * @return
+     */
+    public boolean isBlank(String ownerIddoc) {
         if (values == null || values.isEmpty()) {
             return true;
         }
 
-        for (MetadataValue value : values) {
+        for (MetadataValue value : getValuesForOwner(ownerIddoc)) {
             if (value.getParamValues().isEmpty()) {
                 return true;
             }
@@ -634,7 +665,7 @@ public class Metadata implements Serializable {
         if (se == null) {
             return false;
         }
-        this.ownerIddoc = ownerIddoc;
+        this.ownerStructElementIddoc = ownerIddoc;
         ownerDocstrctType = se.getDocStructType();
 
         if (StringUtils.isNotEmpty(citationTemplate)) {
@@ -774,7 +805,7 @@ public class Metadata implements Serializable {
             }
             int count = 0;
             for (SolrDocument doc : groupedMdList) {
-                String mdDocIddoc = null;
+                String metadataDocIddoc = null;
                 Map<String, List<String>> groupFieldMap = new HashMap<>();
                 // Collect values for all fields in this metadata doc
                 for (String fieldName : doc.getFieldNames()) {
@@ -792,7 +823,7 @@ public class Metadata implements Serializable {
                     }
                     // Collect IDDOC value for use as owner IDDOC for child metadata
                     if (fieldName.equals(SolrConstants.IDDOC)) {
-                        mdDocIddoc = (String) doc.getFieldValue(fieldName);
+                        metadataDocIddoc = (String) doc.getFieldValue(fieldName);
                     }
                 }
                 String groupType = null;
@@ -838,13 +869,15 @@ public class Metadata implements Serializable {
                     }
                 }
                 // Set value IDDOC
-                if (mdDocIddoc != null && values.size() > count) {
-                    values.get(count).setIddoc(mdDocIddoc);
+                if (metadataDocIddoc != null && values.size() > count) {
+                    MetadataValue val = values.get(count);
+                    val.setIddoc(metadataDocIddoc);
+                    val.setOwnerIddoc(ownerIddoc);
 
                     if (!getChildMetadata().isEmpty()) {
                         for (Metadata child : getChildMetadata()) {
                             logger.trace("populating child metadata: {}", child.getLabel());
-                            child.populate(se, mdDocIddoc, locale);
+                            child.populate(se, metadataDocIddoc, locale);
                         }
                     }
                 }

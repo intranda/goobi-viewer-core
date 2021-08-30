@@ -55,10 +55,12 @@ public class MetadataValue implements Serializable {
     private final List<String> paramUrls = new ArrayList<>();
     private final Map<String, String> normDataUrls = new HashMap<>();
     private final Map<String, List<String>> citationValues = new HashMap<>();
+    private final List<MetadataValue> childValues = new ArrayList<>();
     /** Unique ID for citation item generation */
     private String id;
     /** IDDOC of the grouped metadata Solr doc. */
     private String iddoc;
+    private String ownerIddoc;
     private String masterValue;
     private String groupType;
     private String docstrct = null;
@@ -307,6 +309,13 @@ public class MetadataValue implements Serializable {
     }
 
     /**
+     * @return the childValues
+     */
+    public List<MetadataValue> getChildValues() {
+        return childValues;
+    }
+
+    /**
      * <p>
      * hasParamValue.
      * </p>
@@ -337,8 +346,6 @@ public class MetadataValue implements Serializable {
         }
         return "";
     }
-    
-    
 
     /**
      * @return the iddoc
@@ -352,6 +359,20 @@ public class MetadataValue implements Serializable {
      */
     public void setIddoc(String iddoc) {
         this.iddoc = iddoc;
+    }
+
+    /**
+     * @return the ownerIddoc
+     */
+    public String getOwnerIddoc() {
+        return ownerIddoc;
+    }
+
+    /**
+     * @param ownerIddoc the ownerIddoc to set
+     */
+    public void setOwnerIddoc(String ownerIddoc) {
+        this.ownerIddoc = ownerIddoc;
     }
 
     /**
