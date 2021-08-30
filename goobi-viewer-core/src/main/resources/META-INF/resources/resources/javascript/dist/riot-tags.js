@@ -3463,7 +3463,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
 });
 
 
-riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'} {getPageStatus(index)}" each="{canvas, index in thumbnails}"><a class="thumbnails-image-link" href="{getLink(canvas)}" onclick="{handleClickOnImage}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}" loading="lazy"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
+riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'} {getPageStatus(index)}" each="{canvas, index in thumbnails}"><a class="thumbnails-image-link" href="{getLink(canvas)}" onclick="{handleClickOnImage}"><img class="thumbnails-image" alt="{getObjectTitle() + \': \' + getValue(canvas.label)}" riot-src="{getImage(canvas)}" loading="lazy"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
 
 this.thumbnails = [];
 this._debug = false;
@@ -3478,6 +3478,7 @@ this.on("mount", () => {
 	if(viewerJS.isString(source)) {
 		fetch(source)
 		.then(response => response.json())
+
 		.then(json => this.loadThumbnails(json, this.type));
 	} else {
 		this.loadThumbnails(source, this.type);
@@ -3569,6 +3570,16 @@ this.loadCanvas = function(source) {
 
 this.getValue = function(value) {
 	return viewerJS.iiif.getValue(value, this.language, this.language == "en" ? "de" : "en");
+}.bind(this)
+
+this.getObjectTitle = function() {
+	try {
+	return document.querySelector('.archives__object-title').innerHTML;
+	}
+	catch (e) {
+
+		return '';
+	}
 }.bind(this)
 
 this.getImage = function(canvas) {
