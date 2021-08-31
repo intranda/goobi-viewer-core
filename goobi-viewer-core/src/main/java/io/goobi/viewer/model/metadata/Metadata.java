@@ -305,6 +305,8 @@ public class Metadata implements Serializable {
      * 
      * @param ownerIddoc
      * @return Sublist of all values that belong to <code>ownerIddoc</code>; all values if <code>ownerIddoc</code> null
+     * @should return all values if ownerIddoc null
+     * @should return only values for the given ownerIddoc
      */
     public List<MetadataValue> getValuesForOwner(String ownerIddoc) {
         if (ownerIddoc == null) {
@@ -617,8 +619,6 @@ public class Metadata implements Serializable {
      * Checks whether any parameter values are set. 'empty' seems to be a reserved word in JSF, so use 'blank'.
      *
      * @return true if all paramValues are empty or blank; false otherwise.
-     * @should return true if all paramValues are empty
-     * @should return false if at least one paramValue is not empty
      */
     public boolean isBlank() {
         return isBlank(null);
@@ -628,6 +628,10 @@ public class Metadata implements Serializable {
      * 
      * @param ownerIddoc
      * @return
+     * @should return true if all paramValues are empty
+     * @should return false if at least one paramValue is not empty
+     * @should return true if all values have different ownerIddoc
+     * @should return true if at least one value has same ownerIddoc
      */
     public boolean isBlank(String ownerIddoc) {
         if (values == null || values.isEmpty()) {

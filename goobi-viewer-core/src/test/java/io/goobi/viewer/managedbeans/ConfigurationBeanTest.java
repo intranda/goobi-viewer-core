@@ -15,8 +15,8 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import org.junit.After;
-import org.junit.AfterClass;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.ConfigurationTest;
-import io.goobi.viewer.managedbeans.ConfigurationBean;
 
 public class ConfigurationBeanTest extends AbstractTest {
 
@@ -37,14 +36,6 @@ public class ConfigurationBeanTest extends AbstractTest {
     @Before
     public void setUp() throws Exception {
         bean = new ConfigurationBean();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
     }
 
     /**
@@ -110,6 +101,20 @@ public class ConfigurationBeanTest extends AbstractTest {
     @Test
     public void isSidebarFulltextLinkVisible_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(false, bean.isSidebarFulltextLinkVisible());
+    }
+
+    /**
+     * @see ConfigurationBean#getMetadataParamNumberList()
+     * @verifies return correct list
+     */
+    @Test
+    public void getMetadataParamNumberList_shouldReturnCorrectList() throws Exception {
+        List<Integer> result = bean.getMetadataParamNumberList();
+        Assert.assertNotNull(result);
+        Assert.assertEquals(5, result.size());
+        for (int i = 0; i < result.size(); ++i) {
+            Assert.assertEquals(Integer.valueOf(i), result.get(i));
+        }
     }
 
 }
