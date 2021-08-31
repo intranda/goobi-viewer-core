@@ -84,7 +84,7 @@
 		<ics.version>2.10.0-SNAPSHOT</ics.version>
 		<tei-conversion.version>1.2.0</tei-conversion.version>
 		<iiif-api-model.version>2.0.0</iiif-api-model.version>
-		<normdataimporter.version>1.6.0</normdataimporter.version>
+		<normdataimporter.version>1.7.0</normdataimporter.version>
 
         <!-- other libraries -->
         <cdi.version>2.0.SP1</cdi.version>
