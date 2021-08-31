@@ -142,9 +142,7 @@ public class Metadata implements Serializable {
         params.add(param);
         values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue));
         if (paramValue != null) {
-            setParamValue(0, 0, Collections.singletonList(paramValue), label, null, null, null, locale);
-            //            values.get(0).getParamValues().add(new ArrayList<>());
-            //            values.get(0).getParamValues().get(0).add(paramValue);
+            setParamValue(0, 0, Collections.singletonList(paramValue), null, null, null, locale);
         }
         this.type = 0;
         this.number = -1;
@@ -331,7 +329,6 @@ public class Metadata implements Serializable {
      * @param valueIndex a int.
      * @param paramIndex a int.
      * @param inValues List with values
-     * @param label a {@link java.lang.String} object.
      * @param url a {@link java.lang.String} object.
      * @param options a {@link java.util.Map} object.
      * @param groupType value of METADATATYPE, if available
@@ -340,7 +337,7 @@ public class Metadata implements Serializable {
      * @should add multivalued param values correctly
      * @should set group type correctly
      */
-    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> options,
+    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String url, Map<String, String> options,
             String groupType, Locale locale) {
         // logger.trace("setParamValue: {}", label);
         if (inValues == null || inValues.isEmpty()) {
@@ -507,10 +504,6 @@ public class Metadata implements Serializable {
             value = SearchHelper.replaceHighlightingPlaceholders(value);
 
             if (paramIndex >= 0) {
-                while (mdValue.getParamLabels().size() <= paramIndex) {
-                    mdValue.getParamLabels().add("");
-                }
-                mdValue.getParamLabels().set(paramIndex, label);
                 while (mdValue.getParamValues().size() <= paramIndex) {
                     mdValue.getParamValues().add(new ArrayList<>());
                 }
@@ -735,7 +728,7 @@ public class Metadata implements Serializable {
                         }
                         values = moddedValues;
                     }
-                    setParamValue(0, indexOfParam, values, param.getKey(), null, null, null, locale);
+                    setParamValue(0, indexOfParam, values, null, null, null, locale);
                 } else {
                     for (String value : values) {
                         // logger.trace("{}: {}", param.getKey(), mdValue);
@@ -754,14 +747,14 @@ public class Metadata implements Serializable {
                                 continue;
                             }
                         }
-                        setParamValue(count, indexOfParam, Collections.singletonList(value), param.getKey(), null, null, null, locale);
+                        setParamValue(count, indexOfParam, Collections.singletonList(value), null, null, null, locale);
                         count++;
                     }
                 }
             }
             if (values == null && param.getDefaultValue() != null) {
                 // logger.trace("No value found for {} (index {}), using default value '{}'", param.getKey(), indexOfParam, param.getDefaultValue());
-                setParamValue(0, indexOfParam, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, null, locale);
+                setParamValue(0, indexOfParam, Collections.singletonList(param.getDefaultValue()), null, null, null, locale);
                 found = true;
                 count++;
             }
@@ -863,13 +856,13 @@ public class Metadata implements Serializable {
                                 options.put("NORM_TYPE", SolrTools.getSingleFieldStringValue(doc, "NORM_TYPE"));
                             }
                         }
-                        setParamValue(count, i, values, param.getKey(), null, options, groupType, locale);
+                        setParamValue(count, i, values, null, options, groupType, locale);
                     } else if (param.getDefaultValue() != null) {
                         logger.debug("No value found for {}, using default value", param.getKey());
-                        setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, groupType, locale);
+                        setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), null, null, groupType, locale);
                         found = true;
                     } else {
-                        setParamValue(count, i, Collections.singletonList(""), null, null, null, groupType, locale);
+                        setParamValue(count, i, Collections.singletonList(""), null, null, groupType, locale);
                     }
                 }
                 // Set value IDDOC
