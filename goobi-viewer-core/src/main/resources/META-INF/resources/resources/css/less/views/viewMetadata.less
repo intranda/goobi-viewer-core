@@ -92,8 +92,22 @@
 			padding: 1.2rem 1.5rem;
 		}
         &-level-1 {
+			.metadata__element-dl {
+				grid-template-columns: 150px auto;
+			}
 			dt {
 				padding-left: 2rem;
+				&::before {
+					content: "\f148";
+					display: inline-block;
+					font: normal normal normal 14px/1 FontAwesome;
+					font-size: 14px;
+					font-size: inherit;
+					text-rendering: auto;
+					margin-right: 0.7rem;
+					transform: rotate(90deg);
+					opacity: 0.3;
+				}
 			}
 		}
         &-level-2 {}
