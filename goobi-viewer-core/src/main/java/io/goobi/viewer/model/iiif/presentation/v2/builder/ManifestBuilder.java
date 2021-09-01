@@ -203,7 +203,7 @@ public class ManifestBuilder extends AbstractBuilder {
             try {
                 String eleValue = ele.getMetadataValue(navDateField);
                 LocalDate date = LocalDate.parse(eleValue);
-                manifest.setNavDate(Date.from(Instant.from(date.atStartOfDay(ZoneId.of("Z")))));
+                manifest.setNavDate(date.atStartOfDay());
             } catch (NullPointerException | DateTimeParseException e) {
                 logger.warn("Unable to parse {} as Date", ele.getMetadataValue(navDateField));
             }

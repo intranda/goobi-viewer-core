@@ -42,6 +42,7 @@ import de.intranda.api.iiif.presentation.v2.Manifest2;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -213,7 +214,7 @@ public class ActivityCollectionBuilder {
             }
             if (created >= startDate && created <= endDate) {
                 Activity createActivity = new Activity();
-                createActivity.setEndTime(new Date(created));
+                createActivity.setEndTime(DateTools.getLocalDateTimeFromMillis(created, false));
                 createActivity.setType(ActivityType.CREATE);
                 createActivity.setObject(createObject(doc));
                 activities.add(createActivity);
@@ -221,7 +222,7 @@ public class ActivityCollectionBuilder {
             for (Long update : updates) {
                 if (!update.equals(created)) {
                     Activity activity = new Activity();
-                    activity.setEndTime(new Date(update));
+                    activity.setEndTime(DateTools.getLocalDateTimeFromMillis(update, false));
                     activity.setType(update.equals(deleted) ? ActivityType.DELETE : ActivityType.UPDATE);
                     activity.setObject(createObject(doc));
                     activities.add(activity);

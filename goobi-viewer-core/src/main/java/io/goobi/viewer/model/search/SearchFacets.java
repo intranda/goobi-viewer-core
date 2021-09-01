@@ -441,7 +441,8 @@ public class SearchFacets implements Serializable {
             ret = "-";
         }
         try {
-            return URLEncoder.encode(ret, SearchBean.URL_ENCODING);
+            String eRet = URLEncoder.encode(ret, SearchBean.URL_ENCODING);
+            return eRet;
         } catch (UnsupportedEncodingException e) {
             return ret;
         }
@@ -531,6 +532,7 @@ public class SearchFacets implements Serializable {
             labelMap = Collections.emptyMap();
         }
         try {
+            facetString = URLDecoder.decode(facetString, "utf-8");
             facetString = BeanUtils.unescapeCriticalUrlChracters(facetString);
             facetString = URLDecoder.decode(facetString, "utf-8");
         } catch (UnsupportedEncodingException e) {

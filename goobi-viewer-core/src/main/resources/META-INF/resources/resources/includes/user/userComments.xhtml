@@ -144,14 +144,15 @@
 						</label>
 						<div class="user-comments__add-comment-add">
 							<h:inputTextarea id="userCommentAdd"
-								value="#{activeDocumentBean.viewManager.currentPage.currentComment.text}" />
+								value="#{commentText}" />
 						</div>
+						<h:selectBooleanCheckbox id="commentLicenseCheckbox" value="#{commentRestricted}">Restricted</h:selectBooleanCheckbox>
 						<div class="user-comments__add-comment-submit">
 							<h:commandButton
 								rendered="#{activeDocumentBean.viewManager.currentPage.currentComment.id == null}"
-								action="#{activeDocumentBean.viewManager.currentPage.createNewCommentAction(userBean.user)}"
+								action="#{commentBean.createComment(commentText, commentRestricted)}"
 								styleClass="btn btn--success" value="#{msg.addNoteText}">
-								<f:ajax execute="userCommentAdd" render="@form" />
+								<f:ajax execute="userCommentAdd commentLicenseCheckbox" render="@form messages" />
 							</h:commandButton>
 						</div>
 					</div>

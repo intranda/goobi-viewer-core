@@ -135,8 +135,8 @@ public class PersistentAnnotation {
      * @param source a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
      */
     public PersistentAnnotation(WebAnnotation source, Long id, String targetPI, Integer targetPage) {
-        this.dateCreated = DateTools.convertDateToLocalDateTimeViaInstant(source.getCreated());
-        this.dateModified = DateTools.convertDateToLocalDateTimeViaInstant(source.getModified());
+        this.dateCreated = source.getCreated();
+        this.dateModified = source.getModified();
         this.motivation = source.getMotivation();
         this.id = id;
         this.creatorId = null;

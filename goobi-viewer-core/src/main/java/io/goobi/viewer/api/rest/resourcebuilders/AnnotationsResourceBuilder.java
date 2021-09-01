@@ -430,8 +430,8 @@ public class AnnotationsResourceBuilder {
         URI uri = getWebAnnotationURI(anno.getId());
         WebAnnotation annotation = new WebAnnotation(uri);
         try {
-            annotation.setCreated(DateTools.convertLocalDateTimeToDateViaInstant(anno.getDateCreated(), false));
-            annotation.setModified(DateTools.convertLocalDateTimeToDateViaInstant(anno.getDateModified(), false));
+            annotation.setCreated(anno.getDateCreated());
+            annotation.setModified(anno.getDateModified());
             try {
                 if (anno.getCreator() != null) {
                     annotation.setCreator(new Agent(anno.getCreator().getIdAsURI(), AgentType.PERSON, anno.getCreator().getDisplayName()));
