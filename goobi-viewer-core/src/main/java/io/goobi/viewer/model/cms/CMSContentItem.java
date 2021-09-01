@@ -1143,7 +1143,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return
      */
     private boolean isIgnoreHierarchy() {
-        return getItemTemplate().isIgnoreCollectionHierarchy();
+        return Optional.ofNullable(getItemTemplate()).map(CMSContentItemTemplate::isIgnoreCollectionHierarchy).orElse(false);
     }
 
     /**
@@ -1174,7 +1174,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     private CollectionView initializeCollection(final String collectionField, final String facetField, final String filterQuery) {
         // Use FACET_* instead of MD_*, otherwise the hierarchy may be broken
         String useCollectionField = SearchHelper.facetifyField(collectionField);
-        CollectionView collection = new CollectionView(useCollectionField, new BrowseDataProvider() {
+        CollectionView collection = new CollectionView(collectionField, new BrowseDataProvider() {
             @Override
             public Map<String, CollectionResult> getData() throws IndexUnreachableException {
                 Map<String, CollectionResult> dcStrings =
@@ -1616,7 +1616,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public CMSContentItemTemplate getItemTemplate() {
         try {
             return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | IllegalStateException e) {
             return null;
         }
     }
