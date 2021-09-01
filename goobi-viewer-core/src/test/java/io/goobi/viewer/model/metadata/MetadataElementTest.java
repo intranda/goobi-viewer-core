@@ -58,14 +58,14 @@ public class MetadataElementTest {
         {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
-            md.setParamValue(0, 0, Collections.singletonList("bar"), null, null, null, null);
+            md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
             Assert.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
         }
         {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
-            md.setParamValue(0, 0, Collections.singletonList("value"), null, null, null, null);
+            md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
             Assert.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
         }
@@ -82,14 +82,14 @@ public class MetadataElementTest {
         {
             Metadata md = new Metadata();
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
-            md.setParamValue(0, 0, Collections.singletonList("bar"), null, null, null, null);
+            md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
             Assert.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
         }
         {
             Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
             md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
-            md.setParamValue(0, 0, Collections.singletonList("value"), null, null, null, null);
+            md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
             Assert.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
         }

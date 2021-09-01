@@ -402,7 +402,7 @@ public class BrowseElement implements Serializable {
                         elementToUse = anchorStructElement;
                     } else {
                         // Add empty parameter if there is no anchor
-                        md.setParamValue(0, md.getParams().indexOf(param), Collections.singletonList(""), null, null, null, locale);
+                        md.setParamValue(0, md.getParams().indexOf(param), Collections.singletonList(""), null, null, null, null, locale);
                         continue;
                     }
                 }
@@ -415,7 +415,7 @@ public class BrowseElement implements Serializable {
                         metadataValues = topStructElement.getMetadataValues(param.getKey());
                         // logger.debug("Checking topstruct metadata: " + topStructElement.getDocStruct());
                     } else {
-                        md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(""), null, null, null, locale);
+                        md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(""), null, null, null, null, locale);
                         count++;
                     }
                 }
@@ -443,7 +443,7 @@ public class BrowseElement implements Serializable {
                             value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
                         }
                     }
-                    md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(StringTools.intern(value)),
+                    md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(StringTools.intern(value)), null,
                             param.isAddUrl() ? elementToUse.getUrl() : null, null, null, locale);
                     this.existingMetadataFields.add(md.getLabel());
                     count++;

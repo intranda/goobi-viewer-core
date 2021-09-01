@@ -129,6 +129,7 @@ public class MetadataTest extends AbstractTest {
         Assert.assertEquals(1, metadata.getValues().size());
         Assert.assertFalse(metadata.isBlank(null));
     }
+    
 
     /**
      * @see Metadata#isBlank(String)
@@ -139,12 +140,12 @@ public class MetadataTest extends AbstractTest {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
-        metadata.setParamValue(0, 0, Arrays.asList(values), null, null, null, null);
-        metadata.setParamValue(1, 0, Arrays.asList(values), null, null, null, null);
+        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
+        metadata.setParamValue(1, 0, Arrays.asList(values), "", null, null, null, null);
         Assert.assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
-
+        
         Assert.assertTrue(metadata.isBlank("789"));
     }
 
@@ -157,12 +158,12 @@ public class MetadataTest extends AbstractTest {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
-        metadata.setParamValue(0, 0, Arrays.asList(values), null, null, null, null);
-        metadata.setParamValue(1, 0, Arrays.asList(values), null, null, null, null);
+        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
+        metadata.setParamValue(1, 0, Arrays.asList(values), "", null, null, null, null);
         Assert.assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
-
+        
         Assert.assertFalse(metadata.isBlank("456"));
     }
 
@@ -175,7 +176,7 @@ public class MetadataTest extends AbstractTest {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         String[] values = new String[] { "val1", "val2" };
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setPrefix("pre_").setSuffix("_suf"));
-        metadata.setParamValue(0, 0, Arrays.asList(values), null, null, null, null);
+        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
         Assert.assertEquals(1, metadata.getValues().size());
         Assert.assertEquals(1, metadata.getValues().get(0).getParamValues().size());
         Assert.assertEquals(2, metadata.getValues().get(0).getParamValues().get(0).size());
@@ -192,7 +193,7 @@ public class MetadataTest extends AbstractTest {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         String[] values = new String[] { "val1", "val2" };
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setPrefix("pre_").setSuffix("_suf"));
-        metadata.setParamValue(0, 0, Arrays.asList(values), null, null, MetadataGroupType.CORPORATION.name(), null);
+        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, MetadataGroupType.CORPORATION.name(), null);
         Assert.assertEquals(1, metadata.getValues().size());
         Assert.assertEquals(MetadataGroupType.CORPORATION.name(), metadata.getValues().get(0).getGroupTypeForUrl());
     }
@@ -206,12 +207,12 @@ public class MetadataTest extends AbstractTest {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
-        metadata.setParamValue(0, 0, Arrays.asList(values), null, null, null, null);
-        metadata.setParamValue(1, 0, Arrays.asList(values), null, null, null, null);
+        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
+        metadata.setParamValue(1, 0, Arrays.asList(values), "", null, null, null, null);
         Assert.assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
-
+        
         Assert.assertEquals(2, metadata.getValuesForOwner(null).size());
     }
 
@@ -224,12 +225,12 @@ public class MetadataTest extends AbstractTest {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
-        metadata.setParamValue(0, 0, Arrays.asList(values), null, null, null, null);
-        metadata.setParamValue(1, 0, Arrays.asList(values), null, null, null, null);
+        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
+        metadata.setParamValue(1, 0, Arrays.asList(values), "", null, null, null, null);
         Assert.assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
-
+        
         List<MetadataValue> mdValues = metadata.getValuesForOwner("456");
         Assert.assertEquals(1, mdValues.size());
         Assert.assertEquals("456", mdValues.get(0).getOwnerIddoc());

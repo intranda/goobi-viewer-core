@@ -34,6 +34,7 @@
                                                 <ui:repeat value="#{metadata.values}" var="val">
                                                     <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
                                                         <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind0">
+                                                            <f:param value="#{val.getParamLabelWithColon(ind0)}" />
                                                             <f:param value="#{val.getComboValueShort(ind0)}" />
                                                         </c:forEach>
                                                     </h:outputFormat>
@@ -50,6 +51,7 @@
                                                             <dd>
                                                                 <h:outputFormat value="#{msg[cval.masterValue]}" escape="false">
                                                                         <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind1">
+                                                                            <f:param value="#{cval.getParamLabelWithColon(ind1)}" />
                                                                             <f:param value="#{cval.getComboValueShort(ind1)}" />
                                                                         </c:forEach>
                                                                 </h:outputFormat>
@@ -69,6 +71,7 @@
                                                                 <h:panelGroup class="metadata__level-#{child2.indentation}">
                                                                     <h:outputFormat value="#{msg[cval2.masterValue]}" escape="false">
                                                                         <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind2">
+                                                                            <f:param value="#{cval2.getParamLabelWithColon(ind2)}" />
                                                                             <f:param value="#{cval2.getComboValueShort(ind2)}" />
                                                                         </c:forEach>
                                                                     </h:outputFormat>

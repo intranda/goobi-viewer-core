@@ -43,6 +43,7 @@ public class MetadataValue implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(MetadataValue.class);
 
+    private final List<String> paramLabels = new ArrayList<>();
     /**
      * List of lists with parameter values. The top list represents the different parameters, with each containing one or more values for that
      * parameters.
@@ -162,9 +163,32 @@ public class MetadataValue implements Serializable {
         return sb.toString();
     }
 
-    @Deprecated
+    /**
+     * <p>
+     * getParamLabelWithColon.
+     * </p>
+     *
+     * @return the paramLabels
+     * @param index a int.
+     */
     public String getParamLabelWithColon(int index) {
+        // logger.trace("getParamLabelWithColon: {}", index);
+        if (paramLabels.size() > index && paramLabels.get(index) != null) {
+            // logger.trace(ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ");
+            return ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ";
+        }
         return "";
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>paramLabels</code>.
+     * </p>
+     *
+     * @return the paramLabels
+     */
+    public List<String> getParamLabels() {
+        return paramLabels;
     }
 
     /**
@@ -289,6 +313,38 @@ public class MetadataValue implements Serializable {
      */
     public List<MetadataValue> getChildValues() {
         return childValues;
+    }
+
+    /**
+     * <p>
+     * hasParamValue.
+     * </p>
+     *
+     * @param paramLabel a {@link java.lang.String} object.
+     * @return a boolean.
+     */
+    public boolean hasParamValue(String paramLabel) {
+        int index = paramLabels.indexOf(paramLabel);
+        if (index > -1 && index < paramValues.size()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * <p>
+     * getParamValue.
+     * </p>
+     *
+     * @param paramLabel a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public String getParamValue(String paramLabel) {
+        int index = paramLabels.indexOf(paramLabel);
+        if (index > -1 && index < paramValues.size()) {
+            return paramValues.get(index).get(0);
+        }
+        return "";
     }
 
     /**

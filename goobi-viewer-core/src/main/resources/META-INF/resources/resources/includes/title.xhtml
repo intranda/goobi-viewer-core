@@ -74,11 +74,17 @@
 								<dd>
 									<ui:repeat value="#{metadata.values}" var="val">
 										<span class="title-value"> 
-											<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+											<h:outputFormat rendered="#{!metadata.group}" value="#{msg[val.masterValue]}" escape="false">
                                                 <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
                                                     <f:param value="#{val.getComboValueShort(ind)}" />
                                                 </c:forEach>
 											</h:outputFormat> 
+											<h:outputFormat rendered="#{metadata.group}" value="#{msg[val.masterValue]}" escape="false">
+                                                <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                    <f:param value="#{val.getParamLabelWithColon(ind)}" />
+                                                    <f:param value="#{val.getComboValueShort(ind)}" />
+                                                </c:forEach>
+											</h:outputFormat>
 										</span>
 									</ui:repeat>
 								</dd>
