@@ -28,6 +28,7 @@ import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
@@ -39,10 +40,10 @@ public class AnnotationSheetWriter {
     public static final String UNKNOWN_RESOURCE_TYPE = "Unknown";
     
     private final ExcelRenderer excelRenderer;
-    private final AnnotationsResourceBuilder annotationBuilder = new AnnotationsResourceBuilder(DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null), null);
+    private final AnnotationConverter annotationConverter = new AnnotationConverter();
 
     public AnnotationSheetWriter() {
-        this.excelRenderer = new ExcelRenderer(annotationBuilder);
+        this.excelRenderer = new ExcelRenderer(annotationConverter);
     }
     
     /**
@@ -61,7 +62,7 @@ public class AnnotationSheetWriter {
     
     private String getBodyType(PersistentAnnotation anno) {
         try {
-            IResource body = annotationBuilder.getBodyAsResource(anno);
+            IResource body = annotationConverter.getBodyAsResource(anno);
             if(body instanceof TypedResource) {
                 return ((TypedResource) body).getType();
             }

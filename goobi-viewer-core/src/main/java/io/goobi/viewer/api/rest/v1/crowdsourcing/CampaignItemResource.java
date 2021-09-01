@@ -58,6 +58,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
@@ -260,7 +261,7 @@ public class CampaignItemResource {
 
         List<WebAnnotation> webAnnotations = new ArrayList<>();
         for (PersistentAnnotation anno : annotations) {
-            WebAnnotation webAnno = new AnnotationsResourceBuilder(urls, request).getAsWebAnnotation(anno);
+            WebAnnotation webAnno = new AnnotationConverter(urls).getAsWebAnnotation(anno);
             webAnnotations.add(webAnno);
         }
 

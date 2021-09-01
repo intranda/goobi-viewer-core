@@ -21,8 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -35,20 +35,15 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
-import org.bouncycastle.asn1.cmc.BodyPartID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.wa.Dataset;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
-import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
@@ -58,13 +53,13 @@ public class ExcelRenderer {
 
     private static final Logger logger = LoggerFactory.getLogger(ExcelRenderer.class);
 
-    private final AnnotationsResourceBuilder annotationBuilder;
+    private final AnnotationConverter annotationConverter;
     
     /**
      * @param annotationBuilder
      */
-    public ExcelRenderer(AnnotationsResourceBuilder annotationBuilder) {
-       this.annotationBuilder = annotationBuilder;
+    public ExcelRenderer(AnnotationConverter annotationConverter) {
+       this.annotationConverter = annotationConverter;
     }
 
     public HSSFWorkbook render(Map<String, List<PersistentAnnotation>> annotationMap) {
@@ -161,7 +156,7 @@ public class ExcelRenderer {
     
     private List<String> getBodyValues(PersistentAnnotation anno) {
         try {            
-            IResource bodyResource = annotationBuilder.getBodyAsResource(anno);
+            IResource bodyResource = annotationConverter.getBodyAsResource(anno);
             String type = "unknown";
             if(bodyResource instanceof TypedResource) {
                 type = ((TypedResource) bodyResource).getType();

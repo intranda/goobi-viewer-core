@@ -15,10 +15,8 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
 
-import java.awt.Canvas;
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -31,39 +29,21 @@ import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.intranda.api.annotation.AgentType;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IAnnotationCollection;
-import de.intranda.api.annotation.IResource;
-import de.intranda.api.annotation.ISelector;
-import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
-import de.intranda.api.annotation.oa.TextualResource;
-import de.intranda.api.annotation.wa.Agent;
-import de.intranda.api.annotation.wa.FragmentSelector;
-import de.intranda.api.annotation.wa.SpecificResource;
-import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationCollectionBuilder;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.v2.AnnotationList;
-import de.intranda.api.iiif.presentation.v2.Canvas2;
-import de.intranda.api.iiif.presentation.v2.Manifest2;
-import de.intranda.api.iiif.presentation.v3.Canvas3;
-import de.intranda.api.iiif.presentation.v3.Manifest3;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
@@ -79,6 +59,8 @@ public class AnnotationsResourceBuilder {
     private final HttpServletRequest request;
     private final WebAnnotationBuilder waBuilder;
     private final OpenAnnotationBuilder oaBuilder;
+    private final AnnotationConverter converter;
+
 
     private final static Logger logger = LoggerFactory.getLogger(AnnotationsResourceBuilder.class);
 
@@ -99,6 +81,7 @@ public class AnnotationsResourceBuilder {
         this.request = request;
         this.waBuilder = new WebAnnotationBuilder(urls);
         this.oaBuilder = new OpenAnnotationBuilder(urls);
+        converter = new AnnotationConverter(urls);
     }
 
     public AnnotationCollection getWebAnnotationCollection() throws PresentationException, IndexUnreachableException {
@@ -170,7 +153,7 @@ public class AnnotationsResourceBuilder {
     public AnnotationList getOAnnotationListForRecord(String pi, URI uri) throws DAOException {
         List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
         AnnotationList list = new AnnotationList(uri);
-        data.stream().map(this::getAsOpenAnnotation).forEach(oa -> list.addResource(oa));
+        data.stream().map(converter::getAsOpenAnnotation).forEach(oa -> list.addResource(oa));
         return list;
     }
 
@@ -184,7 +167,7 @@ public class AnnotationsResourceBuilder {
     public IAnnotationCollection getOAnnotationListForPage(String pi, Integer pageNo, URI uri) throws DAOException {
         List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, pageNo);
         AnnotationList list = new AnnotationList(uri);
-        data.stream().map(this::getAsOpenAnnotation).forEach(oa -> list.addResource(oa));
+        data.stream().map(converter::getAsOpenAnnotation).forEach(oa -> list.addResource(oa));
         return list;
     }
 
@@ -204,7 +187,7 @@ public class AnnotationsResourceBuilder {
             throw new IllegalRequestException("Page number is out of bounds");
         }
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        List<IAnnotation> annos = data.stream().map(this::getAsWebAnnotation).collect(Collectors.toList());
+        List<IAnnotation> annos = data.stream().map(converter::getAsWebAnnotation).collect(Collectors.toList());
         AnnotationPage annoPage = builder.setItemsPerPage(annos.size()).buildPage(annos, page);
         return annoPage;
     }
@@ -218,7 +201,7 @@ public class AnnotationsResourceBuilder {
             throw new IllegalRequestException("Page number is out of bounds");
         }
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        List<IAnnotation> annos = data.stream().map(this::getAsWebAnnotation).collect(Collectors.toList());
+        List<IAnnotation> annos = data.stream().map(converter::getAsWebAnnotation).collect(Collectors.toList());
         AnnotationPage annoPage = builder.setItemsPerPage(annos.size()).buildPage(annos, page);
         return annoPage;
     }
@@ -256,7 +239,7 @@ public class AnnotationsResourceBuilder {
         AnnotationPage annoPage = builder.setItemsPerPage(data.size())
                 .buildPage(
                         data.stream()
-                                .map(c -> getAsWebAnnotation(c))
+                                .map(converter::getAsWebAnnotation)
                                 .collect(Collectors.toList()),
                         page);
 
@@ -267,7 +250,7 @@ public class AnnotationsResourceBuilder {
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi);
 
         AnnotationList list = new AnnotationList(uri);
-        data.stream().map(c -> getAsOpenAnnotation(c)).forEach(oa -> list.addResource(oa));
+        data.stream().map(converter::getAsOpenAnnotation).forEach(oa -> list.addResource(oa));
         return list;
     }
 
@@ -275,7 +258,7 @@ public class AnnotationsResourceBuilder {
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
 
         AnnotationList list = new AnnotationList(uri);
-        data.stream().map(c -> getAsOpenAnnotation(c)).forEach(oa -> list.addResource(oa));
+        data.stream().map(converter::getAsOpenAnnotation).forEach(oa -> list.addResource(oa));
         return list;
     }
 
@@ -284,195 +267,13 @@ public class AnnotationsResourceBuilder {
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
         AnnotationPage page = new AnnotationPage(uri);
         data.stream()
-        .map(c -> getAsWebAnnotation(c))
+        .map(converter::getAsOpenAnnotation)
         .collect(Collectors.toList())
         .forEach(c -> page.addItem(c));
 
         return page;
     }
 
-    public OpenAnnotation getAsOpenAnnotation(Comment comment) {
-        OpenAnnotation anno = new OpenAnnotation(getOpenAnnotationCommentURI(comment.getPi(), comment.getPage(), comment.getId()));
-        anno.setMotivation(Motivation.COMMENTING);
-        if (comment.getPage() != null) {
-            anno.setTarget(
-                    new Canvas2(URI.create(urls.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(comment.getPi(), comment.getPage()).build())));
-        } else {
-            anno.setTarget(new Manifest2(URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(comment.getPi()).build())));
-        }
-        TextualResource body = new TextualResource(comment.getText());
-        anno.setBody(body);
-        return anno;
-    }
-
-    public WebAnnotation getAsWebAnnotation(Comment comment) {
-        WebAnnotation anno = new WebAnnotation(getWebAnnotationCommentURI(comment.getId()));
-        anno.setMotivation(de.intranda.api.annotation.wa.Motivation.COMMENTING);
-        if (comment.getPage() != null) {
-            anno.setTarget(
-                    new Canvas3(URI.create(urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(comment.getPi(), comment.getPage()).build())));
-        } else {
-            anno.setTarget(new Manifest3(URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(comment.getPi()).build())));
-        }
-        IResource body = new de.intranda.api.annotation.wa.TextualResource(comment.getText());
-        anno.setBody(body);
-        return anno;
-    }
-
-    private URI getWebAnnotationURI(Long id) {
-        return URI.create(this.urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(id).build());
-    }
-
-    private URI getOpenAnnotationURI(Long id) {
-        return URI.create(this.urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(id).query("format", "oa").build());
-    }
-
-    private URI getWebAnnotationCommentURI(Long id) {
-        return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(id).build());
-    }
-
-    private URI getOpenAnnotationCommentURI(String pi, Integer page, Long id) {
-        return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(id).query("format", "oa").build());
-    }
-
-    /**
-     * Get the annotation target as an WebAnnotation {@link de.intranda.api.annotation.IResource} java object
-     *
-     * @return a {@link de.intranda.api.annotation.IResource} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
-     * @throws java.io.IOException if any.
-     */
-    public IResource getTargetAsResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
-        if (anno.getTarget() != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            IResource resource;
-            if (anno.getTarget().contains("SpecificResource")) {
-                resource = mapper.readValue(anno.getTarget(), SpecificResource.class);
-            } else {
-                resource = mapper.readValue(anno.getTarget(), TypedResource.class);
-            }
-            return resource;
-        }
-        return null;
-    }
-
-    /**
-     * Get the annotation target as an OpenAnnotation {@link de.intranda.api.annotation.IResource} java object
-     *
-     * @return a {@link de.intranda.api.annotation.IResource} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
-     * @throws java.io.IOException if any.
-     */
-    public IResource getTargetAsOAResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
-        IResource resource = getTargetAsResource(anno);
-        if (resource != null) {
-            if (resource instanceof SpecificResource && ((SpecificResource) resource).getSelector() instanceof FragmentSelector) {
-                FragmentSelector selector = (FragmentSelector) ((SpecificResource) resource).getSelector();
-                ISelector oaSelector = new de.intranda.api.annotation.oa.FragmentSelector(selector.getFragment());
-                IResource oaResource = new de.intranda.api.annotation.oa.SpecificResource(resource.getId(), oaSelector);
-                return oaResource;
-            }
-            return resource;
-        }
-        return null;
-
-    }
-
-    /**
-     * Get the
-     *
-     * @return a {@link de.intranda.api.annotation.IResource} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
-     * @throws java.io.IOException if any.
-     */
-    public IResource getBodyAsResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
-        if (anno.getBody() != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            IResource resource = mapper.readValue(anno.getBody(), TextualResource.class);
-            return resource;
-        }
-        return null;
-    }
-
-    /**
-     * <p>
-     * getBodyAsOAResource.
-     * </p>
-     *
-     * @return a {@link de.intranda.api.annotation.IResource} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
-     * @throws java.io.IOException if any.
-     */
-    public IResource getBodyAsOAResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
-        TextualResource resource = (TextualResource) getBodyAsResource(anno);
-        if (resource != null) {
-            IResource oaResource = new de.intranda.api.annotation.oa.TextualResource(resource.getText());
-            return oaResource;
-        }
-        return null;
-    }
-
-    /**
-     * Get the annotation as an {@link de.intranda.api.annotation.wa.WebAnnotation} java object
-     *
-     * @return a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
-     * @throws DAOException
-     */
-    public WebAnnotation getAsWebAnnotation(PersistentAnnotation anno) {
-        URI uri = getWebAnnotationURI(anno.getId());
-        WebAnnotation annotation = new WebAnnotation(uri);
-        try {
-            annotation.setCreated(anno.getDateCreated());
-            annotation.setModified(anno.getDateModified());
-            try {
-                if (anno.getCreator() != null) {
-                    annotation.setCreator(new Agent(anno.getCreator().getIdAsURI(), AgentType.PERSON, anno.getCreator().getDisplayName()));
-                }
-                if (anno.getGenerator() != null) {
-                    annotation
-                            .setGenerator(new Agent(anno.getGenerator().getIdAsURI(), AgentType.SOFTWARE, anno.getGenerator().getOwner().getTitle()));
-                }
-            } catch (DAOException e) {
-                logger.error("Error getting author of web annotation for " + anno, e);
-            }
-            annotation.setBody(getBodyAsResource(anno));
-            annotation.setTarget(getTargetAsResource(anno));
-            annotation.setMotivation(anno.getMotivation());
-        } catch (IOException e) {
-            logger.error("Error creating web annotation from " + anno, e);
-        }
-        return annotation;
-    }
-
-    /**
-     * Get the annotation as an {@link de.intranda.api.annotation.oa.OpenAnnotation} java object
-     *
-     * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
-     * @throws java.io.IOException if any.
-     */
-    public OpenAnnotation getAsOpenAnnotation(PersistentAnnotation anno) {
-        URI uri = getOpenAnnotationURI(anno.getId());
-        OpenAnnotation annotation = new OpenAnnotation(uri);
-        try {
-            annotation.setBody(getBodyAsOAResource(anno));
-            annotation.setTarget(getTargetAsOAResource(anno));
-            annotation.setMotivation(anno.getMotivation());
-        } catch (IOException e) {
-            logger.error("Error creating open annotation from " + anno, e);
-        }
-
-        return annotation;
-    }
 
     /**
      * @param id

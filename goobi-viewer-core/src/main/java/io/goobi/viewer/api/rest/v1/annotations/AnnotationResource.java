@@ -22,7 +22,6 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -59,6 +58,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -154,11 +154,11 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "501",
             description = "Persisting this king of annotation or its target is not implemented. Only W3C Web Annotations targeting a manifest, canvas or part of a canvas may be persisted")
     public IAnnotation addAnnotation(IAnnotation anno) throws DAOException, NotImplementedException {
-        AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
-        PersistentAnnotation pAnno = createPersistentAnnotation(anno, builder);
+        AnnotationConverter converter = new AnnotationConverter(urls);
+        PersistentAnnotation pAnno = createPersistentAnnotation(anno);
         if (pAnno != null) {
             DataManager.getInstance().getDao().addAnnotation(pAnno);
-            return builder.getAsWebAnnotation(pAnno);
+            return converter.getAsWebAnnotation(pAnno);
         }
         throw new NotImplementedException();
     }
@@ -180,13 +180,13 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "405", description = "May not delete the annotation because it was created by another user")
     public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException, ViewerConfigurationException {
-        AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
+        AnnotationConverter converter = new AnnotationConverter(urls);
         PersistentAnnotation pAnno = DataManager.getInstance().getDao().getAnnotation(id);
         if (pAnno == null) {
             throw new ContentNotFoundException();
         }
 
-        IAnnotation anno = builder.getAsWebAnnotation(pAnno);
+        IAnnotation anno = converter.getAsWebAnnotation(pAnno);
         User creator = pAnno.getCreator();
         if (creator != null) {
             User user = getUser();
@@ -208,7 +208,7 @@ public class AnnotationResource {
      * @param builder
      * @return
      */
-    public PersistentAnnotation createPersistentAnnotation(IAnnotation anno, AnnotationsResourceBuilder builder) {
+    public PersistentAnnotation createPersistentAnnotation(IAnnotation anno) {
         PersistentAnnotation pAnno = null;
         if (anno instanceof WebAnnotation) {
             IResource target = anno.getTarget();

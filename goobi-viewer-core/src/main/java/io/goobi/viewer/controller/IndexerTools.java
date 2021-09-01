@@ -43,6 +43,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -186,7 +187,7 @@ public class IndexerTools {
                 DataManager.getInstance().getDao().getCampaignStatisticsForRecord(pi, CrowdsourcingStatus.FINISHED);
         if (!statistics.isEmpty()) {
             AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
-            AnnotationsResourceBuilder annoBuilder = new AnnotationsResourceBuilder(urls, null);
+            AnnotationConverter converter = new AnnotationConverter(urls);
             for (CampaignRecordStatistic statistic : statistics) {
                 Campaign campaign = statistic.getOwner();
                 List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
@@ -196,7 +197,7 @@ public class IndexerTools {
                             new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATIONS);
                     for (PersistentAnnotation annotation : annotations) {
                         try {
-                            WebAnnotation webAnno = annoBuilder.getAsWebAnnotation(annotation);
+                            WebAnnotation webAnno = converter.getAsWebAnnotation(annotation);
                             //Write access condition info into annotation for indexing. Normally that field is not written
                             if(StringUtils.isNotBlank(annotation.getAccessCondition())) {
                                 webAnno.setRights(annotation.getAccessCondition());
@@ -221,7 +222,7 @@ public class IndexerTools {
                 DataManager.getInstance().getDao().getCampaignPageStatisticsForRecord(pi, CrowdsourcingStatus.FINISHED);
         if (!pageStatistics.isEmpty()) {
             AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
-            AnnotationsResourceBuilder annoBuilder = new AnnotationsResourceBuilder(urls, null);
+            AnnotationConverter converter = new AnnotationConverter(urls);
             for (CampaignRecordPageStatistic statistic : pageStatistics) {
                 Campaign campaign = statistic.getOwner().getOwner();
                 Integer page = statistic.getPage();
@@ -232,7 +233,7 @@ public class IndexerTools {
                             new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATIONS);
                     for (PersistentAnnotation annotation : annotations) {
                         try {
-                            WebAnnotation webAnno = annoBuilder.getAsWebAnnotation(annotation);
+                            WebAnnotation webAnno = converter.getAsWebAnnotation(annotation);
                             //Write access condition info into annotation for indexing. Normally that field is not written
                             if(StringUtils.isNotBlank(annotation.getAccessCondition())) {
                                 webAnno.setRights(annotation.getAccessCondition());

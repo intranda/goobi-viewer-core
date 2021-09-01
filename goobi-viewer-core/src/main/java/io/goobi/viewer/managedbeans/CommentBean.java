@@ -23,7 +23,7 @@ import javax.inject.Named;
 
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.model.annotation.comments.CommentCreator;
+import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.annotation.notification.JsfMessagesNotificator;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -41,7 +41,7 @@ public class CommentBean implements Serializable {
     private static final String REQUIRES_COMMENT_RIGHTS = "REQUIRES_COMMENT_RIGHTS";
     private static final long serialVersionUID = -3653100353345867739L;
     
-    private final CommentCreator commentCreator = new CommentCreator(
+    private final CommentManager commentCreator = new CommentManager(
             comment -> System.out.println("saved comment " + comment.toString()), 
             comment -> System.out.println("deleted comment " + comment.toString()), 
             new JsfMessagesNotificator());

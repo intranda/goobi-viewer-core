@@ -74,6 +74,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
     private static AbstractApiUrlManager urls;
     private static AnnotationsResourceBuilder annoBuilder;
+    private static AnnotationConverter converter;
 
     private static ObjectMapper mapper;
 
@@ -82,6 +83,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         AbstractDatabaseEnabledTest.setUpClass();
         urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
         annoBuilder = new AnnotationsResourceBuilder(urls, null);
+        converter = new AnnotationConverter(urls);
 
         mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -142,10 +144,10 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
                         + "",
                 targetString);
 
-        IResource retrievedBody = annoBuilder.getBodyAsResource(daoAnno);
+        IResource retrievedBody = converter.getBodyAsResource(daoAnno);
         Assert.assertEquals(body, retrievedBody);
 
-        IResource retrievedTarget = annoBuilder.getTargetAsResource(daoAnno);
+        IResource retrievedTarget = converter.getTargetAsResource(daoAnno);
         Assert.assertEquals(target, retrievedTarget);
 
     }
@@ -173,8 +175,8 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals(existingAnnotations + 1, list.size());
 
             PersistentAnnotation retrieved = list.get(list.size() - 1);
-            Assert.assertEquals(body, annoBuilder.getBodyAsResource(retrieved));
-            Assert.assertEquals(target, annoBuilder.getTargetAsResource(retrieved));
+            Assert.assertEquals(body, converter.getBodyAsResource(retrieved));
+            Assert.assertEquals(target, converter.getTargetAsResource(retrieved));
 
         } finally {
             em.close();
@@ -199,8 +201,8 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         Assert.assertTrue(added);
         URI uri = URI.create(Long.toString(daoAnno.getId()));
         PersistentAnnotation fromDAO = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
-        WebAnnotation webAnno = annoBuilder.getAsWebAnnotation(daoAnno);
-        WebAnnotation fromDAOWebAnno = annoBuilder.getAsWebAnnotation(daoAnno);
+        WebAnnotation webAnno = converter.getAsWebAnnotation(daoAnno);
+        WebAnnotation fromDAOWebAnno = converter.getAsWebAnnotation(daoAnno);
         Assert.assertEquals(webAnno.getBody(), fromDAOWebAnno.getBody());
         Assert.assertEquals(webAnno.getTarget(), fromDAOWebAnno.getTarget());
         Assert.assertEquals(webAnno, fromDAOWebAnno);

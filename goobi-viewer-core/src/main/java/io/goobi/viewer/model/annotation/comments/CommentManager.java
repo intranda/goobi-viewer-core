@@ -40,13 +40,13 @@ import io.goobi.viewer.model.security.user.User;
  * @author florian
  *
  */
-public class CommentCreator {
+public class CommentManager {
 
     private final AnnotationSaver saver;
     private final AnnotationDeleter deleter;
     private final List<ChangeNotificator> notificators;
     
-    public CommentCreator(AnnotationSaver saver, AnnotationDeleter deleter, ChangeNotificator... notificators) {
+    public CommentManager(AnnotationSaver saver, AnnotationDeleter deleter, ChangeNotificator... notificators) {
         this.saver = saver;
         this.deleter = deleter;
         this.notificators = Arrays.asList(notificators);
