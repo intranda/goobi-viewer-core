@@ -180,6 +180,10 @@ public class MetadataValue implements Serializable {
         return "";
     }
 
+    public String getLabel() {
+        return !paramLabels.isEmpty() ? paramLabels.get(0) : "TODO";
+    }
+
     /**
      * <p>
      * Getter for the field <code>paramLabels</code>.

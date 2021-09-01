@@ -25,40 +25,75 @@
                                 <!-- TODO: status.index > 0 should indent the block to the right -->
                                 <div class="metadata__element-level-#{metadata.indentation}">
                                     <dl class="dl-horizontal metadata__element-dl">
-                                        <dt title="#{msg[metadata.label]}">
-                                            <h:outputText value="#{msg[metadata.label]}:" escape="false" />
-                                        </dt>
                                         <!-- grouped="true" -->
                                         <h:panelGroup rendered="#{metadata.group}">
-                                            <dd>
+                                        
+                                            <!-- Single label for all values, each value is a single string -->
+                                            <h:panelGroup rendered="#{metadata.singleString}">
+                                    
+                                                <dt title="#{msg[metadata.label]}">
+                                                    <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+                                                </dt>
+                                                <dd>
+                                                    <ui:repeat value="#{metadata.values}" var="val">
+                                                        <h:panelGroup rendered="#{metadata.singleString}">
+                                                            <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+                                                                <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind0">
+                                                                    <f:param value="#{val.getComboValueShort(ind0)}" />
+                                                                </c:forEach>
+                                                            </h:outputFormat>
+                                                        </h:panelGroup>
+                                                        
+                                                        <!-- TODO: child metadata -->
+                                                        
+                                                    </h:panelGroup>
+                                                </ui:repeat>
+                                                
+                                                    <br />
+                                                </ui:repeat>
+                                                
+                                            </dd>
+                                            </h:panelGroup>
+                                        
+                                            <!-- New label for each metadata value, each value has two cols with label+value -->
+                                            <h:panelGroup rendered="#{!metadata.singleString}">
                                                 <ui:repeat value="#{metadata.values}" var="val">
-                                                    <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                        <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind0">
-                                                            <f:param value="#{val.getParamLabelWithColon(ind0)}" />
-                                                            <f:param value="#{val.getComboValueShort(ind0)}" />
-                                                        </c:forEach>
-                                                    </h:outputFormat>
-                                                            
-                                                <!-- Nested child 1 metadata -->
-                                                <ui:repeat var="child" value="#{metadata.childMetadata}">
-                                                    <h:panelGroup rendered="#{!child.isBlank(val.iddoc)}">
-                                                    <div class="metadata__element-level-#{child.indentation}">
-                                                    <dl class="dl-horizontal metadata__element-dl">
-                                                        <dt title="#{msg[child.label]}">
-                                                            <h:outputText value="#{msg[child.label]}:" escape="false" />
-                                                        </dt>
-                                                        <ui:repeat value="#{child.getValuesForOwner(val.iddoc)}" var="cval">
-                                                            <dd>
-                                                                <h:outputFormat value="#{msg[cval.masterValue]}" escape="false">
-                                                                        <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind1">
-                                                                            <f:param value="#{cval.getParamLabelWithColon(ind1)}" />
-                                                                            <f:param value="#{cval.getComboValueShort(ind1)}" />
-                                                                        </c:forEach>
-                                                                </h:outputFormat>
-                                                            </dd>
-                                                        </ui:repeat>
-                                                        </dl>
-                                                    </div>
+                                                    <dt title="#{msg[metadata.label]}">
+                                                        <h:outputText value="#{msg[val.label]}:" escape="false" />
+                                                    </dt>
+                                                    <dd>
+                                                        <!-- Metadata value -->
+                                                        <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+                                                            <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind0">
+                                                                <dt>
+                                                                    <f:param value="#{val.getParamLabelWithColon(ind0)}" />
+                                                                </dt>
+                                                                <dd>
+                                                                    <f:param value="#{val.getComboValueShort(ind0)}" />
+                                                                </dd>
+                                                            </c:forEach>
+                                                        </h:outputFormat>
+
+                                                        <!-- Nested child 1 metadata -->
+                                                        <ui:repeat var="child" value="#{metadata.childMetadata}">
+                                                            <h:panelGroup rendered="#{!child.isBlank(val.iddoc)}">
+                                                            <div class="metadata__element-level-#{child.indentation}">
+                                                                <dl class="dl-horizontal metadata__element-dl">
+                                                                    <dt title="#{msg[child.label]}">
+                                                                        <h:outputText value="#{msg[child.label]}:" escape="false" />
+                                                                    </dt>
+                                                                    <ui:repeat value="#{child.getValuesForOwner(val.iddoc)}" var="cval">
+                                                                        <dd>
+                                                                            <h:outputFormat value="#{msg[cval.masterValue]}" escape="false">
+                                                                                <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind1">
+                                                                                    <f:param value="#{cval.getParamLabelWithColon(ind1)}" />
+                                                                                    <f:param value="#{cval.getComboValueShort(ind1)}" />
+                                                                                </c:forEach>
+                                                                            </h:outputFormat>
+                                                                        </dd>
+                                                                    </ui:repeat>
+                                                                </dl>
+                                                            </div>
                                                     
                                                     <!-- Nested child 2 metadata -->
                                                     <ui:repeat var="child2" value="#{child.childMetadata}">
@@ -86,12 +121,25 @@
                                                 
                                                     <br />
                                                 </ui:repeat>
+                                                        
+                                                    </dd>
+                                                </ui:repeat>
+
+                                            <dd>
+
                                                 
                                             </dd>
+                                            </h:panelGroup>
+                                         </h:panelGroup>
+                                         
+                                        
                                         </h:panelGroup>
     
                                         <!-- grouped="false" -->
                                         <h:panelGroup rendered="#{!metadata.group}">
+                                            <dt title="#{msg[metadata.label]}">
+                                                <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+                                            </dt>
                                             <dd>
                                                 <ui:repeat value="#{metadata.values}" var="val">
                                                     <span class="metadata__element-value">

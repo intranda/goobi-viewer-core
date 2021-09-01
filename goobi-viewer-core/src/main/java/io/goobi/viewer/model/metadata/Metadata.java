@@ -78,6 +78,7 @@ public class Metadata implements Serializable {
     private final List<MetadataValue> values = new ArrayList<>();
     private final List<MetadataParameter> params = new ArrayList<>();
     private final boolean group;
+    private boolean singleString = true;
     private boolean hideIfOnlyMetadataField = false;
     private String ownerDocstrctType;
     private String citationTemplate;
@@ -959,6 +960,22 @@ public class Metadata implements Serializable {
      */
     public boolean isGroup() {
         return group;
+    }
+
+    /**
+     * @return the singleString
+     */
+    public boolean isSingleString() {
+        return singleString;
+    }
+
+    /**
+     * @param singleString the singleString to set
+     * @return this
+     */
+    public Metadata setSingleString(boolean singleString) {
+        this.singleString = singleString;
+        return this;
     }
 
     /**
