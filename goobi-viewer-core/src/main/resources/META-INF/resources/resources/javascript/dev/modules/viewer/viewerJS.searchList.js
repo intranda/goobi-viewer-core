@@ -125,7 +125,7 @@ var viewerJS = ( function( viewer ) {
             _searchListStyle = sessionStorage.getItem( 'searchListStyle' );
             
             // load thumbnails before appying search list style
-            console.log("Load search hits with style " + _searchListStyle);
+            //console.log("Load search hits with style " + _searchListStyle);
             switch ( _searchListStyle ) { 
                 case 'default':
                     $( '.search-list__views button' ).removeClass( 'active' );
