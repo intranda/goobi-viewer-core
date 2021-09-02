@@ -181,7 +181,7 @@ public class MetadataValue implements Serializable {
     }
 
     public String getLabel() {
-        return !paramLabels.isEmpty() ? paramLabels.get(0) : "TODO";
+        return getComboValueShort(0);
     }
 
     /**

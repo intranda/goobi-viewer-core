@@ -3127,6 +3127,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(md, childMd.getParentMetadata());
         Assert.assertEquals("MD_ARTIST", childMd.getLabel());
         Assert.assertTrue(childMd.isGroup());
+        Assert.assertFalse(childMd.isSingleString());
         Assert.assertEquals(7, childMd.getParams().size());
     }
 

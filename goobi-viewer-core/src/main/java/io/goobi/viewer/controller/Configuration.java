@@ -607,6 +607,7 @@ public final class Configuration extends AbstractConfiguration {
         String label = sub.getString("[@label]");
         String masterValue = sub.getString("[@value]");
         boolean group = sub.getBoolean("[@group]", false);
+        boolean singleString = sub.getBoolean("[@singleString]", true);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
         boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
@@ -686,6 +687,7 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         Metadata ret = new Metadata(label, masterValue, type, paramList, group, number)
+                .setSingleString(singleString)
                 .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
                 .setCitationTemplate(citationTemplate)
                 .setIndentation(indentation);

@@ -1,0 +1,55 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+	<div class="metadata__element-level-#{metadata.indentation}">
+		<dl class="dl-horizontal metadata__element-dl">
+
+			<dt title="#{msg[metadata.label]}">
+				<h:outputText value="#{msg[metadata.label]}:" escape="false" />
+			</dt>
+			<dd>
+				<ui:repeat value="#{metadata.values}" var="val">
+				
+				    <!-- Metadata value -->
+					<h:panelGroup rendered="#{metadata.singleString}">
+						<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+							<c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind0">
+								<f:param value="#{val.getComboValueShort(ind0)}" />
+							</c:forEach>
+						</h:outputFormat>
+					</h:panelGroup>
+
+                    <!-- Nested child metadata -->
+                    <c:forEach var="child" items="#{metadata.childMetadata}" varStatus="status">
+                        <ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
+                            <ui:fragment rendered="#{child.singleString}">
+                                <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                    <ui:param name="metadata" value="#{metadata.childMetadata[status.index]}" />
+                                </ui:include>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{!child.singleString}">
+                                <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                    <ui:param name="metadata" value="#{metadata.childMetadata[status.index]}" />
+                                </ui:include>
+                            </ui:fragment>
+                        </ui:fragment>
+                    </c:forEach>
+
+					<br />
+				</ui:repeat>
+			</dd>
+
+		</dl>
+	</div>
+
+</ui:composition>
+
