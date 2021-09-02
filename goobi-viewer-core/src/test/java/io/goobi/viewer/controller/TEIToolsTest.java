@@ -27,29 +27,6 @@ import io.goobi.viewer.AbstractTest;
 
 public class TEIToolsTest extends AbstractTest {
 
-    //    /**
-    //     * @see TEITools#convertTeiToHtml(String)
-    //     * @verifies convert tei to html correctly
-    //     */
-    //    @Test
-    //    public void convertTeiToHtml_shouldConvertTeiToHtmlCorrectly() throws Exception {
-    //        Document doc = XmlTools.readXmlFile(Paths.get("src/test/resources/data/sample_tei.xml"));
-    //        String result = TEITools.convertTeiToHtml(XmlTools.getStringFromElement(doc, StringTools.DEFAULT_ENCODING));
-    //        Assert.assertTrue(StringUtils.isNotEmpty(result));
-    //        System.out.println(result);
-    //    }
-
-    //    /**
-    //     * @see TEITools#convertDocxToTei(Path)
-    //     * @verifies convert docx to tei correctly
-    //     */
-    //    @Test
-    //    public void convertDocxToTei_shouldConvertDocxToTeiCorrectly() throws Exception {
-    //        String result = TEITools.convertDocxToTei(Paths.get("src/test/resources/data/example.docx"));
-    //        Assert.assertTrue(StringUtils.isNotEmpty(result));
-    //        //        System.out.println(result);
-    //    }
-
     /**
      * @see TEITools#getTeiFulltext(String)
      * @verifies extract fulltext correctly

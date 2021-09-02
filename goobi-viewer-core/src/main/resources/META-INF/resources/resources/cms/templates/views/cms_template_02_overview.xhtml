@@ -49,7 +49,7 @@
                     <!-- IMAGE -->
                     <h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
                         <figure class="tpl-news-overview__image">
-                            <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cmsPage.getMediaName('image01')}" />
+                            <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cmsPage.getMedia('image01').alternativeText}" />
                             <figcaption>
                                 #{cmsPage.getMediaDescription('image01')}
                             </figcaption>
@@ -96,7 +96,6 @@
                                 </div>
                             </div>
                         </c:forEach>
-
                         <!-- PAGINATOR -->
 						<viewerComponent:simplePaginator 
 							itemCount="#{cmsPage.getContentItem('list01').nestedPagesCount}" 

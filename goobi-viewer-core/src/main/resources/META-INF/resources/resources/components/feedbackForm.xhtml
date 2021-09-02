@@ -78,17 +78,19 @@
 	                  </div>
 	                </h:panelGroup>
 	            
-	            <!-- RECIPIENT -->    
+	            <!-- RECIPIENT -->
+	            <ui:fragment rendered="#{configurationBean.feedbackEmailRecipients.size() gt 1}">    
                 <div class="form-group form-row">
                     <label id="labelFeedbackRecipient" for="feedbackRecipient" class="col-lg-3 control-label">#{msg.recipient}:</label>
                     <div class="col-12 col-lg-9">
-					   <h:selectOneMenu id="feedbackRecipient" value="#{userBean.feedback.recipientAddress}" immediate="true">
+					   <h:selectOneMenu id="feedbackRecipient" value="#{userBean.feedback.recipientAddress}" immediate="true" styleClass="custom-control custom-control--select feedback-modal__recipient-dropdown">
 					       <f:selectItems var="recipient" value="#{configurationBean.feedbackEmailRecipients}"
 					           itemLabel="#{recipient.label}" itemValue="#{recipient.emailAddress}">
 					       </f:selectItems>
 					   </h:selectOneMenu>
                     </div>
                 </div>
+                </ui:fragment>
 	                
                 <!-- URL -->
 				<div class="form-group form-row hidden">
@@ -113,7 +115,7 @@
                <!-- SECURITY QUESTION -->
                <ui:fragment rendered="#{userBean.resetSecurityQuestion() and userBean.securityQuestion != null}">
                     <div class="form-group form-row mb-0">
-                    	<label for="feedbackSecurityQuestion"  class="col-lg-3 control-label">#{msg.user__security_question}:</label>
+                    	<label id="feedbackSecurityQuestion" class="col-lg-3 control-label">#{msg.user__security_question}:</label>
                         <div class="col-12 col-12 col-lg-9 composite-control pt-0">
                         <span class="control-label d-block pb-1">#{msg[userBean.securityQuestion.questionKey]}:</span>
                         <h:messages for="feedbackSecurityQuestion" styleClass="m-0 p-0 pb-1 list-unstyled" 
@@ -126,7 +128,9 @@
                                 autocomplete="off"
                                 value="#{userBean.securityAnswer}" 
                                 required="true"
-                                requiredMessage="#{msg.user__security_question_required_msg}" />
+                                requiredMessage="#{msg.user__security_question_required_msg}">
+                            <f:passThroughAttribute name="aria-labelledby" value="feedbackSecurityQuestion" />
+                        </h:inputSecret>
                         </div>
                     </div>
                 </ui:fragment>
@@ -135,7 +139,7 @@
                 <!-- ACTION -->
 				<div class="form-group form-row">
 					<div class="col-sm-12 d-flex justify-content-end">
-                        <h:commandButton styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}">
+                        <h:commandButton styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction(false)}">
                         </h:commandButton>
 					</div>
 				</div>

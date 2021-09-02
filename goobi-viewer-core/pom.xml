@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>21.07.2</version>
+	<version>21.08-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -66,8 +66,8 @@
 
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jdk.version>1.8</jdk.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>11</maven.compiler.release>
 		<skipTests>true</skipTests>
 
 		<!-- Sonar -->
@@ -81,7 +81,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.5</alto.version>
-		<ics.version>2.9.0</ics.version>
+		<ics.version>2.10.0</ics.version>
 		<tei-conversion.version>1.2.0</tei-conversion.version>
 		<iiif-api-model.version>2.0.0</iiif-api-model.version>
 		<normdataimporter.version>1.6.0</normdataimporter.version>
@@ -106,7 +106,7 @@
         <httpunit.version>1.7.3</httpunit.version>
         <icu.version>69.1</icu.version>
         <inject.version>1</inject.version>
-        <jackson.version>2.12.4</jackson.version>
+        <jackson.version>2.12.5</jackson.version>
         <jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
         <jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
@@ -118,16 +118,17 @@
         <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
         <!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
         <javax.jstl.version>1.2</javax.jstl.version>
+        <jaxb-runtime.version>2.3.5</jaxb-runtime.version>
         <jdom2.version>2.0.6</jdom2.version>
         <jersey.version>2.34</jersey.version>
         <jersey-guava.version>2.26-b03</jersey-guava.version>
         <jgravatar.version>1.2</jgravatar.version>
         <!-- https://github.com/stleary/JSON-java -->
         <json.version>20210307</json.version>
-        <jsoup.version>1.14.1</jsoup.version>
+        <jsoup.version>1.14.2</jsoup.version>
         <junit.version>4.13.2</junit.version>
         <mariadb-java-client.version>2.3.0</mariadb-java-client.version>
-        <mockito.version>3.11.2</mockito.version>
+        <mockito.version>3.12.4</mockito.version>
         <mockserver.version>5.11.2</mockserver.version>
         <oauth.version>1.0.2</oauth.version>
         <omnifaces.version>3.11.1</omnifaces.version>
@@ -139,7 +140,7 @@
         <solr.version>8.9.0</solr.version>
         <saml-client.version>4.0.0</saml-client.version>
         <swagger.version>2.1.10</swagger.version>
-        <tomcat.version>9.0.50</tomcat.version>
+        <tomcat.version>9.0.52</tomcat.version>
         <weld-servlet-shaded.version>3.1.8.Final</weld-servlet-shaded.version>
         <xerces.version>2.12.1</xerces.version>
         <xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
@@ -487,7 +488,12 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>${javax.jstl.version}</version>
-		</dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>${jaxb-runtime.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -712,6 +718,9 @@
 								<!-- jersey client is falsely declared as unused blocking maven install (windows developer system only) -->
                                 <ignoredUnusedDeclaredDependency>org.glassfish.jersey.core:jersey-client</ignoredUnusedDeclaredDependency>
 
+								<!-- jaxb-runtime needs to be available to remove the warning "JAXBContext implementation could not be found. WADL feature is disabled" during tomcat startup -->
+                                <ignoredUnusedDeclaredDependency>org.glassfish.jaxb:jaxb-runtime</ignoredUnusedDeclaredDependency>
+
                                 <!-- rewrite-servlet is used by prettyfaces -->
 								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-integration-faces</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-servlet</ignoredUnusedDeclaredDependency>
@@ -725,8 +734,6 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
 					<compilerArgument>-Xlint:deprecation</compilerArgument>
 					<!--compilerArgument>-Xlint:unchecked</compilerArgument -->
 				</configuration>

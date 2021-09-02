@@ -8,20 +8,17 @@
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-    
-    <!-- METADATA -->
+
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('userAccountRetrieve')}" />
         </f:metadata>
     </ui:define>
-    
-    <!-- BREADCRUMBS -->
+
     <ui:define name="breadcrumbs">
         <ui:include src="resources/includes/breadcrumbs.xhtml" />
     </ui:define>
-    
-    <!-- CONTENT -->
+
     <ui:define name="content">
         <f:view
             contentType="text/html"
@@ -49,9 +46,9 @@
                                     </h:inputText>
                                 </div>
                             </div>
-                            
+
                             <p>#{msg.user_retrieveAccountDescription}</p>
-                            
+
                             <div class="user-account-retrieve__action">
                                 <h:commandButton styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.sendPasswordResetLinkAction}" />
                             </div>
@@ -61,8 +58,7 @@
             </h:panelGroup>
         </f:view>
     </ui:define>
-    
-    <!-- SIDEBAR -->
+
     <ui:define name="sidebar">
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
@@ -70,9 +66,11 @@
             </c:forEach>
         </c:forEach>
     </ui:define>
-    
-    <!--  RSS FEED -->
+
     <ui:define name="rssFeed">
-        <ui:include src="resources/includes/rssFeed.xhtml" />
+        <h:panelGroup rendered="#{configurationBean.displaySidebarRssFeed}">
+            <ui:include src="resources/includes/rssFeed.xhtml" />
+        </h:panelGroup>
     </ui:define>
+
 </ui:composition>

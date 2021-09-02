@@ -25,10 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,19 +60,6 @@ public class ConfigurationTest extends AbstractTest {
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationTest.class);
 
     public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
 
     /**
      * @see Configuration#getBreadcrumbsClipping()
@@ -930,7 +914,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSubthemeDiscriminatorField_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("FACET_VIEWERSUBTHEME", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
+        Assert.assertEquals("MD2_VIEWERSUBTHEME", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
     }
 
     //    /**
@@ -1747,11 +1731,12 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getAllFacetFields_shouldReturnCorrectOrder() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getAllFacetFields();
-        Assert.assertEquals(4, result.size());
+        Assert.assertEquals(5, result.size());
         Assert.assertEquals("DC", result.get(0));
         Assert.assertEquals("YEAR", result.get(1));
         Assert.assertEquals("MD_CREATOR", result.get(2));
         Assert.assertEquals("MD_PLACEPUBLISH", result.get(3));
+        Assert.assertEquals("WKT_COORDS", result.get(4));
     }
 
     /**
@@ -2450,15 +2435,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isTranskribusEnabled());
     }
 
-    @Test
-    public void isRememberImageRotation_test() {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isRememberImageRotation());
-    }
-
-    @Test
-    public void isRememberImageZoom_test() {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isRememberImageZoom());
-    }
 
     /**
      * @see Configuration#getDocstructTargetPageType(String)
@@ -2919,6 +2895,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isDisplayWidgetUsageDownloadOptions()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplayWidgetUsageDownloadOptions_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions());
+    }
+
+    /**
      * @see Configuration#isDisplaySidebarWidgetUsageCitationRecommendation()
      * @verifies return correct value
      */
@@ -3092,5 +3077,68 @@ public class ConfigurationTest extends AbstractTest {
             Assert.assertEquals("desc__translation_group_2", group.getDescription());
             Assert.assertEquals(2, group.getItems().size());
         }
+    }
+
+    /**
+     * @see Configuration#isPageBrowseEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isPageBrowseEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isPageBrowseEnabled());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingAlto()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingAlto_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingPDF()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingPDF_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingPlaintext()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingPlaintext_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingViewer()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingViewer_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
+    }
+
+    /**
+     * @see Configuration#isRememberImageRotation()
+     * @verifies return correct value
+     */
+    @Test
+    public void isRememberImageRotation_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isRememberImageRotation());
+    }
+
+    /**
+     * @see Configuration#isRememberImageZoom()
+     * @verifies return correct value
+     */
+    @Test
+    public void isRememberImageZoom_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isRememberImageZoom());
     }
 }

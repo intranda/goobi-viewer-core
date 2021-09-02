@@ -431,10 +431,10 @@ public class CmsMediaBean implements Serializable {
         switch(item.getContentType()) {
             case CMSMediaItem.CONTENT_TYPE_PDF:
             case CMSMediaItem.CONTENT_TYPE_XML:
+            case CMSMediaItem.CONTENT_TYPE_SVG:
                 return ThumbnailHandler.getCMSMediaImageApiUrl(item.getFileName());
             case CMSMediaItem.CONTENT_TYPE_GIF:
                 return ThumbnailHandler.getCMSMediaImageApiUrl(item.getFileName()) + "/full.gif";
-            case CMSMediaItem.CONTENT_TYPE_SVG:
             default:
                 return BeanUtils.getImageDeliveryBean()
                 .getThumbs()
@@ -505,6 +505,30 @@ public class CmsMediaBean implements Serializable {
 
     /**
      * <p>
+     * isVideo.
+     * </p>
+     *
+     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @return a boolean.
+     */
+    public boolean isVideo(CMSMediaItem item) {
+        return item.getFileName().matches(getVideoFilter());
+    }
+    
+    /**
+     * <p>
+     * isAudio.
+     * </p>
+     *
+     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @return a boolean.
+     */
+    public boolean isAudio(CMSMediaItem item) {
+        return item.getFileName().matches(getAudioFilter());
+    }
+    
+    /**
+     * <p>
      * isText.
      * </p>
      *
@@ -512,7 +536,7 @@ public class CmsMediaBean implements Serializable {
      * @return a boolean.
      */
     public boolean isText(CMSMediaItem item) {
-        return !item.getFileName().matches(getImageFilter());
+        return item.getFileName().matches(getDocumentFilter());
     }
 
     /**
@@ -654,7 +678,15 @@ public class CmsMediaBean implements Serializable {
      * @return a regex matching only filenames ending with one of the supported image format suffixes
      */
     public static String getImageFilter() {
-        return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2)";
+        return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2|svg)";
+    }
+    
+    public static String getVideoFilter() {
+        return "(?i).*\\.(mp4|mpeg4|avi|mov|wmv)";
+    }
+    
+    public static String getAudioFilter() {
+        return "(?i).*\\.(mp3|mpeg|wav|ogg|wma)";
     }
 
     /**
@@ -665,7 +697,7 @@ public class CmsMediaBean implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public static String getDocumentFilter() {
-        return "(?i).*\\.(docx?|rtf|x?h?tml|txt)";
+        return "(?i).*\\.(docx?|rtf|x?h?tml|txt|pdf)";
     }
 
     /**

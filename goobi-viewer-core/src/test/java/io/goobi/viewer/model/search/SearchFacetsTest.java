@@ -15,12 +15,16 @@
  */
 package io.goobi.viewer.model.search;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -30,6 +34,10 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -383,5 +391,29 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         Assert.assertNotNull(valueRange);
         Assert.assertEquals(4, valueRange.size());
         Assert.assertArrayEquals(new Integer[] { -20, -10, 10, 2018 }, valueRange.toArray());
+    }
+    
+    @Test
+    public void testFacetEscaping() throws UnsupportedEncodingException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        
+        //original geojson string received from geomap
+        String geoJson = "{\"type\":\"rectangle\",\"vertices\":[[52.27468490157105,12.831527289994273],[52.78227376368535,12.831527289994273],[52.78227376368535,13.864873763618117],[52.27468490157105,13.864873763618117],[52.27468490157105,12.831527289994273]]}";
+        
+        //create SearchFacets with GeoFacetItem
+        GeoFacetItem item = new GeoFacetItem("WKT_COORDS");
+        SearchFacets facets = new SearchFacets();
+        facets.getCurrentFacets().add(item);
+        facets.setGeoFacetFeature(geoJson);
+        
+        //facet string written to url (escaped in browser)
+        String urlFacetString = facets.getCurrentFacetString();
+        String browserFacetString = URLEncoder.encode(urlFacetString, "utf-8");
+        //facet string set from url
+        facets.setCurrentFacetString(browserFacetString);
+        
+        String filterQueryString = facets.generateFacetFilterQueries(0, true, true).get(0);
+        List<SearchHit> hits = SearchHelper.searchWithAggregation("BOOL_WKT_COORDS:*", 0, 100, null, null, Collections.singletonList(filterQueryString), null, null, null, Locale.GERMANY);
+        assertEquals(2, hits.size());
+        
     }
 }

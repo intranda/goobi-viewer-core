@@ -61,6 +61,7 @@
 			text-align: left;
 			max-width: 30%;
 			flex: 0 0 30%;		
+      margin-right: 8px;
 		}
 		dd {
 			margin-bottom: 0;
@@ -165,12 +166,17 @@
 	.metadata {
 		&__element-dl,
 		&__event-dl {
+      flex-wrap: wrap;
 			dt {
+        flex: 0 0 100%;
 				width: 100%;			
+        max-width: 100%;
 			}
 			dd {
-				width: 100%;
 				margin: 0;			
+        flex: 0 0 100%;
+				width: 100%;			
+        max-width: 100%;
 			}
 		}
 	}

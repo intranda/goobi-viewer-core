@@ -33,6 +33,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -44,10 +47,13 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -120,8 +126,13 @@ public class SolrTools {
      * @param fieldValue a {@link java.lang.Object} object.
      * @return a {@link java.lang.String} object.
      */
-    @SuppressWarnings("unchecked")
     public static String getAsString(Object fieldValue) {
+        return getAsString(fieldValue, "\n");
+    }
+        
+        
+    @SuppressWarnings("unchecked")
+    public static String getAsString(Object fieldValue, String separator) {
         if (fieldValue == null) {
             return null;
         }
@@ -131,7 +142,7 @@ public class SolrTools {
             StringBuilder sb = new StringBuilder();
             List<Object> list = (List<Object>) fieldValue;
             for (Object object : list) {
-                sb.append("\n").append(getAsString(object));
+                sb.append(separator).append(getAsString(object));
             }
             return sb.toString().trim();
         } else {
@@ -605,6 +616,63 @@ public class SolrTools {
         }
 
         return conditions.trim();
+    }
+
+    /**
+     * <p>
+     * getAvailableValuesForField.
+     * </p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @param filterQuery a {@link java.lang.String} object.
+     * @return List of facet values for the given field and query
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return all existing values for the given field
+     */
+    public static List<String> getAvailableValuesForField(String field, String filterQuery) throws PresentationException, IndexUnreachableException {
+        if (field == null) {
+            throw new IllegalArgumentException("field may not be null");
+        }
+        if (filterQuery == null) {
+            throw new IllegalArgumentException("filterQuery may not be null");
+        }
+
+        filterQuery = SearchHelper.buildFinalQuery(filterQuery, false);
+        QueryResponse qr =
+                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(field), 1, false);
+        if (qr != null) {
+            FacetField facet = qr.getFacetField(field);
+            if (facet != null) {
+                List<String> ret = new ArrayList<>(facet.getValueCount());
+                for (Count count : facet.getValues()) {
+                    // Skip inverted values
+                    if (!StringTools.checkValueEmptyOrInverted(count.getName())) {
+                        ret.add(count.getName());
+                        // logger.trace(count.getName());
+                    }
+                }
+                return ret;
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * 
+     * @return List of existing values for the configured subtheme discriminator field
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should return correct values
+     */
+    public static List<String> getExistingSubthemes() throws PresentationException, IndexUnreachableException {
+        String subthemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+        if (StringUtils.isEmpty(subthemeDiscriminatorField)) {
+            return Collections.emptyList();
+        }
+
+        return getAvailableValuesForField(subthemeDiscriminatorField, SolrConstants.PI + ":*");
     }
 
     /**

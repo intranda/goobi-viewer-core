@@ -85,6 +85,7 @@ import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
+import io.goobi.viewer.model.search.GeoFacetItem;
 import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -277,6 +278,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param resetFacets a boolean.
      * @return Target URL
      * @should not reset facets if resetFacets false
+     * @should not produce results if search terms not in index
      */
     public String searchSimple(boolean resetParameters, boolean resetFacets) {
         logger.trace("searchSimple");
@@ -1169,7 +1171,10 @@ public class SearchBean implements SearchInterface, Serializable {
         }
     }
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc}
+     * @should escape critical chars
+     * @should not url escape string
+     */
     @Override
     public String getExactSearchString() {
         if (searchStringInternal.length() == 0) {
@@ -1382,7 +1387,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String removeFacetAction(String facetQuery) {
-
+        //reset the search result list to page one since the result list will necessarily change when removing the facet
+        setCurrentPage(1);
         //redirect to current cms page if this action takes place on a cms page
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
@@ -2683,7 +2689,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public boolean hasGeoLocationHits() {
-        return this.currentSearch != null && !this.currentSearch.getHitsLocationList().isEmpty();
+        return this.currentSearch != null && !this.currentSearch.isHasGeoLocationHits();
     }
 
     public List<String> getHitsLocations() {
@@ -2692,6 +2698,14 @@ public class SearchBean implements SearchInterface, Serializable {
         } else {
             return Collections.emptyList();
         }
+    }
+    
+    /**
+     * Display the geo facet map if there are any hits available with geo coordinates
+     * @return
+     */
+    public boolean isShowGeoFacetMap() {
+        return Optional.ofNullable(currentSearch).map(Search::isHasGeoLocationHits).orElse(false);
     }
 
     public GeoMap getHitsMap() {
@@ -2724,13 +2738,22 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public List<FacetItem> getFieldFacetValues(String field, int num) throws IndexUnreachableException, PresentationException {
+        return getFieldFacetValues(field, num, "");
+    }
+    
+    public List<FacetItem> getFieldFacetValues(String field, int num, String filterQuery) throws IndexUnreachableException, PresentationException {
         num = num <= 0 ? Integer.MAX_VALUE : num;
         String query = "+(ISWORK:* OR ISANCHOR:*) " + SearchHelper.getAllSuffixes();
+        if(StringUtils.isNotBlank(filterQuery)) {
+            query += " +(" + filterQuery + ")";
+        }
+        String facetField = SearchHelper.facetifyField(field);
         QueryResponse response =
-                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Collections.singletonList(field), 1, false);
-        return response.getFacetField(field)
+                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Collections.singletonList(facetField), 1, false);
+        return response.getFacetField(facetField)
                 .getValues()
                 .stream()
+                .filter(count -> !StringTools.checkValueEmptyOrInverted(count.getName()))
                 .map(count -> new FacetItem(count))
                 .sorted((f1, f2) -> Long.compare(f2.getCount(), f1.getCount()))
                 .limit(num)

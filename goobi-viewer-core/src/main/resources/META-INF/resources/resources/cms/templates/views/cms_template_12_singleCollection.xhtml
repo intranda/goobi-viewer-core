@@ -48,7 +48,7 @@
                     <!-- IMAGE -->
                     <div class="tpl-single-collection__image faded">
                         <h2>#{cmsPage.title}</h2>
-                        <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cmsPage.getMediaName('image01')}" />
+                        <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cmsPage.getMedia('image01').alternativeText}" />
                     </div>
 
                     <!-- DESCRIPTION -->
@@ -65,7 +65,7 @@
 					<div class="search-list">
                         <ui:include src="/resources/includes/search/searchHitList.xhtml">
                         	<ui:param name="searchParam" value="#{cmsPage.getContentItem('queryList').functionality}"/>
-                            <ui:param name="showSortingOptions" value="#{false}"/>
+                            <ui:param name="showSortingOptions" value="#{cmsPage.getContentItem('queryList').showHitListOptions}"/>
                         </ui:include>
                     </div>
                 </div>

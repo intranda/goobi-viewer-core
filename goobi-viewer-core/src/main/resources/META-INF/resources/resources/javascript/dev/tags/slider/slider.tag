@@ -17,6 +17,7 @@
 
     this.on( 'mount', function() {
 		this.style = this.opts.styles.get(this.opts.style);
+//    	console.log(this.style);
 //     	console.log("mounting 'slider.tag' ", this.opts, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
@@ -58,7 +59,6 @@
     	
     	// console.log("layout = ", this.getLayout());
     	
-    	
     	if(this.slides && this.slides.length > 0) {
     		if(this.slider) {
     			this.slider.destroy();
@@ -66,6 +66,11 @@
 			this.initSlideTags(this.slides);
     		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
     	}
+    	
+    	if (this.style.onUpdate) {
+    		this.style.onUpdate();
+    	}
+    	
     });
     
     setSlides(slides) {

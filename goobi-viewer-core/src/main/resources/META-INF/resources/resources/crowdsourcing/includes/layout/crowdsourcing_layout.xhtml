@@ -42,10 +42,12 @@
                     <!-- CHANGE LOCAL -->
                     <ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}">
 	                    <div id="changeLocalWrapper" class="crowdsourcing-annotations__top-actions-language">
-	                    	<button type="button" class="btn btn--clean" data-toggle="local" aria-label="#{msg.aria_label__switch_language}">
-	                    		#{msg['changeLocal_' += navigationHelper.localeString]}
-	                    	</button>
-	                        <viewerComponent:changeLocal toggleLanguage="false" showFlags="false" />
+							<button type="button"
+		                  class="btn btn--clean"
+		                  data-toggle="local"
+		                  aria-label="#{msg.aria_label__switch_language}">
+		                  <span class="fa fa-globe"></span>#{msg.language}</button>
+		                <viewerComponent:changeLocal toggleLanguage="false" longLanguageStrings="true"/>
 	                    </div>
 	                </ui:fragment>
                     <!-- LOGIN NAVIGATION -->

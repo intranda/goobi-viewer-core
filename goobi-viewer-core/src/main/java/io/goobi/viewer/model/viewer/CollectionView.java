@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
+import io.goobi.viewer.servlets.IdentifierResolver;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
@@ -59,6 +62,7 @@ public class CollectionView {
     private boolean showAllHierarchyLevels = false;
     private boolean displayParentCollections = true;
     private String searchUrl = "";
+    boolean ignoreHierarchy = false;
 
     private List<String> ignoreList = new ArrayList<>();
 
@@ -119,18 +123,33 @@ public class CollectionView {
                     if (!shouldOpenInOwnWindow(collectionName) && showAllHierarchyLevels) {
                         dc.setShowSubElements(true);
                     }
-                    int collectionLevel = dc.getLevel();
-                    if (collectionLevel > 0 && lastElement != null) {
-                        while (lastElement != null && lastElement.getLevel() >= collectionLevel) {
-                            lastElement = lastElement.getParent();
+                    // Set single record PI if collection has one one record
+                    if (collectionSize == 1) {
+                        SolrDocument doc = DataManager.getInstance()
+                                .getSearchIndex()
+                                .getFirstDoc("+" + SolrConstants.PI + ":* +" + field + ":\"" + dcName + "\"",
+                                        null);
+                        if (doc != null) {
+                            dc.setSingleRecordUrl(IdentifierResolver.constructUrl(doc, false));
                         }
-                        if (lastElement != null) {
-                            lastElement.addChild(dc);
-                        }
-                    } else {
-                        completeCollectionList.add(dc);
                     }
-                    lastElement = dc;
+                    
+                    if(ignoreHierarchy) {
+                        completeCollectionList.add(dc);
+                    } else {                        
+                        int collectionLevel = dc.getLevel();
+                        if (collectionLevel > 0 && lastElement != null) {
+                            while (lastElement != null && lastElement.getLevel() >= collectionLevel) {
+                                lastElement = lastElement.getParent();
+                            }
+                            if (lastElement != null) {
+                                lastElement.addChild(dc);
+                            }
+                        } else {
+                            completeCollectionList.add(dc);
+                        }
+                        lastElement = dc;
+                    }
                 }
                 //            Collections.sort(completeCollectionList);
                 calculateVisibleDcElements();
@@ -936,6 +955,7 @@ public class CollectionView {
      * @param collection a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
+     * @should return identifier resolver url if single record and pi known
      */
     public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, String baseSearchUrl) {
 
@@ -955,15 +975,21 @@ public class CollectionView {
             logger.trace("COLLECTION new window url: {}", ret);
             return ret;
         } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
+            // Link directly to single record, if record PI known
+            if (collection.getSingleRecordUrl() != null) {
 
-            String url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                //                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/piresolver?id=")
+                //                        .append(collection.getSingleRecordPi())
+                //                        .toString();
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + collection.getSingleRecordUrl();
+            }
+            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                     .append("/browse/")
                     .append(field)
                     .append("/")
                     .append(collection.getLuceneName())
                     .append("/record/")
                     .toString();
-            return url;
         } else {
             String facetString = field + ":" + collection.getLuceneName();
             String encFacetString = StringTools.encodeUrl(facetString);
@@ -1074,7 +1100,7 @@ public class CollectionView {
         if (completeCollectionList == null) {
             return null;
         }
-        
+
         for (HierarchicalBrowseDcElement ele : completeCollectionList) {
             if (ele.getName().equals(name)) {
                 return ele.getLabel();
@@ -1109,4 +1135,17 @@ public class CollectionView {
         this.searchUrl = searchUrl;
     }
 
+    /**
+     * @return the ignoreHierarchy
+     */
+    public boolean isIgnoreHierarchy() {
+        return ignoreHierarchy;
+    }
+    
+    /**
+     * @param ignoreHierarchy the ignoreHierarchy to set
+     */
+    public void setIgnoreHierarchy(boolean ignoreHierarchy) {
+        this.ignoreHierarchy = ignoreHierarchy;
+    }
 }

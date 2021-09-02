@@ -107,10 +107,10 @@
 	</urls>
 
 	<user>
-		<!-- userRegistrationEnabled: If false, widgets for user registration / 
-			password retrieval are hidden. Default is true. -->
-		<userRegistrationEnabled>false</userRegistrationEnabled>
-		<!-- TODO -->
+		<!-- registration/@enabled: If false, widgets for user registration / password retrieval are hidden. Default is true. -->
+		<registration enabled="false" />
+		
+        <!-- TODO -->
         <securityQuestions>
             <question key="user__security_question__1">
                 <allowedAnswer>foo</allowedAnswer>
@@ -128,7 +128,7 @@
         <authenticationProviders>
             <provider type="openId" name="Google" endpoint="https://accounts.google.com/o/oauth2/auth" clientId="id_google" clientSecret="secret_google" image="google.png" />
             <provider type="openId" name="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="id_facebook" clientSecret="secret_facebook" image="facebook.png" />
-            <provider show="false" type="openId" name="incomplete" endpoint="https://graph.facebook.com/oauth"
+            <provider enabled="false" type="openId" name="incomplete" endpoint="https://graph.facebook.com/oauth"
                 clientId="" image="facebook.png" />
             <provider type="userPassword" name="VuFind" label="VuFind-label" endpoint="https://vuFind.example/Api/User/Auth" image="vufind.png" timeout="7000">
                 <addUserToGroup>vuFindUsers</addUserToGroup>
@@ -184,7 +184,7 @@
         <fullAccessForLocalhost>true</fullAccessForLocalhost>
     </accessConditions>
 
-	<reCaptcha show="false">
+	<reCaptcha enabled="false">
 		<provider name="Google" siteKey="6LetEyITAAAAAEAj7NTxgRXR6S_uhZrk9rn5HyB3" />
 	</reCaptcha>
 
@@ -226,9 +226,8 @@
 	</epub>
 
 	<viewer>
-
-		<pageBrowse>
-			<enabled>true</enabled>
+        <!-- pageBrowse/@enabled: if true, page browsing through the record in different steps is allowed. Default is false. -->
+		<pageBrowse enabled="true">
 			<pageBrowseStep>0</pageBrowseStep>
 			<pageBrowseStep>5</pageBrowseStep>
 			<pageBrowseStep>10</pageBrowseStep>
@@ -292,9 +291,12 @@
 				<url>https?://exteral/.*\.tif</url>
 			</restrictedUrls>
 		</externalContent>
+        
+        <!-- rememberImageZoom/@enabled: if true, the image zoom is saved in the user session and persistent during browsing -->
+        <rememberImageZoom enabled="true" />
 
-		<rememberImageZoom>true</rememberImageZoom>
-		<rememberImageRotation>true</rememberImageRotation>
+        <!-- rememberImageRotation/@enabled: if true, the image rotation is saved in the user session and persistent during browsing -->
+        <rememberImageRotation enabled="true" />
 
 		<!-- max. allowed values for ContentServer arguments, higher values than 
 			these will be reduced to the values defined here -->
@@ -374,7 +376,7 @@
 
 		<!-- theme: defines the theme that shall be used -->
 		<theme mainTheme="mainTheme_value"
-			discriminatorField="FACET_VIEWERSUBTHEME">
+			discriminatorField="MD2_VIEWERSUBTHEME">
             <!-- rootPath: If the theme is localed externally, the CMS template loading
                  mechanism needs the root path of the theme. The path must be defined down
                  to the /themes folder, just above the folder named like the theme. -->
@@ -408,10 +410,8 @@
 			<filter>filter_FIELD2</filter>
 			<filter>filter_FIELD3</filter>
 		</filters>
-		<sorting>
-			<!-- enabled: if false, the option to sort search hits is hidden (since 
-				2.0) -->
-			<enabled>false</enabled>
+		<!-- @enabled: if false, the option to sort search hits is hidden (since 2.0) -->
+        <sorting enabled="false">
 			<!-- Fields used for sorting. Fields must be configured as 'multiValued="false"' 
 				in the Solr schema. -->
 			<!-- defaultSortField: Field used for initial sorting. Multiple semicolon-separated 
@@ -438,13 +438,13 @@
 			<field labelField="MD_FIELDLABEL" sortOrder="numerical">YEAR</field>
 			<hierarchicalField labelField="MD_FIRSTNAME" sortOrder="alphabetical">MD_CREATOR</hierarchicalField>
 			<field initialElementNumber="16" priorityValues="val1;val2;val3">MD_PLACEPUBLISH</field>
+			<geoField>WKT_COORDS</geoField>
 			<!-- initialElementNumber: sets the initial number of facet elements 
 				to be displayed (any field including DC). Default is 20. -->
 			<initialElementNumber>23</initialElementNumber>
 		</facets>
-		<advanced>
-			<!-- Enables the advanced search (default is true) -->
-			<enabled>false</enabled>
+		<!-- @enabled: Enables the advanced search (default is true) -->
+        <advanced enabled="false">
 			<!-- advancedSearchDefaultItemNumber: number of advanced search items 
 				to be rendered by default. Default is 2. -->
 			<defaultItemNumber>3</defaultItemNumber>
@@ -463,9 +463,8 @@
 				<field>MD_FOO_LANG_ES</field>
 			</searchFields>
 		</advanced>
-		<timeline>
-			<!-- Enables the timeline search (default is true) -->
-			<enabled>false</enabled>
+        <!-- @enabled: Enables the timeline search (default is true) -->
+        <timeline enabled="false">
 			<!-- Moegliche Werte fuer Startjahr und Endjahr sind ganze Jahre (auch 
 				Minus) sowie fuer Startjahr weiter der Wert MIN und fuer Endjahr der Wert 
 				MAX. Bei MIN wird das kleinste verfuegbare Jahr aus dem solrIndex als Startwert 
@@ -476,13 +475,13 @@
                 maximum number defined in SolrSearchIndex.MAX_HITS. Default is 108. -->
             <hits>120</hits>
 		</timeline>
-		<calendar>
-			<!-- Enables the calendar search (default is true) -->
-			<enabled>false</enabled>
-		</calendar>
-		<!-- searchSavingEnabled: Allow users to save executed searches to a list 
+        <!-- Enables the calendar search (default is true) -->
+		<calendar enabled="false" />
+        
+		<!-- searchSaving/@enabled: Allow users to save executed searches to a list 
 			for later re-use. Default is true. -->
-		<searchSavingEnabled>false</searchSavingEnabled>
+		<searchSaving enabled="false" />
+        
 		<!-- boostTopLevelDocstructs: If true, anchors receive a factor 10 boost, 
 			volumes and standalone records a factor 5 boost. This results in anchors 
 			appearing on top, followed by other records, followed by lower level docstructs, 
@@ -499,8 +498,7 @@
 		<aggregateHits>false</aggregateHits>
 		<!-- displayAdditionalMetadata: Add relevant metadata fields and values 
 			to the search hits if they contain requested search terms. Default is enabled=true. -->
-		<displayAdditionalMetadata>
-			<enabled>false</enabled>
+		<displayAdditionalMetadata enabled="false">
 			<!-- ignoreField: Fields that add no value to the search hits but take 
 				up space (e.g. PI_TOPSTRUCT, DOCSTRCT) can be configured to not be added 
 				as additional metadata. This element can be repeated. -->
@@ -535,9 +533,8 @@
 		</versioning>
 		<!-- Search export settings -->
 		<export>
-			<excel>
-				<!-- enabled: If true, Excel (.xlsx) export is enabled (default is false). -->
-				<enabled>true</enabled>
+            <!-- enabled: If true, Excel (.xlsx) export is enabled (default is false). -->
+			<excel enabled="true">
 				<!-- field: Solr fields to put into the export sheet. One element per 
 					field. -->
 				<field>PI</field>
@@ -768,10 +765,8 @@
 		</calendarDocstructTypes>
 
 		<!-- browsingMenu: configuration of the browsing section (Stoebern) -->
-		<browsingMenu>
-			<!-- enabled: if false, the browsing section is hidden -->
-			<enabled>false</enabled>
-
+        <!-- @enabled: if false, the browsing section is hidden -->
+		<browsingMenu enabled="false">
 			<!-- hitsPerPage: defines the maximum number of hits that are displayed 
 				per page -->
 			<hitsPerPage>19</hitsPerPage>
@@ -865,13 +860,12 @@
 	</metadata>
 
 	<toc>
-		<!-- multiVolumeThumbnailsWidth|Height: size settings for multivolume TOC 
-			thumbnails -->
-		<multiVolumeThumbnailsWidth>12</multiVolumeThumbnailsWidth>
-		<multiVolumeThumbnailsHeight>13</multiVolumeThumbnailsHeight>
-		<!-- Whether to display thumbnails of contained works in anchor toc. Default 
-			is "true" -->
-		<multiVolumeThumbnailsEnabled>false</multiVolumeThumbnailsEnabled>
+        <!-- multiVolumeThumbnails/@enabled: Whether to display thumbnails of contained works in anchor toc. Default is "true" -->
+        <multiVolumeThumbnails enabled="false">
+            <!-- width|height: size settings for multivolume TOC  thumbnails -->
+            <width>12</width>
+            <height>13</height>
+        </multiVolumeThumbnails>
 
 		<!-- voumeSortFields: Solr fields by which the volumes in an anchor TOC 
 			shall be sorted. Custom templates can be defined for anchor docstruc types, 
@@ -962,25 +956,25 @@
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
 	
-		<!-- sidebarWidgetDownloads: If true, the download widget within a records 
+		<!-- @enabled: If true, the download widget within a records 
 			view for additional files from the source directory is displayed. Default 
 			is true. -->
-		<sidebarWidgetDownloads visible="true" introductionText="MASTERVALUE_DOWNLOADS_INTRO">
-	
+		<sidebarWidgetDownloads enabled="true" introductionText="MASTERVALUE_DOWNLOADS_INTRO">
 			<!-- hideFileRegex: If a regular expression is defined, files matching 
 				it are hidden from the widget display. The download is still possible. -->
 			<hideFileRegex>(wug_.*|AK_.*)</hideFileRegex>
 		</sidebarWidgetDownloads>
 	
-	    <!-- sidebarBrowsingTerms: If true, the sidebar term browsing widget it displayed. Default is true. -->
-        <sidebarBrowsingTerms display="false" />
+	    <!-- @enabled: If true, the sidebar term browsing widget it displayed. Default is true. -->
+        <sidebarBrowsingTerms enabled="false" />
         
-        <!-- sidebarBrowsingTerms: If true, the sidebar RSS widget it displayed. Default is true. -->
-        <sidebarRssFeed display="false" />
+        <!-- @enabled: If true, the sidebar RSS widget it displayed. Default is true. -->
+        <sidebarRssFeed enabled="false" />
 
-        <sidebarWidgetUsage display="false" introductionText="MASTERVALUE_USAGE_INTRO">
+        <!-- @enabled: Show or hide the widget including download links for record and page while viewing the object -->
+        <sidebarWidgetUsage enabled="false" introductionText="MASTERVALUE_USAGE_INTRO">
             <page>
-                <downloadOptions>
+                <downloadOptions enabled="false">
                 <!-- Each option contains a label and a format. The label is translated via the messages. 
                     The format can take the values supported by the ContentServer, for example "pdf", "tif", 
                     "jpg" or "png". If the static string "MASTER" is used, the format is dynamically set to 
@@ -993,7 +987,7 @@
                     <option label="label__download_option_large_4096" format="jpg" boxSizeInPixel="4096" />
                 </downloadOptions>
             </page>
-            <citationRecommendation display="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
+            <citationRecommendation enabled="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
                 <!-- Available citation styles (supported by citeproc) -->
                 <styles>
                     <style>modern-language-association</style>
@@ -1008,7 +1002,7 @@
                     </metadata>
                 </source>
             </citationRecommendation>
-            <citationLinks display="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
+            <citationLinks enabled="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
                 <!-- links: Citation link configurations. -->
                 <links>
                     <link type="URL" for="record" label="LABEL_URN" field="URN" prefix="https://nbn-resolving.org/" suffix="/"
@@ -1019,35 +1013,25 @@
             </citationLinks>
         </sidebarWidgetUsage>
 
-		<!-- page: if false, the image view is hidden -->
-		<page>
-			<visible>false</visible>
-		</page>
+		<!-- @enabled: if false, the image view is hidden -->
+		<page enabled="false" />
 
-		<!-- calendar: if false, the calendar view link is hidden -->
-		<calendar>
-			<visible>false</visible>
-		</calendar>
+		<!-- @enabled: if false, the calendar view link is hidden -->
+		<calendar enabled="false" />
 
-		<!-- toc: if false, the TOC link is hidden (This is the link to the TOC 
+		<!-- @enabled: if false, the TOC link is hidden (This is the link to the TOC 
 			page in the work menu, not the sidebar TOC component!) -->
-		<toc>
-			<visible>false</visible>
-		</toc>
+		<toc enabled="false" />
 
-		<!-- thumbs: if false, the thumbnail view is hidden -->
-		<thumbs>
-			<visible>false</visible>
-		</thumbs>
+		<!-- @enabled: if false, the thumbnail view is hidden -->
+		<thumbs enabled="false" />
 
-        <!-- searchInItem: if false, no widget for searching in the currently show record will be displayed. Default is true. -->
-		<searchInItem>
-			<visible>false</visible>
-		</searchInItem>
+        <!-- @enabled: if false, no widget for searching in the currently show record will be displayed. Default is true. -->
+		<searchInItem enabled="false" />
 
-		<metadata>
+        <!-- @enabled -->
+		<metadata enabled="false">
 			<!-- metadata: if false, the bibliographic data view is hidden -->
-			<visible>false</visible>
 			<!-- showEventMetadata: if false, the event metadata of LIDO records is 
 				hidden (default is true) -->
 			<showEventMetadata>false</showEventMetadata>
@@ -1055,16 +1039,12 @@
             <showRecordLabelIfNoOtherViews>true</showRecordLabelIfNoOtherViews>
 		</metadata>
 
-		<!-- fulltext: if false, the fulltext view is hidden -->
-		<fulltext>
-			<visible>false</visible>
-		</fulltext>
+		<!-- @enabled: if false, the fulltext view is hidden -->
+		<fulltext enabled="false" />
 
 		<!-- sidebarToc: configuration of the sidebar TOC component -->
-		<sidebarToc>
-			<!-- visible: if false, the sidebar toc is hidden -->
-			<visible>false</visible>
-			
+        <!-- @enabled: if false, the sidebar toc is hidden -->
+		<sidebarToc enabled="false">
 			<!-- visibleInFullscreen: If false, the sidebar TOC element won't be visible in the full-screen sidebar accordion -->
             <visibleInFullscreen>false</visibleInFullscreen>
 
@@ -1090,10 +1070,8 @@
 			</collapseLengthThreshold>
 		</sidebarToc>
 		
-        <!-- opac: If true, the OPAC link from the current record will be displayed. Default is false. -->
-        <opac>
-            <visible>true</visible>
-        </opac>
+        <!-- @enabled: If true, the OPAC link from the current record will be displayed. Default is false. -->
+        <opac enabled="true" />
 	</sidebar>
 
 
@@ -1168,11 +1146,8 @@
 		<displaySearchRssLinks>false</displaySearchRssLinks>
 	</rss>
 
-	<bookmarks>
-		<!-- bookmarksEnabled: if false, no links to bookmark administration 
-			are displayed (default is true) -->
-		<bookmarksEnabled>false</bookmarksEnabled>
-	</bookmarks>
+    <!-- bookmarks/@enabled: if false, no links to bookmark administration are displayed (default is true) -->
+	<bookmarks enabled="false" />
 
     <!-- If enabled="true", the user comments functionality is enabled. Default is false. -->
 	<comments enabled="true">
@@ -1251,10 +1226,8 @@
 
 
 	<!-- PIWIK-CONFIGURATION -->
-	<piwik>
-		<!-- If true, piwik code will be insert into page. Default is false. -->
-		<enabled>true</enabled>
-
+    <!-- @enabled: If true, piwik code will be insert into page. Default is false. -->
+	<piwik enabled="true">
 		<!-- BaseURL of the piwik script without "http://"! -->
 		<baseURL>baseURL_value</baseURL>
 
@@ -1314,16 +1287,16 @@
 				at all and the label subnode can be used to configure an individual label 
 				for the link. These labels are translated if translations exist. -->
 			<rendering>
-				<viewer visible="true">
+				<viewer enabled="false">
 					<label>Goobi Viewer</label>
 				</viewer>
-				<pdf visible="true">
+				<pdf enabled="false">
 					<label>PDF</label>
 				</pdf>
-				<plaintext visible="true">
+				<plaintext enabled="false">
 					<label>Fulltext</label>
 				</plaintext>
-				<alto visible="true">
+				<alto enabled="false">
 					<label>ALTO</label>
 				</alto>
 			</rendering>
@@ -1344,7 +1317,7 @@
         
            <!-- If @use is 'true' add a Access-Control-Allow-Origin Header with this value to all REST-api calls
                 referencing the @CORSBinding annotation -->        
-           <cors use="true">*</cors>
+           <cors enabled="true">*</cors>
 	</webapi>
 
     <embedding>

@@ -45,6 +45,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     private final String field;
     public final String splittingChar;
     private long number;
+    private String singleRecordUrl = null;
     private String sortField = "-";
     private boolean showSubElements = false;
     private boolean hasSubelements = false;
@@ -273,6 +274,20 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      */
     public long getNumberOfVolumes() {
         return number;
+    }
+
+    /**
+     * @return the singleRecordUrl
+     */
+    public String getSingleRecordUrl() {
+        return singleRecordUrl;
+    }
+
+    /**
+     * @param singleRecordUrl the singleRecordUrl to set
+     */
+    public void setSingleRecordUrl(String singleRecordUrl) {
+        this.singleRecordUrl = singleRecordUrl;
     }
 
     /**

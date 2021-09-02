@@ -480,7 +480,7 @@ public class AnnotationsResourceBuilder {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public Optional<WebAnnotation> getWebAnnotation(Long id) throws PresentationException, IndexUnreachableException {
+    public Optional<WebAnnotation> getWebAnnotation(long id) throws PresentationException, IndexUnreachableException {
         return waBuilder.getAnnotationDocument(id, request).map(doc -> waBuilder.createUGCWebAnnotation(doc, false));
     }
 

@@ -8,21 +8,16 @@
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	template="/resources/themes/#{navigationHelper.theme}/templateBlank.html">
 
-
-	<ui:define name="head">
-
-		<link rel="stylesheet"
-			href="#{request.contextPath}/resources/css/libs/swagger/swagger-ui.css" />
-		<script type="text/javascript"
-			src="#{request.contextPath}/resources/javascript/libs/swagger/swagger-ui-bundle.js" />
-
-	</ui:define>
-
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
 				listener="#{navigationHelper.setCurrentPage('label__api_swagger', false, true)}" />
 		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<link rel="stylesheet"	href="#{request.contextPath}/resources/css/libs/swagger/swagger-ui.css" />
+		<script type="text/javascript"	src="#{request.contextPath}/resources/javascript/libs/swagger/swagger-ui-bundle.js" />
 	</ui:define>
 
 	<ui:define name="content">
@@ -39,21 +34,21 @@
 					<button id="swagger-api__option-v2">API v2</button>
 				</div>
 			</div>
-			
+
 			<div class="swagger-api__containers">
-				<!-- DYNAMICALLY LOADED CONTENT API V1 -->	
+				<!-- DYNAMICALLY LOADED CONTENT API V1 -->
 				<div id="swagger-container-v1" class="swagger-api__box-v1"><i class="fa fa-spinner fa-spin"></i></div>
-				
-				<!-- DYNAMICALLY LOADED CONTENT API V2 -->	
+
+				<!-- DYNAMICALLY LOADED CONTENT API V2 -->
 				<div id="swagger-container-v2" class="swagger-api__box-v2"><i class="fa fa-spinner fa-spin"></i></div>
-			</div>	
+			</div>
 		</div>
 
 
 
 		<script>
 
-		
+
       //<![CDATA[
 		$(document).ready(function () {
 
@@ -71,9 +66,9 @@
 			      $(this).addClass('-active');
 			      $('#swagger-api__option-v1').removeClass('-active');
 			  });
-			  
+
 		});
-			  
+
 		    $('#swagger-api__option-v2').one('click', function(e){
 		        e.preventDefault();
 
@@ -94,10 +89,10 @@
 			            },
 		        	  });
 		        })
-		        
+
 		    });
 
-		
+
 	        fetch("#{request.contextPath}/api/v1/openapi.json")
 	        .then(res => res.json())
 	        .then(json => {
@@ -115,9 +110,9 @@
 		            },
 	        	  });
 	        })
-	        
 
-        	
+
+
         //]]>
         </script>
 

@@ -164,5 +164,30 @@ public class CMSMultiRecordNote extends CMSRecordNote {
             return true;
         }
     }
+    
+    public String toString() {
+        return getQuery();
+    }
+
+    /**
+     * Check if the given pi is a match for the query of the record note
+     * The pi is a match if the record note query combined with a query for the given pi returns at least one result
+     * 
+     * @param pi
+     * @return
+     */
+    public boolean matchesRecord(String pi) {
+        String solrQuery = getQueryForSearch();
+        String singleRecordQuery = "+({1}) +{2}".replace("{1}", solrQuery).replace("{2}", "PI:"+pi);
+
+        try {
+            return DataManager.getInstance()
+                    .getSearchIndex()
+                    .count(singleRecordQuery) > 0;
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error("Failed to test match for record note '{}': {}", this, e.toString());
+            return false;
+        }
+    }
 
 }

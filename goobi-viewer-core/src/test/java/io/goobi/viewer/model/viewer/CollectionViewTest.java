@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -24,28 +26,35 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.cms.CMSCollection;
+import io.goobi.viewer.model.cms.CMSContentItem;
+import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
+import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.CollectionResult;
-import io.goobi.viewer.model.viewer.CollectionView;
-import io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class CollectionViewTest extends AbstractDatabaseEnabledTest {
+public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
 
     List<String> collections;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        AbstractDatabaseEnabledTest.setUpClass();
+        AbstractDatabaseAndSolrEnabledTest.setUpClass();
         // Initialize the instance with a custom config file
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
@@ -92,13 +101,13 @@ public class CollectionViewTest extends AbstractDatabaseEnabledTest {
         assertTrue(allElements.get(12).getName() == "c.d.a");
     }
 
-    @Test
-    public void testExpandCollection() throws IndexUnreachableException, IllegalRequestException {
-        CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
-        collection.setBaseElementName("c.c");
-        collection.populateCollectionList();
-        List<HierarchicalBrowseDcElement> topElements = new ArrayList<>(collection.getVisibleDcElements());
-    }
+//    @Test
+//    public void testExpandCollection() throws IndexUnreachableException, IllegalRequestException {
+//        CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
+//        collection.setBaseElementName("c.c");
+//        collection.populateCollectionList();
+//        List<HierarchicalBrowseDcElement> topElements = new ArrayList<>(collection.getVisibleDcElements());
+//    }
 
     /**
      * @return
@@ -117,4 +126,34 @@ public class CollectionViewTest extends AbstractDatabaseEnabledTest {
         };
     }
 
+    /**
+     * @see CollectionView#getCollectionUrl(HierarchicalBrowseDcElement,String,String)
+     * @verifies return identifier resolver url if single record and pi known
+     */
+    @Test
+    public void getCollectionUrl_shouldReturnIdentifierResolverUrlIfSingleRecordAndPiKnown() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("collections.redirectToWork", true);
+        CollectionView col = new CollectionView("foo", getTestProvider());
+        HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("bar", 1, "foo", null);
+        element.setSingleRecordUrl("/object/PI123/1/LOG_0001/");
+        Assert.assertEquals("/object/PI123/1/LOG_0001/", col.getCollectionUrl(element));
+    }
+    
+    @Test
+    public void loadCMSCollection_addCMSCollectionInfo() throws PresentationException, IndexUnreachableException, IllegalRequestException, DAOException {
+        CMSPage page = new CMSPage();
+        page.setId(1l);
+        CMSPageLanguageVersion lang = new CMSPageLanguageVersion("global");
+        lang.setOwnerPage(page);
+        CMSContentItem contentItem = new CMSContentItem();
+        contentItem.setCollectionField("DC");
+        contentItem.setOwnerPageLanguageVersion(lang);
+        CollectionView collection = contentItem.initializeCollection();
+        HierarchicalBrowseDcElement element = collection.getVisibleDcElements().stream().filter(ele -> ele.getName().equals("dcimage")).findAny().orElse(null);
+        assertNotNull(element);
+        assertNotNull(element.getInfo());
+        assertEquals(CMSCollection.class, element.getInfo().getClass());
+        CMSMediaItem mediaItem = DataManager.getInstance().getDao().getCMSMediaItem(1l);
+        assertEquals(mediaItem.getIconURI(), element.getInfo().getIconURI());
+    }
 }

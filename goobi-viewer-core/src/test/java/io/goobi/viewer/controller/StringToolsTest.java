@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer.controller;
 
-import static org.junit.Assert.assertEquals;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -208,6 +206,15 @@ public class StringToolsTest {
     @Test
     public void checkValueEmptyOrInverted_shouldReturnTrueIfValueStartsWith0x1() throws Exception {
         Assert.assertTrue(StringTools.checkValueEmptyOrInverted("oof"));
+    }
+
+    /**
+     * @see StringTools#checkValueEmptyOrInverted(String)
+     * @verifies return true if value starts with #1;
+     */
+    @Test
+    public void checkValueEmptyOrInverted_shouldReturnTrueIfValueStartsWith1() throws Exception {
+        Assert.assertTrue(StringTools.checkValueEmptyOrInverted("#1;oof"));
     }
 
     /**

@@ -298,17 +298,18 @@
 							
 								<!-- VISIBLE YES / NO -->
 								<div class="admin__default-block">
-								
-									<div class="admin__record-notes-visibility">
-										<h3>#{msg.cms__record_notes_visibility}</h3>
-										<div class="admin__form-help-text in mb-2">
-										#{msg.cms__record_notes_edit_text__toggle_help}
+									<h:form>
+										<div class="admin__record-notes-visibility">
+											<h3>#{msg.cms__record_notes_visibility}</h3>
+											<div class="admin__form-help-text in mb-2">
+											#{msg.cms__record_notes_edit_text__toggle_help}
+											</div>
+											<div class="mb-1 d-flex justify-content-between">
+												<label>#{msg.cms__record_notes_edit_text__toggle}: </label>
+												<viewerComponent:toggleSwitch name="showThisNote" value="#{note.displayNote}" />
+											</div>
 										</div>
-										<div class="mb-1 d-flex justify-content-between">
-											<label>#{msg.cms__record_notes_edit_text__toggle}: </label>
-											<viewerComponent:toggleSwitch name="showThisNote" value="#{note.displayNote}" />
-										</div>
-									</div>
+									</h:form>
 
 								</div>
 							

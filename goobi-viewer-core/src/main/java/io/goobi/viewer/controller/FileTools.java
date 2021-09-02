@@ -421,7 +421,8 @@ public class FileTools {
     public static String adaptPathForWindows(String path) {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.indexOf("win") >= 0 && path.startsWith("/opt/")) {
-            path = path.replace("/opt", "C:");
+            //            path = path.replace("/opt", "C:");
+            path = "C:" + path;
         } else if (os.indexOf("win") >= 0 && path.startsWith("file:///C:/opt/")) {
             // In case Paths.get() automatically adds "C:" to Unix paths on Windows machines, remove the "C:"
             path = path.replace("/C:", "");
@@ -531,7 +532,7 @@ public class FileTools {
      * 
      * @param pathString
      * @return The filename, or an empty String if it could not be determined
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException
      * @should return file name correctly
      */
     public static String getFilenameFromPathString(String pathString) throws FileNotFoundException {

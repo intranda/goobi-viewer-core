@@ -155,7 +155,7 @@ public class IdentifierResolver extends HttpServlet {
             }
             return;
         }
-        
+
         logger.trace("output: {}", request.getQueryString());
 
         // Parse optional additional field/value pairs
@@ -269,7 +269,7 @@ public class IdentifierResolver extends HttpServlet {
             // Custom page, if parameter given
             if (request.getParameter(PAGE_PARAMETER) != null) {
                 page = Integer.valueOf(request.getParameter(PAGE_PARAMETER));
-             }
+            }
 
             // If the user has no listing privilege for this record, act as if it does not exist
             boolean access;
@@ -484,7 +484,7 @@ public class IdentifierResolver extends HttpServlet {
         //        return;
     }
 
-    static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
+    public static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
         int order = 1;
         if (targetDoc.containsKey(SolrConstants.THUMBPAGENO)) {
             order = (int) targetDoc.getFieldValue(SolrConstants.THUMBPAGENO);
@@ -521,7 +521,7 @@ public class IdentifierResolver extends HttpServlet {
                 .getUrlBuilder()
                 .buildPageUrl(topstructPi, order, (String) targetDoc.getFieldValue(SolrConstants.LOGID), pageType));
 
-        logger.trace("Resolved to: {}", sb.toString());
+        // logger.trace("Resolved to: {}", sb.toString());
         return sb.toString();
     }
 }

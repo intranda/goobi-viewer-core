@@ -110,7 +110,7 @@ var cmsJS = ( function( cms ) {
             rssItemImage.attr( 'alt', item.title );
             rssItemImageLink.append( rssItemImage );
             rssItemImageWrapper.append( rssItemImageLink );
-            console.log("item image", item.description.image);
+            //console.log("item image", item.description.image);
             if(item.description.image) {
             	rssItemColLeft.append( rssItemImageWrapper );
 			}             

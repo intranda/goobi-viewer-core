@@ -57,9 +57,6 @@
 												</h:outputLink>
 											</ui:fragment>
 										</div>
-											<ui:fragment rendered="#{content.type == 'GEOLOCATION'}">
-												<span data-geomap-feature="#{content.annotationBody}"></span>
-											</ui:fragment>
 											<ui:fragment rendered="#{content.type == 'NORMDATA'}">
 												<button type="button"
 													data-remotecontent="#{request.contextPath}/api/v1/authority/resolver?id=#{contentBean.getEscapedBodyUrl(content)}&amp;template=ANNOTATION&amp;lang=#{navigationHelper.localeString}/"
