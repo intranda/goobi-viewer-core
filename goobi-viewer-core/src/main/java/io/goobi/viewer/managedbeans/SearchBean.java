@@ -85,6 +85,7 @@ import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
+import io.goobi.viewer.model.search.GeoFacetItem;
 import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -2688,7 +2689,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public boolean hasGeoLocationHits() {
-        return this.currentSearch != null && !this.currentSearch.getHitsLocationList().isEmpty();
+        return this.currentSearch != null && !this.currentSearch.isHasGeoLocationHits();
     }
 
     public List<String> getHitsLocations() {
@@ -2697,6 +2698,14 @@ public class SearchBean implements SearchInterface, Serializable {
         } else {
             return Collections.emptyList();
         }
+    }
+    
+    /**
+     * Display the geo facet map if there are any hits available with geo coordinates
+     * @return
+     */
+    public boolean isShowGeoFacetMap() {
+        return Optional.ofNullable(currentSearch).map(Search::isHasGeoLocationHits).orElse(false);
     }
 
     public GeoMap getHitsMap() {

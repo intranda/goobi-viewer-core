@@ -158,6 +158,8 @@ public class Search implements Serializable {
      */
     @Transient
     private List<Location> hitLocationList = new ArrayList<>();
+    @Transient
+    private boolean hasGeoLocationHits = false;
 
     /**
      * Empty constructor for JPA.
@@ -414,8 +416,13 @@ public class Search implements Serializable {
                     }
                 }
                 if (facets.getGeoFacetting().isActive()) {
-                    this.hitLocationList = getLocations(facets.getGeoFacetting().getField(), resp.getResults());
-                    this.hitLocationList.sort((l1, l2) -> Double.compare(l2.getArea().getDiameter(), l1.getArea().getDiameter()));
+                    if (DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap()) {
+                        this.hitLocationList = getLocations(facets.getGeoFacetting().getField(), resp.getResults());
+                        this.hitLocationList.sort((l1, l2) -> Double.compare(l2.getArea().getDiameter(), l1.getArea().getDiameter()));
+                        this.hasGeoLocationHits = !this.hitLocationList.isEmpty();
+                    } else {
+                        this.hasGeoLocationHits = resp.getResults().stream().anyMatch(doc -> doc.containsKey(facets.getGeoFacetting().getField()));
+                    }
                 }
                 logger.debug("Total search hits: {}", hitsCount);
             }
@@ -485,6 +492,8 @@ public class Search implements Serializable {
                         searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc);
         this.hits.addAll(hits);
     }
+    
+
 
     private List<Location> getLocations(String solrField, SolrDocumentList results) {
         List<Location> locations = new ArrayList<>();
@@ -1025,5 +1034,12 @@ public class Search implements Serializable {
      */
     public List<Location> getHitsLocationList() {
         return hitLocationList;
+    }
+    
+    /**
+     * @return the hasGeoLocationHits
+     */
+    public boolean isHasGeoLocationHits() {
+        return hasGeoLocationHits;
     }
 }

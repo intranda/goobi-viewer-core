@@ -14,7 +14,7 @@
     <composite:implementation>
     <ui:param name="search" value="#{cc.attrs.search != null ? cc.attrs.search : searchBean}"></ui:param>
         <!--  WIDGET Geo facetting -->
-        <ui:fragment rendered="#{(searchBean.hasGeoLocationHits() or searchBean.facets.geoFacetting.hasArea()) and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
+        <ui:fragment rendered="#{(searchBean.showGeoFacetMap) and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
         <h:form>
 	        <div class="widget widget-geofacetting">
 				<div class="widget-geofacetting__topbar">
@@ -96,6 +96,10 @@
 		                let areaString = '#{searchBean.facets.geoFacetFeature}';
 		                this.area = getArea(areaString);
 		                this.features = #{searchBean.getHitsLocations()};
+		                if(!this.features || this.features.length == 0) {
+		                    $toggleMarkers.hide();
+		                    $toggleMarkersFullscreen.hide();
+		                }
 		                //console.log("area is ", areaString, this.area, setGeoFacetFeature);
 		                let geoMap = new viewerJS.GeoMap({
 	                	    mapId: "geoFacettingMap",
@@ -182,6 +186,7 @@
 		     					    area : this.area,
 		     					    features : this.features,
 		     					    toggleFeatures: $toggleMarkersFullscreen.get(0),
+		     					    search_enabled: #{configurationBean.displayAddressSearchInMap},
 		     					    search_placeholder: "#{msg.ADDRESS}",
 		     					    onFeatureSelect: area => {
 		     					        //console.log("Set facetting area", area);

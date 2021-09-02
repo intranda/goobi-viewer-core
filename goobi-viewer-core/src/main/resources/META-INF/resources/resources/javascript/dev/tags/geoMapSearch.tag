@@ -59,7 +59,9 @@ initMap() {
         if(this.opts.search_placeholder) {
             geocoderConfig.placeholder = this.opts.search_placeholder
         }
-	    this.geoMap.initGeocoder(this.refs.geocoder, geocoderConfig);
+        if(this.opts.search_enabled) {            
+	    	this.geoMap.initGeocoder(this.refs.geocoder, geocoderConfig);
+        }
 	    this.initMapDraw();
     }
     
