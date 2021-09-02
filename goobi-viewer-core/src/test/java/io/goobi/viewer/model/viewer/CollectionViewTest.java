@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -33,7 +35,15 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.cms.CMSCollection;
+import io.goobi.viewer.model.cms.CMSContentItem;
+import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
+import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
 import io.goobi.viewer.solr.SolrConstants;
@@ -129,5 +139,23 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("bar", 1, "foo", null);
         element.setSingleRecordUrl("/object/PI123/1/LOG_0001/");
         Assert.assertEquals("/object/PI123/1/LOG_0001/", col.getCollectionUrl(element));
+    }
+    
+    @Test
+    public void loadCMSCollection_addCMSCollectionInfo() throws PresentationException, IndexUnreachableException, IllegalRequestException, DAOException {
+        CMSPage page = new CMSPage();
+        page.setId(1l);
+        CMSPageLanguageVersion lang = new CMSPageLanguageVersion("global");
+        lang.setOwnerPage(page);
+        CMSContentItem contentItem = new CMSContentItem();
+        contentItem.setCollectionField("DC");
+        contentItem.setOwnerPageLanguageVersion(lang);
+        CollectionView collection = contentItem.initializeCollection();
+        HierarchicalBrowseDcElement element = collection.getVisibleDcElements().stream().filter(ele -> ele.getName().equals("dcimage")).findAny().orElse(null);
+        assertNotNull(element);
+        assertNotNull(element.getInfo());
+        assertEquals(CMSCollection.class, element.getInfo().getClass());
+        CMSMediaItem mediaItem = DataManager.getInstance().getDao().getCMSMediaItem(1l);
+        assertEquals(mediaItem.getIconURI(), element.getInfo().getIconURI());
     }
 }

@@ -126,7 +126,7 @@ var viewerJS = ( function( viewer ) {
 				        	});
         				} else {
         					let thumbnail = viewerJS.iiif.getId(manifest.thumbnail[0]);
-        					console.log("show thumbnail", thumbnail);
+        					//console.log("show thumbnail", thumbnail);
 	        				if(thumbnail) {
 	        				let $img = $(".archives__object-image").find("img");
 	        					$img.on("load", () => {
@@ -143,8 +143,8 @@ var viewerJS = ( function( viewer ) {
 								try  {
 								let altText =  viewerJS.iiif.getId(manifest.label.none[0]);
 								$img.attr("alt", altText);
-								console.log(1)
-								console.log(viewerJS.iiif.getId(manifest.label.none[0]))
+								//console.log(1)
+								//console.log(viewerJS.iiif.getId(manifest.label.none[0]))
 								}
 								catch (e) {
 									// console.log(e);

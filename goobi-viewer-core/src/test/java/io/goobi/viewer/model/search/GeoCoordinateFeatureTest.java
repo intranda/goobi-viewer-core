@@ -17,6 +17,9 @@ package io.goobi.viewer.model.search;
 
 import static org.junit.Assert.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import org.junit.Test;
 
 /**
@@ -45,5 +48,4 @@ public class GeoCoordinateFeatureTest {
         double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
         assertArrayEquals(referencePoints, points);
     }
-
 }

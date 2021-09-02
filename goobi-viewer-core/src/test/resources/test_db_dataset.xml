@@ -158,6 +158,7 @@
     <cms_sliders source_type="1" slider_id="2" name="Collections Slider" description="Slider from collections" style="base" collections="dcone,dctwo,dcthree" />
     <cms_sliders source_type="2" slider_id="3" name="CMSPage Slider" description="Slider from solr CMS pages" style="base" categories="tag1,tag2" />
     
+    <cms_collections cms_collection_id="1" solr_field="DC" solr_value="dcimage" media_item_id="1" />
 		
 	<cms_pages cms_page_id="1" template_id="template_simple" date_created="2015-01-13 14:35:00.000000000" date_updated="2015-01-13 14:35:00.000000000"
 	    published="true" use_default_sidebar="false"/>
@@ -216,7 +217,6 @@
     <cms_record_notes note_type="MULTI" cms_record_note_id="4" query="PI:mnha*" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen MNHA&quot;}" note_text="loram ipsum" display_note="true"></cms_record_notes>
     <cms_record_notes note_type="MULTI" cms_record_note_id="5"  query="DC:dctext*" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen OCR&quot;}" note_text="loram ipsum" display_note="false"></cms_record_notes>
     
-    
     <download_jobs download_job_id="1" type="pdf" identifier="187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118a" pi="PI_1"
         status="WAITING" last_requested="2016-06-01 00:00:00" ttl="3600" />
     <download_jobs download_job_id="2" type="epub" identifier="4b689c5bd24d94ef88bedfd39d8819f8ef3a3676c52dc4f6acb50c7e8f3aab04" pi="PI_1" logid="LOG_0001"
@@ -224,7 +224,6 @@
     
     <download_job_observers download_job_id="1" observer="viewer@intranda.com" />
     
-    <!-- Campaign -->
     <cs_campaigns campaign_id="1" visibility="PUBLIC" date_created="2019-08-29 00:00:00.000000000"
         date_start="2019-08-29 00:00:00.000000000" date_end="2020-08-29 00:00:00.000000000"
         solr_query="+DC:varia" statistic_mode="RECORD" />

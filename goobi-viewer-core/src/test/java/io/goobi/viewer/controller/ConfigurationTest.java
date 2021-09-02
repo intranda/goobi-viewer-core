@@ -1733,11 +1733,12 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getAllFacetFields_shouldReturnCorrectOrder() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getAllFacetFields();
-        Assert.assertEquals(4, result.size());
+        Assert.assertEquals(5, result.size());
         Assert.assertEquals("DC", result.get(0));
         Assert.assertEquals("YEAR", result.get(1));
         Assert.assertEquals("MD_CREATOR", result.get(2));
         Assert.assertEquals("MD_PLACEPUBLISH", result.get(3));
+        Assert.assertEquals("WKT_COORDS", result.get(4));
     }
 
     /**
