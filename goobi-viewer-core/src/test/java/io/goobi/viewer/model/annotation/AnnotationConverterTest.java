@@ -64,7 +64,8 @@ public class AnnotationConverterTest {
             + "        \"target\": {\n"
             + "          \"id\": \"https://viewer.goobi.io/api/v1/records/PPN615391702/pages/88/canvas/\",\n"
             + "          \"type\": \"Canvas\"\n"
-            + "        }\n"
+            + "        },\n"
+            + "        \"creator\": \"https://viewer.goobi.io/api/v1/users/5\"\n"
             + "      }";
     
     private final AnnotationConverter converter;
@@ -80,7 +81,13 @@ public class AnnotationConverterTest {
     public void testConvertComment() throws JsonMappingException, JsonProcessingException {
         WebAnnotation webAnno = mapper.readValue(commentAnnotation, WebAnnotation.class);
         assertEquals("https://viewer.goobi.io/api/v1/annotations/comment_19/", webAnno.getId().toString());
-        PersistentAnnotation 
+        PersistentAnnotation pAnno = converter.getAsPersistentAnnotation(webAnno);
+        Comment comment = converter.getAsComment(webAnno);
+        
+        WebAnnotation commentAnno = converter.getAsWebAnnotation(comment);
+        WebAnnotation annoAnno = converter.getAsWebAnnotation(pAnno);
+        
+        System.out.println(commentAnno.toString());
     }
     
     @Test

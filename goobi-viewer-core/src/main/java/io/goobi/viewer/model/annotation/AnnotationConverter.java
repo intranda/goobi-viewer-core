@@ -266,6 +266,7 @@ public class AnnotationConverter {
         String pi = getPI(anno.getTarget()).orElse(null);
         Integer page = getPageNo(anno.getTarget()).orElse(null);
         String text = anno.getBody().toString();
+        Long annoId = getPersistenceId(anno);
         
         User user = Optional.ofNullable(anno.getCreator())
         .flatMap(this::getUserId)
@@ -279,6 +280,7 @@ public class AnnotationConverter {
         .orElse(null);
         
         Comment comment = new Comment(pi, page, user, text, null);
+        comment.setId(annoId);
         return comment;
     }
 
@@ -369,6 +371,11 @@ public class AnnotationConverter {
             String idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).build(), uri, "{id}");
             if (StringUtils.isNotBlank(idString)) {
                 id = Long.parseLong(idString);
+            } else {
+                idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).build(), uri, "{id}");
+                if (StringUtils.isNotBlank(idString)) {
+                    id = Long.parseLong(idString);
+                }
             }
         }
         if(id != null) {            

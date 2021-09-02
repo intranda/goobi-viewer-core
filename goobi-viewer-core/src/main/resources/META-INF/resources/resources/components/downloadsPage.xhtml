@@ -6,7 +6,7 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" >
     
     <composite:interface />
 
@@ -154,7 +154,7 @@
 											styleClass="btn btn--full widget-usage__download-image-size-button"
 											title="#{msg.downloadButton}" target="_blank"
 											rel="nofollow noopener" aria-label="#{msg.downloadButton}"
-											value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}" a:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
+											value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}" pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
 			                                             #{msg.downloadButton}
 			                            </h:outputLink>
 									</h:form>
