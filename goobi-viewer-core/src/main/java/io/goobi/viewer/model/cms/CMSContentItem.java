@@ -1625,7 +1625,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return true if this contentItem should only appear in a preview of this page
      */
     public boolean isPreview() {
-        return getItemTemplate().isPreview();
+        return Optional.ofNullable(getItemTemplate()).map(CMSContentItemTemplate::isPreview).orElse(false);
     }
 
     /**
