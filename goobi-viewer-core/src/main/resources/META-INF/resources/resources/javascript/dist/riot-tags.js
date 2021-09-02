@@ -3106,6 +3106,7 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     		rxjs.operators.filter(element => element != undefined),
     		rxjs.operators.take(this.maxSlides),
     		rxjs.operators.reduce((res, item) => res.concat(item), []),
+    		rxjs.operators.map(array => array.sort( (s1,s2) => s1.order-s2.order ))
     	)
     	.subscribe(slides => this.setSlides(slides))
     });
@@ -3162,7 +3163,8 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     				label : element.label,
     				description : element.description,
     				image : element.thumbnail,
-    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element))
+    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element)),
+    				order : element.order
     		}
     		return slide;
     	} else {
