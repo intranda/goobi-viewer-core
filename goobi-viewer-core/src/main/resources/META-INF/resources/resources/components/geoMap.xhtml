@@ -51,6 +51,7 @@
             	    markerIcon: #{cc.attrs.geoMap.markerAsJSON}
             	})
             	layer.onFeatureClick.subscribe(feature => {
+            	   console.log("click on feature ", feature);
            	       if(feature.properties && feature.properties.link && !feature.properties.highlighted) {
            	           window.location.assign(feature.properties.link);
            	       }

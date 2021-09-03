@@ -5145,6 +5145,10 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getGeoMapMarkerFields() {
         return getLocalList("maps.coordinateFields.field", Arrays.asList("MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON"));
     }
+    
+    public boolean includeCoordinateFieldsFromMetadataDocs() {
+        return getLocalBoolean("maps.coordinateFields[@includeMetadataDocs]", false);
+    }
 
     public List<GeoMapMarker> getGeoMapMarkers() {
 
