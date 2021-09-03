@@ -52,6 +52,7 @@
 								riot.mount("geoMapSearch", {
 								    onFeatureSelect: (feature) => setSearchString(JSON.stringify(feature)),
 								    area : '#{searchBean.facets.geoFacetting.feature}',
+								    search_enabled: #{configurationBean.displayAddressSearchInMap},
 								    search_placeholder: "#{msg.ADDRESS}",
 								    reset_button: $("[data-feature='reset']"),
 								    msg: {
@@ -61,7 +62,7 @@
 							}
 
 							function setSearchString(feature) {
-							    console.log("set search feature ", feature);
+							    //console.log("set search feature ", feature);
 							    sessionStorage.setItem("geoFacet", feature);
 							    $("#searchInput").val(feature);
 							    if(!feature) {

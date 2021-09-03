@@ -2676,6 +2676,15 @@ public final class Configuration extends AbstractConfiguration {
     public String getGeoFacetFields() {
         return getLocalString("search.facets.geoField");
     }
+    
+
+    /**
+     * @return
+     */
+    public boolean isShowSearchHitsInGeoFacetMap() {
+        return getLocalBoolean("search.facets.geoField[@displayResultsOnMap]", true);
+    }
+    
 
     /**
      * <p>
@@ -5116,7 +5125,11 @@ public final class Configuration extends AbstractConfiguration {
     public String getMapBoxStyleId() {
         return getLocalString("maps.mapbox.styleId", "");
     }
-
+    
+    public boolean isDisplayAddressSearchInMap() {
+        return getLocalBoolean("maps.mapbox.addressSearch[@enabled]", true);
+    }
+    
     /**
      * @param marker
      * @return
@@ -5131,6 +5144,10 @@ public final class Configuration extends AbstractConfiguration {
      */
     public List<String> getGeoMapMarkerFields() {
         return getLocalList("maps.coordinateFields.field", Arrays.asList("MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON"));
+    }
+    
+    public boolean includeCoordinateFieldsFromMetadataDocs() {
+        return getLocalBoolean("maps.coordinateFields[@includeMetadataDocs]", false);
     }
 
     public List<GeoMapMarker> getGeoMapMarkers() {
@@ -5257,6 +5274,8 @@ public final class Configuration extends AbstractConfiguration {
     public String getIIIFVersionToUse() {
         return getLocalString("webapi.iiif[@use-version]", "2.1.1");
     }
+    
+
 
     /**
      * 
@@ -5305,4 +5324,5 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplayAnnotationTextInImage() {
         return getLocalBoolean("webGuiDisplay.displayAnnotationTextInImage", true);
     }
+
 }

@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>21.08-SNAPSHOT</version>
+	<version>21.09-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -81,10 +81,10 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.5</alto.version>
-		<ics.version>2.10.0-SNAPSHOT</ics.version>
+		<ics.version>2.10.0</ics.version>
 		<tei-conversion.version>1.2.0</tei-conversion.version>
 		<iiif-api-model.version>2.1.0-SNAPSHOT</iiif-api-model.version>
-		<normdataimporter.version>1.7.0</normdataimporter.version>
+		<normdataimporter.version>1.6.0</normdataimporter.version>
 
         <!-- other libraries -->
         <cdi.version>2.0.SP1</cdi.version>

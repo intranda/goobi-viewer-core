@@ -1463,4 +1463,8 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplayAnnotationTextInImage() {
         return DataManager.getInstance().getConfiguration().isDisplayAnnotationTextInImage();
     }
+    
+    public boolean isDisplayAddressSearchInMap() {
+        return DataManager.getInstance().getConfiguration().isDisplayAddressSearchInMap();
+    }
 }
