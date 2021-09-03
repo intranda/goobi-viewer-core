@@ -3106,6 +3106,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(5, md.getParams().size());
         Assert.assertEquals("EVENTTYPE", md.getParams().get(0).getKey());
         Assert.assertEquals(MetadataParameterType.FIELD, md.getParams().get(0).getType());
+        Assert.assertEquals("EVENTTYPE", md.getLabelField());
     }
 
     /**

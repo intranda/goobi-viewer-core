@@ -80,6 +80,8 @@ public class Metadata implements Serializable {
     private final boolean group;
     private boolean singleString = true;
     private boolean hideIfOnlyMetadataField = false;
+    /** Optional metadata field that will provide the label value (if singleString=true) */
+    private String labelField;
     private String ownerDocstrctType;
     private String citationTemplate;
     private CitationProcessorWrapper citationProcessorWrapper;
@@ -115,7 +117,7 @@ public class Metadata implements Serializable {
         this.ownerStructElementIddoc = ownerIddoc;
         this.label = label;
         this.masterValue = masterValue;
-        values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue));
+        values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue, label));
         if (paramValue != null) {
             values.get(0).getParamValues().add(new ArrayList<>());
             values.get(0).getParamValues().get(0).add(paramValue);
@@ -141,7 +143,7 @@ public class Metadata implements Serializable {
         this.label = label;
         this.masterValue = masterValue;
         params.add(param);
-        values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue));
+        values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue, label));
         if (paramValue != null) {
             setParamValue(0, 0, Collections.singletonList(paramValue), label, null, null, null, locale);
             //            values.get(0).getParamValues().add(new ArrayList<>());
@@ -332,7 +334,7 @@ public class Metadata implements Serializable {
      * @param valueIndex a int.
      * @param paramIndex a int.
      * @param inValues List with values
-     * @param label a {@link java.lang.String} object.
+     * @param paramLabel a {@link java.lang.String} object.
      * @param url a {@link java.lang.String} object.
      * @param options a {@link java.util.Map} object.
      * @param groupType value of METADATATYPE, if available
@@ -341,7 +343,7 @@ public class Metadata implements Serializable {
      * @should add multivalued param values correctly
      * @should set group type correctly
      */
-    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> options,
+    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String paramLabel, String url, Map<String, String> options,
             String groupType, Locale locale) {
         // logger.trace("setParamValue: {}", label);
         if (inValues == null || inValues.isEmpty()) {
@@ -354,7 +356,7 @@ public class Metadata implements Serializable {
 
         // Adopt indexes to list sizes, if necessary
         while (values.size() - 1 < valueIndex) {
-            MetadataValue mdValue = new MetadataValue(ownerStructElementIddoc + "_" + valueIndex, masterValue);
+            MetadataValue mdValue = new MetadataValue(ownerStructElementIddoc + "_" + valueIndex, masterValue, this.label);
             values.add(mdValue);
         }
         MetadataValue mdValue = values.get(valueIndex);
@@ -420,7 +422,7 @@ public class Metadata implements Serializable {
                 // create a link for reach hierarchy level
                 {
                     NavigationHelper nh = BeanUtils.getNavigationHelper();
-                    value = buildHierarchicalValue(label, value, locale, nh != null ? nh.getApplicationUrl() : null);
+                    value = buildHierarchicalValue(paramLabel, value, locale, nh != null ? nh.getApplicationUrl() : null);
                 }
                     break;
                 case MILLISFIELD:
@@ -511,7 +513,7 @@ public class Metadata implements Serializable {
                 while (mdValue.getParamLabels().size() <= paramIndex) {
                     mdValue.getParamLabels().add("");
                 }
-                mdValue.getParamLabels().set(paramIndex, label);
+                mdValue.getParamLabels().set(paramIndex, paramLabel);
                 while (mdValue.getParamValues().size() <= paramIndex) {
                     mdValue.getParamValues().add(new ArrayList<>());
                 }
@@ -532,6 +534,10 @@ public class Metadata implements Serializable {
                     mdValue.getParamUrls().add("");
                 }
                 mdValue.getParamUrls().add(paramIndex, url);
+            }
+            // Set metadata label from labelField
+            if (StringUtils.isNotEmpty(labelField) && labelField.equals(param.getKey())) {
+                mdValue.setLabel(value);
             }
         }
     }
@@ -991,6 +997,22 @@ public class Metadata implements Serializable {
      */
     public Metadata setHideIfOnlyMetadataField(boolean hideIfOnlyMetadataField) {
         this.hideIfOnlyMetadataField = hideIfOnlyMetadataField;
+        return this;
+    }
+
+    /**
+     * @return the labelField
+     */
+    public String getLabelField() {
+        return labelField;
+    }
+
+    /**
+     * @param labelField the labelField to set
+     * @return this
+     */
+    public Metadata setLabelField(String labelField) {
+        this.labelField = labelField;
         return this;
     }
 

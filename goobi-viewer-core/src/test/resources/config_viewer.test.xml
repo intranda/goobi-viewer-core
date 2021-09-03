@@ -653,7 +653,7 @@
                         <replace string="foo">bar</replace>
                     </param>
                 </metadata>
-                <metadata label="MD_EVENT" value="MASTERVALUE_EVENT" group="true" singleString="false" type="3">
+                <metadata label="MD_EVENT" value="MASTERVALUE_EVENT" group="true" singleString="false" labelField="EVENTTYPE" type="3">
                     <param type="field" key="EVENTTYPE" />
                     <param type="field" key="MD_MATERIAL" />
                     <param type="field" key="MD_CITATION_CATALOGUE" value="MASTERVALUE_CITATION_CATALOGUE" />

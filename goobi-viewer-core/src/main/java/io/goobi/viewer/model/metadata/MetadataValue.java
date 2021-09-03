@@ -64,6 +64,7 @@ public class MetadataValue implements Serializable {
     private String masterValue;
     private String groupType;
     private String docstrct = null;
+    private String label;
     private CSL citationProcessor = null;
     private CitationDataProvider citationItemDataProvider = null;
     private String citationString = null;
@@ -71,11 +72,14 @@ public class MetadataValue implements Serializable {
     /**
      * Package-private constructor.
      * 
+     * @param id
      * @param masterValue
+     * @param label
      */
-    MetadataValue(String id, String masterValue) {
+    MetadataValue(String id, String masterValue, String label) {
         this.id = id;
         this.masterValue = masterValue;
+        this.label = label;
     }
 
     /**
@@ -178,10 +182,6 @@ public class MetadataValue implements Serializable {
             return ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ";
         }
         return "";
-    }
-
-    public String getLabel() {
-        return getComboValueShort(0);
     }
 
     /**
@@ -445,6 +445,22 @@ public class MetadataValue implements Serializable {
      */
     public MetadataValue setDocstrct(String docstrct) {
         this.docstrct = docstrct;
+        return this;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     * @return this
+     */
+    public MetadataValue setLabel(String label) {
+        this.label = label;
         return this;
     }
 

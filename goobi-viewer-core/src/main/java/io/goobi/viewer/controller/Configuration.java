@@ -612,6 +612,7 @@ public final class Configuration extends AbstractConfiguration {
         int type = sub.getInt("[@type]", 0);
         boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
         String citationTemplate = sub.getString("[@citationTemplate]");
+        String labelField= sub.getString("[@labelField]"); 
         List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -690,6 +691,7 @@ public final class Configuration extends AbstractConfiguration {
                 .setSingleString(singleString)
                 .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
                 .setCitationTemplate(citationTemplate)
+                .setLabelField(labelField)
                 .setIndentation(indentation);
 
         // Recursively add nested metadata configurations
