@@ -2262,7 +2262,7 @@ public class ActiveDocumentBean implements Serializable {
             SolrDocument mainDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(mainDocQuery, mainDocFields);
             PageType pageType = PrettyUrlTools.getPreferredPageType(mainDoc);
 
-            boolean addMetadataFeatures = false;
+            boolean addMetadataFeatures = DataManager.getInstance().getConfiguration().includeCoordinateFieldsFromMetadataDocs();
             String docTypeFilter = "+DOCTYPE:DOCSTRCT";
             if (addMetadataFeatures) {
                 docTypeFilter = "+(DOCTYPE:DOCSTRCT DOCTYPE:METADATA)";
@@ -2311,6 +2311,8 @@ public class ActiveDocumentBean implements Serializable {
                     features.addAll(docFeatures);
                 }
             }
+            //remove dubplicates
+            features = features.stream().distinct().collect(Collectors.toList());
             if (!features.isEmpty()) {
                 map.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
                 widget.setGeoMap(map);
