@@ -9,12 +9,14 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+	
+	<ui:param name="metadata" value="#{metadata}"></ui:param>
 
-	<ui:repeat value="#{metadata.values}" var="val">
+	<c:forEach items="#{metadata.values}" var="val">
 
-		<h3>
+		<h4>
 			<h:outputText value="#{msg[val.label]}:" escape="false" />
-		</h3>
+		</h4>
 
 		<div class="metadata__element-level-#{metadata.indentation}">
 
@@ -51,7 +53,7 @@
 
 			<br />
 		</div>
-	</ui:repeat>
+	</c:forEach>
 
 </ui:composition>
 

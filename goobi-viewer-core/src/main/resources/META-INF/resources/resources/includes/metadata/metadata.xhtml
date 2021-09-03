@@ -33,11 +33,11 @@
                     </button>
             </ui:fragment>
 	    </div>
-        <ui:repeat value="#{metadataBean.getMetadataElementList(metadataViewIndex)}" var="metadataElement" varStatus="status">
+        <c:forEach items="#{metadataBean.getMetadataElementList(metadataViewIndex)}" var="metadataElement" varStatus="status">
             <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
             	<ui:param name="metadataElement" value="#{metadataElement}"/>
             </ui:include>
-        </ui:repeat>
+        </c:forEach>
 
         <c:forEach items="#{metadataBean.events}" var="event">
             <!-- METADATA EVENT -->

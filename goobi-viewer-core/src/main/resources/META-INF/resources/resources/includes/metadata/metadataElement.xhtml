@@ -11,7 +11,7 @@
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 	
 	    <ui:fragment rendered="#{!metadataElement.skip}">
-            <ui:repeat var="type" value="#{metadataElement.metadataTypes}">
+            <c:forEach var="type" items="#{metadataElement.metadataTypes}">
                 <!-- METADATA ELEMENT -->
                 <div class="metadata__elements">
                     <h3 class="metadata__elements-h3">
@@ -20,7 +20,7 @@
                     </h3>
                     
                     <div class="metadata__element-wrapper">
-                        <ui:repeat value="#{metadataElement.metadataList}" var="metadata">
+                        <c:forEach items="#{metadataElement.metadataList}" var="metadata">
                             <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
 
                                 <!-- grouped="true" -->
@@ -63,10 +63,10 @@
                                 </h:panelGroup>
                                                 
                             </h:panelGroup>
-                        </ui:repeat>
+                        </c:forEach>
                     </div>                    
                 </div>
-            </ui:repeat>
+            </c:forEach>
         </ui:fragment>
 </ui:composition>
 
