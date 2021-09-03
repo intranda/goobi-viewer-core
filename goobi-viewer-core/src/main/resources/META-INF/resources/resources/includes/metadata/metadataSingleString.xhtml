@@ -17,7 +17,7 @@
 				<h:outputText value="#{msg[metadata.label]}:" escape="false" />
 			</dt>
 			<dd>
-				<ui:repeat value="#{metadata.values}" var="val">
+				<c:forEach items="#{metadata.values}" var="val">
 				
 				    <!-- Metadata value -->
 					<h:panelGroup rendered="#{metadata.singleString}">
@@ -46,7 +46,7 @@
                     </c:forEach>
 
 					<br />
-				</ui:repeat>
+				</c:forEach>
 			</dd>
 
 		</dl>

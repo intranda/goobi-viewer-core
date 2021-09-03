@@ -176,7 +176,7 @@ public class MetadataValue implements Serializable {
      * @param index a int.
      */
     public String getParamLabelWithColon(int index) {
-         logger.trace("getParamLabelWithColon: {}", index);
+        // logger.trace("getParamLabelWithColon: {}", index);
         if (paramLabels.size() > index && paramLabels.get(index) != null) {
             // logger.trace(ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ");
             return ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ";
