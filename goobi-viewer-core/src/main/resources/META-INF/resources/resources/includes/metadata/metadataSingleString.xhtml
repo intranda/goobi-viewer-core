@@ -23,6 +23,7 @@
 					<h:panelGroup rendered="#{metadata.singleString}">
 						<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
 							<c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind0">
+                                <f:param value="#{val.getParamLabelWithColon(ind0)}" />
 								<f:param value="#{val.getComboValueShort(ind0)}" />
 							</c:forEach>
 						</h:outputFormat>

@@ -21,19 +21,16 @@
 		<div class="metadata__element-level-#{metadata.indentation}">
 
 			<!-- Metadata value -->
-			<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
 				<c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind0">
 					<dl class="dl-horizontal metadata__element-dl">
 						<dt>
-							<f:param value="#{val.getParamLabelWithColon(ind0)}" />
+							#{val.getParamLabelWithColon(ind0)}
 						</dt>
 						<dd>
-							<f:param value="#{val.getComboValueShort(ind0)}" />
+							#{val.getComboValueShort(ind0)}
 						</dd>
 					</dl>
-<!-- 					<br /> -->
 				</c:forEach>
-			</h:outputFormat>
 
 			<!-- Nested child metadata -->
 			<c:forEach var="child" items="#{metadata.childMetadata}" varStatus="status">
