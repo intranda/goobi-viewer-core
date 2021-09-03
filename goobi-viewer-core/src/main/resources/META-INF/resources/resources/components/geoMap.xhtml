@@ -51,19 +51,16 @@
             	    markerIcon: #{cc.attrs.geoMap.markerAsJSON}
             	})
             	layer.onFeatureClick.subscribe(feature => {
-            	   console.log("click on feature ", feature);
            	       if(feature.properties && feature.properties.link && !feature.properties.highlighted) {
            	           window.location.assign(feature.properties.link);
            	       }
            	    });
 	        	if(#{cc.attrs.linkToSearch and cc.attrs.geoMap.type == 'SOLR_QUERY'}) {
 	                let searchUrlTemplate = '#{geoMapBean.getCoordinateSearchQueryTemplate(cc.attrs.geoMap)}';
-	                geoMap.layers.forEach(layer => {
-	                    layer.onFeatureClick.subscribe( (feature) => {
-		                    let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
-		                    queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
-		                    window.open(queryUrl, "#{cc.attrs.linkTarget}");
-		                });
+	                layer.onFeatureClick.subscribe( (feature) => {
+	                    let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
+	                    queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
+	                    window.open(queryUrl, "#{cc.attrs.linkTarget}");
 	                });
 	            }
 	        	
