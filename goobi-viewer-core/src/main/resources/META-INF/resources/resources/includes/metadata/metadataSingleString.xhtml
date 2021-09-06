@@ -10,46 +10,57 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-	<div class="metadata__element-level-#{metadata.indentation}">
-		<dl class="dl-horizontal metadata__element-dl">
+	<div class="metadata__elements">
 
-			<dt title="#{msg[metadata.label]}">
-				<h:outputText value="#{msg[metadata.label]}:" escape="false" />
-			</dt>
-			<dd>
-				<c:forEach items="#{metadata.values}" var="val">
-				
-				    <!-- Metadata value -->
-					<h:panelGroup rendered="#{metadata.singleString}">
-						<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-							<c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind0">
-                                <f:param value="#{val.getParamLabelWithColon(ind0)}" />
-								<f:param value="#{val.getComboValueShort(ind0)}" />
+		<div class="metadata__element-wrapper">
+
+			<div class="metadata__element-level-#{metadata.indentation}">
+				<dl class="dl-horizontal metadata__element-dl">
+
+					<dt title="#{msg[metadata.label]}">
+						<h:outputText value="#{msg[metadata.label]}:" escape="false" />
+					</dt>
+
+					<dd>
+						<c:forEach items="#{metadata.values}" var="val">
+
+							<!-- Metadata value -->
+							<h:panelGroup rendered="#{metadata.singleString}">
+								<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+									<c:forEach begin="0"
+										end="#{configurationBean.metadataParamNumber - 1}" var="ind0">
+										<f:param value="#{val.getParamLabelWithColon(ind0)}" />
+										<f:param value="#{val.getComboValueShort(ind0)}" />
+									</c:forEach>
+								</h:outputFormat>
+							</h:panelGroup>
+
+							<!-- Nested child metadata -->
+							<c:forEach var="child" items="#{metadata.childMetadata}" varStatus="status">
+								<ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
+									<ui:fragment rendered="#{child.singleString}">
+										<ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
+											<ui:param name="metadata"
+												value="#{metadata.childMetadata[status.index]}" />
+										</ui:include>
+									</ui:fragment>
+									<ui:fragment rendered="#{!child.singleString}">
+										<ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+											<ui:param name="metadata" value="#{metadata.childMetadata[status.index]}" />
+										</ui:include>
+									</ui:fragment>
+								</ui:fragment>
 							</c:forEach>
-						</h:outputFormat>
-					</h:panelGroup>
 
-                    <!-- Nested child metadata -->
-                    <c:forEach var="child" items="#{metadata.childMetadata}" varStatus="status">
-                        <ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
-                            <ui:fragment rendered="#{child.singleString}">
-                                <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
-                                    <ui:param name="metadata" value="#{metadata.childMetadata[status.index]}" />
-                                </ui:include>
-                            </ui:fragment>
-                            <ui:fragment rendered="#{!child.singleString}">
-                                <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
-                                    <ui:param name="metadata" value="#{metadata.childMetadata[status.index]}" />
-                                </ui:include>
-                            </ui:fragment>
-                        </ui:fragment>
-                    </c:forEach>
+							<br />
+						</c:forEach>
+					</dd>
 
-					<br />
-				</c:forEach>
-			</dd>
+				</dl>
+			</div>
 
-		</dl>
+		</div>
+
 	</div>
 
 </ui:composition>

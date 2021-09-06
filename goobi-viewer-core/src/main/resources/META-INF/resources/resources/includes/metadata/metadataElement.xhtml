@@ -13,15 +13,13 @@
 	    <ui:fragment rendered="#{!metadataElement.skip}">
             <c:forEach var="type" items="#{metadataElement.metadataTypes}">
                 <!-- METADATA ELEMENT -->
-                <div class="metadata__elements">
                     <h3 class="metadata__elements-h3">
                         <h:outputText rendered="#{fn:length(metadataElement.metadataTypes) > 0}"
                             value="#{msg[type.getTabName(metadataBean.activeMetadataView.index)]}" />
                     </h3>
                     
-                    <div class="metadata__element-wrapper">
-                        <c:forEach items="#{metadataElement.metadataList}" var="metadata">
-                            <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
+                    <c:forEach items="#{metadataElement.metadataList}" var="metadata">
+                        <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
 
                                 <!-- grouped="true" -->
                                 <h:panelGroup rendered="#{metadata.group}">
@@ -62,10 +60,9 @@
                                     </dl>
                                 </h:panelGroup>
                                                 
-                            </h:panelGroup>
-                        </c:forEach>
-                    </div>                    
-                </div>
+                        </h:panelGroup>
+                    </c:forEach>
+
             </c:forEach>
         </ui:fragment>
 </ui:composition>
