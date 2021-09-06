@@ -24,10 +24,10 @@
 				<c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind0">
 					<dl class="dl-horizontal metadata__element-dl">
 						<dt>
-							#{val.getParamLabelWithColon(ind0)}
+							<h:outputText value="#{val.getParamLabelWithColon(ind0)}" escape="false" />
 						</dt>
 						<dd>
-							#{val.getComboValueShort(ind0)}
+							<h:outputText value="#{val.getComboValueShort(ind0)}" escape="false" />
 						</dd>
 					</dl>
 				</c:forEach>
