@@ -48,6 +48,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -298,9 +299,9 @@ public class IdentifierResolver extends HttpServlet {
 
             // 5. redirect or forward using the target field value
             if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
-                // response.sendRedirect(TARGET_WORK_URL.replaceAll("\\(0\\)", outputPart));
                 try {
-                    response.sendRedirect(result);
+                    String absoluteUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + result;
+                    response.sendRedirect(absoluteUrl);
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -436,7 +437,8 @@ public class IdentifierResolver extends HttpServlet {
         logger.debug("URL: {}", result);
         // A.6 redirect or forward to this newly created url
         if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
-            response.sendRedirect(result);
+            String absoluteUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + result;
+            response.sendRedirect(absoluteUrl);
         } else {
             getServletContext().getRequestDispatcher(result).forward(request, response);
         }
