@@ -15,13 +15,21 @@
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_AUDIO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_HTML;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_PDF;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_SVG;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_VIDEO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_ITEM_BY_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_ITEM_BY_ID;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URLDecoder;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,8 +39,10 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -55,7 +65,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +80,6 @@ import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaItem;
 import io.goobi.viewer.api.rest.v1.media.MediaDeliveryService;
-import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
@@ -510,6 +518,7 @@ public class CMSMediaResource {
         private final int prioritySlots;
         private final boolean random;
         private final Random randomizer = new SecureRandom();
+        private final Map<CMSMediaItem, Integer> map = new IdentityHashMap<>();
         private final List<CMSMediaItem> priorityList = new ArrayList<>();
 
         public PriorityComparator(Integer prioritySlots, boolean random) {
@@ -535,9 +544,15 @@ public class CMSMediaResource {
             } else if (b.getDisplayOrder() != 0) {
                 return 1;
             } else if (random) {
-                return getRandomOrder();
+                return Integer.compare(valueFor(a), valueFor(b));
             } else {
                 return a.compareTo(b);
+            }
+        }
+
+        private int valueFor(CMSMediaItem a) {
+            synchronized (map) {
+                return map.computeIfAbsent(a, ignore -> randomizer.nextInt());
             }
         }
 
