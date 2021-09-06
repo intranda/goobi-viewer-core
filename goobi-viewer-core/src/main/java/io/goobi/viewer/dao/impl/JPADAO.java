@@ -4700,13 +4700,21 @@ public class JPADAO implements IDAO {
     @Override
     public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters) throws DAOException {
+        Map<String, Object> params = new HashMap<>();
+        String filterString = createAnnotationsFilterQuery(null, filters, params);
+        return getAnnotations(first, pageSize, sortField, descending, filterString, params);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
+            String filterString, Map<String,Object> params) throws DAOException {
+        params = params == null ? new HashMap<>() : params;
         synchronized (crowdsourcingRequestLock) {
             preQuery();
             StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM PersistentAnnotation a");
             StringBuilder order = new StringBuilder();
             try {
-                Map<String, Object> params = new HashMap<>();
-                String filterString = createAnnotationsFilterQuery(null, filters, params);
                 if (StringUtils.isNotEmpty(sortField)) {
                     order.append(" ORDER BY a.").append(sortField);
                     if (descending) {

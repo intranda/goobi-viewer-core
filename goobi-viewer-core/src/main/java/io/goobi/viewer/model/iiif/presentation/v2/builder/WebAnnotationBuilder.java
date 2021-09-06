@@ -123,8 +123,8 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     public WebAnnotation createUGCWebAnnotation(SolrDocument doc, boolean urlOnlyTarget) {
         String pi = Optional.ofNullable(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).map(SolrTools::getAsString).orElse("");
         return createUGCWebAnnotation(pi, doc, urlOnlyTarget);
-
     }
+    
 
     /**
      * <p>

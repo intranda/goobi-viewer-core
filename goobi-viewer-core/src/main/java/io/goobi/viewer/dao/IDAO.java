@@ -2276,4 +2276,17 @@ public interface IDAO {
     List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException
     ;
 
+    /**
+     * @param first
+     * @param pageSize
+     * @param sortField
+     * @param descending
+     * @param filterString
+     * @param filterParams
+     * @return
+     * @throws DAOException
+     */
+    List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, String filterString,
+            Map<String, Object> filterParams) throws DAOException;
+
 }

@@ -65,7 +65,8 @@ public class AnnotationConverterTest {
             + "          \"id\": \"https://viewer.goobi.io/api/v1/records/PPN615391702/pages/88/canvas/\",\n"
             + "          \"type\": \"Canvas\"\n"
             + "        },\n"
-            + "        \"creator\": \"https://viewer.goobi.io/api/v1/users/5\"\n"
+            + "        \"creator\": \"https://viewer.goobi.io/api/v1/users/5\",\n"
+            + "        \"created\": \"2021-08-03T12:03Z\"\n"
             + "      }";
     
     private final AnnotationConverter converter;
