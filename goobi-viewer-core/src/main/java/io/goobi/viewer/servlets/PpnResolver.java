@@ -75,6 +75,8 @@ public class PpnResolver extends HttpServlet implements Serializable {
      * @should return 400 if record identifier missing
      * @should return 404 if record not found
      * @should return 500 if record identifier bad
+     * @should forward to relative url
+     * @should redirect to full url
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
