@@ -85,7 +85,6 @@ import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
-import io.goobi.viewer.model.search.GeoFacetItem;
 import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -1171,7 +1170,9 @@ public class SearchBean implements SearchInterface, Serializable {
         }
     }
 
-    /** {@inheritDoc}
+    /**
+     * {@inheritDoc}
+     * 
      * @should escape critical chars
      * @should not url escape string
      */
@@ -2454,7 +2455,16 @@ public class SearchBean implements SearchInterface, Serializable {
     private URI getParameterPath(URI basePath) {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
         basePath = ViewerPathBuilder.resolve(basePath, "-");
-        basePath = ViewerPathBuilder.resolve(basePath, getExactSearchString());
+        // URL-encode query if not yet encoded
+        String exactSearchString = getExactSearchString();
+        try {
+            if (!StringTools.isStringUrlEncoded(exactSearchString, URL_ENCODING)) {
+                exactSearchString = StringTools.encodeUrl(exactSearchString);
+            }
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
+        }
+        basePath = ViewerPathBuilder.resolve(basePath, exactSearchString);
         basePath = ViewerPathBuilder.resolve(basePath, Integer.toString(getCurrentPage()));
         basePath = ViewerPathBuilder.resolve(basePath, getSortString());
         basePath = ViewerPathBuilder.resolve(basePath, StringTools.encodeUrl(getFacets().getCurrentFacetString()));
@@ -2699,9 +2709,10 @@ public class SearchBean implements SearchInterface, Serializable {
             return Collections.emptyList();
         }
     }
-    
+
     /**
      * Display the geo facet map if there are any hits available with geo coordinates
+     * 
      * @return
      */
     public boolean isShowGeoFacetMap() {
@@ -2740,11 +2751,11 @@ public class SearchBean implements SearchInterface, Serializable {
     public List<FacetItem> getFieldFacetValues(String field, int num) throws IndexUnreachableException, PresentationException {
         return getFieldFacetValues(field, num, "");
     }
-    
+
     public List<FacetItem> getFieldFacetValues(String field, int num, String filterQuery) throws IndexUnreachableException, PresentationException {
         num = num <= 0 ? Integer.MAX_VALUE : num;
         String query = "+(ISWORK:* OR ISANCHOR:*) " + SearchHelper.getAllSuffixes();
-        if(StringUtils.isNotBlank(filterQuery)) {
+        if (StringUtils.isNotBlank(filterQuery)) {
             query += " +(" + filterQuery + ")";
         }
         String facetField = SearchHelper.facetifyField(field);
