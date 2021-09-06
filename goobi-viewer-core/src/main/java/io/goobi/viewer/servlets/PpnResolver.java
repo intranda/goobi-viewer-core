@@ -38,6 +38,7 @@ import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -138,7 +139,8 @@ public class PpnResolver extends HttpServlet implements Serializable {
                 result = IdentifierResolver.constructUrl(targetDoc, false, page);
             }
             if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
-                response.sendRedirect(result);
+                String absoluteUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + result;
+                response.sendRedirect(absoluteUrl);
             } else {
                 getServletContext().getRequestDispatcher(result).forward(request, response);
             }
