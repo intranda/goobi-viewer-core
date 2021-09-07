@@ -38,6 +38,7 @@ import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -74,6 +75,8 @@ public class PpnResolver extends HttpServlet implements Serializable {
      * @should return 400 if record identifier missing
      * @should return 404 if record not found
      * @should return 500 if record identifier bad
+     * @should forward to relative url
+     * @should redirect to full url
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -138,7 +141,8 @@ public class PpnResolver extends HttpServlet implements Serializable {
                 result = IdentifierResolver.constructUrl(targetDoc, false, page);
             }
             if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
-                response.sendRedirect(result);
+                String absoluteUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + result;
+                response.sendRedirect(absoluteUrl);
             } else {
                 getServletContext().getRequestDispatcher(result).forward(request, response);
             }
