@@ -564,9 +564,6 @@ public class DisplayUserGeneratedContent {
         if (type == null) {
             logger.error("Cannot build UGC Solr doc, UGCTYPE '{}' not found.", type);
             return null;
-        } else if(body == null) {
-            logger.error("Cannot build UGC Solr doc, No content found.");
-            return null;
         }
 
         DisplayUserGeneratedContent ret = new DisplayUserGeneratedContent();
