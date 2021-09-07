@@ -18,12 +18,14 @@ package io.goobi.viewer.api.rest.resourcebuilders;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
@@ -46,8 +48,12 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * @author florian
@@ -92,26 +98,54 @@ public class AnnotationsResourceBuilder {
         return collection;
     }
 
-    public AnnotationPage getWebAnnotationPage(Integer page) throws IllegalRequestException, PresentationException, IndexUnreachableException {
+    public AnnotationPage getWebAnnotationPage(Integer page) throws IllegalRequestException, PresentationException, IndexUnreachableException, DAOException {
         if (page == null || page < 1) {
             throw new IllegalRequestException("Page number must be at least 1");
         }
         int first = (page - 1) * MAX_ANNOTATIONS_PER_PAGE;
         String sortField = "id";
         
-        DataManager.getInstance().getDao().getAnnotations(first, MAX_ANNOTATIONS_PER_PAGE, sortField, false, null)
+        List<IAnnotation> annotations = DataManager.getInstance().getDao().getAnnotations(0, Integer.MAX_VALUE, sortField, false, null)
+                .stream()
+                .filter(anno -> isAccessible(anno, request))
+                .skip(first)
+                .limit(MAX_ANNOTATIONS_PER_PAGE)
+                .map(converter::getAsWebAnnotation)
+                .collect(Collectors.toList());
         
-        List<SolrDocument> data = waBuilder.getAnnotationDocuments(waBuilder.getAnnotationQuery(), first, MAX_ANNOTATIONS_PER_PAGE, null, request);
-        //        List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotations(first, MAX_ANNOTATIONS_PER_PAGE, sortField, true, null);
-        if (data.isEmpty()) {
-            throw new IllegalRequestException("Page number is out of bounds");
-        }
+//        List<SolrDocument> data = waBuilder.getAnnotationDocuments(waBuilder.getAnnotationQuery(), first, MAX_ANNOTATIONS_PER_PAGE, null, request);
+//        if (data.isEmpty()) {
+//            throw new IllegalRequestException("Page number is out of bounds");
+//        }
         URI uri = URI.create(urls.path(ANNOTATIONS).build());
-        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        List<IAnnotation> annos = data.stream().map(doc -> waBuilder.createUGCWebAnnotation(doc, false)).collect(Collectors.toList());
-        AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(annos, page);
+        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, annotations.size());
+//        List<IAnnotation> annos = data.stream()
+//                .map(doc -> waBuilder.getAnnotation((String)doc.getFirstValue(SolrConstants.MD_ANNOTATION_ID)).orElse(waBuilder.createUGCWebAnnotation(doc, false)))
+//                .collect(Collectors.toList());
+        AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(annotations, page);
         return annoPage;
     }
+
+    /**
+     * @param anno
+     * @param request2
+     * @return
+     */
+    private boolean isAccessible(PersistentAnnotation anno, HttpServletRequest request) {
+        // TODO Auto-generated method stub
+        if(StringUtils.isBlank(anno.getAccessCondition()) ||  anno.getAccessCondition().equals(SolrConstants.OPEN_ACCESS_VALUE)) {
+            return true;
+        } else {
+            try {
+                return AccessConditionUtils.checkAccessPermission(Collections.singleton(anno.getAccessCondition()),
+                        IPrivilegeHolder.PRIV_VIEW_UGC, waBuilder.getAnnotationQuery(anno.getId()), request);
+            } catch (IndexUnreachableException | PresentationException | DAOException e) {
+                logger.error("Error ckecking access conditions for annotation " + anno.getId() + ": " + e.toString());
+                return false;
+            }
+        }
+    }
+
 
     /**
      * @param pi

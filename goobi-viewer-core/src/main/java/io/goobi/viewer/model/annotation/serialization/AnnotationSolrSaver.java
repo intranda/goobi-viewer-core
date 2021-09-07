@@ -16,11 +16,16 @@
 package io.goobi.viewer.model.annotation.serialization;
 
 import java.io.IOException;
+import java.util.Arrays;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.wa.WebAnnotation;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
@@ -28,33 +33,32 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
  * @author florian
  *
  */
-public class AnnotationSqlSaver implements AnnotationSaver {
+public class AnnotationSolrSaver implements AnnotationSaver {
 
-    private final IDAO dao; 
-    private final AnnotationConverter converter;
-
-    public AnnotationSqlSaver() throws DAOException {
-        this.dao = DataManager.getInstance().getDao();
-        this.converter = new AnnotationConverter();
-    }
+    private final static Logger logger = LoggerFactory.getLogger(AnnotationSolrSaver.class);
     
-    public AnnotationSqlSaver(IDAO dao) {
-        this.dao = dao;
-        this.converter = new AnnotationConverter();
+    private final AnnotationConverter converter;
+    private final AnnotationIndexAugmenter indexAugmenter;
 
+    public AnnotationSolrSaver() {
+        this.converter = new AnnotationConverter();
+        this.indexAugmenter = new AnnotationIndexAugmenter()
     }
     
     @Override
     public void save(WebAnnotation annotation) throws IOException {
+        
         PersistentAnnotation pa = converter.getAsPersistentAnnotation(annotation);
-        try {            
-            if(pa.getId() != null) {
-                dao.updateAnnotation(pa);
-            } else {
-                dao.addAnnotation(pa);
+        
+        if(pa.getTargetPageOrder() != null) {
+            try {
+                IndexerTools.reIndexPage(pa.getTargetPI(), pa.getTargetPageOrder(), Arrays.asList(null));
+            } catch (DAOException | PresentationException | IndexUnreachableException | IOException e) {
+                logger.warn("Error reindexing single page. Try reindexing entire record");
+                IndexerTools.triggerReIndexRecord(pa.getTargetPI());
             }
-        } catch(DAOException e) {
-            throw new IOException(e);
+        } else {            
+            IndexerTools.triggerReIndexRecord(pa.getTargetPI());
         }
     }
 

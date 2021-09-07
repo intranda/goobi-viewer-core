@@ -228,6 +228,7 @@ public class AnnotationConverter {
             annotation.setBody(getBodyAsResource(anno));
             annotation.setTarget(getTargetAsResource(anno));
             annotation.setMotivation(anno.getMotivation());
+            annotation.setRights(anno.getAccessCondition());
         } catch (IOException e) {
             logger.error("Error creating web annotation from " + anno, e);
         }
@@ -257,9 +258,7 @@ public class AnnotationConverter {
     } 
     
     public PersistentAnnotation getAsPersistentAnnotation(WebAnnotation anno) {
-        
         return new PersistentAnnotation(anno, getPersistenceId(anno), getPI(anno.getTarget()).orElse(null), getPageNo(anno.getTarget()).orElse(null));
-    
     }
     
     public Comment getAsComment(WebAnnotation anno) {
@@ -371,17 +370,17 @@ public class AnnotationConverter {
             String idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).build(), uri, "{id}");
             if (StringUtils.isNotBlank(idString)) {
                 id = Long.parseLong(idString);
-            } else {
-                idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).build(), uri, "{id}");
-                if (StringUtils.isNotBlank(idString)) {
-                    id = Long.parseLong(idString);
-                }
+//            } else {
+//                idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).build(), uri, "{id}");
+//                if (StringUtils.isNotBlank(idString)) {
+//                    id = Long.parseLong(idString);
+//                }
             }
         }
         if(id != null) {            
             return id;
         } else {
-            throw new IllegalArgumentException("Cannot parse annotation-id from " + anno.getId());
+            return null;
         }
     }
     

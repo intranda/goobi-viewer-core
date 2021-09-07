@@ -2879,6 +2879,21 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals(1L, params.get("generatorId"));
             Assert.assertEquals("%PPN123%", params.get("targetPIbody"));
         }
+
+    }
+    
+    @Test
+    public void testGenerateNullMotivationFilterQuery() {
+        {
+            // campaign ID and record identifier
+            Map<String, String> filters = new HashMap<>(2);
+            filters.put("motivation", "NULL");
+            Map<String, Object> params = new HashMap<>(2);
+            Assert.assertEquals(
+                    " prefix WHERE (a.motivation IS NULL)",
+                    JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
+            Assert.assertEquals(0, params.size());
+        }
     }
 
     @Test

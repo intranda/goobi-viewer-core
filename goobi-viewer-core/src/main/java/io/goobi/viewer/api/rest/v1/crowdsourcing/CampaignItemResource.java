@@ -51,7 +51,6 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.bindings.CrowdsourcingCampaignBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.CrowdsourcingCampaignFilter;
-import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.dao.IDAO;
@@ -71,7 +70,6 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
-import io.goobi.viewer.websockets.CampaignEndpoint;
 
 /**
  * Rest resources to create a frontend-view for a campaign to annotate or review a work, and to process the created annotations and/or changes to the
@@ -232,11 +230,25 @@ public class CampaignItemResource {
                 break;
 
         }
+        
+        Integer annotationPage = StatisticMode.PAGE.equals(campaign.getStatisticMode()) ? page : null;
+        List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, pi, annotationPage);
 
         DataManager.getInstance().getDao().updateCampaign(campaign);
         // Re-index finished record to have its annotations indexed
         if (status.equals(CrowdsourcingStatus.FINISHED)) {
+                annotations.forEach(anno -> {
+                    if (campaign.isRestrictAnnotationAccess()) {
+                        anno.setAccessCondition(campaign.getTitle(IPolyglott.getDefaultLocale().getLanguage()));
+                    } else {
+                        anno.setAccessCondition(SolrConstants.OPEN_ACCESS_VALUE);
+                    }
+                });
             IndexerTools.triggerReIndexRecord(pi);
+        } else {
+            annotations.forEach(anno -> {
+                anno.setAccessCondition(status.name());
+            });
         }
     }
 
@@ -313,9 +325,7 @@ public class CampaignItemResource {
 
             //add new annotation and update existing ones
             for (PersistentAnnotation anno : newAnnotations) {
-                if (campaign != null && campaign.isRestrictAnnotationAccess()) {
-                    anno.setAccessCondition(campaign.getTitle(IPolyglott.getDefaultLocale().getLanguage()));
-                }
+                    anno.setAccessCondition(CrowdsourcingStatus.ANNOTATE.name());
                 try {
                     if (anno.getId() == null) {
                         dao.addAnnotation(anno);
