@@ -33,6 +33,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.wa.Motivation;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -151,7 +152,7 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
     }
     
     private Collection<PersistentAnnotation> loadAllCommentAnnotations(String pi, int page) throws DAOException {
-        
+        List<PersistentAnnotations> comments = DataManager.getInstance().getDao().getAllAnnotationsByMotivation(Motivation.COMMENTING);
     }
 
 

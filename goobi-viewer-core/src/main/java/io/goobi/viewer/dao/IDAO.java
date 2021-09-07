@@ -26,6 +26,7 @@ import javax.persistence.Query;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.serialization.PersistentAnnotations;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
@@ -2288,5 +2289,11 @@ public interface IDAO {
      */
     List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, String filterString,
             Map<String, Object> filterParams) throws DAOException;
+
+    /**
+     * @param commenting
+     * @return
+     */
+    List<PersistentAnnotations> getAllAnnotationsByMotivation(String commenting);
 
 }

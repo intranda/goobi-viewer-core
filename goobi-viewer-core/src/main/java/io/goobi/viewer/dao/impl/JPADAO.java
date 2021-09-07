@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.AlphabetIterator;
 import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.dao.PersistentAnnotations;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.Comment;
@@ -4534,6 +4535,16 @@ public class JPADAO implements IDAO {
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
+    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllAnnotationsByMotivation(java.lang.String)
+     */
+    @Override
+    public List<PersistentAnnotations> getAllAnnotationsByMotivation(String commenting) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -5300,4 +5311,5 @@ public class JPADAO implements IDAO {
 
         return pageList;
     }
+
 }

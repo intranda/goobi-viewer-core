@@ -33,5 +33,5 @@ public interface AnnotationSaver {
      * @param annotation    The annotation to save
      * @throws IOException  If saving the annotation fails
      */
-    public void save(WebAnnotation annotation) throws IOException;
+    public void save(WebAnnotation... annotations) throws IOException;
 }

@@ -17,6 +17,8 @@ package io.goobi.viewer.model.annotation.serialization;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,15 +40,15 @@ public class AnnotationSolrSaver implements AnnotationSaver {
     private final static Logger logger = LoggerFactory.getLogger(AnnotationSolrSaver.class);
     
     private final AnnotationConverter converter;
-    private final AnnotationIndexAugmenter indexAugmenter;
 
     public AnnotationSolrSaver() {
         this.converter = new AnnotationConverter();
-        this.indexAugmenter = new AnnotationIndexAugmenter()
     }
     
     @Override
-    public void save(WebAnnotation annotation) throws IOException {
+    public void save(WebAnnotation... annotations) throws IOException {
+        
+        Collection<PersistentAnnotation> pas = Arrays.stream(annotations).map(converter::getAsPersistentAnnotation).collect(Collectors.toList());
         
         PersistentAnnotation pa = converter.getAsPersistentAnnotation(annotation);
         
