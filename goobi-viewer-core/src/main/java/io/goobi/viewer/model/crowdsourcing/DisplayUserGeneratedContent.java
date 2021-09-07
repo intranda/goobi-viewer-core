@@ -574,7 +574,9 @@ public class DisplayUserGeneratedContent {
         ret.setDisplayCoordinates((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setPi((String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
         ret.setAccessCondition(SolrTools.getSingleFieldStringValue(doc, SolrConstants.ACCESSCONDITION));
-        ret.setAnnotationBody(body);
+        if(body != null) {            
+            ret.setAnnotationBody(body);
+        }
         Object pageNo = doc.getFieldValue(SolrConstants.ORDER);
         if (pageNo != null && pageNo instanceof Number) {
             ret.setPage(((Number) pageNo).intValue());
