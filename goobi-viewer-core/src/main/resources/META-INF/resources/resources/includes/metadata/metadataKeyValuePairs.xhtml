@@ -18,7 +18,8 @@
 			<h:outputText value="#{msg[val.label]}:" escape="false" />
 		</h4>
 
-		<div class="metadata__elements metadata__elements-level-#{metadata.indentation} metadata__grouped-wrapper">
+		<div
+			class="metadata__elements metadata__elements-level-#{metadata.indentation} metadata__grouped-wrapper">
 
 			<div class="metadata__element-wrapper">
 
@@ -27,16 +28,18 @@
 					<!-- Metadata value -->
 					<c:forEach begin="0"
 						end="#{configurationBean.metadataParamNumber - 1}" var="ind0">
-						<dl class="dl-horizontal metadata__element-dl">
-							<dt>
-								<h:outputText value="#{val.getParamLabelWithColon(ind0)}"
-									escape="false" />
-							</dt>
-							<dd>
-								<h:outputText value="#{val.getComboValueShort(ind0)}"
-									escape="false" />
-							</dd>
-						</dl>
+						<ui:fragment rendered="#{!val.isParamValueBlank(ind0)}">
+							<dl class="dl-horizontal metadata__element-dl">
+								<dt>
+									<h:outputText value="#{val.getParamLabelWithColon(ind0)}"
+										escape="false" />
+								</dt>
+								<dd>
+									<h:outputText value="#{val.getComboValueShort(ind0)}"
+										escape="false" />
+								</dd>
+							</dl>
+						</ui:fragment>
 					</c:forEach>
 
 				</div>
