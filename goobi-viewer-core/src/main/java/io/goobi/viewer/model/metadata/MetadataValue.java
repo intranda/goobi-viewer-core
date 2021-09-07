@@ -83,6 +83,15 @@ public class MetadataValue implements Serializable {
     }
 
     /**
+     * 
+     * @param index
+     * @return
+     */
+    public boolean isParamValueBlank(int index) {
+        return StringUtils.isBlank(getComboValueShort(index));
+    }
+
+    /**
      * <p>
      * getComboValueShort.
      * </p>
