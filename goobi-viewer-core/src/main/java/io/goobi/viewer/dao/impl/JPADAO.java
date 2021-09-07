@@ -53,7 +53,6 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.AlphabetIterator;
 import io.goobi.viewer.dao.IDAO;
-import io.goobi.viewer.dao.PersistentAnnotations;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.Comment;
@@ -4541,9 +4540,13 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#getAllAnnotationsByMotivation(java.lang.String)
      */
     @Override
-    public List<PersistentAnnotations> getAllAnnotationsByMotivation(String commenting) {
-        // TODO Auto-generated method stub
-        return null;
+    public List<PersistentAnnotation> getAllAnnotationsByMotivation(String motivation) throws DAOException {
+        preQuery();
+        String query = "SELECT a FROM PersistentAnnotation a WHERE a.motivation = :motivation";
+        Query q = getEntityManager().createQuery(query);
+        q.setParameter("motivation", motivation);
+
+        return q.getResultList();
     }
 
     /** {@inheritDoc} */
@@ -4567,6 +4570,13 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException {
+        return getAnnotationsForTarget(pi, page, null);
+    }
+    
+    
+    @Override
+    public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page, String motivation) throws DAOException {
+        
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
         if (page != null) {
@@ -4574,10 +4584,16 @@ public class JPADAO implements IDAO {
         } else {
             query += " AND a.targetPageOrder IS NULL";
         }
+        if(StringUtils.isNotBlank(motivation)) {
+            query += " AND a.motivation =  + :motivation";
+        }
         Query q = getEntityManager().createQuery(query);
         q.setParameter("pi", pi);
         if (page != null) {
             q.setParameter("page", page);
+        }
+        if(StringUtils.isNotBlank(motivation)) {
+            q.setParameter("motivation", motivation);
         }
 
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -5311,5 +5327,6 @@ public class JPADAO implements IDAO {
 
         return pageList;
     }
+
 
 }

@@ -78,7 +78,7 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
     @Override
     public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws Exception {
 
-        Collection<PersistentAnnotation> annotations = this.annotations != null ? this.annotations : loadAllCampaignAnnotations(pi);
+        Collection<PersistentAnnotation> annotations = this.annotations != null ? this.annotations : loadAllAnnotations(pi);
 
         if (!annotations.isEmpty()) {
             logger.debug("Found {} annotations for this record.", annotations.size());
@@ -92,7 +92,7 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
     @Override
     public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme) throws Exception {
 
-        Collection<PersistentAnnotation> annotations = this.annotations != null ? this.annotations : loadAllCampaignAnnotations(pi, page);
+        Collection<PersistentAnnotation> annotations = this.annotations != null ? this.annotations : loadAllAnnotations(pi, page);
 
         if (!annotations.isEmpty()) {
             logger.debug("Found {} annotations for this record.", annotations.size());
@@ -117,6 +117,20 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
                 logger.error(e.getMessage(), e);
             }
         }
+    }
+    
+    private Collection<PersistentAnnotation> loadAllAnnotations(String pi) throws DAOException {
+        List<PersistentAnnotation> annotations = new ArrayList<>();
+        annotations.addAll(loadAllCampaignAnnotations(pi));
+        annotations.addAll(loadAllCommentAnnotations(pi));
+        return annotations;
+    }
+    
+    private Collection<PersistentAnnotation> loadAllAnnotations(String pi, int page) throws DAOException {
+        List<PersistentAnnotation> annotations = new ArrayList<>();
+        annotations.addAll(loadAllCampaignAnnotations(pi, page));
+        annotations.addAll(loadAllCommentAnnotations(pi, page));
+        return annotations;
     }
 
     private Collection<PersistentAnnotation> loadAllCampaignAnnotations(String pi) throws DAOException {
@@ -152,7 +166,13 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
     }
     
     private Collection<PersistentAnnotation> loadAllCommentAnnotations(String pi, int page) throws DAOException {
-        List<PersistentAnnotations> comments = DataManager.getInstance().getDao().getAllAnnotationsByMotivation(Motivation.COMMENTING);
+        List<PersistentAnnotation> comments = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page, Motivation.COMMENTING);
+        return comments;
+    }
+    
+    private Collection<PersistentAnnotation> loadAllCommentAnnotations(String pi) throws DAOException {
+        List<PersistentAnnotation> comments = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, null, Motivation.COMMENTING);
+        return comments;
     }
 
 

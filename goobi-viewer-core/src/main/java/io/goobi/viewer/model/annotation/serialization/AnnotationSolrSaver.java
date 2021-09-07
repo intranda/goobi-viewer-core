@@ -48,20 +48,21 @@ public class AnnotationSolrSaver implements AnnotationSaver {
     @Override
     public void save(WebAnnotation... annotations) throws IOException {
         
-        Collection<PersistentAnnotation> pas = Arrays.stream(annotations).map(converter::getAsPersistentAnnotation).collect(Collectors.toList());
+        Collection<PersistentAnnotation> pas = Arrays.stream(annotations).map(converter::getAsPersistentAnnotation).collect(Collectors.toMap(anno -> anno.get, null));
         
-        PersistentAnnotation pa = converter.getAsPersistentAnnotation(annotation);
-        
-        if(pa.getTargetPageOrder() != null) {
-            try {
-                IndexerTools.reIndexPage(pa.getTargetPI(), pa.getTargetPageOrder(), Arrays.asList(null));
-            } catch (DAOException | PresentationException | IndexUnreachableException | IOException e) {
-                logger.warn("Error reindexing single page. Try reindexing entire record");
+        for (PersistentAnnotation pa : pas) {            
+            if(pa.getTargetPageOrder() != null) {
+                try {
+                    IndexerTools.reIndexPage(pa.getTargetPI(), pa.getTargetPageOrder(), Arrays.asList(null));
+                } catch (DAOException | PresentationException | IndexUnreachableException | IOException e) {
+                    logger.warn("Error reindexing single page. Try reindexing entire record");
+                    IndexerTools.triggerReIndexRecord(pa.getTargetPI());
+                }
+            } else {            
                 IndexerTools.triggerReIndexRecord(pa.getTargetPI());
             }
-        } else {            
-            IndexerTools.triggerReIndexRecord(pa.getTargetPI());
         }
+        
     }
 
 }
