@@ -17,6 +17,7 @@ package io.goobi.viewer.dao.update;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.api.annotation.wa.Motivation;
-import de.intranda.api.annotation.wa.WebAnnotation;
+import de.intranda.api.annotation.wa.TextualResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -35,6 +36,7 @@ import io.goobi.viewer.model.annotation.serialization.AnnotationSqlSaver;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -63,9 +65,32 @@ public class AnnotationUpdate implements IModelUpdate {
         AnnotationSaver saver = new AnnotationSqlSaver(dao);
         List<Object[]> comments = dao.createNativeQuery("SELECT * FROM comments").getResultList();
         for (Object[] comment : comments) {
-            Timestamp dateCreated = (Timestamp) comment[1];
             
+            LocalDateTime dateCreated = Optional.ofNullable(comment[1]).map(o -> (Timestamp)o).map(Timestamp::toLocalDateTime).orElse(null);
+            LocalDateTime dateUpdated = Optional.ofNullable(comment[2]).map(o -> (Timestamp)o).map(Timestamp::toLocalDateTime).orElse(null);
+            Integer page = Optional.ofNullable(comment[3]).map(o -> (Integer)o).orElse(null);
+            String pi = Optional.ofNullable(comment[4]).map(o -> (String)o).orElse(null);
+            String text = Optional.ofNullable(comment[5]).map(o -> (String)o).orElse(null);
+            User owner = Optional.ofNullable(comment[6]).map(o -> (Long)o).flatMap(id -> this.getUser(id, dao)).orElse(null);
+            //Id of a comment this one is a response to. Not used
+            Long parenId = Optional.ofNullable(comment[7]).map(o -> (Long)o).orElse(null);
+            
+            PersistentAnnotation anno = new PersistentAnnotation();
+            anno.setDateCreated(dateCreated);
+            anno.setDateModified(dateUpdated);
+            anno.setTargetPI(pi);
+            anno.setTargetPageOrder(page);
+            anno.setCreator(owner);
+            anno.setBody(text);
         }
+    }
+    
+    private Optional<User> getUser(Long id, IDAO dao) {
+       try {
+        return Optional.ofNullable(dao.getUser(id));
+    } catch (DAOException e) {
+        return Optional.empty();
+    }
     }
 
     private void updateCrowdsourcingAnnotations(IDAO dao) throws DAOException {
