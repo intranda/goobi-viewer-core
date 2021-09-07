@@ -58,8 +58,8 @@ public class TOCElement implements Serializable {
     private final boolean accessPermissionPdf;
     /** Element is visible in the current tree. */
     private boolean visible = true;
-    private int id = 0;
-    private int parentId = 0;
+    private int id = -1;
+    private int parentId = -1;
     private String footerId = "";
     /** Element is expanded or collapsed. */
     private boolean expanded = false;
