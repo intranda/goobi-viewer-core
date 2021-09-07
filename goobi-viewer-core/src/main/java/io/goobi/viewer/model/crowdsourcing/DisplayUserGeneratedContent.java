@@ -21,10 +21,12 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +41,7 @@ import io.goobi.viewer.controller.HtmlParser;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -59,19 +62,21 @@ public class DisplayUserGeneratedContent {
         COMMENT,
         PICTURE,
         GEOLOCATION,
-        NORMDATA;
+        NORMDATA,
+        DATASET;
 
         public String getName() {
             return this.name();
         }
 
         public static ContentType getByName(String name) {
-            for (ContentType type : ContentType.values()) {
-                if (type.name().equals(name)) {
-                    return type;
+            if (StringUtils.isNotBlank(name)) {
+                for (ContentType type : ContentType.values()) {
+                    if (type.name().equalsIgnoreCase(name)) {
+                        return type;
+                    }
                 }
             }
-
             return null;
         }
     }
@@ -493,27 +498,43 @@ public class DisplayUserGeneratedContent {
     }
 
     public boolean setAnnotationBody(String json) {
-        if (StringUtils.isNotBlank(json) && !"{}".equals(json)) {
+        this.annotationBody = getAsResource(json);
+        return this.annotationBody != null;
+    }
 
-            ObjectMapper mapper = new ObjectMapper();
+    private static ITypedResource getAsResource(Object value) {
+
+        String json = null;
+        if (value instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Object> features = (List<Object>) value;
+            if (features.size() == 1) {
+                json = SolrTools.getAsString(features.get(0));
+            } else {
+                json = "[" + features.stream().map(SolrTools::getAsString).collect(Collectors.joining(",")) + "]";
+            }
+        } else {
+            json = SolrTools.getAsString(value);
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        ITypedResource resource = null;
+        if (StringUtils.isNotBlank(json) && !"{}".equals(json)) {
             try {
-                this.annotationBody = mapper.readValue(json, de.intranda.api.annotation.wa.TypedResource.class);
-                if (this.annotationBody == null) {
+                resource = mapper.readValue(json, de.intranda.api.annotation.wa.TypedResource.class);
+                if (resource == null) {
                     throw new IllegalArgumentException("no content generated");
                 }
-                return true;
             } catch (JsonProcessingException | IllegalArgumentException e) {
                 try {
-                    this.annotationBody = mapper.readValue(json, de.intranda.api.annotation.oa.TypedResource.class);
-                    return true;
+                    resource = mapper.readValue(json, de.intranda.api.annotation.oa.TypedResource.class);
                 } catch (JsonProcessingException e1) {
-                    
-                    this.annotationBody = new TextualResource(json, HtmlParser.isHtml(json) ? "text/html" : "text/plain");
+                    resource = new TextualResource(json, HtmlParser.isHtml(json) ? "text/html" : "text/plain");
                 }
 
             }
         }
-        return false;
+        return resource;
     }
 
     /**
@@ -531,40 +552,36 @@ public class DisplayUserGeneratedContent {
             throw new IllegalArgumentException("doc may not be null");
         }
 
-        String type = (String) doc.getFieldValue(SolrConstants.UGCTYPE);
-        if (type == null || ContentType.getByName(type) == null) {
+        ITypedResource body = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_BODY))
+                .map(DisplayUserGeneratedContent::getAsResource)
+                .orElse(null);
+        ContentType type = Optional.ofNullable(getTypeFromBody(body))
+                .orElse(Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCTYPE))
+                        .map(SolrTools::getAsString)
+                        .map(ContentType::getByName)
+                        .orElse(null));
+
+        if (type == null) {
             logger.error("Cannot build UGC Solr doc, UGCTYPE '{}' not found.", type);
             return null;
+        } else if(body == null) {
+            logger.error("Cannot build UGC Solr doc, No content found.");
+            return null;
         }
+
         DisplayUserGeneratedContent ret = new DisplayUserGeneratedContent();
         long iddoc = Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC));
         ret.setId(iddoc);
-        ret.setType(ContentType.getByName(type));
+        ret.setType(type);
         ret.setAreaString((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setDisplayCoordinates((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setPi((String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
         ret.setAccessCondition(SolrTools.getSingleFieldStringValue(doc, SolrConstants.ACCESSCONDITION));
-        if (doc.containsKey(SolrConstants.MD_BODY)) {
-            Object body = doc.getFieldValue(SolrConstants.MD_BODY);
-            if (body instanceof List) {
-                @SuppressWarnings("unchecked")
-                List<String> features = (List<String>) body;
-                if (features.size() == 1) {
-                    ret.setAnnotationBody(features.get(0));
-                } else {
-                    String array = "[" + features.stream().collect(Collectors.joining(",")) + "]";
-                    ret.setAnnotationBody(array);
-                }
-            } else if (body instanceof String) {
-                ret.setAnnotationBody((String) body);
-            }
-            ret.setTypeFromBody();
-        }
+        ret.setAnnotationBody(body);
         Object pageNo = doc.getFieldValue(SolrConstants.ORDER);
         if (pageNo != null && pageNo instanceof Number) {
             ret.setPage(((Number) pageNo).intValue());
         }
-
         if (StringUtils.isNotBlank(ret.getAnnotationBody().getType())) {
             ret.setLabel(createLabelFromBody(ret.getType(), ret.getAnnotationBody()));
             ret.setExtendendLabel(createExtendedLabelFromBody(ret.getType(), ret.getAnnotationBody()));
@@ -604,6 +621,8 @@ public class DisplayUserGeneratedContent {
                 return "admin__crowdsourcing_question_type_GEOLOCATION_POINT";
             case NORMDATA:
                 return Paths.get(body.getId().getPath()).getFileName().toString();
+            case DATASET:
+                return getDataSetForDisplay(body);
             case COMMENT:
             default:
                 if (body instanceof TextualResource) {
@@ -614,23 +633,40 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * @param body
+     * @return
+     */
+    private static String getDataSetForDisplay(ITypedResource body) {
+        JSONObject json = new JSONObject(body.toString());
+        JSONObject data = json.getJSONObject("data");
+        StringBuilder sb = new StringBuilder();
+        for (String key : data.keySet()) {
+            String value = data.getJSONArray(key).getString(0);
+            sb.append(ViewerResourceBundle.getTranslation(key, BeanUtils.getLocale()));
+            sb.append(":\t");
+            sb.append(value);
+            sb.append("\n");
+        }
+        return sb.toString().trim();
+    }
+
+    /**
      * If the annotation body has a type property of one of "Feature", "AuthorityResource" or "TextualBody" then the {@link #type} is set accordingly
      */
-    private void setTypeFromBody() {
-        ContentType type = this.type;
-        if (StringUtils.isNotBlank(this.annotationBody.getType())) {
-            switch (this.annotationBody.getType()) {
+    private static ContentType getTypeFromBody(ITypedResource body) {
+        if (body != null &&  StringUtils.isNotBlank(body.getType())) {
+            switch (body.getType()) {
                 case "Feature":
-                    type = ContentType.GEOLOCATION;
-                    break;
+                    return ContentType.GEOLOCATION;
                 case "AuthorityResource":
-                    type = ContentType.NORMDATA;
-                    break;
+                    return ContentType.NORMDATA;
                 case "TextualBody":
-                    type = ContentType.COMMENT;
+                    return ContentType.COMMENT;
+                case "Dataset":
+                    return ContentType.DATASET;
             }
         }
-        this.type = type;
+        return null;
     }
 
     /**
