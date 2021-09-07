@@ -14,11 +14,11 @@
 
 	<c:forEach items="#{metadata.values}" var="val">
 
-		<h4>
+		<h4 class="metadata__heading level-#{metadata.indentation}">
 			<h:outputText value="#{msg[val.label]}:" escape="false" />
 		</h4>
 
-		<div class="metadata__elements">
+		<div class="metadata__elements metadata__elements-level-#{metadata.indentation} metadata__grouped-wrapper">
 
 			<div class="metadata__element-wrapper">
 
@@ -65,8 +65,6 @@
 				</ui:fragment>
 			</ui:fragment>
 		</c:forEach>
-
-		<br />
 
 	</c:forEach>
 

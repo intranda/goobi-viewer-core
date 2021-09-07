@@ -51,7 +51,9 @@
     }
 	/* ELEMENTS / EVENTS */
 	&__elements,
-	&__events {}
+	&__events {
+		font-size: 1.3rem;
+	}
 	&__element,
 	&__event {}
 	&__element-dl,
@@ -80,33 +82,27 @@
 	/* ELEMENT */
 	&__element {
 		&-level-0 {
-			margin-top: 1rem;
-			transition: background 0.2s ease;
 			&:hover {
-				background: #f6f6f6;
 			}
 			&:first-child {
-				margin-top: 0;
 			}
-			background: #f9f9f9;
-			padding: 1.2rem 1.5rem;
 		}
         &-level-1 {
 			.metadata__element-dl {
-				grid-template-columns: 150px auto;
+				grid-template-columns: 220px auto;
 			}
 			dt {
-				padding-left: 2rem;
+				// padding-left: 2rem;
 				&::before {
-					content: "\f148";
-					display: inline-block;
-					font: normal normal normal 14px/1 FontAwesome;
-					font-size: 14px;
-					font-size: inherit;
-					text-rendering: auto;
-					margin-right: 0.7rem;
-					transform: rotate(90deg);
-					opacity: 0.3;
+//					content: "\f148";
+//					display: inline-block;
+//					font: normal normal normal 14px/1 FontAwesome;
+//					font-size: 14px;
+//					font-size: inherit;
+//					text-rendering: auto;
+//					margin-right: 0.7rem;
+//					transform: rotate(90deg);
+//					opacity: 0.3;
 				}
 			}
 		}
@@ -126,14 +122,30 @@
         &.level-8 {}
         &.level-9 {}
 	}
-	&__elements-h3 {
-		display: none;
+	&__elements {
+		&-level-0 {}
+        &-level-1 {
+			margin-left: 3rem;
+		}
+        &-level-2 {}
 	}
-	&__element-wrapper {}
+	&__elements-h3 {
+		// display: none;
+		// DELETE NEXT LINE
+		display: block !important;
+		margin-top: 2rem;
+	}
+	&__element-wrapper {
+		background: #f3f3f3;
+		padding: 1rem;
+	}
 	&__element {}
 	&__element-dl {
 		display: grid;
-		grid-template-columns: 254px auto;
+		grid-template-columns: 220px auto;
+		dt {
+			width: auto;
+		}
 		dt {}
 		dd {}
 	}
@@ -146,7 +158,54 @@
 		dd {}
 	}
 	&__event-value {}
+	&__grouped-wrapper {
+		background: white;
+		padding: 1rem 1.5rem;
+		dt, dd {
+			font-size: 1.3rem;
+		}
+	}
+	&__ungrouped-wrapper {
+		background: white;
+		padding: 1rem 1.5rem;
+		margin-bottom: 1rem;
+	}
+	&__element-ungrouped {
+		grid-template-columns: 230px auto;
+		dt {
+			font-size: 1.6rem;
+		}
+	}
+
 	
+	&__heading {
+		font-size: 1.6rem;
+		font-weight: 700;
+		margin-top: 1rem;
+		background: white;
+		padding: 1rem 1.5rem;
+		margin-bottom: 0;
+		position: relative;
+		&.level-1 {
+			margin-left: 3rem;
+			&:before {
+				content: "\f148";
+				display: inline-block;
+				font: normal normal normal 14px/1 FontAwesome;
+				    font-size: 14px;
+				font-size: 14px;
+				font-size: inherit;
+				text-rendering: auto;
+				margin-right: .7rem;
+				transform: rotate(90deg);
+				opacity: 1;
+				position: absolute;
+				left: -28px;
+				font-size: 20px;
+				top: 9px;
+			}
+		}
+	}
 }
 
 /* DOWNLOADS */

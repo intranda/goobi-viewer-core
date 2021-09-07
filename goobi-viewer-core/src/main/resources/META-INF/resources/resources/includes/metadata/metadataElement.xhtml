@@ -41,8 +41,8 @@
                                 </h:panelGroup>
 
                                 <!-- grouped="false" -->
-                                <h:panelGroup rendered="#{!metadata.group}">
-                                    <dl class="dl-horizontal metadata__element-dl">
+                                <h:panelGroup styleClass="metadata__ungrouped-wrapper" layout="block" rendered="#{!metadata.group}">
+                                    <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
                                         <dt title="#{msg[metadata.label]}">
                                             <h:outputText value="#{msg[metadata.label]}:" escape="false" />
                                         </dt>
