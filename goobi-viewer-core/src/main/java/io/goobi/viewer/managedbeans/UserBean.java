@@ -64,7 +64,6 @@ import io.goobi.viewer.filters.LoginFilter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
@@ -526,7 +525,7 @@ public class UserBean implements Serializable {
                 BeanUtils.getActiveDocumentBean().resetAccess();
                 BeanUtils.getSessionBean().cleanSessionObjects();
             } catch (Throwable e) {
-                logger.error(e.getMessage());
+                logger.warn(e.getMessage());
             }
 
             this.authenticationProviders = null;
@@ -808,8 +807,15 @@ public class UserBean implements Serializable {
                 .map(map -> map.get("referer"))
                 .orElse(null);
         if (StringUtils.isEmpty(url)) {
-            Optional.ofNullable(navigationHelper).map(NavigationHelper::getCurrentPrettyUrl)
-            .ifPresent(u -> feedback.setUrl(u));
+            // Accessing beans from a different thread will throw an unhandled exception that will result in a white screen when logging in
+            try {
+                Optional.ofNullable(navigationHelper)
+                        .map(NavigationHelper::getCurrentPrettyUrl)
+                        .ifPresent(u -> feedback.setUrl(u));
+            } catch (Throwable e) {
+                logger.warn(e.getMessage());
+            }
+
         }
     }
 
