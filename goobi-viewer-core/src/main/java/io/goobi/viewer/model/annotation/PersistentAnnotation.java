@@ -128,6 +128,21 @@ public class PersistentAnnotation {
      */
     public PersistentAnnotation() {
     }
+    
+    public PersistentAnnotation(PersistentAnnotation source) {
+        this.id = source.id;
+        this.accessCondition = source.accessCondition;
+        this.body = source.body;
+        this.creatorId = source.creatorId;
+        this.dateCreated = source.dateCreated;
+        this.dateModified = source.dateModified;
+        this.generatorId = source.getGeneratorId();
+        this.motivation = source.motivation;
+        this.reviewerId = source.reviewerId;
+        this.target = source.target;
+        this.targetPI = source.targetPI;
+        this.targetPageOrder = source.targetPageOrder;
+    }
 
     /**
      * creates a new PersistentAnnotation from a WebAnnotation
@@ -680,4 +695,5 @@ public class PersistentAnnotation {
         return sb.toString();
 
     }
+    
 }

@@ -15,7 +15,7 @@
  */
 package io.goobi.viewer.model.annotation.notification;
 
-import de.intranda.api.annotation.wa.WebAnnotation;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
  * @author florian
@@ -23,8 +23,8 @@ import de.intranda.api.annotation.wa.WebAnnotation;
  */
 public interface ChangeNotificator {
 
-    public void notifyCreation(WebAnnotation annotation);
-    public void notifyEdit(WebAnnotation oldAnnotation, WebAnnotation newAnnotation);
-    public void notifyDeletion(WebAnnotation annotation);
+    public void notifyCreation(PersistentAnnotation annotation);
+    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation);
+    public void notifyDeletion(PersistentAnnotation annotation);
     public void notifyError(Exception exception);
 }

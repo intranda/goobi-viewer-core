@@ -29,6 +29,8 @@ import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.annotation.AnnotationConverter;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.annotation.notification.ChangeNotificator;
 import io.goobi.viewer.model.annotation.serialization.AnnotationDeleter;
 import io.goobi.viewer.model.annotation.serialization.AnnotationSaver;
@@ -45,6 +47,7 @@ public class CommentManager {
     private final AnnotationSaver saver;
     private final AnnotationDeleter deleter;
     private final List<ChangeNotificator> notificators;
+    private final AnnotationConverter converter = new AnnotationConverter();
     
     public CommentManager(AnnotationSaver saver, AnnotationDeleter deleter, ChangeNotificator... notificators) {
         this.saver = saver;
@@ -53,7 +56,7 @@ public class CommentManager {
     }
     
     public void createComment(String text, User creator, String pi, Integer pageOrder, String license) {
-        WebAnnotation comment = createWebAnnotation(createTextualBody(text), createTarget(pi, pageOrder), Motivation.COMMENTING, createAgent(creator), license);
+        PersistentAnnotation comment = createAnnotation(createTextualBody(text), createTarget(pi, pageOrder), Motivation.COMMENTING, createAgent(creator), license);
         try {            
             saver.save(comment);
             notificators.forEach(n -> n.notifyCreation(comment));
@@ -62,17 +65,9 @@ public class CommentManager {
         }
     }
     
-    public void editComment(WebAnnotation comment, String text, User editor, String license) {
-        WebAnnotation editedComment = new WebAnnotation(comment.getId());
-        editedComment.setTarget(comment.getTarget());
-        editedComment.setCreated(comment.getCreated());
-        editedComment.setCreator(comment.getCreator());
-        editedComment.setGenerator(comment.getGenerator());
-        editedComment.setMotivation(comment.getMotivation());
-
-        editedComment.setBody(createTextualBody(text));
-        editedComment.setModified(LocalDateTime.now());
-        editedComment.setRights(license);
+    public void editComment(PersistentAnnotation comment, String text, User editor, String license) {
+        PersistentAnnotation editedComment = new PersistentAnnotation(comment);
+        editedComment.setBody(createTextualBody(text).toString());
         
         try {            
             saver.save(editedComment);
@@ -82,7 +77,7 @@ public class CommentManager {
         }
     }
     
-    public void deleteComment(WebAnnotation comment) {
+    public void deleteComment(PersistentAnnotation comment) {
         try {
             deleter.delete(comment);
             notificators.forEach(n -> n.notifyDeletion(comment));
@@ -101,7 +96,7 @@ public class CommentManager {
      * @param license
      * @return
      */
-    private WebAnnotation createWebAnnotation(IResource body, IResource target, String motivation, Agent creator, String license) {
+    private PersistentAnnotation createAnnotation(IResource body, IResource target, String motivation, Agent creator, String license) {
         WebAnnotation annotation = new WebAnnotation();
         annotation.setBody(body);
         annotation.setTarget(target);
@@ -109,7 +104,7 @@ public class CommentManager {
         annotation.setCreator(creator);
         annotation.setCreated(LocalDateTime.now());
         annotation.setRights(license);
-        return annotation;
+        return converter.getAsPersistentAnnotation(annotation);
     }
 
     /**

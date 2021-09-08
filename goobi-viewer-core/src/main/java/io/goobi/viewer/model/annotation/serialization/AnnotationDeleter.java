@@ -17,7 +17,7 @@ package io.goobi.viewer.model.annotation.serialization;
 
 import java.io.IOException;
 
-import de.intranda.api.annotation.wa.WebAnnotation;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
  * Removes annotations from a persistence context
@@ -27,5 +27,5 @@ import de.intranda.api.annotation.wa.WebAnnotation;
  */
 public interface AnnotationDeleter {
 
-    public void delete(WebAnnotation annotation) throws IOException;
+    public void delete(PersistentAnnotation annotation) throws IOException;
 }

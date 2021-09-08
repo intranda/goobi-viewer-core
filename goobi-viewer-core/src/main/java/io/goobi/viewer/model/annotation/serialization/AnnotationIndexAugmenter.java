@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,12 +60,13 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
     /** Constant <code>SUFFIX_ANNOTATIONS="_annotations"</code> */
     public static final String SUFFIX_ANNOTATIONS = "_annotations";
 
-    private final Collection<PersistentAnnotation> annotations;
+    private final List<PersistentAnnotation> annotations;
     private final AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
     private final AnnotationConverter converter = new AnnotationConverter(urls);
 
     public AnnotationIndexAugmenter(Collection<PersistentAnnotation> annotations) {
-        this.annotations = annotations;
+        this.annotations = new ArrayList<>(annotations);
+        this.annotations.sort((a1, a2) -> StringUtils.compare(a1.getBody(), a2.getBody()));
     }
 
     public AnnotationIndexAugmenter() {
@@ -175,6 +177,17 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
         return comments;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(AnnotationIndexAugmenter.class)) {
+            return this.annotations.equals(((AnnotationIndexAugmenter)obj).annotations);
+        } else {
+            return false;
+        }
+    }
 
 
 }

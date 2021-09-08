@@ -17,7 +17,7 @@ package io.goobi.viewer.model.annotation.serialization;
 
 import java.io.IOException;
 
-import de.intranda.api.annotation.wa.WebAnnotation;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
  * Save WebAnnotations to a persistence contex
@@ -33,5 +33,5 @@ public interface AnnotationSaver {
      * @param annotation    The annotation to save
      * @throws IOException  If saving the annotation fails
      */
-    public void save(WebAnnotation... annotations) throws IOException;
+    public void save(PersistentAnnotation... annotations) throws IOException;
 }

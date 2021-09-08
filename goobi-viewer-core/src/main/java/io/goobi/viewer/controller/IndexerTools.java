@@ -17,7 +17,6 @@ package io.goobi.viewer.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,26 +31,13 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
-import de.intranda.api.annotation.wa.WebAnnotation;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.annotation.AnnotationConverter;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.annotation.serialization.AnnotationIndexAugmenter;
 import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
-import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -78,12 +64,17 @@ public class IndexerTools {
      * @param pi a {@link java.lang.String} object.
      */
     public static void triggerReIndexRecord(String pi) {
+        triggerReIndexRecord(pi, DataManager.getInstance().getModules());
+    }
+
+    public static void triggerReIndexRecord(String pi, List<? extends IndexAugmenter> augmenters) {
+          
         Thread backgroundThread = new Thread(new Runnable() {
 
             @Override
             public void run() {
                 try {
-                    if (!reIndexRecord(pi)) {
+                    if (!reIndexRecord(pi, augmenters)) {
                         logger.error("Failed to re-index  record {}", pi);
                         Messages.error("reIndexRecordFailure");
                     } else {
@@ -334,4 +325,5 @@ public class IndexerTools {
         }
         return (Files.isRegularFile(file));
     }
+
 }

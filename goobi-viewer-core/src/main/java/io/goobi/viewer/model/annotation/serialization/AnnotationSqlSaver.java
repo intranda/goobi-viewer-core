@@ -45,16 +45,17 @@ public class AnnotationSqlSaver implements AnnotationSaver {
     }
     
     @Override
-    public void save(WebAnnotation annotation) throws IOException {
-        PersistentAnnotation pa = converter.getAsPersistentAnnotation(annotation);
-        try {            
-            if(pa.getId() != null) {
-                dao.updateAnnotation(pa);
-            } else {
-                dao.addAnnotation(pa);
+    public void save(PersistentAnnotation... annotations) throws IOException {
+        for (PersistentAnnotation annotation : annotations) {            
+            try {            
+                if(annotation.getId() != null) {
+                    dao.updateAnnotation(annotation);
+                } else {
+                    dao.addAnnotation(annotation);
+                }
+            } catch(DAOException e) {
+                throw new IOException(e);
             }
-        } catch(DAOException e) {
-            throw new IOException(e);
         }
     }
 
