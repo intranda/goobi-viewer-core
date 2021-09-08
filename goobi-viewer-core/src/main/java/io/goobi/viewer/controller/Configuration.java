@@ -3744,12 +3744,14 @@ public final class Configuration extends AbstractConfiguration {
     public List<EmailRecipient> getFeedbackEmailRecipients() {
         List<EmailRecipient> ret = new ArrayList<>();
         List<HierarchicalConfiguration> licenseNodes = getLocalConfigurationsAt("user.feedbackEmailAddressList.address");
+        int counter = 0;
         for (HierarchicalConfiguration node : licenseNodes) {
             String address = node.getString(".", "");
             if (StringUtils.isNotBlank(address)) {
+                String id = node.getString("[@id]", "genId_" + (++counter));
                 String label = node.getString("[@label]", address);
                 boolean defaultRecipient = node.getBoolean("[@default]", false);
-                ret.add(new EmailRecipient(label, address, defaultRecipient));
+                ret.add(new EmailRecipient(id, label, address, defaultRecipient));
             }
         }
 
