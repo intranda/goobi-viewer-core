@@ -15,8 +15,8 @@
     <composite:implementation>
     
         <!-- WIDGET RECORD NOTES -->
-		<ui:repeat var="note" value="#{cc.attrs.notes}">
-                <div id="widgetRecordNotes" class="widget widget-record-notes">
+		<ui:repeat var="note" varStatus="status" value="#{cc.attrs.notes}">
+                <div id="widgetRecordNotes_#{status.index}" class="widget widget-record-notes">
                     <h3 class="widget__title">
                         <span>#{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}</span>
                     </h3>
