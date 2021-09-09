@@ -41,7 +41,7 @@
 // 	           		markerIcon: {
 // 	           		 	markerColor: 'blue',
 // 	           		 	highlightColor: 'red',
-// 	           	     	shape: 'square',
+// 	           	     	shape: 'circle',
 // 	           		}
            		}
            	});
@@ -68,7 +68,7 @@
 	        	if(highlightDocumentId) {
 	        	    features.filter(f => f.properties.documentId == highlightDocumentId).forEach(f => f.properties.highlighted = true);
 	        	}
-	        	// console.log("init features", highlightDocumentId, features.filter(f => f.properties.documentId == highlightDocumentId));
+	        	//console.log("init features", features, features.filter(f => f.properties.documentId == highlightDocumentId));
             	layer.init(features, true);
 
                 //geoMap.setView(geoMap.getViewAroundFeatures(layer.getFeatures()));

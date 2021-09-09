@@ -5181,6 +5181,7 @@ public final class Configuration extends AbstractConfiguration {
             marker.setIconColor(config.getString("[@iconColor]", marker.getIconColor()));
             marker.setIconRotate(config.getInt("[@iconRotate]", marker.getIconRotate()));
             marker.setMarkerColor(config.getString("[@markerColor]", marker.getMarkerColor()));
+            marker.setHighlightColor(config.getString("[@highlightColor]", marker.getHighlightColor()));
             marker.setNumber(config.getString("[@number]", marker.getNumber()));
             marker.setPrefix(config.getString("[@prefix]", marker.getPrefix()));
             marker.setShape(config.getString("[@shape]", marker.getShape()));
