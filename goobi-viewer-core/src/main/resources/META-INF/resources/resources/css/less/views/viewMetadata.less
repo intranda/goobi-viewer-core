@@ -130,7 +130,9 @@
         &-level-1 {
 			margin-left: 3rem;
 		}
-        &-level-2 {}
+        &-level-2 {
+				margin-left: 6rem;
+		}
 	}
 	&__elements-h3 {
 		// display: none;
@@ -199,8 +201,8 @@
 		padding: 1rem 1.5rem;
 		margin-bottom: 0;
 		position: relative;
-		&.level-1 {
-			margin-left: 3rem;
+		&.level-1,
+		&.level-2 {
 			&:before {
 				content: "\f148";
 				display: inline-block;
@@ -217,6 +219,12 @@
 				font-size: 20px;
 				top: 9px;
 			}
+		}
+		&.level-1 {
+			margin-left: 3rem;
+		}
+		&.level-2 {
+			margin-left: 6rem;
 		}
 	}
 }
