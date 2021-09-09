@@ -797,7 +797,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getExactSearchString_shouldNotUrlEscapeString() throws Exception {
         SearchBean sb = new SearchBean();
         sb.setExactSearchString("PI:*");
-        Assert.assertEquals("PI:*", sb.getExactSearchString());
+        Assert.assertEquals("PI%3A*", sb.getExactSearchString());
     }
 
     /**
@@ -808,6 +808,6 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getExactSearchString_shouldEscapeCriticalChars() throws Exception {
         SearchBean sb = new SearchBean();
         sb.setExactSearchString("PI:foo/bar");
-        Assert.assertEquals("PI:foo" + BeanUtils.SLASH_REPLACEMENT + "bar", sb.getExactSearchString());
+        Assert.assertEquals("PI%3Afoo" + BeanUtils.SLASH_REPLACEMENT + "bar", sb.getExactSearchString());
     }
 }
