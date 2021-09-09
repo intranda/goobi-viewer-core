@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
@@ -66,7 +67,6 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
 
     public AnnotationIndexAugmenter(Collection<PersistentAnnotation> annotations) {
         this.annotations = new ArrayList<>(annotations);
-        this.annotations.sort((a1, a2) -> StringUtils.compare(a1.getBody(), a2.getBody()));
     }
 
     public AnnotationIndexAugmenter() {
@@ -177,13 +177,13 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
         return comments;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
+    /**
+     * Two instances are equal if they contain the same annotations (disregarding order)
      */
     @Override
     public boolean equals(Object obj) {
         if(obj != null && obj.getClass().equals(AnnotationIndexAugmenter.class)) {
-            return this.annotations.equals(((AnnotationIndexAugmenter)obj).annotations);
+            return CollectionUtils.isEqualCollection(this.annotations, ((AnnotationIndexAugmenter)obj).annotations);
         } else {
             return false;
         }

@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -45,10 +46,10 @@ public class AnnotationSolrSaver implements AnnotationSaver {
 
     private final static Logger logger = LoggerFactory.getLogger(AnnotationSolrSaver.class);
     
-    private final AnnotationConverter converter;
-
-    public AnnotationSolrSaver() {
-        this.converter = new AnnotationConverter();
+    public AnnotationSolrSaver() throws IndexUnreachableException {
+        if(!DataManager.getInstance().getSearchIndex().isSolrIndexOnline()) {
+            throw new IndexUnreachableException("Solr index at " + DataManager.getInstance().getSearchIndex().getSolrServerUrl() + " not reachable");
+        }
     }
     
     @Override
@@ -90,19 +91,13 @@ public class AnnotationSolrSaver implements AnnotationSaver {
             this.pi = pi;
             this.page = page;
         }
-        
-        static Target getOrCreate(String pi, Integer page) {
-            String id = pi + (page != null ? ("$$$" + page) : "");
-            targetStore.putIfAbsent(id, new Target(pi, page));
-            return targetStore.get(id);
-        }
-        
+
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
          */
         @Override
         public String toString() {
-            return this.pi + (this.page != null ? ("$$$" + this.page) : "");
+            return this.pi + (this.page != null ? (" / " + this.page) : "");
         }
         
         /* (non-Javadoc)

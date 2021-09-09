@@ -21,10 +21,12 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import de.intranda.api.annotation.wa.WebAnnotation;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.annotation.notification.JsfMessagesNotificator;
+import io.goobi.viewer.model.annotation.serialization.AnnotationSolrAndSqlSaver;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -41,25 +43,29 @@ public class CommentBean implements Serializable {
     private static final String REQUIRES_COMMENT_RIGHTS = "REQUIRES_COMMENT_RIGHTS";
     private static final long serialVersionUID = -3653100353345867739L;
     
-    private final CommentManager commentCreator = new CommentManager(
-            comment -> System.out.println("saved comment " + comment.toString()), 
-            comment -> System.out.println("deleted comment " + comment.toString()), 
-            new JsfMessagesNotificator());
-        
+    private final CommentManager commentCreator;
+ 
     @Inject
     private ActiveDocumentBean activeDocumentBean;
     @Inject
     private UserBean userBean;
     
+    public CommentBean() throws IndexUnreachableException, DAOException {
+        commentCreator = new CommentManager(
+                new AnnotationSolrAndSqlSaver(), 
+                comment -> System.out.println("deleted comment " + comment.toString()), 
+                new JsfMessagesNotificator());
+    }
+    
     public void createComment(String text, boolean restricted) throws IndexUnreachableException {
         this.commentCreator.createComment(text, userBean.getUser(), activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), restricted ? getRestrictedLicense() : getPublicLicense());
     }
     
-    public void editComment(WebAnnotation original, String text, boolean restricted) throws IndexUnreachableException {
+    public void editComment(PersistentAnnotation original, String text, boolean restricted) throws IndexUnreachableException {
         this.commentCreator.editComment(original, text, userBean.getUser(), restricted ? getRestrictedLicense() : getPublicLicense());
     }
     
-    public void deleteComment(WebAnnotation annotation) throws IndexUnreachableException {
+    public void deleteComment(PersistentAnnotation annotation) throws IndexUnreachableException {
         this.commentCreator.deleteComment(annotation);
     }
 

@@ -35,10 +35,25 @@ import io.goobi.viewer.model.annotation.serialization.AnnotationSolrSaver.Target
  */
 public class AnnotationSolrSaverTest {
 
-    private AnnotationConverter converter = new AnnotationConverter();
     
     @Test
-    public void testSaveAnnotationsShouldCorrectlyCallReindexTarget() throws IOException {
+    public void callRedindexTargetWithCorrectArguments() throws IOException {
+        String pi1 = "PI1";
+        Integer page1 = 5;
+        
+        PersistentAnnotation anno1 = new PersistentAnnotation(new WebAnnotation(), 1l, pi1, page1);
+        PersistentAnnotation anno2 = new PersistentAnnotation(new WebAnnotation(), 2l, pi1, page1);
+        AnnotationSolrSaver saver = Mockito.spy(AnnotationSolrSaver.class);
+        saver.save(anno1, anno2);
+        ArgumentCaptor<Target> targetArgument = ArgumentCaptor.forClass(Target.class);
+        ArgumentCaptor<AnnotationIndexAugmenter> augmenterArgument = ArgumentCaptor.forClass(AnnotationIndexAugmenter.class);
+        Mockito.verify(saver, Mockito.times(1)).reindexTarget(targetArgument.capture(), augmenterArgument.capture());
+        assertEquals(new Target(pi1, page1), targetArgument.getValue());
+        assertEquals(new AnnotationIndexAugmenter(Arrays.asList(anno1, anno2)), augmenterArgument.getValue());
+    }
+    
+    @Test
+    public void callReindexTargetCorrectNumberOfTimes() throws IOException {
         String pi1 = "PI1";
         String pi2 = "PI2";
         Integer noPage = null;
@@ -49,14 +64,12 @@ public class AnnotationSolrSaverTest {
         PersistentAnnotation anno2 = new PersistentAnnotation(new WebAnnotation(), 2l, pi1, page1);
         PersistentAnnotation anno3 = new PersistentAnnotation(new WebAnnotation(), 3l, pi1, page2);
         PersistentAnnotation anno4 = new PersistentAnnotation(new WebAnnotation(), 4l, pi2, page2);
+        PersistentAnnotation anno5 = new PersistentAnnotation(new WebAnnotation(), 4l, pi2, noPage);
+
         
         AnnotationSolrSaver saver = Mockito.spy(AnnotationSolrSaver.class);
-        saver.save(anno1, anno2);
-        ArgumentCaptor<Target> targetArgument = ArgumentCaptor.forClass(Target.class);
-        ArgumentCaptor<AnnotationIndexAugmenter> augmenterArgument = ArgumentCaptor.forClass(AnnotationIndexAugmenter.class);
-        Mockito.verify(saver, Mockito.times(1)).reindexTarget(targetArgument.capture(), augmenterArgument.capture());
-        assertEquals(new Target(pi1, page1), targetArgument.getValue());
-        assertEquals(new AnnotationIndexAugmenter(Arrays.asList(anno1, anno2)), augmenterArgument.getValue());
+        saver.save(anno1, anno2, anno3, anno4, anno5);
+        Mockito.verify(saver, Mockito.times(4)).reindexTarget(Mockito.any(), Mockito.any());
     }
 
 }

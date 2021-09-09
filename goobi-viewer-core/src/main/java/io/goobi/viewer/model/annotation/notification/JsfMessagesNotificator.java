@@ -15,8 +15,8 @@
  */
 package io.goobi.viewer.model.annotation.notification;
 
-import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
  * @author florian
@@ -28,7 +28,7 @@ public class JsfMessagesNotificator implements ChangeNotificator {
      * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyCreation(de.intranda.api.annotation.wa.WebAnnotation)
      */
     @Override
-    public void notifyCreation(WebAnnotation annotation) {
+    public void notifyCreation(PersistentAnnotation annotation) {
         Messages.info(null, "Successfully created comment '{}'", annotation.getBody().toString());
     }
 
@@ -36,7 +36,7 @@ public class JsfMessagesNotificator implements ChangeNotificator {
      * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyEdit(de.intranda.api.annotation.wa.WebAnnotation, de.intranda.api.annotation.wa.WebAnnotation)
      */
     @Override
-    public void notifyEdit(WebAnnotation oldAnnotation, WebAnnotation newAnnotation) {
+    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation) {
         Messages.info(null, "Successfully changed comment '{}' to '{}'", oldAnnotation.getBody().toString(), newAnnotation.getBody().toString());
 
     }
@@ -45,7 +45,7 @@ public class JsfMessagesNotificator implements ChangeNotificator {
      * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyDeletion(de.intranda.api.annotation.wa.WebAnnotation)
      */
     @Override
-    public void notifyDeletion(WebAnnotation annotation) {
+    public void notifyDeletion(PersistentAnnotation annotation) {
         Messages.info(null, "Successfully deleted comment '{}'", annotation.getBody().toString());
     }
 
