@@ -71,7 +71,7 @@
 	        	// console.log("init features", highlightDocumentId, features.filter(f => f.properties.documentId == highlightDocumentId));
             	layer.init(features, true);
 
-                 geoMap.setView(geoMap.getViewAroundFeatures(layer.getFeatures()));
+                //geoMap.setView(geoMap.getViewAroundFeatures(layer.getFeatures()));
         	}
            	$(document).ready(() => {   
             	let view = #{cc.attrs.geoMap.initialView};
