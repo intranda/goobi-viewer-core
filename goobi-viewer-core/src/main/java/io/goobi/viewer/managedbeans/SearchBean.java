@@ -2716,7 +2716,11 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return
      */
     public boolean isShowGeoFacetMap() {
-        return Optional.ofNullable(currentSearch).map(Search::isHasGeoLocationHits).orElse(false);
+        if(currentSearch != null && facets != null && (currentSearch.isHasGeoLocationHits() || facets.getGeoFacetting().hasFeature() )) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public GeoMap getHitsMap() {
