@@ -937,6 +937,16 @@ public class SearchFacets implements Serializable {
                 ret.put(field, availableFacets.get(field));
             }
         }
+        
+        //add current facets which have no hits. This may happen due to geomap facetting
+        for (IFacetItem currentItem : currentFacets) {
+            List<IFacetItem> availableFacetItems = ret.getOrDefault(currentItem.getField(), new ArrayList<>());
+            if(!availableFacetItems.contains(currentItem)) {
+                availableFacetItems.add(currentItem);
+                ret.put(currentItem.getField(), availableFacetItems);
+            }
+            
+        }
 
         return ret;
     }
