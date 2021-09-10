@@ -141,7 +141,7 @@ var viewerJS = ( function( viewer ) {
             this.map.addLayer(osm);
         }
         
-//        this.setView(this.config.initialView);
+        //this.setView(this.config.initialView);
         
         //init map events
         rxjs.fromEvent(this.map, "moveend").pipe(rxjs.operators.map(e => this.getView())).subscribe(this.onMapMove);
@@ -153,8 +153,11 @@ var viewerJS = ( function( viewer ) {
         .subscribe(this.onMapClick);
     
         
-       	this.layers[0].init(features);
-        if(view && (!features || features.length == 0)) {
+       	this.layers[0].init(features, false);
+        if(features && features.length > 0) {
+        	this.layers[0].setViewToFeatures(true)
+            
+        } else if(view){                                                    
             this.setView(view);
         }
         
@@ -409,9 +412,9 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.featureGroup.prototype.setViewToFeatures = function(setViewToHighlighted) {
-    	let features = this.markers.map(marker => marker.feature);
-    	if(features.length > 0) {
-            let zoom = this.geoMap.getView().zoom;
+    	let features = this.getFeatures();
+    	if(features && features.length > 0) {
+            let zoom = this.geoMap.view ? this.geoMap.zoom : this.geoMap.config.initialView.zoom;
             let highlightedFeatures = features.filter(f => f.properties.highlighted);
             //console.log(" highlightedFeatures", highlightedFeatures);
             if(setViewToHighlighted && highlightedFeatures.length > 0) {
