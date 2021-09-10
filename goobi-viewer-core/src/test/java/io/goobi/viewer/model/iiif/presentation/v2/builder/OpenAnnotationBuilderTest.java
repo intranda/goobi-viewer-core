@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
@@ -32,7 +33,7 @@ import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
  * @author florian
  *
  */
-public class OpenAnnotationBuilderTest {
+public class OpenAnnotationBuilderTest extends AbstractTest{
 
     final static String PI = "1234";
     final static Integer PAGENO = 27;
@@ -42,13 +43,9 @@ public class OpenAnnotationBuilderTest {
     OpenAnnotationBuilder builder;
     SolrDocument solrDocument;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-    }
-
     @Before
-    public void SetUp() {
+    public void SetUp() throws Exception {
+        super.setUp();
         builder = new OpenAnnotationBuilder(new ApiUrls("http://localhost:8080/viewer/rest")) {
         };
     }

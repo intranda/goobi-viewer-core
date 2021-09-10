@@ -66,7 +66,6 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
         restUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
         converter = new SearchResultConverter(urls, pi, pageNo);
 

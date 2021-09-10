@@ -40,8 +40,6 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     @BeforeClass
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
-        // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
 
     /**

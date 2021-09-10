@@ -64,18 +64,10 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
                 .orElseThrow(() -> new ViewerConfigurationException("urls.iiif must be configured to current rest api"));
         dataUrls = DataManager.getInstance().getRestApiManager().getDataApiManager()
                 .orElseThrow(() -> new ViewerConfigurationException("urls.iiif must be configured to current rest api"));
-        
-        //        FacesContext facesContext = TestUtils.mockFacesContext();
-        //        ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
-        //        Mockito.when(servletContext.getRealPath("/")).thenReturn("src/META-INF/resources/");
-
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
 
         File webContent = new File("WebContent/").getAbsoluteFile();
         String webContentPath = webContent.toURI().toString();
-        //        if (webContentPath.startsWith("file:/")) {
-        //            webContentPath = webContentPath.replace("file:/", "");
-        //        }
+
         CMSTemplateManager.getInstance(webContentPath, null);
     }
 

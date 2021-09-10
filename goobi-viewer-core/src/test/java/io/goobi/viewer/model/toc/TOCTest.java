@@ -29,15 +29,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.AbstractTest;
 
-public class TOCTest {
+public class TOCTest extends AbstractTest {
 
     @Before
     public void setUp() throws Exception {
-        // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
+        super.setUp();    
     }
 
     /**

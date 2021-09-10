@@ -18,6 +18,7 @@ package io.goobi.viewer.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
@@ -2394,14 +2395,13 @@ public class ConfigurationTest extends AbstractTest {
 
     @Test
     public void testBrokenConfig() {
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer_broken.test.xml"));
+        DataManager.getInstance().injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_broken.test.xml").getAbsolutePath()));
         String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
         Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
         String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
         Assert.assertEquals(viewerHome, "src/test/resources/data/viewer/");
         String dataRepositories = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
         Assert.assertEquals(dataRepositories, "src/test/resources/data/viewer/data/");
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
 
     }
 

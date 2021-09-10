@@ -136,14 +136,6 @@ public final class Configuration extends AbstractConfiguration {
                         }
                     });
         } else {
-            
-            
-            String url = builder.getFileHandler().getURL().toString();
-            String basepath = builder.getFileHandler().getBasePath();
-            String path = builder.getFileHandler().getPath();
-            String file = builder.getFileHandler().getFile().getAbsolutePath();
-            String javaBasePath = new File("").getAbsolutePath();
-            String resourcePath = Configuration.class.getClassLoader().getResource("").getFile();
             logger.error("Default configuration file not found: {}; Base path is {}", builder.getFileHandler().getFile().getAbsoluteFile(), builder.getFileHandler().getBasePath());
         }
 
