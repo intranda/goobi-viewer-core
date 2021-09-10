@@ -86,6 +86,7 @@ import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
+import io.netty.util.internal.logging.Log4J2LoggerFactory;
 
 /**
  * <p>
@@ -111,9 +112,12 @@ public final class Configuration extends AbstractConfiguration {
         builder =
                 new ReloadingFileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
                         .configure(new Parameters().properties()
+                                .setBasePath(Configuration.class.getClassLoader().getResource("").getFile())
                                 .setFileName(configFilePath)
                                 .setListDelimiterHandler(new DefaultListDelimiterHandler(','))
                                 .setThrowExceptionOnMissing(false));
+        //alternative to .setBasePath from ClassLoader
+        //builder.getFileHandler().setFile(new File(builder.getFileHandler().getURL().getFile()));
         if (builder.getFileHandler().getFile().exists()) {
             try {
                 builder.getConfiguration();
@@ -132,7 +136,15 @@ public final class Configuration extends AbstractConfiguration {
                         }
                     });
         } else {
-            logger.error("Default configuration file not found: {}", Paths.get(configFilePath).toAbsolutePath());
+            
+            
+            String url = builder.getFileHandler().getURL().toString();
+            String basepath = builder.getFileHandler().getBasePath();
+            String path = builder.getFileHandler().getPath();
+            String file = builder.getFileHandler().getFile().getAbsolutePath();
+            String javaBasePath = new File("").getAbsolutePath();
+            String resourcePath = Configuration.class.getClassLoader().getResource("").getFile();
+            logger.error("Default configuration file not found: {}; Base path is {}", builder.getFileHandler().getFile().getAbsoluteFile(), builder.getFileHandler().getBasePath());
         }
 
         // Load local config file
