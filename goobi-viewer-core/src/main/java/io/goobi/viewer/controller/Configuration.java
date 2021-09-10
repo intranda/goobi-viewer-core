@@ -86,7 +86,6 @@ import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
-import io.netty.util.internal.logging.Log4J2LoggerFactory;
 
 /**
  * <p>
@@ -136,7 +135,8 @@ public final class Configuration extends AbstractConfiguration {
                         }
                     });
         } else {
-            logger.error("Default configuration file not found: {}; Base path is {}", builder.getFileHandler().getFile().getAbsoluteFile(), builder.getFileHandler().getBasePath());
+            logger.error("Default configuration file not found: {}; Base path is {}", builder.getFileHandler().getFile().getAbsoluteFile(),
+                    builder.getFileHandler().getBasePath());
         }
 
         // Load local config file
@@ -145,7 +145,7 @@ public final class Configuration extends AbstractConfiguration {
                 new ReloadingFileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
                         .configure(new Parameters().properties()
                                 .setFileName(fileLocal.getAbsolutePath())
-                                .setListDelimiterHandler(new DefaultListDelimiterHandler('&')) // TODO Why '&'?
+                                .setListDelimiterHandler(new DefaultListDelimiterHandler(','))
                                 .setThrowExceptionOnMissing(false));
         if (builder.getFileHandler().getFile().exists()) {
             try {
