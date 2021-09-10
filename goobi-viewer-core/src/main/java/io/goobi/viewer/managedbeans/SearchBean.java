@@ -1183,15 +1183,15 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         logger.trace("getExactSearchString: {}", searchStringInternal);
         String ret = BeanUtils.escapeCriticalUrlChracters(searchStringInternal);
-        //        try {
-        //            if (!StringTools.isStringUrlEncoded(ret, URL_ENCODING)) {
-        //                logger.trace("url encoding: " + ret);
-        //                ret = URLEncoder.encode(ret, URL_ENCODING);
-        //                logger.trace("encoded: " + ret);
-        //            }
-        //        } catch (UnsupportedEncodingException e) {
-        //            logger.error(e.getMessage());
-        //        }
+        try {
+            if (!StringTools.isStringUrlEncoded(ret, URL_ENCODING)) {
+                // logger.trace("url pre-encoding: {}", ret);
+                ret = URLEncoder.encode(ret, URL_ENCODING);
+                // logger.trace("url encoded: {}", ret);
+            }
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
+        }
         return ret;
     }
 
@@ -1211,8 +1211,14 @@ public class SearchBean implements SearchInterface, Serializable {
         // First apply regular URL decoder
         try {
             searchStringInternal = URLDecoder.decode(inSearchString, URL_ENCODING);
+            // Second decoding pass in case the query was encoded twice
+            if (StringTools.isStringUrlEncoded(searchStringInternal, URL_ENCODING)) {
+                searchStringInternal = URLDecoder.decode(searchStringInternal, URL_ENCODING);
+            }
         } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
         } catch (IllegalArgumentException e) {
+            logger.error(e.getMessage());
         }
         // Then unescape custom sequences
         searchStringInternal = BeanUtils.unescapeCriticalUrlChracters(searchStringInternal);
@@ -2716,7 +2722,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return
      */
     public boolean isShowGeoFacetMap() {
-        if(currentSearch != null && facets != null && (currentSearch.isHasGeoLocationHits() || facets.getGeoFacetting().hasFeature() )) {
+        if (currentSearch != null && facets != null && (currentSearch.isHasGeoLocationHits() || facets.getGeoFacetting().hasFeature())) {
             return true;
         } else {
             return false;
