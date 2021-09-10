@@ -30,7 +30,7 @@
 		**/
 		//<![CDATA[
 		(() => {
-        	let geoMap = new viewerJS.GeoMap({
+        	this.geoMap = new viewerJS.GeoMap({
         	    mapId: "#{cc.attrs.mapId}",
            		language: "#{navigationHelper.localeString}",
            		layer : {
@@ -38,16 +38,11 @@
 	           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
 	           		popoverOnHover: #{cc.attrs.popoverOnHover},
 	           		clusterMarkers: #{cc.attrs.clusterMarkers},
-// 	           		markerIcon: {
-// 	           		 	markerColor: 'blue',
-// 	           		 	highlightColor: 'red',
-// 	           	     	shape: 'circle',
-// 	           		}
            		}
            	});
-        	function initMap(view, features) {
-        	    geoMap.init(view);
-            	let layer = new viewerJS.GeoMap.featureGroup(geoMap, {
+        	this.initMap = function(view, features) {
+        	    this.geoMap.init(view);
+            	let layer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
             	    markerIcon: #{cc.attrs.geoMap.markerAsJSON}
             	})
             	layer.onFeatureClick.subscribe(feature => {
@@ -73,13 +68,14 @@
 
                 //geoMap.setView(geoMap.getViewAroundFeatures(layer.getFeatures()));
         	}
+        	
            	$(document).ready(() => {   
             	let view = #{cc.attrs.geoMap.initialView};
             	let features = #{cc.attrs.geoMap.featuresAsString};
-            	
             	if(features.length > 0 ) {
-            	    initMap(view, features)
+            	    this.initMap(view, features);
             	} else {
+            	    console.log("hide map because of missing features");
             	    $("##{cc.attrs.mapId}").parent().hide();
             	}
             })
