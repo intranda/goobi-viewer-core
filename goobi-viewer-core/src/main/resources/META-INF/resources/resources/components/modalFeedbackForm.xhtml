@@ -3,6 +3,7 @@
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
 
@@ -42,9 +43,9 @@
 				                    <label id="feedbackModal__labelFeedbackRecipient" for="feedbackModal__feedbackRecipient" class="col-lg-3 control-label">#{msg.recipient}:</label>
 				                    <div class="col-12 col-lg-9">
 									   <h:selectOneMenu styleClass="custom-control custom-control--select feedback-modal__recipient-dropdown" id="feedbackModal__feedbackRecipient" value="#{userBean.feedback.recipientAddress}" immediate="true">
-									       <f:selectItems var="recipient" value="#{configurationBean.feedbackEmailRecipients}"
-									           itemLabel="#{recipient.label}" itemValue="#{recipient.emailAddress}">
-									       </f:selectItems>
+									       <c:forEach var="recipient" items="#{configurationBean.feedbackEmailRecipients}">
+									       	<f:selectItem itemLabel="#{recipient.label}" itemValue="#{recipient.emailAddress}" pt:data-recipient-id="#{recipient.id}" ></f:selectItem>
+									       </c:forEach>
 									   </h:selectOneMenu>
 				                    </div>
 				                </div>

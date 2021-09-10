@@ -149,7 +149,7 @@
 		<smtpPort>25</smtpPort>
         <feedbackEmailAddressList>
             <address label="Everyone" default="true">everyone@example.com</address>
-            <address>someone@example.com</address>
+            <address id="someid">someone@example.com</address>
         </feedbackEmailAddressList>
 		
         <!-- anonymousUserEmailAddress: A user with this email address will be automatically created by the application.

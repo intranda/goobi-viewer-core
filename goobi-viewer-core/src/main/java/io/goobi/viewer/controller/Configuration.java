@@ -612,7 +612,7 @@ public final class Configuration extends AbstractConfiguration {
         int type = sub.getInt("[@type]", 0);
         boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
         String citationTemplate = sub.getString("[@citationTemplate]");
-        String labelField= sub.getString("[@labelField]"); 
+        String labelField = sub.getString("[@labelField]");
         List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -2728,7 +2728,6 @@ public final class Configuration extends AbstractConfiguration {
     public String getGeoFacetFields() {
         return getLocalString("search.facets.geoField");
     }
-    
 
     /**
      * @return
@@ -2736,7 +2735,6 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isShowSearchHitsInGeoFacetMap() {
         return getLocalBoolean("search.facets.geoField[@displayResultsOnMap]", true);
     }
-    
 
     /**
      * <p>
@@ -3706,12 +3704,14 @@ public final class Configuration extends AbstractConfiguration {
     public List<EmailRecipient> getFeedbackEmailRecipients() {
         List<EmailRecipient> ret = new ArrayList<>();
         List<HierarchicalConfiguration<ImmutableNode>> licenseNodes = getLocalConfigurationsAt("user.feedbackEmailAddressList.address");
+        int counter = 0;
         for (HierarchicalConfiguration<ImmutableNode> node : licenseNodes) {
             String address = node.getString(".", "");
             if (StringUtils.isNotBlank(address)) {
+                String id = node.getString("[@id]", "genId_" + (++counter));
                 String label = node.getString("[@label]", address);
                 boolean defaultRecipient = node.getBoolean("[@default]", false);
-                ret.add(new EmailRecipient(label, address, defaultRecipient));
+                ret.add(new EmailRecipient(id, label, address, defaultRecipient));
             }
         }
 
@@ -5091,11 +5091,11 @@ public final class Configuration extends AbstractConfiguration {
     public String getMapBoxStyleId() {
         return getLocalString("maps.mapbox.styleId", "");
     }
-    
+
     public boolean isDisplayAddressSearchInMap() {
         return getLocalBoolean("maps.mapbox.addressSearch[@enabled]", true);
     }
-    
+
     /**
      * @param marker
      * @return
@@ -5111,7 +5111,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getGeoMapMarkerFields() {
         return getLocalList("maps.coordinateFields.field", Arrays.asList("MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON"));
     }
-    
+
     public boolean includeCoordinateFieldsFromMetadataDocs() {
         return getLocalBoolean("maps.coordinateFields[@includeMetadataDocs]", false);
     }
@@ -5145,6 +5145,7 @@ public final class Configuration extends AbstractConfiguration {
             marker.setIconColor(config.getString("[@iconColor]", marker.getIconColor()));
             marker.setIconRotate(config.getInt("[@iconRotate]", marker.getIconRotate()));
             marker.setMarkerColor(config.getString("[@markerColor]", marker.getMarkerColor()));
+            marker.setHighlightColor(config.getString("[@highlightColor]", marker.getHighlightColor()));
             marker.setNumber(config.getString("[@number]", marker.getNumber()));
             marker.setPrefix(config.getString("[@prefix]", marker.getPrefix()));
             marker.setShape(config.getString("[@shape]", marker.getShape()));
@@ -5241,8 +5242,6 @@ public final class Configuration extends AbstractConfiguration {
     public String getIIIFVersionToUse() {
         return getLocalString("webapi.iiif[@use-version]", "2.1.1");
     }
-    
-
 
     /**
      * 

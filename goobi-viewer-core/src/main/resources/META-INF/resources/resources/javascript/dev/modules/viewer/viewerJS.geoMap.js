@@ -229,9 +229,12 @@ var viewerJS = ( function( viewer ) {
         }
     }
     
-    viewer.GeoMap.prototype.getViewAroundFeatures = function(features, defaultZoom) {
+    viewer.GeoMap.prototype.getViewAroundFeatures = function(features, defaultZoom, zoomPadding) {
         if(!defaultZoom) {
             defaultZoom = this.map.getZoom();
+        }
+        if(!zoomPadding) {
+        	zoomPadding = 0.2;
         }
         if(!features || features.length == 0) {
             return undefined;
@@ -244,7 +247,7 @@ var viewerJS = ( function( viewer ) {
             let center = bounds.getCenter();
             let diameter = this.getDiameter(bounds);
             return {
-                "zoom": diameter > 0 ?  Math.max(1, this.map.getBoundsZoom(bounds.pad(0.2))) : defaultZoom,
+                "zoom": diameter > 0 ?  Math.max(1, this.map.getBoundsZoom(bounds.pad(zoomPadding))) : defaultZoom,
                 "center": [center.lng, center.lat]
             }
         }
@@ -325,7 +328,6 @@ var viewerJS = ( function( viewer ) {
             	if(feature.properties && feature.properties.highlighted) {
 					let style = $.extend(true, {}, this.config.style);
 					style.color = this.config.style.highlightColor;
-            		console.log("get style for feature", feature, style, this.config.style);
 					return style;       		
             	} else {
 	            	return this.config.style;
@@ -335,7 +337,7 @@ var viewerJS = ( function( viewer ) {
             pointToLayer: function(geoJsonPoint, latlng) {
                 let marker = L.marker(latlng, {
                     draggable: this.config.allowMovingFeatures,
-                    icon: this.getMarkerIcon()
+                    icon: this.getMarkerIcon(geoJsonPoint.properties && geoJsonPoint.properties.highlighted)
                 });
                 return marker;
             }.bind(this),
@@ -402,8 +404,15 @@ var viewerJS = ( function( viewer ) {
         
         if(zoomToFeatures && features && features.length > 0) {
             let zoom = this.geoMap.getView().zoom;
-            let viewAroundFeatures = this.geoMap.getViewAroundFeatures(this.getFeatures(), zoom);
-            this.geoMap.setView(viewAroundFeatures);
+            let highlightedFeatures = features.filter(f => f.properties.highlighted);
+            //console.log(" highlightedFeatures", highlightedFeatures);
+            if(highlightedFeatures.length > 0) {
+            	let viewAroundFeatures = this.geoMap.getViewAroundFeatures(highlightedFeatures, zoom, 0.5);
+	            this.geoMap.setView(viewAroundFeatures);
+            } else {
+	            let viewAroundFeatures = this.geoMap.getViewAroundFeatures(features, zoom);
+	            this.geoMap.setView(viewAroundFeatures);
+            }
         }
         
     }
@@ -504,12 +513,16 @@ var viewerJS = ( function( viewer ) {
         return icon;
     }
     
-    viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function() {
+    viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function(highlighted) {
         if(this.config.markerIcon && !jQuery.isEmptyObject(this.config.markerIcon)) {
             let icon = L.ExtraMarkers.icon(this.config.markerIcon);
         	icon.options.name = "";	//remove name property to avoid it being displayed on the map
             if(this.config.markerIcon.shadow === false) {                
                 icon.options.shadowSize = [0,0];
+            }
+            if(highlighted) {
+            console.log(this.config.markerIcon.highlightColor);
+            	icon.options.markerColor = this.config.markerIcon.highlightColor;
             }
             return icon;
         } else {
@@ -539,6 +552,12 @@ var viewerJS = ( function( viewer ) {
         }
     }
 
+    viewer.GeoMap.prototype.normalizePoint = function(p) {
+//   		let wrapped = new L.latLng(Math.max(Math.min(p.lat, 90), -90), p.lng - Math.round(p.lng/360)*360);
+   		let wrapped = new L.latLng(Math.max(Math.min(p.lat, 90), -90), Math.max(Math.min(p.lng, 180), -180))
+    	//console.log("Point ",p, wrapped);
+    	return wrapped;
+    }
 
         
     viewer.GeoMap.prototype.getDiameter = function(bounds) {
@@ -595,9 +614,7 @@ var viewerJS = ( function( viewer ) {
 
     viewer.GeoMap.featureGroup.prototype.removeMarker = function(feature) {
         let marker = this.getMarker(feature.id);
-        console.log("remove marker", marker);
         marker.remove();
-        console.log("remaining markers", this.markers);
         let index = this.markers.indexOf(marker);
         this.markers.splice(index, 1);
     }

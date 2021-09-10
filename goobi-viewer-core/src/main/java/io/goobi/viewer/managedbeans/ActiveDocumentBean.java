@@ -2255,7 +2255,7 @@ public class ActiveDocumentBean implements Serializable {
             map.setType(GeoMapType.MANUAL);
             map.setShowPopover(true);
             map.setMarkerTitleField(null);
-            //map.setMarker("default");
+            map.setMarker("default");
 
             String mainDocQuery = String.format("PI:%s", pi);
             List<String> mainDocFields = PrettyUrlTools.getSolrFieldsToDeterminePageType();

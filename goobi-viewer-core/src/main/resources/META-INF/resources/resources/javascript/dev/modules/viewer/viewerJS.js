@@ -481,11 +481,16 @@ var viewerJS = (function () {
 	viewer.handleFragmentAction = function() {
 		let hash = location.hash;
 		if(hash) {
-			let hashName = hash.replace(/=.*/, "");
+			let hashName = hash.replace(/[=:].*/, "");
 			switch(hashName) {
 				case "#feedback":
 					
 					$('#feedbackModal').modal();
+					let recipientMatch = hash.match(/recipient=([\w-]+)/);
+					if(recipientMatch && recipientMatch.length == 2) {
+						let recipient = recipientMatch[1];					
+						$('#feedbackModal .feedback-modal__recipient-dropdown').find('[data-recipient-id="'+recipient+'"]').attr('selected', 'selected');
+					}
 					$('#feedbackModal').on('hidden.bs.modal', function (e) {
 						history.replaceState({}, '', window.location.href.replace("#feedback", ""));
 					})

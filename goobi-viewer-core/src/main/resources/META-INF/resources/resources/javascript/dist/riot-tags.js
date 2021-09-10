@@ -2597,23 +2597,30 @@ this.setSearchArea = function(layer) {
     switch(type) {
         case "polygon":
         case "rectangle":
-	        let vertices = [...layer.getLatLngs()[0]];
+            let origLayer = L.polygon(layer.getLatLngs());
+            let wrappedCenter = this.geoMap.map.wrapLatLng(layer.getCenter());
+            let distance = layer.getCenter().lng - wrappedCenter.lng;
+
+	        let vertices = [...layer.getLatLngs()[0]].map(p => L.latLng(p.lat, p.lng-distance));
+
 	        if(vertices[0] != vertices[vertices.length-1]) {
 	        	vertices.push(vertices[0]);
 	        }
+
 	        this.notifyFeatureSet({
 	           type : type,
-	           vertices: vertices.map(p => [p.lat, p.lng])
+	           vertices: vertices.map(p => this.geoMap.normalizePoint(p)).map(p => [p.lat, p.lng])
 	        })
 	        break;
         case "circle":
-            let bounds = layer.getBounds();
+            let bounds = this.geoMap.map.wrapLatLngBounds(layer.getBounds());
+            let center = this.geoMap.map.wrapLatLng(layer.getLatLng());
             let circumgon = this.createCircumgon(bounds.getCenter(), bounds.getSouthWest(), bounds.getSouthWest(), 16);
             let diameterM = bounds.getSouthWest().distanceTo(bounds.getNorthWest());
             this.notifyFeatureSet({
                 type : "circle",
-                vertices: circumgon.map(p => [p.lat, p.lng]),
-                center: layer.getLatLng(),
+                vertices: circumgon.map(p => this.geoMap.normalizePoint(p)).map(p => [p.lat, p.lng]),
+                center: center,
             	radius: layer.getRadius()
             })
             break;

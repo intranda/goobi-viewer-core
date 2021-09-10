@@ -164,8 +164,6 @@
 
         <widgetComponent:widget_searchResultNavigation />
 
-        <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
-
         <widgetComponent:widget_metadata />
         
         <widgetComponent:widget_geoMap 
@@ -179,6 +177,8 @@
         highlightDocumentId="#{activeDocumentBean.logid}"/>
 
         <widgetComponent:widget_annotations />
+        
+        <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
 
         <widgetComponent:widget_usage />
 

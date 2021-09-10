@@ -262,12 +262,14 @@ public class ConfigurationTest extends AbstractTest {
             EmailRecipient recipient = result.get(0);
             Assert.assertEquals("Everyone", recipient.getLabel());
             Assert.assertEquals("everyone@example.com", recipient.getEmailAddress());
+            Assert.assertEquals("genId_1", recipient.getId());
             Assert.assertTrue(recipient.isDefaultRecipient());
         }
         {
             EmailRecipient recipient = result.get(1);
             Assert.assertEquals("someone@example.com", recipient.getLabel()); // No label defined, using address
             Assert.assertEquals("someone@example.com", recipient.getEmailAddress());
+            Assert.assertEquals("someid", recipient.getId());
             Assert.assertFalse(recipient.isDefaultRecipient());
         }
     }
