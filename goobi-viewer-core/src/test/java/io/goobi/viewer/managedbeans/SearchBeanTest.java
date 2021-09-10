@@ -791,10 +791,10 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#getExactSearchString()
-     * @verifies not url escape string
+     * @verifies url escape string
      */
     @Test
-    public void getExactSearchString_shouldNotUrlEscapeString() throws Exception {
+    public void getExactSearchString_shouldUrlEscapeString() throws Exception {
         SearchBean sb = new SearchBean();
         sb.setExactSearchString("PI:*");
         Assert.assertEquals("PI%3A*", sb.getExactSearchString());
@@ -809,5 +809,16 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchBean sb = new SearchBean();
         sb.setExactSearchString("PI:foo/bar");
         Assert.assertEquals("PI%3Afoo" + BeanUtils.SLASH_REPLACEMENT + "bar", sb.getExactSearchString());
+    }
+
+    /**
+     * @see SearchBean#setExactSearchString(String)
+     * @verifies perform double unescaping if necessary
+     */
+    @Test
+    public void setExactSearchString_shouldPerformDoubleUnescapingIfNecessary() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setExactSearchString("SUPERDEFAULT%25253A%2525281234xyz%252529");
+        Assert.assertEquals("SUPERDEFAULT%3A%281234xyz%29", sb.getExactSearchString()); // getter should return single encoding
     }
 }

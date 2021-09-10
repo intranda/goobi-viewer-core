@@ -1174,7 +1174,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * {@inheritDoc}
      * 
      * @should escape critical chars
-     * @should not url escape string
+     * @should url escape string
      */
     @Override
     public String getExactSearchString() {
@@ -1184,6 +1184,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("getExactSearchString: {}", searchStringInternal);
         String ret = BeanUtils.escapeCriticalUrlChracters(searchStringInternal);
         try {
+            // Escape the query here, otherwise Rewrite will spam warnings into catalina.out
             if (!StringTools.isStringUrlEncoded(ret, URL_ENCODING)) {
                 // logger.trace("url pre-encoding: {}", ret);
                 ret = URLEncoder.encode(ret, URL_ENCODING);
@@ -1200,6 +1201,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * drill-down, etc.
      *
      * @param inSearchString a {@link java.lang.String} object.
+     * @should perform double unescaping if necessary
      */
     public void setExactSearchString(String inSearchString) {
         logger.debug("setExactSearchString: {}", inSearchString);
