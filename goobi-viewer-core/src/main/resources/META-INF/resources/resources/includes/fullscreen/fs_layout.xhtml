@@ -118,15 +118,22 @@
 					<!-- RECORD NOTES -->
 					<c:set var="recordNotes" value="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}"/>
                     <c:if test="#{not empty recordNotes}">
-	                    <div id="panel-10" class="fullscreen__view-sidebar-accordeon-panel fs-record-notes">
-	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
-	                            <span>#{msg.cms__record_notes__title_plural}</span>
-	                        </h3>
-	
-	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
-	                            <widgetComponent:widget_recordNotes notes="#{recordNotes}" />
-	                        </div>
-	                    </div>
+	                    <ui:repeat var="note" varStatus="status" value="#{recordNotes}">
+		                    <div id="panel-note-#{status.index+1}" class="fullscreen__view-sidebar-accordeon-panel fs-record-note">
+		                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+		                            <span>#{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}</span>
+		                        </h3>
+		
+		                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
+		                            <h:outputText escape="false" value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}" />
+			                    	<ui:fragment rendered="#{userBean.admin}">
+					                    <div class="widget-record-notes__action-link">
+					                        	<a href="#{request.contextPath}/admin/cms/recordnotes/edit/#{note.id}">#{msg.edit}</a>
+					                    </div>
+				                    </ui:fragment>
+		                        </div>
+		                    </div>
+	                    </ui:repeat>
                     </c:if>
 	
                     <!-- DOWNLOADS -->
