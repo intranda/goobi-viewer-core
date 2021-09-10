@@ -59,9 +59,14 @@ var viewerJS = ( function( viewer ) {
         this.onMapRightclick = new rxjs.Subject();
         this.onMapClick = new rxjs.Subject();
         this.onMapMove = new rxjs.Subject();
+        this.initialized = new Promise( (resolve, reject) => {
+        	this.resolveInitialization = resolve;
+        	this.rejectInitialization = reject;
+        });
 
-        this.layers.push(new viewer.GeoMap.featureGroup(this, this.config.layer));
+        new viewer.GeoMap.featureGroup(this, this.config.layer);
 
+		viewer.GeoMap.allMaps.push(this);
     }
     
     viewer.GeoMap.prototype.init = function(view, features) {
@@ -104,10 +109,10 @@ var viewerJS = ( function( viewer ) {
             // it should however be set to true when a mobile version of Safari is used
             tap: viewer.iOS() ? true : false
         });
+        this.htmlElement = this.map._container;
         
-        let defer = Q.defer();
         this.map.whenReady(e => {
-        	defer.resolve(this);
+        	this.resolveInitialization(this);
         });
         
         if(this.config.mapBox) {
@@ -149,16 +154,11 @@ var viewerJS = ( function( viewer ) {
     
         
        	this.layers[0].init(features);
-        if(features && features.length > 0) {
-            let zoom = view ? view.zoom : this.config.initialView.zoom;
-            let viewAroundFeatures = this.getViewAroundFeatures(this.layers[0].getFeatures(), zoom);
-            this.setView(viewAroundFeatures);
-        } else if(view){                                                    
+        if(view && (!features || features.length == 0)) {
             this.setView(view);
         }
-
         
-        return defer.promise;
+        return this.initialized;
         
     }
     
@@ -191,8 +191,6 @@ var viewerJS = ( function( viewer ) {
     		console.warn("Cannot initialize geocoder: No mapbox token");
     	}
     }
-
-
     
     /**
      * Center must be an array containing longitude andlatitude as numbers - in that order
@@ -202,6 +200,7 @@ var viewerJS = ( function( viewer ) {
         if(_debug) {
             console.log("set view to ", view);
         }
+        this.view = view;
         if(!view) {
             return;
         } else if(typeof view === "string") {
@@ -291,6 +290,7 @@ var viewerJS = ( function( viewer ) {
         
     viewer.GeoMap.featureGroup = function(geoMap, config) {
  		this.geoMap = geoMap;
+ 		this.geoMap.layers.push(this);
         this.config = $.extend( true, {}, _defaults_featureGroup, geoMap.config.layer, config );
         if(_debug) {
             console.log("create featureGroup with config ",  config);
@@ -402,11 +402,19 @@ var viewerJS = ( function( viewer ) {
             })
         }
         
-        if(zoomToFeatures && features && features.length > 0) {
+        if(zoomToFeatures) {
+        	this.setViewToFeatures(true);
+        }
+        
+    }
+    
+    viewer.GeoMap.featureGroup.prototype.setViewToFeatures = function(setViewToHighlighted) {
+    	let features = this.markers.map(marker => marker.feature);
+    	if(features.length > 0) {
             let zoom = this.geoMap.getView().zoom;
             let highlightedFeatures = features.filter(f => f.properties.highlighted);
             //console.log(" highlightedFeatures", highlightedFeatures);
-            if(highlightedFeatures.length > 0) {
+            if(setViewToHighlighted && highlightedFeatures.length > 0) {
             	let viewAroundFeatures = this.geoMap.getViewAroundFeatures(highlightedFeatures, zoom, 0.5);
 	            this.geoMap.setView(viewAroundFeatures);
             } else {
@@ -414,8 +422,13 @@ var viewerJS = ( function( viewer ) {
 	            this.geoMap.setView(viewAroundFeatures);
             }
         }
-        
     }
+    
+        viewer.GeoMap.featureGroup.prototype.isEmpty = function() {
+        	return this.markers.length == 0 && this.areas.length == 0;
+        }
+    
+    
     
     viewer.GeoMap.featureGroup.prototype.compareFeatures = function(f1, f2) {
     
@@ -695,6 +708,10 @@ var viewerJS = ( function( viewer ) {
 	    this.onFeatureClick.complete();
         this.onFeatureMove.complete();	
     }
+    
+    //static methods to get all loaded maps
+    viewer.GeoMap.allMaps = [];
+    
 
     return viewer;
     
