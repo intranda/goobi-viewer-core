@@ -2601,7 +2601,7 @@ this.setSearchArea = function(layer) {
             let wrappedCenter = this.geoMap.map.wrapLatLng(layer.getCenter());
             let distance = layer.getCenter().lng - wrappedCenter.lng;
 
-	        let vertices = [...layer.getLatLngs()[0]].map(p => L.latLng(p.lat, p.lng-distance));
+	        let vertices = [...layer.getLatLngs()[0]].map(p => L.latLng(p.lat, p.lng-distance)).map(p => this.geoMap.normalizePoint(p));
 
 	        if(vertices[0] != vertices[vertices.length-1]) {
 	        	vertices.push(vertices[0]);
@@ -2609,7 +2609,7 @@ this.setSearchArea = function(layer) {
 
 	        this.notifyFeatureSet({
 	           type : type,
-	           vertices: vertices.map(p => this.geoMap.normalizePoint(p)).map(p => [p.lat, p.lng])
+	           vertices: vertices.map(p => [p.lat, p.lng])
 	        })
 	        break;
         case "circle":

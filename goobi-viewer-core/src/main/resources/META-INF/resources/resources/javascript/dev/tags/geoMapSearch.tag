@@ -222,7 +222,7 @@ setSearchArea(layer) {
             let wrappedCenter = this.geoMap.map.wrapLatLng(layer.getCenter());
             let distance = layer.getCenter().lng - wrappedCenter.lng;
             //console.log("distance ", wrappedCenter.lng, layer.getCenter().lng, distance);
-	        let vertices = [...layer.getLatLngs()[0]].map(p => L.latLng(p.lat, p.lng-distance));
+	        let vertices = [...layer.getLatLngs()[0]].map(p => L.latLng(p.lat, p.lng-distance)).map(p => this.geoMap.normalizePoint(p));
             //console.log("moved ", origLayer, " by ", distance, " from ", layer.getLatLngs()[0], " to ", vertices);
 	        if(vertices[0] != vertices[vertices.length-1]) {	            
 	        	vertices.push(vertices[0]);
@@ -230,7 +230,7 @@ setSearchArea(layer) {
 	        //console.log("drew feature ", vertices);
 	        this.notifyFeatureSet({
 	           type : type,
-	           vertices: vertices.map(p => this.geoMap.normalizePoint(p)).map(p => [p.lat, p.lng])
+	           vertices: vertices.map(p => [p.lat, p.lng])
 	        })
 	        break;
         case "circle":

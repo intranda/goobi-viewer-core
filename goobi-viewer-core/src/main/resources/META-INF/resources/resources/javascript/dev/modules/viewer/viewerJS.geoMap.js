@@ -32,7 +32,7 @@ var viewerJS = ( function( viewer ) {
     
     var _defaults = {
             mapId : "geomap",
-            minZoom : 0,
+            minZoom : 1,
             maxZoom : 19,
             initialView : {
                 zoom: 5,
@@ -114,7 +114,7 @@ var viewerJS = ( function( viewer ) {
         this.map.whenReady(e => {
         	this.resolveInitialization(this);
         });
-        
+                
         if(this.config.mapBox) {
             let url = 'https://api.mapbox.com/styles/v1/{1}/{2}/tiles/{z}/{x}/{y}?access_token={3}'
                 .replace("{1}", this.config.mapBox.user)
@@ -123,6 +123,8 @@ var viewerJS = ( function( viewer ) {
             var mapbox = new L.TileLayer(url, {
                         tileSize: 512,
                         zoomOffset: -1,
+                        minZoom: this.config.minZoom,
+                		maxZoom: this.config.maxZoom,
                         attribution: '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     });
             if(_debug) {                
@@ -217,7 +219,7 @@ var viewerJS = ( function( viewer ) {
             } else {                
                 this.map.panTo(center);
             }
-        } else if(view.zoom) {            
+        } else if(view.zoom) {   
             this.map.setZoom(view.zoom);
         }
     }
