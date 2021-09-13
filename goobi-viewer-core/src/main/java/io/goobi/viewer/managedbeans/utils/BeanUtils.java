@@ -488,6 +488,20 @@ public class BeanUtils {
 
         return null;
     }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> Optional<T> getBeanFromRequest(HttpServletRequest request, String beanName, Class<T> clazz) {
+        if (request != null && request.getSession() != null) {
+           Object bean = request.getSession().getAttribute(beanName);
+           if(bean != null && bean.getClass().equals(clazz)) {
+               return Optional.of(bean).map(o -> (T)o);
+           } else {
+               return findInstanceInSessionAttributes(request, clazz);
+           }
+        }
+
+        return Optional.empty();
+    }
 
     /**
      * <p>
@@ -518,17 +532,17 @@ public class BeanUtils {
         return escapeCriticalUrlChracters(value, false);
     }
 
-    public static Optional<Object> findInstanceInSessionAttributes(HttpServletRequest request, Class clazz) {
+    public static <T> Optional<T> findInstanceInSessionAttributes(HttpServletRequest request, Class<T> clazz) {
         Enumeration<String> attributeNames = request.getSession().getAttributeNames();
         while(attributeNames.hasMoreElements()) {
             String attributeName = attributeNames.nextElement();
             Object attributeValue = request.getSession().getAttribute(attributeName);
             if(attributeValue != null && attributeValue.getClass().equals(clazz)) {
-                return  Optional.of(attributeValue);
+                return  Optional.of(attributeValue).map(o -> (T)o);
             } else if(attributeValue != null && attributeValue instanceof SerializableContextualInstance) {
                 Object instance = ((SerializableContextualInstance)attributeValue).getInstance();
                 if(instance != null && instance.getClass().equals(clazz)) {
-                    return Optional.of(instance);
+                    return Optional.of(instance).map(o -> (T)o);
                 }
             }
         }
