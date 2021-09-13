@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ocpsoft.pretty.PrettyContext;
+import com.sun.faces.context.RequestMap;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -308,15 +309,14 @@ public class UserBean implements Serializable {
      * 
      * @param provider
      * @param result
+     * @param loginRequest 
      * @throws IllegalStateException
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
         HttpServletResponse response = result.getResponse();
         HttpServletRequest request = result.getRequest();
         try {
-
             Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
-
             if (result.isRefused()) {
                 Messages.error("errLoginWrong");
             } else if (result.getUser().map(u -> !u.isActive()).orElse(false)) {
@@ -334,7 +334,7 @@ public class UserBean implements Serializable {
                         // Exception if different user logged in
                         throw new AuthenticationProviderException("errLoginError");
                     }
-                    wipeSession(request);
+                    wipeSession(result.getRequest());
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(user, request);
                     // Update last login
                     user.setLastLogin(LocalDateTime.now());
@@ -367,10 +367,8 @@ public class UserBean implements Serializable {
                     SearchHelper.updateFilterQuerySuffix(request);
 
                     // Reset loaded user-generated content lists
-                    ContentBean contentBean = BeanUtils.getContentBean();
-                    if (contentBean != null) {
-                        contentBean.resetContentList();
-                    }
+                    BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class).ifPresent(ContentBean::resetContentList);
+
 
                     // Add this user to configured groups
                     if (provider.getAddUserToGroups() != null && !provider.getAddUserToGroups().isEmpty()) {
@@ -428,10 +426,7 @@ public class UserBean implements Serializable {
             wipeSession(request);
             SearchHelper.updateFilterQuerySuffix(request);
             // Reset loaded user-generated content lists
-            ContentBean contentBean = BeanUtils.getContentBean();
-            if (contentBean != null) {
-                contentBean.resetContentList();
-            }
+            BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class).ifPresent(ContentBean::resetContentList);
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
             throw new AuthenticationProviderException(e);
         }
@@ -521,9 +516,12 @@ public class UserBean implements Serializable {
             }
 
             try {
-                BeanUtils.getCmsBean().invalidate();
-                BeanUtils.getActiveDocumentBean().resetAccess();
-                BeanUtils.getSessionBean().cleanSessionObjects();
+                BeanUtils.getBeanFromRequest(request, "cmsBean", CmsBean.class)
+                .ifPresentOrElse(bean -> bean.invalidate(), () -> {throw new IllegalStateException("Cann access cmsBean to invalidate");});
+                BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
+                .ifPresentOrElse(bean -> bean.resetAccess(), () -> {throw new IllegalStateException("Cann access activeDocumentBean to resetAccess");});
+                BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
+                .ifPresentOrElse(bean -> bean.cleanSessionObjects(), () -> {throw new IllegalStateException("Cann access sessionBean to cleanSessionObjects");});
             } catch (Throwable e) {
                 logger.warn(e.getMessage());
             }
@@ -809,7 +807,7 @@ public class UserBean implements Serializable {
         if (StringUtils.isEmpty(url)) {
             // Accessing beans from a different thread will throw an unhandled exception that will result in a white screen when logging in
             try {
-                Optional.ofNullable(navigationHelper)
+                Optional.ofNullable(BeanUtils.getNavigationHelper())
                         .map(NavigationHelper::getCurrentPrettyUrl)
                         .ifPresent(u -> feedback.setUrl(u));
             } catch (Throwable e) {
