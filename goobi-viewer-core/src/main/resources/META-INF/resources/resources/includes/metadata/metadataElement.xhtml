@@ -13,6 +13,7 @@
 	    <ui:fragment rendered="#{!metadataElement.skip}">
             <c:forEach var="type" items="#{metadataElement.metadataTypes}">
                 <!-- METADATA ELEMENT -->
+                <div class="metadata__wrapper">
                     <h3 class="metadata__elements-h3">
                         <h:outputText rendered="#{fn:length(metadataElement.metadataTypes) > 0}"
                             value="#{msg[type.getTabName(metadataBean.activeMetadataView.index)]}" />
@@ -62,8 +63,9 @@
                                                 
                         </h:panelGroup>
                     </c:forEach>
-
+            </div>
             </c:forEach>
+
         </ui:fragment>
 </ui:composition>
 
