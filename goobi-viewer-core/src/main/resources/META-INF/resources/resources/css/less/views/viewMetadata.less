@@ -57,6 +57,9 @@
 			font-size: 1.4rem;
 		}
 	}
+	&__wrapper {
+		margin-bottom: 2rem;
+	}
 	&__element,
 	&__event {}
 	&__element-dl,
@@ -95,17 +98,7 @@
 				grid-template-columns: 230px auto;
 			}
 			dt {
-				// padding-left: 2rem;
 				&::before {
-//					content: "\f148";
-//					display: inline-block;
-//					font: normal normal normal 14px/1 FontAwesome;
-//					font-size: 14px;
-//					font-size: inherit;
-//					text-rendering: auto;
-//					margin-right: 0.7rem;
-//					transform: rotate(90deg);
-//					opacity: 0.3;
 				}
 			}
 		}
@@ -136,9 +129,6 @@
 	}
 	&__elements-h3 {
 		// display: none;
-		// DELETE NEXT LINE
-		display: block !important;
-		margin-top: 2rem;
 	}
 	&__element-wrapper-single {
 		background: white;
@@ -169,8 +159,8 @@
 	&__event-value {}
 	&__grouped-wrapper {
 		background: white;
+		margin-top: 1rem;
 		padding: 1.5rem;
-		padding-top: 0;
 		dt, dd {
 			font-size: 1.3rem;
 		}
@@ -196,9 +186,8 @@
 	&__heading {
 		font-size: 1.6rem;
 		font-weight: 700;
-		margin-top: 1rem;
 		background: white;
-		padding: 1rem 1.5rem;
+		padding-bottom: 1.5rem;
 		margin-bottom: 0;
 		position: relative;
 		&.level-1,
@@ -206,25 +195,19 @@
 			&:before {
 				content: "\f148";
 				display: inline-block;
-				font: normal normal normal 14px/1 FontAwesome;
-				    font-size: 14px;
-				font-size: 14px;
-				font-size: inherit;
+				font-family: "FontAwesome";
+				font-size: 2.3rem;
 				text-rendering: auto;
-				margin-right: .7rem;
 				transform: rotate(90deg);
 				opacity: 1;
 				position: absolute;
-				left: -28px;
-				font-size: 20px;
-				top: 9px;
+				left: -43px;
+				top: -7px;
 			}
 		}
 		&.level-1 {
-			margin-left: 3rem;
 		}
 		&.level-2 {
-			margin-left: 6rem;
 		}
 	}
 }
