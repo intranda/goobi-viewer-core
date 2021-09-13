@@ -3696,7 +3696,16 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isUseViewerLocaleAsRecordLanguage() {
         return getLocalBoolean("viewer.useViewerLocaleAsRecordLanguage", false);
     }
-
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getFallbackDefaultLanguage() {
+        return getLocalString("viewer.fallbackDefaultLanguage", "en");
+    }
+    
     /**
      * <p>
      * getFeedbackEmailAddresses.

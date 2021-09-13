@@ -2477,6 +2477,16 @@ public class ConfigurationTest extends AbstractTest {
     public void isUseViewerLocaleAsRecordLanguage_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage());
     }
+    
+
+    /**
+     * @see Configuration#getFallbackDefaultLanguage()
+     * @verifies return correct value
+     */
+    @Test
+    public void getFallbackDefaultLanguage_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("de", DataManager.getInstance().getConfiguration().getFallbackDefaultLanguage());
+    }
 
     /**
      * @see Configuration#getSearchExcelExportFields()

@@ -174,6 +174,18 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
+     * Returns a locale for the configured fallback language. Does not use FacesContext.
+     * 
+     * @return Locale for the language code returned by the configuration getter
+     * @should return locale for configured fallback language
+     * @should return English if no fallback language configured
+     */
+    public static Locale getFallbackLocale() {
+        String fallbackLanguage = DataManager.getInstance().getConfiguration().getFallbackDefaultLanguage();
+        return Locale.forLanguageTag(fallbackLanguage);
+    }
+
+    /**
      * Loads resource bundles for the current locale and reloads them if the locale has since changed.
      * 
      * @param inLocale
@@ -592,6 +604,11 @@ public class ViewerResourceBundle extends ResourceBundle {
         return allLocales;
     }
 
+    /**
+     * 
+     * @param servletContext
+     * @return
+     */
     public static List<Locale> getAllLocales(ServletContext servletContext) {
         if (allLocales == null) {
             allLocales = getLocalesFromFacesConfig(servletContext);
@@ -644,7 +661,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * Get locales configured in faces-config, ordered by apprearance in file
+     * Get locales configured in faces-config, ordered by appearance in file
      * 
      * @return a list of Locale objects, or null if the list could not be retrieved
      */

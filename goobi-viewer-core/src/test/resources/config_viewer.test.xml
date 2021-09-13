@@ -373,6 +373,9 @@
 			also change the preferred language for record metadata. Default is false. -->
 		<useViewerLocaleAsRecordLanguage>true
 		</useViewerLocaleAsRecordLanguage>
+        
+        <!-- fallbackDefaultLanguage: Language that shall be used for locales in case FacesContext is unavailable. Default is 'en'. -->
+        <fallbackDefaultLanguage>de</fallbackDefaultLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
 		<theme mainTheme="mainTheme_value"

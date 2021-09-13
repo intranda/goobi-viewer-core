@@ -16,6 +16,7 @@
 package io.goobi.viewer.managedbeans.utils;
 
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -56,6 +57,7 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.SessionBean;
 import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
@@ -87,16 +89,16 @@ public class BeanUtils {
      * @return a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public static HttpServletRequest getRequest() {
-                
+
         SessionBean sb = getSessionBean();
         try {
-            if(sb != null) {
+            if (sb != null) {
                 return sb.getRequest();
-            }            
-        } catch(ContextNotActiveException e) {
-            
+            }
+        } catch (ContextNotActiveException e) {
+
         }
-        
+
         FacesContext context = FacesContext.getCurrentInstance();
         return getRequest(context);
     }
@@ -200,11 +202,46 @@ public class BeanUtils {
     }
 
     /**
+     * 
+     * @return
+     */
+    public static Locale getInitialLocale() {
+        Locale ret = null;
+        if (FacesContext.getCurrentInstance() != null) {
+            if (FacesContext.getCurrentInstance().getViewRoot() != null) {
+                // Currently selected locale in FacesContext
+                ret = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+            } else {
+                // Default locale from Faces config
+                ret = ViewerResourceBundle.getDefaultLocale();
+            }
+        }
+
+        if (ret == null) {
+            // Manually read Faces config file and return the first available locale
+            // TODO This probably won't return anything of no FacesContext is available
+            List<Locale> locales = ViewerResourceBundle.getLocalesFromFacesConfig(getServletContext());
+            if (locales != null && !locales.isEmpty()) {
+                ret = locales.get(0);
+            }
+        }
+
+        if (ret == null) {
+
+            // No Faces or servlet context available whatsoever - return locale for the configured default language.
+            ret = ViewerResourceBundle.getFallbackLocale();
+            logger.warn("Could not access FacesContext, using configured fallback locale: {}.", ret != null ? ret.getLanguage() : "NONE");
+        }
+
+        return ret;
+    }
+
+    /**
      * <p>
      * getLocale.
      * </p>
      *
-     * @return a {@link java.util.Locale} object.
+     * @return Current Locale in {@link NavigationHelper}; default locale if none found
      */
     public static Locale getLocale() {
         NavigationHelper nh = BeanUtils.getNavigationHelper();
@@ -212,7 +249,7 @@ public class BeanUtils {
             return nh.getLocale();
         }
 
-        return Locale.ENGLISH;
+        return getInitialLocale();
     }
 
     /**
@@ -302,7 +339,6 @@ public class BeanUtils {
         }
         return navigationHelper;
     }
-    
 
     /**
      * <p>
@@ -413,13 +449,13 @@ public class BeanUtils {
 
     public static SessionBean getSessionBean() {
         Object bean = getBeanByName("sessionBean", SessionBean.class);
-        if(bean != null) {
+        if (bean != null) {
             return (SessionBean) bean;
         } else {
             return new SessionBean();
         }
     }
-    
+
     /**
      * <p>
      * getImageDeliveryBean.
@@ -437,7 +473,7 @@ public class BeanUtils {
             } catch (ContextNotActiveException e) {
                 bean = new ImageDeliveryBean();
                 bean.init(
-                        DataManager.getInstance().getConfiguration(), 
+                        DataManager.getInstance().getConfiguration(),
                         DataManager.getInstance().getRestApiManager().getIIIFDataApiManager(),
                         DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null));
             }
@@ -477,27 +513,27 @@ public class BeanUtils {
      */
     public static UserBean getUserBeanFromRequest(HttpServletRequest request) {
         if (request != null && request.getSession() != null) {
-           Object bean = request.getSession().getAttribute("userBean");
-           if(bean != null) {
-               return (UserBean)bean;
-           } else {
-               return (UserBean) findInstanceInSessionAttributes(request, UserBean.class)
-                       .orElse(null);
-           }
+            Object bean = request.getSession().getAttribute("userBean");
+            if (bean != null) {
+                return (UserBean) bean;
+            } else {
+                return (UserBean) findInstanceInSessionAttributes(request, UserBean.class)
+                        .orElse(null);
+            }
         }
 
         return null;
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T> Optional<T> getBeanFromRequest(HttpServletRequest request, String beanName, Class<T> clazz) {
         if (request != null && request.getSession() != null) {
-           Object bean = request.getSession().getAttribute(beanName);
-           if(bean != null && bean.getClass().equals(clazz)) {
-               return Optional.of(bean).map(o -> (T)o);
-           } else {
-               return findInstanceInSessionAttributes(request, clazz);
-           }
+            Object bean = request.getSession().getAttribute(beanName);
+            if (bean != null && bean.getClass().equals(clazz)) {
+                return Optional.of(bean).map(o -> (T) o);
+            } else {
+                return findInstanceInSessionAttributes(request, clazz);
+            }
         }
 
         return Optional.empty();
@@ -534,21 +570,21 @@ public class BeanUtils {
 
     public static <T> Optional<T> findInstanceInSessionAttributes(HttpServletRequest request, Class<T> clazz) {
         Enumeration<String> attributeNames = request.getSession().getAttributeNames();
-        while(attributeNames.hasMoreElements()) {
+        while (attributeNames.hasMoreElements()) {
             String attributeName = attributeNames.nextElement();
             Object attributeValue = request.getSession().getAttribute(attributeName);
-            if(attributeValue != null && attributeValue.getClass().equals(clazz)) {
-                return  Optional.of(attributeValue).map(o -> (T)o);
-            } else if(attributeValue != null && attributeValue instanceof SerializableContextualInstance) {
-                Object instance = ((SerializableContextualInstance)attributeValue).getInstance();
-                if(instance != null && instance.getClass().equals(clazz)) {
-                    return Optional.of(instance).map(o -> (T)o);
+            if (attributeValue != null && attributeValue.getClass().equals(clazz)) {
+                return Optional.of(attributeValue).map(o -> (T) o);
+            } else if (attributeValue != null && attributeValue instanceof SerializableContextualInstance) {
+                Object instance = ((SerializableContextualInstance) attributeValue).getInstance();
+                if (instance != null && instance.getClass().equals(clazz)) {
+                    return Optional.of(instance).map(o -> (T) o);
                 }
             }
         }
         return Optional.empty();
     }
-    
+
     /**
      * <p>
      * escapeCriticalUrlChracters.
