@@ -666,6 +666,10 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @return a list of Locale objects, or null if the list could not be retrieved
      */
     public static List<Locale> getLocalesFromFacesConfig(ServletContext servletContext) {
+        if (servletContext == null) {
+            return getFacesLocales();
+        }
+        
         try {
             String webContentRoot = servletContext.getRealPath("resources/themes");
             Path facesConfigPath = Paths.get(webContentRoot).resolve("faces-config.xml");
