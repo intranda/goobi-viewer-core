@@ -1187,7 +1187,7 @@ public class SearchBean implements SearchInterface, Serializable {
             // Escape the query here, otherwise Rewrite will spam warnings into catalina.out
             if (!StringTools.isStringUrlEncoded(ret, URL_ENCODING)) {
                 // logger.trace("url pre-encoding: {}", ret);
-                ret = URLEncoder.encode(ret, URL_ENCODING);
+                ret = StringTools.encodeUrl(ret);
                 // logger.trace("url encoded: {}", ret);
             }
         } catch (UnsupportedEncodingException e) {
@@ -1223,7 +1223,7 @@ public class SearchBean implements SearchInterface, Serializable {
             logger.error(e.getMessage());
         }
         // Then unescape custom sequences
-        searchStringInternal = BeanUtils.unescapeCriticalUrlChracters(searchStringInternal);
+        searchStringInternal = StringTools.unescapeCriticalUrlChracters(searchStringInternal);
 
         // Parse search terms from the query (unescape spaces first)
         String discriminatorValue = null;
@@ -2465,13 +2465,13 @@ public class SearchBean implements SearchInterface, Serializable {
         basePath = ViewerPathBuilder.resolve(basePath, "-");
         // URL-encode query if not yet encoded
         String exactSearchString = getExactSearchString();
-        try {
-            if (!StringTools.isStringUrlEncoded(exactSearchString, URL_ENCODING)) {
-                exactSearchString = StringTools.encodeUrl(exactSearchString);
-            }
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage());
-        }
+        //        try {
+        //            if (!StringTools.isStringUrlEncoded(exactSearchString, URL_ENCODING)) {
+        //                exactSearchString = StringTools.encodeUrl(exactSearchString);
+        //            }
+        //        } catch (UnsupportedEncodingException e) {
+        //            logger.error(e.getMessage());
+        //        }
         basePath = ViewerPathBuilder.resolve(basePath, exactSearchString);
         basePath = ViewerPathBuilder.resolve(basePath, Integer.toString(getCurrentPage()));
         basePath = ViewerPathBuilder.resolve(basePath, getSortString());

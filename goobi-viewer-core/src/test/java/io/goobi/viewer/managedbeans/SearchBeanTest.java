@@ -26,7 +26,6 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -808,7 +807,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getExactSearchString_shouldEscapeCriticalChars() throws Exception {
         SearchBean sb = new SearchBean();
         sb.setExactSearchString("PI:foo/bar");
-        Assert.assertEquals("PI%3Afoo" + BeanUtils.SLASH_REPLACEMENT + "bar", sb.getExactSearchString());
+        Assert.assertEquals("PI%3Afoo" + StringTools.SLASH_REPLACEMENT + "bar", sb.getExactSearchString());
     }
 
     /**

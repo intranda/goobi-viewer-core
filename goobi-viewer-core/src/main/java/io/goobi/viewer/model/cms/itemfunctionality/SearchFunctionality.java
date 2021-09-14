@@ -389,13 +389,13 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
         // URL-encoder query, if necessary (otherwise, exceptions might occur)
         String queryString = getQueryString();
-        try {
-            if (!StringTools.isStringUrlEncoded(queryString, StringTools.DEFAULT_ENCODING)) {
-                queryString = URLEncoder.encode(queryString, StringTools.DEFAULT_ENCODING);
-            }
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage());
-        }
+        //        try {
+        //            if (!StringTools.isStringUrlEncoded(queryString, StringTools.DEFAULT_ENCODING)) {
+        //                queryString = URLEncoder.encode(queryString, StringTools.DEFAULT_ENCODING);
+        //            }
+        //        } catch (UnsupportedEncodingException e) {
+        //            logger.error(e.getMessage());
+        //        }
 
         path = ViewerPathBuilder.resolve(path, queryString);
         path = ViewerPathBuilder.resolve(path, Integer.toString(getPageNo()));

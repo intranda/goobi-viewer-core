@@ -992,7 +992,7 @@ public class CollectionView {
                     .toString();
         } else {
             String facetString = field + ":" + collection.getLuceneName();
-            String encFacetString = StringTools.encodeUrl(facetString);
+            String encFacetString = StringTools.encodeUrl(facetString, true);
             String ret = new StringBuilder(baseSearchUrl)
                     .append("-/-/1/")
                     .append(collection.getSortField())

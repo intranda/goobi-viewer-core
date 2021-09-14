@@ -27,23 +27,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSSidebarElement;
-import io.goobi.viewer.model.cms.CMSSidebarElementWithQuery;
-import io.goobi.viewer.model.cms.SidebarElementType;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -532,7 +528,7 @@ public class SearchFacets implements Serializable {
         }
         try {
             facetString = URLDecoder.decode(facetString, "utf-8");
-            facetString = BeanUtils.unescapeCriticalUrlChracters(facetString);
+            facetString = StringTools.unescapeCriticalUrlChracters(facetString);
             facetString = URLDecoder.decode(facetString, "utf-8");
         } catch (UnsupportedEncodingException e) {
         }
@@ -598,7 +594,7 @@ public class SearchFacets implements Serializable {
         if (StringUtils.isNotEmpty(updateValue) && !"-".equals(updateValue)) {
             try {
                 updateValue = URLDecoder.decode(updateValue, "utf-8");
-                updateValue = BeanUtils.unescapeCriticalUrlChracters(updateValue);
+                updateValue = StringTools.unescapeCriticalUrlChracters(updateValue);
             } catch (UnsupportedEncodingException e) {
             }
 

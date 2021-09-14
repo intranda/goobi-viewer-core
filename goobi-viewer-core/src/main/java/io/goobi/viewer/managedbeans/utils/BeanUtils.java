@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.BookmarkBean;
@@ -67,19 +68,6 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 public class BeanUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(BeanUtils.class);
-
-    /** Constant <code>SLASH_REPLACEMENT="U002F"</code> */
-    public static final String SLASH_REPLACEMENT = "U002F";
-    /** Constant <code>BACKSLASH_REPLACEMENT="U005C"</code> */
-    public static final String BACKSLASH_REPLACEMENT = "U005C";
-    /** Constant <code>PIPE_REPLACEMENT="U007C"</code> */
-    public static final String PIPE_REPLACEMENT = "U007C";
-    /** Constant <code>QUESTION_MARK_REPLACEMENT="U003F"</code> */
-    public static final String QUESTION_MARK_REPLACEMENT = "U003F";
-    /** Constant <code>PERCENT_REPLACEMENT="U0025"</code> */
-    public static final String PERCENT_REPLACEMENT = "U0025";
-    /** Constant <code>PLUS_REPLACEMENT="U0025"</code> */
-    public static final String PLUS_REPLACEMENT = "U002B";
 
     private static Locale defaultLocale = null;
 
@@ -565,7 +553,7 @@ public class BeanUtils {
      * @return a {@link java.lang.String} object.
      */
     public static String escapeCriticalUrlChracters(String value) {
-        return escapeCriticalUrlChracters(value, false);
+        return StringTools.escapeCriticalUrlChracters(value, false);
     }
 
     public static <T> Optional<T> findInstanceInSessionAttributes(HttpServletRequest request, Class<T> clazz) {
@@ -583,55 +571,6 @@ public class BeanUtils {
             }
         }
         return Optional.empty();
-    }
-
-    /**
-     * <p>
-     * escapeCriticalUrlChracters.
-     * </p>
-     *
-     * @param value a {@link java.lang.String} object.
-     * @should replace characters correctly
-     * @param escapePercentCharacters a boolean.
-     * @return a {@link java.lang.String} object.
-     */
-    public static String escapeCriticalUrlChracters(String value, boolean escapePercentCharacters) {
-        if (value == null) {
-            throw new IllegalArgumentException("value may not be null");
-        }
-
-        value = value.replace("/", SLASH_REPLACEMENT)
-                .replace("\\", BACKSLASH_REPLACEMENT)
-                .replace("|", PIPE_REPLACEMENT)
-                .replace("%7C", PIPE_REPLACEMENT)
-                .replace("?", QUESTION_MARK_REPLACEMENT)
-                .replace("+", PLUS_REPLACEMENT);
-        if (escapePercentCharacters) {
-            value = value.replace("%", PERCENT_REPLACEMENT);
-        }
-        return value;
-    }
-
-    /**
-     * <p>
-     * unescapeCriticalUrlChracters.
-     * </p>
-     *
-     * @param value a {@link java.lang.String} object.
-     * @should replace characters correctly
-     * @return a {@link java.lang.String} object.
-     */
-    public static String unescapeCriticalUrlChracters(String value) {
-        if (value == null) {
-            throw new IllegalArgumentException("value may not be null");
-        }
-
-        return value.replace(SLASH_REPLACEMENT, "/")
-                .replace(BACKSLASH_REPLACEMENT, "\\")
-                .replace(PIPE_REPLACEMENT, "|")
-                .replace(QUESTION_MARK_REPLACEMENT, "?")
-                .replace(PERCENT_REPLACEMENT, "%")
-                .replace(PLUS_REPLACEMENT, "+");
     }
 
     /**
