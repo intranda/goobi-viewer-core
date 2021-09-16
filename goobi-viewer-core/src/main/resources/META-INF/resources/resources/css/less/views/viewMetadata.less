@@ -10,6 +10,11 @@
 	&__title-wrapper {
 		display: flex;
 		margin-bottom: 1.5rem;
+		& + .metadata__wrapper {
+			.metadata__elements-h3:first-child {
+				margin-top: 1rem;
+			}
+		}
 	}
 	&__title {
 		flex: 0 0 calc(100% - 25px);
@@ -58,7 +63,7 @@
 		}
 	}
 	&__wrapper {
-		margin-bottom: 2rem;
+		margin-bottom: 1rem;
 	}
 	&__element,
 	&__event {}
@@ -128,7 +133,9 @@
 		}
 	}
 	&__elements-h3 {
-		// display: none;
+		display: none;
+		margin-bottom: 1rem;
+		margin-top: 3.5rem;
 	}
 	&__element-wrapper-single {
 		background: white;
