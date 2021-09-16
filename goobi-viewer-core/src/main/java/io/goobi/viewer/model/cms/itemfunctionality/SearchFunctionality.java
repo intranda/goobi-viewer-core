@@ -42,6 +42,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.maps.GeoMap;
+import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchInterface;
@@ -509,6 +510,11 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     @Override
     public boolean isSearchInDcFlag() {
         return getSearchBean().isSearchInDcFlag();
+    }
+    
+    @Override
+    public boolean isSearchInFacetFieldFlag(String fieldName) {
+        return getSearchBean().isSearchInFacetFieldFlag(fieldName);
     }
 
     /* (non-Javadoc)

@@ -893,6 +893,17 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return false;
     }
+    
+    @Override
+    public boolean isSearchInFacetFieldFlag(String fieldName) {
+        for (IFacetItem item : facets.getCurrentFacets()) {
+            if (item.getField().equals(fieldName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * Getter for the invisible (empty) search string. Used for the search field widget for when no search input display is desired.
