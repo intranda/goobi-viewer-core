@@ -11,11 +11,16 @@
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 	
 	    <ui:fragment rendered="#{!metadataElement.skip}">
+	    <div class="metadata_element__wrapper">
+            <h3 class="metadata__elements-h3">
+                <h:outputText rendered="#{!metadataElement.hasMetadataTypeLabels(metadataBean.activeMetadataView.index)}" 
+                	value="#{msg[metadataElement.docStructType]}" />
+            </h3>
             <c:forEach var="type" items="#{metadataElement.metadataTypes}">
                 <!-- METADATA ELEMENT -->
                 <div class="metadata__wrapper">
                     <h3 class="metadata__elements-h3">
-                        <h:outputText rendered="#{fn:length(metadataElement.metadataTypes) > 0}"
+                        <h:outputText rendered="#{not empty type.getTabName(metadataBean.activeMetadataView.index)}"
                             value="#{msg[type.getTabName(metadataBean.activeMetadataView.index)]}" />
                     </h3>
                     
@@ -65,7 +70,7 @@
                     </c:forEach>
             </div>
             </c:forEach>
-
+			</div>
         </ui:fragment>
 </ui:composition>
 

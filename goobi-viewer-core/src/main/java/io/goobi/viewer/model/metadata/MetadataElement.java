@@ -49,10 +49,10 @@ public class MetadataElement {
 
         private static final String KEY_ROOT = "metadataTab";
 
-        private int type = 0;
+        private int type;
 
         public MetadataType() {
-            // the emptiness inside
+            this.type = 0;
         }
 
         public MetadataType(int type) {
@@ -129,7 +129,13 @@ public class MetadataElement {
          * @should return correct message key
          */
         public String getTabName(int viewIndex) {
-            return KEY_ROOT + "_" + viewIndex + "_" + type;
+            String key = KEY_ROOT + "_" + viewIndex + "_" + type;
+            ;
+            if(ViewerResourceBundle.getAllKeys().contains(key)) {
+                return key;
+            } else {
+                return "";
+            }
         }
 
         public void setTabName(String tabName) {
@@ -314,6 +320,10 @@ public class MetadataElement {
         }
 
         return metadataTypes;
+    }
+    
+    public boolean hasMetadataTypeLabels(int viewIndex) {
+        return getMetadataTypes().stream().anyMatch(type -> StringUtils.isNotBlank(type.getTabName(viewIndex)));
     }
 
     /**
