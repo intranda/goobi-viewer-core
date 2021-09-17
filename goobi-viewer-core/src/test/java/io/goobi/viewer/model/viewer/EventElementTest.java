@@ -1,5 +1,5 @@
 /**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
@@ -54,5 +54,30 @@ public class EventElementTest extends AbstractTest {
         EventElement ee = new EventElement(doc, null);
         Assert.assertNotNull(ee.getDateEnd());
         Assert.assertEquals("2018-11-23", DateTools.format(ee.getDateEnd(), DateTools.formatterISO8601Date, false));
+    }
+
+    /**
+     * @see EventElement#getLabel()
+     * @verifies include type
+     */
+    @Test
+    public void getLabel_shouldIncludeType() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.EVENTTYPE, "Creation");
+        EventElement ee = new EventElement(doc, null);
+        Assert.assertEquals("Creation", ee.getLabel());
+    }
+
+    /**
+     * @see EventElement#getLabel()
+     * @verifies not include date
+     */
+    @Test
+    public void getLabel_shouldNotIncludeDate() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.EVENTTYPE, "Creation");
+        doc.setField(SolrConstants.EVENTDATESTART, "2021-09-17");
+        EventElement ee = new EventElement(doc, null);
+        Assert.assertEquals("Creation", ee.getLabel());
     }
 }

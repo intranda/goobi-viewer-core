@@ -204,13 +204,15 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @should include type
+     * @should not include date
      */
     public String getLabel() {
         String type = getType();
         String date = getDisplayDate();
-        if (StringUtils.isNotEmpty(date)) {
-            return new StringBuilder(type).append(" (").append(date).append(')').toString();
-        }
+        //        if (StringUtils.isNotEmpty(date)) {
+        //            return new StringBuilder(type).append(" (").append(date).append(')').toString();
+        //        }
         return type;
     }
 
