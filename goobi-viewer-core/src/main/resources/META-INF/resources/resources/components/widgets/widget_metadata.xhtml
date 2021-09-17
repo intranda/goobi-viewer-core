@@ -65,18 +65,17 @@
 				<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}">
                 
                     <!-- LIDO event sidebar metadata (event metadata explicitly configured in the sidebar metadata list) -->
-                    <h:panelGroup rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0}">
-                        <dl>
-                            <c:forEach items="#{metadataBean.events}" var="event">
+                    <ui:fragment rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0}">
+                        <div id="widgetMetadata" class="widget widget-metadata">
+                            <ui:repeat value="#{metadataBean.events}" var="event">
                                 <ui:fragment rendered="#{event.hasSidebarMetadata}">
-                                    <dt>
-                                        <h:outputText value="#{msg[event.label]}" escape="false" />
-                                    </dt>
+                                <h3>#{msg[event.label]}</h3>
+                                <dl>
                                     <ui:repeat value="#{event.sidebarMetadata}" var="metadata">
                                         <h:panelGroup rendered="#{!metadata.blank}">
-                                            <dd>
+                                            <dt>
                                                 <h:outputText value="#{msg[metadata.label]}:" escape="false" />
-                                            </dd>
+                                            </dt>
                                             <h:panelGroup>
                                                 <dd>
                                                     <ui:repeat value="#{metadata.values}" var="val">
@@ -90,10 +89,11 @@
                                             </h:panelGroup>
                                         </h:panelGroup>
                                     </ui:repeat>
+                                    </dl>
                                 </ui:fragment>
-                            </c:forEach>
-                        </dl>
-                    </h:panelGroup>
+                            </ui:repeat>
+                        </div>
+                    </ui:fragment>
                     
                 </ui:fragment>
             

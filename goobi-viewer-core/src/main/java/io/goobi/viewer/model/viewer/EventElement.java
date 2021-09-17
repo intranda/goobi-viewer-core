@@ -106,6 +106,10 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, type);
         populateMetadata(metadata, type, doc, locale);
         sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(type);
+        if (sidebarMetadata.isEmpty()) {
+            // Use default if no elements are defined for the current event type
+            sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate("_DEFAULT");
+        }
         populateMetadata(sidebarMetadata, type, doc, locale);
     }
 
@@ -209,7 +213,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      */
     public String getLabel() {
         String type = getType();
-        String date = getDisplayDate();
+        //        String date = getDisplayDate();
         //        if (StringUtils.isNotEmpty(date)) {
         //            return new StringBuilder(type).append(" (").append(date).append(')').toString();
         //        }
