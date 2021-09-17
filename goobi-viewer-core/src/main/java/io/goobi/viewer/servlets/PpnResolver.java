@@ -99,13 +99,6 @@ public class PpnResolver extends HttpServlet implements Serializable {
             }
         }
 
-        // // 5. redirect or forward using the target field value
-        // if (DO_REDIRECT) {
-        // response.sendRedirect(result);
-        // } else {
-        // getServletContext().getRequestDispatcher(result).forward(request, response);
-        // }
-
         // 3. evaluate the search
         try {
             String query = "+" + SolrConstants.PI + ":\"" + identifier + "\"" + SearchHelper.getAllSuffixes(request, false, false);
@@ -117,7 +110,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
                 return;
             } else if (hits.getNumFound() > 1) {
-                // 3.2 show multiple match, that indicates corrupted indexer
+                // 3.2 show multiple match, that indicates corrupted index
                 response.sendError(HttpServletResponse.SC_CONFLICT, ERRTXT_MULTIMATCH);
                 return;
             }

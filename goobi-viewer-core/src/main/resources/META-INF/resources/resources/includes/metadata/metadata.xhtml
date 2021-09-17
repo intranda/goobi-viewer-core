@@ -39,34 +39,40 @@
             </ui:include>
         </c:forEach>
 
+        <!-- EVENT METADATA -->
         <c:forEach items="#{metadataBean.events}" var="event">
-            <!-- METADATA EVENT -->
             <div class="metadata__events">
-                <ui:repeat value="#{event.metadata}" var="metadata">
-                    <h:panelGroup rendered="#{!metadata.blank}">
+                <div class="metadata__elements metadata__elements-level-0 metadata__grouped-wrapper">
+            
+                <h4 class="metadata__heading level-0">
+                    <h:outputText value="#{msg[event.label]}" escape="false" />
+                </h4>
+            
+                <c:forEach items="#{event.metadata}" var="metadata">
+                    <ui:fragment rendered="#{!metadata.blank}">
                         <div class="metadata__event">
                             <dl class="dl-horizontal metadata__event-dl">
                                 <dt title="#{msg[metadata.label]}">
                                     <h:outputText value="#{msg[metadata.label]}:" escape="false" />
                                 </dt>
                                 <!-- grouped="true" -->
-                                <h:panelGroup rendered="#{metadata.group}">
+                                <ui:fragment rendered="#{metadata.group}">
                                     <dd>
-                                        <ui:repeat value="#{metadata.values}" var="val">
+                                        <c:forEach items="#{metadata.values}" var="val">
                                             <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
                                                 <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
                                                     <f:param value="#{val.getParamLabelWithColon(ind)}" />
                                                     <f:param value="#{val.getComboValueShort(ind)}" />
                                                 </c:forEach>
                                             </h:outputFormat>
-                                        </ui:repeat>
+                                        </c:forEach>
                                     </dd>
-                                </h:panelGroup>
+                                </ui:fragment>
     
                                 <!-- grouped="false" -->
-                                <h:panelGroup rendered="#{!metadata.group}">
+                                <ui:fragment rendered="#{!metadata.group}">
                                     <dd>
-                                        <ui:repeat value="#{metadata.values}" var="val">
+                                        <c:forEach items="#{metadata.values}" var="val">
                                             <span class="metadata__element-value">
                                                 <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
                                                     <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
@@ -74,13 +80,14 @@
                                                     </c:forEach>
                                                 </h:outputFormat>
                                             </span>
-                                        </ui:repeat>
+                                        </c:forEach>
                                     </dd>
-                                </h:panelGroup>
+                                </ui:fragment>
                             </dl>
                         </div>
-                    </h:panelGroup>
-                </ui:repeat>
+                    </ui:fragment>
+                </c:forEach>
+                </div>
             </div>
         </c:forEach>
     </div>

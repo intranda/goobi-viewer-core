@@ -18,6 +18,7 @@ package io.goobi.viewer.servlets;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,12 +30,11 @@ import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 
-import io.goobi.viewer.AbstractSolrEnabledTest;
-import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.servlets.PpnResolver;
 
-public class PpnResolverTest extends AbstractSolrEnabledTest {
+public class PpnResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static final String RESOLVER_NAME = "ppnResolver";
 
@@ -57,7 +57,7 @@ public class PpnResolverTest extends AbstractSolrEnabledTest {
     public void doGet_shouldReturn400IfRecordIdentifierMissing() throws Exception {
         ServletUnitClient sc = sr.newClient();
         WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
-        WebResponse response = sc.getResponse(request);
+        sc.getResponse(request);
     }
 
     /**
@@ -69,7 +69,7 @@ public class PpnResolverTest extends AbstractSolrEnabledTest {
         ServletUnitClient sc = sr.newClient();
         WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
         request.setParameter("id", "NOTFOUND");
-        WebResponse response = sc.getResponse(request);
+        sc.getResponse(request);
     }
 
     /**
@@ -81,6 +81,39 @@ public class PpnResolverTest extends AbstractSolrEnabledTest {
         ServletUnitClient sc = sr.newClient();
         WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
         request.setParameter("id", "a:b");
-        WebResponse response = sc.getResponse(request);
+        sc.getResponse(request);
     }
+
+//    /**
+//     * @see PpnResolver#doGet(HttpServletRequest,HttpServletResponse)
+//     * @verifies forward to relative url
+//     */
+//    @Test
+//    public void doGet_shouldForwardToRelativeUrl() throws Exception {
+//        PpnResolver resolver = new PpnResolver();
+//        String page = "/object/PPN517154005/1/LOG_0000/";
+//        HttpServletRequest request = TestUtils.mockHttpRequest(page);
+//        HttpServletResponse response = TestUtils.mockHttpResponse();
+//        request.setAttribute("id", PI_KLEIUNIV);
+//        Assert.assertEquals(PI_KLEIUNIV, request.getAttribute("id"));
+//        resolver.service(request, response);
+//        Assert.assertNotNull(request.getRequestDispatcher(page));
+//        request.getRequestDispatcher(page).forward(request, response);
+//    }
+//
+//    /**
+//     * @see PpnResolver#doGet(HttpServletRequest,HttpServletResponse)
+//     * @verifies redirect to full url
+//     */
+//    @Test
+//    public void doGet_shouldRedirectToFullUrl() throws Exception {
+//        DataManager.getInstance().getConfiguration().overrideValue("collections.redirectToWork", true);
+//        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
+//
+//        ServletUnitClient sc = sr.newClient();
+//        WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+//        request.setParameter("id", PI_KLEIUNIV);
+//        WebResponse response = sc.getResponse(request);
+//        Assert.assertEquals(200, response.getResponseCode());
+//    }
 }
