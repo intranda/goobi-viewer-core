@@ -130,8 +130,8 @@ public class MetadataElement {
          */
         public String getTabName(int viewIndex) {
             String key = KEY_ROOT + "_" + viewIndex + "_" + type;
-            ;
-            if(ViewerResourceBundle.getAllKeys().contains(key)) {
+            if(ViewerResourceBundle.getTranslation(key, null, true, false, false, false) != null) {
+//            if(ViewerResourceBundle.getAllKeys().contains(key)) {
                 return key;
             } else {
                 return "";
