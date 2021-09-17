@@ -15,6 +15,13 @@
 				margin-top: 1rem;
 			}
 		}
+		& + .metadata_element__wrapper {
+			.metadata__wrapper {
+				.metadata__elements-h3:first-child {
+					margin-top: 1rem;
+				}
+			}
+		}
 	}
 	&__title {
 		flex: 0 0 calc(100% - 25px);
@@ -69,6 +76,8 @@
 	&__event {}
 	&__element-dl,
 	&__event-dl {
+		display: grid;
+		grid-template-columns: 240px auto;
 		margin: 0;
 		dt {
 			text-align: left;	
@@ -142,7 +151,7 @@
 		padding: 1rem 1.5rem;
 		margin-bottom: 1rem;
 		dt {
-			font-size: 1.6rem;
+			font-size: 1.4rem;
 		}
 	}
 	&__element {}
@@ -164,12 +173,17 @@
 		dd {}
 	}
 	&__event-value {}
+	&__event-inside-wrapper {
+		background: #f6f6f6;
+		padding: 1rem;
+		margin-bottom: unset;
+	}
 	&__grouped-wrapper {
 		background: white;
 		margin-top: 1rem;
 		padding: 1.5rem;
 		dt, dd {
-			font-size: 1.3rem;
+			font-size: 1.4rem;
 		}
 		.metadata__element-wrapper {
 			background: #f6f6f6;
@@ -185,13 +199,13 @@
 	&__element-ungrouped {
 		grid-template-columns: 250px auto;
 		dt {
-			font-size: 1.6rem;
+			font-size: 1.4rem;
 		}
 	}
 
 	
 	&__heading {
-		font-size: 1.6rem;
+		font-size: 1.4rem;
 		font-weight: 700;
 		background: white;
 		padding-bottom: 1.5rem;
@@ -276,7 +290,10 @@
 				word-wrap: anywhere;
 			}
 		}
-		
+		&__event-dl {
+			grid-template-columns: unset;
+			grid-template-rows: auto;
+		}
 		&__element-ungrouped {
 			grid-template-columns: unset;
 			grid-template-rows: auto;

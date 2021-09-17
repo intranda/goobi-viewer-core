@@ -12,17 +12,24 @@
 	
 	    <ui:fragment rendered="#{!metadataElement.skip}">
 	    <div class="metadata_element__wrapper">
-            <h3 class="metadata__elements-h3">
-                <h:outputText rendered="#{!metadataElement.hasMetadataTypeLabels(metadataBean.activeMetadataView.index)}" 
-                	value="#{msg[metadataElement.docStructType]}" />
-            </h3>
+	    
+	    	<ui:fragment rendered="#{!metadataElement.hasMetadataTypeLabels(metadataBean.activeMetadataView.index)}">
+	            <h3 class="metadata__elements-h3">
+	                <h:outputText
+	                	value="#{msg[metadataElement.docStructType]}" />
+	            </h3>
+	        </ui:fragment>
+            
+            
             <c:forEach var="type" items="#{metadataElement.metadataTypes}">
                 <!-- METADATA ELEMENT -->
                 <div class="metadata__wrapper">
-                    <h3 class="metadata__elements-h3">
-                        <h:outputText rendered="#{not empty type.getTabName(metadataBean.activeMetadataView.index)}"
-                            value="#{msg[type.getTabName(metadataBean.activeMetadataView.index)]}" />
-                    </h3>
+                	<ui:fragment rendered="#{not empty type.getTabName(metadataBean.activeMetadataView.index)}">
+	                    <h3 class="metadata__elements-h3">
+	                        <h:outputText
+	                            value="#{msg[type.getTabName(metadataBean.activeMetadataView.index)]}" />
+	                    </h3>
+                    </ui:fragment>
                     
                     <c:forEach items="#{metadataElement.metadataList}" var="metadata">
                         <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">

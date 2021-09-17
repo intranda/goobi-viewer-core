@@ -50,7 +50,7 @@
             
                 <c:forEach items="#{event.metadata}" var="metadata">
                     <ui:fragment rendered="#{!metadata.blank}">
-                        <div class="metadata__event">
+                        <div class="metadata__event-inside-wrapper">
                             <dl class="dl-horizontal metadata__event-dl">
                                 <dt title="#{msg[metadata.label]}">
                                     <h:outputText value="#{msg[metadata.label]}:" escape="false" />
