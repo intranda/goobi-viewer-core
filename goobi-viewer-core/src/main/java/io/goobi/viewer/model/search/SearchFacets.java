@@ -352,8 +352,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * If the facet for given field is expanded, return the size of the facet, otherwise the initial (collapsed) number of elements as
-     * configured.
+     * If the facet for given field is expanded, return the size of the facet, otherwise the initial (collapsed) number of elements as configured.
      *
      * @should return full facet size if expanded
      * @should return default if collapsed
@@ -390,8 +389,8 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * Returns true if the "(more)" link is to be displayed for a facet box. This is the case if the facet has more elements than the initial
-     * number of displayed elements and the facet hasn't been manually expanded yet.
+     * Returns true if the "(more)" link is to be displayed for a facet box. This is the case if the facet has more elements than the initial number
+     * of displayed elements and the facet hasn't been manually expanded yet.
      *
      * @param field a {@link java.lang.String} object.
      * @should return true if DC facet collapsed and has more elements than default
@@ -607,7 +606,7 @@ public class SearchFacets implements Serializable {
             }
             if (fieldItem == null) {
                 String geoFacetField = DataManager.getInstance().getConfiguration().getGeoFacetFields();
-                if (geoFacetField != null && geoFacetField.equals(field)){
+                if (geoFacetField != null && geoFacetField.equals(field)) {
                     fieldItem = new GeoFacetItem(field);
                     fieldItem.setValue(updateValue);
                 } else {
@@ -927,21 +926,20 @@ public class SearchFacets implements Serializable {
 
         List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
 
-        
         for (String field : allFacetFields) {
             if (availableFacets.containsKey(field)) {
                 ret.put(field, availableFacets.get(field));
             }
         }
-        
+
         //add current facets which have no hits. This may happen due to geomap facetting
         for (IFacetItem currentItem : currentFacets) {
-            List<IFacetItem> availableFacetItems = ret.getOrDefault(currentItem.getField(), new ArrayList<>());
-            if(!availableFacetItems.contains(currentItem)) {
+            // Make a copy of the list to avoid concurrent modification
+            List<IFacetItem> availableFacetItems = new ArrayList<>(ret.getOrDefault(currentItem.getField(), new ArrayList<>()));
+            if (!availableFacetItems.contains(currentItem)) {
                 availableFacetItems.add(currentItem);
                 ret.put(currentItem.getField(), availableFacetItems);
             }
-            
         }
 
         return ret;
