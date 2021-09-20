@@ -30,6 +30,15 @@
 
 
                     <h:panelGroup layout="block" id="treeGroup" styleClass="archives__graphic-tree">
+                    
+                    <h:selectOneMenu styleClass="archives__select-database-dropdown" value="EMPTY">
+	                    <f:selectItem itemValue = "1" itemLabel = "#{archiveBean.trueRoot.label}" /> 
+	   					<f:selectItem itemValue = "2" itemLabel = "Database 2" />
+
+	   					<!-- TO DO: POPULATE SELECTABLE ITEMS FROM DATABASE AND TRIGGER PAGE RELOAD/ARCHIVE TREE RELOAD -->
+						<!-- <f:selectItems value="#{bean.names}" /> -->
+					
+					</h:selectOneMenu>
 
 	                    <div class="archives__search-input-wrapper">
 		                    <h:form id="searchForm" prependId="false">
