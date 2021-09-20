@@ -29,19 +29,21 @@ public class GeoMapMarker {
     private String icon = "";
     private String markerColor = "blue";
     private String highlightColor = "cyan";
-    private String shape  = "circle";
+    private String shape = "circle";
     private String extraClasses = "";
     private String prefix = "fa";
     private String iconColor = "white";
     private int iconRotate = 0;
     private String number = "";
+    private String highlightIcon = "";
+    private boolean useDefault = false;
     private boolean svg = false;
     private boolean shadow = true;
-    
+
     public GeoMapMarker(String name) {
         this.name = name;
     }
-    
+
     public GeoMapMarker() {
     }
 
@@ -177,50 +179,78 @@ public class GeoMapMarker {
     public String getName() {
         return name;
     }
-    
+
     /**
      * @param name the name to set
      */
     public void setName(String name) {
         this.name = name;
     }
-    
+
     /**
      * @return the shadow
      */
     public boolean isShadow() {
         return shadow;
     }
-    
+
     /**
      * @param shadow the shadow to set
      */
     public void setShadow(boolean shadow) {
         this.shadow = shadow;
     }
-    
+
     /**
      * @return the highlightColor
      */
     public String getHighlightColor() {
         return highlightColor;
     }
-    
+
     /**
      * @param highlightColor the highlightColor to set
      */
     public void setHighlightColor(String highlightColor) {
         this.highlightColor = highlightColor;
     }
-    
-   public String toJSONString() throws JsonProcessingException {
-       ObjectMapper mapper = new ObjectMapper();
-       return mapper.writeValueAsString(this);
-   }
-            
-   public static GeoMapMarker fromJSONString(String json) throws JsonMappingException, JsonProcessingException {
-       ObjectMapper mapper = new ObjectMapper();
-       return mapper.readValue(json, GeoMapMarker.class);
-   }
-            
+
+    public String toJSONString() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(this);
+    }
+
+    public static GeoMapMarker fromJSONString(String json) throws JsonMappingException, JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(json, GeoMapMarker.class);
+    }
+
+    /**
+     * @param useDefault the useDefault to set
+     */
+    public void setUseDefault(boolean useDefault) {
+        this.useDefault = useDefault;
+    }
+
+    /**
+     * @return the useDefault
+     */
+    public boolean isUseDefault() {
+        return useDefault;
+    }
+
+    /**
+     * @param highlightIcon the highlightIcon to set
+     */
+    public void setHighlightIcon(String highlightIcon) {
+        this.highlightIcon = highlightIcon;
+    }
+
+    /**
+     * @return the highlightIcon
+     */
+    public String getHighlightIcon() {
+        return highlightIcon;
+    }
+
 }
