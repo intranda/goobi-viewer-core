@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -81,6 +82,7 @@ public class GeoMap {
 
     private static final String METADATA_TAG_TITLE = "Title";
     private static final String METADATA_TAG_DESCRIPTION = "Description";
+    private static final String DEFAULT_MARKER_NAME = "default";
 
     public static enum GeoMapType {
         SOLR_QUERY,
@@ -130,7 +132,7 @@ public class GeoMap {
             "}";
 
     @Column(name = "marker")
-    private String marker = null;
+    private String marker = DEFAULT_MARKER_NAME;
 
     /**
      * SOLR-Field to create the marker title from if the features are generated from a SOLR query
@@ -143,7 +145,7 @@ public class GeoMap {
 
     @Transient
     private boolean showPopover = true;
-    
+
     /**
      * Empty Constructor
      */
@@ -404,7 +406,7 @@ public class GeoMap {
                             GeoMapFeature feature = new GeoMapFeature(jsonString);
                             feature.setTitle(title);
                             feature.setDescription(desc);
-                            if(!docFeatures.contains(feature)) {                                
+                            if (!docFeatures.contains(feature)) {
                                 docFeatures.add(feature);
                             }
                         }
@@ -419,7 +421,6 @@ public class GeoMap {
         }
         return docFeatures;
     }
-
 
     /**
      * @param initialView the initialView to set
@@ -488,7 +489,7 @@ public class GeoMap {
      * @return the marker
      */
     public String getMarker() {
-        return this.marker;
+        return Optional.ofNullable(this.marker).orElse(DEFAULT_MARKER_NAME);
     }
 
     /**

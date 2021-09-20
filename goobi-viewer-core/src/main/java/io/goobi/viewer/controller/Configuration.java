@@ -5164,6 +5164,8 @@ public final class Configuration extends AbstractConfiguration {
             marker.setShape(config.getString("[@shape]", marker.getShape()));
             marker.setSvg(config.getBoolean("[@svg]", marker.isSvg()));
             marker.setShadow(config.getBoolean("[@shadow]", marker.isShadow()));
+            marker.setUseDefault(config.getBoolean("[@useDefaultIcon]", marker.isUseDefault()));
+            marker.setHighlightIcon(config.getString("[@highlightIcon]", marker.getHighlightIcon()));
         }
         return marker;
     }
