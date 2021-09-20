@@ -130,8 +130,8 @@ public class MetadataElement {
          */
         public String getTabName(int viewIndex) {
             String key = KEY_ROOT + "_" + viewIndex + "_" + type;
-            if(ViewerResourceBundle.getTranslation(key, null, true, false, false, false) != null) {
-//            if(ViewerResourceBundle.getAllKeys().contains(key)) {
+            if (ViewerResourceBundle.getTranslation(key, null, true, false, false, false) != null) {
+                //            if(ViewerResourceBundle.getAllKeys().contains(key)) {
                 return key;
             } else {
                 return "";
@@ -321,7 +321,7 @@ public class MetadataElement {
 
         return metadataTypes;
     }
-    
+
     public boolean hasMetadataTypeLabels(int viewIndex) {
         return getMetadataTypes().stream().anyMatch(type -> StringUtils.isNotBlank(type.getTabName(viewIndex)));
     }
@@ -440,6 +440,22 @@ public class MetadataElement {
         if (metadataList != null) {
             return metadataList.stream().anyMatch(md -> !md.isBlank());
         }
+        return false;
+    }
+
+    /**
+     * 
+     * @return
+     * @should return true if at least one metadata not single string
+     * @should return false if all metadata single string
+     */
+    public boolean isHasNonSingleStringGroupedMetadata() {
+        for (Metadata md : getMetadataList()) {
+            if (!md.isSingleString()) {
+                return true;
+            }
+        }
+
         return false;
     }
 
