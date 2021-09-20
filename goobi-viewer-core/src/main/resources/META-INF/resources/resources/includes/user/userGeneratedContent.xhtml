@@ -11,7 +11,7 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
 	<!-- USER GENERATED CONTENT -->
-	<h:panelGroup rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}">
+	<h:panelGroup rendered="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}">
 		<div id="view_image_user_generated_content">
 			<h3>#{msgcs.crowdsourcing_userGeneratedContent}</h3>
 

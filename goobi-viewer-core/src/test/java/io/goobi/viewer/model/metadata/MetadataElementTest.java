@@ -95,4 +95,56 @@ public class MetadataElementTest {
         }
         Assert.assertFalse(me.isSkip());
     }
+
+    /**
+     * @see MetadataElement#isHasNonSingleStringGroupedMetadata()
+     * @verifies return true if at least one metadata not single string
+     */
+    @Test
+    public void isHasNonSingleStringGroupedMetadata_shouldReturnTrueIfAtLeastOneMetadataNotSingleString() throws Exception {
+        MetadataElement me = new MetadataElement();
+        {
+            Metadata md = new Metadata();
+            md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
+            md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
+            Assert.assertFalse(md.isBlank());
+            me.getMetadataList().add(md);
+            md.setSingleString(true);
+        }
+        {
+            Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
+            md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
+            md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
+            Assert.assertFalse(md.isBlank());
+            me.getMetadataList().add(md);
+            md.setSingleString(false);
+        }
+        Assert.assertTrue(me.isHasNonSingleStringGroupedMetadata());
+    }
+
+    /**
+     * @see MetadataElement#isHasNonSingleStringGroupedMetadata()
+     * @verifies return false if all metadata single string
+     */
+    @Test
+    public void isHasNonSingleStringGroupedMetadata_shouldReturnFalseIfAllMetadataSingleString() throws Exception {
+        MetadataElement me = new MetadataElement();
+        {
+            Metadata md = new Metadata();
+            md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
+            md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
+            Assert.assertFalse(md.isBlank());
+            me.getMetadataList().add(md);
+            md.setSingleString(true);
+        }
+        {
+            Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
+            md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
+            md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
+            Assert.assertFalse(md.isBlank());
+            me.getMetadataList().add(md);
+            md.setSingleString(true);
+        }
+        Assert.assertFalse(me.isHasNonSingleStringGroupedMetadata());
+    }
 }
