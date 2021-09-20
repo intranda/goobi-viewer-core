@@ -22,14 +22,14 @@
             
             
             <c:forEach var="type" items="#{metadataElement.metadataTypes}">
-                <!-- METADATA ELEMENT -->
-                <div class="metadata__wrapper">
                 	<ui:fragment rendered="#{not empty type.getTabName(metadataBean.activeMetadataView.index)}">
 	                    <h3 class="metadata__elements-h3">
 	                        <h:outputText
 	                            value="#{msg[type.getTabName(metadataBean.activeMetadataView.index)]}" />
 	                    </h3>
                     </ui:fragment>
+                <!-- METADATA ELEMENT -->
+                <div class="metadata__wrapper">
                     
                     <c:forEach items="#{metadataElement.metadataList}" var="metadata">
                         <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
