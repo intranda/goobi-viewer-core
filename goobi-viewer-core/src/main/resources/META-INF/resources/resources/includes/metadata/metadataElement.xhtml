@@ -28,8 +28,8 @@
                     </ui:fragment>
 
                     <!-- METADATA ELEMENT -->
-                    <!-- TODO @Jannek all metadata in a single white box if metadataElement.hasNonSingleStringGroupedMetadata == false -->
-                    <div class="metadata__wrapper #{metadataElement.hasNonSingleStringGroupedMetadata ? -foo : bar}">
+                    <!-- TODO @Jannek all metadata in a single white box if metadataElement.displayBoxed == true -->
+                    <div class="metadata__wrapper #{metadataElement.displayBoxed ? -foo : bar}">
                         <c:forEach items="#{metadataElement.metadataList}" var="metadata">
                             <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
 
