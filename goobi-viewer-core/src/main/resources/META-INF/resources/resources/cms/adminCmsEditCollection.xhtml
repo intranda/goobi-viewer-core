@@ -186,7 +186,7 @@
 					<h3>#{msg.admin__cms_collections_translation}</h3>
 		
 					<!-- DESCRIPTION AVAILABLE -->
-					<div class="admin__form-help-text in mb-2">
+					<div class="admin__form-help-text in mb-3">
 						#{msg.admin__cms_collections_translation_desc}
 					</div>
 
@@ -237,11 +237,28 @@
 				        	<div class="admin__cms-edit-collection-data-value">#{value.value != null ? value.value : '-/-'}</div>
 				        </div>
 				    </ui:repeat>
-				    <div class="admin__cms-edit-collection-data-wrapper">
-				    	<h:outputFormat value="#{msg.admin__cms_collections__link_search_results}" escape="false">
-				    		<f:param value="#{cmsCollectionsBean.getSearchUrl(cmsCollectionsBean.currentCollection)}"/>
-				    	</h:outputFormat>
+				    
+				    
+<!-- 				    <div class="admin__cms-edit-collection-data-wrapper"> -->
+<!-- 				    	<h:outputFormat value="#{msg.admin__cms_collections__link_search_results}" escape="false"> -->
+<!-- 				    		<f:param value="#{cmsCollectionsBean.getSearchUrl(cmsCollectionsBean.currentCollection)}"/> -->
+<!-- 				    	</h:outputFormat> -->
+<!-- 					</div> -->
+					
+					<!-- SHOW ALL RECORDS OF COLLECTION IN SEARCH HIT LIST -->
+					<div class="admin__form-help-text in mb-3 mt-4">
+						#{msg.admin__cms_collections__link_search_results}
 					</div>
+					<div class="row">
+						<div class="col-12 d-flex justify-content-center">
+						
+							<h:outputLink styleClass="btn btn--default" target="_blank" value="#{cmsCollectionsBean.getSearchUrl(cmsCollectionsBean.currentCollection)}">
+								<h:outputText value="#{msg.admin__cms_collections_preview}" />
+							</h:outputLink>
+                       	</div>
+					</div>
+
+					
 				</div>
 			</div>
 
