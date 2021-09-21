@@ -158,11 +158,11 @@ public class EventElement implements Comparable<EventElement>, Serializable {
 
         // Get metadata list for the event type
         logger.trace("Metadata for event '{}'", type);
-        long iddoc = Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC));
+        String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
         for (Metadata md : metadata) {
-            StructElement se = new StructElement(iddoc);
+            StructElement se = new StructElement();
             se.setMetadataFields(SolrTools.getFieldValueMap(doc));
-            md.populate(se, String.valueOf(se.getLuceneId()), locale);
+            md.populate(se, iddoc, locale);
             //            if (md.getValues() != null && !md.getValues().isEmpty()) {
             //                logger.trace("{}: {}", md.getLabel(), SolrTools.getFieldValueMap(doc).toString());
             //            }
