@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +36,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
-import io.goobi.viewer.servlets.IdentifierResolver;
-import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
@@ -125,18 +123,20 @@ public class CollectionView {
                     }
                     // Set single record PI if collection has one one record
                     if (collectionSize == 1) {
-                        SolrDocument doc = DataManager.getInstance()
-                                .getSearchIndex()
-                                .getFirstDoc("+" + SolrConstants.PI + ":* +" + field + ":\"" + dcName + "\"",
-                                        null);
-                        if (doc != null) {
-                            dc.setSingleRecordUrl(IdentifierResolver.constructUrl(doc, false));
+                        // Retrieve the first record for the given collection (considering filtering and access rights)
+                        StringPair piAndPageType =
+                                SearchHelper.getFirstRecordPiAndPageType(field, dcName, true, displayParentCollections, collectionName, null);
+                        if (piAndPageType != null) {
+                            String url = "/" + DataManager.getInstance()
+                                    .getUrlBuilder()
+                                    .buildPageUrl(piAndPageType.getOne(), 1, null, PageType.getByName(piAndPageType.getTwo()));
+                            dc.setSingleRecordUrl(url);
                         }
                     }
-                    
-                    if(ignoreHierarchy) {
+
+                    if (ignoreHierarchy) {
                         completeCollectionList.add(dc);
-                    } else {                        
+                    } else {
                         int collectionLevel = dc.getLevel();
                         if (collectionLevel > 0 && lastElement != null) {
                             while (lastElement != null && lastElement.getLevel() >= collectionLevel) {
@@ -172,7 +172,7 @@ public class CollectionView {
             //If we are beneath the base level, open in collection view
             return true;
         } else if (collectionName.equals(getBaseElementName())) {
-            //If this is the base element of the entiry collection view, open in collection view (TODO: is that correct?)
+            //If this is the base element of the entire collection view, open in collection view (TODO: is that correct?)
             return true;
         } else if (collectionName.startsWith(getBaseElementName() + splittingChar)
                 && calculateLevel(collectionName) - calculateLevel(getBaseElementName()) <= getBaseLevels()) {
@@ -977,10 +977,6 @@ public class CollectionView {
         } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
             // Link directly to single record, if record PI known
             if (collection.getSingleRecordUrl() != null) {
-
-                //                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/piresolver?id=")
-                //                        .append(collection.getSingleRecordPi())
-                //                        .toString();
                 return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + collection.getSingleRecordUrl();
             }
             return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
@@ -1141,7 +1137,7 @@ public class CollectionView {
     public boolean isIgnoreHierarchy() {
         return ignoreHierarchy;
     }
-    
+
     /**
      * @param ignoreHierarchy the ignoreHierarchy to set
      */
