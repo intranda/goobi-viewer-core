@@ -60,7 +60,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      * Constructor for EventElement.
      * </p>
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param doc Event Solr document
      * @param locale a {@link java.util.Locale} object.
      * @should fill in missing dateStart from displayDate
      * @should fill in missing dateEnd from dateStart
@@ -149,17 +149,23 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      */
     private static void populateMetadata(List<Metadata> metadata, String type, SolrDocument doc, Locale locale)
             throws IndexUnreachableException, PresentationException {
+        if (doc == null) {
+            throw new IllegalArgumentException("doc may not be null");
+        }
+        if (metadata == null) {
+            return;
+        }
+
         // Get metadata list for the event type
-        if (metadata != null) {
-            logger.trace("Metadata for event '{}'", type);
-            for (Metadata md : metadata) {
-                StructElement se = new StructElement();
-                se.setMetadataFields(SolrTools.getFieldValueMap(doc));
-                md.populate(se, String.valueOf(se.getLuceneId()), locale);
-                if (md.getValues() != null && !md.getValues().isEmpty()) {
-                    logger.trace("{}: {}", md.getLabel(), SolrTools.getFieldValueMap(doc).toString());
-                }
-            }
+        logger.trace("Metadata for event '{}'", type);
+        long iddoc = Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC));
+        for (Metadata md : metadata) {
+            StructElement se = new StructElement(iddoc);
+            se.setMetadataFields(SolrTools.getFieldValueMap(doc));
+            md.populate(se, String.valueOf(se.getLuceneId()), locale);
+            //            if (md.getValues() != null && !md.getValues().isEmpty()) {
+            //                logger.trace("{}: {}", md.getLabel(), SolrTools.getFieldValueMap(doc).toString());
+            //            }
         }
     }
 
