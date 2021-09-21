@@ -444,19 +444,20 @@ public class MetadataElement {
     }
 
     /**
+     * Checks whether all metadata fields for this element can be displayed in a single box (i.e. no table type grouped metadata are configured).
      * 
-     * @return
-     * @should return true if at least one metadata not single string
-     * @should return false if all metadata single string
+     * @return true if all metadata are not configured as single string; false otherwise
+     * @should return false if at least one metadata not single string
+     * @should return true if all metadata single string
      */
-    public boolean isHasNonSingleStringGroupedMetadata() {
+    public boolean isDisplayBoxed() {
         for (Metadata md : getMetadataList()) {
             if (!md.isSingleString()) {
-                return true;
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 
     /**
