@@ -40,7 +40,7 @@
     <ui:define name="sidebar">
 			<h:panelGroup layout="block" styleClass="user-settings__profile-image-box">
 				<h:panelGroup rendered="#{user.useGravatar}">
-					<img class="user-settings__profile-image" src="#{user.getGravatarUrl(96)}" alt="User Gravatar" />
+					<img class="user-settings__profile-image" src="#{user.getGravatarUrl(300)}" alt="User Gravatar" />
 				</h:panelGroup>
 				<h:panelGroup rendered="#{!user.useGravatar}">
 					<img class="user-settings__profile-image" src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" alt="User Gravatar" />
