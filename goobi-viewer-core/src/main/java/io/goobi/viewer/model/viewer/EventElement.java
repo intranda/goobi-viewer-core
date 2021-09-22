@@ -60,7 +60,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      * Constructor for EventElement.
      * </p>
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param doc Event Solr document
      * @param locale a {@link java.util.Locale} object.
      * @should fill in missing dateStart from displayDate
      * @should fill in missing dateEnd from dateStart
@@ -106,6 +106,10 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, type);
         populateMetadata(metadata, type, doc, locale);
         sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(type);
+        if (sidebarMetadata.isEmpty()) {
+            // Use default if no elements are defined for the current event type
+            sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate("_DEFAULT");
+        }
         populateMetadata(sidebarMetadata, type, doc, locale);
     }
 
@@ -145,17 +149,23 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      */
     private static void populateMetadata(List<Metadata> metadata, String type, SolrDocument doc, Locale locale)
             throws IndexUnreachableException, PresentationException {
+        if (doc == null) {
+            throw new IllegalArgumentException("doc may not be null");
+        }
+        if (metadata == null) {
+            return;
+        }
+
         // Get metadata list for the event type
-        if (metadata != null) {
-            logger.trace("Metadata for event '{}'", type);
-            for (Metadata md : metadata) {
-                StructElement se = new StructElement();
-                se.setMetadataFields(SolrTools.getFieldValueMap(doc));
-                md.populate(se, locale);
-                if (md.getValues() != null && !md.getValues().isEmpty()) {
-                    logger.trace("{}: {}", md.getLabel(), SolrTools.getFieldValueMap(doc).toString());
-                }
-            }
+        logger.trace("Metadata for event '{}'", type);
+        String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
+        for (Metadata md : metadata) {
+            StructElement se = new StructElement();
+            se.setMetadataFields(SolrTools.getFieldValueMap(doc));
+            md.populate(se, iddoc, locale);
+            //            if (md.getValues() != null && !md.getValues().isEmpty()) {
+            //                logger.trace("{}: {}", md.getLabel(), SolrTools.getFieldValueMap(doc).toString());
+            //            }
         }
     }
 
@@ -204,13 +214,15 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @should include type
+     * @should not include date
      */
     public String getLabel() {
         String type = getType();
-        String date = getDisplayDate();
-        if (StringUtils.isNotEmpty(date)) {
-            return new StringBuilder(type).append(" (").append(date).append(')').toString();
-        }
+        //        String date = getDisplayDate();
+        //        if (StringUtils.isNotEmpty(date)) {
+        //            return new StringBuilder(type).append(" (").append(date).append(')').toString();
+        //        }
         return type;
     }
 

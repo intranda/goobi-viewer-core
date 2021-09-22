@@ -38,6 +38,7 @@ import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -74,6 +75,8 @@ public class PpnResolver extends HttpServlet implements Serializable {
      * @should return 400 if record identifier missing
      * @should return 404 if record not found
      * @should return 500 if record identifier bad
+     * @should forward to relative url
+     * @should redirect to full url
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -96,13 +99,6 @@ public class PpnResolver extends HttpServlet implements Serializable {
             }
         }
 
-        // // 5. redirect or forward using the target field value
-        // if (DO_REDIRECT) {
-        // response.sendRedirect(result);
-        // } else {
-        // getServletContext().getRequestDispatcher(result).forward(request, response);
-        // }
-
         // 3. evaluate the search
         try {
             String query = "+" + SolrConstants.PI + ":\"" + identifier + "\"" + SearchHelper.getAllSuffixes(request, false, false);
@@ -114,7 +110,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
                 return;
             } else if (hits.getNumFound() > 1) {
-                // 3.2 show multiple match, that indicates corrupted indexer
+                // 3.2 show multiple match, that indicates corrupted index
                 response.sendError(HttpServletResponse.SC_CONFLICT, ERRTXT_MULTIMATCH);
                 return;
             }
@@ -138,7 +134,8 @@ public class PpnResolver extends HttpServlet implements Serializable {
                 result = IdentifierResolver.constructUrl(targetDoc, false, page);
             }
             if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
-                response.sendRedirect(result);
+                String absoluteUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + result;
+                response.sendRedirect(absoluteUrl);
             } else {
                 getServletContext().getRequestDispatcher(result).forward(request, response);
             }

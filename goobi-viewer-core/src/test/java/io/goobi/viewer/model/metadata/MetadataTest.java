@@ -109,25 +109,62 @@ public class MetadataTest extends AbstractTest {
     }
 
     /**
-     * @see Metadata#isBlank()
+     * @see Metadata#isBlank(String)
      * @verifies return true if all paramValues are empty
      */
     @Test
     public void isBlank_shouldReturnTrueIfAllParamValuesAreEmpty() throws Exception {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         Assert.assertEquals(1, metadata.getValues().size());
-        Assert.assertTrue(metadata.isBlank());
+        Assert.assertTrue(metadata.isBlank(null));
     }
 
     /**
-     * @see Metadata#isBlank()
+     * @see Metadata#isBlank(String)
      * @verifies return false if at least one paramValue is not empty
      */
     @Test
     public void isBlank_shouldReturnFalseIfAtLeastOneParamValueIsNotEmpty() throws Exception {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "val");
         Assert.assertEquals(1, metadata.getValues().size());
-        Assert.assertFalse(metadata.isBlank());
+        Assert.assertFalse(metadata.isBlank(null));
+    }
+    
+
+    /**
+     * @see Metadata#isBlank(String)
+     * @verifies return true if all values have different ownerIddoc
+     */
+    @Test
+    public void isBlank_shouldReturnTrueIfAllValuesHaveDifferentOwnerIddoc() throws Exception {
+        Metadata metadata = new Metadata("", "MD_FIELD", "", null);
+        metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
+        String[] values = new String[] { "val1", "val2" };
+        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
+        metadata.setParamValue(1, 0, Arrays.asList(values), "", null, null, null, null);
+        Assert.assertEquals(2, metadata.getValues().size());
+        metadata.getValues().get(0).setOwnerIddoc("123");
+        metadata.getValues().get(1).setOwnerIddoc("456");
+        
+        Assert.assertTrue(metadata.isBlank("789"));
+    }
+
+    /**
+     * @see Metadata#isBlank(String)
+     * @verifies return true if at least one value has same ownerIddoc
+     */
+    @Test
+    public void isBlank_shouldReturnTrueIfAtLeastOneValueHasSameOwnerIddoc() throws Exception {
+        Metadata metadata = new Metadata("", "MD_FIELD", "", null);
+        metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
+        String[] values = new String[] { "val1", "val2" };
+        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
+        metadata.setParamValue(1, 0, Arrays.asList(values), "", null, null, null, null);
+        Assert.assertEquals(2, metadata.getValues().size());
+        metadata.getValues().get(0).setOwnerIddoc("123");
+        metadata.getValues().get(1).setOwnerIddoc("456");
+        
+        Assert.assertFalse(metadata.isBlank("456"));
     }
 
     /**
@@ -159,5 +196,43 @@ public class MetadataTest extends AbstractTest {
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, MetadataGroupType.CORPORATION.name(), null);
         Assert.assertEquals(1, metadata.getValues().size());
         Assert.assertEquals(MetadataGroupType.CORPORATION.name(), metadata.getValues().get(0).getGroupTypeForUrl());
+    }
+
+    /**
+     * @see Metadata#getValuesForOwner(String)
+     * @verifies return all values if ownerIddoc null
+     */
+    @Test
+    public void getValuesForOwner_shouldReturnAllValuesIfOwnerIddocNull() throws Exception {
+        Metadata metadata = new Metadata("", "MD_FIELD", "", null);
+        metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
+        String[] values = new String[] { "val1", "val2" };
+        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
+        metadata.setParamValue(1, 0, Arrays.asList(values), "", null, null, null, null);
+        Assert.assertEquals(2, metadata.getValues().size());
+        metadata.getValues().get(0).setOwnerIddoc("123");
+        metadata.getValues().get(1).setOwnerIddoc("456");
+        
+        Assert.assertEquals(2, metadata.getValuesForOwner(null).size());
+    }
+
+    /**
+     * @see Metadata#getValuesForOwner(String)
+     * @verifies return only values for the given ownerIddoc
+     */
+    @Test
+    public void getValuesForOwner_shouldReturnOnlyValuesForTheGivenOwnerIddoc() throws Exception {
+        Metadata metadata = new Metadata("", "MD_FIELD", "", null);
+        metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
+        String[] values = new String[] { "val1", "val2" };
+        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
+        metadata.setParamValue(1, 0, Arrays.asList(values), "", null, null, null, null);
+        Assert.assertEquals(2, metadata.getValues().size());
+        metadata.getValues().get(0).setOwnerIddoc("123");
+        metadata.getValues().get(1).setOwnerIddoc("456");
+        
+        List<MetadataValue> mdValues = metadata.getValuesForOwner("456");
+        Assert.assertEquals(1, mdValues.size());
+        Assert.assertEquals("456", mdValues.get(0).getOwnerIddoc());
     }
 }

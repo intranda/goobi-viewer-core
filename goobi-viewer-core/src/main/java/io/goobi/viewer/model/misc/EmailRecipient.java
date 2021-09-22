@@ -17,6 +17,7 @@ package io.goobi.viewer.model.misc;
 
 public class EmailRecipient {
 
+    private final String id;
     private final String label;
     private final String emailAddress;
     private final boolean defaultRecipient;
@@ -27,7 +28,8 @@ public class EmailRecipient {
      * @param emailAddress
      * @param defaultRecipient
      */
-    public EmailRecipient(String label, String emailAddress, boolean defaultRecipient) {
+    public EmailRecipient(String id, String label, String emailAddress, boolean defaultRecipient) {
+        this.id = id;
         this.label = label;
         this.emailAddress = emailAddress;
         this.defaultRecipient = defaultRecipient;
@@ -52,6 +54,13 @@ public class EmailRecipient {
      */
     public boolean isDefaultRecipient() {
         return defaultRecipient;
+    }
+    
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
     }
     
     @Override

@@ -30,24 +30,20 @@
 		**/
 		//<![CDATA[
 		(() => {
-        	let geoMap = new viewerJS.GeoMap({
+        	this.geoMap = new viewerJS.GeoMap({
         	    mapId: "#{cc.attrs.mapId}",
            		language: "#{navigationHelper.localeString}",
+           		iconPath: "#{request.contextPath}/resources/images/map",
            		layer : {
 	           		allowMovingFeatures: false,
 	           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
 	           		popoverOnHover: #{cc.attrs.popoverOnHover},
-	           		clusterMarkers: #{cc.attrs.clusterMarkers},
-// 	           		markerIcon: {
-// 	           		 	markerColor: 'blue',
-// 	           		 	highlightColor: 'red',
-// 	           	     	shape: 'square',
-// 	           		}
+	           		clusterMarkers: #{cc.attrs.clusterMarkers}
            		}
            	});
-        	function initMap(view, features) {
-        	    geoMap.init(view);
-            	let layer = new viewerJS.GeoMap.featureGroup(geoMap, {
+        	this.initMap = function(view, features) {
+        	    this.geoMap.init(view);
+            	let layer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
             	    markerIcon: #{cc.attrs.geoMap.markerAsJSON}
             	})
             	layer.onFeatureClick.subscribe(feature => {
@@ -68,18 +64,19 @@
 	        	if(highlightDocumentId) {
 	        	    features.filter(f => f.properties.documentId == highlightDocumentId).forEach(f => f.properties.highlighted = true);
 	        	}
-	        	// console.log("init features", highlightDocumentId, features.filter(f => f.properties.documentId == highlightDocumentId));
+	        	//console.log("init features", features, features.filter(f => f.properties.documentId == highlightDocumentId));
             	layer.init(features, true);
 
-                 geoMap.setView(geoMap.getViewAroundFeatures(layer.getFeatures()));
+                //geoMap.setView(geoMap.getViewAroundFeatures(layer.getFeatures()));
         	}
+        	
            	$(document).ready(() => {   
             	let view = #{cc.attrs.geoMap.initialView};
             	let features = #{cc.attrs.geoMap.featuresAsString};
-            	
             	if(features.length > 0 ) {
-            	    initMap(view, features)
+            	    this.initMap(view, features);
             	} else {
+            	    console.log("hide map because of missing features");
             	    $("##{cc.attrs.mapId}").parent().hide();
             	}
             })

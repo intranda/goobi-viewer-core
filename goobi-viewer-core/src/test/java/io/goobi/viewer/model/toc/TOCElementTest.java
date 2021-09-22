@@ -20,20 +20,20 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.toc.TOCElement;
 import io.goobi.viewer.model.viewer.PageType;
 
-public class TOCElementTest {
+public class TOCElementTest extends AbstractTest {
 
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-    }
+        super.setUp();    }
 
     /**
      * @see TOCElement#TOCElement(String,String,String,String,String,int,String,String,boolean,boolean,String,String)

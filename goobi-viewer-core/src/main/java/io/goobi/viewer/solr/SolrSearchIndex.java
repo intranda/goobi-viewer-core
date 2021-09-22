@@ -457,7 +457,7 @@ public final class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public SolrDocumentList getDocs(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
-        logger.trace("getDocs: {}", query);
+        // logger.trace("getDocs: {}", query);
         SolrDocumentList hits = search(query, fieldList);
         if (hits.getNumFound() > 0) {
             return hits;

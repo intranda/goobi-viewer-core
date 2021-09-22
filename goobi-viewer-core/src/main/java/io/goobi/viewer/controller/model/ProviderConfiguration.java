@@ -19,8 +19,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.SubnodeConfiguration;
+import org.apache.commons.configuration2.HierarchicalConfiguration;
+import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.exceptions.PresentationException;
@@ -49,7 +49,7 @@ public class ProviderConfiguration {
         this.label = label;
     }
     
-    public ProviderConfiguration(HierarchicalConfiguration config) throws PresentationException {
+    public ProviderConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws PresentationException {
         this(config.getString("url", null), config.getString("label", null));
         
         List<Object> logos = config.getList("logo");
@@ -57,8 +57,8 @@ public class ProviderConfiguration {
             this.logos.add(URI.create(logo.toString()));
         });
         
-        List<HierarchicalConfiguration> homepages = config.configurationsAt("homepage");
-        for (HierarchicalConfiguration homepage : homepages) {
+        List<HierarchicalConfiguration<ImmutableNode>> homepages = config.configurationsAt("homepage");
+        for (HierarchicalConfiguration<ImmutableNode> homepage : homepages) {
             this.homepages.add(new WebResourceConfiguration(homepage));
         }
 

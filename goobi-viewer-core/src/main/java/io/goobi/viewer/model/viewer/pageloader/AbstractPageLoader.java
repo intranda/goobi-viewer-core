@@ -15,12 +15,14 @@
  */
 package io.goobi.viewer.model.viewer.pageloader;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,13 +31,16 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.jboss.weld.persistence.PersistenceApiAbstraction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
@@ -223,6 +228,17 @@ public abstract class AbstractPageLoader implements IPageLoader {
         }
         if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
             pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
+        }
+        if (!pe.hasIndividualSize()) {
+            try {
+                Optional.ofNullable(BeanUtils.getImageDeliveryBean().getImages().getImageInformation(pe))
+                        .ifPresent(info -> {
+                            pe.setHeight(info.getHeight());
+                            pe.setWidth(info.getWidth());
+                        });
+            } catch (ContentLibException | URISyntaxException | PresentationException | IndexUnreachableException e) {
+                logger.error("Error reading image size of " + pe.getFilename() + ": " + e.toString());
+            }
         }
 
         // Full-text filename

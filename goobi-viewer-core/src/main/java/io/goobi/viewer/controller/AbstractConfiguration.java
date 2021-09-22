@@ -19,9 +19,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.configuration.ConversionException;
-import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration2.HierarchicalConfiguration;
+import org.apache.commons.configuration2.XMLConfiguration;
+import org.apache.commons.configuration2.builder.ReloadingFileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.ex.ConversionException;
+import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +35,38 @@ public abstract class AbstractConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
-    protected XMLConfiguration config;
-    protected XMLConfiguration configLocal;
+    protected ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
+    protected ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builderLocal;
+
+    /**
+     * 
+     * @return {@link XMLConfiguration} that is synced with the current state of the config file
+     */
+    protected XMLConfiguration getConfig() {
+        try {
+            return builder.getConfiguration();
+        } catch (ConfigurationException e) {
+            logger.error(e.getMessage());
+        }
+
+        return new XMLConfiguration();
+    }
+
+    /**
+     * 
+     * @return {@link XMLConfiguration} that is synced with the current state of the config file
+     */
+    protected XMLConfiguration getConfigLocal() {
+        if (builderLocal != null) {
+            try {
+                return builderLocal.getConfiguration();
+            } catch (ConfigurationException e) {
+                // logger.error(e.getMessage());
+            }
+        }
+
+        return new XMLConfiguration();
+    }
 
     /**
      * <p>
@@ -46,7 +79,7 @@ public abstract class AbstractConfiguration {
      */
     protected int getLocalInt(String inPath, int inDefault) {
         try {
-            return configLocal.getInt(inPath, config.getInt(inPath, inDefault));
+            return getConfigLocal().getInt(inPath, getConfig().getInt(inPath, inDefault));
         } catch (ConversionException e) {
             logger.error("{}. Using default value {} instead.", e.getMessage(), inDefault);
             return inDefault;
@@ -65,7 +98,7 @@ public abstract class AbstractConfiguration {
      * @return a float.
      */
     protected float getLocalFloat(String inPath) {
-        return configLocal.getFloat(inPath, config.getFloat(inPath));
+        return getConfigLocal().getFloat(inPath, getConfig().getFloat(inPath));
     }
 
     /**
@@ -79,7 +112,7 @@ public abstract class AbstractConfiguration {
      */
     protected float getLocalFloat(String inPath, float inDefault) {
         try {
-            return configLocal.getFloat(inPath, config.getFloat(inPath, inDefault));
+            return getConfigLocal().getFloat(inPath, getConfig().getFloat(inPath, inDefault));
         } catch (ConversionException e) {
             logger.error("{}. Using default value {} instead.", e.getMessage(), inDefault);
             return inDefault;
@@ -100,7 +133,7 @@ public abstract class AbstractConfiguration {
      */
     protected String getLocalString(String inPath, String inDefault) {
         try {
-            return configLocal.getString(inPath, config.getString(inPath, inDefault));
+            return getConfigLocal().getString(inPath, getConfig().getString(inPath, inDefault));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return inDefault;
@@ -116,7 +149,7 @@ public abstract class AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     protected String getLocalString(String inPath) {
-        return configLocal.getString(inPath, config.getString(inPath));
+        return getConfigLocal().getString(inPath, getConfig().getString(inPath));
     }
 
     /**
@@ -130,8 +163,8 @@ public abstract class AbstractConfiguration {
      * @param defaultList List of default values to return if none found in config
      * @return a {@link java.util.List} object.
      */
-    protected static List<String> getLocalList(HierarchicalConfiguration config, HierarchicalConfiguration altConfig, String inPath,
-            List<String> defaultList) {
+    protected static List<String> getLocalList(HierarchicalConfiguration<ImmutableNode> config, HierarchicalConfiguration<ImmutableNode> altConfig,
+            String inPath, List<String> defaultList) {
         if (config == null) {
             throw new IllegalArgumentException("config may not be null");
         }
@@ -156,7 +189,8 @@ public abstract class AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     protected List<Object> getLocalNodeList(String inPath) {
-        List<Object> objects = ((HierarchicalConfiguration) configLocal).getList(inPath, ((HierarchicalConfiguration) config).getList(inPath));
+        List<Object> objects = ((HierarchicalConfiguration<ImmutableNode>) getConfigLocal()).getList(inPath,
+                ((HierarchicalConfiguration<ImmutableNode>) getConfig()).getList(inPath));
         if (objects != null && !objects.isEmpty()) {
             List<Object> ret = new ArrayList<>(objects.size());
             for (Object obj : objects) {
@@ -178,7 +212,7 @@ public abstract class AbstractConfiguration {
      * @return configured list; defaultList if none found
      */
     protected List<String> getLocalList(String inPath, List<String> defaultList) {
-        return getLocalList(configLocal, config, inPath, defaultList);
+        return getLocalList(getConfigLocal(), getConfig(), inPath, defaultList);
     }
 
     /**
@@ -204,7 +238,7 @@ public abstract class AbstractConfiguration {
      */
     protected boolean getLocalBoolean(String inPath, boolean inDefault) {
         try {
-            return configLocal.getBoolean(inPath, config.getBoolean(inPath, inDefault));
+            return getConfigLocal().getBoolean(inPath, getConfig().getBoolean(inPath, inDefault));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return inDefault;
@@ -219,10 +253,10 @@ public abstract class AbstractConfiguration {
      * @param inPath a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      */
-    protected List<HierarchicalConfiguration> getLocalConfigurationsAt(String inPath) {
-        List<HierarchicalConfiguration> ret = configLocal.configurationsAt(inPath);
+    protected List<HierarchicalConfiguration<ImmutableNode>> getLocalConfigurationsAt(String inPath) {
+        List<HierarchicalConfiguration<ImmutableNode>> ret = getConfigLocal().configurationsAt(inPath);
         if (ret == null || ret.isEmpty()) {
-            ret = config.configurationsAt(inPath);
+            ret = getConfig().configurationsAt(inPath);
         }
 
         return ret;
@@ -236,18 +270,22 @@ public abstract class AbstractConfiguration {
      * @param inPath a {@link java.lang.String} object.
      * @return a {@link org.apache.commons.configuration.HierarchicalConfiguration} object.
      */
-    protected HierarchicalConfiguration getLocalConfigurationAt(String inPath) {
-        HierarchicalConfiguration ret = null;
+    protected HierarchicalConfiguration<ImmutableNode> getLocalConfigurationAt(String inPath) {
+        List<HierarchicalConfiguration<ImmutableNode>> ret = null;
         try {
-            ret = configLocal.configurationAt(inPath);
+            ret = getConfigLocal().configurationsAt(inPath);
             if (ret == null || ret.isEmpty()) {
                 throw new IllegalArgumentException();
             }
         } catch (IllegalArgumentException e) {
-            ret = config.configurationAt(inPath);
+            ret = getConfig().configurationsAt(inPath);
         }
 
-        return ret;
+        if (ret != null && !ret.isEmpty()) {
+            return ret.get(0);
+        }
+
+        return null;
     }
 
     /**
@@ -257,6 +295,6 @@ public abstract class AbstractConfiguration {
      * @param value New value to set
      */
     public void overrideValue(String property, Object value) {
-        configLocal.setProperty(property, value);
+        getConfig().setProperty(property, value);
     }
 }

@@ -35,8 +35,7 @@ public class FacetItemTest extends AbstractTest {
 
     @Before
     public void setUp() throws Exception {
-        // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
+        super.setUp();
     }
 
     /**

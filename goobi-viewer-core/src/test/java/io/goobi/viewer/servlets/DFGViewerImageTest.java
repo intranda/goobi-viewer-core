@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer.servlets;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -27,25 +25,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.meterware.servletunit.ServletRunner;
-
-import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
 
 /**
  * @author florian
  *
  */
-public class DFGViewerImageTest {
+public class DFGViewerImageTest extends AbstractTest {
 
     DFGViewerImage servlet;
 
 
     @Before
     public void setUp() throws Exception {
-
-        // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
+        super.setUp();
         servlet = new DFGViewerImage();
     }
     

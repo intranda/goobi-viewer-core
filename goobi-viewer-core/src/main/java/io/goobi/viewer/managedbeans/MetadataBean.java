@@ -288,6 +288,19 @@ public class MetadataBean {
 
         return "bibData";
     }
+    
+    /**
+     * Convenience method for the sidebar metadata widget label key, depending on the document type.
+     * 
+     * @return Message key for the label
+     */
+    public String getDefaultSidebarMetadataLabel() {
+        if (activeDocumentBean != null && activeDocumentBean.getViewManager().getTopStructElement().isLidoRecord()) {
+            return "metadata";
+        }
+
+        return "sidebarBibData";
+    }
 
     /**
      * <p>

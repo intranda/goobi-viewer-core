@@ -26,7 +26,6 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -791,13 +790,13 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#getExactSearchString()
-     * @verifies not url escape string
+     * @verifies url escape string
      */
     @Test
-    public void getExactSearchString_shouldNotUrlEscapeString() throws Exception {
+    public void getExactSearchString_shouldUrlEscapeString() throws Exception {
         SearchBean sb = new SearchBean();
         sb.setExactSearchString("PI:*");
-        Assert.assertEquals("PI:*", sb.getExactSearchString());
+        Assert.assertEquals("PI%3A*", sb.getExactSearchString());
     }
 
     /**
@@ -808,6 +807,17 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getExactSearchString_shouldEscapeCriticalChars() throws Exception {
         SearchBean sb = new SearchBean();
         sb.setExactSearchString("PI:foo/bar");
-        Assert.assertEquals("PI:foo" + BeanUtils.SLASH_REPLACEMENT + "bar", sb.getExactSearchString());
+        Assert.assertEquals("PI%3Afoo" + StringTools.SLASH_REPLACEMENT + "bar", sb.getExactSearchString());
+    }
+
+    /**
+     * @see SearchBean#setExactSearchString(String)
+     * @verifies perform double unescaping if necessary
+     */
+    @Test
+    public void setExactSearchString_shouldPerformDoubleUnescapingIfNecessary() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setExactSearchString("SUPERDEFAULT%25253A%2525281234xyz%252529");
+        Assert.assertEquals("SUPERDEFAULT%3A%281234xyz%29", sb.getExactSearchString()); // getter should return single encoding
     }
 }

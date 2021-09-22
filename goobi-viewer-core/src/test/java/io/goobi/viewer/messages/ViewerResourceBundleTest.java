@@ -145,4 +145,23 @@ public class ViewerResourceBundleTest extends AbstractTest {
             }
         }
     }
+
+    /**
+     * @see ViewerResourceBundle#getFallbackLocale()
+     * @verifies return locale for configured fallback language
+     */
+    @Test
+    public void getFallbackLocale_shouldReturnLocaleForConfiguredFallbackLanguage() throws Exception {
+        Assert.assertEquals(Locale.GERMAN, ViewerResourceBundle.getFallbackLocale());
+    }
+
+    /**
+     * @see ViewerResourceBundle#getFallbackLocale()
+     * @verifies return English if no fallback language configured
+     */
+    @Test
+    public void getFallbackLocale_shouldReturnEnglishIfNoFallbackLanguageConfigured() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("viewer.fallbackDefaultLanguage", null);
+        Assert.assertEquals(Locale.ENGLISH, ViewerResourceBundle.getFallbackLocale());
+    }
 }

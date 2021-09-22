@@ -33,7 +33,6 @@ import org.junit.Test;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -43,7 +42,6 @@ import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
-import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
 import io.goobi.viewer.solr.SolrConstants;
@@ -55,8 +53,6 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
-        // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
 
     /**
@@ -133,10 +129,23 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getCollectionUrl_shouldReturnIdentifierResolverUrlIfSingleRecordAndPiKnown() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("collections.redirectToWork", true);
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
+        
         CollectionView col = new CollectionView("foo", getTestProvider());
         HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("bar", 1, "foo", null);
         element.setSingleRecordUrl("/object/PI123/1/LOG_0001/");
         Assert.assertEquals("/object/PI123/1/LOG_0001/", col.getCollectionUrl(element));
+    }
+    
+    /**
+     * @see CollectionView#getCollectionUrl(HierarchicalBrowseDcElement,String,String)
+     * @verifies escape critical url chars in collection name
+     */
+    @Test
+    public void getCollectionUrl_shouldEscapeCriticalUrlCharsInCollectionName() throws Exception {
+        CollectionView col = new CollectionView("foo", getTestProvider());
+        HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("foo/bar", 2, SolrConstants.DC, null);
+        Assert.assertEquals("/search/-/-/1/-/foo%3AfooU002Fbar/", col.getCollectionUrl(element));
     }
     
     @Test

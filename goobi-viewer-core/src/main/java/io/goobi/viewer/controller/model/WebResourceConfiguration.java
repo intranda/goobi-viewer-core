@@ -17,7 +17,8 @@ package io.goobi.viewer.controller.model;
 
 import java.net.URI;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration2.HierarchicalConfiguration;
+import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.exceptions.PresentationException;
@@ -45,7 +46,7 @@ public class WebResourceConfiguration {
         this.label = label;
     }
     
-    public WebResourceConfiguration(HierarchicalConfiguration config) throws PresentationException {
+    public WebResourceConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws PresentationException {
         this(config.getString("url", null), config.getString("label", null));
     }
 }

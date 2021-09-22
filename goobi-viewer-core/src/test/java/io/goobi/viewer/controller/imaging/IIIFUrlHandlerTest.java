@@ -47,8 +47,7 @@ public class IIIFUrlHandlerTest extends AbstractTest {
      */
     @Before
     public void setUp() throws Exception {
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-        
+        super.setUp();
         ApiUrls urls = new ApiUrls(ApiUrls.API);
         handler = new IIIFUrlHandler(urls);
     }

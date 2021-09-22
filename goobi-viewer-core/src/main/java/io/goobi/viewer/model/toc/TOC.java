@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -189,7 +190,7 @@ public class TOC implements Serializable {
      * @param visibleLevel
      * @param collapseThreshold
      * @param lowestLevelToCollapse
-     * @param currentElementIdDoc 
+     * @param currentElementIdDoc
      */
     protected void buildTree(String group, int visibleLevel, int collapseThreshold, int lowestLevelToCollapse, Long currentElementIdDoc) {
         logger.trace("buildTree");
@@ -252,37 +253,31 @@ public class TOC implements Serializable {
      * @param currentElementIdDoc
      */
     private void uncollapseCurrentElementAncestors(List<TOCElement> list, Long currentElementIdDoc) {
-        if(currentElementIdDoc != null) {
-            TOCElement currentElement = list.stream().filter(ele -> ele.getIddoc().equals(currentElementIdDoc.toString())).findAny().orElse(null);
-            if(currentElement != null) {
-                int index = list.indexOf(currentElement);
+        if (currentElementIdDoc != null) {
+            TOCElement currentElement = getElement(list, currentElementIdDoc);
+            if (currentElement != null) {
                 currentElement.setVisible(true);
                 int parentId = currentElement.getParentId();
-                if(parentId != 0) {  
-                    //make visible all following elements with the same parent
-                    for (int i = index + 1; i < list.size(); i++) {
-                        TOCElement ele = list.get(i);
-                        if(ele.getParentId() == parentId) {
-                            ele.setVisible(true);
-                        } else {
-                            break;
-                        }
-                    }
-                    //make visible all previous elements with the same parent and 
-                    //make visible and expanded all ancestor elements
-                    for (int i = index - 1; i > 0; i--) {
-                        TOCElement ele = list.get(i); 
-                        if(ele.getID() == parentId) {
-                            ele.setVisible(true);
-                            ele.setExpanded(true);
-                            parentId = ele.getParentId();
-                        } else if(ele.getParentId() == parentId) {
-                            ele.setVisible(true);
-                        }
-                    }
+                TOCElement parent = getElement(list, parentId);
+                //recursivley expand all direct ancestors
+                while (parent != null) {
+                    parent.setExpanded(true);
+                    expandTree(parentId);
+                    parentId = parent.getParentId();
+                    parent = getElement(list, parentId);
                 }
             }
         }
+    }
+
+    private TOCElement getElement(List<TOCElement> list, Long iddoc) {
+        TOCElement currentElement = list.stream().filter(ele -> ele.getIddoc().equals(iddoc.toString())).findAny().orElse(null);
+        return currentElement;
+    }
+
+    private TOCElement getElement(List<TOCElement> list, int id) {
+        TOCElement currentElement = list.stream().filter(ele -> ele.getID() == id).findAny().orElse(null);
+        return currentElement;
     }
 
     private void collapseTocForLength(int collapseThreshold, int lowestLevelToCollapse) {

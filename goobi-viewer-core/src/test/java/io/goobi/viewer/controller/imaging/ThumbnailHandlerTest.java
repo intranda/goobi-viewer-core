@@ -62,7 +62,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
     @Override
     @Before
     public void setUp() throws Exception {
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
+        super.setUp();
         Configuration configuration = DataManager.getInstance().getConfiguration();
         IIIFUrlHandler iiifHandler = new IIIFUrlHandler(new ApiUrls(ApiUrls.API));
         handler = new ThumbnailHandler(iiifHandler, configuration, STATIC_IMAGES_PATH);

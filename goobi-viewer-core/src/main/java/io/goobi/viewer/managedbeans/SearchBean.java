@@ -85,7 +85,6 @@ import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
-import io.goobi.viewer.model.search.GeoFacetItem;
 import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -894,6 +893,17 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return false;
     }
+    
+    @Override
+    public boolean isSearchInFacetFieldFlag(String fieldName) {
+        for (IFacetItem item : facets.getCurrentFacets()) {
+            if (item.getField().equals(fieldName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * Getter for the invisible (empty) search string. Used for the search field widget for when no search input display is desired.
@@ -1171,9 +1181,11 @@ public class SearchBean implements SearchInterface, Serializable {
         }
     }
 
-    /** {@inheritDoc}
+    /**
+     * {@inheritDoc}
+     * 
      * @should escape critical chars
-     * @should not url escape string
+     * @should url escape string
      */
     @Override
     public String getExactSearchString() {
@@ -1182,15 +1194,16 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         logger.trace("getExactSearchString: {}", searchStringInternal);
         String ret = BeanUtils.escapeCriticalUrlChracters(searchStringInternal);
-        //        try {
-        //            if (!StringTools.isStringUrlEncoded(ret, URL_ENCODING)) {
-        //                logger.trace("url encoding: " + ret);
-        //                ret = URLEncoder.encode(ret, URL_ENCODING);
-        //                logger.trace("encoded: " + ret);
-        //            }
-        //        } catch (UnsupportedEncodingException e) {
-        //            logger.error(e.getMessage());
-        //        }
+        try {
+            // Escape the query here, otherwise Rewrite will spam warnings into catalina.out
+            if (!StringTools.isStringUrlEncoded(ret, URL_ENCODING)) {
+                // logger.trace("url pre-encoding: {}", ret);
+                ret = StringTools.encodeUrl(ret);
+                // logger.trace("url encoded: {}", ret);
+            }
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
+        }
         return ret;
     }
 
@@ -1199,6 +1212,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * drill-down, etc.
      *
      * @param inSearchString a {@link java.lang.String} object.
+     * @should perform double unescaping if necessary
      */
     public void setExactSearchString(String inSearchString) {
         logger.debug("setExactSearchString: {}", inSearchString);
@@ -1210,11 +1224,17 @@ public class SearchBean implements SearchInterface, Serializable {
         // First apply regular URL decoder
         try {
             searchStringInternal = URLDecoder.decode(inSearchString, URL_ENCODING);
+            // Second decoding pass in case the query was encoded twice
+            if (StringTools.isStringUrlEncoded(searchStringInternal, URL_ENCODING)) {
+                searchStringInternal = URLDecoder.decode(searchStringInternal, URL_ENCODING);
+            }
         } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
         } catch (IllegalArgumentException e) {
+            logger.error(e.getMessage());
         }
         // Then unescape custom sequences
-        searchStringInternal = BeanUtils.unescapeCriticalUrlChracters(searchStringInternal);
+        searchStringInternal = StringTools.unescapeCriticalUrlChracters(searchStringInternal);
 
         // Parse search terms from the query (unescape spaces first)
         String discriminatorValue = null;
@@ -2454,7 +2474,16 @@ public class SearchBean implements SearchInterface, Serializable {
     private URI getParameterPath(URI basePath) {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
         basePath = ViewerPathBuilder.resolve(basePath, "-");
-        basePath = ViewerPathBuilder.resolve(basePath, getExactSearchString());
+        // URL-encode query if not yet encoded
+        String exactSearchString = getExactSearchString();
+        //        try {
+        //            if (!StringTools.isStringUrlEncoded(exactSearchString, URL_ENCODING)) {
+        //                exactSearchString = StringTools.encodeUrl(exactSearchString);
+        //            }
+        //        } catch (UnsupportedEncodingException e) {
+        //            logger.error(e.getMessage());
+        //        }
+        basePath = ViewerPathBuilder.resolve(basePath, exactSearchString);
         basePath = ViewerPathBuilder.resolve(basePath, Integer.toString(getCurrentPage()));
         basePath = ViewerPathBuilder.resolve(basePath, getSortString());
         basePath = ViewerPathBuilder.resolve(basePath, StringTools.encodeUrl(getFacets().getCurrentFacetString()));
@@ -2699,13 +2728,18 @@ public class SearchBean implements SearchInterface, Serializable {
             return Collections.emptyList();
         }
     }
-    
+
     /**
      * Display the geo facet map if there are any hits available with geo coordinates
+     * 
      * @return
      */
     public boolean isShowGeoFacetMap() {
-        return Optional.ofNullable(currentSearch).map(Search::isHasGeoLocationHits).orElse(false);
+        if (currentSearch != null && facets != null && (currentSearch.isHasGeoLocationHits() || facets.getGeoFacetting().hasFeature())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public GeoMap getHitsMap() {
@@ -2740,11 +2774,11 @@ public class SearchBean implements SearchInterface, Serializable {
     public List<FacetItem> getFieldFacetValues(String field, int num) throws IndexUnreachableException, PresentationException {
         return getFieldFacetValues(field, num, "");
     }
-    
+
     public List<FacetItem> getFieldFacetValues(String field, int num, String filterQuery) throws IndexUnreachableException, PresentationException {
         num = num <= 0 ? Integer.MAX_VALUE : num;
         String query = "+(ISWORK:* OR ISANCHOR:*) " + SearchHelper.getAllSuffixes();
-        if(StringUtils.isNotBlank(filterQuery)) {
+        if (StringUtils.isNotBlank(filterQuery)) {
             query += " +(" + filterQuery + ")";
         }
         String facetField = SearchHelper.facetifyField(field);

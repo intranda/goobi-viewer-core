@@ -90,6 +90,13 @@ public interface SearchInterface {
      * @return a boolean.
      */
     public boolean isSearchInDcFlag();
+    
+    /**
+     * Return if search is performed only within a certain facet field
+     *
+     * @return a boolean.
+     */
+    public boolean isSearchInFacetFieldFlag(String fieldName);
 
     /**
      * List all current {@link SearchFacet}s

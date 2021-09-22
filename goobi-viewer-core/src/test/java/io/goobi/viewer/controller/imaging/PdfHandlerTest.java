@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
@@ -36,7 +37,7 @@ import io.goobi.viewer.controller.imaging.WatermarkHandler;
  * @author Florian Alpers
  *
  */
-public class PdfHandlerTest {
+public class PdfHandlerTest extends AbstractTest{
 
     PdfHandler handler;
 
@@ -45,7 +46,7 @@ public class PdfHandlerTest {
      */
     @Before
     public void setUp() throws Exception {
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
+        super.setUp();
         Configuration configuration = DataManager.getInstance().getConfiguration();
         AbstractApiUrlManager urls = new ApiUrls("https://viewer.goobi.io/api/v1/");
         handler = new PdfHandler(new WatermarkHandler(configuration, "http://localhost:8080/viewer/"), urls);

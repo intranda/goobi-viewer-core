@@ -580,7 +580,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                             .append(':')
                             .append(DocType.EVENT)
                             .toString(), SolrSearchIndex.MAX_HITS, null, null);
-            logger.trace("{} events found", result.size());
+            if (!result.isEmpty()) {
+                logger.trace("{} events found", result.size());
+            }
             List<EventElement> ret = new ArrayList<>(result.size());
             for (SolrDocument doc : result) {
                 EventElement event = new EventElement(doc, locale);
@@ -926,7 +928,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     return SolrTools.getSingleFieldStringValue(pages.get(0), field);
                 }
             } catch (NullPointerException | NumberFormatException e) {
-                logger.trace(e.getMessage());
+                // logger.trace(e.getMessage());
             }
         }
 
