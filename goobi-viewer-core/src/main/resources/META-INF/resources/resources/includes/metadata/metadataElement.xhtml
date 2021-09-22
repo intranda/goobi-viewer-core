@@ -11,7 +11,7 @@
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
 	    <ui:fragment rendered="#{!metadataElement.skip}">
-	        <div class="metadata_element__wrapper">
+	        <div class="metadata__element-wrapper">
 
     	    	<ui:fragment rendered="#{!metadataElement.hasMetadataTypeLabels(metadataBean.activeMetadataView.index)}">
     	            <h3 class="metadata__elements-h3">
@@ -28,8 +28,8 @@
                     </ui:fragment>
 
                     <!-- METADATA ELEMENT -->
-                    <!-- TODO @Jannek all metadata in a single white box if metadataElement.hasNonSingleStringGroupedMetadata == false -->
-                    <div class="metadata__wrapper #{metadataElement.hasNonSingleStringGroupedMetadata ? -foo : bar}">
+                    <!-- TODO @Jannek all metadata in a single white box if metadataElement.displayBoxed == true -->
+                    <div class="metadata__wrapper #{metadataElement.displayBoxed ? '-isBoxed' : ''}">
                         <c:forEach items="#{metadataElement.metadataList}" var="metadata">
                             <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
 

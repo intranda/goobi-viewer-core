@@ -97,11 +97,11 @@ public class MetadataElementTest {
     }
 
     /**
-     * @see MetadataElement#isHasNonSingleStringGroupedMetadata()
-     * @verifies return true if at least one metadata not single string
+     * @see MetadataElement#isDisplayBoxed()
+     * @verifies return false if at least one metadata not single string
      */
     @Test
-    public void isHasNonSingleStringGroupedMetadata_shouldReturnTrueIfAtLeastOneMetadataNotSingleString() throws Exception {
+    public void isDisplayBoxed_shouldReturnFalseIfAtLeastOneMetadataNotSingleString() throws Exception {
         MetadataElement me = new MetadataElement();
         {
             Metadata md = new Metadata();
@@ -119,15 +119,15 @@ public class MetadataElementTest {
             me.getMetadataList().add(md);
             md.setSingleString(false);
         }
-        Assert.assertTrue(me.isHasNonSingleStringGroupedMetadata());
+        Assert.assertFalse(me.isDisplayBoxed());
     }
 
     /**
-     * @see MetadataElement#isHasNonSingleStringGroupedMetadata()
-     * @verifies return false if all metadata single string
+     * @see MetadataElement#isDisplayBoxed()
+     * @verifies return true if all metadata single string
      */
     @Test
-    public void isHasNonSingleStringGroupedMetadata_shouldReturnFalseIfAllMetadataSingleString() throws Exception {
+    public void isDisplayBoxed_shouldReturnTrueIfAllMetadataSingleString() throws Exception {
         MetadataElement me = new MetadataElement();
         {
             Metadata md = new Metadata();
@@ -145,6 +145,6 @@ public class MetadataElementTest {
             me.getMetadataList().add(md);
             md.setSingleString(true);
         }
-        Assert.assertFalse(me.isHasNonSingleStringGroupedMetadata());
+        Assert.assertTrue(me.isDisplayBoxed());
     }
 }
