@@ -32,8 +32,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -70,7 +68,6 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         SearchFacets.parseFacetString("DC:a;;DC:b;;MD_TITLE:word;;", facetItems, null);
         Assert.assertEquals(3, facetItems.size());
         Assert.assertEquals("DC", facetItems.get(0).getField());
-        Assert.assertEquals("a", facetItems.get(0).getValue());
         Assert.assertEquals("DC", facetItems.get(1).getField());
         Assert.assertEquals("b", facetItems.get(1).getValue());
         Assert.assertEquals("MD_TITLE", facetItems.get(2).getField());

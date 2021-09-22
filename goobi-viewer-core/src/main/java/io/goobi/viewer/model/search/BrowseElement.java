@@ -192,7 +192,7 @@ public class BrowseElement implements Serializable {
 
         // Collect the docstruct hierarchy
         StructElement anchorStructElement = null;
-        StructElement topStructElement = null;
+        StructElement topStructElement = null; // this can be null in unit tests
         StructElement tempElement = structElement;
         while (tempElement != null && !tempElement.isWork()) {
             structElements.add(tempElement.createStub());
@@ -262,7 +262,7 @@ public class BrowseElement implements Serializable {
             int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
             populateMetadataList(structElement, topStructElement, anchorStructElement, searchTerms, length, number, locale);
             // Add event metadata for LIDO records
-            if (topStructElement.isLidoRecord()) {
+            if (topStructElement != null && topStructElement.isLidoRecord()) {
                 // Retrieve events of the top element
                 this.events = topStructElement.generateEventElements(locale, true);
                 if (!this.events.isEmpty()) {
@@ -951,8 +951,6 @@ public class BrowseElement implements Serializable {
 
         return structElements.get(structElements.size() - 1);
     }
-    
-    
 
     /**
      * @return the events
