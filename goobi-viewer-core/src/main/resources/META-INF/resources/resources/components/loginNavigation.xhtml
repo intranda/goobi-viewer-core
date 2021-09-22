@@ -68,17 +68,6 @@
                         <div class="login-navigation__user-dropdown">
                             <h:form id="userDropdownForm" prependId="false">
                                 <ul class="login-navigation__list">
-                                    <!-- USERDATA -->
-                                    <li>
-                                        <div class="login-navigation__user-dropdown-item">
-                                            <div class="login-navigation__user-dropdown-item-icon">
-                                                <i class="fa fa-user-circle-o" aria-hidden="true"></i>
-                                            </div>
-                                            <div class="login-navigation__user-dropdown-item-string">
-                                                <a href="#{navigationHelper.applicationUrl}user/">#{msg.admin__user_profile}</a>
-                                            </div>
-                                        </div>
-                                    </li>
                                     
                                     <!-- BOOKMARKS -->
                                     <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
@@ -129,6 +118,18 @@
                                             <ui:include src="/#{contribution}" />
                                         </c:forEach>
                                     </c:forEach>
+                                    
+                                    <!-- USERDATA/PROFILE SETTINGS -->
+                                    <li>
+                                        <div class="login-navigation__user-dropdown-item">
+                                            <div class="login-navigation__user-dropdown-item-icon">
+                                                <i class="fa fa-wrench" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="login-navigation__user-dropdown-item-string">
+                                                <a href="#{navigationHelper.applicationUrl}user/">#{msg.admin__crowdsourcing_campaign_settings}</a>
+                                            </div>
+                                        </div>
+                                    </li>
                                     
                                     <!-- ADMINISTRATION -->
                                     <ui:fragment

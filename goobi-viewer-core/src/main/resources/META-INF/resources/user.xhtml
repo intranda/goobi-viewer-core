@@ -38,15 +38,17 @@
     </ui:define>
 
     <ui:define name="sidebar">
-        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
-            <widgetComponent:widget_browsing />
-        </h:panelGroup>
+			<h:panelGroup layout="block" styleClass="user-settings__profile-image-box">
+				<h:panelGroup rendered="#{user.useGravatar}">
+					<img class="user-settings__profile-image" src="#{user.getGravatarUrl(96)}" alt="User Gravatar" />
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!user.useGravatar}">
+					<img class="user-settings__profile-image" src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" alt="User Gravatar" />
+				</h:panelGroup>
+				<button data-toggle="modal" data-target="#changeProfilePicture" class="btn btn--default user-settings__profile-image-edit-button">Profilbild bearbeiten</button>
+			</h:panelGroup>
 
-        <c:forEach var="module" items="#{configurationBean.modules}">
-            <c:forEach var="contribution" items="#{module.sidebarContributions}">
-                <ui:include src="/#{contribution}" />
-            </c:forEach>
-        </c:forEach>
+
     </ui:define>
 
 </ui:composition>

@@ -4,23 +4,30 @@
    ==============================================================*/
 /* USERDATA */
 /* BLOCK */
-.userdata {
-	/* ELEMENT */
+.user-settings {
 	h3 {}
-	&__gravatar {
-		img {
-			display: block;
-		}
+	&__profile-image-box {
+		background: @white;
+		padding: 1rem;
 	}
-	&__data {
-        overflow-x: auto;
+	&__profile-image {
+		margin-bottom: 2rem;
 	}
-	&__action {
-		text-align: right;
-		.btn {
-			margin: 0;
-		}
+	&__profile-image-edit-button {
+		width: 100%;
+		display: block;
 	}
+	&__form-wrapper {
+		background: white;
+		padding: 2rem;
+		// MOVE TO REFERENCE
+		border: 1px solid @middlegray;
+		margin-bottom: 2rem;
+	}
+	&__actions {
+		margin-top: 2rem;
+	}
+	
 }
 
 #editUserdataModal {
