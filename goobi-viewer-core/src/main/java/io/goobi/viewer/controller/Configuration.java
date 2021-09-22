@@ -113,7 +113,7 @@ public final class Configuration extends AbstractConfiguration {
                         .configure(new Parameters().properties()
                                 .setBasePath(Configuration.class.getClassLoader().getResource("").getFile())
                                 .setFileName(configFilePath)
-                                .setListDelimiterHandler(new DefaultListDelimiterHandler(','))
+                                .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
                                 .setThrowExceptionOnMissing(false));
         //alternative to .setBasePath from ClassLoader
         //builder.getFileHandler().setFile(new File(builder.getFileHandler().getURL().getFile()));
@@ -145,7 +145,7 @@ public final class Configuration extends AbstractConfiguration {
                 new ReloadingFileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
                         .configure(new Parameters().properties()
                                 .setFileName(fileLocal.getAbsolutePath())
-                                .setListDelimiterHandler(new DefaultListDelimiterHandler(','))
+                                .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
                                 .setThrowExceptionOnMissing(false));
         if (builder.getFileHandler().getFile().exists()) {
             try {
