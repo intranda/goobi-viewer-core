@@ -564,10 +564,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * </p>
      *
      * @param locale a {@link java.util.Locale} object.
+     * @param forSearchHit If true, only search hit metadata will be populated in the event; if false main and sidebar metadata
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public List<EventElement> generateEventElements(Locale locale) throws IndexUnreachableException {
+    public List<EventElement> generateEventElements(Locale locale, boolean forSearchHit) throws IndexUnreachableException {
         logger.trace("generateEventElements");
         try {
             // Return all fields here because the metadata fields are needed to populate the event objects
@@ -585,7 +586,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             }
             List<EventElement> ret = new ArrayList<>(result.size());
             for (SolrDocument doc : result) {
-                EventElement event = new EventElement(doc, locale);
+                EventElement event = new EventElement(doc, locale, forSearchHit);
                 ret.add(event);
             }
             return ret;
