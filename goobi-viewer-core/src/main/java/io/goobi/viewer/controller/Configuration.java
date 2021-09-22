@@ -421,7 +421,7 @@ public final class Configuration extends AbstractConfiguration {
                             .setTopstructOnly(topstructOnly));
                 }
             }
-            ret.add(new Metadata(label, masterValue, type, paramList, group));
+            ret.add(new Metadata(label, masterValue, paramList).setGroup(group).setType(type));
         }
 
         return ret;
@@ -649,16 +649,19 @@ public final class Configuration extends AbstractConfiguration {
                             int charIndex = sub3.getInt("[@char]");
                             character = (char) charIndex;
                         } catch (NoSuchElementException e) {
+                            //
                         }
                         String string = null;
                         try {
                             string = sub3.getString("[@string]");
                         } catch (NoSuchElementException e) {
+                            //
                         }
                         String regex = null;
                         try {
                             regex = sub3.getString("[@regex]");
                         } catch (NoSuchElementException e) {
+                            //
                         }
                         String replaceWith = sub3.getString("");
                         if (replaceWith == null) {
@@ -691,7 +694,10 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        Metadata ret = new Metadata(label, masterValue, type, paramList, group, number)
+        Metadata ret = new Metadata(label, masterValue, paramList)
+                .setType(type)
+                .setGroup(group)
+                .setNumber(number)
                 .setSingleString(singleString)
                 .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
                 .setCitationTemplate(citationTemplate)
@@ -3696,7 +3702,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isUseViewerLocaleAsRecordLanguage() {
         return getLocalBoolean("viewer.useViewerLocaleAsRecordLanguage", false);
     }
-    
+
     /**
      * 
      * @return
@@ -3705,7 +3711,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getFallbackDefaultLanguage() {
         return getLocalString("viewer.fallbackDefaultLanguage", "en");
     }
-    
+
     /**
      * <p>
      * getFeedbackEmailAddresses.

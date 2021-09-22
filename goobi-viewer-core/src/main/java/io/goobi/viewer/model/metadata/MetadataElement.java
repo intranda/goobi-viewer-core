@@ -133,9 +133,9 @@ public class MetadataElement {
             if (ViewerResourceBundle.getTranslation(key, null, true, false, false, false) != null) {
                 //            if(ViewerResourceBundle.getAllKeys().contains(key)) {
                 return key;
-            } else {
-                return "";
             }
+
+            return "";
         }
 
         public void setTabName(String tabName) {
@@ -452,10 +452,10 @@ public class MetadataElement {
      */
     public boolean isDisplayBoxed(int type) {
         for (Metadata md : getMetadataList()) {
-            if(md.getType() != type) {
+            if (md.getType() != type) {
                 continue;
             }
-            if (md.isGroup() || !md.isSingleString()) {
+            if (!md.isSingleString()) {
                 return false;
             }
         }
