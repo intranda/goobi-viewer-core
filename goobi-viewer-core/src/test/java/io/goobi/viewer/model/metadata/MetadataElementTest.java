@@ -97,11 +97,11 @@ public class MetadataElementTest {
     }
 
     /**
-     * @see MetadataElement#isDisplayBoxed()
-     * @verifies return false if at least one metadata not single string
+     * @see MetadataElement#isDisplayBoxed(int)
+     * @verifies return false if at least one metadata with same type not single string
      */
     @Test
-    public void isDisplayBoxed_shouldReturnFalseIfAtLeastOneMetadataNotSingleString() throws Exception {
+    public void isDisplayBoxed_shouldReturnFalseIfAtLeastOneMetadataWithSameTypeNotSingleString() throws Exception {
         MetadataElement me = new MetadataElement();
         {
             Metadata md = new Metadata();
@@ -117,17 +117,17 @@ public class MetadataElementTest {
             md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
             Assert.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
-            md.setSingleString(false);
+            md.setSingleString(false); // single string false
         }
-        Assert.assertFalse(me.isDisplayBoxed());
+        Assert.assertFalse(me.isDisplayBoxed(0));
     }
 
     /**
-     * @see MetadataElement#isDisplayBoxed()
-     * @verifies return true if all metadata single string
+     * @see MetadataElement#isDisplayBoxed(int)
+     * @verifies return true if all metadata of same type single string
      */
     @Test
-    public void isDisplayBoxed_shouldReturnTrueIfAllMetadataSingleString() throws Exception {
+    public void isDisplayBoxed_shouldReturnTrueIfAllMetadataOfSameTypeSingleString() throws Exception {
         MetadataElement me = new MetadataElement();
         {
             Metadata md = new Metadata();
@@ -143,8 +143,9 @@ public class MetadataElementTest {
             md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
             Assert.assertFalse(md.isBlank());
             me.getMetadataList().add(md);
-            md.setSingleString(true);
+            md.setSingleString(false); // single string false
+            md.setType(1); //different type
         }
-        Assert.assertTrue(me.isDisplayBoxed());
+        Assert.assertTrue(me.isDisplayBoxed(0));
     }
 }

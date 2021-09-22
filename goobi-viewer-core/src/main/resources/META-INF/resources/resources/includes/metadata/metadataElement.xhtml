@@ -29,7 +29,7 @@
 
                     <!-- METADATA ELEMENT -->
                     <!-- TODO @Jannek all metadata in a single white box if metadataElement.displayBoxed == true -->
-                    <div class="metadata__wrapper #{metadataElement.displayBoxed ? '-isBoxed' : ''}">
+                    <div class="metadata__wrapper #{metadataElement.isDisplayBoxed(type.type) ? '-isBoxed' : ''}">
                         <c:forEach items="#{metadataElement.metadataList}" var="metadata">
                             <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
 
