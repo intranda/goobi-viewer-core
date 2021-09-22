@@ -73,11 +73,11 @@ public class Metadata implements Serializable {
     private final String label;
     /** Value from messages.properties (with placeholders) */
     private final String masterValue;
-    private final int type;
     private final int number;
     private final List<MetadataValue> values = new ArrayList<>();
     private final List<MetadataParameter> params = new ArrayList<>();
     private final boolean group;
+    private int type;
     private boolean singleString = true;
     private boolean hideIfOnlyMetadataField = false;
     /** Optional metadata field that will provide the label value (if singleString=true) */
@@ -291,6 +291,13 @@ public class Metadata implements Serializable {
      */
     public int getType() {
         return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(int type) {
+        this.type = type;
     }
 
     /**
@@ -696,13 +703,10 @@ public class Metadata implements Serializable {
         // Grouped metadata
         if (group) {
             if (se.getMetadataFields().get(label) == null && parentMetadata == null) {
-                // If there is no plain value in the docstruct doc or this is a child metadata, then there shouldn't be a metadata Solr doc. In this case save time by skipping this field.
+                // If there is no plain value in the docstruct/event doc or this is a child metadata, then there shouldn't be a metadata Solr doc.
+                // In this case save time by skipping this field.
                 return false;
             }
-            //            if (se.getMetadataFields().get(SolrConstants.IDDOC) == null || se.getMetadataFields().get(SolrConstants.IDDOC).isEmpty()) {
-            //                return false;
-            //            }
-
             return populateGroup(se, ownerIddoc, locale);
         }
 
