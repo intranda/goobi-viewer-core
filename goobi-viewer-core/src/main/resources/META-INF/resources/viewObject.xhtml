@@ -108,7 +108,12 @@
                     </c:forEach>
                 </c:forEach>
 
-				<ui:include src="/resources/includes/user/userGeneratedContent.xhtml"></ui:include>
+					<!-- USER GENERATED CONTENT -->
+				<h:panelGroup rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}">
+					<div id="view_image_user_generated_content">
+						<viewerComponent:annotationList contentList="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage)}" sidebar="false"/>
+					</div>
+				</h:panelGroup>
 
                 <!-- USER COMMENTS -->
                 <ui:insert name="userComments">
