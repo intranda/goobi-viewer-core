@@ -45,7 +45,11 @@
 				<h:panelGroup rendered="#{!user.useGravatar}">
 					<img class="user-settings__profile-image" src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" alt="User Gravatar" />
 				</h:panelGroup>
-				<button data-toggle="modal" data-target="#changeProfilePicture" class="btn btn--default user-settings__profile-image-edit-button">Profilbild bearbeiten</button>
+				<!-- TO DO DISPLAY FUNCTIONALITY FOR OWN IMAGE -->
+<!-- 				<h:panelGroup rendered="#{!user.NewFunctionForOwnImage}"> -->
+<!-- 					<img class="user-settings__profile-image" src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" alt="User Gravatar" /> -->
+<!-- 				</h:panelGroup> -->
+				<button data-toggle="modal" data-backdrop="false" data-target="#changeProfilePicture" class="btn btn--default user-settings__profile-image-edit-button">{msg.user_change_profile_picture}</button>
 			</h:panelGroup>
 
 

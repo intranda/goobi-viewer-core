@@ -152,34 +152,13 @@
                                 </div>
                             </ui:fragment>
 
-                            <!-- SAVE / CANCEL BUTTONS FOR EXISTING USERS -->
-                            <ui:fragment rendered="#{adminBean.currentUser.active}">
-                                <div class="row no-gutters justify-content-end user-settings__actions">
-                                    <h:commandLink  rendered="#{adminBean.currentUser.id != null}" id="cancelUserButton" styleClass="btn admin__cancel-button" value="#{msg.cancel}" action="pretty:adminUsers" immediate="true" />
-                                    <h:commandLink id="saveUserButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
-                                </div>
-                            </ui:fragment>
 
-                            <!-- ACCOUNT ACTIVATION -->
-                            <ui:fragment rendered="#{!adminBean.currentUser.active and !adminBean.currentUser.anonymous}">
-                                <h3>#{msg.admin__user_activation}</h3>
-                                   <div class="user-settings__form-wrapper -warning">
-                                       <p>#{msg.admin__user_activation_description}</p>
-                                       <div class="form-group form-row">
-                                           <div class="col-9">
-                                               <div class="form-check">
-                                                   <h:selectBooleanCheckbox class="form-check-input" value="#{adminBean.currentUser.active}" id="userActivation"/>
-                                                <label for="userActivation" class="form-check-label" >#{msg.admin__user_activation_label}</label>
-                                               </div>
-                                           </div>
-                                       </div>
-                                </div>
-                                <!-- SAVE / CANCEL BUTTONS FOR NEW USER -->
+                                
+                                <!-- SAVE / CANCEL BUTTONS -->
                                 <div class="row no-gutters justify-content-end admin__final-actions">
                                     <h:commandLink id="cancelNewUserCreationnButton" styleClass="btn admin__cancel-button" value="#{msg.cancel}" action="pretty:adminUsers" immediate="true" />
                                     <h:commandLink id="saveNewUserCreationButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
                                 </div>
-                            </ui:fragment>
                         </h:form>
                         
                         
@@ -221,9 +200,10 @@
 		<div class="modal fade profile-picture-modal" id="changeProfilePicture" tabindex="-1" role="dialog" aria-labelledby="editUserdataModalLabel">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
-					<h:form id="userEditDataForm" styleClass="form-horizontal" prependId="false">
+				
+
 						<div class="modal-header">
-							<h3 class="modal-title" id="editUserdataModalLabel">#{msg.changeUserData}</h3>
+							<h3 class="modal-title" id="editUserdataModalLabel">#{msg.user_change_profile_picture}</h3>
 							<button type="button" class="fancy-close" data-dismiss="modal" aria-label="Close">
 								<span aria-hidden="true"> 
 									<h:outputText value="&amp;times;" escape="false" />
@@ -231,97 +211,92 @@
 							</button>							
 						</div>
 						<div class="modal-body">
-							<!-- prevent autocomplete in IE, Chrome and Firefox -->
-							<input type="text" class="hidden" /> 
-							<input type="password" class="hidden" />
-
-							<h:outputText escape="false" value="#{msg.userEditInfoText}" />
-
-							<h3>#{msg.userCP}</h3>
-
-							<div class="form-group form-row">
-								<h:outputLabel value="#{msg.nameNick}*:" styleClass="col-12 col-sm-5 control-label">
-									<f:passThroughAttribute name="id" value="labelNameNick" />
-								</h:outputLabel>
-								<div class="col-12 col-sm-7">
-                                    <h:inputText value="#{userBean.user.nickName}" required="true" requiredMessage="#{msg.loginEnterNickName}" styleClass="form-control" disabled="#{!userBean.allowNickNameChange}">
-                                    	<f:validator validatorId="nicknameValidator" />
-                                    	<f:passThroughAttribute name="aria-labelledby" value="labelNameNick" />
-                                    </h:inputText>
+						
+						<p>#{msg.user_change_profile_picture_text}</p>
+	
+	
+                            <h:panelGroup layout="block" id="imageModeGroup" styleClass="admin__cms-edit-collection-image-actions-wrapper">
+                            
+                            	<div class="form-group admin__cms-edit-collection-connected-radio-buttons">
+                            		<div class="connected-top">
+                            			<!-- STANDARD PLACEHOLDER PERSON IMAGE -->
+		                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
+		                                	<f:selectItem itemValue="NONE" itemLabel="#{msg.user_change_profile_picture_label_standard}" />
+		                                	<f:ajax render="imageModeGroup" />
+		                            	</h:selectOneRadio>
+	                            	</div>
+	                            	<div class="connected-middle">
+	                            		<!-- TO DO: UPLOAD OWN IMAGE FILE -->
+		                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
+		                                	<f:selectItem itemValue="IMAGE" itemLabel="#{msg.user_change_profile_picture_upload_image}" />
+		                                	<f:ajax render="imageModeGroup" />
+		                            	</h:selectOneRadio>
+	                            	</div>
+	                            	<div class="connected-bottom">
+	                            		<!-- CHOOSE GRAVATAR AS PROFILE PICTURE -->
+		                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
+		                                	<f:selectItem itemValue="PI" itemLabel="#{msg.gravatar}" />
+		                                	<f:ajax render="imageModeGroup" />
+		                            	</h:selectOneRadio>
+	                            	</div>
 								</div>
-							</div>
-							<div class="form-group form-row">
-								<h:outputLabel value="#{msg.nameFirst}:" styleClass="col-12 col-sm-5 control-label">
-									<f:passThroughAttribute name="id" value="labelNameFirst"/>
-								</h:outputLabel>
-								<div class="col-12 col-sm-7">
-									<h:inputText value="#{userBean.user.firstName}" styleClass="form-control">
-										<f:passThroughAttribute name="aria-labelledby" value="labelNameFirst" />
-									</h:inputText>
-								</div>
-							</div>
-							<div class="form-group form-row">
-								<h:outputLabel value="#{msg.nameLast}:" styleClass="col-12 col-sm-5 control-label" >
-									<f:passThroughAttribute name="id" value="labelNameLast"/>
-								</h:outputLabel>
-								<div class="col-12 col-sm-7">
-									<h:inputText value="#{userBean.user.lastName}" styleClass="form-control">
-										<f:passThroughAttribute name="aria-labelledby" value="labelNameLast" />
-									</h:inputText>
-								</div>
-							</div>
-							<div class="form-group form-row">
-								<h:outputLabel value="#{msg.email}:" styleClass="col-12 col-sm-5 control-label">
-									<f:passThroughAttribute name="id" value="labelEmail"/>
-								</h:outputLabel>
-								<div class="col-12 col-sm-7">
-									<h:inputText value="#{userBean.user.email}" styleClass="form-control" disabled="#{!userBean.allowEmailChange}">
-                                    	<f:validator validatorId="emailValidator" />
-                                        <f:validator validatorId="emailAvailableValidator"></f:validator>
-										<f:passThroughAttribute name="aria-labelledby" value="labelEmail" />
-                                    </h:inputText>
-								</div>
-							</div>
-							<div class="form-group form-row">
-								<h:outputLabel value="#{msg.user_useGravatar}:" styleClass="col-5 control-label">
-									<f:passThroughAttribute name="id" value="labelGravatar"/>
-								</h:outputLabel>
-								<div class="col-7 align-self-center">
-									<h:selectBooleanCheckbox value="#{userBean.user.useGravatar}">
-										<f:passThroughAttribute name="aria-labelledby" value="labelGravatar" />
-									</h:selectBooleanCheckbox>
-								</div>
-							</div>
-							<h:panelGroup rendered="#{userBean.allowPasswordChange}">
-								<div class="form-group form-row">
-									<h:outputLabel value="#{msg.user_newPasswordOne}:" styleClass="col-12 col-sm-5 control-label">
-										<f:passThroughAttribute name="id" value="labelNewPasswordOne"/>
-									</h:outputLabel>
-									<div class="col-12 col-sm-7">
-										<h:inputSecret value="#{userBean.passwordOne}" styleClass="form-control">
-											<f:passThroughAttribute name="aria-labelledby" value="labelNewPasswordOne" />
-										</h:inputSecret>
-									</div>
-								</div>
-								<div class="form-group form-row">
-									<h:outputLabel value="#{msg.user_newPasswordTwo}:" styleClass="col-12 col-sm-5 control-label" >
-										<f:passThroughAttribute name="id" value="labelNewPasswordTwo" />
-									</h:outputLabel>
-									<div class="col-12 col-sm-7">
-										<h:inputSecret value="#{userBean.passwordTwo}" styleClass="form-control">
-											<f:passThroughAttribute name="aria-labelledby" value="labelNewPasswordTwo" />
-										</h:inputSecret>
-									</div>
-								</div>
-							</h:panelGroup>
+                            	
+                            
+                                <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image" id="mediaGroup" rendered="#{cmsCollectionsBean.imageMode == 'IMAGE'}">
+                                <!-- THUMBNAIL -->
+                                <div class="admin__cms-edit-collection-image-thumbnail">
+                                    <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
+                                        <img src="#{cmsCollectionsBean.currentCollection.iconURI}" class="img-fluid" alt="" />
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{!cmsCollectionsBean.currentCollection.hasImage()}">
+                                        <img data-src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
+                                        data-viewer-thumbnail="thumbnail"
+                                            class="img-fluid" alt="" />
+                                    </ui:fragment>
+                                </div>
+                                
+				                <!-- ACTIONS -->
+				                <div class="admin__cms-edit-collection-image-actions">
+				                    <h:commandLink 
+				                        action="#{cmsBean.setSelectedMediaHolder(cmsCollectionsBean.currentCollection)}" 
+				                        value="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}" 
+				                        class="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? 'btn btn--default' : ''}" 
+				                        role="button">
+				                        <f:ajax execute="@form" render="mediaSelectPanel" />
+				                    </h:commandLink>
+				                    <h:commandLink 
+				                        rendered="#{cmsCollectionsBean.currentCollection.getMediaItem() != null}" 
+				                        action="#{cmsCollectionsBean.currentCollection.setMediaItem(null)}" 
+				                        value="#{msg.cms_selectMediaItem_deselect}" 
+				                        class="-redlink"
+				                        role="button">
+				                        <f:ajax render="mediaGroup" />
+				                    </h:commandLink>                    
+				                </div>
+                                
+                                </h:panelGroup>	
+                            
+                            <h:panelGroup layout="block" styleClass="admin__cms-collections-wrapper-identifier" id="piGroup" rendered="#{cmsCollectionsBean.imageMode == 'PI'}">
+                            	<div class="cms-edit-collection__text-control">
+                                	<h:inputText id="workPI" styleClass="form-control" validator="#{cmsCollectionsBean.validatePI}" value="#{cmsCollectionsBean.currentCollection.representativeWorkPI}">
+                                   		<!--                                 validator="piInSolrValidator" -->
+                                    	<f:ajax render="@all"></f:ajax>
+                                	</h:inputText>
+                            	</div>
+                            </h:panelGroup>
+                            
+                            </h:panelGroup>
+	
+	
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
 							<h:commandButton value="#{msg.save}" action="#{userBean.saveUserAction}" styleClass="btn btn--success">
 								<f:passThroughAttribute name="aria-label" value="#{msg.save}" />
 							</h:commandButton>
 						</div>
-					</h:form>
+					
+					
+					
 				</div>
 			</div>
 			<div class="alt-backdrop" data-dismiss="modal"></div>
