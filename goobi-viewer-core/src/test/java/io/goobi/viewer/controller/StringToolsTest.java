@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer.controller;
 
-import static org.junit.Assert.assertEquals;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,6 +23,8 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 public class StringToolsTest {
 
@@ -212,6 +212,15 @@ public class StringToolsTest {
 
     /**
      * @see StringTools#checkValueEmptyOrInverted(String)
+     * @verifies return true if value starts with #1;
+     */
+    @Test
+    public void checkValueEmptyOrInverted_shouldReturnTrueIfValueStartsWith1() throws Exception {
+        Assert.assertTrue(StringTools.checkValueEmptyOrInverted("#1;oof"));
+    }
+
+    /**
+     * @see StringTools#checkValueEmptyOrInverted(String)
      * @verifies return false otherwise
      */
     @Test
@@ -232,16 +241,53 @@ public class StringToolsTest {
         Assert.assertEquals("key1", result.get(1));
         Assert.assertEquals("key2", result.get(2));
     }
-    
-//   @Test
-//    public void testGetGeoSearchPoints() {
-//        String searchString = "WKT_COORDS:\"IsWithin(POLYGON((1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2))) distErrPct=0\"";
-//    
-//        double[][] points = StringTools.getGeoSearchPoints(searchString);
-//        assertEquals(4, points.length);
-//        assertEquals(1.1, points[0][0], 0.0);
-//        assertEquals(1.2, points[0][1], 0.0);
-//        assertEquals(4.1, points[3][0], 0.0);
-//        assertEquals(4.2, points[3][1], 0.0);
-//    }
+
+    /**
+     * @see StringTools#isStringUrlEncoded(String,String)
+     * @verifies return true if string contains url encoded characters
+     */
+    @Test
+    public void isStringUrlEncoded_shouldReturnTrueIfStringContainsUrlEncodedCharacters() throws Exception {
+        Assert.assertTrue(StringTools.isStringUrlEncoded("%28foo%29", StringTools.DEFAULT_ENCODING));
+    }
+
+    /**
+     * @see StringTools#isStringUrlEncoded(String,String)
+     * @verifies return false if string not encoded
+     */
+    @Test
+    public void isStringUrlEncoded_shouldReturnFalseIfStringNotEncoded() throws Exception {
+        Assert.assertFalse(StringTools.isStringUrlEncoded("(foo)", StringTools.DEFAULT_ENCODING));
+    }
+
+    /**
+     * @see StringTools#escapeCriticalUrlChracters(String,boolean)
+     * @verifies replace characters correctly
+     */
+    @Test
+    public void escapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
+        Assert.assertEquals("U002BAU002FU005CU007CU003FZ", StringTools.escapeCriticalUrlChracters("+A/\\|?Z", false));
+        Assert.assertEquals("U007C", StringTools.escapeCriticalUrlChracters("%7C", true));
+    }
+
+    /**
+     * @see StringTools#unescapeCriticalUrlChracters(String)
+     * @verifies replace characters correctly
+     */
+    @Test
+    public void unescapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
+        Assert.assertEquals("+A/\\|?Z", StringTools.unescapeCriticalUrlChracters("U002BAU002FU005CU007CU003FZ"));
+    }
+
+    //   @Test
+    //    public void testGetGeoSearchPoints() {
+    //        String searchString = "WKT_COORDS:\"IsWithin(POLYGON((1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2))) distErrPct=0\"";
+    //    
+    //        double[][] points = StringTools.getGeoSearchPoints(searchString);
+    //        assertEquals(4, points.length);
+    //        assertEquals(1.1, points[0][0], 0.0);
+    //        assertEquals(1.2, points[0][1], 0.0);
+    //        assertEquals(4.1, points[3][0], 0.0);
+    //        assertEquals(4.2, points[3][1], 0.0);
+    //    }
 }

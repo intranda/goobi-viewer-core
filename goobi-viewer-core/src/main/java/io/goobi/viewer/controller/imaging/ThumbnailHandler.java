@@ -741,13 +741,13 @@ public class ThumbnailHandler {
                         case "video":
                         case "text":
                             thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
-                            if (StringUtils.isEmpty(thumbnailUrl)) {
+                            if (StringUtils.isEmpty(thumbnailUrl) || !isImageMimeType(thumbnailUrl)) {
                                 thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
                             }
                             break;
                         case "audio":
                             thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
-                            if (StringUtils.isEmpty(thumbnailUrl)) {
+                            if (StringUtils.isEmpty(thumbnailUrl) || !isImageMimeType(thumbnailUrl)) {
                                 thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
                             }
                             break;
@@ -763,6 +763,15 @@ public class ThumbnailHandler {
             }
         }
         return thumbnailUrl;
+    }
+
+    /**
+     * @param thumbnailUrl
+     * @return
+     */
+    private boolean isImageMimeType(String thumbnailUrl) {
+       ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(thumbnailUrl);
+       return format != null;
     }
 
     private static Optional<DocType> getDocType(StructElement structElement) {
@@ -840,18 +849,30 @@ public class ThumbnailHandler {
     public String getThumbnailUrl(Optional<CMSMediaItem> optional, int width, int height) {
         return optional.map(item -> {
             try {
+                String contentType = item.getContentType();
                 String filename = item.getFileName();
-                String size = getSize(width, height);
-                ImageFileFormat format = ImageFileFormat.JPG;
-                ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
-                if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg|gif).*)")) { //match any image-mimetype except jpg and png
-                    format = formatType;
-                }
                 String imageApiUrl = getCMSMediaImageApiUrl(filename);
-                String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, RegionRequest.FULL, Scale.getScaleMethod(size), Rotation.NONE,
-                        Colortype.DEFAULT, format);
-                url += "?updated=" + item.getLastModifiedTime();
-                return url;
+                switch(contentType) {
+                    case CMSMediaItem.CONTENT_TYPE_VIDEO:
+                    case CMSMediaItem.CONTENT_TYPE_AUDIO:
+                    case CMSMediaItem.CONTENT_TYPE_PDF:
+                    case CMSMediaItem.CONTENT_TYPE_XML:
+                    case CMSMediaItem.CONTENT_TYPE_SVG:
+                        return imageApiUrl;
+                    case CMSMediaItem.CONTENT_TYPE_GIF:
+                        return imageApiUrl + "/full.gif";
+                    default:
+                        String size = getSize(width, height);
+                        ImageFileFormat format = ImageFileFormat.JPG;
+                        ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
+                        if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg|gif).*)")) { //match any image-mimetype except jpg and png
+                            format = formatType;
+                        }
+                        String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, RegionRequest.FULL, Scale.getScaleMethod(size), Rotation.NONE,
+                                Colortype.DEFAULT, format);
+                        url += "?updated=" + item.getLastModifiedTime();
+                        return url;
+                }
             } catch (IllegalRequestException | ServiceNotImplementedException e) {
                 logger.error(e.toString(), e);
                 return "";

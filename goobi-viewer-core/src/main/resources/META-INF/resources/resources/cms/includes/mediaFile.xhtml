@@ -35,8 +35,21 @@
 
             <!-- FILE IMAGE -->
             <ui:fragment rendered="#{cmsMediaBean.isImage(media)}">
-            
                 <div class="admin-cms-media__file-image" style="background-image: url('#{cmsMediaBean.getMediaUrl(media, 300, 300)}')"></div>
+            </ui:fragment>
+            <ui:fragment rendered="#{cmsMediaBean.isVideo(media)}">
+                <div class="admin-cms-media__file-image" style="background-image: url('#{request.contextPath}/resources/cms/images/video_media_placeholder.jpg')">
+                    <div class="admin-cms-media__file-image-caption">
+                        #{media.fileName}
+                    </div>
+                </div>
+            </ui:fragment>
+            <ui:fragment rendered="#{cmsMediaBean.isAudio(media)}">
+                <div class="admin-cms-media__file-image" style="background-image: url('#{request.contextPath}/resources/cms/images/audio_media_placeholder.jpg')">
+                    <div class="admin-cms-media__file-image-caption">
+                        #{media.fileName}
+                    </div>
+                </div>
             </ui:fragment>
             <ui:fragment rendered="#{cmsMediaBean.isText(media)}">
                 <div class="admin-cms-media__file-image" style="background-image: url('#{request.contextPath}/resources/cms/images/text_media_placeholder.png')">

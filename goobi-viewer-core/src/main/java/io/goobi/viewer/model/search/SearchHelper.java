@@ -63,8 +63,6 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.monitoring.timer.Time;
-import de.intranda.monitoring.timer.Timer;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -89,6 +87,7 @@ import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.translations.language.LocaleComparator;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -350,8 +349,8 @@ public final class SearchHelper {
                 hit.setChildDocs(childDocs.get(pi));
                 for (SolrDocument childDoc : childDocs.get(pi)) {
                     String docType = (String) childDoc.getFieldValue(SolrConstants.DOCTYPE);
-                    String ownerId = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
-                    String topStructId = (String) doc.getFieldValue(SolrConstants.IDDOC);
+                    //                    String ownerId = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
+                    //                    String topStructId = (String) doc.getFieldValue(SolrConstants.IDDOC);
                     if (DocType.METADATA.name().equals(docType)) {
                         // Hack: count metadata hits as docstruct for now (because both are labeled "Metadata")
                         docType = DocType.DOCSTRCT.name();
@@ -477,15 +476,19 @@ public final class SearchHelper {
      * @param filterForBlacklist a boolean.
      * @param separatorString a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
-     * @return a {@link java.lang.String} object.
+     * @return StringPair containing the PI and the target page type of the first record.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public static StringPair getFirstRecordURL(String luceneField, String value, boolean filterForWhitelist,
+    public static StringPair getFirstRecordPiAndPageType(String luceneField, String value, boolean filterForWhitelist,
             boolean filterForBlacklist, String separatorString, Locale locale)
             throws IndexUnreachableException, PresentationException {
         if (luceneField == null || value == null) {
             return null;
+        }
+
+        if (StringUtils.isEmpty(separatorString)) {
+            separatorString = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(luceneField);
         }
 
         StringBuilder sbQuery = new StringBuilder();
@@ -519,11 +522,11 @@ public final class SearchHelper {
             return null;
         }
 
-        String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(luceneField);
         try {
             SolrDocument doc = resp.getResults().get(0);
+            IdentifierResolver.constructUrl(doc, false);
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
-            Collection<Object> accessConditions = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+            //            Collection<Object> accessConditions = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
             if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST,
                     BeanUtils.getRequest())) {
                 // TODO check whether users with permissions still skip over such records
@@ -535,11 +538,6 @@ public final class SearchHelper {
             PageType pageType =
                     PageType.determinePageType((String) doc.get(SolrConstants.DOCSTRCT), (String) doc.get(SolrConstants.MIMETYPE), anchorOrGroup,
                             doc.containsKey(SolrConstants.THUMBNAIL), false);
-
-            //            String url = DataManager.getInstance()
-            //                    .getUrlBuilder()
-            //                    .buildPageUrl(pi, 1, (String) doc.getFieldValue(SolrConstants.LOGID), pageType);
-            //            logger.trace(url);
             return new StringPair(pi, pageType.name());
         } catch (Throwable e) {
             logger.error("Failed to retrieve record", e);
@@ -604,10 +602,10 @@ public final class SearchHelper {
             Map<String, CollectionResult> ret = createCollectionResults(facetResults, splittingChar);
 
             addGrouping(ret, luceneField, groupResults, sbQuery.toString());
-            
+
             logger.debug("{} collections found", ret.size());
             return ret;
-            
+
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
@@ -615,6 +613,12 @@ public final class SearchHelper {
         return Collections.emptyMap();
     }
 
+    /**
+     * 
+     * @param facetResults
+     * @param splittingChar
+     * @return
+     */
     private static Map<String, CollectionResult> createCollectionResults(FacetField facetResults, String splittingChar) {
         Map<String, CollectionResult> ret = new HashMap<>();
         for (Count count : facetResults.getValues()) {

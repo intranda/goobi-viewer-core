@@ -51,7 +51,7 @@ public class AbstractAnnotationBuilder {
     private final static Logger logger  = LoggerFactory.getLogger(AbstractAnnotationBuilder.class);
 
     public static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE,
-            SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS, SolrConstants.ACCESSCONDITION };
+            SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS, SolrConstants.ACCESSCONDITION, SolrConstants.MD_ANNOTATION_ID};
 
     
     private final AbstractBuilder restBuilder;
@@ -76,8 +76,16 @@ public class AbstractAnnotationBuilder {
         return query;
     }
     
-    public String getAnnotationQuery(long iddoc) {
-        return "+" + SolrConstants.IDDOC + ":" + iddoc;
+    /**
+     * Search for both UGC docs with given IDDOC and with MD_ANNOTATION_ID = "annotation_<id>". Searching for IDDOC is only
+     * included for backwards compatibility purposes. The correct identifier is MD_ANNOTATION_ID since it reflects the
+     * original sql identifier
+     * 
+     * @param iddoc
+     * @return
+     */
+    public String getAnnotationQuery(long id) {
+        return "+(" + SolrConstants.MD_ANNOTATION_ID + ":annotation_" + id + " " + SolrConstants.IDDOC + ":" + id + ")";
     }
 
     

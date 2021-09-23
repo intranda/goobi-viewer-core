@@ -31,6 +31,12 @@ public class CMSContentItemTemplate extends CMSContentItem {
     private int order = 0;
     private boolean mandatory = false;
     private boolean preview = false;
+    private boolean ignoreCollectionHierarchy = false;
+    /**
+     * For SOLRQUERY items: If true, show number of hits and sort order options on page and hide them in cms backend
+     */
+    boolean hitListOptions = false;
+    boolean randomizeItems = false;
 
     /**
      * <p>
@@ -166,5 +172,46 @@ public class CMSContentItemTemplate extends CMSContentItem {
     @Override
     public String getItemLabel() {
         return this.itemLabel;
+    }
+    
+    /**
+     * @return the ignoreCollectionHierarchy
+     */
+    public boolean isIgnoreCollectionHierarchy() {
+        return ignoreCollectionHierarchy;
+    }
+    /**
+     * @param ignoreCollectionHierarchy the ignoreCollectionHierarchy to set
+     */
+    public void setIgnoreCollectionHierarchy(boolean ignoreCollectionHierarchy) {
+        this.ignoreCollectionHierarchy = ignoreCollectionHierarchy;
+    }
+    
+    /**
+     * @return the hitListOptions
+     */
+    public boolean isHitListOptions() {
+        return hitListOptions;
+    }
+    
+    /**
+     * @param hitListOptions the hitListOptions to set
+     */
+    public void setHitListOptions(boolean hitListOptions) {
+        this.hitListOptions = hitListOptions;
+    }
+
+    /**
+     * @param radomizeItems the radomizeItems to set
+     */
+    public void setRandomizeItems(boolean radomizeItems) {
+        this.randomizeItems = radomizeItems;
+    }
+    
+    /**
+     * 
+     */
+    public boolean isRandomizeItems() {
+        return this.randomizeItems;
     }
 }

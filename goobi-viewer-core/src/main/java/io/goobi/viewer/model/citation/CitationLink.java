@@ -127,7 +127,7 @@ public class CitationLink {
      * @should construct external url correctly
      */
     public String getUrl(ViewManager viewManager) throws PresentationException, IndexUnreachableException, DAOException {
-        logger.trace("getUrl: {}/{}", level, field);
+        // logger.trace("getUrl: {}/{}", level, field);
         if (viewManager == null) {
             return null;
         }
@@ -148,13 +148,6 @@ public class CitationLink {
             sb.append(prefix);
         }
         sb.append(getValue(viewManager));
-        if (suffix != null) {
-            sb.append(suffix);
-            if (appendImageNumberToSuffix) {
-                sb.append(viewManager.getCurrentImageOrder());
-            }
-        }
-
         return sb.toString();
     }
 
@@ -201,7 +194,7 @@ public class CitationLink {
         }
 
         if (StringUtils.isEmpty(this.value)) {
-            logger.trace("Loading value: {}/{}", level, field);
+            // logger.trace("Loading value: {}/{}", level, field);
             String query = null;
             switch (level) {
                 case RECORD:
@@ -230,6 +223,9 @@ public class CitationLink {
                 if (doc != null && doc.get(field) != null) {
                     this.value = String.valueOf(doc.get(field));
                 }
+            }
+            if(StringUtils.isNotBlank(this.value) && !CitationLinkLevel.RECORD.equals(level) && StringUtils.isNotBlank(this.suffix)) {
+                this.value = this.value + this.suffix + viewManager.getCurrentImageOrder();
             }
         }
 

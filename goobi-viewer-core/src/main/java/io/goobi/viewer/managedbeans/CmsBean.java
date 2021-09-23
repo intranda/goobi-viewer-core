@@ -39,7 +39,9 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
@@ -51,6 +53,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.RandomComparator;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -71,6 +74,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
+import io.goobi.viewer.model.cms.CMSContentItemTemplate;
 import io.goobi.viewer.model.cms.CMSMediaHolder;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
@@ -463,7 +467,8 @@ public class CmsBean implements Serializable {
                         .distinct()
                         .collect(Collectors.toList());
         for (CMSContentItem pageItem : allPageItems) {
-            if (template.getContentItem(pageItem.getItemId()) == null) {
+            CMSContentItemTemplate templateItem = template.getContentItem(pageItem.getItemId());
+            if (templateItem == null || ObjectUtils.notEqual(templateItem.getType(), pageItem.getType())) {
                 logger.debug("remove content item "  + pageItem.getItemId());
                 //if not, remove them
                 page.removeContentItem(pageItem.getItemId());
@@ -755,24 +760,25 @@ public class CmsBean implements Serializable {
      * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @deprecated use {@link CMSContentItem#getNestedPages()}
      */
+    @Deprecated
     public List<CMSPage> getNestedPages(CMSContentItem item) throws DAOException {
         int size = item.getElementsPerPage();
         int offset = item.getListOffset();
-        List<CMSPage> nestedPages = new ArrayList<>();
-        int counter = 0;
-        List<CMSPage> cmsPages = getAllCMSPages();
-        for (CMSCategory category : item.getCategories()) {
-            for (CMSPage cmsPage : cmsPages) {
-                if (cmsPage.isPublished() && cmsPage.getCategories().contains(category)) {
-                    counter++;
-                    if (counter > offset && counter <= size + offset) {
-                        nestedPages.add(cmsPage);
-                    }
-                }
-            }
+        
+        Stream<CMSPage> nestedPagesStream = getAllCMSPages().stream()
+                .filter(CMSPage::isPublished)
+                .filter(child -> item.getCategories().isEmpty() || !CollectionUtils.intersection(item.getCategories(), child.getCategories()).isEmpty());
+        
+        if(item.isRandomizeItems()) {
+            nestedPagesStream = nestedPagesStream.sorted(new RandomComparator<CMSPage>());
         }
-        setNestedPagesCount((int) Math.ceil(counter / (double) size));
+        
+        nestedPagesStream = nestedPagesStream.skip(offset).limit(size);
+        List<CMSPage> nestedPages = nestedPagesStream.collect(Collectors.toList());
+        setNestedPagesCount((int) Math.ceil((offset+nestedPages.size()) / (double) size));
+        
         return nestedPages;
     }
 
@@ -1775,12 +1781,12 @@ public class CmsBean implements Serializable {
         } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
             Search search = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
             search.setQuery(item.getSolrQuery());
-            if (StringUtils.isNotBlank(item.getSolrSortFields())) {
+            if (StringUtils.isNotBlank(item.getSolrSortFields()) && !item.getSolrSortFields().equals("-")) {
                 search.setSortString(item.getSolrSortFields());
                 searchBean.setSortString(item.getSolrSortFields());
             }
             //NOTE: Cannot sort by multivalued fields like DC.
-            if (StringUtils.isNotBlank(item.getGroupBy())) {
+            if (StringUtils.isNotBlank(item.getGroupBy()) && !item.getGroupBy().equals("-")) {
                 String sortString = search.getSortString() == null ? "" : search.getSortString().replace("-", "");
                 sortString = item.getGroupBy() + ";" + sortString;
                 search.setSortString(sortString);
@@ -2690,7 +2696,7 @@ public class CmsBean implements Serializable {
         this.selectedMediaHolder.ifPresent(contentItem -> {
             String filter = contentItem.getMediaFilter();
             if (StringUtils.isBlank(filter)) {
-                filter = CmsMediaBean.getImageFilter();
+                filter = "(" + CmsMediaBean.getImageFilter() + ")|(" + CmsMediaBean.getVideoFilter() + ")";
             }
             cmsMediaBean.setFilenameFilter(filter);
             if (contentItem.hasMediaItem()) {

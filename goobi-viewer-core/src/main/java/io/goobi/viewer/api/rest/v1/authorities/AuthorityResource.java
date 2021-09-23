@@ -15,7 +15,8 @@
  */
 package io.goobi.viewer.api.rest.v1.authorities;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.AUTHORITY;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.AUTHORITY_RESOLVER;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +26,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -49,7 +49,6 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -104,7 +103,7 @@ public class AuthorityResource {
         }
         // logger.debug("norm data locale: {}", locale.toString());
 
-        url = BeanUtils.unescapeCriticalUrlChracters(url.trim());
+        url = StringTools.unescapeCriticalUrlChracters(url.trim());
         String secondUrl = null;
         if (url.contains("$")) {
             String[] urlSplit = url.split("[$]");

@@ -10,7 +10,7 @@
     <composite:implementation>
         <div class="search-list__save-search">
 			<span data-toggle="tooltip" data-placement="top" title="#{msg.saveSearch}">
-				<button type="button" class="btn btn--icon" data-toggle="modal" data-target="#saveSearchModal" aria-label="#{msg.saveSearch}">
+				<button type="button" class="btn btn--icon" data-toggle="modal" data-target="#saveSearchModal" data-backdrop="false" aria-label="#{msg.saveSearch}">
 					<i class="fa fa-floppy-o" aria-hidden="true"></i>
 				</button>
 			</span>
@@ -37,6 +37,7 @@
                             </div>
                         </div>
                     </div>
+					<div class="alt-backdrop" data-dismiss="modal"></div>
                 </div>
             </h:form>
         </div>

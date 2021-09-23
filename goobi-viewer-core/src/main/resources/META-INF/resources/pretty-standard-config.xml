@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pretty-config xmlns="http://ocpsoft.com/prettyfaces/3.3.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://ocpsoft.com/prettyfaces/3.3.3 http://ocpsoft.com/xml/ns/prettyfaces/ocpsoft-pretty-faces-3.3.3.xsd">
+<pretty-config xmlns="http://ocpsoft.com/prettyfaces/3.5.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://ocpsoft.com/prettyfaces/3.5.0 http://ocpsoft.com/xml/ns/prettyfaces/ocpsoft-pretty-faces-3.5.0.xsd">
 
 	<rewrite match="/;jsessionid=\w+" substitute="/" />
 	<rewrite match="/melody/?" substitute="/monitoring?main" />
@@ -62,25 +62,18 @@
 		<view-id value="/browse.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-		<action onPostback="false">#{browseBean.initializeCollection('DC')}</action>
-		<action onPostback="false">#{browseBean.populateCollection('DC')}</action>
+		<action onPostback="false">#{browseBean.setCollectionField('DC')}</action>
 	</url-mapping>
 	<url-mapping id="browseTopics">
 		<pattern value="/browseTopics/" />
 		<view-id value="/browse.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{browseBean.initializeCollection('MD_TOPIC')}</action>
-		<action onPostback="false">#{browseBean.populateCollection('MD_TOPIC')}</action>
-		<!-- <action onPostback="false">#{browseBean.expandCollection(2)}</action> -->
-		<!-- <action onPostback="false">#{browseBean.collection.showAll()}</action> -->
+		<action onPostback="false">#{browseBean.setCollectionField('MD_TOPIC')}</action>
 	</url-mapping>
 	<url-mapping id="browseHierarchy">
 		<pattern value="/browseHierarchy/" />
 		<view-id value="/browse.xhtml" />
-		<action onPostback="false">#{browseBean.initializeCollection('MD_HIERARCHY')}</action>
-		<action onPostback="false">#{browseBean.populateCollection('MD_HIERARCHY')}</action>
-		<!-- <action onPostback="false">#{browseBean.expandCollection(2)}</action> -->
-		<!-- <action onPostback="false">#{browseBean.collection.showAll()}</action> -->
+		<action onPostback="false">#{browseBean.setCollectionField('MD_HIERARCHY')}</action>
 	</url-mapping>	
 	<url-mapping id="browseFirstRecord">
 		<pattern value="/browse/#{browseBean.collectionField}/#{browseBean.targetCollection}/record/" />

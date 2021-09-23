@@ -18,6 +18,7 @@ package io.goobi.viewer.model.cms.itemfunctionality;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -40,6 +42,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.maps.GeoMap;
+import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchInterface;
@@ -385,7 +388,17 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     private URI getParameterPath() {
         URI path = URI.create("");
         //        path = ViewerPathBuilder.resolve(path, getCollection());
-        path = ViewerPathBuilder.resolve(path, getQueryString());
+        // URL-encoder query, if necessary (otherwise, exceptions might occur)
+        String queryString = getQueryString();
+        //        try {
+        //            if (!StringTools.isStringUrlEncoded(queryString, StringTools.DEFAULT_ENCODING)) {
+        //                queryString = URLEncoder.encode(queryString, StringTools.DEFAULT_ENCODING);
+        //            }
+        //        } catch (UnsupportedEncodingException e) {
+        //            logger.error(e.getMessage());
+        //        }
+
+        path = ViewerPathBuilder.resolve(path, queryString);
         path = ViewerPathBuilder.resolve(path, Integer.toString(getPageNo()));
         path = ViewerPathBuilder.resolve(path, getSortString());
         path = ViewerPathBuilder.resolve(path, getFacetString());
@@ -497,6 +510,11 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     @Override
     public boolean isSearchInDcFlag() {
         return getSearchBean().isSearchInDcFlag();
+    }
+    
+    @Override
+    public boolean isSearchInFacetFieldFlag(String fieldName) {
+        return getSearchBean().isSearchInFacetFieldFlag(fieldName);
     }
 
     /* (non-Javadoc)

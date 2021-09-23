@@ -289,8 +289,13 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         if (StringUtils.isNotBlank(nickName)) {
             return nickName;
         }
-        if (BeanUtils.getUserBean() != null && BeanUtils.getUserBean().isAdmin()) {
-            return email;
+     // Accessing beans from a different thread will throw an unhandled exception that will result in a white screen when logging in
+        try {
+            if (BeanUtils.getUserBean() != null && BeanUtils.getUserBean().isAdmin()) {
+                return email;
+            }
+        } catch (Throwable e) {
+            logger.warn(e.getMessage());
         }
 
         return NetTools.scrambleEmailAddress(email);

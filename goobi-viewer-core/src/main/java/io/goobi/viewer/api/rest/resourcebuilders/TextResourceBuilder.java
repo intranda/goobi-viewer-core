@@ -72,6 +72,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.UncheckedPresentationException;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * @author florian
@@ -494,14 +495,14 @@ public class TextResourceBuilder {
         TEIHeaderBuilder header = new TEIHeaderBuilder();
 
         Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.LABEL))
-                .map(Object::toString)
+                .map(SolrTools::getAsString)
                 .map(Title::new)
                 .ifPresent(title -> header.setTitle(title));
 
         List<String> authors = Optional.ofNullable(solrDoc.getFieldValues("MD_AUTHOR"))
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(Object::toString)
+                .map(SolrTools::getAsString)
                 .collect(Collectors.toList());
         for (String name : authors) {
             if (name.contains(",")) {
@@ -513,7 +514,7 @@ public class TextResourceBuilder {
         }
 
         Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.PI))
-                .map(Object::toString)
+                .map(SolrTools::getAsString)
                 .map(Identifier::new)
                 .ifPresent(id -> header.addIdentifier(id));
         return header;

@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,6 +56,10 @@ public class CollectionLabeledLink extends CompoundLabeledLink {
     /** {@inheritDoc} */
     @Override
     public List<LabeledLink> getSubLinks() {
+        if (collection == null) {
+            return Collections.emptyList();
+        }
+        
         List<LabeledLink> links = collection.getAncestors(collection.getTopVisibleElement(), true)
                 .stream()
                 .map(element -> new LabeledLink(element.getName(), collection.getCollectionUrl(element), 0))

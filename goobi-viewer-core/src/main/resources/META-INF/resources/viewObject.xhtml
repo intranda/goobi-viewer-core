@@ -5,11 +5,9 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	template="/resources/themes/#{navigationHelper.theme}/template.html">
-
-
 
     <ui:define name="metadata">
         <f:metadata>
@@ -19,21 +17,16 @@
 
     <ui:define name="head">
         <f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"
-                rendered="#{configurationBean.addDublinCoreMetaTags}" />
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}"
-                rendered="#{configurationBean.addHighwirePressMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"  rendered="#{configurationBean.addDublinCoreMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" rendered="#{configurationBean.addHighwirePressMetaTags}" />
         </f:view>
     </ui:define>
 
-    <!-- BREADCRUMBS -->
     <ui:define name="breadcrumbs">
         <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>    
+    </ui:define>
 
-    <!-- CONTENT -->
     <ui:define name="content">
-    
 		<f:view contentType="text/html" encoding="utf-8">
             <!-- reCAPTCHA API -->
             <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
@@ -41,7 +34,7 @@
             </h:panelGroup>
             <!-- HIDDEN DFG VIEWER LINK -->
             <h:outputText value="#{activeDocumentBean.viewManager.linkForDFGViewer}" id="imageNumber" styleClass="hiddenDfgViewerLink" style="display:none;" />
-            
+
             <!-- TOP DOC ANCHOR -->
             <a name="topDocAnchor"></a>
 
@@ -58,44 +51,44 @@
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType != 'video' and activeDocumentBean.viewManager.currentPage.mimeType != 'audio'}">
                     <viewerComponent:imageControls />
                 </h:panelGroup>
-                
+
                 <!-- VIEW IMAGE -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
                     <ui:insert name="viewImage">
-                        <ui:include src="/resources/includes/object/image.xhtml" />        
+                        <ui:include src="/resources/includes/object/image.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
 
                 <!-- VIEW VIDEO -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'video'}">
                     <ui:insert name="viewVideo">
-                        <ui:include src="/resources/includes/object/video.xhtml" />        
-                    </ui:insert>                    
+                        <ui:include src="/resources/includes/object/video.xhtml" />
+                    </ui:insert>
                 </h:panelGroup>
 
                 <!-- VIEW AUDIO -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'audio'}">
                     <ui:insert name="viewAudio">
-                        <ui:include src="/resources/includes/object/audio.xhtml" />        
-                    </ui:insert>                    
+                        <ui:include src="/resources/includes/object/audio.xhtml" />
+                    </ui:insert>
                 </h:panelGroup>
-                
+
                 <!-- VIEW 3D OBJECT -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'object'}">
                     <ui:insert name="viewObject3d">
-                        <ui:include src="/resources/includes/object/object3d.xhtml" />        
-                    </ui:insert>                    
+                        <ui:include src="/resources/includes/object/object3d.xhtml" />
+                    </ui:insert>
                 </h:panelGroup>
-                
+
                 <!-- TODO -->
                 <!-- VIEW TEXT -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'text'}">
                     <ui:insert name="viewText">
-                        <ui:include src="/resources/includes/object/text.xhtml" />        
+                        <ui:include src="/resources/includes/object/text.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
-                
-                
+
+
                 <!--  PAGINATOR -->
                 <viewerComponent:simplePaginator
                     itemCount="#{activeDocumentBean.viewManager.imagesCount}"
@@ -104,10 +97,10 @@
                     lastItem="#{activeDocumentBean.viewManager.lastPageOrder}"
                     urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/"
                     urlSuffix="#topDocAnchor"
-                    rtl="#{activeDocumentBean.viewManager.topDocument.rtl}" />                    
+                    rtl="#{activeDocumentBean.viewManager.topDocument.rtl}" />
 
 
-				
+
 				<!-- MODULE CONTRIBUTIONS -->
                 <c:forEach var="module" items="#{configurationBean.modules}">
                     <c:forEach var="contribution" items="#{module.getWidgets('viewImage')}">
@@ -115,18 +108,23 @@
                     </c:forEach>
                 </c:forEach>
 
-				<ui:include src="/resources/includes/user/userGeneratedContent.xhtml"></ui:include>
+					<!-- USER GENERATED CONTENT -->
+				<h:panelGroup rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}">
+					<div id="view_image_user_generated_content">
+						<viewerComponent:annotationList contentList="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage)}" sidebar="false"/>
+					</div>
+				</h:panelGroup>
 
                 <!-- USER COMMENTS -->
                 <ui:insert name="userComments">
                     <ui:include src="/resources/includes/user/userComments.xhtml" />
                 </ui:insert>
             </div>
-            
+
             <h:panelGroup rendered="#{userBean.loggedIn}">
                 <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
             </h:panelGroup>
-    
+
             <script type="text/javascript">
             	var downloadModalConfig = {
                 	downloadBtn: $( ".download-modal" ),
@@ -152,9 +150,9 @@
                         saveBtn: "#{msg.downloadGenerateFile}",
                     }
                 };
-            
+
                 viewerJS.downloadModal.init( downloadModalConfig );
-                
+
                 viewerJS.clipboard.init( '[data-copy]' );
             </script>
 		</f:view>
@@ -162,17 +160,15 @@
 
     <ui:define name="sidebar">
         <widgetComponent:widget_views pageType="image" />
-        
+
         <widgetComponent:widget_searchInCurrentItem />
-        
+
         <widgetComponent:widget_archives />
-                
+
         <widgetComponent:widget_nerFacetting />
-        
+
         <widgetComponent:widget_searchResultNavigation />
-        
-        <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
-        
+
         <widgetComponent:widget_metadata />
         
         <widgetComponent:widget_geoMap 
@@ -181,26 +177,31 @@
         allowFullscreen="false" 
         linkToSearch="false" 
         showAnnotations="true"
-        popoverOnHover="true"/>
-        
+        popoverOnHover="true"
+        popoverClass="record_geomap_popover"
+        highlightDocumentId="#{activeDocumentBean.logid}"/>
+
         <widgetComponent:widget_annotations />
-                
+        
+        <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
+
         <widgetComponent:widget_usage />
 
         <widgetComponent:widget_relatedGroups />
-        
+
         <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" />
 
         <widgetComponent:widget_download />
 
         <widgetComponent:widget_versionHistory />
-        
+
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
             </c:forEach>
         </c:forEach>
-        
+
         <widgetComponent:widget_userInteractions />
     </ui:define>
+
 </ui:composition>

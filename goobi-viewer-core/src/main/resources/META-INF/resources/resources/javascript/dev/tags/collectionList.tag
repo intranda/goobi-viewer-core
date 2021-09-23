@@ -34,9 +34,13 @@
 	
 		</div>
 	
+	
+	
+	
 			<div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false">
 				<p class="tpl-stacked-collection__long-info">
-					{getDescription(collection)}
+					<raw html="{getDescription(collection)}"></raw>
+					
 				</p> 
 			</div>
 		
@@ -60,6 +64,18 @@
 
 
 <script>
+
+riot.tag('raw', '', function(opts) {
+    this.root.innerHTML = opts.html;
+});
+
+
+
+
+
+
+
+
 
 this.collections = this.opts.collections;
 

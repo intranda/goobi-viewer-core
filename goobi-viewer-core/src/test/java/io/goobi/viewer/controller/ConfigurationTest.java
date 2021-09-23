@@ -18,17 +18,16 @@ package io.goobi.viewer.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.junit.After;
-import org.junit.AfterClass;
+import org.apache.commons.configuration2.HierarchicalConfiguration;
+import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +41,7 @@ import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
+import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.misc.EmailRecipient;
@@ -63,19 +63,6 @@ public class ConfigurationTest extends AbstractTest {
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationTest.class);
 
     public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
 
     /**
      * @see Configuration#getBreadcrumbsClipping()
@@ -276,12 +263,14 @@ public class ConfigurationTest extends AbstractTest {
             EmailRecipient recipient = result.get(0);
             Assert.assertEquals("Everyone", recipient.getLabel());
             Assert.assertEquals("everyone@example.com", recipient.getEmailAddress());
+            Assert.assertEquals("genId_1", recipient.getId());
             Assert.assertTrue(recipient.isDefaultRecipient());
         }
         {
             EmailRecipient recipient = result.get(1);
             Assert.assertEquals("someone@example.com", recipient.getLabel()); // No label defined, using address
             Assert.assertEquals("someone@example.com", recipient.getEmailAddress());
+            Assert.assertEquals("someid", recipient.getId());
             Assert.assertFalse(recipient.isDefaultRecipient());
         }
     }
@@ -437,7 +426,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(2, params.size());
         Assert.assertEquals("LABEL", params.get(0).getKey());
         Assert.assertEquals("MD_CREATOR", params.get(1).getKey());
-        Assert.assertEquals("/", params.get(1).getPrefix());
+        Assert.assertEquals(" / ", params.get(1).getPrefix());
     }
 
     /**
@@ -930,7 +919,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSubthemeDiscriminatorField_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("FACET_VIEWERSUBTHEME", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
+        Assert.assertEquals("MD2_VIEWERSUBTHEME", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
     }
 
     //    /**
@@ -1747,11 +1736,12 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getAllFacetFields_shouldReturnCorrectOrder() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getAllFacetFields();
-        Assert.assertEquals(4, result.size());
+        Assert.assertEquals(5, result.size());
         Assert.assertEquals("DC", result.get(0));
         Assert.assertEquals("YEAR", result.get(1));
         Assert.assertEquals("MD_CREATOR", result.get(2));
         Assert.assertEquals("MD_PLACEPUBLISH", result.get(3));
+        Assert.assertEquals("WKT_COORDS", result.get(4));
     }
 
     /**
@@ -2218,6 +2208,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getImageViewTileSizesTest() throws ViewerConfigurationException {
         Map<Integer, List<Integer>> tiles = DataManager.getInstance().getConfiguration().getTileSizes();
         Assert.assertEquals(512, tiles.keySet().iterator().next(), 0);
+        Assert.assertEquals(3, tiles.get(512).size());
         Assert.assertEquals(1, tiles.get(512).get(0), 0);
         Assert.assertEquals(2, tiles.get(512).get(1), 0);
         Assert.assertEquals(3, tiles.get(512).get(2), 0);
@@ -2227,6 +2218,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getFullscreenTileSizesTest() throws ViewerConfigurationException {
         Map<Integer, List<Integer>> tiles = DataManager.getInstance().getConfiguration().getTileSizes(PageType.viewFullscreen, null);
         Assert.assertEquals(1024, tiles.keySet().iterator().next(), 0);
+        Assert.assertEquals(3, tiles.get(1024).size());
         Assert.assertEquals(2, tiles.get(1024).get(0), 0);
         Assert.assertEquals(4, tiles.get(1024).get(1), 0);
         Assert.assertEquals(8, tiles.get(1024).get(2), 0);
@@ -2403,14 +2395,13 @@ public class ConfigurationTest extends AbstractTest {
 
     @Test
     public void testBrokenConfig() {
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer_broken.test.xml"));
+        DataManager.getInstance().injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_broken.test.xml").getAbsolutePath()));
         String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
         Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
         String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
         Assert.assertEquals(viewerHome, "src/test/resources/data/viewer/");
         String dataRepositories = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
         Assert.assertEquals(dataRepositories, "src/test/resources/data/viewer/data/");
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
 
     }
 
@@ -2450,15 +2441,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isTranskribusEnabled());
     }
 
-    @Test
-    public void isRememberImageRotation_test() {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isRememberImageRotation());
-    }
-
-    @Test
-    public void isRememberImageZoom_test() {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isRememberImageZoom());
-    }
 
     /**
      * @see Configuration#getDocstructTargetPageType(String)
@@ -2494,6 +2476,16 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isUseViewerLocaleAsRecordLanguage_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage());
+    }
+    
+
+    /**
+     * @see Configuration#getFallbackDefaultLanguage()
+     * @verifies return correct value
+     */
+    @Test
+    public void getFallbackDefaultLanguage_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("de", DataManager.getInstance().getConfiguration().getFallbackDefaultLanguage());
     }
 
     /**
@@ -2919,6 +2911,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isDisplayWidgetUsageDownloadOptions()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplayWidgetUsageDownloadOptions_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions());
+    }
+
+    /**
      * @see Configuration#isDisplaySidebarWidgetUsageCitationRecommendation()
      * @verifies return correct value
      */
@@ -3092,5 +3093,108 @@ public class ConfigurationTest extends AbstractTest {
             Assert.assertEquals("desc__translation_group_2", group.getDescription());
             Assert.assertEquals(2, group.getItems().size());
         }
+    }
+
+    /**
+     * @see Configuration#isPageBrowseEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isPageBrowseEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isPageBrowseEnabled());
+    }
+
+    /**
+     * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean)
+     * @verifies load parameters correctly
+     */
+    @Test
+    public void getMetadataFromSubnodeConfig_shouldLoadParametersCorrectly() throws Exception {
+        HierarchicalConfiguration<ImmutableNode> metadataConfig =
+                DataManager.getInstance().getConfiguration().getLocalConfigurationAt("metadata.metadataView(1).template(0).metadata(1)");
+        Assert.assertNotNull(metadataConfig);
+        Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig, false, 0);
+        Assert.assertNotNull(md);
+        Assert.assertEquals(5, md.getParams().size());
+        Assert.assertEquals("EVENTTYPE", md.getParams().get(0).getKey());
+        Assert.assertEquals(MetadataParameterType.FIELD, md.getParams().get(0).getType());
+        Assert.assertEquals("EVENTTYPE", md.getLabelField());
+    }
+
+    /**
+     * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean)
+     * @verifies load child metadata configurations recursively
+     */
+    @Test
+    public void getMetadataFromSubnodeConfig_shouldLoadChildMetadataConfigurationsRecursively() throws Exception {
+        List<HierarchicalConfiguration<ImmutableNode>> metadataConfig =
+                DataManager.getInstance().getConfiguration().getLocalConfigurationsAt("metadata.metadataView(1).template(0).metadata(1)");
+        Assert.assertNotNull(metadataConfig);
+        Assert.assertFalse(metadataConfig.isEmpty());
+        Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig.get(0), false, 0);
+        Assert.assertNotNull(md);
+        Assert.assertEquals(0, md.getIndentation());
+        Assert.assertEquals(1, md.getChildMetadata().size());
+        Metadata childMd = md.getChildMetadata().get(0);
+        Assert.assertEquals(1, childMd.getIndentation());
+        Assert.assertEquals(md, childMd.getParentMetadata());
+        Assert.assertEquals("MD_ARTIST", childMd.getLabel());
+        Assert.assertTrue(childMd.isGroup());
+        Assert.assertFalse(childMd.isSingleString());
+        Assert.assertEquals(7, childMd.getParams().size());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingAlto()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingAlto_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingPDF()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingPDF_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingPlaintext()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingPlaintext_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext());
+    }
+
+    /**
+     * @see Configuration#isVisibleIIIFRenderingViewer()
+     * @verifies return correct value
+     */
+    @Test
+    public void isVisibleIIIFRenderingViewer_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
+    }
+
+    /**
+     * @see Configuration#isRememberImageRotation()
+     * @verifies return correct value
+     */
+    @Test
+    public void isRememberImageRotation_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isRememberImageRotation());
+    }
+
+    /**
+     * @see Configuration#isRememberImageZoom()
+     * @verifies return correct value
+     */
+    @Test
+    public void isRememberImageZoom_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isRememberImageZoom());
     }
 }

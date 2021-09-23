@@ -1,5 +1,5 @@
 /**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
@@ -22,18 +22,13 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class EventElementTest {
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-    }
+public class EventElementTest extends AbstractTest {
 
     /**
      * @see EventElement#EventElement(SolrDocument,Locale)
@@ -43,7 +38,7 @@ public class EventElementTest {
     public void EventElement_shouldFillInMissingDateStartFromDisplayDate() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.EVENTDATE, "2018-11-23");
-        EventElement ee = new EventElement(doc, null);
+        EventElement ee = new EventElement(doc, null, false);
         Assert.assertNotNull(ee.getDateStart());
         Assert.assertEquals("2018-11-23", DateTools.format(ee.getDateStart(), DateTools.formatterISO8601Date, false));
     }
@@ -56,8 +51,65 @@ public class EventElementTest {
     public void EventElement_shouldFillInMissingDateEndFromDateStart() throws Exception {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.EVENTDATESTART, "2018-11-23");
-        EventElement ee = new EventElement(doc, null);
+        EventElement ee = new EventElement(doc, null, false);
         Assert.assertNotNull(ee.getDateEnd());
         Assert.assertEquals("2018-11-23", DateTools.format(ee.getDateEnd(), DateTools.formatterISO8601Date, false));
+    }
+
+    /**
+     * @see EventElement#getLabel()
+     * @verifies include type
+     */
+    @Test
+    public void getLabel_shouldIncludeType() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.EVENTTYPE, "Creation");
+        EventElement ee = new EventElement(doc, null, false);
+        Assert.assertEquals("Creation", ee.getLabel());
+    }
+
+    /**
+     * @see EventElement#getLabel()
+     * @verifies not include date
+     */
+    @Test
+    public void getLabel_shouldNotIncludeDate() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.EVENTTYPE, "Creation");
+        doc.setField(SolrConstants.EVENTDATESTART, "2021-09-17");
+        EventElement ee = new EventElement(doc, null, false);
+        Assert.assertEquals("Creation", ee.getLabel());
+    }
+
+    /**
+     * @see EventElement#EventElement(SolrDocument,Locale,boolean)
+     * @verifies populate search hit metadata correctly
+     */
+    @Test
+    public void EventElement_shouldPopulateSearchHitMetadataCorrectly() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.EVENTTYPE, "Creation");
+        doc.setField(SolrConstants.EVENTDATESTART, "2021-09-17");
+        EventElement ee = new EventElement(doc, null, true); // search mode
+        Assert.assertNotNull(ee.getSearchHitMetadata());
+        Assert.assertNull(ee.getMetadata());
+        Assert.assertNull(ee.getSidebarMetadata());
+        // TODO test case with actual metadata values
+    }
+
+    /**
+     * @see EventElement#EventElement(SolrDocument,Locale,boolean)
+     * @verifies populate non search metadata correctly
+     */
+    @Test
+    public void EventElement_shouldPopulateNonSearchMetadataCorrectly() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.EVENTTYPE, "Creation");
+        doc.setField(SolrConstants.EVENTDATESTART, "2021-09-17");
+        EventElement ee = new EventElement(doc, null, false); // non search mode
+        Assert.assertNull(ee.getSearchHitMetadata());
+        Assert.assertNotNull(ee.getMetadata());
+        Assert.assertNotNull(ee.getSidebarMetadata());
+        // TODO test case with actual metadata values
     }
 }

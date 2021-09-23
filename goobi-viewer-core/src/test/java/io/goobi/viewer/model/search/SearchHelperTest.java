@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -43,12 +42,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.user.User;
@@ -67,8 +65,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
-        // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
 
     @Override
@@ -120,7 +116,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, CollectionResult> collections =
                 SearchHelper.findAllCollectionsFromField(SolrConstants.DC, null, null, true, true, ".");
         Assert.assertTrue(collections.size() > 40);
-        List<String> keys = new ArrayList<>(collections.keySet());
+        //        List<String> keys = new ArrayList<>(collections.keySet());
         // Collections.sort(keys);
         //        for (String key : keys) {
         //            switch (key) {
@@ -183,21 +179,23 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         //    }
 
     }
-    
+
     @Test
     public void findAllCollectionsFromField_shouldGroupCorrectly() throws Exception {
         // First, make sure the collection blacklist always comes from the same config file;
         Map<String, CollectionResult> collections =
                 SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DOCSTRCT, null, true, true, ".");
-//        for (String collection : collections.keySet()) {
-//            System.out.println("collection " + collection + " with facets " + collections.get(collection).getFacetValues().stream().collect(Collectors.joining(", ")));
-//        }
+        //        for (String collection : collections.keySet()) {
+        //            System.out.println("collection " + collection + " with facets " + collections.get(collection).getFacetValues().stream().collect(Collectors.joining(", ")));
+        //        }
         assertTrue(collections.get("dcmultimedia").getFacetValues().containsAll(Arrays.asList("video", "Audio")));
         assertTrue(collections.get("dcauthoritydata.provenance").getFacetValues().containsAll(Arrays.asList("monograph")));
-        assertTrue(collections.get("dcauthoritydata").getFacetValues().containsAll(Arrays.asList("item", "musical_notation", "monograph", "letter", "3dobject", "video")));
+        assertTrue(collections.get("dcauthoritydata")
+                .getFacetValues()
+                .containsAll(Arrays.asList("item", "musical_notation", "monograph", "letter", "3dobject", "video")));
         assertTrue(collections.get("dcimage.many").getFacetValues().containsAll(Arrays.asList("volume")));
 
-    } 
+    }
 
     /**
      * @see SearchHelper#getPersonalFilterQuerySuffix(User,String)
@@ -1277,7 +1275,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateQueryParams_shouldReturnEmptyMapIfSearchHitAggregationOn() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("search.aggregateHits", true);
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAggregateHits());
+
         Map<String, String> params = SearchHelper.generateQueryParams();
+        Assert.assertNotNull(params);
+        Assert.assertEquals(0, params.size());
     }
 
     /**
@@ -1299,7 +1301,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getQueryForAccessCondition_shouldBuildEscapedQueryCorrectly() throws Exception {
         Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX +
-                "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo" + BeanUtils.SLASH_REPLACEMENT + "bar\"",
+                "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo" + StringTools.SLASH_REPLACEMENT + "bar\"",
                 SearchHelper.getQueryForAccessCondition("foo/bar", true));
     }
 

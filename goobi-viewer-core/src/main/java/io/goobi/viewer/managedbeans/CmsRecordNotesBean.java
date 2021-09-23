@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -40,6 +41,8 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 
@@ -198,7 +201,12 @@ public class CmsRecordNotesBean implements Serializable{
     public List<CMSRecordNote> getNotesForRecord(String pi) throws DAOException {
         List<CMSRecordNote> notes = new ArrayList<>();
         notes.addAll(DataManager.getInstance().getDao().getRecordNotesForPi(pi, true));
-        notes.addAll(DataManager.getInstance().getDao().getAllMultiRecordNotes(true).stream().filter(note -> note.getRecords().contains(pi)).collect(Collectors.toList()));
+        notes.addAll(DataManager.getInstance().getDao().getAllMultiRecordNotes(true).stream().filter(note -> note.matchesRecord(pi)).collect(Collectors.toList()));
         return notes;
+    }
+    
+    public String getSearchUrlForNote(CMSMultiRecordNote note)  {
+        String query = BeanUtils.escapeCriticalUrlChracters(note.getQueryForSearch());
+        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", query, "1", "-", "-");
     }
 }

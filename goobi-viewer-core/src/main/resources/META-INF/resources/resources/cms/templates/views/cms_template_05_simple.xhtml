@@ -15,7 +15,7 @@
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
 			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
 			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-            <f:viewAction action="#{cmsDynamicContentBean.setCmsPage(cmsBean.currentPage)}" />
+            <f:viewAction onPostback="true" action="#{cmsDynamicContentBean.setCmsPage(cmsBean.currentPage)}" />
         </f:metadata>
     </ui:define>
     
@@ -54,8 +54,15 @@
                 </ui:fragment>
 				
 				<ui:fragment rendered="#{cmsPage.hasContent('image01')}">
-                    <figure class="tpl-simple__image">
-    					<img src="#{cmsPage.getContent('image01')}" class="img-fluid" title="#{cmsPage.getMediaName('image01')}" />
+                    <figure class="tpl-simple__media">
+                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cmsPage.getContentItem('image01').mediaItem)}">
+	    					<img src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cmsPage.getMedia('image01').alternativeText}" title="#{cmsPage.getMediaName('image01')}" />
+                    	</ui:fragment>
+                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cmsPage.getContentItem('image01').mediaItem)}">
+	    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cmsPage.getMediaName('image01')}">
+	    						<source src="#{cmsPage.getContent('image01')}"/>
+	    					</video>
+                    	</ui:fragment>
                         <figcaption>
                             #{cmsPage.getMediaDescription('image01')}
                         </figcaption>

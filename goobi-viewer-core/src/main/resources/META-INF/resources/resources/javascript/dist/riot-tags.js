@@ -5,7 +5,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         if(this.opts.fileTypes) {
             this.fileTypes = this.opts.fileTypes;
         } else {
-        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf';
+        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg';
         }
         this.isDragover = false;
 
@@ -787,7 +787,11 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h4 class="card-title"><a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h4><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"> {getDescription(collection)} </p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><ul if="{collection.members && collection.members.length > 0}" class="list"><li each="{child in getChildren(collection)}"><a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></li></ul></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
+riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h4 class="card-title"><a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h4><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"><raw html="{getDescription(collection)}"></raw></p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><ul if="{collection.members && collection.members.length > 0}" class="list"><li each="{child in getChildren(collection)}"><a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></li></ul></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
+
+riot.tag('raw', '', function(opts) {
+    this.root.innerHTML = opts.html;
+});
 
 this.collections = this.opts.collections;
 
@@ -1670,7 +1674,7 @@ this.moveFeature = function(feature) {
 }.bind(this)
 
 this.removeFeature = function(feature) {
-    this.geoMap.removeMarker(feature);
+    this.geoMap.layers[0].removeMarker(feature);
 	let annotation = this.getAnnotation(feature.id);
     if(annotation) {
 	    this.question.deleteAnnotation(annotation);
@@ -2445,7 +2449,9 @@ this.initMap = function() {
         if(this.opts.search_placeholder) {
             geocoderConfig.placeholder = this.opts.search_placeholder
         }
-	    this.geoMap.initGeocoder(this.refs.geocoder, geocoderConfig);
+        if(this.opts.search_enabled) {
+	    	this.geoMap.initGeocoder(this.refs.geocoder, geocoderConfig);
+        }
 	    this.initMapDraw();
     }
 
@@ -2595,23 +2601,30 @@ this.setSearchArea = function(layer) {
     switch(type) {
         case "polygon":
         case "rectangle":
-	        let vertices = [...layer.getLatLngs()[0]];
+            let origLayer = L.polygon(layer.getLatLngs());
+            let wrappedCenter = this.geoMap.map.wrapLatLng(layer.getCenter());
+            let distance = layer.getCenter().lng - wrappedCenter.lng;
+
+	        let vertices = [...layer.getLatLngs()[0]].map(p => L.latLng(p.lat, p.lng-distance)).map(p => this.geoMap.normalizePoint(p));
+
 	        if(vertices[0] != vertices[vertices.length-1]) {
 	        	vertices.push(vertices[0]);
 	        }
+
 	        this.notifyFeatureSet({
 	           type : type,
 	           vertices: vertices.map(p => [p.lat, p.lng])
 	        })
 	        break;
         case "circle":
-            let bounds = layer.getBounds();
+            let bounds = this.geoMap.map.wrapLatLngBounds(layer.getBounds());
+            let center = this.geoMap.map.wrapLatLng(layer.getLatLng());
             let circumgon = this.createCircumgon(bounds.getCenter(), bounds.getSouthWest(), bounds.getSouthWest(), 16);
             let diameterM = bounds.getSouthWest().distanceTo(bounds.getNorthWest());
             this.notifyFeatureSet({
                 type : "circle",
-                vertices: circumgon.map(p => [p.lat, p.lng]),
-                center: layer.getLatLng(),
+                vertices: circumgon.map(p => this.geoMap.normalizePoint(p)).map(p => [p.lat, p.lng]),
+                center: center,
             	radius: layer.getRadius()
             })
             break;
@@ -3058,7 +3071,7 @@ this.addCloseHandler = function() {
 });
 
 
-riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}"><h3 class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</h3><div class="swiper-image slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><div class="swiper-description slider-{this.opts.stylename}__description">{this.opts.description}</div></a>', '', '', function(opts) {
+riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><div class="swiper-image slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><div class="swiper-description slider-{this.opts.stylename}__description">{this.opts.description}</div></a>', '', '', function(opts) {
 });
 riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
 });
@@ -3104,6 +3117,7 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     		rxjs.operators.filter(element => element != undefined),
     		rxjs.operators.take(this.maxSlides),
     		rxjs.operators.reduce((res, item) => res.concat(item), []),
+    		rxjs.operators.map(array => array.sort( (s1,s2) => s1.order-s2.order ))
     	)
     	.subscribe(slides => this.setSlides(slides))
     });
@@ -3117,6 +3131,11 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
 			this.initSlideTags(this.slides);
     		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
     	}
+
+    	if (this.style.onUpdate) {
+    		this.style.onUpdate();
+    	}
+
     });
 
     this.setSlides = function(slides) {
@@ -3155,7 +3174,8 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     				label : element.label,
     				description : element.description,
     				image : element.thumbnail,
-    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element))
+    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element)),
+    				order : element.order
     		}
     		return slide;
     	} else {
@@ -3458,7 +3478,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
 });
 
 
-riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'} {getPageStatus(index)}" each="{canvas, index in thumbnails}"><a class="thumbnails-image-link" href="{getLink(canvas)}" onclick="{handleClickOnImage}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}" loading="lazy"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
+riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'} {getPageStatus(index)}" each="{canvas, index in thumbnails}"><a class="thumbnails-image-link" href="{getLink(canvas)}" onclick="{handleClickOnImage}"><img class="thumbnails-image" alt="{getObjectTitle() + \': \' + getValue(canvas.label)}" riot-src="{getImage(canvas)}" loading="lazy"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
 
 this.thumbnails = [];
 this._debug = false;
@@ -3473,6 +3493,7 @@ this.on("mount", () => {
 	if(viewerJS.isString(source)) {
 		fetch(source)
 		.then(response => response.json())
+
 		.then(json => this.loadThumbnails(json, this.type));
 	} else {
 		this.loadThumbnails(source, this.type);
@@ -3564,6 +3585,16 @@ this.loadCanvas = function(source) {
 
 this.getValue = function(value) {
 	return viewerJS.iiif.getValue(value, this.language, this.language == "en" ? "de" : "en");
+}.bind(this)
+
+this.getObjectTitle = function() {
+	try {
+	return document.querySelector('.archives__object-title').innerHTML;
+	}
+	catch (e) {
+
+		return '';
+	}
 }.bind(this)
 
 this.getImage = function(canvas) {

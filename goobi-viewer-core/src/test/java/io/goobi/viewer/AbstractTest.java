@@ -1,5 +1,7 @@
 package io.goobi.viewer;
 
+import java.io.File;
+
 import org.junit.Before;
 
 /**
@@ -30,11 +32,14 @@ import io.goobi.viewer.controller.RestApiManager;
  */
 public abstract class AbstractTest {
 
+    public static final String TEST_CONFIG_PATH = new File("src/test/resources/config_viewer.test.xml").getAbsolutePath();
+    public static final String TEST_LOG_CONFIG_PATH = new File("src/test/resources/log4j2.test.xml").getAbsolutePath();
+
+    
     @BeforeClass
     public static void setUpClass() throws Exception {
-        System.setProperty("log4j.configurationFile", "src/test/resources/log4j2.test.xml");
-
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
+        System.setProperty("log4j.configurationFile", TEST_LOG_CONFIG_PATH);
+        DataManager.getInstance().injectConfiguration(new Configuration(TEST_CONFIG_PATH));
         
         //init rest urls
         ApiUrls dataUrls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
@@ -44,7 +49,7 @@ public abstract class AbstractTest {
     
     @Before
     public void setUp() throws Exception {
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
+        DataManager.getInstance().injectConfiguration(new Configuration(TEST_CONFIG_PATH));
     }
 
 }

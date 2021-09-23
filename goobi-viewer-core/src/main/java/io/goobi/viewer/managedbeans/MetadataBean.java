@@ -129,7 +129,7 @@ public class MetadataBean {
             Collections.reverse(metadataElementList);
 
             // Retrieve events of the top element
-            events = se.generateEventElements(locale);
+            events = se.generateEventElements(locale, false);
             Collections.sort(events);
         } catch (NumberFormatException e) {
             logger.error(e.getMessage());
@@ -287,6 +287,19 @@ public class MetadataBean {
         }
 
         return "bibData";
+    }
+
+    /**
+     * Convenience method for the sidebar metadata widget label key, depending on the document type.
+     * 
+     * @return Message key for the label
+     */
+    public String getDefaultSidebarMetadataLabel() {
+        if (activeDocumentBean != null && activeDocumentBean.getViewManager().getTopStructElement().isLidoRecord()) {
+            return "metadata";
+        }
+
+        return "sidebarBibData";
     }
 
     /**

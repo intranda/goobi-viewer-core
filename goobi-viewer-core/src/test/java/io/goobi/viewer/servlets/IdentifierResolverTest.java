@@ -56,9 +56,6 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     public void setUp() throws Exception {
         super.setUp();
 
-        // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-
         sr = new ServletRunner();
         sr.registerServlet(RESOLVER_NAME, IdentifierResolver.class.getName());
     }

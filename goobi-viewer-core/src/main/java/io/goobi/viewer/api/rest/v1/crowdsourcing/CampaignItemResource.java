@@ -69,6 +69,7 @@ import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 import io.goobi.viewer.websockets.CampaignEndpoint;
 
 /**
@@ -179,7 +180,7 @@ public class CampaignItemResource {
     }
 
     private static List<String> getFieldValues(SolrDocument doc, String field) {
-        return doc.getFieldValues(field).stream().map(Object::toString).collect(Collectors.toList());
+        return doc.getFieldValues(field).stream().map(SolrTools::getAsString).collect(Collectors.toList());
     }
 
     /**

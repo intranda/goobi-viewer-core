@@ -18,8 +18,11 @@ package io.goobi.viewer.api.rest.v1.cms;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_AUDIO;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_HTML;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_PDF;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_SVG;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_VIDEO;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_ITEM_BY_FILE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_ITEM_BY_ID;
 
@@ -36,8 +39,10 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -60,7 +65,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -75,11 +79,13 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaItem;
+import io.goobi.viewer.api.rest.v1.media.MediaDeliveryService;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.UserBean;
@@ -108,6 +114,7 @@ public class CMSMediaResource {
     protected HttpServletRequest servletRequest;
     @Context
     protected HttpServletResponse servletResponse;
+    
 
     /**
      * <p>
@@ -193,6 +200,49 @@ public class CMSMediaResource {
             };
         }
         throw new ContentNotFoundException("File " + path + " not found in file system");
+    }
+    
+    @GET
+    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_SVG)
+    @Produces("image/svg+xml")
+    @CORSBinding
+    public static StreamingOutput getSvgContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
+            throws ContentNotFoundException, DAOException {
+        String decFilename = StringTools.decodeUrl(filename);
+        Path path = Paths.get(
+                DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
+                decFilename);
+        if (Files.exists(path)) {
+            return new StreamingOutput() {
+
+                @Override
+                public void write(OutputStream out) throws IOException, WebApplicationException {
+                    try (InputStream in = Files.newInputStream(path)) {
+                        IOUtils.copy(in, out);
+                    }
+                }
+            };
+        }
+        throw new ContentNotFoundException("File " + path + " not found in file system");
+    }
+    
+    @GET
+    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
+    public String serveVideoContent(@PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, WebApplicationException {
+        Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder());
+        Path file = cmsMediaFolder.resolve(StringTools.decodeUrl(filename));
+        return serveMediaContent("video", file);
+    }
+    
+    @GET
+    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
+    public String serveAudioContent(@PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, WebApplicationException {
+        Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder());
+        Path file = cmsMediaFolder.resolve(StringTools.decodeUrl(filename));
+        return serveMediaContent("audio", file);
     }
 
     /**
@@ -468,6 +518,7 @@ public class CMSMediaResource {
         private final int prioritySlots;
         private final boolean random;
         private final Random randomizer = new SecureRandom();
+        private final Map<CMSMediaItem, Integer> map = new IdentityHashMap<>();
         private final List<CMSMediaItem> priorityList = new ArrayList<>();
 
         public PriorityComparator(Integer prioritySlots, boolean random) {
@@ -493,9 +544,15 @@ public class CMSMediaResource {
             } else if (b.getDisplayOrder() != 0) {
                 return 1;
             } else if (random) {
-                return getRandomOrder();
+                return Integer.compare(valueFor(a), valueFor(b));
             } else {
                 return a.compareTo(b);
+            }
+        }
+
+        private int valueFor(CMSMediaItem a) {
+            synchronized (map) {
+                return map.computeIfAbsent(a, ignore -> randomizer.nextInt());
             }
         }
 
@@ -515,6 +572,27 @@ public class CMSMediaResource {
             return randomizer.nextBoolean() ? 1 : -1;
         }
 
+    }
+    
+    private String serveMediaContent(String type, Path file) throws PresentationException, IndexUnreachableException, WebApplicationException {
+        String mimeType = type + "/" + FilenameUtils.getExtension(file.getFileName().toString());
+
+        if (Files.isRegularFile(file)) {
+            logger.debug("Video file: {} ({} bytes)", file.toAbsolutePath(), file.toFile().length());
+            try {
+                new MediaDeliveryService().processRequest(servletRequest, servletResponse, file.toAbsolutePath().toString(), mimeType);
+            } catch (IOException e) {
+                throw new PresentationException("Error accessing media resource", e);
+            }
+        } else {
+            logger.error("File '{}' not found.", file.toAbsolutePath());
+            try {
+                servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
+            } catch (IOException e) {
+                throw new WebApplicationException(e);
+            }
+        }
+        return "";
     }
 
 }

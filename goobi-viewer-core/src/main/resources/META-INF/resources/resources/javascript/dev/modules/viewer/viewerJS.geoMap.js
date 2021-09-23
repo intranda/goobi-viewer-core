@@ -32,7 +32,7 @@ var viewerJS = ( function( viewer ) {
     
     var _defaults = {
             mapId : "geomap",
-            minZoom : 0,
+            minZoom : 1,
             maxZoom : 19,
             initialView : {
                 zoom: 5,
@@ -59,9 +59,14 @@ var viewerJS = ( function( viewer ) {
         this.onMapRightclick = new rxjs.Subject();
         this.onMapClick = new rxjs.Subject();
         this.onMapMove = new rxjs.Subject();
+        this.initialized = new Promise( (resolve, reject) => {
+        	this.resolveInitialization = resolve;
+        	this.rejectInitialization = reject;
+        });
 
-        this.layers.push(new viewer.GeoMap.featureGroup(this, this.config.layer));
+        new viewer.GeoMap.featureGroup(this, this.config.layer);
 
+		viewer.GeoMap.allMaps.push(this);
     }
     
     viewer.GeoMap.prototype.init = function(view, features) {
@@ -98,14 +103,18 @@ var viewerJS = ( function( viewer ) {
             doubleClickZoom: !this.config.fixed,
             scrollWheelZoom: !this.config.fixed,
             dragging: !this.config.fixed,    
-            keyboard: !this.config.fixed
+            keyboard: !this.config.fixed,
+            // Fix desktop safari browsers: 
+            // disabling the tap option shows popups when clicking on geoMap markers in safari
+            // it should however be set to true when a mobile version of Safari is used
+            tap: viewer.iOS() ? true : false
         });
+        this.htmlElement = this.map._container;
         
-        let defer = Q.defer();
         this.map.whenReady(e => {
-        	defer.resolve(this);
+        	this.resolveInitialization(this);
         });
-        
+                
         if(this.config.mapBox) {
             let url = 'https://api.mapbox.com/styles/v1/{1}/{2}/tiles/{z}/{x}/{y}?access_token={3}'
                 .replace("{1}", this.config.mapBox.user)
@@ -114,6 +123,8 @@ var viewerJS = ( function( viewer ) {
             var mapbox = new L.TileLayer(url, {
                         tileSize: 512,
                         zoomOffset: -1,
+                        minZoom: this.config.minZoom,
+                		maxZoom: this.config.maxZoom,
                         attribution: '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     });
             if(_debug) {                
@@ -132,7 +143,7 @@ var viewerJS = ( function( viewer ) {
             this.map.addLayer(osm);
         }
         
-//        this.setView(this.config.initialView);
+        //this.setView(this.config.initialView);
         
         //init map events
         rxjs.fromEvent(this.map, "moveend").pipe(rxjs.operators.map(e => this.getView())).subscribe(this.onMapMove);
@@ -144,17 +155,15 @@ var viewerJS = ( function( viewer ) {
         .subscribe(this.onMapClick);
     
         
-       	this.layers[0].init(features);
+       	this.layers[0].init(features, false);
         if(features && features.length > 0) {
-            let zoom = view ? view.zoom : this.config.initialView.zoom;
-            let viewAroundFeatures = this.getViewAroundFeatures(this.layers[0].getFeatures(), zoom);
-            this.setView(viewAroundFeatures);
+        	this.layers[0].setViewToFeatures(true)
+            
         } else if(view){                                                    
             this.setView(view);
         }
-
         
-        return defer.promise;
+        return this.initialized;
         
     }
     
@@ -187,8 +196,6 @@ var viewerJS = ( function( viewer ) {
     		console.warn("Cannot initialize geocoder: No mapbox token");
     	}
     }
-
-
     
     /**
      * Center must be an array containing longitude andlatitude as numbers - in that order
@@ -198,6 +205,7 @@ var viewerJS = ( function( viewer ) {
         if(_debug) {
             console.log("set view to ", view);
         }
+        this.view = view;
         if(!view) {
             return;
         } else if(typeof view === "string") {
@@ -211,7 +219,7 @@ var viewerJS = ( function( viewer ) {
             } else {                
                 this.map.panTo(center);
             }
-        } else if(view.zoom) {            
+        } else if(view.zoom) {   
             this.map.setZoom(view.zoom);
         }
     }
@@ -225,9 +233,12 @@ var viewerJS = ( function( viewer ) {
         }
     }
     
-    viewer.GeoMap.prototype.getViewAroundFeatures = function(features, defaultZoom) {
+    viewer.GeoMap.prototype.getViewAroundFeatures = function(features, defaultZoom, zoomPadding) {
         if(!defaultZoom) {
             defaultZoom = this.map.getZoom();
+        }
+        if(!zoomPadding) {
+        	zoomPadding = 0.2;
         }
         if(!features || features.length == 0) {
             return undefined;
@@ -240,7 +251,7 @@ var viewerJS = ( function( viewer ) {
             let center = bounds.getCenter();
             let diameter = this.getDiameter(bounds);
             return {
-                "zoom": diameter > 0 ?  Math.max(1, this.map.getBoundsZoom(bounds.pad(0.2))) : defaultZoom,
+                "zoom": diameter > 0 ?  Math.max(1, this.map.getBoundsZoom(bounds.pad(zoomPadding))) : defaultZoom,
                 "center": [center.lng, center.lat]
             }
         }
@@ -272,6 +283,7 @@ var viewerJS = ( function( viewer ) {
             style: {
             	stroke: true,
             	color: '#3388ff',
+            	highlightColor: '#d9534f',
             	wight: 3,
             	opactity: 1.0,
             	fill: true,
@@ -283,6 +295,7 @@ var viewerJS = ( function( viewer ) {
         
     viewer.GeoMap.featureGroup = function(geoMap, config) {
  		this.geoMap = geoMap;
+ 		this.geoMap.layers.push(this);
         this.config = $.extend( true, {}, _defaults_featureGroup, geoMap.config.layer, config );
         if(_debug) {
             console.log("create featureGroup with config ",  config);
@@ -317,15 +330,21 @@ var viewerJS = ( function( viewer ) {
         this.locations = L.geoJSON([], {
             
             style: function(feature) {
-            	return this.config.style;
+            	if(feature.properties && feature.properties.highlighted) {
+					let style = $.extend(true, {}, this.config.style);
+					style.color = this.config.style.highlightColor;
+					return style;       		
+            	} else {
+	            	return this.config.style;
+            	}
             }.bind(this),
             
             pointToLayer: function(geoJsonPoint, latlng) {
                 let marker = L.marker(latlng, {
                     draggable: this.config.allowMovingFeatures,
-                    icon: this.getMarkerIcon()
+                    icon: this.getMarkerIcon(geoJsonPoint.properties && geoJsonPoint.properties.highlighted)
                 });
-                return marker;
+                return marker; 
             }.bind(this),
             
             onEachFeature: function(feature, layer) {
@@ -352,7 +371,8 @@ var viewerJS = ( function( viewer ) {
                     }
                     layer.bindPopup(() => this.createPopup(layer),{
                     	closeButton: !this.config.popoverOnHover,
-                    	autoPan: false
+                    	autoPan: false,
+                    	closeOnClick: false,
                     });
                 }
             	this.markers.push(layer);    
@@ -387,13 +407,33 @@ var viewerJS = ( function( viewer ) {
             })
         }
         
-        if(zoomToFeatures && features && features.length > 0) {
-            let zoom = this.geoMap.getView().zoom;
-            let viewAroundFeatures = this.geoMap.getViewAroundFeatures(this.getFeatures(), zoom);
-            this.geoMap.setView(viewAroundFeatures);
+        if(zoomToFeatures) {
+        	this.setViewToFeatures(true);
         }
         
     }
+    
+    viewer.GeoMap.featureGroup.prototype.setViewToFeatures = function(setViewToHighlighted) {
+    	let features = this.getFeatures();
+    	if(features && features.length > 0) {
+            let zoom = this.geoMap.view ? this.geoMap.zoom : this.geoMap.config.initialView.zoom;
+            let highlightedFeatures = features.filter(f => f.properties.highlighted);
+            //console.log(" highlightedFeatures", highlightedFeatures);
+            if(setViewToHighlighted && highlightedFeatures.length > 0) {
+            	let viewAroundFeatures = this.geoMap.getViewAroundFeatures(highlightedFeatures, zoom, 0.5);
+	            this.geoMap.setView(viewAroundFeatures);
+            } else {
+	            let viewAroundFeatures = this.geoMap.getViewAroundFeatures(features, zoom);
+	            this.geoMap.setView(viewAroundFeatures);
+            }
+        }
+    }
+    
+        viewer.GeoMap.featureGroup.prototype.isEmpty = function() {
+        	return this.markers.length == 0 && this.areas.length == 0;
+        }
+    
+    
     
     viewer.GeoMap.featureGroup.prototype.compareFeatures = function(f1, f2) {
     
@@ -407,7 +447,7 @@ var viewerJS = ( function( viewer ) {
     		return 0;
     	} else {
     		let polygon = L.polygon(feature.geometry.coordinates);
-    		return this.getArea(polygon.getBounds());
+    		return this.geoMap.getDiameter(polygon.getBounds());
     	}
     }
 
@@ -482,22 +522,41 @@ var viewerJS = ( function( viewer ) {
             svg: true,
             prefix: "fa",
             iconRotate: 0
-        };
+        }; 
         if(this.config.markerIcon) {
             iconConfig = $.extend(true, {}, this.config.markerIcon, iconConfig);
+            iconConfig.name = ""; //remove name because it shows up as a label underneath the marker
         }
         let icon = L.ExtraMarkers.icon(iconConfig);
         return icon;
     }
     
-    viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function() {
+    viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function(highlighted) {
         if(this.config.markerIcon && !jQuery.isEmptyObject(this.config.markerIcon)) {
-            let icon = L.ExtraMarkers.icon(this.config.markerIcon);
-        	icon.options.name = "";	//remove name property to avoid it being displayed on the map
-            if(this.config.markerIcon.shadow === false) {                
-                icon.options.shadowSize = [0,0];
+        	console.log("use marker icon config",this.config.markerIcon); 
+        	if(this.config.markerIcon.useDefault) {
+        		if(this.config.markerIcon.highlightIcon && highlighted) {
+        		let icon = new L.Icon.Default({
+        			imagePath : this.geoMap.config.iconPath + "/"
+        		});
+        		icon.options.iconUrl = this.config.markerIcon.highlightIcon;
+        		//console.log("use hightlight icon ", icon);
+        		return icon; 
+        		} else {
+        			return new L.Icon.Default();
+        		}
+        	} else {
+	            let icon = L.ExtraMarkers.icon(this.config.markerIcon);
+	        	icon.options.name = "";	//remove name property to avoid it being displayed on the map
+	            if(this.config.markerIcon.shadow === false) {                
+	                icon.options.shadowSize = [0,0];
+	            }
+	            if(highlighted) {
+	            console.log(this.config.markerIcon.highlightColor);
+	            	icon.options.markerColor = this.config.markerIcon.highlightColor;
+	            }
+	            return icon;
             }
-            return icon;
         } else {
             return new L.Icon.Default();
         }
@@ -525,21 +584,28 @@ var viewerJS = ( function( viewer ) {
         }
     }
 
+    viewer.GeoMap.prototype.normalizePoint = function(p) {
+//   		let wrapped = new L.latLng(Math.max(Math.min(p.lat, 90), -90), p.lng - Math.round(p.lng/360)*360);
+   		let wrapped = new L.latLng(Math.max(Math.min(p.lat, 90), -90), Math.max(Math.min(p.lng, 180), -180))
+    	//console.log("Point ",p, wrapped);
+    	return wrapped;
+    }
 
         
     viewer.GeoMap.prototype.getDiameter = function(bounds) {
     	if(!bounds || !bounds.isValid()) {
     		return 0;
     	} else {
-		    return this.map.distance(bounds.getSouthWest(), bounds.getNorthEast())
+		    let diameter = this.map.distance(bounds.getSouthWest(), bounds.getNorthEast());
+		    return diameter;
     	}
     }
     
-    viewer.GeoMap.featureGroup.prototype.getArea = function(bounds) {
+    viewer.GeoMap.featureGroup.prototype.getArea = function(bounds, feature) {
     	if(!bounds || !bounds.isValid()) {
     		return 0;
     	} else {
-		    return this.geoMap.map.distance(bounds.getSouthWest(), bounds.getNorthWest()) * this.geoMap.map.distance(bounds.getSouthWest(), bounds.getSouthEast())
+		    let area = this.geoMap.map.distance(bounds.getSouthWest(), bounds.getNorthWest()) * this.geoMap.map.distance(bounds.getSouthWest(), bounds.getSouthEast())
     	}
     }
     
@@ -580,9 +646,7 @@ var viewerJS = ( function( viewer ) {
 
     viewer.GeoMap.featureGroup.prototype.removeMarker = function(feature) {
         let marker = this.getMarker(feature.id);
-        console.log("remove marker", marker);
         marker.remove();
-        console.log("remaining markers", this.markers);
         let index = this.markers.indexOf(marker);
         this.markers.splice(index, 1);
     }
@@ -663,6 +727,10 @@ var viewerJS = ( function( viewer ) {
 	    this.onFeatureClick.complete();
         this.onFeatureMove.complete();	
     }
+    
+    //static methods to get all loaded maps
+    viewer.GeoMap.allMaps = [];
+    
 
     return viewer;
     

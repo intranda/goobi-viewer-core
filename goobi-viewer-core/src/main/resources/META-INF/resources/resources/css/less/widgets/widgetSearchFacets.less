@@ -1,0 +1,154 @@
+/* ==============================================================
+   Widget Search Drill Down
+   style declarations for widget_searchFacets.xhtml
+   ==============================================================*/
+/* BLOCK */
+.widget-search-facets {
+	h3 {
+		span {
+			display: inline-block;
+			max-width: calc(~"100% - 36px");			
+		}
+	}
+	.widget {
+		ul {}
+		li {
+			&.active {
+				margin-bottom: 3px;
+				a {
+					background-color: @lightgray;
+				}
+				.row {
+					margin: 0;
+				}
+				.col-11,
+				.col-1 {
+					padding: 0;
+					text-overflow: ellipsis;
+					overflow: hidden;
+				}
+				.col-1 {
+					text-align: right;
+				}
+			}
+		}
+		a {
+			display: block;
+			padding: 3px 5px;
+		}
+	}
+	/* FILTER */
+	&__filter {
+		position: absolute;
+		top: 3px;
+		right: 5px;
+		left: 5px;
+		background-color: @blue;
+		z-index: 10;
+		input, button, button:hover {
+			position: absolute;
+			color: @white;
+			
+			i.fa {
+				font-size: 1.6rem;
+			}
+		}
+		input {
+			right: 32px;
+			width: 0;
+			height: 32px;
+			font-size: @fontMedium;
+			color: @white;
+			border: 0;
+			border-bottom: 1px solid @white;
+			background-color: @blue;
+			opacity: 0;
+			&::-webkit-input-placeholder { 
+			    color: @white;
+			    opacity: 0.5;
+			}
+			&:-moz-placeholder {
+			    color: @white;
+			    opacity: 0.5;
+			}
+			&::-moz-placeholder {
+			    color: @white;
+			    opacity: 0.5;
+			}
+			&:-ms-input-placeholder {
+			    color: @white;
+			    opacity: 0.5;
+			}
+			&.in {
+				width: calc(~"100% - 36px");
+				opacity: 1;				
+			}
+		}
+		[data-toggle="filter-input"],
+		[data-toggle="filter-input"]:hover {
+			right: 0;
+			width: 34px;
+			height: 34px;
+			font-size: 1.8rem;
+			// background-image: url("@{images}/icons/icon-search.svg");
+			// background-repeat: no-repeat;
+			// background-position: center;
+			// background-size: 16px;
+			
+			i.fa {
+				font-size: 1.8rem;
+			}
+		}
+	}
+	&__filter-input {
+		padding-left: 1rem;
+	}
+	/* COLLECTION/GROUPS */
+	&__collection,
+	&__groups {
+		ul {
+			max-height: 400px;
+			overflow-y: auto;
+		}
+	}
+	&__collection {
+		position: relative;
+	}
+	&__groups {}
+	/* COLLAPSE FACETS */
+    &__collapse {
+        a {
+            display: block;
+            text-align: center;
+            color: @middlegray;
+        }
+    }
+    &__filter {
+    	display: none;
+    }
+}
+
+@{RTL} .widget-search-facets {
+	&__filter {
+		[data-toggle="filter-input"] {
+			right: unset;
+			left: 0;
+		}
+		input {
+		right: unset;
+		left: 32px;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

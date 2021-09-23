@@ -48,6 +48,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -116,6 +117,8 @@ public class IdentifierResolver extends HttpServlet {
      * @should return 404 if record not found
      * @should return 500 if record field name bad
      * @should return 500 if record field value bad
+     * @should forward to relative url
+     * @should redirect to full url
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -155,7 +158,7 @@ public class IdentifierResolver extends HttpServlet {
             }
             return;
         }
-        
+
         logger.trace("output: {}", request.getQueryString());
 
         // Parse optional additional field/value pairs
@@ -269,7 +272,7 @@ public class IdentifierResolver extends HttpServlet {
             // Custom page, if parameter given
             if (request.getParameter(PAGE_PARAMETER) != null) {
                 page = Integer.valueOf(request.getParameter(PAGE_PARAMETER));
-             }
+            }
 
             // If the user has no listing privilege for this record, act as if it does not exist
             boolean access;
@@ -298,9 +301,9 @@ public class IdentifierResolver extends HttpServlet {
 
             // 5. redirect or forward using the target field value
             if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
-                // response.sendRedirect(TARGET_WORK_URL.replaceAll("\\(0\\)", outputPart));
                 try {
-                    response.sendRedirect(result);
+                    String absoluteUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + result;
+                    response.sendRedirect(absoluteUrl);
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -436,7 +439,8 @@ public class IdentifierResolver extends HttpServlet {
         logger.debug("URL: {}", result);
         // A.6 redirect or forward to this newly created url
         if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
-            response.sendRedirect(result);
+            String absoluteUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + result;
+            response.sendRedirect(absoluteUrl);
         } else {
             getServletContext().getRequestDispatcher(result).forward(request, response);
         }
@@ -484,7 +488,7 @@ public class IdentifierResolver extends HttpServlet {
         //        return;
     }
 
-    static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
+    public static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
         int order = 1;
         if (targetDoc.containsKey(SolrConstants.THUMBPAGENO)) {
             order = (int) targetDoc.getFieldValue(SolrConstants.THUMBPAGENO);
@@ -521,7 +525,7 @@ public class IdentifierResolver extends HttpServlet {
                 .getUrlBuilder()
                 .buildPageUrl(topstructPi, order, (String) targetDoc.getFieldValue(SolrConstants.LOGID), pageType));
 
-        logger.trace("Resolved to: {}", sb.toString());
+        // logger.trace("Resolved to: {}", sb.toString());
         return sb.toString();
     }
 }

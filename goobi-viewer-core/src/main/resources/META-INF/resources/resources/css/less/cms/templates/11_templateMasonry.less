@@ -18,9 +18,14 @@
         	opacity: 1;
         }
     }
-    .grid-sizer,
+
+    .grid-sizer {
+	    width: calc(~"33.333333% - 4px");
+    }
     .grid-item {
-		width: calc(~"33.33333% - 4px");
+	    width: calc(~"33.333333% - 12px");
+    }
+    .grid-item {
         margin-bottom: 6px;
         overflow: hidden;
         img {
@@ -86,22 +91,24 @@
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
-	.tpl-masonry .grid-sizer, 
-	.tpl-masonry .grid-item {
-		width: calc(~"50% - 3px");
+	.tpl-masonry {
+      .grid-sizer {
+	    	width: calc(~"50% - 3px"); 
+      }
+	    .grid-item {
+	    	width: calc(~"50% - 14px");
+	    }
 	}
 }
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {
-	.tpl-masonry .grid-sizer, 
-	.tpl-masonry .grid-item {}
-}
+@media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-    .tpl-masonry .grid-sizer, 
-	.tpl-masonry .grid-item {
-		width: 100%;
+	.tpl-masonry {
+	    .grid-item {
+	    	  width: calc(~"100% - 20px");
+	    }
 	}
 }

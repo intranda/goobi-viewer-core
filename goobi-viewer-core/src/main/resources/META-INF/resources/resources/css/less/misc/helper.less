@@ -2,6 +2,50 @@
    CSS Helper Classes
    ==============================================================*/
 
+// fitting size for poster image video element and do not distort video proportions
+.video-file-element {
+	object-fit: contain;
+}
+
+.alt-backdrop {
+	z-index: 2030;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background-color: #000;
+	opacity: .8;
+	left: 0;
+	top: 0;
+}
+
+[data-loader="fullOverlay"] {
+	display: none;
+}
+
+.ajax-loader__overlay-wrapper {
+	z-index: 50000;
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	
+}
+.ajax-loader__overlay {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.ajax-loader__animated-image {
+	z-index: 5001;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 180px;
+}
+
 .-feedback-form-link {
 	cursor: pointer;
 }

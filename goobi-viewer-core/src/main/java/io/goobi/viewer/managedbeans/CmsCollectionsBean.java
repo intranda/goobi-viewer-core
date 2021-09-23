@@ -16,6 +16,8 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.net.URI;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -35,6 +37,8 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -182,8 +186,11 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
+     * Returns the {@link MessageEntry} representing existing translations for the current value of <code>solrFieldValue</code>. Use for the info
+     * widget in the collection administration.
      * 
-     * @return
+     * @return {@link MessageEntry} containing the translations for <code>solrFieldValue</code>; empty {@link MessageEntry} if none found
+     * @should return empty MessageEntry if none found
      */
     public MessageEntry getMessageEntryForFieldValue() {
         List<TranslationGroup> groups = AdminBean.getTranslationGroupsForSolrFieldStatic(solrField);
@@ -198,6 +205,7 @@ public class CmsCollectionsBean implements Serializable {
                 try {
                     for (MessageEntry entry : item.getEntries()) {
                         if (entry.getKey().equals(solrFieldValue)) {
+                            logger.trace(entry.getKey());
                             return entry;
                         }
 
@@ -209,7 +217,8 @@ public class CmsCollectionsBean implements Serializable {
             }
         }
 
-        return null;
+        // Return new MessageEntry containing empty values for each language
+        return MessageEntry.create(solrFieldValue, ViewerResourceBundle.getAllLocales());
     }
 
     /**
@@ -718,5 +727,11 @@ public class CmsCollectionsBean implements Serializable {
         boolean dirty =
                 this.currentCollection != null && this.originalCollection != null && !this.currentCollection.contentEquals(this.originalCollection);
         return dirty;
+    }
+    
+    public String getSearchUrl(CMSCollection collection) {
+        String filter = collection.getSolrField() + ":" + collection.getSolrFieldValue();
+        filter = StringTools.encodeUrl(filter);
+        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", "-", 1, "-", filter);
     }
 }

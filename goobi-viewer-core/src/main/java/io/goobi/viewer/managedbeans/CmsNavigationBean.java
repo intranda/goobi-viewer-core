@@ -38,6 +38,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSNavigationManager;
 import io.goobi.viewer.model.cms.SelectableNavigationItem;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * <p>
@@ -291,7 +292,8 @@ public class CmsNavigationBean implements Serializable {
     public List<String> getSelectableThemes() throws PresentationException, IndexUnreachableException {
         if (selectableThemes == null) {
             selectableThemes = new ArrayList<>(cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.getUser()));
-            if (userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) {
+            // Add main theme to the list of allowed themes if user either has access to all themes or no subthemes exist in the index
+            if (userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues() || SolrTools.getExistingSubthemes().isEmpty()) {
                 selectableThemes.add(0, DataManager.getInstance().getConfiguration().getTheme());
             }
         }

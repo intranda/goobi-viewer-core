@@ -12,15 +12,17 @@
     	<composite:attribute name="showAnnotations" type="java.lang.Boolean" required="false" default="false"/>
     	<composite:attribute name="popoverOnHover" type="java.lang.Boolean" required="false" default="#{cc.attrs.geoMap.type == 'SOLR_QUERY'}"/>
     	<composite:attribute name="clusterMarkers" type="java.lang.Boolean" required="false" default="#{cc.attrs.geoMap.type == 'SOLR_QUERY'}"/>
-    	
+    	<composite:attribute name="popoverClass" required="false" default="geomap_popover"/>
+    	<composite:attribute name="highlightDocumentId" required="false" default=""/>
     </composite:interface>
     
 	<composite:implementation>
 
 		<div id="#{cc.attrs.mapId}" class="geomap" />
-		<popover id="popoverTemplate_#{cc.attrs.mapId}">
-		<h4 data-metadata="title"></h4>
-		<span data-metadata="description"></span> </popover>
+		<popover id="popoverTemplate_#{cc.attrs.mapId}" class="#{cc.attrs.popoverClass}">
+				<h4 data-metadata="title"></h4>
+				<span data-metadata="description"></span> 
+		</popover>
 		<script>
 		/**
 		* put this code in anonymous function and execute it to limit the scope of declared variables to 
@@ -28,60 +30,54 @@
 		**/
 		//<![CDATA[
 		(() => {
-        	let geoMap = new viewerJS.GeoMap({
+        	this.geoMap = new viewerJS.GeoMap({
         	    mapId: "#{cc.attrs.mapId}",
            		language: "#{navigationHelper.localeString}",
+           		iconPath: "#{request.contextPath}/resources/images/map",
            		layer : {
 	           		allowMovingFeatures: false,
 	           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
 	           		popoverOnHover: #{cc.attrs.popoverOnHover},
-	           		clusterMarkers: #{cc.attrs.clusterMarkers},
-// 	           		markerIcon: {
-// 	           		 	markerColor: 'blue',
-// 	           		 	highlightColor: 'red',
-// 	           	     	shape: 'square',
-// 	           		}
+	           		clusterMarkers: #{cc.attrs.clusterMarkers}
            		}
            	});
-           	$(document).ready(() => {   
-            	let view = #{cc.attrs.geoMap.initialView};
-            	let features = #{cc.attrs.geoMap.featuresAsString};
-            	geoMap.init(view);
-            	let layer = new viewerJS.GeoMap.featureGroup(geoMap, {
+        	this.initMap = function(view, features) {
+        	    this.geoMap.init(view);
+            	let layer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
             	    markerIcon: #{cc.attrs.geoMap.markerAsJSON}
             	})
             	layer.onFeatureClick.subscribe(feature => {
-           	       if(feature.properties && feature.properties.link) {
+           	       if(feature.properties && feature.properties.link && !feature.properties.highlighted) {
            	           window.location.assign(feature.properties.link);
            	       }
            	    });
 	        	if(#{cc.attrs.linkToSearch and cc.attrs.geoMap.type == 'SOLR_QUERY'}) {
 	                let searchUrlTemplate = '#{geoMapBean.getCoordinateSearchQueryTemplate(cc.attrs.geoMap)}';
-	                geoMap.onFeatureClick.subscribe( (feature) => {
+	                layer.onFeatureClick.subscribe( (feature) => {
 	                    let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
 	                    queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
-	//                     window.location = queryUrl;
 	                    window.open(queryUrl, "#{cc.attrs.linkTarget}");
 	                });
 	            }
+	        	
+	        	let highlightDocumentId = "#{cc.attrs.highlightDocumentId}";
+	        	if(highlightDocumentId) {
+	        	    features.filter(f => f.properties.documentId == highlightDocumentId).forEach(f => f.properties.highlighted = true);
+	        	}
+	        	//console.log("init features", features, features.filter(f => f.properties.documentId == highlightDocumentId));
             	layer.init(features, true);
-            	
-            	// console.log("Show annotations: " + #{cc.attrs.showAnnotations});
-            	if(#{cc.attrs.showAnnotations}) {            	    
-            	 $("[data-geomap-feature]").each((index, ele) => {
-                     let featureString = $(ele).attr("data-geomap-feature");
-                     if(featureString) {
-                         let feature = JSON.parse(featureString);
-                         layer.addMarker(feature);
-                         $(ele).parent().on("mouseenter",  () => {
-                             layer.highlightMarker(feature);
-                         });
-                         $(ele).parent().on("mouseleave",  () => {
-                             layer.highlightMarker(null);
-                         });
-                     }
-                 });
-                 geoMap.setView(geoMap.getViewAroundFeatures(layer.getFeatures()));
+
+                //geoMap.setView(geoMap.getViewAroundFeatures(layer.getFeatures()));
+        	}
+        	
+           	$(document).ready(() => {   
+            	let view = #{cc.attrs.geoMap.initialView};
+            	let features = #{cc.attrs.geoMap.featuresAsString};
+            	if(features.length > 0 ) {
+            	    this.initMap(view, features);
+            	} else {
+            	    console.log("hide map because of missing features");
+            	    $("##{cc.attrs.mapId}").parent().hide();
             	}
             })
 		    

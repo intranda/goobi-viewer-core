@@ -85,7 +85,7 @@
                 }, {
                     name: "ugc",
                     styleClass: "ugcBox",
-                    interactive: true
+                    interactive: true,
                 
                 },
                 {
@@ -111,7 +111,7 @@
 		                coordinates: (function(coords){
 		                    	return coords ? coords: [];
 		                	})(#{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}),
-		                displayTooltip: true
+		                displayTooltip: #{configurationBean.displayAnnotationTextInImage}
 		            }, {
 		                name: "annotations",
 		                coordinates: window.location.hash,

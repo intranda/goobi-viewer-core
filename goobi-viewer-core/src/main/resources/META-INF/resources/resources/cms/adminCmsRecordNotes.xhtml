@@ -72,6 +72,11 @@
                                            		<img alt="#{note.recordPi}" title="#{note.recordPi}"
                                            			src="#{cmsRecordNotesBean.getThumbnailUrl(note, 160, 160)}" />
                                        		</ui:fragment>
+                                       		<ui:fragment rendered="#{note.isMultiRecordNote()}">
+                                       			<div class="admin__record-notes-solr-query-img">
+                                           			<i class="fa fa-tasks"></i>
+                                           		</div>
+                                       		</ui:fragment>
                                            </div>
 
                                         <div class="admin__table-data">
@@ -93,6 +98,9 @@
                                                 <ui:fragment rendered="#{note.isSingleRecordNote()}">
                                                 	<a class="admin__table-action-link" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(note)}">#{msg.show}</a>
                                                 </ui:fragment>
+                                                <ui:fragment rendered="#{note.isMultiRecordNote()}">
+													<a href="#{cmsRecordNotesBean.getSearchUrlForNote(note)}" class="admin__table-action-link" target="_blank">#{msg.show}</a>
+												</ui:fragment> 
                                                 <!-- DELETE -->
                                                 <h:commandLink 
                                                 	styleClass="admin__table-action-link -redlink" 

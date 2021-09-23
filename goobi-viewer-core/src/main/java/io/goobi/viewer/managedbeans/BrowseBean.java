@@ -104,7 +104,7 @@ public class BrowseBean implements Serializable {
     private int currentPage = -1;
 
     private Map<String, CollectionView> collections = new HashMap<>();
-    private String collectionField;
+    private String collectionField = SolrConstants.DC;
 
     /**
      * Empty constructor.
@@ -870,7 +870,7 @@ public class BrowseBean implements Serializable {
         }
 
         StringPair result =
-                SearchHelper.getFirstRecordURL(getCollectionField(), getTargetCollection(), true, true,
+                SearchHelper.getFirstRecordPiAndPageType(getCollectionField(), getTargetCollection(), true, true,
                         DataManager.getInstance().getConfiguration().getCollectionSplittingChar(getCollectionField()), BeanUtils.getLocale());
         if (result == null) {
             return null;

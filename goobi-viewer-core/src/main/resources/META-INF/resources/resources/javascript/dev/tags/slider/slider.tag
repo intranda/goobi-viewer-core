@@ -17,6 +17,7 @@
 
     this.on( 'mount', function() {
 		this.style = this.opts.styles.get(this.opts.style);
+//    	console.log(this.style);
 //     	console.log("mounting 'slider.tag' ", this.opts, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
@@ -50,6 +51,7 @@
     		rxjs.operators.filter(element => element != undefined),		//drop all responses which could not be mapped to a slide
     		rxjs.operators.take(this.maxSlides),						//stop after maxSlides slides have been created
     		rxjs.operators.reduce((res, item) => res.concat(item), []),	//create an array out of the sub-observables
+    		rxjs.operators.map(array => array.sort( (s1,s2) => s1.order-s2.order ))
     	)
     	.subscribe(slides => this.setSlides(slides))		//add the slides and call update
     });
@@ -58,7 +60,6 @@
     	
     	// console.log("layout = ", this.getLayout());
     	
-    	
     	if(this.slides && this.slides.length > 0) {
     		if(this.slider) {
     			this.slider.destroy();
@@ -66,6 +67,11 @@
 			this.initSlideTags(this.slides);
     		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
     	}
+    	
+    	if (this.style.onUpdate) {
+    		this.style.onUpdate();
+    	}
+    	
     });
     
     setSlides(slides) {
@@ -107,7 +113,8 @@
     				label : element.label,
     				description : element.description,
     				image : element.thumbnail,
-    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element))
+    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element)),
+    				order : element.order
     		}
     		return slide;
     	} else {

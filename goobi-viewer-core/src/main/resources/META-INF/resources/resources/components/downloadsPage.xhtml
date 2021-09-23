@@ -6,7 +6,7 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" >
     
     <composite:interface />
 
@@ -133,12 +133,15 @@
 											<ui:repeat varStatus="status" var="option"
 												value="#{activeDocumentBean.viewManager.downloadOptionsForCurrentImage}">
 												<div class="widget-usage__download-image-size-option-wrapper">
-													<input
-													class="widget-usage__download-image-size-input"
-													onclick="setDownloadOptionLabel({optionvalue: this.getAttribute('value')});"
-													value="#{option.label}" name="downloadSelectSizes" type="radio"
-													id="downloadSelectSizes_#{status.index}" data-checked="#{status.first}"/>
-												<label for="downloadSelectSizes_#{status.index}"><span class="widget-usage__download-image-size-radio-label">#{msg[option.label]}</span><span class="widget-usage__download-image-size-radio-size">#{option.boxSizeLabel}</span><span class="widget-usage__download-image-size-radio-format">#{option.format}</span></label>
+													<input class="widget-usage__download-image-size-input"
+													   onclick="setDownloadOptionLabel({optionvalue: this.getAttribute('value')});"
+													   value="#{option.label}" name="downloadSelectSizes" type="radio"
+													   id="downloadSelectSizes_#{status.index}" data-checked="#{status.first}"/>
+												    <label for="downloadSelectSizes_#{status.index}">
+												        <span class="widget-usage__download-image-size-radio-label">#{msg[option.label]}</span>
+												        <span class="widget-usage__download-image-size-radio-size">#{option.boxSizeLabel}</span>
+												        <span class="widget-usage__download-image-size-radio-format">#{option.format}</span>
+												    </label>
 												</div>
 											</ui:repeat>
 										</fieldset>
@@ -154,7 +157,7 @@
 											styleClass="btn btn--full widget-usage__download-image-size-button"
 											title="#{msg.downloadButton}" target="_blank"
 											rel="nofollow noopener" aria-label="#{msg.downloadButton}"
-											value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}" a:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
+											value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}" pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
 			                                             #{msg.downloadButton}
 			                            </h:outputLink>
 									</h:form>

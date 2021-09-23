@@ -208,7 +208,6 @@ var viewerJS = ( function( viewer ) {
                 if ( $( this ).hasClass( 'in' ) ) {
                     $( this ).toggleClass( 'in' );
                     $( this ).next().slideToggle( 'fast' );
-                    
                     panelSessionStatus[ parentPanelId ] = false;
                     sessionStorage.setItem( 'fsPanelStatus', JSON.stringify( panelSessionStatus ) );
                 }
@@ -222,7 +221,10 @@ var viewerJS = ( function( viewer ) {
 
                     $( this ).toggleClass( 'in' );
                     $( this ).next().slideToggle( 'fast' );
-                    
+//                    viewer.GeoMap.allMaps.forEach(geomap => {
+//                    	geomap.map.invalidateSize();
+//                    	geomap.layers.find(layer => !layer.isEmpty())?.setViewToFeatures(true);
+//                    });
                     for ( var status in panelSessionStatus ) {
                         if(status.startsWith("panel-")) {                       
                             panelSessionStatus[ status ] = false;
@@ -295,6 +297,8 @@ var viewerJS = ( function( viewer ) {
     		if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
     			// hide sidebar
     			_hideSidebar( $( '#fullscreenViewSidebar' ).outerWidth() );
+				// always set fssidebarstatus to false for very small screens (this is needed for the thumbnail view size calculation)
+    			sessionStorage.setItem( 'fsSidebarStatus', false );    
     		} else {
     			sessionStorage.setItem( 'fsSidebarStatus', true );    
     		}

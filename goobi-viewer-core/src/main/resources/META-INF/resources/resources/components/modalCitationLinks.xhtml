@@ -3,6 +3,7 @@
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
@@ -34,7 +35,8 @@
 				        <div>
 				        
 				            <!-- RECORD -->
-				            <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
+				            <ui:fragment 
+				                rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork and fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')) > 0}">
 				            	<div class="widget-usage__citelinks-block">
 				                <h4 id="titleWork" class="widget-usage__citelinks-subtitle">#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}</h4>
 				                <h:outputText rendered="#{configurationBean.sidebarWidgetUsageCitationLinksRecordIntroText != null}">
@@ -76,7 +78,8 @@
 							</ui:fragment>
 							
 				            <!-- SUB-DOCSTRUCT -->
-				            <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkDocstruct}">
+				            <ui:fragment
+                                rendered="#{activeDocumentBean.viewManager.displayCiteLinkDocstruct and fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('docstruct')) > 0}">
 				                <div class="widget-usage__citelinks-block">
 				                <h4 id="titlePage" class="widget-usage__citelinks-subtitle" title="#{activeDocumentBean.viewManager.currentStructElement.label}">#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}</h4>
 				                <h:outputText rendered="#{configurationBean.sidebarWidgetUsageCitationLinksDocstructIntroText != null}">
@@ -115,7 +118,8 @@
 				            </ui:fragment>
 				
 				            <!-- IMAGE -->
-				            <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage and !activeDocumentBean.viewManager.doublePageMode}">
+				            <ui:fragment
+				                rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage and !activeDocumentBean.viewManager.doublePageMode and fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')) > 0}">
 				                <div class="widget-usage__citelinks-block">
 				                <h4 id="titleImage" class="widget-usage__citelinks-subtitle">#{msg.image}</h4>
 				                <h:outputText rendered="sidebarWidgetUsageCitationLinksImageIntroText != null}">
@@ -156,7 +160,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="widget-usage__citelinks-alt-backdrop" data-dismiss="modal"></div>
+			<div class="alt-backdrop" data-dismiss="modal"></div>
 		</div>
 		
 

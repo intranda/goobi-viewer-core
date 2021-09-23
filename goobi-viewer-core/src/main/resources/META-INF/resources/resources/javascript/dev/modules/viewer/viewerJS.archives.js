@@ -105,6 +105,7 @@ var viewerJS = ( function( viewer ) {
         				//console.log("loaded manifest ", manifest);
         				//if the manifest contains struct elements, show them as thumbnail gallery
         				if(manifest.structures && manifest.structures.length > 1) {
+        				// console.log("Show structure images");
 				        	riot.mount(".archives__object-thumbnails", "thumbnails", {
 					        	language : currentLang, 
 					        	type: "structures",
@@ -125,16 +126,31 @@ var viewerJS = ( function( viewer ) {
 				        	});
         				} else {
         					let thumbnail = viewerJS.iiif.getId(manifest.thumbnail[0]);
+        					//console.log("show thumbnail", thumbnail);
 	        				if(thumbnail) {
-	        					$(".archives__object-image").find("img").on("load", () => {
+	        				let $img = $(".archives__object-image").find("img");
+	        					$img.on("load", () => {
 	        						this.hideLoader("load_record_image");
 		        					$(".archives__object-image").show();
 	        					});
-	        					$(".archives__object-image").find("img").on("error", () => {
+	        					$img.on("error", () => {
 	        						this.hideLoader("load_record_image");
 	        						$(".archives__object-image").hide();
 	        					});
-	        					let imageSource = $(".archives__object-image").find("img").attr("src", "bla");
+	        					$img.attr("src", thumbnail);
+
+								// Add alternative text to images
+								try  {
+								let altText =  viewerJS.iiif.getId(manifest.label.none[0]);
+								$img.attr("alt", altText);
+								//console.log(1)
+								//console.log(viewerJS.iiif.getId(manifest.label.none[0]))
+								}
+								catch (e) {
+									// console.log(e);
+									$img.attr("alt", "Sorry, no alternative text available.");
+								}
+
 	        				} else {
 	        					this.hideLoader("load_record_image");
 	        					$(".archives__object-image").hide();

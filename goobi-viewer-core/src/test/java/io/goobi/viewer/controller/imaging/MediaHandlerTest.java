@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
@@ -29,7 +30,7 @@ import io.goobi.viewer.controller.DataManager;
  * @author Florian Alpers
  *
  */
-public class MediaHandlerTest {
+public class MediaHandlerTest extends AbstractTest {
 
     MediaHandler handler;
 
@@ -38,7 +39,7 @@ public class MediaHandlerTest {
      */
     @Before
     public void setUp() throws Exception {
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
+        super.setUp();
         handler = new MediaHandler();
     }
 

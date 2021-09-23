@@ -33,7 +33,6 @@ import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -287,7 +286,7 @@ public class BookmarkBean implements Serializable {
             Messages.error(msg.replace("{0}", "not selected"));
             return "";
         }
-        
+
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null && userBean.getUser() != null && StringUtils.isNotEmpty(currentBookmark.getName())) {
             logger.trace("saving bookmark to bookmark list");
@@ -453,6 +452,9 @@ public class BookmarkBean implements Serializable {
      * @return a boolean.
      */
     public boolean isNewBookmarkList() {
+        if (currentBookmarkList == null) {
+            return false;
+        }
         return currentBookmarkList.getId() == null;
     }
 
@@ -501,8 +503,6 @@ public class BookmarkBean implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, ViewerResourceBundle.getTranslation("bookmark listNameFailure", null), null);
             throw new ValidatorException(message);
         }
-
-        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 
         // Do not allow duplicate names
         if (isNewBookmarkList()) {

@@ -15,17 +15,17 @@
  */
 package io.goobi.viewer.controller.imaging;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.EXTERNAL_IMAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.EXTERNAL_IMAGES_IIIF;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_IIIF;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,12 +39,8 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import io.goobi.viewer.controller.StringTools;
 
 /**
  * <p>
@@ -102,35 +98,33 @@ public class IIIFUrlHandler {
                 } catch (URISyntaxException e) {
                     logger.warn("file url {} is not a valid url: {}", fileUrl, e.getMessage());
                 }
-                if(urls != null) {
-                    fileUrl = BeanUtils.escapeCriticalUrlChracters(fileUrl, false);
+                if (urls != null) {
+                    fileUrl = StringTools.escapeCriticalUrlChracters(fileUrl, false);
                     return urls.path(EXTERNAL_IMAGES, EXTERNAL_IMAGES_IIIF).params(fileUrl, region, size, rotation, quality, format).toString();
-                } else {                    
-                    StringBuilder sb = new StringBuilder(apiUrl);
-                    sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, false));
-                    return IIIFUrlResolver.getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
                 }
+                StringBuilder sb = new StringBuilder(apiUrl);
+                sb.append("image/-/").append(StringTools.escapeCriticalUrlChracters(fileUrl, false));
+                return IIIFUrlResolver.getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
             } else if (ImageHandler.isExternalUrl(fileUrl)) {
                 if (IIIFUrlResolver.isIIIFImageUrl(fileUrl)) {
                     return IIIFUrlResolver.getModifiedIIIFFUrl(fileUrl, region, size, rotation, quality, format);
                 } else if (ImageHandler.isImageUrl(fileUrl, false)) {
-                    
-                    if(urls != null) {
-                        fileUrl = BeanUtils.escapeCriticalUrlChracters(fileUrl, false);
+
+                    if (urls != null) {
+                        fileUrl = StringTools.escapeCriticalUrlChracters(fileUrl, false);
                         return urls.path(EXTERNAL_IMAGES, EXTERNAL_IMAGES_IIIF).params(fileUrl, region, size, rotation, quality, format).toString();
-                    } else {
-                        StringBuilder sb = new StringBuilder(apiUrl);
-                        if (!apiUrl.endsWith("/")) {
-                            sb.append("/");
-                        }
-                        sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, false)).append("/");
-                        sb.append(region).append("/");
-                        sb.append(size).append("/");
-                        sb.append(rotation).append("/");
-                        sb.append("default.").append(format);
-                        //                  thumbCompression.ifPresent(compr -> sb.append("?compression=").append(thumbCompression));
-                        return sb.toString();
                     }
+                    StringBuilder sb = new StringBuilder(apiUrl);
+                    if (!apiUrl.endsWith("/")) {
+                        sb.append("/");
+                    }
+                    sb.append("image/-/").append(StringTools.escapeCriticalUrlChracters(fileUrl, false)).append("/");
+                    sb.append(region).append("/");
+                    sb.append(size).append("/");
+                    sb.append(rotation).append("/");
+                    sb.append("default.").append(format);
+                    //                  thumbCompression.ifPresent(compr -> sb.append("?compression=").append(thumbCompression));
+                    return sb.toString();
                 } else {
                     //assume its a iiif id
                     if (fileUrl.endsWith("info.json")) {
@@ -157,27 +151,26 @@ public class IIIFUrlHandler {
                             .params(URLEncoder.encode(docStructIdentifier, UTF_8), URLEncoder.encode(fileUrl, UTF_8), region, size, rotation,
                                     "default", format)
                             .build();
-                } else {
-                    //if the fileUrl contains a "/", then the part before that is the actual docStructIdentifier
-                    int separatorIndex = fileUrl.indexOf("/");
-                    if (separatorIndex > 0) {
-                        docStructIdentifier = fileUrl.substring(0, separatorIndex);
-                        fileUrl = fileUrl.substring(separatorIndex + 1);
-                    }
-    
-                    StringBuilder sb = new StringBuilder(apiUrl);
-                    sb.append("image/{pi}/{filename}"
-                            .replace("{pi}", URLEncoder.encode(docStructIdentifier, UTF_8))
-                            .replace("{filename}",
-                                    URLEncoder.encode(fileUrl, UTF_8)))
-                            .append("/");
-                    sb.append(region).append("/");
-                    sb.append(size).append("/");
-                    sb.append(rotation).append("/");
-                    sb.append("default.").append(format);
-                    //                thumbCompression.ifPresent(compr -> sb.append("?compression=").append(thumbCompression));
-                    return sb.toString();
                 }
+                //if the fileUrl contains a "/", then the part before that is the actual docStructIdentifier
+                int separatorIndex = fileUrl.indexOf("/");
+                if (separatorIndex > 0) {
+                    docStructIdentifier = fileUrl.substring(0, separatorIndex);
+                    fileUrl = fileUrl.substring(separatorIndex + 1);
+                }
+
+                StringBuilder sb = new StringBuilder(apiUrl);
+                sb.append("image/{pi}/{filename}"
+                        .replace("{pi}", URLEncoder.encode(docStructIdentifier, UTF_8))
+                        .replace("{filename}",
+                                URLEncoder.encode(fileUrl, UTF_8)))
+                        .append("/");
+                sb.append(region).append("/");
+                sb.append(size).append("/");
+                sb.append(rotation).append("/");
+                sb.append("default.").append(format);
+                //                thumbCompression.ifPresent(compr -> sb.append("?compression=").append(thumbCompression));
+                return sb.toString();
             }
         } catch (URISyntaxException e) {
             logger.error("Not a valid url: " + fileUrl, e.getMessage());
@@ -231,7 +224,7 @@ public class IIIFUrlHandler {
                 rotation == null ? null : rotation.toString(), quality == null ? null : quality.toString(),
                 format == null ? null : format.getFileExtension());
     }
-    
+
     /**
      * @return the urls
      */

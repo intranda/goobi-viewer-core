@@ -116,15 +116,16 @@
 		position: relative;
 		display: flex;
 		[data-toggle="local"] {
-			text-transform: uppercase;			
-		}
+			.fa {
+				padding-right: .5rem;
+			}
+		} 
 		.change-local {
 			background: #444;
 			display: none;
 			position: absolute;
 			top: 3.2rem;
-			left: 50%;
-			margin-left: -2.35rem;
+			left: 0;
 			padding-top: .1rem;
 			z-index: 2000;
 			box-shadow: none;
@@ -140,8 +141,11 @@
 				&:hover,
 				&:active,
 				&:focus {
+					background-color: #606060;
+					text-decoration: none;
 				}
 				&.activeLang {
+					background-color: #606060;
 				}
 			}
 			img {}
@@ -468,6 +472,24 @@
 		&::after {
 			display: none;
 		}
+	}
+	.archives-tree__inactive-title.-recordHasImage {
+		&:after {
+			content: "\f03e";
+			font-family: "FontAwesome";
+			display: inline;
+			font-size: 14px;
+			margin: unset;
+			font-weight: 400;
+			padding-left: 1.2rem;
+		}
+	}
+	&__select-database-dropdown {
+		border: none;
+		background: transparent;
+		font-weight: 700;
+		font-size: 1.6rem;
+		margin-bottom: 1rem;
 	}
 }
 

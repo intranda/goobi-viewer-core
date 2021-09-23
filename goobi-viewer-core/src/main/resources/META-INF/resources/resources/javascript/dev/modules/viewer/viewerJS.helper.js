@@ -76,6 +76,15 @@ var viewerJS = ( function( viewer ) {
                 console.log( 'viewer.helper.getRemoteData: url = ', url );
             }
             
+            //alternative using fetch
+            /*var promise = fetch(decodeURI(url),  {
+            	headers: {
+				  'Content-Type': 'application/json'
+				},
+            })
+            .then(resp => resp.json());*/
+            
+            
             var promise = Q( $.ajax( {
                 url: decodeURI( url ),
                 type: "GET",
@@ -328,12 +337,17 @@ var viewerJS = ( function( viewer ) {
             	$( '[data-toggle="tooltip"]' ).tooltip( 'dispose' );
             }
 
-            // enable BS popovers
+            // enable bootstrap popovers
             $( '[data-toggle="popover"]' ).popover( {
             	placement: 'auto bottom',
 	            trigger: 'hover',
 	            html: true
             } );
+
+			// append all bootstrap modals to body
+			  $('.modal').not('.user-login-modal').appendTo("body");
+		
+
         },
         
         initNumberOnlyInput: function() {

@@ -140,7 +140,7 @@
 	}
 	&__citelinks-label {
 		margin-right: 1rem;
-		flex: 0 0 135px;
+		flex: 0 0 65px;
 	}
 	&__citelinks-internal {
 		padding-right: 3.5rem;
@@ -191,16 +191,6 @@
 	}
 	&__citelinks-box {
 		z-index: 2031;
-	}
-	&__citelinks-alt-backdrop {
-		z-index: 2030;
-		position: fixed;
-		width: 100%;
-		height: 100%;
-		background-color: #000;
-		opacity: .8;
-		left: 0;
-		top: 0;
 	}
 }
 
@@ -262,6 +252,24 @@
 				padding-right: unset;
 				padding-left: 0.5rem;
 			}
+		}
+		&__citerecommendation-text-wrapper {
+			.fa-quote-right {
+				padding-right: unset;
+				padding-left: 1.7rem;
+			}
+		}
+		&__citelinks-label {
+			margin-right: unset;
+			margin-left: 1rem;
+		}
+		&__citelinks-internal {
+			padding-right: unset;
+			padding-left: 3.5rem;
+		}
+		&__citelinks-copy-to-clipboard {
+			right: unset;
+			left: 1.3rem;
 		}
 	}
 }

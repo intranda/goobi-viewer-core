@@ -51,6 +51,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -120,7 +121,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * @return a {@link de.intranda.api.annotation.oa.WebAnnotation} object.
      */
     public WebAnnotation createUGCWebAnnotation(SolrDocument doc, boolean urlOnlyTarget) {
-        String pi = Optional.ofNullable(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).map(Object::toString).orElse("");
+        String pi = Optional.ofNullable(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).map(SolrTools::getAsString).orElse("");
         return createUGCWebAnnotation(pi, doc, urlOnlyTarget);
 
     }
@@ -136,10 +137,12 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * @return a {@link de.intranda.api.annotation.oa.WebAnnotation} object.
      */
     public WebAnnotation createUGCWebAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
-        String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse("");
+        String id = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_ANNOTATION_ID)).map(SolrTools::getAsString)
+                .map(i -> i.replace("annotation_", ""))
+                .orElse((String)doc.getFieldValue(SolrConstants.IDDOC));
         Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
-        String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse(null);
-        URI annoURI = getRestBuilder().getAnnotationURI(iddoc);
+        String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(SolrTools::getAsString).orElse(null);
+        URI annoURI = getRestBuilder().getAnnotationURI(id);
 
         WebAnnotation anno = new WebAnnotation(annoURI);
 

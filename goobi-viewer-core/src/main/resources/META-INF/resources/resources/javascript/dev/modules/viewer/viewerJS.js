@@ -40,12 +40,14 @@ var viewerJS = (function () {
         widgetNerSidebarRight: false,
         accessDeniedImage: '',
         notFoundImage: '',
-        activateDrilldownFilter: true
+        activateFacetsFilter: true
     };
     
 
     var viewer = {};
     viewer.initialized = new rxjs.Subject();
+    
+    
 
     viewer.init = function (config) {
         if (_debug) {
@@ -182,13 +184,13 @@ var viewerJS = (function () {
             $(href).collapse('show');
         });
 
-        // init search drilldown filter
-        if (_defaults.activateDrilldownFilter) {
-            this.initDrillDownFilters();
+        // init search facets filter
+        if (_defaults.activateFacetsFilter) {
+            this.initFacetsFilters();
             this.jsfAjax.success.subscribe(e => {
             	let collapseLink = $(e.source).attr("data-collapse-link");
             	if(collapseLink) {
-            		this.initDrillDownFilters();
+            		this.initFacetsFilters();
             	}
         	});
         }
@@ -412,13 +414,13 @@ var viewerJS = (function () {
         sessionStorage.setItem('scrollPositions', JSON.stringify(scrollPositions));
     }
 
-    viewer.initDrillDownFilters = function () {
-        var $drilldowns = $('.widget-search-drilldown__collection');
+    viewer.initFacetsFilters = function () {
+        var $facets = $('.widget-search-facets__collection');
 
-        $drilldowns.each(function () {
+        $facets.each(function () {
             var filterConfig = {
-                wrapper: $(this).find('.widget-search-drilldown__filter'),
-                input: $(this).find('.widget-search-drilldown__filter-input'),
+                wrapper: $(this).find('.widget-search-facets__filter'),
+                input: $(this).find('.widget-search-facets__filter-input'),
                 elements: $(this).find('li a')
             }
 
@@ -437,6 +439,20 @@ var viewerJS = (function () {
     		}
     		
     	});
+    }
+
+    // Helper fn: returns true if OS is iOS
+    viewer.iOS = function() {
+      return [
+          'iPad Simulator',
+          'iPhone Simulator',
+          'iPod Simulator',
+          'iPad',
+          'iPhone',
+          'iPod'
+        ].includes(navigator.platform)
+        // iPad on iOS 13 detection
+        || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
     }
     
     viewer.getRestApiUrl = function () {
@@ -465,17 +481,31 @@ var viewerJS = (function () {
 	viewer.handleFragmentAction = function() {
 		let hash = location.hash;
 		if(hash) {
-			let hashName = hash.replace(/=.*/, "");
+			let hashName = hash.replace(/[=:].*/, "");
 			switch(hashName) {
 				case "#feedback":
+					
 					$('#feedbackModal').modal();
+					let recipientMatch = hash.match(/recipient=([\w-]+)/);
+					if(recipientMatch && recipientMatch.length == 2) {
+						let recipient = recipientMatch[1];					
+						$('#feedbackModal .feedback-modal__recipient-dropdown').find('[data-recipient-id="'+recipient+'"]').attr('selected', 'selected');
+					}
 					$('#feedbackModal').on('hidden.bs.modal', function (e) {
 						history.replaceState({}, '', window.location.href.replace("#feedback", ""));
 					})
 					break;
 				case "#?page":
-					let url = location.href.replace("#?page", "&page");
-					location.replace(url);
+					// SHOW LOADER BEFORE REDIRECT
+					$("[data-loader='fullOverlay']").show();
+					$("html").addClass('modal-open');
+					// SHOW THE LOADER FOR SOME TIME TO AVOID UNWANTED FLASHING OF HALF TRANSPARENT BACKDROP
+					// THEN REDIRECT
+					setTimeout(function(){
+						let url = location.href.replace("#?page", "&page");
+						location.replace(url);
+					}, 1400);
+
 			}
 		}
 	}
@@ -489,7 +519,7 @@ var viewerJS = (function () {
 			$ele.attr("disabled", "disabled");
 			let id = $(element).attr("data-require-input");
 			let $texts = $("[data-require-input-text='" + id + "']");
-			$texts.on("change", (e) => {
+			$texts.on("change paste keyup cut", (e) => {
 				let filled = true;
 				$texts.each((index, element) => {
 					let text = $(element).val();
@@ -528,6 +558,10 @@ var viewerJS = (function () {
     
 })(jQuery);
   
+	// loading screen while page redirect
+
+	
+
 	// overriding enforceFocus for bootstrao modals in general - important: This might be a problem for accessibility
 	// $.fn.modal.Constructor.prototype._enforceFocus = function() {};
 

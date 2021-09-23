@@ -10,6 +10,7 @@
 
 /* USER LOGIN MODAL */
 .user-login-modal {
+	
 	font-family: @fontBackend;
 	&.active {
 		position: fixed;
@@ -77,7 +78,9 @@
 		background-position: right center;
 		background-size: contain;
 		}
-	&__header-title {}
+	&__header-title {
+		font-size: 2.4rem;
+	}
 	&__header-title-create-account {
 		display: none;
 	}
@@ -201,8 +204,9 @@
 	}
 	&__terms-text {
 		border: 1px solid @middlegray;
-		resize: none;
 		padding: 0.5rem 1rem;
+		height: 150px;
+		overflow-y: auto;
 	}
 	&__new-account-submit {
 		width: 100%;

@@ -36,6 +36,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 
 /**
@@ -59,6 +60,7 @@ public class CollectionView {
     private boolean showAllHierarchyLevels = false;
     private boolean displayParentCollections = true;
     private String searchUrl = "";
+    boolean ignoreHierarchy = false;
 
     private List<String> ignoreList = new ArrayList<>();
 
@@ -119,18 +121,35 @@ public class CollectionView {
                     if (!shouldOpenInOwnWindow(collectionName) && showAllHierarchyLevels) {
                         dc.setShowSubElements(true);
                     }
-                    int collectionLevel = dc.getLevel();
-                    if (collectionLevel > 0 && lastElement != null) {
-                        while (lastElement != null && lastElement.getLevel() >= collectionLevel) {
-                            lastElement = lastElement.getParent();
+                    // Set single record PI if collection has one one record
+                    if (collectionSize == 1) {
+                        // Retrieve the first record for the given collection (considering filtering and access rights)
+                        StringPair piAndPageType =
+                                SearchHelper.getFirstRecordPiAndPageType(field, dcName, true, displayParentCollections, collectionName, null);
+                        if (piAndPageType != null) {
+                            String url = "/" + DataManager.getInstance()
+                                    .getUrlBuilder()
+                                    .buildPageUrl(piAndPageType.getOne(), 1, null, PageType.getByName(piAndPageType.getTwo()));
+                            dc.setSingleRecordUrl(url);
                         }
-                        if (lastElement != null) {
-                            lastElement.addChild(dc);
-                        }
-                    } else {
-                        completeCollectionList.add(dc);
                     }
-                    lastElement = dc;
+
+                    if (ignoreHierarchy) {
+                        completeCollectionList.add(dc);
+                    } else {
+                        int collectionLevel = dc.getLevel();
+                        if (collectionLevel > 0 && lastElement != null) {
+                            while (lastElement != null && lastElement.getLevel() >= collectionLevel) {
+                                lastElement = lastElement.getParent();
+                            }
+                            if (lastElement != null) {
+                                lastElement.addChild(dc);
+                            }
+                        } else {
+                            completeCollectionList.add(dc);
+                        }
+                        lastElement = dc;
+                    }
                 }
                 //            Collections.sort(completeCollectionList);
                 calculateVisibleDcElements();
@@ -153,7 +172,7 @@ public class CollectionView {
             //If we are beneath the base level, open in collection view
             return true;
         } else if (collectionName.equals(getBaseElementName())) {
-            //If this is the base element of the entiry collection view, open in collection view (TODO: is that correct?)
+            //If this is the base element of the entire collection view, open in collection view (TODO: is that correct?)
             return true;
         } else if (collectionName.startsWith(getBaseElementName() + splittingChar)
                 && calculateLevel(collectionName) - calculateLevel(getBaseElementName()) <= getBaseLevels()) {
@@ -936,6 +955,8 @@ public class CollectionView {
      * @param collection a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
+     * @should return identifier resolver url if single record and pi known
+     * @should escape critical url chars in collection name
      */
     public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, String baseSearchUrl) {
 
@@ -955,18 +976,20 @@ public class CollectionView {
             logger.trace("COLLECTION new window url: {}", ret);
             return ret;
         } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
-
-            String url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+            // Link directly to single record, if record PI known
+            if (collection.getSingleRecordUrl() != null) {
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + collection.getSingleRecordUrl();
+            }
+            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                     .append("/browse/")
                     .append(field)
                     .append("/")
                     .append(collection.getLuceneName())
                     .append("/record/")
                     .toString();
-            return url;
         } else {
             String facetString = field + ":" + collection.getLuceneName();
-            String encFacetString = StringTools.encodeUrl(facetString);
+            String encFacetString = StringTools.encodeUrl(facetString, true);
             String ret = new StringBuilder(baseSearchUrl)
                     .append("-/-/1/")
                     .append(collection.getSortField())
@@ -1074,7 +1097,7 @@ public class CollectionView {
         if (completeCollectionList == null) {
             return null;
         }
-        
+
         for (HierarchicalBrowseDcElement ele : completeCollectionList) {
             if (ele.getName().equals(name)) {
                 return ele.getLabel();
@@ -1109,4 +1132,17 @@ public class CollectionView {
         this.searchUrl = searchUrl;
     }
 
+    /**
+     * @return the ignoreHierarchy
+     */
+    public boolean isIgnoreHierarchy() {
+        return ignoreHierarchy;
+    }
+
+    /**
+     * @param ignoreHierarchy the ignoreHierarchy to set
+     */
+    public void setIgnoreHierarchy(boolean ignoreHierarchy) {
+        this.ignoreHierarchy = ignoreHierarchy;
+    }
 }

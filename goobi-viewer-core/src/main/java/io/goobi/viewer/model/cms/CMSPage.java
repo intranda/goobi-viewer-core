@@ -1268,6 +1268,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                             contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
                             break;
                         case CMSMediaItem.CONTENT_TYPE_PDF:
+                        case CMSMediaItem.CONTENT_TYPE_VIDEO:
+                        case CMSMediaItem.CONTENT_TYPE_AUDIO:
                             boolean useContentApi = DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls();
                             Optional<AbstractApiUrlManager> urls;
                             if (useContentApi) {

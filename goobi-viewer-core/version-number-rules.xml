@@ -19,6 +19,13 @@
                 <ignoreVersion>3.0.2</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="org.glassfish.jaxb">
+            <ignoreVersions>
+                <ignoreVersion>2.4.0-b180725.0644</ignoreVersion>
+                <ignoreVersion>2.4.0-b180830.0438</ignoreVersion>
+                <ignoreVersion type="regex">3.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
         <rule groupId="com.sun.xml.bind" artifactId="jaxb-*">
             <ignoreVersions>
                 <ignoreVersion>3.0.0</ignoreVersion>
@@ -27,6 +34,7 @@
         <rule groupId="jakarta.annotation" artifactId="jakarta.annotation-api">
             <ignoreVersions>
                 <ignoreVersion>2.0.0</ignoreVersion>
+                <ignoreVersion>2.1.0-B1</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="jakarta.servlet" artifactId="jakarta.servlet-api">
@@ -48,6 +56,8 @@
                 <ignoreVersion>10.0.6</ignoreVersion>
                 <ignoreVersion>10.0.7</ignoreVersion>
                 <ignoreVersion>10.0.8</ignoreVersion>
+                <ignoreVersion>10.0.10</ignoreVersion>
+                <ignoreVersion>10.0.11</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.eclipse.persistence" artifactId="org.eclipse.persistence.*">
