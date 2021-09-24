@@ -125,7 +125,7 @@ public class CollectionView {
                     if (collectionSize == 1) {
                         // Retrieve the first record for the given collection (considering filtering and access rights)
                         StringPair piAndPageType =
-                                SearchHelper.getFirstRecordPiAndPageType(field, dcName, true, displayParentCollections, collectionName, null);
+                                SearchHelper.getFirstRecordPiAndPageType(field, dcName, true, displayParentCollections, splittingChar, null);
                         if (piAndPageType != null) {
                             String url = "/" + DataManager.getInstance()
                                     .getUrlBuilder()
