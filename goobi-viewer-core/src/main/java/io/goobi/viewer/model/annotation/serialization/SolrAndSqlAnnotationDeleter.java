@@ -16,44 +16,34 @@
 package io.goobi.viewer.model.annotation.serialization;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 
 /**
  * @author florian
  *
  */
-public class SolrAnnotationDeleter implements AnnotationDeleter {
+public class SolrAndSqlAnnotationDeleter implements AnnotationDeleter {
 
-    public SolrAnnotationDeleter() throws IndexUnreachableException, DAOException {
-        if(!DataManager.getInstance().getSearchIndex().isSolrIndexOnline()) {
-            throw new IndexUnreachableException("Solr index at " + DataManager.getInstance().getSearchIndex().getSolrServerUrl() + " not reachable");
-        }
+    private final SolrAnnotationDeleter solrDeleter;
+    private final SqlAnnotationDeleter sqlDeleter;
+
+    public SolrAndSqlAnnotationDeleter() throws IndexUnreachableException, DAOException {
+        solrDeleter = new SolrAnnotationDeleter();
+        sqlDeleter = new SqlAnnotationDeleter();    
     }
-    
+
+
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.annotation.serialization.AnnotationDeleter#delete(io.goobi.viewer.model.annotation.PersistentAnnotation)
+     */
     @Override
     public void delete(PersistentAnnotation annotation) throws IOException {
-        reindexTarget(annotation.getTargetPI(), annotation.getTargetPageOrder());
-    }
-    
-    protected void reindexTarget(String pi, Integer page) {
-        if(page != null) {
-            try {
-                IndexerTools.reIndexPage(pi, page);
-            } catch (DAOException | PresentationException | IndexUnreachableException | IOException e) {
-                IndexerTools.triggerReIndexRecord(pi);
-            }
-        } else {            
-            IndexerTools.triggerReIndexRecord(pi);
-        }
+        sqlDeleter.delete(annotation);
+        solrDeleter.delete(annotation);
     }
 
 }

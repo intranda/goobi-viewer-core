@@ -16,14 +16,12 @@
 package io.goobi.viewer.model.annotation.serialization;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +32,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 import net.sf.ehcache.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -54,26 +51,27 @@ public class SolrAnnotationSaver implements AnnotationSaver {
     @Override
     public void save(PersistentAnnotation... annotations) throws IOException {
         
-        Map<Target, Iterable<PersistentAnnotation>> pas = Arrays.stream(annotations)
-                .collect(Collectors.toMap(anno -> new Target(anno.getTargetPI(), anno.getTargetPageOrder()), anno -> new ArrayList<>(Arrays.asList(anno)), (a1,a2) -> CollectionUtils.union(a1, a2)));
+        List<Target> targets = Arrays.stream(annotations)
+                .map(anno -> new Target(anno.getTargetPI(), anno.getTargetPageOrder()))
+                .distinct()
+                .collect(Collectors.toList());
         
-        for (Target target : pas.keySet()) {
-            IndexAugmenter augmenter = new AnnotationIndexAugmenter(IterableUtils.toList(pas.get(target)));
-            reindexTarget(target, augmenter);
+        for (Target target : targets) {
+            reindexTarget(target);
         }
         
     }
 
-    protected void reindexTarget(Target target, IndexAugmenter augmenter) {
+    protected void reindexTarget(Target target) {
         if(target.page != null) {
             try {
-                IndexerTools.reIndexPage(target.pi, target.page, Arrays.asList(augmenter));
+                IndexerTools.reIndexPage(target.pi, target.page);
             } catch (DAOException | PresentationException | IndexUnreachableException | IOException e) {
                 logger.warn("Error reindexing single page. Try reindexing entire record");
-                IndexerTools.triggerReIndexRecord(target.pi, Arrays.asList(augmenter));
+                IndexerTools.triggerReIndexRecord(target.pi);
             }
         } else {            
-            IndexerTools.triggerReIndexRecord(target.pi, Arrays.asList(augmenter));
+            IndexerTools.triggerReIndexRecord(target.pi);
         }
     }
     

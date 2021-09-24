@@ -21,6 +21,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -102,7 +103,7 @@ public class IndexerTools {
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
      */
     public static synchronized boolean reIndexRecord(String pi) throws DAOException, RecordNotFoundException {
-        return reIndexRecord(pi, DataManager.getInstance().getModules());
+        return reIndexRecord(pi, getAllAugmenters(pi, null));
     }
     
     /**
@@ -223,8 +224,21 @@ public class IndexerTools {
      */
     public static synchronized boolean reIndexPage(String pi, int page)
             throws DAOException, PresentationException, IndexUnreachableException, IOException {
-        return reIndexPage(pi, page, DataManager.getInstance().getModules());
+        return reIndexPage(pi, page, getAllAugmenters(pi, page));
     }
+        /**
+     * @return
+         * @throws DAOException 
+     */
+    private static Collection<? extends IndexAugmenter> getAllAugmenters(String pi, Integer page) throws DAOException {
+        List<IndexAugmenter> augmenters = new ArrayList<>();
+        augmenters.addAll(DataManager.getInstance().getModules());
+        List annos = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
+        IndexAugmenter augmenter = new AnnotationIndexAugmenter(annos);
+        augmenters.add(augmenter);
+        return augmenters;
+    }
+
         /**
          * <p>
          * reIndexPage.
