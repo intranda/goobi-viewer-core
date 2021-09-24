@@ -33,9 +33,9 @@ import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.annotation.notification.CommentMailNotificator;
 import io.goobi.viewer.model.annotation.notification.JsfMessagesNotificator;
-import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
+import io.goobi.viewer.model.annotation.serialization.SolrAndSqlAnnotationDeleter;
+import io.goobi.viewer.model.annotation.serialization.SolrAndSqlAnnotationSaver;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationLister;
-import io.goobi.viewer.model.annotation.serialization.SqlAnnotationSaver;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -62,8 +62,8 @@ public class CommentBean implements Serializable {
     
     public CommentBean() throws IndexUnreachableException, DAOException {
         commentManager = new CommentManager(
-                new SqlAnnotationSaver(), 
-                new SqlAnnotationDeleter(),
+                new SolrAndSqlAnnotationSaver(), 
+                new SolrAndSqlAnnotationDeleter(),
                 new SqlAnnotationLister(),
                 new CommentMailNotificator(DataManager.getInstance().getConfiguration().getCommentsNotificationEmailAddresses()),
                 new JsfMessagesNotificator());

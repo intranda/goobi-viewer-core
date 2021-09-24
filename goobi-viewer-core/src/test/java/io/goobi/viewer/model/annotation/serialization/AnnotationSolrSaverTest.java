@@ -46,10 +46,8 @@ public class AnnotationSolrSaverTest {
         SolrAnnotationSaver saver = Mockito.spy(SolrAnnotationSaver.class);
         saver.save(anno1, anno2);
         ArgumentCaptor<Target> targetArgument = ArgumentCaptor.forClass(Target.class);
-        ArgumentCaptor<AnnotationIndexAugmenter> augmenterArgument = ArgumentCaptor.forClass(AnnotationIndexAugmenter.class);
-        Mockito.verify(saver, Mockito.times(1)).reindexTarget(targetArgument.capture(), augmenterArgument.capture());
+        Mockito.verify(saver, Mockito.times(1)).reindexTarget(targetArgument.capture());
         assertEquals(new Target(pi1, page1), targetArgument.getValue());
-        assertEquals(new AnnotationIndexAugmenter(Arrays.asList(anno1, anno2)), augmenterArgument.getValue());
     }
     
     @Test
@@ -69,7 +67,7 @@ public class AnnotationSolrSaverTest {
         
         SolrAnnotationSaver saver = Mockito.spy(SolrAnnotationSaver.class);
         saver.save(anno1, anno2, anno3, anno4, anno5);
-        Mockito.verify(saver, Mockito.times(4)).reindexTarget(Mockito.any(), Mockito.any());
+        Mockito.verify(saver, Mockito.times(4)).reindexTarget(Mockito.any());
     }
 
 }
