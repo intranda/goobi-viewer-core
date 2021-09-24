@@ -491,7 +491,7 @@ public final class SearchHelper {
             splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(luceneField);
         }
 
-        StringBuilder sbQuery = new StringBuilder();
+        StringBuilder sbQuery = new StringBuilder(SolrConstants.PI).append(":*");
         if (filterForWhitelist) {
             if (sbQuery.length() > 0) {
                 sbQuery.append(" AND ");
