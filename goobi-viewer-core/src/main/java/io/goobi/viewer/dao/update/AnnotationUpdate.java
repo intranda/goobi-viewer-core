@@ -95,14 +95,14 @@ public class AnnotationUpdate implements IModelUpdate {
                 anno.setPublicationStatus(PublicationStatus.PUBLISHED);
                 anno.setAccessCondition(SolrConstants.OPEN_ACCESS_VALUE);
 
-                saver.save(anno);
+//                saver.save(anno);
             } catch (IOException e) {
                 throw new DAOException(e.toString());
             }
         }
-        dao.startTransaction();
-        dao.createNativeQuery("DROP TABLE comments").executeUpdate();
-        dao.commitTransaction();
+//        dao.startTransaction();
+//        dao.createNativeQuery("DROP TABLE comments").executeUpdate();
+//        dao.commitTransaction();
     }
 
     /**

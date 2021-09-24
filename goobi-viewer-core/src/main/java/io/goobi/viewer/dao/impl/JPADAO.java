@@ -4523,7 +4523,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<PersistentAnnotation> getAllAnnotations(String sortField, boolean descending) throws DAOException {
         preQuery();
-        String query = "SELECT a FROM PersistentAnnotation";
+        String query = "SELECT a FROM PersistentAnnotation a";
         if(StringUtils.isNotBlank(sortField)) {
             query += " ORDER BY " + sortField + (descending ? "desc" : "asc");
         }
@@ -4822,7 +4822,6 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateAnnotation(PersistentAnnotation annotation) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
             em.merge(annotation);
@@ -4830,8 +4829,6 @@ public class JPADAO implements IDAO {
             return true;
         } catch (IllegalArgumentException e) {
             return false;
-        } finally {
-            em.close();
         }
     }
 
@@ -4842,7 +4839,6 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteAnnotation(PersistentAnnotation annotation) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
             PersistentAnnotation o = em.getReference(PersistentAnnotation.class, annotation.getId());
@@ -4851,8 +4847,6 @@ public class JPADAO implements IDAO {
             return true;
         } catch (IllegalArgumentException e) {
             return false;
-        } finally {
-            em.close();
         }
     }
 

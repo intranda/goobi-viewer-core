@@ -30,6 +30,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -126,6 +127,9 @@ public class PersistentAnnotation {
     @Column(name = "publication_status")
     private PublicationStatus publicationStatus = PublicationStatus.CREATING;
 
+     @Transient
+     private User creator = null;
+    
     /**
      * empty constructor
      */
@@ -160,6 +164,7 @@ public class PersistentAnnotation {
         this.id = id;
         this.creatorId = null;
         this.generatorId = null;
+        this.accessCondition = source.getRights();
         try {
             if (source.getCreator() != null && source.getCreator().getId() != null) {
                 Long userId = User.getId(source.getCreator().getId());
@@ -271,10 +276,10 @@ public class PersistentAnnotation {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public User getCreator() throws DAOException {
-        if (creatorId != null) {
-            return DataManager.getInstance().getDao().getUser(creatorId);
+        if (this.creator == null && this.creatorId != null) {
+            this.creator = DataManager.getInstance().getDao().getUser(creatorId);
         }
-        return null;
+        return this.creator;
     }
 
     /**
@@ -285,6 +290,7 @@ public class PersistentAnnotation {
      * @param creator the creator to set
      */
     public void setCreator(User creator) {
+        this.creator = creator;
         this.creatorId = creator.getId();
     }
 

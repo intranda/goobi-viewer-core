@@ -16,7 +16,10 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -26,12 +29,14 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.annotation.notification.CommentMailNotificator;
 import io.goobi.viewer.model.annotation.notification.JsfMessagesNotificator;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationLister;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationSaver;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -65,15 +70,51 @@ public class CommentBean implements Serializable {
     }
     
     public void createComment(String text, boolean restricted) throws IndexUnreachableException {
-        this.commentManager.createComment(text, userBean.getUser(), activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), restricted ? getRestrictedLicense() : getPublicLicense());
+        this.commentManager.createComment(text, userBean.getUser(), activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), getLicense(restricted), getInitialPublicationStatus());
     }
-    
+
     public void editComment(PersistentAnnotation original, String text, boolean restricted) throws IndexUnreachableException {
-        this.commentManager.editComment(original, text, userBean.getUser(), restricted ? getRestrictedLicense() : getPublicLicense());
+        this.commentManager.editComment(original, text, userBean.getUser(), getLicense(restricted), getInitialPublicationStatus());
     }
     
     public void deleteComment(PersistentAnnotation annotation) throws IndexUnreachableException {
         this.commentManager.deleteComment(annotation);
+    }
+    
+    public List<PersistentAnnotation> getComments(int startIndex, int numItems, String filter, User user, String sortField, boolean descending) {
+        return this.commentManager.getAnnotations(startIndex, numItems, filter, null, null, Collections.singletonList(user.getId()), null, null, sortField, descending);
+    }
+    
+    public List<PersistentAnnotation> getCommentsForCurrentPage() throws IndexUnreachableException {
+        return this.commentManager.getAnnotations(0, Integer.MAX_VALUE, null, null, null, null, activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), null, false)
+                .stream()
+                .filter(c -> PublicationStatus.PUBLISHED.equals(c.getPublicationStatus()) || Optional.ofNullable(c.getCreatorId()).map(id -> id.equals(getCurrentUserId())).orElse(false))
+                //TODO: Check prvilege for viewing comment
+                //.filter(c -> Optional.ofNullable(userBean).map(UserBean::getUser).map(u -> u.isHasAnnotationPrivilege(REQUIRES_COMMENT_RIGHTS)).orElse(false))
+                .collect(Collectors.toList());
+    }
+
+    private Long getCurrentUserId() {
+        return Optional.ofNullable(userBean).map(UserBean::getUser).map(User::getId).orElse(null);
+    }
+    
+    public boolean isRestricted(PersistentAnnotation anno) {
+        return REQUIRES_COMMENT_RIGHTS.equals(anno.getAccessCondition());
+    }
+    
+    private String getLicense(boolean restricted) {
+        return restricted ? getRestrictedLicense() : getPublicLicense();
+    }
+    
+    /**
+     * @return
+     */
+    private PublicationStatus getInitialPublicationStatus() {
+        if(DataManager.getInstance().getConfiguration().reviewEnabledForComments()) {
+            return PublicationStatus.REVIEW;
+        } else {
+            return PublicationStatus.PUBLISHED;
+        }
     }
 
     /**

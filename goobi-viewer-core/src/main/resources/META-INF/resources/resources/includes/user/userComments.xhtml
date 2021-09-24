@@ -39,15 +39,15 @@
 				</ui:fragment>
 
 				<!-- EXISTING COMMENTS -->
-				<ui:repeat var="comment"
-					value="#{activeDocumentBean.viewManager.currentPage.comments}">
+				<ui:repeat var="comment"  varStatus="status"
+					value="#{commentBean.commentsForCurrentPage}">
 					<div class="user-comments__comment">
 						<!-- USER IMAGE -->
 						<div class="user-comments__comment-image">
-							<ui:fragment rendered="#{user.useGravatar}">
-								<img src="#{comment.owner.avatarUrl}" alt="User Gravatar" />
+							<ui:fragment rendered="#{comment.creator.useGravatar}">
+								<img src="#{comment.creator.avatarUrl}" alt="User Gravatar" />
 							</ui:fragment>
-							<ui:fragment rendered="#{!user.useGravatar}">
+							<ui:fragment rendered="#{!comment.creator.useGravatar}">
 								<img
 									src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg"
 									alt="User Gravatar" />
@@ -56,7 +56,7 @@
 
 						<!-- COMMENT METADATA -->
 						<div class="user-comments__comment-metadata">
-							<span class="user-comments__comment-metadata-creator">#{comment.owner.displayNameObfuscated}</span>
+							<span class="user-comments__comment-metadata-creator">#{comment.creator.displayNameObfuscated}</span>
 							<span class="user-comments__comment-metadata-date">#{navigationHelper.getLocalDate(comment.dateCreated)}</span>
 						</div>
 
@@ -67,20 +67,20 @@
 
 							<!-- COMMENT OPTIONS -->
 							<ui:fragment
-								rendered="#{userBean.loggedIn or comment.dateUpdated != null}">
+								rendered="#{userBean.loggedIn or comment.dateModified != null}">
 								<div class="user-comments__comment-content-options">
 									<!-- LAST CHANGE -->
-									<h:panelGroup rendered="#{comment.dateUpdated != null}"
+									<h:panelGroup rendered="#{comment.dateModified != null}"
 										styleClass="user-comments__comment-content-options-last-change">
-                                        #{msg.lastEdited} #{navigationHelper.getLocalDate(comment.dateUpdated)}
+                                        #{msg.lastEdited} #{navigationHelper.getLocalDate(comment.dateModified)}
                                     </h:panelGroup>
 
 									<!-- EDIT COMMENT -->
 									<ui:fragment
-										rendered="#{userBean.user == comment.owner or userBean.user.superuser}">
+										rendered="#{userBean.user == comment.creator or userBean.user.superuser}">
 										<span class="user-comments__comment-content-options-save">
 											<h:commandLink
-												action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}"
+												action="#{commentBean.editComment(comment, commentText, commentBean.isRestricted(comment))}"
 												title="#{msg.userCommentSave}">
 												<i class="fa fa-floppy-o" aria-hidden="true"></i>
 												<f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -99,7 +99,8 @@
 										<span class="user-comments__comment-content-options-edit in">
 											<button type="button" class="btn btn--icon"
 												title="#{msg.userCommentEdit}" data-edit="comment"
-												data-toggle="tooltip" data-placement="bottom" aria-label="#{msg.userCommentEdit}">
+												data-toggle="tooltip" data-placement="bottom" aria-label="#{msg.userCommentEdit}"
+												onclick='$("#comment-text-#{comment.id} textarea").val("#{comment.contentString}")'>
 												<i class="fa fa-pencil" aria-hidden="true"></i>
 											</button>
 										</span>
@@ -107,11 +108,11 @@
 
 									<!-- DELETE COMMENT -->
 									<ui:fragment
-										rendered="#{userBean.loggedIn and (userBean.user == comment.owner or userBean.user.superuser)}">
+										rendered="#{userBean.loggedIn and (userBean.user == comment.creator or userBean.user.superuser)}">
 										<span class="user-comments__comment-content-options-delete">
 											<h:commandLink
 												onclick="if ( !confirm( &quot;#{msg.userCommentDeleteText}&quot; ) ) { return false; }"
-												action="#{activeDocumentBean.viewManager.currentPage.deleteCommentAction(comment)}"
+												action="#{commentBean.deleteComment(comment)}"
 												title="#{msg.userCommentDelete}">
 												<i class="fa fa-trash-o" aria-hidden="true"></i>
 												<f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -126,12 +127,12 @@
 
 							<!-- COMMENT TEXT -->
 							<div class="user-comments__comment-content-options-text in">
-								#{comment.displayText}</div>
+								#{comment.contentString}</div>
 
 							<!-- COMMENT TEXT EDIT -->
-							<div class="user-comments__comment-content-options-text-edit">
+							<div class="user-comments__comment-content-options-text-edit" id="comment-text-#{comment.id}">
 								<h:inputTextarea id="userCommentEditableText"
-									value="#{comment.text}" />
+									value="#{commentText}" />
 							</div>
 						</div>
 					</div>
@@ -149,7 +150,6 @@
 						<h:selectBooleanCheckbox id="commentLicenseCheckbox" value="#{commentRestricted}">Restricted</h:selectBooleanCheckbox>
 						<div class="user-comments__add-comment-submit">
 							<h:commandButton
-								rendered="#{activeDocumentBean.viewManager.currentPage.currentComment.id == null}"
 								action="#{commentBean.createComment(commentText, commentRestricted)}"
 								styleClass="btn btn--success" value="#{msg.addNoteText}">
 								<f:ajax execute="userCommentAdd commentLicenseCheckbox" render="@form messages" />

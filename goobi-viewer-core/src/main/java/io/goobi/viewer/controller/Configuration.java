@@ -3828,6 +3828,13 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isCommentsEnabled() {
         return getLocalBoolean(("comments[@enabled]"), false);
     }
+    
+    /**
+     * @return
+     */
+    public boolean reviewEnabledForComments() {
+        return getLocalBoolean("comments.review[@enabled]", false);
+    }
 
     /**
      * <p>
@@ -5305,5 +5312,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplayAnnotationTextInImage() {
         return getLocalBoolean("webGuiDisplay.displayAnnotationTextInImage", true);
     }
+
+
 
 }

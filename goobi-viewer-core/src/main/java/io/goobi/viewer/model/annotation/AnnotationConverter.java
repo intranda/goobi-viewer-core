@@ -258,7 +258,8 @@ public class AnnotationConverter {
     } 
     
     public PersistentAnnotation getAsPersistentAnnotation(WebAnnotation anno) {
-        return new PersistentAnnotation(anno, getPersistenceId(anno), getPI(anno.getTarget()).orElse(null), getPageNo(anno.getTarget()).orElse(null));
+        PersistentAnnotation pa = new PersistentAnnotation(anno, getPersistenceId(anno), getPI(anno.getTarget()).orElse(null), getPageNo(anno.getTarget()).orElse(null));
+        return pa;
     }
     
     public Comment getAsComment(WebAnnotation anno) {

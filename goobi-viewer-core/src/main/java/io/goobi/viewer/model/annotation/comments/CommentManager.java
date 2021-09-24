@@ -37,6 +37,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.notification.ChangeNotificator;
 import io.goobi.viewer.model.annotation.serialization.AnnotationDeleter;
 import io.goobi.viewer.model.annotation.serialization.AnnotationLister;
@@ -66,10 +67,11 @@ public class CommentManager implements AnnotationLister {
         this.notificators = Arrays.asList(notificators);
     }
 
-    public void createComment(String text, User creator, String pi, Integer pageOrder, String license) {
+    public void createComment(String text, User creator, String pi, Integer pageOrder, String license, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, creator, pi, pageOrder);
         PersistentAnnotation comment =
                 createAnnotation(createTextualBody(textCleaned), createTarget(pi, pageOrder), Motivation.COMMENTING, createAgent(creator), license);
+        comment.setPublicationStatus(publicationStatus);
         try {
             saver.save(comment);
             notificators.forEach(n -> n.notifyCreation(comment, BeanUtils.getLocale()));
@@ -78,11 +80,11 @@ public class CommentManager implements AnnotationLister {
         }
     }
 
-    public void editComment(PersistentAnnotation comment, String text, User editor, String license) {
+    public void editComment(PersistentAnnotation comment, String text, User editor, String license, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, editor, comment.getTargetPI(), comment.getTargetPageOrder());
         PersistentAnnotation editedComment = new PersistentAnnotation(comment);
         editedComment.setBody(createTextualBody(textCleaned).toString());
-
+        comment.setPublicationStatus(publicationStatus);
         try {
             saver.save(editedComment);
             notificators.forEach(n -> n.notifyEdit(comment, editedComment, BeanUtils.getLocale()));
