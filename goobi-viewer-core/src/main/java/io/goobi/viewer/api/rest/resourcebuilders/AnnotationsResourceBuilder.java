@@ -112,16 +112,9 @@ public class AnnotationsResourceBuilder {
                 .limit(MAX_ANNOTATIONS_PER_PAGE)
                 .map(converter::getAsWebAnnotation)
                 .collect(Collectors.toList());
-        
-//        List<SolrDocument> data = waBuilder.getAnnotationDocuments(waBuilder.getAnnotationQuery(), first, MAX_ANNOTATIONS_PER_PAGE, null, request);
-//        if (data.isEmpty()) {
-//            throw new IllegalRequestException("Page number is out of bounds");
-//        }
+
         URI uri = URI.create(urls.path(ANNOTATIONS).build());
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, annotations.size());
-//        List<IAnnotation> annos = data.stream()
-//                .map(doc -> waBuilder.getAnnotation((String)doc.getFirstValue(SolrConstants.MD_ANNOTATION_ID)).orElse(waBuilder.createUGCWebAnnotation(doc, false)))
-//                .collect(Collectors.toList());
         AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(annotations, page);
         return annoPage;
     }

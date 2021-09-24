@@ -4520,6 +4520,33 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
     
+    @Override
+    public List<PersistentAnnotation> getAllAnnotations(String sortField, boolean descending) throws DAOException {
+        preQuery();
+        String query = "SELECT a FROM PersistentAnnotation";
+        if(StringUtils.isNotBlank(sortField)) {
+            query += " ORDER BY " + sortField + (descending ? "desc" : "asc");
+        }
+        Query q = getEntityManager().createQuery(query);
+
+        return q.getResultList();
+    }
+    
+    @Override
+    public long getTotalAnnotationCount() throws DAOException {
+        preQuery();
+        String query = "SELECT COUNT(a) FROM PersistentAnnotation a";
+        Query q = getEntityManager().createQuery(query);
+
+        Object o = q.getResultList().get(0);
+        // MySQL
+        if (o instanceof BigInteger) {
+            return ((BigInteger) q.getResultList().get(0)).longValue();
+        }
+        // H2
+        return (long) q.getResultList().get(0);
+    }
+
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getAllAnnotationsByMotivation(java.lang.String)
@@ -5310,6 +5337,7 @@ public class JPADAO implements IDAO {
 
         return pageList;
     }
+
 
 
 }

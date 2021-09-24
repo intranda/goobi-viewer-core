@@ -582,7 +582,7 @@ public class PersistentAnnotation {
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String getContentString() throws IOException, DAOException {
+    public String getContentString() {
 
         if (StringUtils.isNotBlank(body)) {
             try {

@@ -27,6 +27,7 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.annotation.notification.JsfMessagesNotificator;
 import io.goobi.viewer.model.annotation.serialization.AnnotationSolrAndSqlSaver;
+import io.goobi.viewer.model.annotation.serialization.SqlAnnotationLister;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -53,7 +54,9 @@ public class CommentBean implements Serializable {
     public CommentBean() throws IndexUnreachableException, DAOException {
         commentCreator = new CommentManager(
                 new AnnotationSolrAndSqlSaver(), 
-                comment -> System.out.println("deleted comment " + comment.toString()), 
+                new AnnotationSolrAndSqlDeleter(),
+                new SqlAnnotationLister(),
+                new MailNotificator(), 
                 new JsfMessagesNotificator());
     }
     

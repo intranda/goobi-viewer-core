@@ -2298,4 +2298,16 @@ public interface IDAO {
      */
     List<PersistentAnnotation> getAllAnnotationsByMotivation(String commenting) throws DAOException;
 
+    /**
+     * @return
+     * @throws DAOException
+     */
+    List<PersistentAnnotation> getAllAnnotations(String sortField, boolean sortDescending) throws DAOException;
+
+    /**
+     * @return
+     * @throws DAOException
+     */
+    long getTotalAnnotationCount() throws DAOException;
+
 }

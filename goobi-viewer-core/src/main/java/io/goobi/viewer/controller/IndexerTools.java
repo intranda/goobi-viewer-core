@@ -186,7 +186,7 @@ public class IndexerTools {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
-
+        
         // Module augmentations
         for (IndexAugmenter module : augmenters) {
             try {

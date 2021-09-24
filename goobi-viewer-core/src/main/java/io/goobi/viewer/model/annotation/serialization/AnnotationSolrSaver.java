@@ -33,7 +33,6 @@ import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 import net.sf.ehcache.util.concurrent.ConcurrentHashMap;
@@ -45,7 +44,7 @@ import net.sf.ehcache.util.concurrent.ConcurrentHashMap;
 public class AnnotationSolrSaver implements AnnotationSaver {
 
     private final static Logger logger = LoggerFactory.getLogger(AnnotationSolrSaver.class);
-    
+        
     public AnnotationSolrSaver() throws IndexUnreachableException {
         if(!DataManager.getInstance().getSearchIndex().isSolrIndexOnline()) {
             throw new IndexUnreachableException("Solr index at " + DataManager.getInstance().getSearchIndex().getSolrServerUrl() + " not reachable");

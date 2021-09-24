@@ -17,6 +17,7 @@ package io.goobi.viewer.model.annotation.comments;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,60 +34,62 @@ import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.annotation.notification.ChangeNotificator;
 import io.goobi.viewer.model.annotation.serialization.AnnotationDeleter;
+import io.goobi.viewer.model.annotation.serialization.AnnotationLister;
 import io.goobi.viewer.model.annotation.serialization.AnnotationSaver;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * Class to create comments from a text input for a given PI and page order and to save them using a given {@link AnnotationSaver} 
+ * Class to create comments from a text input for a given PI and page order and to save them using a given {@link AnnotationSaver}
  * 
  * @author florian
  *
  */
-public class CommentManager {
+public class CommentManager implements AnnotationLister {
 
     private final AnnotationSaver saver;
     private final AnnotationDeleter deleter;
     private final List<ChangeNotificator> notificators;
     private final AnnotationConverter converter = new AnnotationConverter();
-    
-    public CommentManager(AnnotationSaver saver, AnnotationDeleter deleter, ChangeNotificator... notificators) {
+    private final AnnotationLister lister;
+
+    public CommentManager(AnnotationSaver saver, AnnotationDeleter deleter, AnnotationLister lister, ChangeNotificator... notificators) {
         this.saver = saver;
         this.deleter = deleter;
+        this.lister = lister;
         this.notificators = Arrays.asList(notificators);
     }
-    
+
     public void createComment(String text, User creator, String pi, Integer pageOrder, String license) {
-        PersistentAnnotation comment = createAnnotation(createTextualBody(text), createTarget(pi, pageOrder), Motivation.COMMENTING, createAgent(creator), license);
-        try {            
+        PersistentAnnotation comment =
+                createAnnotation(createTextualBody(text), createTarget(pi, pageOrder), Motivation.COMMENTING, createAgent(creator), license);
+        try {
             saver.save(comment);
             notificators.forEach(n -> n.notifyCreation(comment));
-        } catch(IOException e) {
+        } catch (IOException e) {
             notificators.forEach(n -> n.notifyError(e));
         }
     }
-    
+
     public void editComment(PersistentAnnotation comment, String text, User editor, String license) {
         PersistentAnnotation editedComment = new PersistentAnnotation(comment);
         editedComment.setBody(createTextualBody(text).toString());
-        
-        try {            
+
+        try {
             saver.save(editedComment);
             notificators.forEach(n -> n.notifyEdit(comment, editedComment));
-        } catch(IOException e) {
+        } catch (IOException e) {
             notificators.forEach(n -> n.notifyError(e));
         }
     }
-    
+
     public void deleteComment(PersistentAnnotation comment) {
         try {
             deleter.delete(comment);
             notificators.forEach(n -> n.notifyDeletion(comment));
-        } catch(IOException e) {
+        } catch (IOException e) {
             notificators.forEach(n -> n.notifyError(e));
         }
     }
-
-
 
     /**
      * @param createTextualBody
@@ -114,18 +117,20 @@ public class CommentManager {
     private Agent createAgent(User creator) {
         return new Agent(creator.getIdAsURI(), AgentType.PERSON, creator.getDisplayName());
     }
-    
+
     /**
      * @param pi
      * @param pageOrder
      * @return
      */
     private IResource createTarget(String pi, Integer pageOrder) {
-        return DataManager.getInstance().getRestApiManager().getDataApiManager()
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
                 .map(urls -> urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_CANVAS).params(pi, pageOrder).buildURI())
                 .map(uri -> new SimpleResource(uri))
                 .orElse(null);
-        
+
     }
 
     /**
@@ -135,6 +140,49 @@ public class CommentManager {
     private IResource createTextualBody(String text) {
         return new TextualResource(text);
     }
-    
-    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAllAnnotations()
+     */
+    @Override
+    public List<PersistentAnnotation> getAllAnnotations() {
+        return lister.getAnnotations(0, Integer.MAX_VALUE, null, Arrays.asList(Motivation.COMMENTING), null, null, null, null, null, false);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getTotalAnnotationCount()
+     */
+    @Override
+    public long getTotalAnnotationCount() {
+        return getAllAnnotations().size();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotations(int, int, java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer, java.lang.String, boolean)
+     */
+    @Override
+    public List<PersistentAnnotation> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators,
+            List<Long> creators, String targetPi, Integer targetPage, String sortField, boolean sortDescending) {
+        List<String> allMotivations = new ArrayList<>();
+        allMotivations.add(Motivation.COMMENTING);
+        if(motivations  != null) {
+            allMotivations.addAll(allMotivations);
+        }
+        return lister.getAnnotations(firstIndex, items, textQuery, allMotivations, generators, creators, targetPi, targetPage, sortField, sortDescending);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotationCount(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer)
+     */
+    @Override
+    public long getAnnotationCount(String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi,
+            Integer targetPage) {
+        List<String> allMotivations = new ArrayList<>();
+        allMotivations.add(Motivation.COMMENTING);
+        if(motivations  != null) {
+            allMotivations.addAll(allMotivations);
+        }
+        return lister.getAnnotationCount(textQuery, allMotivations, generators, creators, targetPi, targetPage);
+    }
+
 }
