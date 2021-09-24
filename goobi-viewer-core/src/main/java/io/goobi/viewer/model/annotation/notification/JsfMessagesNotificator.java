@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.annotation.notification;
 
+import java.util.Locale;
+
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
@@ -28,7 +30,7 @@ public class JsfMessagesNotificator implements ChangeNotificator {
      * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyCreation(de.intranda.api.annotation.wa.WebAnnotation)
      */
     @Override
-    public void notifyCreation(PersistentAnnotation annotation) {
+    public void notifyCreation(PersistentAnnotation annotation, Locale locale) {
         Messages.info(null, "Successfully created comment '{}'", annotation.getBody().toString());
     }
 
@@ -36,7 +38,7 @@ public class JsfMessagesNotificator implements ChangeNotificator {
      * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyEdit(de.intranda.api.annotation.wa.WebAnnotation, de.intranda.api.annotation.wa.WebAnnotation)
      */
     @Override
-    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation) {
+    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation, Locale locale) {
         Messages.info(null, "Successfully changed comment '{}' to '{}'", oldAnnotation.getBody().toString(), newAnnotation.getBody().toString());
 
     }
@@ -45,7 +47,7 @@ public class JsfMessagesNotificator implements ChangeNotificator {
      * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyDeletion(de.intranda.api.annotation.wa.WebAnnotation)
      */
     @Override
-    public void notifyDeletion(PersistentAnnotation annotation) {
+    public void notifyDeletion(PersistentAnnotation annotation, Locale locale) {
         Messages.info(null, "Successfully deleted comment '{}'", annotation.getBody().toString());
     }
 
@@ -53,7 +55,7 @@ public class JsfMessagesNotificator implements ChangeNotificator {
      * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyError(java.lang.Exception)
      */
     @Override
-    public void notifyError(Exception exception) {
+    public void notifyError(Exception exception, Locale locale) {
         Messages.error("Error changing notification: " + exception.getMessage().toString());
     }
 

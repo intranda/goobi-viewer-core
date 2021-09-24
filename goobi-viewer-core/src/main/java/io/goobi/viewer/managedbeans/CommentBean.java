@@ -16,18 +16,22 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
+import io.goobi.viewer.model.annotation.notification.CommentMailNotificator;
 import io.goobi.viewer.model.annotation.notification.JsfMessagesNotificator;
-import io.goobi.viewer.model.annotation.serialization.AnnotationSolrAndSqlSaver;
+import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationLister;
+import io.goobi.viewer.model.annotation.serialization.SqlAnnotationSaver;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -44,7 +48,7 @@ public class CommentBean implements Serializable {
     private static final String REQUIRES_COMMENT_RIGHTS = "REQUIRES_COMMENT_RIGHTS";
     private static final long serialVersionUID = -3653100353345867739L;
     
-    private final CommentManager commentCreator;
+    private final CommentManager commentManager;
  
     @Inject
     private ActiveDocumentBean activeDocumentBean;
@@ -52,24 +56,24 @@ public class CommentBean implements Serializable {
     private UserBean userBean;
     
     public CommentBean() throws IndexUnreachableException, DAOException {
-        commentCreator = new CommentManager(
-                new AnnotationSolrAndSqlSaver(), 
-                new AnnotationSolrAndSqlDeleter(),
+        commentManager = new CommentManager(
+                new SqlAnnotationSaver(), 
+                new SqlAnnotationDeleter(),
                 new SqlAnnotationLister(),
-                new MailNotificator(), 
+                new CommentMailNotificator(DataManager.getInstance().getConfiguration().getCommentsNotificationEmailAddresses()),
                 new JsfMessagesNotificator());
     }
     
     public void createComment(String text, boolean restricted) throws IndexUnreachableException {
-        this.commentCreator.createComment(text, userBean.getUser(), activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), restricted ? getRestrictedLicense() : getPublicLicense());
+        this.commentManager.createComment(text, userBean.getUser(), activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), restricted ? getRestrictedLicense() : getPublicLicense());
     }
     
     public void editComment(PersistentAnnotation original, String text, boolean restricted) throws IndexUnreachableException {
-        this.commentCreator.editComment(original, text, userBean.getUser(), restricted ? getRestrictedLicense() : getPublicLicense());
+        this.commentManager.editComment(original, text, userBean.getUser(), restricted ? getRestrictedLicense() : getPublicLicense());
     }
     
     public void deleteComment(PersistentAnnotation annotation) throws IndexUnreachableException {
-        this.commentCreator.deleteComment(annotation);
+        this.commentManager.deleteComment(annotation);
     }
 
     /**

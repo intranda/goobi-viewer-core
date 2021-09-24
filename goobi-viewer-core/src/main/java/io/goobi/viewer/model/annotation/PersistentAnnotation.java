@@ -122,6 +122,9 @@ public class PersistentAnnotation {
 
     @Column(name = "access_condition", nullable = true)
     private String accessCondition;
+    
+    @Column(name = "publication_status")
+    private PublicationStatus publicationStatus = PublicationStatus.CREATING;
 
     /**
      * empty constructor
@@ -142,6 +145,7 @@ public class PersistentAnnotation {
         this.target = source.target;
         this.targetPI = source.targetPI;
         this.targetPageOrder = source.targetPageOrder;
+        this.publicationStatus = source.publicationStatus;
     }
 
     /**
@@ -696,4 +700,34 @@ public class PersistentAnnotation {
 
     }
     
+    public String getDisplayDate(LocalDateTime date) {
+        return DateTools.format(date, DateTools.formatterDEDateTime, false);
+    }
+    
+    /**
+     * Checks whether the user with the given ID is allowed to edit this comment (i.e. the annotation belongs to this (proper) user.
+     *
+     * @return true if allowed; false otherwise
+     * @should return true if use id equals owner id
+     * @should return false if owner id is null
+     * @should return false if user is null
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     */
+    public boolean mayEdit(User user) {
+        return this.creatorId != null && user != null && this.creatorId.equals(user.getId());
+    }
+    
+    /**
+     * @return the publicationStatus
+     */
+    public PublicationStatus getPublicationStatus() {
+        return publicationStatus;
+    }
+    
+    /**
+     * @param publicationStatus the publicationStatus to set
+     */
+    public void setPublicationStatus(PublicationStatus publicationStatus) {
+        this.publicationStatus = publicationStatus;
+    }
 }

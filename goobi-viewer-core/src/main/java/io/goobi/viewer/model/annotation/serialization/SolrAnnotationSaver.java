@@ -41,11 +41,11 @@ import net.sf.ehcache.util.concurrent.ConcurrentHashMap;
  * @author florian
  *
  */
-public class AnnotationSolrSaver implements AnnotationSaver {
+public class SolrAnnotationSaver implements AnnotationSaver {
 
-    private final static Logger logger = LoggerFactory.getLogger(AnnotationSolrSaver.class);
+    private final static Logger logger = LoggerFactory.getLogger(SolrAnnotationSaver.class);
         
-    public AnnotationSolrSaver() throws IndexUnreachableException {
+    public SolrAnnotationSaver() throws IndexUnreachableException {
         if(!DataManager.getInstance().getSearchIndex().isSolrIndexOnline()) {
             throw new IndexUnreachableException("Solr index at " + DataManager.getInstance().getSearchIndex().getSolrServerUrl() + " not reachable");
         }

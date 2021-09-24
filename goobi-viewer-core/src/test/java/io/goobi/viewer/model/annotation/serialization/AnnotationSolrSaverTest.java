@@ -27,7 +27,7 @@ import org.mockito.Mockito;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.model.annotation.serialization.AnnotationSolrSaver.Target;
+import io.goobi.viewer.model.annotation.serialization.SolrAnnotationSaver.Target;
 
 /**
  * @author florian
@@ -43,7 +43,7 @@ public class AnnotationSolrSaverTest {
         
         PersistentAnnotation anno1 = new PersistentAnnotation(new WebAnnotation(), 1l, pi1, page1);
         PersistentAnnotation anno2 = new PersistentAnnotation(new WebAnnotation(), 2l, pi1, page1);
-        AnnotationSolrSaver saver = Mockito.spy(AnnotationSolrSaver.class);
+        SolrAnnotationSaver saver = Mockito.spy(SolrAnnotationSaver.class);
         saver.save(anno1, anno2);
         ArgumentCaptor<Target> targetArgument = ArgumentCaptor.forClass(Target.class);
         ArgumentCaptor<AnnotationIndexAugmenter> augmenterArgument = ArgumentCaptor.forClass(AnnotationIndexAugmenter.class);
@@ -67,7 +67,7 @@ public class AnnotationSolrSaverTest {
         PersistentAnnotation anno5 = new PersistentAnnotation(new WebAnnotation(), 4l, pi2, noPage);
 
         
-        AnnotationSolrSaver saver = Mockito.spy(AnnotationSolrSaver.class);
+        SolrAnnotationSaver saver = Mockito.spy(SolrAnnotationSaver.class);
         saver.save(anno1, anno2, anno3, anno4, anno5);
         Mockito.verify(saver, Mockito.times(4)).reindexTarget(Mockito.any(), Mockito.any());
     }

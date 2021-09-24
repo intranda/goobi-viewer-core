@@ -17,30 +17,42 @@ package io.goobi.viewer.model.annotation.serialization;
 
 import java.io.IOException;
 
+import de.intranda.api.annotation.wa.WebAnnotation;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
  * @author florian
  *
  */
-public class AnnotationSolrAndSqlSaver implements AnnotationSaver {
+public class SqlAnnotationSaver implements AnnotationSaver {
 
-    private final AnnotationSolrSaver solrSaver;
-    private final AnnotationSqlSaver sqlSaver;
+    private final IDAO dao; 
 
-    public AnnotationSolrAndSqlSaver() throws IndexUnreachableException, DAOException {
-        solrSaver = new AnnotationSolrSaver();
-        sqlSaver = new AnnotationSqlSaver();    
+    public SqlAnnotationSaver() throws DAOException {
+        this.dao = DataManager.getInstance().getDao();
     }
     
+    public SqlAnnotationSaver(IDAO dao) {
+        this.dao = dao;
+    }
     
     @Override
     public void save(PersistentAnnotation... annotations) throws IOException {
-        //first save to sql then to solr because solr will take longer anyway and sql is the main data-source
-        sqlSaver.save(annotations);
-        solrSaver.save(annotations);
+        for (PersistentAnnotation annotation : annotations) {            
+            try {            
+                if(annotation.getId() != null) {
+                    dao.updateAnnotation(annotation);
+                } else {
+                    dao.addAnnotation(annotation);
+                }
+            } catch(DAOException e) {
+                throw new IOException(e);
+            }
+        }
     }
 
 }

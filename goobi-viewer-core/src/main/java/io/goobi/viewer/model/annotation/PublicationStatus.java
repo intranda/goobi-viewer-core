@@ -13,20 +13,17 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.annotation.notification;
-
-import java.util.Locale;
-
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+package io.goobi.viewer.model.annotation;
 
 /**
  * @author florian
  *
  */
-public interface ChangeNotificator {
-
-    public void notifyCreation(PersistentAnnotation annotation, Locale locale);
-    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation, Locale locale);
-    public void notifyDeletion(PersistentAnnotation annotation, Locale locale);
-    public void notifyError(Exception exception, Locale locale);
+public enum PublicationStatus {
+    CREATING, //The annotation has been created but is not ready for review or publication yet
+    REVIEW, //The annotation needs to be approved of before being published
+    PUBLISHED, //The annotation may be viewed by anyone meeting the access conditions
+    PRIVATE, //The annotation is hidden from anyone except the creator
+    SUSPENDED, //The annotation is temporarily disabled
+    DELETED, //The annotation should remain disabled
 }

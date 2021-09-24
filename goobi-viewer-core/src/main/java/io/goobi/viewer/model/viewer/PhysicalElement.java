@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -69,6 +70,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
@@ -1571,9 +1573,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<Comment> getComments() throws DAOException {
-        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order);
-        Collections.sort(comments);
+    public List<PersistentAnnotation> getComments() throws DAOException {
+        List<PersistentAnnotation> comments = DataManager.getInstance().getDao().getAnnotationsForTarget(this.pi, this.order, Motivation.COMMENTING);
+        Collections.sort(comments, (c1, c2) -> c1.getDateCreated().compareTo(c2.getDateCreated()));
         //        Collections.reverse(comments);
         return comments;
     }

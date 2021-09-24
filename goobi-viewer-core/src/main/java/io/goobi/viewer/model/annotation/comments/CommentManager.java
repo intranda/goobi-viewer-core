@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.intranda.api.annotation.AgentType;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.SimpleResource;
@@ -30,6 +33,8 @@ import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.annotation.notification.ChangeNotificator;
@@ -46,6 +51,8 @@ import io.goobi.viewer.model.security.user.User;
  */
 public class CommentManager implements AnnotationLister {
 
+    private final static Logger logger = LoggerFactory.getLogger(CommentManager.class);
+    
     private final AnnotationSaver saver;
     private final AnnotationDeleter deleter;
     private final List<ChangeNotificator> notificators;
@@ -60,34 +67,36 @@ public class CommentManager implements AnnotationLister {
     }
 
     public void createComment(String text, User creator, String pi, Integer pageOrder, String license) {
+        String textCleaned = checkAndCleanScripts(text, creator, pi, pageOrder);
         PersistentAnnotation comment =
-                createAnnotation(createTextualBody(text), createTarget(pi, pageOrder), Motivation.COMMENTING, createAgent(creator), license);
+                createAnnotation(createTextualBody(textCleaned), createTarget(pi, pageOrder), Motivation.COMMENTING, createAgent(creator), license);
         try {
             saver.save(comment);
-            notificators.forEach(n -> n.notifyCreation(comment));
+            notificators.forEach(n -> n.notifyCreation(comment, BeanUtils.getLocale()));
         } catch (IOException e) {
-            notificators.forEach(n -> n.notifyError(e));
+            notificators.forEach(n -> n.notifyError(e, BeanUtils.getLocale()));
         }
     }
 
     public void editComment(PersistentAnnotation comment, String text, User editor, String license) {
+        String textCleaned = checkAndCleanScripts(text, editor, comment.getTargetPI(), comment.getTargetPageOrder());
         PersistentAnnotation editedComment = new PersistentAnnotation(comment);
-        editedComment.setBody(createTextualBody(text).toString());
+        editedComment.setBody(createTextualBody(textCleaned).toString());
 
         try {
             saver.save(editedComment);
-            notificators.forEach(n -> n.notifyEdit(comment, editedComment));
+            notificators.forEach(n -> n.notifyEdit(comment, editedComment, BeanUtils.getLocale()));
         } catch (IOException e) {
-            notificators.forEach(n -> n.notifyError(e));
+            notificators.forEach(n -> n.notifyError(e, BeanUtils.getLocale()));
         }
     }
 
     public void deleteComment(PersistentAnnotation comment) {
         try {
             deleter.delete(comment);
-            notificators.forEach(n -> n.notifyDeletion(comment));
+            notificators.forEach(n -> n.notifyDeletion(comment, BeanUtils.getLocale()));
         } catch (IOException e) {
-            notificators.forEach(n -> n.notifyError(e));
+            notificators.forEach(n -> n.notifyError(e, BeanUtils.getLocale()));
         }
     }
 
@@ -185,4 +194,16 @@ public class CommentManager implements AnnotationLister {
         return lister.getAnnotationCount(textQuery, allMotivations, generators, creators, targetPi, targetPage);
     }
 
+    private String checkAndCleanScripts(String text, User editor, String pi, Integer page) {
+        if (text != null) {
+            String cleanText = StringTools.stripJS(text);
+            if (cleanText.length() < text.length()) {
+                logger.warn("User {} attempted to add a script block into a comment for {}, page {}, which was removed:\n{}", editor.getId(), pi, page, text);
+                text = cleanText;
+            }
+            return cleanText;
+        } else {
+            return text;
+        }
+    }
 }
