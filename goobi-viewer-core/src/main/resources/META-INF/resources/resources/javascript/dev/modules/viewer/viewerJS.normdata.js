@@ -85,12 +85,14 @@ var viewerJS = ( function( viewer ) {
             $( '.closeAllPopovers' ).hide();
             
             // first level click
-            $( _defaults.linkSelector ).on( 'click', function() {
+            $( _defaults.linkSelector ).on( 'click', function(event) {
             	_$this = $( this );
                 
                 _$this.off( 'focus' );
                 
                 _renderPopoverAction( _$this, _defaults.id );
+                event.preventDefault();
+                
             } );
         },
     };
@@ -324,7 +326,7 @@ var viewerJS = ( function( viewer ) {
         
         if ( $( '.normdata-popover' ).length > 0 ) {
             _close.show();
-            _close.on( 'click', function() {
+            _close.on( 'click', function(event) {
                 // close all popovers
                 $( '.normdata-popover' ).each( function() {
                     $( this ).remove();
@@ -337,6 +339,8 @@ var viewerJS = ( function( viewer ) {
                 
                 // set trigger to enable
                 $( _defaults.linkSelector ).removeAttr( 'disabled' ).removeClass( 'disabled' );
+                
+                event.preventDefault();
             } );
         }
         else {
