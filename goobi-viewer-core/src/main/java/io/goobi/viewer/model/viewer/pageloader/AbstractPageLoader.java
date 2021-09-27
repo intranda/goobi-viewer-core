@@ -237,7 +237,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
                             pe.setWidth(info.getWidth());
                         });
             } catch (Throwable e) {
-                logger.error("Error reading image size of " + pe.getFilename() + ": " + e.toString());
+                logger.warn("Error reading image size of " + pe.getFilename() + ": " + e.toString());
             }
         }
 

@@ -21,57 +21,79 @@
 		<nav id="user_generated_content_nav">
 			<ul>
 				<ui:repeat var="content" value="#{cc.attrs.contentList}">
-					<h:panelGroup rendered="#{content.isEmpty() ? 'false':'true'}">
-						<li id="words-#{content.id}"
-							class="widget-annotations__entry #{content.isOnThisPage(activeDocumentBean.viewManager.currentPage) ? '-onpage' : ''}">
-							<div class="widget-annotations__type">
-								<i class="#{content.iconClass}" aria-hidden="true"></i>
-							</div>
-							<ui:fragment rendered="#{content.type != 'NORMDATA' or cc.attrs.sidebar}">
-								<div class="widget-annotations__text">
-									<ui:fragment rendered="#{!content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
+					<h:panelGroup rendered="#{!content.isEmpty() and content.type != 'GEOLOCATION'}">
+						<li id="words-#{content.id}">
+							
+							<ui:fragment rendered="#{!content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
+								<div class="widget-annotations__entry #{content.isOnThisPage(activeDocumentBean.viewManager.currentPage) ? '-onpage' : ''}">
+									<div class="widget-annotations__type">
+										<i class="#{content.iconClass}" aria-hidden="true"></i>
+									</div>
+									<h:panelGroup display="block" rendered="#{cc.attrs.sidebar}" class="widget-annotations__content">
+										<h:outputText value="#{msg[contentBean.cleanUpValue(content.extendendLabel)]}" escape="false">
+										</h:outputText>
+									</h:panelGroup>
+									<ui:fragment rendered="#{content.type == 'NORMDATA' and cc.attrs.sidebar}">
+										<button type="button"
+											data-remotecontent="#{request.contextPath}/api/v1/authority/resolver?id=#{contentBean.getEscapedBodyUrl(content)}&amp;template=ANNOTATION&amp;lang=#{navigationHelper.localeString}/"
+											data-toggle="tooltip" data-placement="top" data-trigger="hover"
+											class="widget-annotations__button">
+											<i class="fa fa-list-ul" aria-hidden="true"></i>
+											<div class="normdata-preloader"></div>
+										</button>
+										<i class="fa fa-times closeAllPopovers" aria-hidden="true"
+											data-toggle="tooltip" data-placement="top" data-trigger="hover"
+											title="#{msg.normdataPopoverCloseAll}"></i>
+									</ui:fragment>
+									<ui:fragment rendered="#{content.type == 'NORMDATA' and not cc.attrs.sidebar}">
+										<div id="annotation_body_#{content.id}" class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(content.annotationBody.toString())}</div>
+											<annotationBody annotationid="#{content.id}" contentid="annotation_body_#{content.id}"/>
+									</ui:fragment>
+									<div class="widget-annotations__page">
+										<ui:fragment rendered="#{content.isOnAnyPage()}">
+											<span>#{content.page}</span>
+										</ui:fragment>
+									</div>
+								</div>
+							</ui:fragment>
+							<ui:fragment rendered="#{content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
+								<h:outputLink pt:class="widget-annotations__entry #{content.isOnThisPage(activeDocumentBean.viewManager.currentPage) ? '-onpage' : ''}" value="#{content.pageUrl}" styleClass="p-0">
+									<div class="widget-annotations__type">
+										<i class="#{content.iconClass}" aria-hidden="true"></i>
+									</div>
+									<h:panelGroup display="block" rendered="#{cc.attrs.sidebar}" class="widget-annotations__content">
 										<h:outputText
 											value="#{msg[contentBean.cleanUpValue(content.extendendLabel)]}"
-											escape="false"></h:outputText>
+											escape="false">
+										</h:outputText>
+									</h:panelGroup>
+									<ui:fragment rendered="#{content.type == 'NORMDATA' and cc.attrs.sidebar}">
+										<button type="button"
+											data-remotecontent="#{request.contextPath}/api/v1/authority/resolver?id=#{contentBean.getEscapedBodyUrl(content)}&amp;template=ANNOTATION&amp;lang=#{navigationHelper.localeString}/"
+											data-toggle="tooltip" data-placement="top" data-trigger="hover"
+											class="widget-annotations__button">
+											<i class="fa fa-list-ul" aria-hidden="true"></i>
+											<div class="normdata-preloader"></div>
+										</button>
+										<i class="fa fa-times closeAllPopovers" aria-hidden="true"
+											data-toggle="tooltip" data-placement="top" data-trigger="hover"
+											title="#{msg.normdataPopoverCloseAll}"></i>
 									</ui:fragment>
-									<ui:fragment rendered="#{content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
-										<h:outputLink value="#{content.pageUrl}" styleClass="p-0">
-											<h:outputText
-												value="#{msg[contentBean.cleanUpValue(content.extendendLabel)]}"
-												escape="false"></h:outputText>
-										</h:outputLink>
+									<ui:fragment rendered="#{content.type == 'NORMDATA' and not cc.attrs.sidebar}">
+										<div id="annotation_body_#{content.id}" class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(content.annotationBody.toString())}</div>
+											<annotationBody annotationid="#{content.id}" contentid="annotation_body_#{content.id}"/>
 									</ui:fragment>
-								</div> 
+									<div class="widget-annotations__page">
+										<ui:fragment rendered="#{content.isOnAnyPage()}">
+											<span>#{content.page}</span>
+										</ui:fragment>
+									</div>
+								</h:outputLink>
 							</ui:fragment>
-							
-							<ui:fragment rendered="#{content.type == 'NORMDATA' and cc.attrs.sidebar}">
-								<button type="button"
-									data-remotecontent="#{request.contextPath}/api/v1/authority/resolver?id=#{contentBean.getEscapedBodyUrl(content)}&amp;template=ANNOTATION&amp;lang=#{navigationHelper.localeString}/"
-									data-toggle="tooltip" data-placement="top" data-trigger="hover"
-									class="widget-annotations__button">
-									<i class="fa fa-list-ul" aria-hidden="true"></i>
-									<div class="normdata-preloader"></div>
-								</button>
-								<i class="fa fa-times closeAllPopovers" aria-hidden="true"
-									data-toggle="tooltip" data-placement="top" data-trigger="hover"
-									title="#{msg.normdataPopoverCloseAll}"></i>
-							</ui:fragment>
-							
-							<ui:fragment rendered="#{content.type == 'NORMDATA' and not cc.attrs.sidebar}">
-								<div id="annotation_body_#{content.id}" class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(content.annotationBody.toString())}</div>
-									<annotationBody annotationid="#{content.id}" contentid="annotation_body_#{content.id}"/>
-								</ui:fragment>
-								
-							<div class="widget-annotations__page">
-								<ui:fragment rendered="#{content.isOnAnyPage()}">
-									<span>#{content.page}</span>
-								</ui:fragment>
-							</div>
 						</li>
 					</h:panelGroup>
 					<script type="text/javascript">
 						$("#words-#{content.id}, #words-#{content.id} div").on('click', function(e) {
-						    console.log("Click on content #{content.id}");
 							viewImage.overlays.focusBox("ugc", "#{content.id}");
 							highlightCurrentSelection($(this));
 							if(!#{cc.attrs.sidebar}) {
