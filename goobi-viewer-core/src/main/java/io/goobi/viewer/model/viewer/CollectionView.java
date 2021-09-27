@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -121,17 +122,11 @@ public class CollectionView {
                     if (!shouldOpenInOwnWindow(collectionName) && showAllHierarchyLevels) {
                         dc.setShowSubElements(true);
                     }
+                    
                     // Set single record PI if collection has one one record
                     if (collectionSize == 1) {
-                        // Retrieve the first record for the given collection (considering filtering and access rights)
-                        StringPair piAndPageType =
-                                SearchHelper.getFirstRecordPiAndPageType(field, dcName, true, displayParentCollections, splittingChar, null);
-                        if (piAndPageType != null) {
-                            String url = "/" + DataManager.getInstance()
-                                    .getUrlBuilder()
-                                    .buildPageUrl(piAndPageType.getOne(), 1, null, PageType.getByName(piAndPageType.getTwo()));
-                            dc.setSingleRecordUrl(url);
-                        }
+                        String recordUrl = PrettyUrlTools.getRelativePageUrl("browseFirstRecord", field, dcName);
+                        dc.setSingleRecordUrl(recordUrl);
                     }
 
                     if (ignoreHierarchy) {
