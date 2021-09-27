@@ -1,6 +1,7 @@
 const fs = require("fs")
 const XML = require('pixl-xml');
 const process = require('process');
+const depsPaths = require('./Grunt_depsPaths');
 
 function getTomcatDir() {
 	let homedir = require("os").homedir();
@@ -152,26 +153,88 @@ module.exports = function (grunt) {
                     minified : true,
                     unminified : false,
                     css : true,
-                    ignore: ["tinymce"],
+                    ignore: ["bootstrap", "clipboard", "tinymce"],
                     include : {
                         js : {
-                            "tinymce/plugins" : "tinymce/",
-                            "tinymce/skins" : "tinymce/",
-                            "tinymce/themes" : "tinymce/",
-                            "tinymce/icons" : "tinymce/",
-                            "tinymce/tinymce.min.js*" : "tinymce/",
-                            "leaflet/dist/leaflet.js*" : "leaflet/",
-                            "leaflet.markercluster/dist/leaflet.markercluster.js*" : "leaflet/markercluster",
+                          // Use wildcard operator to copy .js AND .js.map files
+                          // Include LICENCES if possible 
+                          
+                          // BOOTSTRAP
+                          'bootstrap/dist/js/bootstrap.bundle.min.js*' : 'bs/',
+                          'bootstrap/LICENSE*' : 'bs/',
+                          // CLIPBOARD
+                          'clipboard/dist/clipboard.min.js' : 'clipboard/',
+                          'clipboard/LICENSE' : 'clipboard/',
+                          // HC-STICKY
+                          'hc-sticky/dist/hc-sticky.js' : 'hcsticky',
+                          'hc-sticky/LICENSE' : 'hcsticky',
+                          // LEAFLET
+                          'leaflet/dist/leaflet.js*' : 'leaflet/',
+                          'leaflet/LICENSE' : 'leaflet',
+                          'leaflet-extra-markers/dist/js/leaflet.extra-markers.*' : 'leaflet/extra-markers', 
+                          'leaflet-extra-markers/LICENSE' : 'leaflet/extra-markers', 
+                          'leaflet.markercluster/dist/leaflet.markercluster.js*' : 'leaflet/markercluster',
+                          'leaflet.markercluster/MIT-LICENCE.txt' : 'leaflet/markercluster',
+                          'leaflet-draw/dist/leaflet.draw.js' : 'leaflet/draw/',
+                          // MASONRY-LAYOUT, requires imagesloaded
+                          'masonry-layout/dist/masonry.pkgd.min.js' : 'masonry/',
+                          'imagesloaded/imagesloaded.pkgd.min.js' : 'masonry/',
+
+                          /* OPENSEADRAGON is not updated using NPM 
+                           * => viewer core uses a custom version of openseadragon
+                           * and is currently not working with any of the regular releases
+                           * 
+                          'openseadragon/build/openseadragon/openseadragon.js*': 'openseadragon/',
+                          'openseadragon/LICENSE.txt': 'openseadragon/',
+                          '@openseadragon-imaging/openseadragon-viewerinputhook/dist/openseadragon-viewerinputhook.js*' : 'openseadragon/',
+                          '@openseadragon-imaging/openseadragon-viewerinputhook/LICENSE': 'openseadragon/',
+                          */
+                          
+                          'overhang/dist/overhang.min.js' : 'overhang/',
+                          'overhang/LICENSE' : 'overhang/',
+
+                          'swiper/swiper-bundle.min.js*' : 'swiper',
+                          'swiper/LICENSE' : 'swiper',
+
+                          'tinymce/icons' : 'tinymce/',
+                          'tinymce/plugins' : 'tinymce/',
+                          'tinymce/skins' : 'tinymce/',
+                          'tinymce/themes' : 'tinymce/',
+                          'tinymce/jquery.tinymce.min.js*' : 'tinymce/',
+                          'tinymce/tinymce.min.js*' : 'tinymce/',
+                          'tinymce/license.txt' : 'tinymce/',
+
+                          'x3dom/x3dom.js' : 'x3dom/',
+
+                          /*
                             "swagger-ui-dist/swagger-ui-bundle.js*" : "swagger/",
-                            "hc-sticky/dist/hc-sticky.js*" : "hcsticky/",
                             "mirador/dist/mirador.min.js*" : "mirador/",
                             "swiper/swiper-bundle.min.js*" : "swiper/",
                             "sweetalert2/dist/sweetalert2.min.js*" : "sweetalert/",
                             "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.min.js*" : "mapbox/geocoder/",
                             "mapbox-gl/dist/mapbox-gl.js*" : "mapbox/",
                             "leaflet-draw/dist/leaflet.draw.js*" : "leaflet/draw"
+                            */
                         },
                         css : {
+                          // Currently Bootstrap css cannot be managed using NPM
+                          // => Viewer core uses a custom made version of bootstrap's v4 css
+                          // 'bootstrap/bootstrap.min.css*' : 'bs/',
+                          // 'bootstrap/LICENSE',
+
+                          'leaflet/dist/leaflet.css' : 'leaflet/',
+                          'leaflet/dist/images/*' : 'leaflet/images',
+                          'leaflet-draw/dist/leaflet.draw.css' : 'leaflet/draw/',
+                          'leaflet-draw/dist/images/*' : 'leaflet/draw/images/',
+                          'leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css' : 'leaflet/extra-markers', 
+                          'leaflet.markercluster/dist/MarkerCluster.css' : 'leaflet/markercluster',
+
+                          'swiper/swiper-bundle.min.css' : 'swiper',
+                          
+
+
+
+                          /*
                             "leaflet/dist/leaflet.css*" : "leaflet/",
                             "leaflet/dist/images" : "leaflet",
                             "leaflet.markercluster/dist/MarkerCluster.css*" : "leaflet/markercluster",
@@ -182,6 +245,7 @@ module.exports = function (grunt) {
                             "mapbox-gl/dist/mapbox-gl.css*" : "mapbox/",
                             "leaflet-draw/dist/leaflet.draw.css*" : "leaflet/draw",
                             "leaflet-draw/dist/images" : "leaflet/draw",
+                            */
                         }
                     }
                 },
@@ -258,7 +322,8 @@ module.exports = function (grunt) {
 		},
 	});
 
-	// ---------- LOAD TASKS ----------
+	// ---------- LOAD TASKS ---------
+  grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-kss');
 	grunt.loadNpmTasks('grunt-contrib-concat');
@@ -300,5 +365,13 @@ module.exports = function (grunt) {
 	// $ grunt
 	grunt.registerTask('default', ['build']);
 	
-    grunt.registerTask('updatelibs', ["copydeps"]);
+  grunt.registerTask('updatelibs', ["copydeps"]);
+
+  grunt.registerTask('testPaths', () => {
+    depsPaths.forEach( (path) => {
+      grunt.file.copy(path.src, path.dest);
+    })
+    console.log('testPaths did run')
+
+  })
 };
