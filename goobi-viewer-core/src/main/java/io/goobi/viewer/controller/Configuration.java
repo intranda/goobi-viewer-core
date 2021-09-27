@@ -147,9 +147,9 @@ public final class Configuration extends AbstractConfiguration {
                                 .setFileName(fileLocal.getAbsolutePath())
                                 .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
                                 .setThrowExceptionOnMissing(false));
-        if (builder.getFileHandler().getFile().exists()) {
+        if (builderLocal.getFileHandler().getFile().exists()) {
             try {
-                builder.getConfiguration();
+                builderLocal.getConfiguration();
                 logger.info("Local configuration file '{}' loaded.", fileLocal.getAbsolutePath());
             } catch (ConfigurationException e) {
                 logger.error(e.getMessage(), e);

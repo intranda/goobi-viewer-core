@@ -261,12 +261,12 @@ public class BrowseElement implements Serializable {
             int length = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueLength();
             int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
             populateMetadataList(structElement, topStructElement, anchorStructElement, searchTerms, length, number, locale);
+            
             // Add event metadata for LIDO records
             if (topStructElement != null && topStructElement.isLidoRecord()) {
-                // Retrieve events of the top element
                 this.events = topStructElement.generateEventElements(locale, true);
                 if (!this.events.isEmpty()) {
-                    Collections.sort(events);
+                    Collections.sort(this.events);
                 }
             }
         }
