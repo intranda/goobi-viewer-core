@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -123,9 +125,12 @@ public class CollectionView {
                         dc.setShowSubElements(true);
                     }
                     
+                    String applicationUrl = DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> urls.getApplicationUrl()).orElse(null);
+
                     // Set single record PI if collection has one one record
-                    if (collectionSize == 1) {
-                        String recordUrl = PrettyUrlTools.getRelativePageUrl("browseFirstRecord", field, dcName);
+                    if (collectionSize == 1 && StringUtils.isNotBlank(applicationUrl)) {
+                        String recordUrl = UriBuilder.fromPath("/browse/{field}/{collection}/record/").build(field, dcName).toString();
+                        //String recordUrl = PrettyUrlTools.getRelativePageUrl("browseFirstRecord", field, dcName);
                         dc.setSingleRecordUrl(recordUrl);
                     }
 
