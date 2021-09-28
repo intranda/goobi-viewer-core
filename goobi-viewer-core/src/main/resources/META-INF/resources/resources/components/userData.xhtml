@@ -185,7 +185,9 @@
 						action="#{navigationHelper.returnTo(cc.attrs.parentPage)}" immediate="true" />
 					<h:commandLink id="saveNewUserCreationButton"
 						styleClass="btn btn--success" value="#{msg.save}"
-						action="#{adminBean.saveUserAction(cc.attrs.user, cc.attrs.parentPage)}" />
+						action="#{adminBean.saveUserAction(cc.attrs.user, cc.attrs.parentPage)}">
+						<f:ajax execute="@all"/>
+					</h:commandLink>
 				</div>
 			</h:form>
 
