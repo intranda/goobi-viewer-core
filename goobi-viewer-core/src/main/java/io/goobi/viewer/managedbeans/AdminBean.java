@@ -276,28 +276,19 @@ public class AdminBean implements Serializable {
             Messages.info("errSave");
             return false;
         }
-        
-        // Retrieving a new user from the DB overrides the current object and resets the field, so save a copy
-        User copy = user.clone();
-        // Copy of the copy contains the previous nickname, in case the chosen one is already taken
-        copy.setCopy(user.getCopy().clone());
+
         // Do not allow the same nickname being used for multiple users
         if (user.getNickName() != null) {
             user.setNickName(user.getNickName().trim());
         }
         if (UserTools.isEmailInUse(user.getEmail(), user.getId())) {
-            Messages.error(ViewerResourceBundle.getTranslation("user_emailTaken", null).replace("{0}", user.getEmail().trim()));
-            user = copy;
-            user.setEmail(copy.getCopy().getEmail());
+            Messages.error("email", ViewerResourceBundle.getTranslation("user_emailTaken", null).replace("{0}", user.getEmail().trim()));
             return false;
         }
         if (UserTools.isNicknameInUse(user.getNickName(), user.getId())) {
-            Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", user.getNickName().trim()));
-            user = copy;
-            user.setNickName(copy.getCopy().getNickName());
+            Messages.error("displayName", ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", user.getNickName().trim()));
             return false;
         }
-        user = copy;
         if (user.getId() != null) {
             // Existing user
             if (StringUtils.isNotEmpty(passwordOne) || StringUtils.isNotEmpty(passwordTwo)) {

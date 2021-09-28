@@ -32,7 +32,7 @@
 
             <!-- USER LOGGED IN -->
             <ui:fragment rendered="#{userBean.loggedIn}">
-                <viewerComponent:userData user="#{userBean.user}" />
+                <viewerComponent:userData user="#{userBean.user.copy}" />
             </ui:fragment>
         </div>
     </ui:define>
