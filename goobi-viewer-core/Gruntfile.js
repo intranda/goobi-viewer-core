@@ -1,7 +1,6 @@
 const fs = require("fs")
 const XML = require('pixl-xml');
 const process = require('process');
-const depsPaths = require('./Grunt_depsPaths');
 
 function getTomcatDir() {
 	let homedir = require("os").homedir();
@@ -168,6 +167,13 @@ module.exports = function (grunt) {
                           // HC-STICKY
                           'hc-sticky/dist/hc-sticky.js' : 'hcsticky',
                           'hc-sticky/LICENSE' : 'hcsticky',
+                          // JQPLOT: Copies minified js + css files
+                          // ! Plugins are not available via NPM, they are copied manually !
+                          // ! Get new Plugin-Versions from here: http://www.jqplot.com/download/ !
+                          'jqplot/jquery.jqplot.min*': 'jqplot/',
+
+                          // jqueryUI wird derzeit nicht per NPM aktualisert
+                          
                           // LEAFLET
                           'leaflet/dist/leaflet.js*' : 'leaflet/',
                           'leaflet/LICENSE' : 'leaflet',
@@ -176,9 +182,19 @@ module.exports = function (grunt) {
                           'leaflet.markercluster/dist/leaflet.markercluster.js*' : 'leaflet/markercluster',
                           'leaflet.markercluster/MIT-LICENCE.txt' : 'leaflet/markercluster',
                           'leaflet-draw/dist/leaflet.draw.js' : 'leaflet/draw/',
+
+                          // MAPBOX
+                          "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.min.js*" : "mapbox/geocoder/",
+                          "mapbox-gl/dist/mapbox-gl.js*" : "mapbox/",
+                         
                           // MASONRY-LAYOUT, requires imagesloaded
                           'masonry-layout/dist/masonry.pkgd.min.js' : 'masonry/',
                           'imagesloaded/imagesloaded.pkgd.min.js' : 'masonry/',
+
+                          // MIRADOR
+                          'mirador/dist/mirador.min.js*' : 'mirador/',
+
+
 
                           /* OPENSEADRAGON is not updated using NPM 
                            * => viewer core uses a custom version of openseadragon
@@ -211,8 +227,6 @@ module.exports = function (grunt) {
                             "mirador/dist/mirador.min.js*" : "mirador/",
                             "swiper/swiper-bundle.min.js*" : "swiper/",
                             "sweetalert2/dist/sweetalert2.min.js*" : "sweetalert/",
-                            "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.min.js*" : "mapbox/geocoder/",
-                            "mapbox-gl/dist/mapbox-gl.js*" : "mapbox/",
                             "leaflet-draw/dist/leaflet.draw.js*" : "leaflet/draw"
                             */
                         },
