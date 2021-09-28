@@ -225,7 +225,7 @@
 					<div class="text-right">
 						<h:commandLink id="deleteUserButton" styleClass="btn btn--danger"
 							value="#{msg.admin__user_delete_permanently}"
-							action="#{adminBean.deleteUserAction(user, adminBean.deleteUserContributions)}" />
+							action="#{adminBean.deleteUserAction(cc.attrs.user, adminBean.deleteUserContributions)}" />
 					</div>
 				</div>
 			</h:form>
