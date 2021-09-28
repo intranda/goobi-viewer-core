@@ -17,7 +17,6 @@ package io.goobi.viewer.api.rest.v1.authentication;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_USER_AVATAR_IMAGE;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -54,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -90,7 +90,7 @@ public class UserAvatarResource extends ImageResource {
     
     public UserAvatarResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Parameter(description = "User id") @PathParam("userId") Long userId) throws IOException {
+            @Parameter(description = "User id") @PathParam("userId") Long userId) throws IOException, ContentLibException {
         super(context, request, response, "", getMediaFileUrl(userId).toString());
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         request.setAttribute("filename", this.imageURI.toString());
@@ -114,25 +114,34 @@ public class UserAvatarResource extends ImageResource {
     }
 
     /**
+     * @throws IOException 
      * @param filename
      * @return
      * @throws IOException 
      * @throws  
      */
-    public static URI getMediaFileUrl(Long userId) throws IOException {
+    public static URI getMediaFileUrl(Long userId) throws ContentLibException, IOException {
+        return getUserAvatarFile(userId).map(PathConverter::toURI).orElseThrow(() -> new ContentNotFoundException("No avatar file found for user " + userId));
+    }
+
+    public static Path getUserAvatarFolder() {
         Path folder = 
                 Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getUserAvatarFolder());
-        return getUserAvatarFile(folder, userId).map(PathConverter::toURI).orElseThrow(() -> new FileNotFoundException("No avatar file found for user " + userId));
+        return folder;
     }
-    
+       
     /**
      * @param folder
      * @param userId
      * @return
      * @throws IOException 
      */
-    public static Optional<Path> getUserAvatarFile(Path folder, Long userId) throws IOException {
+    public static Optional<Path> getUserAvatarFile(Long userId) throws IOException {
+        Path folder = getUserAvatarFolder();
+        if(!Files.isDirectory(folder)) {
+            Files.createDirectories(folder);
+        }
         String baseFilename = FILENAME_TEMPLATE.replace("{id}", userId.toString());
         try(Stream<Path> files = Files.list(folder)) {
             return files.filter(file -> FilenameUtils.getBaseName(file.getFileName().toString()).equals(baseFilename)).findAny();
@@ -140,10 +149,7 @@ public class UserAvatarResource extends ImageResource {
     }
     
     public static String getAvatarFileSuffix(Long userId) throws IOException {
-        Path folder = 
-                Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                DataManager.getInstance().getConfiguration().getUserAvatarFolder());
-        return getUserAvatarFile(folder, userId).map(Path::getFileName).map(Path::toString).map(FilenameUtils::getExtension).orElse("jpg");
+        return getUserAvatarFile(userId).map(Path::getFileName).map(Path::toString).map(FilenameUtils::getExtension).orElse("jpg");
     }
  
     @Override
@@ -175,17 +181,12 @@ public class UserAvatarResource extends ImageResource {
         if (!user.isPresent()) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("No user session found").build();
         } else {
-
-            ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(uploadFilename);
-            String filename = FILENAME_TEMPLATE.replace("{id}", user.get().getId().toString()) + "." + fileFormat.getFileExtension();
-            
-            Path mediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                    DataManager.getInstance().getConfiguration().getUserAvatarFolder());
-            Path mediaFile = mediaFolder.resolve(filename);
+            Path mediaFolder = getUserAvatarFolder();
+            Path mediaFile = getAvatarFilePath(uploadFilename, user.get().getId());
             try {
 
                 if (!Files.exists(mediaFolder)) {
-                    Files.createDirectory(mediaFolder);
+                    Files.createDirectories(mediaFolder);
                 }
 
                 Files.copy(uploadedInputStream, mediaFile, StandardCopyOption.REPLACE_EXISTING);
@@ -213,6 +214,14 @@ public class UserAvatarResource extends ImageResource {
             }
         }
     }
+
+    public static Path getAvatarFilePath(String uploadFilename, Long userId) {
+        ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(uploadFilename);
+        String filename = FILENAME_TEMPLATE.replace("{id}", userId.toString()) + "." + fileFormat.getFileExtension();
+        
+        Path mediaFile = getUserAvatarFolder().resolve(filename);
+        return mediaFile;
+    }
     
     /**
      * Determines the current User using the UserBean instance stored in the session store. If no session is available, no UserBean could be found or
@@ -236,7 +245,7 @@ public class UserAvatarResource extends ImageResource {
         return Optional.of(user);
     }
     
-    private void removeFromImageCache(Path file) {
+    public static void removeFromImageCache(Path file) {
         String identifier = file.getParent().getFileName().toString() + "_" + file.getFileName().toString().replace(".", "-");
         CacheUtils.deleteFromCache(identifier, true, true);
     }

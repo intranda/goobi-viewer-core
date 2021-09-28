@@ -15,8 +15,14 @@
  */
 package io.goobi.viewer.model.security.user;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,6 +52,7 @@ import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
+import javax.servlet.http.Part;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.Index;
@@ -57,6 +64,7 @@ import com.timgroup.jgravatar.Gravatar;
 import com.timgroup.jgravatar.GravatarDefaultImage;
 import com.timgroup.jgravatar.GravatarRating;
 
+import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -65,7 +73,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
-import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCategory;
@@ -290,7 +297,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         if (StringUtils.isNotBlank(nickName)) {
             return nickName;
         }
-     // Accessing beans from a different thread will throw an unhandled exception that will result in a white screen when logging in
+        // Accessing beans from a different thread will throw an unhandled exception that will result in a white screen when logging in
         try {
             if (BeanUtils.getUserBean() != null && BeanUtils.getUserBean().isAdmin()) {
                 return email;
@@ -679,7 +686,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public String getAvatarUrl() {
         return getAvatarUrl(AVATAR_DEFAULT_SIZE, null);
-        }
+    }
 
     /**
      * 
@@ -698,7 +705,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public String getAvatarUrl(int size) {
         return getAvatarUrl(size, null);
-        }
+    }
 
     /**
      * <p>
@@ -1708,19 +1715,57 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     public boolean isAgreedToTermsOfUse() {
         return agreedToTermsOfUse;
     }
-    
+
     /**
      * @return the avatarType
      */
     public UserAvatarOption getAvatarType() {
         return Optional.ofNullable(avatarType).orElse(UserAvatarOption.DEFAULT);
     }
-    
+
     /**
      * @param avatarType the avatarType to set
      */
     public void setAvatarType(UserAvatarOption avatarType) {
         this.avatarType = avatarType;
+    }
+
+    public boolean hasLocalAvatarImage() {
+        try {
+            return UserAvatarResource.getUserAvatarFile(getId()).isPresent();
+        } catch (IOException e) {
+            logger.error("Error reading local avatar file: {}", e.toString());
+            return false;
+        }
+    }
+
+    public void setAvatarFile(Part uploadedFile) throws IOException {
+        String fileName = Paths.get(uploadedFile.getSubmittedFileName()).getFileName().toString(); // MSIE fix.
+        Path destFile = UserAvatarResource.getAvatarFilePath(fileName, getId());
+        deleteAvatarFile();
+        UserAvatarResource.removeFromImageCache(destFile);
+        try (InputStream initialStream = uploadedFile.getInputStream()) {
+            if(!Files.isDirectory(destFile.getParent())) {
+                Files.createDirectories(destFile.getParent());
+            }
+            java.nio.file.Files.copy(
+                    uploadedFile.getInputStream(),
+                    destFile,
+                    StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            logger.error("Error uploaded avatar file: {}", e.toString());
+        }
+    }
+    
+    public void deleteAvatarFile() throws IOException {
+        UserAvatarResource.getUserAvatarFile(getId()).ifPresent(file -> {
+            try {
+                Files.delete(file);
+            } catch (IOException e) {
+                logger.error("Error deleting avatar file: {}", e.toString());
+
+            }
+        });
     }
 
 }

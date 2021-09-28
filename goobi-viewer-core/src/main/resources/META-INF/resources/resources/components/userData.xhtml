@@ -2,297 +2,349 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
 	<composite:interface>
-			<composite:attribute name="user" required="true" type="io.goobi.viewer.model.security.user.User" />
+		<composite:attribute name="user" required="true"
+			type="io.goobi.viewer.model.security.user.User" />
+		<composite:attribute name="parentPage" required="false" default=""/>
 	</composite:interface>
 
-    <composite:implementation>
-        <div class="user-settings">	        
-                        <h:form id="editUser" styleClass="form-horizontal form-group" role="form" prependId="false">
-                            <h3>#{msg.general}</h3>
-                            <div class="user-settings__form-wrapper">
+	<composite:implementation>
+		<div class="user-settings">
+			<h:form id="editUser" styleClass="form-horizontal form-group"
+				role="form" prependId="false">
+				<h3>#{msg.general}</h3>
+				<div class="user-settings__form-wrapper">
 
-                                <!-- prevent autocomplete in IE, Chrome and Firefox -->
-                                <input type="text" class="hidden" />
-                                <input type="password" class="hidden" />
+					<!-- prevent autocomplete in IE, Chrome and Firefox -->
+					<input type="text" class="hidden" /> <input type="password"
+						class="hidden" />
 
-                                <fieldset>
-                                    <!-- USER DISPLAY NAME -->
-                                    <div class="form-group form-row">
-                                        <div class="col-2 control-label admin__form-label">
-                                            <label for="displayName">#{msg.admin__user_display_name}:</label>
-                                        </div>
-                                        <div class="col-9 admin__form-input">
-                                            <h:inputText value="#{cc.attrs.user.nickName}" id="displayName" label="displayName" styleClass="form-control"
-                                                required="false" requiredMessage="#{msg.loginEnterDisplayName}" />
-                                            <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>
-                                        </div>
-                                        <div class="col-1 admin__form-help-icon">
-                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                            </button>
-                                        </div>
-                                    </div>
+					<fieldset>
+						<!-- USER DISPLAY NAME -->
+						<div class="form-group form-row">
+							<div class="col-2 control-label admin__form-label">
+								<label for="displayName">#{msg.admin__user_display_name}:</label>
+							</div>
+							<div class="col-9 admin__form-input">
+								<h:inputText value="#{cc.attrs.user.nickName}" id="displayName"
+									label="displayName" styleClass="form-control" required="false"
+									requiredMessage="#{msg.loginEnterDisplayName}" />
+								<span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>
+							</div>
+							<div class="col-1 admin__form-help-icon">
+								<button type="button" class="btn btn--clean"
+									data-toggle="helptext" aria-label="inline help icon">
+									<i class="fa fa-question-circle" aria-hidden="true"></i>
+								</button>
+							</div>
+						</div>
 
-                                    <!-- USER EMAIL ADDRESS -->
-                                    <h:panelGroup id="emailGroup" layout="block" styleClass="form-group form-row">
-                                         <div class="col-2 control-label admin__form-label">
-                                             <label for="email">#{msg.email}: </label><span class="admin__label-required-field">(#{msg.form__required_field})</span>
-                                         </div>
-                                         <div class="col-9 admin__form-input cms-module__option-control">
-                                             <div class="cms-module__option-message">
-                                                 <h:messages for="email"
-                                                     infoClass="cms-module__option-message-status success"
-                                                     warnClass="cms-module__option-message-status warning"
-                                                     errorClass="cms-module__option-message-status danger" />
-                                                 <div class="cms-module__option-message-mark">
-                                                     <i class="fa fa-check" aria-hidden="true"></i>
-                                                     <i class="fa fa-exclamation" aria-hidden="true"></i>
-                                                 </div>
-                                             </div>
-                                             <h:inputText disabled="#{cc.attrs.user.anonymous}" value="#{cc.attrs.user.email}"
-                                                 id="email" label="email" immediate="true" required="true"
-                                                 styleClass="form-control">
-                                                 <f:validator validatorId="emailValidator" for="email" />
-                                                 <f:ajax render="emailGroup" />
-                                             </h:inputText>
-                                             <span class="admin__form-help-text">#{msg.admin__user_email__help}</span>
-                                         </div>
-                                         <div class="col-1 admin__form-help-icon">
-                                             <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                             </button>
-                                         </div>
-                                    </h:panelGroup>
+						<!-- USER EMAIL ADDRESS -->
+						<h:panelGroup id="emailGroup" layout="block"
+							styleClass="form-group form-row">
+							<div class="col-2 control-label admin__form-label">
+								<label for="email">#{msg.email}: </label><span
+									class="admin__label-required-field">(#{msg.form__required_field})</span>
+							</div>
+							<div class="col-9 admin__form-input cms-module__option-control">
+								<div class="cms-module__option-message">
+									<h:messages for="email"
+										infoClass="cms-module__option-message-status success"
+										warnClass="cms-module__option-message-status warning"
+										errorClass="cms-module__option-message-status danger" />
+									<div class="cms-module__option-message-mark">
+										<i class="fa fa-check" aria-hidden="true"></i> <i
+											class="fa fa-exclamation" aria-hidden="true"></i>
+									</div>
+								</div>
+								<h:inputText disabled="#{cc.attrs.user.anonymous}"
+									value="#{cc.attrs.user.email}" id="email" label="email"
+									immediate="true" required="true" styleClass="form-control">
+									<f:validator validatorId="emailValidator" for="email" />
+									<f:ajax render="emailGroup" />
+								</h:inputText>
+								<span class="admin__form-help-text">#{msg.admin__user_email__help}</span>
+							</div>
+							<div class="col-1 admin__form-help-icon">
+								<button type="button" class="btn btn--clean"
+									data-toggle="helptext" aria-label="inline help icon">
+									<i class="fa fa-question-circle" aria-hidden="true"></i>
+								</button>
+							</div>
+						</h:panelGroup>
 
-                                    <!-- USER FIRST NAME -->
-                                    <div class="form-group form-row">
-                                        <div class="col-2 control-label admin__form-label">
-                                            <label for="firstName">#{msg.nameFirst}:</label>
-                                        </div>
-                                        <div class="col-9 admin__form-input">
-                                            <h:inputText value="#{cc.attrs.user.firstName}" id="firstName" label="firstName" styleClass="form-control" />
-                                            <span class="admin__form-help-text">#{msg.admin__user_first_name__help}</span>
-                                        </div>
-                                        <div class="col-1 admin__form-help-icon">
-                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                            </button>
-                                        </div>
-                                    </div>
+						<!-- USER FIRST NAME -->
+						<div class="form-group form-row">
+							<div class="col-2 control-label admin__form-label">
+								<label for="firstName">#{msg.nameFirst}:</label>
+							</div>
+							<div class="col-9 admin__form-input">
+								<h:inputText value="#{cc.attrs.user.firstName}" id="firstName"
+									label="firstName" styleClass="form-control" />
+								<span class="admin__form-help-text">#{msg.admin__user_first_name__help}</span>
+							</div>
+							<div class="col-1 admin__form-help-icon">
+								<button type="button" class="btn btn--clean"
+									data-toggle="helptext" aria-label="inline help icon">
+									<i class="fa fa-question-circle" aria-hidden="true"></i>
+								</button>
+							</div>
+						</div>
 
-                                    <!-- USER LAST NAME -->
-                                    <div class="form-group form-row">
-                                        <div class="col-2 control-label admin__form-label">
-                                            <label for="lastName">#{msg.nameLast}:</label>
-                                        </div>
-                                        <div class="col-9 admin__form-input">
-                                                <h:inputText value="#{cc.attrs.user.lastName}" id="lastName" label="lastName" styleClass="form-control" />
-                                                <span class="admin__form-help-text">#{msg.admin__user_last_name__help}</span>
-                                        </div>
-                                        <div class="col-1 admin__form-help-icon">
-                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                            </button>
-                                        </div>
-                                    </div>
+						<!-- USER LAST NAME -->
+						<div class="form-group form-row">
+							<div class="col-2 control-label admin__form-label">
+								<label for="lastName">#{msg.nameLast}:</label>
+							</div>
+							<div class="col-9 admin__form-input">
+								<h:inputText value="#{cc.attrs.user.lastName}" id="lastName"
+									label="lastName" styleClass="form-control" />
+								<span class="admin__form-help-text">#{msg.admin__user_last_name__help}</span>
+							</div>
+							<div class="col-1 admin__form-help-icon">
+								<button type="button" class="btn btn--clean"
+									data-toggle="helptext" aria-label="inline help icon">
+									<i class="fa fa-question-circle" aria-hidden="true"></i>
+								</button>
+							</div>
+						</div>
 
-                                </fieldset>
-                            </div>
+					</fieldset>
+				</div>
 
-                            <!-- PASSWORD NEW USER -->
-                            <ui:fragment rendered="#{cc.attrs.user.id == null}">
-                                <h3>#{msg.password}</h3>
-                                <div class="user-settings__form-wrapper">
-                                    <p>#{msg.admin__user_create_password_info_text}</p>
-                                    <div class="form-horizontal" role="form">
-                                        <div class="form-group form-row">
-                                            <h:outputLabel for="adminPasswordOneNew" styleClass="col-sm-2 control-label" value="#{msg.newUserPasswordOne}:" />
-                                            <div class="col-sm-9">
-                                                <h:inputSecret id="adminPasswordOneNew" styleClass="form-control" value="#{adminBean.passwordOne}"
-                                                    required="true" requiredMessage="#{msg.newUserPasswordOneRequired}" />
-                                            </div>
-                                        </div>
-                                        <div class="form-group form-row">
-                                            <h:outputLabel for="adminPasswordTwoNew" styleClass="col-sm-2 control-label" value="#{msg.newUserPasswordTwo}:" />
-                                            <div class="col-sm-9">
-                                                <h:inputSecret id="adminPasswordTwoNew" styleClass="form-control" value="#{adminBean.passwordTwo}"
-                                                    required="true" requiredMessage="#{msg.newUserPasswordOneRequired}" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </ui:fragment>
+				<!-- PASSWORD NEW USER -->
+				<ui:fragment rendered="#{cc.attrs.user.id == null}">
+					<h3>#{msg.password}</h3>
+					<div class="user-settings__form-wrapper">
+						<p>#{msg.admin__user_create_password_info_text}</p>
+						<div class="form-horizontal" role="form">
+							<div class="form-group form-row">
+								<h:outputLabel for="adminPasswordOneNew"
+									styleClass="col-sm-2 control-label"
+									value="#{msg.newUserPasswordOne}:" />
+								<div class="col-sm-9">
+									<h:inputSecret id="adminPasswordOneNew"
+										styleClass="form-control" value="#{adminBean.passwordOne}"
+										required="true"
+										requiredMessage="#{msg.newUserPasswordOneRequired}" />
+								</div>
+							</div>
+							<div class="form-group form-row">
+								<h:outputLabel for="adminPasswordTwoNew"
+									styleClass="col-sm-2 control-label"
+									value="#{msg.newUserPasswordTwo}:" />
+								<div class="col-sm-9">
+									<h:inputSecret id="adminPasswordTwoNew"
+										styleClass="form-control" value="#{adminBean.passwordTwo}"
+										required="true"
+										requiredMessage="#{msg.newUserPasswordOneRequired}" />
+								</div>
+							</div>
+						</div>
+					</div>
+				</ui:fragment>
 
-                            <!-- PASSWORD CHANGE FOR EXISTING USER -->
-                            <ui:fragment rendered="#{cc.attrs.user.id != null and !cc.attrs.user.anonymous}">
-                                <h3>#{msg.changePassword}</h3>
-                                <div class="user-settings__form-wrapper">
-                                    <p>#{msg.admin__user_password_info_text}</p>
-                                    <div class="form-horizontal" role="form">
-                                        <div class="form-group form-row">
-                                            <h:outputLabel for="adminPasswordOne" styleClass="col-2 control-label" value="#{msg.newUserPasswordOne}:" />
-                                            <div class="col-9">
-                                                <h:inputSecret id="adminPasswordOne" styleClass="form-control" value="#{adminBean.passwordOne}" />
-                                            </div>
-                                        </div>
-                                        <div class="form-group form-row">
-                                            <h:outputLabel for="adminPasswordTwo" styleClass="col-2 control-label" value="#{msg.newUserPasswordTwo}:" />
-                                            <div class="col-9">
-                                                <h:inputSecret id="adminPasswordTwo" styleClass="form-control" value="#{adminBean.passwordTwo}" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </ui:fragment>
+				<!-- PASSWORD CHANGE FOR EXISTING USER -->
+				<ui:fragment
+					rendered="#{cc.attrs.user.id != null and !cc.attrs.user.anonymous}">
+					<h3>#{msg.changePassword}</h3>
+					<div class="user-settings__form-wrapper">
+						<p>#{msg.admin__user_password_info_text}</p>
+						<div class="form-horizontal" role="form">
+							<div class="form-group form-row">
+								<h:outputLabel for="adminPasswordOne"
+									styleClass="col-2 control-label"
+									value="#{msg.newUserPasswordOne}:" />
+								<div class="col-9">
+									<h:inputSecret id="adminPasswordOne" styleClass="form-control"
+										value="#{adminBean.passwordOne}" />
+								</div>
+							</div>
+							<div class="form-group form-row">
+								<h:outputLabel for="adminPasswordTwo"
+									styleClass="col-2 control-label"
+									value="#{msg.newUserPasswordTwo}:" />
+								<div class="col-9">
+									<h:inputSecret id="adminPasswordTwo" styleClass="form-control"
+										value="#{adminBean.passwordTwo}" />
+								</div>
+							</div>
+						</div>
+					</div>
+				</ui:fragment>
 
 
-                                
-                                <!-- SAVE / CANCEL BUTTONS -->
-                                <div class="row no-gutters justify-content-end admin__final-actions">
-                                    <h:commandLink id="cancelNewUserCreationnButton" styleClass="btn admin__cancel-button" value="#{msg.cancel}" action="pretty:index" immediate="true" />
-                                    <h:commandLink id="saveNewUserCreationButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction(cc.attrs.user)}" />
-                                </div>
-                        </h:form>
-                        
-                        
-			                            <h:form id="deleteUser" styleClass="form-horizontal" role="form" prependId="false">
-                                <h3>#{msg.admin__user_delete}</h3>
-                                <div class="admin__default-block -danger">
-                                    <p>#{msg.admin__user_delete_description}:</p>
-                                    <div class="form-group">
-                                        <div class="form-check connected-top">
-                                        	<input type="radio" id="keepDataOption" name="deleteData" value="false" checked="#{adminBean.deleteUserContributions ? null : 'true'}" />
-                                            <label for="keepDataOption">#{msg.admin__user_delete_type_keep_data}</label>
-                                        </div>
-                                        <div class="form-check connected-bottom">
-                                            <input type="radio" id="deleteDataOption" name="deleteData" value="true" checked="#{adminBean.deleteUserContributions ? 'true' : null}"/>
-                                            <label for="deleteDataOption">#{msg.admin__user_delete_type_everything}</label>
-                                        </div>
-                                    </div>
-                                    <div class="form-group form-row">
-                                        <h:outputLabel for="emailConfirmation" styleClass="col-4 control-label" value="#{msg.admin__user_delete_email_confirmation}:" />
-                                        <div class="col-8">
-                                            <h:inputText value="#{adminBean.emailConfirmation}" id="emailConfirmation" label="emailConfirmation" 
-                                            styleClass="form-control" required="true" requiredMessage="#{msg.admin__error_email_mismatch}" />
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <h:commandLink id="deleteUserButton" styleClass="btn btn--danger" value="#{msg.admin__user_delete_permanently}"
-                                            action="#{adminBean.deleteUserAction(user, adminBean.deleteUserContributions)}" />
-                                    </div>
-                                </div>
-                            </h:form>
-			
-			
-			
-			
-			
-        </div>
+
+				<!-- SAVE / CANCEL BUTTONS -->
+				<div class="row no-gutters justify-content-end admin__final-actions">
+					<h:commandLink id="cancelNewUserCreationnButton"
+						styleClass="btn admin__cancel-button" value="#{msg.cancel}"
+						action="#{navigationHelper.returnTo(cc.attrs.parentPage)}" immediate="true" />
+					<h:commandLink id="saveNewUserCreationButton"
+						styleClass="btn btn--success" value="#{msg.save}"
+						action="#{adminBean.saveUserAction(cc.attrs.user, cc.attrs.parentPage)}" />
+				</div>
+			</h:form>
+
+
+			<h:form id="deleteUser" styleClass="form-horizontal" role="form"
+				prependId="false">
+				<h3>#{msg.admin__user_delete}</h3>
+				<div class="admin__default-block -danger">
+					<p>#{msg.admin__user_delete_description}:</p>
+					<div class="form-group">
+						<div class="form-check connected-top">
+							<input type="radio" id="keepDataOption" name="deleteData"
+								value="false"
+								checked="#{adminBean.deleteUserContributions ? null : 'true'}" />
+							<label for="keepDataOption">#{msg.admin__user_delete_type_keep_data}</label>
+						</div>
+						<div class="form-check connected-bottom">
+							<input type="radio" id="deleteDataOption" name="deleteData"
+								value="true"
+								checked="#{adminBean.deleteUserContributions ? 'true' : null}" />
+							<label for="deleteDataOption">#{msg.admin__user_delete_type_everything}</label>
+						</div>
+					</div>
+					<div class="form-group form-row">
+						<h:outputLabel for="emailConfirmation"
+							styleClass="col-4 control-label"
+							value="#{msg.admin__user_delete_email_confirmation}:" />
+						<div class="col-8">
+							<h:inputText value="#{adminBean.emailConfirmation}"
+								id="emailConfirmation" label="emailConfirmation"
+								styleClass="form-control" required="true"
+								requiredMessage="#{msg.admin__error_email_mismatch}" />
+						</div>
+					</div>
+					<div class="text-right">
+						<h:commandLink id="deleteUserButton" styleClass="btn btn--danger"
+							value="#{msg.admin__user_delete_permanently}"
+							action="#{adminBean.deleteUserAction(user, adminBean.deleteUserContributions)}" />
+					</div>
+				</div>
+			</h:form>
+
+
+
+
+
+		</div>
 
 		<!-- EDIT USERDATA MODAL -->
-		<div class="modal fade profile-picture-modal" id="changeProfilePicture" tabindex="-1" role="dialog" aria-labelledby="editUserdataModalLabel">
+		<div class="modal fade profile-picture-modal"
+			id="changeProfilePicture" tabindex="-1" role="dialog"
+			aria-labelledby="editUserdataModalLabel">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
-					<h:form>
 
-						<div class="modal-header">
-							<h3 class="modal-title" id="editUserdataModalLabel">#{msg.user_change_profile_picture}</h3>
-							<button type="button" class="fancy-close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true"> 
-									<h:outputText value="&amp;times;" escape="false" />
-								</span>
-							</button>							
-						</div>
-						<div class="modal-body">
-						
+					<div class="modal-header">
+						<h3 class="modal-title" id="editUserdataModalLabel">#{msg.user_change_profile_picture}</h3>
+						<button type="button" class="fancy-close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true"> <h:outputText
+									value="&amp;times;" escape="false" />
+							</span>
+						</button>
+					</div>
+					<div class="modal-body">
+
 						<p>#{msg.user_change_profile_picture_text}</p>
-	
-	
-                            <h:panelGroup layout="block" id="avatarModeGroup" styleClass="admin__cms-edit-collection-image-actions-wrapper">
-                            
-                            	<div class="form-group admin__cms-edit-collection-connected-radio-buttons">
-                            		<div class="connected-top">
-                            			<!-- STANDARD PLACEHOLDER PERSON IMAGE -->
-		                            	<h:selectOneRadio group="imageModeRadio" value="#{cc.attrs.user.avatarType}" immediate="true">
-		                                	<f:selectItem itemValue="DEFAULT" itemLabel="#{msg.user_change_profile_picture_label_standard}" />
-		                                	<f:ajax render="avatarModeGroup" />
-		                            	</h:selectOneRadio>
-	                            	</div>
-	                            	<div class="connected-middle">
-	                            		<!-- TO DO: UPLOAD OWN IMAGE FILE -->
-		                            	<h:selectOneRadio group="imageModeRadio" value="#{cc.attrs.user.avatarType}" immediate="true">
-		                                	<f:selectItem itemValue="LOCAL" itemLabel="#{msg.user_change_profile_picture_upload_image}" />
-		                                	<f:ajax render="avatarModeGroup" />
-		                            	</h:selectOneRadio>
-	                            	</div>
-	                            	<div class="connected-bottom">
-	                            		<!-- CHOOSE GRAVATAR AS PROFILE PICTURE -->
-		                            	<h:selectOneRadio group="imageModeRadio" value="#{cc.attrs.user.avatarType}" immediate="true">
-		                                	<f:selectItem itemValue="GRAVATAR" itemLabel="#{msg.gravatar}" />
-		                                	<f:ajax render="avatarModeGroup" />
-		                            	</h:selectOneRadio>
-	                            	</div>
+
+
+						<h:panelGroup layout="block" id="avatarModeGroup"
+							styleClass="admin__cms-edit-collection-image-actions-wrapper">
+
+							<h:form id="modalForm">
+								<div
+									class="form-group admin__cms-edit-collection-connected-radio-buttons">
+									<div class="connected-top">
+										<!-- STANDARD PLACEHOLDER PERSON IMAGE -->
+										<h:selectOneRadio group="imageModeRadio"
+											value="#{cc.attrs.user.avatarType}" immediate="true">
+											<f:selectItem itemValue="DEFAULT"
+												itemLabel="#{msg.user_change_profile_picture_label_standard}" />
+											<f:ajax render="#{cc.clientId}:avatarModeGroup" />
+										</h:selectOneRadio>
+									</div>
+									<div class="connected-middle">
+										<!-- TO DO: UPLOAD OWN IMAGE FILE -->
+										<h:selectOneRadio group="imageModeRadio"
+											value="#{cc.attrs.user.avatarType}" immediate="true">
+											<f:selectItem itemValue="LOCAL"
+												itemLabel="#{msg.user_change_profile_picture_upload_image}" />
+											<f:ajax render="#{cc.clientId}:avatarModeGroup" />
+										</h:selectOneRadio>
+									</div>
+									<div class="connected-bottom">
+										<!-- CHOOSE GRAVATAR AS PROFILE PICTURE -->
+										<h:selectOneRadio group="imageModeRadio"
+											value="#{cc.attrs.user.avatarType}" immediate="true">
+											<f:selectItem itemValue="GRAVATAR"
+												itemLabel="#{msg.gravatar}" />
+											<f:ajax render="#{cc.clientId}:avatarModeGroup" />
+										</h:selectOneRadio>
+									</div>
 								</div>
-                            	
-                            
-                                <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image" id="mediaGroup" rendered="#{cmsCollectionsBean.imageMode == 'IMAGE'}">
-                                <!-- THUMBNAIL -->
-                                <div class="admin__cms-edit-collection-image-thumbnail">
-                                    <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
-                                        <img src="#{cmsCollectionsBean.currentCollection.iconURI}" class="img-fluid" alt="" />
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{!cmsCollectionsBean.currentCollection.hasImage()}">
-                                        <img data-src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
-                                        data-viewer-thumbnail="thumbnail"
-                                            class="img-fluid" alt="" />
-                                    </ui:fragment>
-                                </div>
-                                
-				                <!-- ACTIONS -->
-				                <div class="admin__cms-edit-collection-image-actions">
-				                    <h:commandLink 
-				                        action="#{cmsBean.setSelectedMediaHolder(cmsCollectionsBean.currentCollection)}" 
-				                        value="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}" 
-				                        class="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? 'btn btn--default' : ''}" 
-				                        role="button">
-				                        <f:ajax execute="@form" render="mediaSelectPanel" />
-				                    </h:commandLink>
-				                    <h:commandLink 
-				                        rendered="#{cmsCollectionsBean.currentCollection.getMediaItem() != null}" 
-				                        action="#{cmsCollectionsBean.currentCollection.setMediaItem(null)}" 
-				                        value="#{msg.cms_selectMediaItem_deselect}" 
-				                        class="-redlink"
-				                        role="button">
-				                        <f:ajax render="mediaGroup" />
-				                    </h:commandLink>                    
-				                </div>
-                                
-                                </h:panelGroup>	
-                            
-                            <h:panelGroup layout="block" styleClass="admin__cms-collections-wrapper-identifier" id="piGroup" rendered="#{cmsCollectionsBean.imageMode == 'PI'}">
-                            	<div class="cms-edit-collection__text-control">
-                                	<h:inputText id="workPI" styleClass="form-control" validator="#{cmsCollectionsBean.validatePI}" value="#{cmsCollectionsBean.currentCollection.representativeWorkPI}">
-                                   		<!--                                 validator="piInSolrValidator" -->
-                                    	<f:ajax render="@all"></f:ajax>
-                                	</h:inputText>
-                            	</div>
-                            </h:panelGroup>
-                            
-                            </h:panelGroup>
-	
-	
-						</div>
-						<div class="modal-footer">
-							<h:commandButton value="#{msg.save}" action="#{adminBean.saveUserAction(cc.attrs.user)}" styleClass="btn btn--success">
+							</h:form>
+							
+							<h:panelGroup layout="block"
+								styleClass="admin__cms-edit-collection-wrapper-choose-image"
+								rendered="#{cc.attrs.user.avatarType != 'LOCAL'}">
+								<img src="#{cc.attrs.user.avatarUrl}?#{navigationHelper.currentTime}"
+									class="img-fluid" alt="" />
+							</h:panelGroup>
+
+							<h:panelGroup layout="block"
+								styleClass="admin__cms-edit-collection-wrapper-choose-image"
+								id="mediaGroup"
+								rendered="#{cc.attrs.user.avatarType == 'LOCAL'}">
+								<h:form id="mediaForm" prependId="false"
+									enctype="multipart/form-data">
+									<!-- THUMBNAIL -->
+									<div class="admin__cms-edit-collection-image-thumbnail">
+										<ui:fragment rendered="#{cc.attrs.user.hasLocalAvatarImage()}">
+											<img
+												src="#{cc.attrs.user.avatarUrl}?#{navigationHelper.currentTime}"
+												class="img-fluid" alt="" />
+										</ui:fragment>
+									</div>
+
+									<!-- ACTIONS -->
+									<div class="admin__cms-edit-collection-image-actions">
+										<o:inputFile id="localFileUpload"
+											value="#{adminBean.uploadedAvatarFile}">
+											<f:ajax
+												listener="#{cc.attrs.user.setAvatarFile(adminBean.uploadedAvatarFile)}"
+												execute="@this" render="@form" />
+										</o:inputFile>
+										<h:commandLink value="Delete file"
+											rendered="#{cc.attrs.user.hasLocalAvatarImage()}"
+											action="#{cc.attrs.user.deleteAvatarFile}">
+											<f:ajax render="@form"></f:ajax>
+										</h:commandLink>
+									</div>
+
+								</h:form>
+							</h:panelGroup>
+
+						</h:panelGroup>
+
+
+					</div>
+					<div class="modal-footer">
+						<h:form>
+							<h:commandButton value="#{msg.save}"
+								action="#{adminBean.saveUserAction(cc.attrs.user)}"
+								styleClass="btn btn--success">
 								<f:passThroughAttribute name="aria-label" value="#{msg.save}" />
 							</h:commandButton>
-						</div>
-					
-					
-					</h:form>
+						</h:form>
+					</div>
+
 				</div>
 			</div>
 			<div class="alt-backdrop" data-dismiss="modal"></div>

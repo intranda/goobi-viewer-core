@@ -36,6 +36,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.Part;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -128,6 +129,7 @@ public class AdminBean implements Serializable {
 
     private Role memberRole;
 
+    private Part uploadedAvatarFile;
     /**
      * <p>
      * Constructor for AdminBean.
@@ -260,6 +262,12 @@ public class AdminBean implements Serializable {
             return "";
         }
     }
+    
+    public String saveUserAction(User user, String returnPage) throws DAOException {
+        this.saveUserAction(user);
+        return returnPage;
+    }
+
     
     /**
      * <p>
@@ -2083,5 +2091,19 @@ public class AdminBean implements Serializable {
      */
     public boolean hasAccessPermissingForTranslationFiles() {
         return TranslationGroup.isHasFileAccess();
+    }
+    
+    /**
+     * @param uploadedAvatarFile the uploadedAvatarFile to set
+     */
+    public void setUploadedAvatarFile(Part uploadedAvatarFile) {
+        this.uploadedAvatarFile = uploadedAvatarFile;
+    }
+    
+    /**
+     * @return the uploadedAvatarFile
+     */
+    public Part getUploadedAvatarFile() {
+        return uploadedAvatarFile;
     }
 }
