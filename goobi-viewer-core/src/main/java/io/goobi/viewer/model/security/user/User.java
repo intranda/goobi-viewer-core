@@ -1,5 +1,5 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/**vaserserA
+ * This file is part of the Goobi viewer - a content presentativaon and management application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
@@ -75,6 +75,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -151,7 +152,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     private long score = 0;
 
     @Column(name = "use_gravatar")
-    private boolean useGravatar = false;
+    private UserAvatarOption avatarType = UserAvatarOption.DEFAULT;
 
     @Column(name = "agreed_to_terms_of_use")
     private boolean agreedToTermsOfUse = false;
@@ -269,7 +270,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         user.setNickName(nickName);
         user.setComments(comments);
         user.setScore(score);
-        user.setUseGravatar(useGravatar);
+        user.setAvatarType(this.avatarType);
         for (License license : licenses) {
             user.getLicenses().add(license);
         }
@@ -668,18 +669,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * @return
      */
     public String getAvatarUrl(int size, HttpServletRequest request) {
-        if (useGravatar) {
-            return getGravatarUrl(size);
-        }
-
-        if (request != null) {
-            String contextPath = request.getContextPath();
-            return contextPath + "/resources/images/backend/thumbnail_goobi_person.png";
-        }
-
-        return Optional.ofNullable(BeanUtils.getNavigationHelper())
-                .map(NavigationHelper::getApplicationUrl)
-                .orElse("/") + "resources/images/backend/thumbnail_goobi_person.png";
+        return this.avatarType.getAvatar(this).getIconUrl(size, request);
     }
 
     /**
@@ -1395,8 +1385,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      *
      * @return the useGravatar
      */
+    @Deprecated
     public boolean isUseGravatar() {
-        return useGravatar;
+        return UserAvatarOption.GRAVATAR == this.avatarType;
     }
 
     /**
@@ -1406,8 +1397,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      *
      * @param useGravatar the useGravatar to set
      */
+    @Deprecated
     public void setUseGravatar(boolean useGravatar) {
-        this.useGravatar = useGravatar;
+        this.avatarType = useGravatar ? UserAvatarOption.GRAVATAR : UserAvatarOption.DEFAULT;
     }
 
     //    /**
@@ -1716,4 +1708,19 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     public boolean isAgreedToTermsOfUse() {
         return agreedToTermsOfUse;
     }
+    
+    /**
+     * @return the avatarType
+     */
+    public UserAvatarOption getAvatarType() {
+        return Optional.ofNullable(avatarType).orElse(UserAvatarOption.DEFAULT);
+    }
+    
+    /**
+     * @param avatarType the avatarType to set
+     */
+    public void setAvatarType(UserAvatarOption avatarType) {
+        this.avatarType = avatarType;
+    }
+
 }

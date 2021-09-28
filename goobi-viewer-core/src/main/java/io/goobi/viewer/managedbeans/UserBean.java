@@ -75,6 +75,7 @@ import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserTools;
+import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
@@ -528,63 +529,6 @@ public class UserBean implements Serializable {
 
             this.authenticationProviders = null;
         }
-    }
-
-    /**
-     * <p>
-     * saveUserAction.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String saveUserAction() throws DAOException {
-        try {
-            if (user != null) {
-                // Retrieving a new user from the DB overrides the current object and resets the field, so save a copy
-                User copy = user.clone();
-                // Copy of the copy contains the previous nickname, in case the chosen one is already taken
-                if (user.getCopy() != null) {
-                    copy.setCopy(user.getCopy().clone());
-                } else {
-                    logger.warn("No backup user object found, cannot restore data in case of cancellation / error.");
-                }
-                // Do not allow the same nickname being used for multiple users
-                if (UserTools.isNicknameInUse(user.getNickName(), user.getId())) {
-                    Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", user.getNickName().trim()));
-                    user = copy;
-                    if (copy.getCopy() != null) {
-                        user.setNickName(copy.getCopy().getNickName());
-                    }
-                    return "pretty:userEdit";
-                }
-                user = copy;
-                if (StringUtils.isNotBlank(passwordOne)) {
-                    if (!PasswordValidator.validatePassword(passwordOne)) {
-                        Messages.error("password_errInvalid");
-                        return "pretty:userEdit";
-                    }
-                    if (!passwordOne.equals(passwordTwo)) {
-                        Messages.error("user_passwordMismatch");
-                        return "pretty:userEdit";
-                    }
-                    user.setNewPassword(passwordOne);
-                    logger.debug("Set new password for user {}", user.getEmail());
-                    Messages.info("user_passwordChanged");
-                }
-                if (DataManager.getInstance().getDao().updateUser(user)) {
-                    user.setCopy(null);
-                    logger.debug("User '" + user.getEmail() + "' updated successfully.");
-                    Messages.info("user_saveSuccess");
-                    return "pretty:user";
-                }
-                Messages.error("errSave");
-            }
-        } finally {
-            resetPasswordFields();
-        }
-
-        return "pretty:userEdit";
     }
 
     /**
@@ -1469,4 +1413,5 @@ public class UserBean implements Serializable {
         Messages.info(messageKey);
 
     }
+
 }
