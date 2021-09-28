@@ -29,7 +29,7 @@
 									<div class="widget-annotations__type">
 										<i class="#{content.iconClass}" aria-hidden="true"></i>
 									</div>
-									<h:panelGroup display="block" rendered="#{cc.attrs.sidebar}" class="widget-annotations__content">
+									<h:panelGroup display="block" rendered="#{content.type != 'NORMDATA'}" class="widget-annotations__content">
 										<h:outputText value="#{msg[contentBean.cleanUpValue(content.extendendLabel)]}" escape="false">
 										</h:outputText>
 									</h:panelGroup>
@@ -61,7 +61,7 @@
 									<div class="widget-annotations__type">
 										<i class="#{content.iconClass}" aria-hidden="true"></i>
 									</div>
-									<h:panelGroup display="block" rendered="#{cc.attrs.sidebar}" class="widget-annotations__content">
+									<h:panelGroup display="block" rendered="#{content.type != 'NORMDATA'}" class="widget-annotations__content">
 										<h:outputText
 											value="#{msg[contentBean.cleanUpValue(content.extendendLabel)]}"
 											escape="false">
@@ -93,7 +93,7 @@
 						</li>
 					</h:panelGroup>
 					<script type="text/javascript">
-						$("#words-#{content.id}, #words-#{content.id} div").on('click', function(e) {
+						$("#words-#{content.id}").on('click', function(e) {
 							viewImage.overlays.focusBox("ugc", "#{content.id}");
 							highlightCurrentSelection($(this));
 							if(!#{cc.attrs.sidebar}) {
