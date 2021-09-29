@@ -101,8 +101,8 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     /** Constant <code>ATTRIBUTE_LOGINS="logins"</code> */
     public static final String ATTRIBUTE_LOGINS = "logins";
 
-    /** Constant <code>AVATAR_DEFAULT_SIZE=96</code> */
-    public static final int AVATAR_DEFAULT_SIZE = 96;
+    /** Constant <code>AVATAR_DEFAULT_SIZE=140</code> */
+    public static final int AVATAR_DEFAULT_SIZE = 140;
 
     private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/{id}";
     private static final String URI_ID_REGEX = ".*/users/(\\d+)/?$";
