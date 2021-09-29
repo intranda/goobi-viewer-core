@@ -41,6 +41,8 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -59,10 +61,6 @@ import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.timgroup.jgravatar.Gravatar;
-import com.timgroup.jgravatar.GravatarDefaultImage;
-import com.timgroup.jgravatar.GravatarRating;
 
 import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
 import io.goobi.viewer.controller.BCrypt;
@@ -158,7 +156,8 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     @Column(name = "score")
     private long score = 0;
 
-    @Column(name = "use_gravatar")
+    @Column(name = "avatar_type")
+    @Enumerated(EnumType.STRING)
     private UserAvatarOption avatarType = UserAvatarOption.DEFAULT;
 
     @Column(name = "agreed_to_terms_of_use")
@@ -676,7 +675,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * @return
      */
     public String getAvatarUrl(int size, HttpServletRequest request) {
-        return this.avatarType.getAvatar(this).getIconUrl(size, request);
+        return getAvatarType().getAvatar(this).getIconUrl(size, request);
     }
 
     /**
@@ -713,35 +712,24 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated use {@link #getAvatarUrl()}
      */
+    @Deprecated
     public String getGravatarUrl() {
         return getGravatarUrl(AVATAR_DEFAULT_SIZE);
     }
 
-    /**
-     * Empty setter so that HTML pages do not throw missing property errors.
-     *
-     * @param gravatarUrl a {@link java.lang.String} object.
-     */
-    public void setGravatarUrl(String gravatarUrl) {
-        // nothing
-    }
 
     /**
      * Generates and returns a Gravatar url for the user's e-mail address.
      *
      * @param size a int.
      * @return Gravatar URL
+     * @deprecated use {@link #getAvatarUrl(int)}
      */
+    @Deprecated
     public String getGravatarUrl(int size) {
-        if (StringUtils.isNotEmpty(email)) {
-            Gravatar gravatar =
-                    new Gravatar().setSize(size).setRating(GravatarRating.GENERAL_AUDIENCES).setDefaultImage(GravatarDefaultImage.IDENTICON);
-            String url = gravatar.getUrl(email);
-            return url.replace("http:", "");
-        }
-
-        return "//www.gravatar.com/avatar/";
+        return getAvatarUrl(size);
     }
 
     /**
@@ -1391,6 +1379,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @return the useGravatar
+     * @deprecated decision of avatar type is handled within {@link #getAvatarUrl()}
      */
     @Deprecated
     public boolean isUseGravatar() {
