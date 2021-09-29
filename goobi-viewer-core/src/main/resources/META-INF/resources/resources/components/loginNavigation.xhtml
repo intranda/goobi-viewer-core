@@ -34,18 +34,9 @@
                             <button type="button" class="btn btn--clean" data-toggle="user-dropdown">
                                 <!-- USER NAME -->
 								<span class="login-navigation__user-name" data-toggle="tooltip" data-placement="bottom">#{userBean.user.displayName}</span>
-                                
-<!--                                 <ui:fragment rendered="#{userBean.user.nickName != ''}"> -->
-<!--                                     <span class="login-navigation__user-name" title="#{userBean.user.nickName}" data-toggle="tooltip" data-placement="bottom">#{userBean.user.nickName}</span> -->
-<!--                                 </ui:fragment> -->
-<!--                                 <ui:fragment rendered="#{userBean.user.nickName eq ''}"> -->
-<!--                                     <span class="login-navigation__user-name" title="#{userBean.user.email}" data-toggle="tooltip" data-placement="bottom">#{userBean.user.email}</span> -->
-<!--                                 </ui:fragment> -->
-                                
                                 <!-- USER ICON -->
                                 <span class="login-navigation__user-icon">
-                                    <!-- GRAVATAR -->
-                                        <img src="#{user.getAvatarUrl(96)}" class="rounded-circle" alt="User Gravatar" />
+									<img class="login-navigation__mini-avatar" src="#{userBean.user.getAvatarUrl(300)}" alt="User Avatar" />
                                 </span>
                             </button>
                         </ui:fragment>

@@ -35,12 +35,12 @@ public class DefaultUserAvatar implements UserAvatar{
     public String getIconUrl(int size, HttpServletRequest request) {
         if (request != null) {
             String contextPath = request.getContextPath();
-            return contextPath + "/resources/images/backend/thumbnail_goobi_person.png";
+            return contextPath + "/resources/images/backend/thumbnail_goobi_person.svg";
         }
 
         return Optional.ofNullable(BeanUtils.getNavigationHelper())
                 .map(NavigationHelper::getApplicationUrl)
-                .orElse("/") + "resources/images/backend/thumbnail_goobi_person.png";
+                .orElse("/") + "resources/images/backend/thumbnail_goobi_person.svg";
     }
 
     

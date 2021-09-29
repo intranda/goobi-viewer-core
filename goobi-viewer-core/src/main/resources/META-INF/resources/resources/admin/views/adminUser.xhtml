@@ -47,18 +47,30 @@
 							<div class="admin__content-side -sticky">
 								<div class="admin__default-block">
 									<!-- USER ADMIN RIGHTS -->
+									<h3>#{msg.admin__user_avatar}</h3>
 									<div class="form-group form-row">
 
 										<img class="user-settings__profile-image"
 											src="#{adminBean.currentUser.getAvatarUrl(300)}" alt="User Avatar" />
 										<button data-toggle="modal" data-backdrop="false"
 											data-target="#changeProfilePicture"
-											class="btn btn--default user-settings__profile-image-edit-button mb-3">#{msg.user_change_profile_picture}</button>
+											class="btn btn--default user-settings__profile-image-edit-button">#{msg.user_change_profile_picture}</button>
+									</div>
+									
+									
 
-										<div class="col-6 control-label admin__form-label">
-											<span>#{msg.admin__user_superuser}:</span>
-										</div>
-										<div class="col-6 admin__form-input">
+								</div>
+								
+								<div class="admin__default-block">
+								
+								<div class="row">
+									<div class="col-12 control-label admin__form-label">
+									<h3>#{msg.admin__user_superuser}</h3>
+									</div>
+								</div>
+								
+									<div class="row mt-2">	
+										<div class="col-12 admin__form-input">
 											<h:form id="sidebarForm">
 												<div class="admin__radio-switch openAccessToggle">
 													<h:selectOneRadio group="superUserToggle"
@@ -79,8 +91,9 @@
 											</h:form>
 										</div>
 									</div>
-
 								</div>
+								
+								
 							</div>
 
 						</div>
