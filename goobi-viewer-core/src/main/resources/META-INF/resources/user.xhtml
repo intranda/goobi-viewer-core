@@ -12,6 +12,7 @@
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageUser()}" />
             <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(userBean.loggedIn ? msg.userLoggedIn : msg.userNotLoggedIn,1)}" />
+            <f:viewAction onPostback="false" action="#{userBean.user.backupFields()}" />
         </f:metadata>
     </ui:define>
 
@@ -22,7 +23,6 @@
     <ui:define name="content">
         <div id="userAccount" class="user-account">
             <h2>#{msg.account}</h2>
-
             <!-- USER NOT LOGGED IN -->
             <ui:fragment rendered="#{!userBean.loggedIn}">
                 <div class="alert alert-warning" role="alert">
@@ -32,21 +32,16 @@
 
             <!-- USER LOGGED IN -->
             <ui:fragment rendered="#{userBean.loggedIn}">
-                <viewerComponent:userData />
+                <viewerComponent:userData user="#{userBean.user.copy}" parentPage="pretty:index"/>
             </ui:fragment>
         </div>
     </ui:define>
 
     <ui:define name="sidebar">
-        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
-            <widgetComponent:widget_browsing />
-        </h:panelGroup>
-
-        <c:forEach var="module" items="#{configurationBean.modules}">
-            <c:forEach var="contribution" items="#{module.sidebarContributions}">
-                <ui:include src="/#{contribution}" />
-            </c:forEach>
-        </c:forEach>
+		<h:panelGroup layout="block" styleClass="user-settings__profile-image-box">
+				<img class="user-settings__profile-image" src="#{userBean.user.getAvatarUrl(300)}" alt="User Avatar" />
+			<button data-toggle="modal" data-backdrop="false" data-target="#changeProfilePicture" class="btn btn--default user-settings__profile-image-edit-button">#{msg.user_change_profile_picture}</button>
+		</h:panelGroup>
     </ui:define>
 
 </ui:composition>

@@ -4406,6 +4406,11 @@ public final class Configuration extends AbstractConfiguration {
     public String getTempMediaFolder() {
         return getLocalString("tempMediaFolder", "temp_media");
     }
+    
+    public String getUserAvatarFolder() {
+        return getLocalString("userAvatarFolder", "users/avatar");
+    }
+
 
     /**
      * <p>
