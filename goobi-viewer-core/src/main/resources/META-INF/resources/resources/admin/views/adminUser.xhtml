@@ -43,22 +43,24 @@
 
 
 							<div class="admin__content-side -sticky">
+								<!-- USER PROFILE PICTURE -->
 								<div class="admin__default-block">
-									<!-- USER ADMIN RIGHTS -->
+									
 									<h3>#{msg.admin__user_avatar}</h3>
-									<div class="form-group form-row">
+									<div class="form-group form-row admin__profile-image-wrapper">
 
-										<img class="user-settings__profile-image"
+										<img class="admin__profile-image"
 											src="#{adminBean.currentUser.getAvatarUrl(300)}" alt="User Avatar" />
 										<button data-toggle="modal" data-backdrop="false"
 											data-target="#changeProfilePicture"
-											class="btn btn--default user-settings__profile-image-edit-button">#{msg.user_change_profile_picture}</button>
+											class="btn btn--default user-settings__profile-image-edit-button">#{msg.edit}</button>
 									</div>
 									
 									
 
 								</div>
 								
+								<!-- USER ADMIN RIGHTS -->
 								<div class="admin__default-block">
 								
 								<div class="row">
@@ -66,9 +68,16 @@
 									<h3>#{msg.admin__user_superuser}</h3>
 									</div>
 								</div>
+								<div class="admin__form-help-text in mb-3">
+									#{msg.admin__admin_rights_info}
+								</div>
 								
-									<div class="row mt-2">	
-										<div class="col-12 admin__form-input">
+									<div class="row">	
+									
+									<div class="col-6">
+										#{msg.admin__user_superuser}:
+									</div>
+										<div class="col-6 admin__form-input">
 											<h:form id="sidebarForm">
 												<div class="admin__radio-switch openAccessToggle">
 													<h:selectOneRadio group="superUserToggle"
