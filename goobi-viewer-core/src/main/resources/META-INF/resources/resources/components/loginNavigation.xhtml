@@ -45,14 +45,7 @@
                                 <!-- USER ICON -->
                                 <span class="login-navigation__user-icon">
                                     <!-- GRAVATAR -->
-                                    <ui:fragment rendered="#{user.useGravatar}">
-                                        <img src="#{user.getGravatarUrl(96)}" class="rounded-circle" alt="User Gravatar" />
-                                    </ui:fragment>
-                                    
-                                    <!-- ICON -->
-                                    <ui:fragment rendered="#{!user.useGravatar}">
-                                        <i class="fa fa-user-circle-o" aria-hidden="true"></i>
-                                    </ui:fragment>
+                                        <img src="#{user.getAvatarUrl(96)}" class="rounded-circle" alt="User Gravatar" />
                                 </span>
                             </button>
                         </ui:fragment>

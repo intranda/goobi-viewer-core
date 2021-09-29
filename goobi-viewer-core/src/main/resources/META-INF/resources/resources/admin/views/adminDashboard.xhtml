@@ -32,20 +32,9 @@
                                 <div class="row">
                                     <h3 class="col-9">#{msg.admin__dashboard_hello} #{userBean.user.nickName}</h3>
                                     <div class="col-3 d-flex justify-content-end">
-                                        <!-- GRAVATAR -->
-                                        <c:choose>
-											<c:when test="#{user.useGravatar}">
-												<img src="#{user.getGravatarUrl(96)}"
-													class="rounded-circle admin__dashboard-user-icon"
-													alt="User Gravatar" />
-											</c:when>
-											<c:otherwise>
-												<img
-													src="#{request.contextPath}/resources/images/backend/thumbnail_goobi_person.png"
-													class="admin__dashboard-user-icon" alt="User avatar" />
-											</c:otherwise>
-										</c:choose>
-
+                                    	<img src="#{user.getAvatarUrl(96)}"
+												class="rounded-circle admin__dashboard-user-icon"
+												alt="User Gravatar" />
                                     </div>
                                 </div>
                                 <div class="row mb-3">
