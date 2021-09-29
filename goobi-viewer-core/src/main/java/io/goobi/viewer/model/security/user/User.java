@@ -668,7 +668,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
     /**
      * get the url for the avatar. If useGravatar is active, return {@link #getGravatarUrl(int size)}. Otherwise build a resource url to
-     * 'resources/images/backend/thumbnail_goobi_person.png' from the request or the JSF-Context if no request is provided
+     * 'resources/images/backend/thumbnail_goobi_person.svg' from the request or the JSF-Context if no request is provided
      * 
      * @param size
      * @param request
