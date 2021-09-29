@@ -44,15 +44,22 @@
                                 
                                 <!-- USER ICON -->
                                 <span class="login-navigation__user-icon">
-                                    <!-- GRAVATAR -->
-                                    <ui:fragment rendered="#{user.useGravatar}">
-                                        <img src="#{user.getGravatarUrl(96)}" class="rounded-circle" alt="User Gravatar" />
-                                    </ui:fragment>
+                                
+                                
+<!--                                     GRAVATAR -->
+<!--                                     <ui:fragment rendered="#{user.useGravatar}"> -->
+<!--                                         <img src="#{user.getGravatarUrl(96)}" class="rounded-circle" alt="User Gravatar" /> -->
+<!--                                     </ui:fragment> -->
                                     
-                                    <!-- ICON -->
-                                    <ui:fragment rendered="#{!user.useGravatar}">
-                                        <i class="fa fa-user-circle-o" aria-hidden="true"></i>
-                                    </ui:fragment>
+<!--                                     ICON -->
+<!--                                     <ui:fragment rendered="#{!user.useGravatar}"> -->
+<!--                                         <i class="fa fa-user-circle-o" aria-hidden="true"></i> -->
+<!--                                     </ui:fragment> -->
+
+
+									<img class="login-navigation__mini-avatar" src="#{userBean.user.getAvatarUrl(300)}" alt="User Avatar" />
+                                    
+                                    
                                 </span>
                             </button>
                         </ui:fragment>
