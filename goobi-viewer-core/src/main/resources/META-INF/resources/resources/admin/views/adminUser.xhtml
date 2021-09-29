@@ -15,8 +15,6 @@
 				listener="#{navigationHelper.setCurrentPageAdmin('adminUser')}" />
 			<f:viewAction onPostback="false"
 				action="#{adminBean.currentUser.backupFields}" />
-			<f:viewParam name="avatar"
-				value="#{adminBean.currentUser.useGravatar}" />
 			<f:viewParam name="deleteData"
 				value="#{adminBean.deleteUserContributions}" />
 		</f:metadata>

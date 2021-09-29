@@ -88,6 +88,7 @@ import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
+import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 
 /**
  * JPADAO test suite using H2 DB.
@@ -158,7 +159,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         user.setLastName("last");
         user.setNickName("banned_admin");
         user.setComments("no");
-        user.setUseGravatar(true);
+        user.setAvatarType(UserAvatarOption.GRAVATAR);
         LocalDateTime now = LocalDateTime.now();
         user.setLastLogin(now);
         user.setActive(false);
@@ -174,7 +175,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(user.getLastName(), user2.getLastName());
         Assert.assertEquals(user.getNickName(), user2.getNickName());
         Assert.assertEquals(user.getComments(), user2.getComments());
-        Assert.assertEquals(user.isUseGravatar(), user2.isUseGravatar());
+        Assert.assertEquals(user.getAvatarType(), user2.getAvatarType());
         Assert.assertEquals(user.getLastLogin(), now);
         Assert.assertEquals(user.isActive(), user2.isActive());
         Assert.assertEquals(user.isSuspended(), user2.isSuspended());
@@ -192,11 +193,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         user.setLastName("last");
         user.setNickName("unbanned_admin");
         user.setComments("no");
-        user.setUseGravatar(true);
+        user.setAvatarType(UserAvatarOption.GRAVATAR);
         user.setLastLogin(LocalDateTime.now());
         user.setActive(false);
         user.setSuspended(true);
         user.setSuperuser(false);
+        user.setAgreedToTermsOfUse(true);
         DataManager.getInstance().getDao().updateUser(user);
 
         Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUsers(false).size());
@@ -209,11 +211,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(user.getLastName(), user2.getLastName());
         Assert.assertEquals(user.getNickName(), user2.getNickName());
         Assert.assertEquals(user.getComments(), user2.getComments());
-        Assert.assertEquals(user.isUseGravatar(), user2.isUseGravatar());
+        Assert.assertEquals(user.getAvatarType(), user2.getAvatarType());
         Assert.assertEquals(user.getLastLogin(), user2.getLastLogin());
         Assert.assertEquals(user.isActive(), user2.isActive());
         Assert.assertEquals(user.isSuspended(), user2.isSuspended());
         Assert.assertEquals(user.isSuperuser(), user2.isSuperuser());
+        Assert.assertEquals(user.isAgreedToTermsOfUse(), user2.isAgreedToTermsOfUse());
     }
 
     @Test

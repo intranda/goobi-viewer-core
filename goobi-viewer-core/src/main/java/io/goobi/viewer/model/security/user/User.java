@@ -276,6 +276,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         user.setNickName(nickName);
         user.setComments(comments);
         user.setScore(score);
+        user.setAgreedToTermsOfUse(agreedToTermsOfUse);
         user.setAvatarType(this.avatarType);
         for (License license : licenses) {
             user.getLicenses().add(license);
