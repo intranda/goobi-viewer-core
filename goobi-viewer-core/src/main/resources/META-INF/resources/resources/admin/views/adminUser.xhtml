@@ -43,6 +43,55 @@
 
 
 							<div class="admin__content-side -sticky">
+							
+							
+							<ui:fragment rendered="#{!adminBean.currentUser.copy.active and !adminBean.currentUser.copy.anonymous}">
+							
+			 				<!-- ACCOUNT ACTIVATION -->
+							<div class="admin__default-block">
+								
+								<div class="row">
+									<div class="col-12 control-label admin__form-label">
+									<h3>#{msg.admin__user_activation}</h3>
+									</div>
+								</div>
+								<div class="admin__form-help-text in mb-3">
+									#{msg.admin__user_activation_description}
+								</div>
+								
+									<div class="row">	
+									
+									<div class="col-6">
+										#{msg.admin__user_activation_label}:
+									</div>
+										<div class="col-6 admin__form-input">
+											<h:form id="sidebarForm2">
+												<div class="admin__radio-switch openAccessToggle">
+													<h:selectOneRadio group="activateUserToggle"
+														value="#{adminBean.currentUser.copy.active}" immediate="true"
+														checked="true">
+														<f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+														<f:ajax execute="@this" render="@none"></f:ajax>
+													</h:selectOneRadio>
+													<h:selectOneRadio group="activateUserToggle"
+														value="#{adminBean.currentUser.copy.active}" immediate="true"
+														checked="null">
+														<f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+														<f:ajax execute="@this" render="@none"></f:ajax>
+													</h:selectOneRadio>
+													<span class="toggle-outside"><span
+														class="toggle-inside"></span></span>
+												</div>
+											</h:form>
+										</div>
+									</div>
+								</div>
+			                
+			                </ui:fragment>
+			                
+			                
+							
+							
 								<!-- USER PROFILE PICTURE -->
 								<ui:fragment rendered="#{not empty adminBean.currentUser.id}">
 									<div class="admin__default-block">
