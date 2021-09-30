@@ -702,13 +702,6 @@
         <action onPostback="false">#{searchBean.search}</action>
     </url-mapping>
 
-	<!-- USER PROFILE -->
-<!-- 	<url-mapping id="userMenuProfile"> -->
-<!-- 		<pattern value="/user/bookmarks/" /> -->
-<!-- 		<view-id value="/userBackendUserSettings.xhtml" /> -->
-<!-- 		<action onPostback="false">#{navigationHelper.resetTheme}</action> -->
-<!-- 	</url-mapping> -->
-
 	<!-- BOOKMARKS (USER) -->
 	<url-mapping id="userMenuBookmarkLists">
 		<pattern value="/user/bookmarks/" />
