@@ -28,18 +28,11 @@
         		<!-- LEFT SIDE -->
 				<div class="archives__left-side">
 
-
+                    <div class="archives__tree-heading">
+                    	#{msg.archives__archive_tree_heading}
+                    	<span id="archivesSearchTrigger"><i class="fa fa-search"></i></span>
+                    </div>
                     <h:panelGroup layout="block" id="treeGroup" styleClass="archives__graphic-tree">
-                    
-                    <h:selectOneMenu styleClass="archives__select-database-dropdown" value="EMPTY">
-	                    <f:selectItem itemValue = "1" itemLabel = "#{archiveBean.trueRoot.label}" /> 
-	   					<f:selectItem itemValue = "2" itemLabel = "Database 2" />
-
-	   					<!-- TO DO: POPULATE SELECTABLE ITEMS FROM DATABASE AND TRIGGER PAGE RELOAD/ARCHIVE TREE RELOAD -->
-						<!-- <f:selectItems value="#{bean.names}" /> -->
-					
-					</h:selectOneMenu>
-
 	                    <div class="archives__search-input-wrapper">
 		                    <h:form id="searchForm" prependId="false">
 		                        <h:inputText id="archivesSearchField" styleClass="form-control filter-input archives__search-input"
@@ -79,6 +72,7 @@
                  </h:panelGroup>
 
                  <h:panelGroup layout="block" id="metadataGroup">
+                 	<div class="archives__object-info-heading">#{msg.archives__archive_area_unit}</div>
 	                 <div class="archives__object-info">
 	                 	<div class="archives__object-metadata">
 	                      <!-- METADATA -->
@@ -167,11 +161,14 @@
 		                              </div>
 		                      </h:outputLink>
 	                      </div>
+	                      <div class="archives-object-thumbnails-wrapper">
+			                  <div class="archives__object-ajax-loader ajax_loader" data-loader="load_record_image">
+								<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." />
+							  </div>
+							  <div class="archives__object-thumbnails" source="#{request.contextPath}/api/v2/records/#{archiveBean.displayEntry.associatedRecordPi}/manifest"></div>
+						  </div>
 	                 </div>
-	                 <div class="archives__object-ajax-loader ajax_loader" data-loader="load_record_image">
-						<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." />
-					 </div>
-					 <div class="archives__object-thumbnails" source="#{request.contextPath}/api/v2/records/#{archiveBean.displayEntry.associatedRecordPi}/manifest"></div>
+
                  </h:panelGroup>
 				</div>
 			</div>

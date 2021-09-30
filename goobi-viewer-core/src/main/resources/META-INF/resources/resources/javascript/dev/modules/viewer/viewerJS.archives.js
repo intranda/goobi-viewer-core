@@ -192,6 +192,33 @@ var viewerJS = ( function( viewer ) {
         },
         
         initSearch: function() {
+			/* Trigger for search */
+			$('#archivesSearchTrigger').on('click', function(){
+				$(this).toggleClass('-active');
+				
+				if ($('.archives__search-input-wrapper').is(":visible")) {
+				$('.archives__search-input-wrapper').slideToggle('fast');
+				
+				setTimeout(
+				  function() {
+					$('.archives__search-input').val("");
+                	/* trigger empty search on click */
+                	$('.archives__search-submit-button').click();
+				  }, 200);
+
+				}
+				else {
+					$('.archives__search-input-wrapper').slideToggle('fast');
+				}
+				
+
+		
+		
+
+
+		
+			});
+	
             /* check search field for input value and show clear button */
             if(!$('.archives__search-input').val() == ''){
                 $('.archives__search-clear').show();
@@ -301,7 +328,8 @@ var viewerJS = ( function( viewer ) {
             //Call the commandscript "updateUrl" in archivesTreeView.xhtml to trigger an ajax call 
             //and update the page url to show the selected record 
             updateUrl();
-        }
+        },
+
     };
 
 

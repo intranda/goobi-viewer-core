@@ -33,42 +33,75 @@
 				</div>
 
                 <!-- PAGE HEADER TOP BRAND -->
+		        <!-- LOGO -->
+		        <div class="archives__header-brand">
+		            <a href="#{request.contextPath}/">
+		                <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/fullscreen_logo.png" alt="Goobi Logo" />
+		            </a>
+		        </div>
+                
+                
                 <div class="archives__top-brand">
 				<a href="#{request.contextPath}/" target="_self" rel="noopener">#{configurationBean.name}</a> › <h1>#{msg.archives__archiveViewHeading}</h1>
                 </div>
 
 
                 <!-- PAGE HEADER TOP ARCHIVE TITLE -->
-                <div class="archives__top-title">
-                	<span>#{archiveBean.trueRoot.label}</span>
-                </div>
+<!--                 <div class="archives__top-title"> -->
+<!--                 	<span>#{archiveBean.trueRoot.label}</span> -->
+<!--                 </div> -->
+					<div class="archives__top-title">
+	                    <h:selectOneMenu styleClass="archives__select-database-dropdown" value="EMPTY">
+		                    <f:selectItem itemValue = "1" itemLabel = "#{archiveBean.trueRoot.label}" /> 
+		   					<f:selectItem itemValue = "2" itemLabel = "Database 2 Long Name for Testing This and That" />
+	
+		   					<!-- TO DO: POPULATE SELECTABLE ITEMS FROM DATABASE AND TRIGGER PAGE RELOAD/ARCHIVE TREE RELOAD -->
+							<!-- <f:selectItems value="#{bean.names}" /> -->
+						
+						</h:selectOneMenu>
+					</div>
+					
+					<select id="tempWidthSelect">
+					 <option id="tempWidthOption"></option>
+					</select>
                 
-                <!-- PAGE HEADER TOP ACTIONS -->
-                <div class="archives__top-actions">
-                    <!-- CHANGE LOCAL -->
-                    <ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}">
-	                    <div id="changeLocalWrapper" class="archives__top-actions-language">
-							<button type="button"
-		                  class="btn btn--clean"
-		                  data-toggle="local"
-		                  aria-label="#{msg.aria_label__switch_language}">
-		                  <span class="fa fa-globe"></span>#{msg.language}</button>
-		                  <viewerComponent:changeLocal toggleLanguage="false" longLanguageStrings="true"/>
-	                    </div>
-                    </ui:fragment>
+<!--                 PAGE HEADER TOP ACTIONS -->
+<!--                 <div class="archives__top-actions"> -->
+<!--                     CHANGE LOCAL -->
+<!--                     <ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}"> -->
+<!-- 	                    <div id="changeLocalWrapper" class="archives__top-actions-language"> -->
+<!-- 							<button type="button" -->
+<!-- 		                  class="btn btn-clean" -->
+<!-- 		                  data-toggle="local" -->
+<!-- 		                  aria-label="#{msg.aria_label__switch_language}"> -->
+<!-- 		                  <span class="fa fa-globe"></span>#{msg.language}</button> -->
+<!-- 		                  <viewerComponent:changeLocal toggleLanguage="false" longLanguageStrings="true"/> -->
+<!-- 	                    </div> -->
+<!--                     </ui:fragment> -->
 
-                    <!-- LOGIN NAVIGATION -->
-                    <div class="archives__top-actions-login">
-                        <viewerComponent:loginNavigation />
-                    </div>
-                </div>
+<!--                     LOGIN NAVIGATION -->
+<!--                     <div class="archives__top-actions-login"> -->
+<!--                         <viewerComponent:loginNavigation /> -->
+<!--                     </div> -->
+<!--                 </div> -->
 
-	            <!-- OPEN MOBILE NAVIGATION -->
-            	<div class="archives__top-mobile-sidebar">
-					<button type="button" class="btn btn--clean" data-open="sidebar" aria-label="#{msg.aria_label__open_sidebar}">
-						<span></span>
-					</button>
-				</div>
+<!-- 	            OPEN MOBILE NAVIGATION -->
+<!--             	<div class="archives__top-mobile-sidebar"> -->
+<!-- 					<button type="button" class="btn btn-clean" data-open="sidebar" aria-label="#{msg.aria_label__open_sidebar}"> -->
+<!-- 						<span></span> -->
+<!-- 					</button> -->
+<!-- 				</div> -->
+
+			        <!-- EXIT -->
+			        <div class="archives__header-exit">
+			            <h:outputLink value="#{request.contextPath}" title="#{msg.fullscreen_exit}">
+<!-- 			                <f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
+<!-- 			                <f:passThroughAttribute name="data-placement" value="bottom" /> -->
+<!-- 			                <f:passThroughAttribute name="data-js" value="exit-fullscreen" /> -->
+<!-- 			                <f:passThroughAttribute name="aria-label" value="#{msg.fullscreen_exit}" /> -->
+			            </h:outputLink>
+			        </div>
+
             </div>
 	    </header>
 
@@ -105,8 +138,21 @@
         	viewerJS.archives.init({
                 initHcSticky: true,
                 initSearch: true,
-                initTextTree: true
+                initTextTree: true,
         });
+        	
+   		// Make select dropdown always the size of the options text
+   			$(document).ready(function() {
+   			  $('.archives__select-database-dropdown').change(function(){
+   			    $("#tempWidthOption").html($('.archives__select-database-dropdown option:selected').text()); 
+   			    $(this).width($("#tempWidthSelect").width());  
+   			  });
+   			});
+   			$(document).ready(function() {
+     			    $("#tempWidthOption").html($('.archives__select-database-dropdown option:selected').text()); 
+     			    $('.archives__select-database-dropdown').width($("#tempWidthSelect").width());  
+     	 });
+            
         </script>
 
     </div>
