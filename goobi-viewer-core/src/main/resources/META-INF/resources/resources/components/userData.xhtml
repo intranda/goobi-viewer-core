@@ -10,6 +10,7 @@
 		<composite:attribute name="user" required="true"
 			type="io.goobi.viewer.model.security.user.User" />
 		<composite:attribute name="parentPage" required="false" default=""/>
+		<composite:attribute name="confirmEmailChange" required="false" default="false" type="java.lang.Boolean"/>
 	</composite:interface>
 
 	<composite:implementation>
@@ -79,13 +80,15 @@
 							<script>
 							
 							function confirmEmailChange(e) {
-							    if(e.status == 'success') {
-								    let value = e.source.value;
-								    let originalValue = e.source.defaultValue
-								    viewerJS.notifications.confirm("#{msg.user__change_email__confirm}")
-								    .catch(() => {			        
-								        $("[data-confirm='email']").val(originalValue);
-								    })
+							    if(#{cc.attrs.confirmEmailChange}) {
+							    	if(e.status == 'success') {
+									    let value = e.source.value;
+									    let originalValue = e.source.defaultValue
+									    viewerJS.notifications.confirm("#{msg.user__change_email__confirm}")
+									    .catch(() => {			        
+									        $("[data-confirm='email']").val(originalValue);
+									    })
+								    }
 							    }
 							}
 							
