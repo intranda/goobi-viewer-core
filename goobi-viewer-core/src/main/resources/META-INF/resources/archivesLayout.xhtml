@@ -46,51 +46,14 @@
                 </div>
 
 
-                <!-- PAGE HEADER TOP ARCHIVE TITLE -->
-<!--                 <div class="archives__top-title"> -->
-<!--                 	<span>#{archiveBean.trueRoot.label}</span> -->
-<!--                 </div> -->
-					<div class="archives__top-title">
-	                    <h:selectOneMenu styleClass="archives__select-database-dropdown" value="EMPTY">
-		                    <f:selectItem itemValue = "1" itemLabel = "#{archiveBean.trueRoot.label}" /> 
-		   					<f:selectItem itemValue = "2" itemLabel = "Database 2 Long Name for Testing This and That" />
-	
-		   					<!-- TO DO: POPULATE SELECTABLE ITEMS FROM DATABASE AND TRIGGER PAGE RELOAD/ARCHIVE TREE RELOAD -->
-							<!-- <f:selectItems value="#{bean.names}" /> -->
-						
-						</h:selectOneMenu>
-					</div>
+<!--                 PAGE HEADER TOP ARCHIVE TITLE -->
+                <div class="archives__top-title">
+                	<span>#{archiveBean.trueRoot.label}</span>
+                </div>
+
 					
-					<select id="tempWidthSelect">
-					 <option id="tempWidthOption"></option>
-					</select>
                 
-<!--                 PAGE HEADER TOP ACTIONS -->
-<!--                 <div class="archives__top-actions"> -->
-<!--                     CHANGE LOCAL -->
-<!--                     <ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}"> -->
-<!-- 	                    <div id="changeLocalWrapper" class="archives__top-actions-language"> -->
-<!-- 							<button type="button" -->
-<!-- 		                  class="btn btn-clean" -->
-<!-- 		                  data-toggle="local" -->
-<!-- 		                  aria-label="#{msg.aria_label__switch_language}"> -->
-<!-- 		                  <span class="fa fa-globe"></span>#{msg.language}</button> -->
-<!-- 		                  <viewerComponent:changeLocal toggleLanguage="false" longLanguageStrings="true"/> -->
-<!-- 	                    </div> -->
-<!--                     </ui:fragment> -->
 
-<!--                     LOGIN NAVIGATION -->
-<!--                     <div class="archives__top-actions-login"> -->
-<!--                         <viewerComponent:loginNavigation /> -->
-<!--                     </div> -->
-<!--                 </div> -->
-
-<!-- 	            OPEN MOBILE NAVIGATION -->
-<!--             	<div class="archives__top-mobile-sidebar"> -->
-<!-- 					<button type="button" class="btn btn-clean" data-open="sidebar" aria-label="#{msg.aria_label__open_sidebar}"> -->
-<!-- 						<span></span> -->
-<!-- 					</button> -->
-<!-- 				</div> -->
 
 			        <!-- EXIT -->
 			        <div class="archives__header-exit">

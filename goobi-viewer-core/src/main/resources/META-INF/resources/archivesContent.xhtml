@@ -27,6 +27,20 @@
 
         		<!-- LEFT SIDE -->
 				<div class="archives__left-side">
+				
+					
+					<div class="archives__select-database-dropdown-wrapper">
+						<div class="archives__select-database-dropdown-label">Aktueller Bestand:</div>
+	                    <h:selectOneMenu styleClass="archives__select-database-dropdown" value="EMPTY">
+		                    <f:selectItem itemValue = "1" itemLabel = "#{archiveBean.trueRoot.label}" /> 
+		   					<f:selectItem itemValue = "2" itemLabel = "Database 2 Long Name for Testing This and That" />
+	
+		   					<!-- TO DO: POPULATE SELECTABLE ITEMS FROM DATABASE AND TRIGGER PAGE RELOAD/ARCHIVE TREE RELOAD -->
+							<!-- <f:selectItems value="#{bean.names}" /> -->
+						
+						</h:selectOneMenu>
+					</div>
+				
 
                     <div class="archives__tree-heading">
                     	#{msg.archives__archive_tree_heading}

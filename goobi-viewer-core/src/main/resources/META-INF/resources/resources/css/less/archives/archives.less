@@ -9,7 +9,7 @@
 .archives {
 	width: 100vw;
 	&__top-wrapper {
-		height: 60px;
+		height: 70px;
 		position: fixed;
 		top: 0;
 		background-color: @white;
@@ -37,7 +37,7 @@
 		-webkit-box-align: center;
 		-ms-flex-align: center;
 		align-items: center;
-		min-height: 60px;
+		min-height: 70px;
 		a, .btn, button {
 			&:hover,
 			&:focus,
@@ -53,7 +53,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		min-height: 60px;
+		min-height: 70px;
 		color: white;
 		a, button {
 			color: white;
@@ -96,20 +96,11 @@
 		}
 	}
 	&__top-title {
+		display: none;
 		text-align: center;
 		font-weight: 700;
 		font-size: 1.6rem;
-		// margin-left: -100px;
 	}
-//	&__top-actions {
-//		flex: 1;
-//		margin-left: auto;
-//		display: flex;
-//		flex-wrap: wrap;
-//		align-items: center;
-//		justify-content: flex-end;	
-//		padding: 1.5rem;
-//	}
     &__header-exit {
 		margin-right: 5rem;
     	margin-left: auto;
@@ -351,6 +342,7 @@
 	&__object-ajax-loader {
 		padding: 0 2rem;
 		background: @white;
+		margin-top: 2rem;
 	}
 	.thumbnails-image-wrapper {
 		overflow: hidden;
@@ -394,8 +386,8 @@
 		background-color: #f2f3f4;
 		width: 100vw;
 		display: block;
-		margin-top: 60px;
-		min-height: calc(~"100vh - 60px");
+		margin-top: 70px;
+		min-height: calc(~"100vh - 70px");
 	}
 	&__content-wrapper {
 		width: 100%;
@@ -530,12 +522,25 @@
 			}
 		}
 	}
+	&__select-database-dropdown-wrapper {
+		display: flex;
+		align-items: center;
+		background: #f2f3f4;
+		padding-bottom: 2rem;
+	}
+	&__select-database-dropdown-label {
+		font-weight: 700;
+		font-size: 1.6rem;
+	}
 	&__select-database-dropdown {
 		border: none;
 		background: transparent;
-		font-weight: 700;
 		font-size: 1.6rem;
-		text-align: right;
+		flex: 1;
+		margin-left: 1.5rem;
+		background: @white;
+		border: 1px solid @middlegray;
+		padding: 0.5rem 1rem;
 	}
 	// invisible element for JS functionality
 	#tempWidthSelect {
