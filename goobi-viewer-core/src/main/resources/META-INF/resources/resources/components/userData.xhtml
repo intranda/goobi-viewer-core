@@ -3,6 +3,7 @@
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
 	<composite:interface>
@@ -62,9 +63,10 @@
 								</div>
 								<h:inputText disabled="#{cc.attrs.user.anonymous}"
 									value="#{cc.attrs.user.email}" id="email" label="email"
+									pt:data-confirm="email"
 									immediate="true" required="true" styleClass="form-control">
 									<f:validator validatorId="emailValidator" for="email" />
-									<f:ajax render="emailGroup" />
+									<f:ajax render="emailGroup" onevent="confirmEmailChange" />
 								</h:inputText>
 								<span class="admin__form-help-text">#{msg.admin__user_email__help}</span>
 							</div>
@@ -74,6 +76,20 @@
 									<i class="fa fa-question-circle" aria-hidden="true"></i>
 								</button>
 							</div>
+							<script>
+							
+							function confirmEmailChange(e) {
+							    if(e.status == 'success') {
+								    let value = e.source.value;
+								    let originalValue = e.source.defaultValue
+								    viewerJS.notifications.confirm("#{msg.user__change_email__confirm}")
+								    .catch(() => {			        
+								        $("[data-confirm='email']").val(originalValue);
+								    })
+							    }
+							}
+							
+							</script>
 						</h:panelGroup>
 
 						<!-- USER FIRST NAME -->
@@ -204,6 +220,8 @@
 					</h:commandLink>
 				</div>
 			</h:form>
+			
+
 
 
 			<h:form id="deleteUser" styleClass="form-horizontal" role="form" rendered="#{not empty cc.attrs.user.id}"

@@ -280,8 +280,8 @@ public class AdminBean implements Serializable {
     public boolean saveUserAction(User user) throws DAOException {
         
         //first check if current user has the right to edit the given user
-        if(user == null || !BeanUtils.getUserBean().getUser().isSuperuser() && !BeanUtils.getUserBean().getUser().equals(user)) {
-            Messages.info("errSave");
+        if(user == null || (!BeanUtils.getUserBean().getUser().isSuperuser() && !BeanUtils.getUserBean().getUser().equals(user))) {
+            Messages.error("errSave");
             return false;
         }
 
@@ -333,7 +333,7 @@ public class AdminBean implements Serializable {
             if (DataManager.getInstance().getDao().addUser(user)) {
                 Messages.info("newUserCreated");
             } else {
-                Messages.info("errSave");
+                Messages.error("errSave");
                 return false;
             }
         }

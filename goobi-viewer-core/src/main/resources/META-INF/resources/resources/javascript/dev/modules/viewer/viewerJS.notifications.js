@@ -38,7 +38,7 @@ var viewerJS = ( function( viewer ) {
 				denyText = denyText ? denyText : viewerJS.translator.translate("cancel");
 				if(typeof(Swal) !== 'undefined') {
 					return Swal.fire({
-						title: message,
+						text: message,
 						icon: 'warning',
 						showCancelButton: true,
 						confirmButtonText: confirmText,
@@ -61,7 +61,7 @@ var viewerJS = ( function( viewer ) {
 		notify : (message, type) => {
 			if(typeof Swal !== 'undefined') {
 				Swal.fire({
-					title: message,
+					text: message,
 					icon: type,
 				    buttonsStyling: false,
 				    text: '',
