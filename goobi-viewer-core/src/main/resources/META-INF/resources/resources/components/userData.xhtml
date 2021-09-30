@@ -176,7 +176,21 @@
 					</div>
 				</ui:fragment>
 
-
+ 				<!-- ACCOUNT ACTIVATION -->
+                <ui:fragment rendered="#{!cc.attrs.user.active and !cc.attrs.user.anonymous}">
+                    <h3>#{msg.admin__user_activation}</h3>
+                       <div class="admin__default-block -warning">
+                           <p>#{msg.admin__user_activation_description}</p>
+                           <div class="form-group form-row">
+                               <div class="col-9">
+                                   <div class="form-check">
+                                       <h:selectBooleanCheckbox class="form-check-input" value="#{cc.attrs.user.active}" id="userActivation"/>
+                                    <label for="userActivation" class="form-check-label" >#{msg.admin__user_activation_label}</label>
+                                   </div>
+                               </div>
+                           </div>
+                    </div>
+                </ui:fragment>
 
 				<!-- SAVE / CANCEL BUTTONS -->
 				<div class="row no-gutters justify-content-end admin__final-actions">
@@ -192,7 +206,7 @@
 			</h:form>
 
 
-			<h:form id="deleteUser" styleClass="form-horizontal" role="form"
+			<h:form id="deleteUser" styleClass="form-horizontal" role="form" rendered="#{not empty cc.attrs.user.id}"
 				prependId="false">
 				<h3>#{msg.admin__user_delete}</h3>
 				<div class="admin__default-block -danger">

@@ -44,21 +44,19 @@
 
 							<div class="admin__content-side -sticky">
 								<!-- USER PROFILE PICTURE -->
-								<div class="admin__default-block">
-									
-									<h3>#{msg.admin__user_avatar}</h3>
-									<div class="form-group form-row admin__profile-image-wrapper">
-
-										<img class="admin__profile-image"
-											src="#{adminBean.currentUser.getAvatarUrl(300)}" alt="User Avatar" />
-										<button data-toggle="modal" data-backdrop="false"
-											data-target="#changeProfilePicture"
-											class="btn btn--default user-settings__profile-image-edit-button">#{msg.edit}</button>
+								<ui:fragment rendered="#{not empty adminBean.currentUser.id}">
+									<div class="admin__default-block">
+										<h3>#{msg.admin__user_avatar}</h3>
+										<div class="form-group form-row admin__profile-image-wrapper">
+	
+											<img class="admin__profile-image"
+												src="#{adminBean.currentUser.getAvatarUrl(300)}" alt="User Avatar" />
+											<button data-toggle="modal" data-backdrop="false"
+												data-target="#changeProfilePicture"
+												class="btn btn--default user-settings__profile-image-edit-button">#{msg.edit}</button>
+										</div>
 									</div>
-									
-									
-
-								</div>
+								</ui:fragment>
 								
 								<!-- USER ADMIN RIGHTS -->
 								<div class="admin__default-block">
