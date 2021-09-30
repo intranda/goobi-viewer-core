@@ -46,6 +46,11 @@ public class CmsDynamicContentBean implements Serializable{
     private HtmlPanelGroup topBarGroup = null;
     private CMSPage cmsPage = null;
     
+    @Deprecated //no longer needed to set
+    public void setCmsPage(CMSPage page) {
+        this.cmsPage = page;
+    }
+    
     public HtmlPanelGroup getTopBarContent() {
         this.cmsPage = Optional.ofNullable(BeanUtils.getCmsBean()).map(CmsBean::getCurrentPage).orElse(null);
         if (topBarGroup == null) {
