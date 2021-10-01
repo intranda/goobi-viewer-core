@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
@@ -38,7 +37,7 @@ public class ArchiveEntry {
     // node is search hit
     private boolean searchHit;
     // node type -  @level
-    private String nodeType;
+    private NodeType nodeType;
     // display node in a search result
     private boolean displaySearch;
     // true if the validation of all metadata fields was successful
@@ -142,28 +141,7 @@ public class ArchiveEntry {
         }
         return list;
     }
-
-    public void findAssociatedRecordPi() throws PresentationException {
-        if (id == null) {
-            associatedRecordPi = "";
-            return;
-        }
-        try {
-            //Put quotes around entry id in request, otherwise any document matching any of the '-'-separated parts of the id will be returned
-            SolrDocument doc = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getFirstDoc("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":\"" + id + "\"", Collections.singletonList(SolrConstants.PI));
-            if (doc != null) {
-                associatedRecordPi = (String) doc.getFieldValue(SolrConstants.PI);
-            }
-            if (associatedRecordPi == null) {
-                associatedRecordPi = "";
-            }
-        } catch (SolrException | IndexUnreachableException e) {
-            logger.error("Error reading solr database:" + e);
-        }
-    }
-
+    
     public boolean isHasChildren() {
         return !subEntryList.isEmpty();
     }
@@ -467,7 +445,7 @@ public class ArchiveEntry {
     /**
      * @return the nodeType
      */
-    public String getNodeType() {
+    public NodeType getNodeType() {
         return nodeType;
     }
 
@@ -475,7 +453,7 @@ public class ArchiveEntry {
      * @param nodeType the nodeType to set
      */
     public void setNodeType(String nodeType) {
-        this.nodeType = nodeType;
+        this.nodeType = NodeType.getNodeType(nodeType);
     }
 
     /**

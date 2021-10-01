@@ -17,12 +17,14 @@ package io.goobi.viewer.model.archives;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -73,7 +75,7 @@ public class BasexEADParser {
 
     private List<ArchiveMetadataField> configuredFields;
     
-    private final Map<String, String> associatedRecordMap;
+    private final Map<String, Entry<String, Boolean>> associatedRecordMap;
 
     //    private List<StringPair> eventList;
     //    private List<String> editorList;
@@ -87,15 +89,16 @@ public class BasexEADParser {
      */
     public BasexEADParser(String basexUrl) throws PresentationException, IndexUnreachableException {
         this.basexUrl = basexUrl;   
-        this.associatedRecordMap = getAssociatedRecordPis();
+        this.associatedRecordMap = getAssociatedRecordPis();        
     }
     
-    private Map<String, String> getAssociatedRecordPis() throws PresentationException, IndexUnreachableException {
+    private Map<String, Entry<String, Boolean>> getAssociatedRecordPis() throws PresentationException, IndexUnreachableException {
         return DataManager.getInstance()
                 .getSearchIndex()
-                .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*" + " +" + SolrConstants.BOOL_IMAGEAVAILABLE + ":*", Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI))
+                .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*", Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI, SolrConstants.BOOL_IMAGEAVAILABLE))
                 .stream()
-                .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)), doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI))));
+                .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)), 
+                        doc -> new SimpleEntry(SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI)), SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE)))));
     }
 
     /**
@@ -229,7 +232,7 @@ public class BasexEADParser {
      * @param configuredFields
      * @return
      */
-    private static ArchiveEntry parseElement(int order, int hierarchy, Element element, List<ArchiveMetadataField> configuredFields, Map<String, String> associatedPIs) {
+    private static ArchiveEntry parseElement(int order, int hierarchy, Element element, List<ArchiveMetadataField> configuredFields, Map<String, Entry<String, Boolean>> associatedPIs) {
         if (element == null) {
             throw new IllegalArgumentException("element may not be null");
         }
@@ -239,6 +242,8 @@ public class BasexEADParser {
 
         ArchiveEntry entry = new ArchiveEntry(order, hierarchy);
 
+        
+        
         for (ArchiveMetadataField emf : configuredFields) {
 
             List<String> stringValues = new ArrayList<>();
@@ -282,7 +287,7 @@ public class BasexEADParser {
         List<Element> clist = null;
         Element archdesc = element.getChild("archdesc", NAMESPACE_EAD);
         if (archdesc != null) {
-            String type = archdesc.getAttributeValue("localtype");
+            String type = archdesc.getAttributeValue("level");
             entry.setNodeType(type);
             Element dsc = archdesc.getChild("dsc", NAMESPACE_EAD);
             if (dsc != null) {
@@ -290,19 +295,19 @@ public class BasexEADParser {
             }
 
         } else {
-            String type = element.getAttributeValue("otherlevel");
+            String type = element.getAttributeValue("level");
             entry.setNodeType(type);
 
         }
 
-        if (StringUtils.isBlank(entry.getNodeType())) {
+        if (entry.getNodeType() == null) {
             entry.setNodeType("folder");
         }
 
-        String associatedPI = associatedPIs.get(entry.getId());
-        if(StringUtils.isNotBlank(associatedPI)) {
-            entry.setAssociatedRecordPi(associatedPI);
-            entry.setContainsImage(true);
+        Entry<String, Boolean> associatedRecordEntry = associatedPIs.get(entry.getId());
+        if(associatedRecordEntry != null) {
+            entry.setAssociatedRecordPi(associatedRecordEntry.getKey());
+            entry.setContainsImage(associatedRecordEntry.getValue());
         }
         
         // Set description level value

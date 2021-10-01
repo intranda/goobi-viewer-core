@@ -70,9 +70,11 @@
 									
 									<!-- TITLE -->
 									<div class="archives-tree__list-expandable-title #{entry.id == archiveBean.archiveTree.selectedEntry.id ? '-archives-selected' : ''} #{entry.searchHit ? '-archives-search-hit':''}">
-												<span class="fa-stack" aria-hidden="true"><i
-													class="fa fa-file-o"></i>
-													<i class="fa fa-stack-text">F</i></span>
+												<span class="fa-stack">
+													<i class="#{entry.nodeType.iconClass}"></i>
+												</span>
+<!-- 												<span class="fa-stack" aria-hidden="true"> -->
+<!-- 													<i class="fa fa-stack-text">F</i></span> -->
 												<ui:fragment rendered="#{entry.id == archiveBean.archiveTree.selectedEntry.id}">
 													<a class="archives-tree__selected" name="selected"></a>
 												</ui:fragment>
