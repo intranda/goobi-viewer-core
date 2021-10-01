@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
@@ -751,4 +752,11 @@ public class ArchiveEntry {
     public void setContainsImage(boolean containsImage) {
         this.containsImage = containsImage;
     }
+    
+    public String getFieldValue(String field) {
+        return getAllAreaLists().stream().filter(entry -> entry.getLabel().equals(field))
+                .map(ArchiveMetadataField::getValue)
+                .filter(StringUtils::isNotBlank)
+                .findAny().orElse(null);
+  }
 }
