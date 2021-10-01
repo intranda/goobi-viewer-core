@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrException;
 import org.slf4j.Logger;
@@ -49,6 +50,8 @@ public class ArchiveEntry {
     private boolean expanded = false;
 
     private String associatedRecordPi;
+    
+    private boolean containsImage = false;
 
     /* 1. metadata for Identity Statement Area */
     //    Reference code(s)
@@ -702,12 +705,16 @@ public class ArchiveEntry {
      * @throws PresentationException
      */
     public String getAssociatedRecordPi() throws PresentationException, IndexUnreachableException {
-        if (associatedRecordPi == null) {
-            findAssociatedRecordPi();
-        }
-
         return associatedRecordPi;
     }
+    
+    /**
+     * @param associatedRecordPi the associatedRecordPi to set
+     */
+    public void setAssociatedRecordPi(String associatedRecordPi) {
+        this.associatedRecordPi = associatedRecordPi;
+    }
+    
 
     /**
      * Get the parent node hierarchy of this node, optionally including the node itself The list is sorted with hightest hierarchy level first, so the
@@ -734,5 +741,14 @@ public class ArchiveEntry {
     @Override
     public String toString() {
         return id;
+    }
+    
+
+    public boolean isContainsImage() {
+        return this.containsImage;
+    }
+
+    public void setContainsImage(boolean containsImage) {
+        this.containsImage = containsImage;
     }
 }
