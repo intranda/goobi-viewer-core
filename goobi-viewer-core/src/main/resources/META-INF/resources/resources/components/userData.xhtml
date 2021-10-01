@@ -81,13 +81,11 @@
 							
 							function confirmEmailChange(e) {
 							    if(#{cc.attrs.confirmEmailChange}) {
-							    	if(e.status == 'success') {
+							    	if(e.status == 'begin') {
 									    let value = e.source.value;
 									    let originalValue = e.source.defaultValue
 									    viewerJS.notifications.confirm("#{msg.user__change_email__confirm}")
-									    .catch(() => {			        
-									        $("[data-confirm='email']").val(originalValue);
-									    })
+									    .catch(() => $("[data-confirm='email']").val(originalValue))
 								    }
 							    }
 							}
