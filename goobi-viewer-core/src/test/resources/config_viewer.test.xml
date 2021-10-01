@@ -181,7 +181,7 @@
         <!-- unzoomedImageAccessMaxWidth: Images up to this size are regarded as 'unzoomed'. Access conditions for zooming images are not applied -->
         <unzoomedImageAccessMaxWidth>2</unzoomedImageAccessMaxWidth>
         <!-- fullAccessForLocalhost: If true, users on localhost will be granted superuser access. Default is false. -->
-        <fullAccessForLocalhost>false</fullAccessForLocalhost>
+        <fullAccessForLocalhost>true</fullAccessForLocalhost>
     </accessConditions>
 
 	<reCaptcha enabled="false">

@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.Collections;
 
 import javax.ws.rs.core.MediaType;
@@ -34,6 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.LicenseType;
@@ -61,6 +63,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        DataManager.getInstance().injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_no_local_access.test.xml").getAbsolutePath()));
     }
 
     /**
