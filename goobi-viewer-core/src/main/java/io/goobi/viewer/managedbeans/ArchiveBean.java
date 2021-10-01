@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -66,6 +68,8 @@ public class ArchiveBean implements Serializable {
     private String searchString;
 
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
+    
+    private Map<String, String> archives = new HashMap<>();
 
     //    @Inject
     //    private FacesContext context;
