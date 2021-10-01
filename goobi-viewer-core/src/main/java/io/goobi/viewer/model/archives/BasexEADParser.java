@@ -93,7 +93,7 @@ public class BasexEADParser {
     private Map<String, String> getAssociatedRecordPis() throws PresentationException, IndexUnreachableException {
         return DataManager.getInstance()
                 .getSearchIndex()
-                .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*", Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI))
+                .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*" + " +" + SolrConstants.BOOL_IMAGEAVAILABLE + ":*", Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI))
                 .stream()
                 .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)), doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI))));
     }
