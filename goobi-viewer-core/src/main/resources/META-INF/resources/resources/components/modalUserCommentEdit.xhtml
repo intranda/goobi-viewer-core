@@ -1,0 +1,101 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface />
+
+    <composite:implementation>
+    
+    <ui:fragment>
+
+		<!-- MODAL -->
+		<div class="modal fade" id="#{cc.attrs.id}" tabindex="-1"
+			role="dialog"
+			aria-labelledby="#{termsOfUseBean.getTitleForDisplay()}"
+			aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered widget-usage__citelinks-box" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h2 class="modal-title">#{msg.edit_comment}</h2>
+						<button type="button" class="fancy-close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">x</span>
+						</button>
+					</div>
+					<div class="modal-body">
+					
+					
+					
+					
+					
+							<!-- COMMENT TEXT EDIT -->
+							<div class="user-comments__comment-content-options-text-edit">
+								<h:inputTextarea id="userCommentEditableText"
+									value="#{comment.text}" />
+							</div>
+							
+						
+										
+									<!-- EDIT COMMENT -->
+									<ui:fragment
+										rendered="#{userBean.user == comment.owner or userBean.user.superuser}">
+										<span class="user-comments__comment-content-options-save">
+											<h:commandLink
+												action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}"
+												title="#{msg.userCommentSave}">
+												<i class="fa fa-floppy-o" aria-hidden="true"></i>
+												<f:passThroughAttribute name="data-toggle" value="tooltip" />
+												<f:passThroughAttribute name="data-placement" value="bottom" />
+												<f:passThroughAttribute name="data-edit" value="save" />
+												<f:ajax execute="userCommentEditableText" render="#userCommentsForm" />
+											</h:commandLink>
+										</span>
+										<span class="user-comments__comment-content-options-cancel">
+											<button type="button" class="btn btn--icon"
+												title="#{msg.userCommentEditCancel}" data-edit="cancel"
+												data-toggle="tooltip" data-placement="bottom">
+												<i class="fa fa-ban" aria-hidden="true"></i>
+											</button>
+										</span>
+										<span class="user-comments__comment-content-options-edit in">
+											<button type="button" class="btn btn--icon"
+												title="#{msg.userCommentEdit}" data-edit="comment"
+												data-toggle="tooltip" data-placement="bottom" aria-label="#{msg.userCommentEdit}">
+												<i class="fa fa-pencil" aria-hidden="true"></i>
+											</button>
+										</span>
+									</ui:fragment>
+									
+									
+											<h:commandLink
+												action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}"
+												title="#{msg.userCommentSave}" value="Speichern">
+												<f:ajax execute="userCommentEditableText" render="userCommentsForm" />
+											</h:commandLink>
+										
+						
+						
+						
+					</div>
+
+				</div>
+			</div>
+			<div class="alt-backdrop" data-dismiss="modal"></div>
+		</div>
+
+		
+
+
+</ui:fragment>
+
+	</composite:implementation>
+</ui:composition>

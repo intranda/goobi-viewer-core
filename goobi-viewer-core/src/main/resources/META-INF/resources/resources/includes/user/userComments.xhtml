@@ -62,11 +62,25 @@
 							<ui:fragment
 								rendered="#{userBean.loggedIn or comment.dateUpdated != null}">
 								<div class="user-comments__comment-content-options">
+								
+								
+								
+								
+								
 									<!-- LAST CHANGE -->
 									<h:panelGroup rendered="#{comment.dateUpdated != null}"
 										styleClass="user-comments__comment-content-options-last-change">
                                         #{msg.lastEdited} #{navigationHelper.getLocalDate(comment.dateUpdated)}
                                     </h:panelGroup>
+
+
+
+									<viewerComponent:modalUserCommentEdit id="modalUserCommentEdit" />
+
+
+
+
+
 
 									<!-- EDIT COMMENT -->
 									<ui:fragment
@@ -117,15 +131,23 @@
 								</div>
 							</ui:fragment>
 
-							<!-- COMMENT TEXT -->
-							<div class="user-comments__comment-content-options-text in">
-								#{comment.displayText}</div>
 
-							<!-- COMMENT TEXT EDIT -->
-							<div class="user-comments__comment-content-options-text-edit">
-								<h:inputTextarea id="userCommentEditableText"
-									value="#{comment.text}" />
-							</div>
+
+							<div id="reloadtest">
+								<!-- COMMENT TEXT -->
+								<div class="user-comments__comment-content-options-text in">
+									#{comment.displayText}</div>
+							</div>	
+
+
+
+
+							<!-- Button trigger modal -->
+							<button type="button" class="btn btn-primary" data-backdrop="false" data-toggle="modal" data-target="#modalUserCommentEdit">
+							  Launch demo modal
+							</button>
+
+
 						</div>
 					</div>
 				</ui:repeat>
