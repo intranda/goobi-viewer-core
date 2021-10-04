@@ -5,7 +5,6 @@
 
 /* USER LOGIN MODAL */
 .user-login-modal {
-	
 	font-family: @fontBackend;
 	&.active {
 		position: fixed;
@@ -122,12 +121,14 @@
 			width: 100%;
 		}
 	}
+	&__body-login-open-id {
+		flex: 0 0 80%;
+		max-width: 80%;	
+	}
 	&__body-login-open-id, &__new-account  {
 		h4 {
 			position: relative;
-			margin-right: -15px;
 			margin-bottom: 1.6rem;
-			margin-left: -15px;
 			font-size: @fontMedium;
 			text-align: center;
 			text-transform: uppercase;
@@ -135,19 +136,19 @@
 			span {
 				position: relative;
 				padding: 0 3px;
-				background-color: @white;
 				z-index: 10;
+				color: @white;
 			}
 			&:before {
-				content: "";
-				position: absolute;
-				display: block;
-				top: 50%;
-				width: 100%;
-				height: 1px;
-				margin-top: -1px;
-				background-color: @middlegray;
-				z-index: 9;
+//				content: "";
+//				position: absolute;
+//				display: block;
+//				top: 50%;
+//				width: 100%;
+//				height: 1px;
+//				margin-top: -1px;
+//				background-color: @middlegray;
+//				z-index: 9;
 			}
 		}
 		ul {
@@ -187,7 +188,7 @@
 				font-weight: 700;
 				text-align: center;
 				color: @black;
-				border: 1px solid @middlegray;
+				background: @white;
 				&:hover,
 				&:active,
 				&focus {
@@ -235,17 +236,68 @@
 		flex-direction: row;
 		overflow: hidden;
 		border-radius: 20px;
+		background: transparent;
 	}
 	&__left {
 		flex: 0 0 70%;
 		max-width: 70%;
+		background: @white;
 	}
 	&__right {
+		position: relative;
 		flex: 0 0 30%;
 		max-width: 30%;
 		background: @blue;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
+	.fancy-close {
+		top: 3.5rem;
+		right: 2.5rem;
+		background: transparent;
+		&::before,
+		&::after {
+		    background-color: #fff;
+		}
+	}
+	.effect-label {
+		color: var(--primary-medium);
+		font-size: 16px;
+		position: absolute;
+		pointer-events: none;
+		left: 1rem;
+		top: 10px;
+		transition: 0.2s ease all;
+	}
+	input:focus + .effect-label {
+		top: -8px;
+		left: 10px;
+		background-color: white;
+		padding: 0 0.25em 0 0.25em;
+	}
+
 }
+
+.svgtest svg {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
+height: 100%;
+max-width: 60%;
+}
+.svgtest {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  vertical-align: middle;
+  overflow: hidden;
+height: 100%;
+}
+
+
 
 /* MODIFICATION */
 #login-body {
@@ -267,11 +319,15 @@
 
 // KEYBOARD ANIMATION
 .keyboard {
-  border: 5px solid rgb(255, 255, 255);
-  border-radius: 10px;
+	border: 5px solid rgb(255, 255, 255);
+	border-radius: 10px;
 	width: 87px;
 	height: 48px;
-    position: relative;
+	position: absolute;
+	bottom: 4rem;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
 }
 
 .space-button {
