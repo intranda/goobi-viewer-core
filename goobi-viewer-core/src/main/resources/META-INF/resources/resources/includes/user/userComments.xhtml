@@ -75,82 +75,78 @@
 
 
 
-									<viewerComponent:modalUserCommentEdit id="modalUserCommentEdit" />
 
 
 
 
 
 
-									<!-- EDIT COMMENT -->
-									<ui:fragment
-										rendered="#{userBean.user == comment.owner or userBean.user.superuser}">
-										<span class="user-comments__comment-content-options-save">
-											<h:commandLink
-												action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}"
-												title="#{msg.userCommentSave}">
-												<i class="fa fa-floppy-o" aria-hidden="true"></i>
-												<f:passThroughAttribute name="data-toggle" value="tooltip" />
-												<f:passThroughAttribute name="data-placement" value="bottom" />
-												<f:passThroughAttribute name="data-edit" value="save" />
-												<f:ajax execute="userCommentEditableText" render="@form" />
-											</h:commandLink>
-										</span>
-										<span class="user-comments__comment-content-options-cancel">
-											<button type="button" class="btn btn--icon"
-												title="#{msg.userCommentEditCancel}" data-edit="cancel"
-												data-toggle="tooltip" data-placement="bottom">
-												<i class="fa fa-ban" aria-hidden="true"></i>
-											</button>
-										</span>
-										<span class="user-comments__comment-content-options-edit in">
-											<button type="button" class="btn btn--icon"
-												title="#{msg.userCommentEdit}" data-edit="comment"
-												data-toggle="tooltip" data-placement="bottom" aria-label="#{msg.userCommentEdit}">
-												<i class="fa fa-pencil" aria-hidden="true"></i>
-											</button>
-										</span>
-									</ui:fragment>
 
-									<!-- DELETE COMMENT -->
-									<ui:fragment
-										rendered="#{userBean.loggedIn and (userBean.user == comment.owner or userBean.user.superuser)}">
-										<span class="user-comments__comment-content-options-delete">
-											<h:commandLink
-												onclick="if ( !confirm( &quot;#{msg.userCommentDeleteText}&quot; ) ) { return false; }"
-												action="#{activeDocumentBean.viewManager.currentPage.deleteCommentAction(comment)}"
-												title="#{msg.userCommentDelete}">
-												<i class="fa fa-trash-o" aria-hidden="true"></i>
-												<f:passThroughAttribute name="data-toggle" value="tooltip" />
-												<f:passThroughAttribute name="data-placement" value="bottom" />
-												<f:passThroughAttribute name="aria-label" value="#{msg.userCommentDelete}" />
-												<f:ajax render="@form" />
-											</h:commandLink>
-										</span>
-									</ui:fragment>
+
+
+
 								</div>
 							</ui:fragment>
 
 
-
-							<div id="reloadtest">
 								<!-- COMMENT TEXT -->
 								<div class="user-comments__comment-content-options-text in">
 									#{comment.displayText}</div>
-							</div>	
+
+								
+									<!-- EDIT COMMENT -->
+									<ui:fragment
+										rendered="#{userBean.user == comment.owner or userBean.user.superuser}">
+										
+										
+<!-- 										<span class="user-comments__comment-content-options-save"> -->
+<!-- 											<h:commandLink -->
+<!-- 												action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}" -->
+<!-- 												title="#{msg.userCommentSave}"> -->
+<!-- 												<i class="fa fa-floppy-o" aria-hidden="true"></i> -->
+<!-- 												<f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
+<!-- 												<f:passThroughAttribute name="data-placement" value="bottom" /> -->
+<!-- 												<f:passThroughAttribute name="data-edit" value="save" /> -->
+<!-- 												<f:ajax execute="userCommentEditableText" render="@form" /> -->
+<!-- 											</h:commandLink> -->
+<!-- 										</span> -->
+
+										
+										<div class="user-comments__action-wrapper">
+											<!-- TRIGGER EDIT COMMENT MODAL -->
+											<button type="button" class="btn--clean user-comments__edit-comment-button" data-backdrop="false" data-toggle="modal" data-target="#modalUserCommentEdit">
+											  #{msg.edit}
+											</button>
+											
+											<!-- DELETE COMMENT -->
+											<ui:fragment
+												rendered="#{userBean.loggedIn and (userBean.user == comment.owner or userBean.user.superuser)}">
+													<h:commandLink styleClass="user-comments__delete-comment-button"
+														onclick="if ( !confirm( &quot;#{msg.userCommentDeleteText}&quot; ) ) { return false; }"
+														action="#{activeDocumentBean.viewManager.currentPage.deleteCommentAction(comment)}"
+														title="#{msg.userCommentDelete}">
+														#{msg.delete}
+														<f:ajax render="@form" />
+													</h:commandLink>
+											</ui:fragment>
+											
+											
+										</div>
+									</ui:fragment>
 
 
+								</div>	
 
 
-							<!-- Button trigger modal -->
-							<button type="button" class="btn btn-primary" data-backdrop="false" data-toggle="modal" data-target="#modalUserCommentEdit">
-							  Launch demo modal
-							</button>
 
 
 						</div>
-					</div>
+
 				</ui:repeat>
+				
+				<viewerComponent:modalUserCommentEdit id="modalUserCommentEdit" />
+													
+													
 
 				<!-- ADD COMMENT -->
 				<ui:fragment rendered="#{userBean.loggedIn}">

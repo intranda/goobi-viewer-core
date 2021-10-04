@@ -14,88 +14,57 @@
 	<composite:interface />
 
     <composite:implementation>
-    
-    <ui:fragment>
 
-		<!-- MODAL -->
-		<div class="modal fade" id="#{cc.attrs.id}" tabindex="-1"
-			role="dialog"
-			aria-labelledby="#{termsOfUseBean.getTitleForDisplay()}"
-			aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered widget-usage__citelinks-box" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h2 class="modal-title">#{msg.edit_comment}</h2>
-						<button type="button" class="fancy-close" data-dismiss="modal"
-							aria-label="Close">
-							<span aria-hidden="true">x</span>
-						</button>
-					</div>
-					<div class="modal-body">
-					
-					
-					
-					
-					
+		<ui:fragment>
+			<!-- MODAL -->
+			<div class="modal fade" id="#{cc.attrs.id}" tabindex="-1"
+				role="dialog"
+				aria-labelledby="#{termsOfUseBean.getTitleForDisplay()}"
+				aria-hidden="true">
+				<div
+					class="modal-dialog modal-dialog-centered widget-usage__citelinks-box"
+					role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h2 class="modal-title">#{msg.userCommentEdit}</h2>
+							<button type="button" class="fancy-close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">x</span>
+							</button>
+						</div>
+						<div class="modal-body">
+
 							<!-- COMMENT TEXT EDIT -->
-							<div class="user-comments__comment-content-options-text-edit">
-								<h:inputTextarea id="userCommentEditableText"
-									value="#{comment.text}" />
+							<div class="user-comments__modal-inside-wrapper">
+								<div class="row">
+
+									<div class="col-3">#{msg.userCommentText}:</div>
+									<div
+										class="col-9 user-comments__comment-content-options-text-edit">
+										<h:inputTextarea id="userCommentEditableText"
+											value="#{comment.text}" />
+									</div>
+								</div>
 							</div>
-							
-						
-										
-									<!-- EDIT COMMENT -->
-									<ui:fragment
-										rendered="#{userBean.user == comment.owner or userBean.user.superuser}">
-										<span class="user-comments__comment-content-options-save">
-											<h:commandLink
-												action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}"
-												title="#{msg.userCommentSave}">
-												<i class="fa fa-floppy-o" aria-hidden="true"></i>
-												<f:passThroughAttribute name="data-toggle" value="tooltip" />
-												<f:passThroughAttribute name="data-placement" value="bottom" />
-												<f:passThroughAttribute name="data-edit" value="save" />
-												<f:ajax execute="userCommentEditableText" render="#userCommentsForm" />
-											</h:commandLink>
-										</span>
-										<span class="user-comments__comment-content-options-cancel">
-											<button type="button" class="btn btn--icon"
-												title="#{msg.userCommentEditCancel}" data-edit="cancel"
-												data-toggle="tooltip" data-placement="bottom">
-												<i class="fa fa-ban" aria-hidden="true"></i>
-											</button>
-										</span>
-										<span class="user-comments__comment-content-options-edit in">
-											<button type="button" class="btn btn--icon"
-												title="#{msg.userCommentEdit}" data-edit="comment"
-												data-toggle="tooltip" data-placement="bottom" aria-label="#{msg.userCommentEdit}">
-												<i class="fa fa-pencil" aria-hidden="true"></i>
-											</button>
-										</span>
-									</ui:fragment>
-									
-									
-											<h:commandLink
-												action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}"
-												title="#{msg.userCommentSave}" value="Speichern">
-												<f:ajax execute="userCommentEditableText" render="userCommentsForm" />
-											</h:commandLink>
-										
-						
-						
-						
+
+							<!-- ACTION -->
+							<div class="form-group form-row user-comments__modal-actions">
+								<div class="col-sm-12 mt-3 d-flex justify-content-end">
+									<button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
+									<h:commandButton styleClass="btn btn--success accept ml-3"
+										value="#{msg.save}"
+										action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}">
+										<f:ajax execute="@this" />
+										<f:passThroughAttribute name="data-dismiss" value="modal"></f:passThroughAttribute>
+									</h:commandButton>
+								</div>
+							</div>
+						</div>
 					</div>
-
 				</div>
+				<div class="alt-backdrop" data-dismiss="modal"></div>
 			</div>
-			<div class="alt-backdrop" data-dismiss="modal"></div>
-		</div>
-
-		
-
-
-</ui:fragment>
+		</ui:fragment>
 
 	</composite:implementation>
 </ui:composition>
