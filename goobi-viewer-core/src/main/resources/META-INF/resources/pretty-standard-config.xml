@@ -129,9 +129,15 @@
 	</url-mapping>
 	<url-mapping id="user">
 		<pattern value="/user/" />
+         <!-- TODO: dashboard -->
 		<view-id value="/user.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+    <url-mapping id="userSettings">
+        <pattern value="/user/settings/" />
+        <view-id value="/user.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 	<url-mapping id="userRedirect">
 		<pattern value="/user/redirect/#{redirectUrl:userBean.redirectUrl}/" />
 		<view-id value="/user.xhtml" />
