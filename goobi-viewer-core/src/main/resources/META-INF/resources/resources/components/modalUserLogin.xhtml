@@ -25,20 +25,21 @@
 			class="modal user-login-modal #{alwaysVisible ? 'show':'fade'}"
 			tabindex="-1" role="dialog"
 			aria-hidden="#{cc.attrs.ariaHidden == true ? true : false}">
-			<div class="modal-dialog modal-dialog-centered" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<!--  <div class="user-login-modal__header-logo"></div> -->
-						<h2 class="modal-title user-login-modal__header-title">#{msg.login__header_title}</h2>
-						<h2 class="modal-title user-login-modal__header-title-create-account">#{msg.login__create_new_account}</h2>
-						<ui:fragment rendered="#{!alwaysVisible}">
-							<button type="button" class="fancy-close" data-dismiss="modal"
-								aria-label="Close">
-								<span aria-hidden="true">x</span>
-							</button>
-						</ui:fragment>
-					</div>
-
+			<div class="modal-dialog modal-dialog-centered user-login-modal__outer-wrapper" role="document">
+			
+				<!-- SPLIT MODAL WRAPPER -->
+				<div class="modal-content user-login-modal__inner">
+				
+					<!-- MODAL LEFT SIDE -->
+					<div class="user-login-modal__left">
+						
+						<div class="modal-header">
+							<!--  <div class="user-login-modal__header-logo"></div> -->
+							<h2 class="modal-title user-login-modal__header-title">#{msg.login__header_title}</h2>
+							<h2 class="modal-title user-login-modal__header-title-create-account">#{msg.login__create_new_account}</h2>
+						</div>
+						
+						
 					<div class="modal-body">
 
 						<!-- USER LOGIN -->
@@ -383,6 +384,48 @@
 							</div>
 						</div>
 					</div>
+						
+						
+						
+					</div>
+					
+					<!-- MODAL RIGHT SIDE -->
+					<div class="user-login-modal__right">
+					<!-- CLOSE BUTTON -->
+						<ui:fragment rendered="#{!alwaysVisible}">
+							<button type="button" class="fancy-close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">x</span>
+							</button>
+						</ui:fragment>
+						
+							<div class="keyboard">
+							  <div class="space-button"></div>
+							    <div class="single-key single-key-1"></div>
+							    <div class="single-key single-key-2"></div>
+							    <div class="single-key single-key-3 keyPressAnimation -delay1"></div>
+							    <div class="single-key single-key-4"></div>
+							    <div class="single-key single-key-5"></div>
+							    <div class="single-key single-key-6 keyPressAnimation -delay2"></div>
+							    <div class="single-key single-key-7"></div>
+							    <div class="single-key single-key-8"></div>
+							    <div class="single-key single-key-9 keyPressAnimation -delay3"></div>
+							    <div class="single-key single-key-10"></div>
+							    <div class="single-key single-key-11"></div>
+							    <div class="single-key single-key-12  keyPressAnimation -delay4"></div>
+							    <div class="single-key single-key-13"></div>
+							    <div class="single-key single-key-14"></div>
+							    <div class="single-key single-key-15"></div>
+							    <div class="single-key single-key-16"></div>
+							</div>
+						
+						
+						
+					</div>
+
+
+
+
 				</div>
 			</div>
 		</div>

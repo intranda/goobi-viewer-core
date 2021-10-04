@@ -2,11 +2,6 @@
    User Login
    style declarations for userLogin.xhtml
    ==============================================================*/
-   
-/* ==============================================================
-   User Login
-   style declarations for userLogin.xhtml
-   ==============================================================*/
 
 /* USER LOGIN MODAL */
 .user-login-modal {
@@ -231,6 +226,25 @@
 			vertical-align: inherit;
 		}
 	}
+	
+	// NEW FANCY STUFF
+	&__outer-wrapper {
+		max-width: 700px;
+	}
+	&__inner {
+		flex-direction: row;
+		overflow: hidden;
+		border-radius: 20px;
+	}
+	&__left {
+		flex: 0 0 70%;
+		max-width: 70%;
+	}
+	&__right {
+		flex: 0 0 30%;
+		max-width: 30%;
+		background: @blue;
+	}
 }
 
 /* MODIFICATION */
@@ -249,6 +263,134 @@
 	.user-login-modal {
 		display: block;
 	}
+}
+
+// KEYBOARD ANIMATION
+.keyboard {
+  border: 5px solid rgb(255, 255, 255);
+  border-radius: 10px;
+	width: 87px;
+	height: 48px;
+    position: relative;
+}
+
+.space-button {
+  width: 47px;
+  height: 6px;
+  background: rgb(255, 255, 255);
+  position: absolute;
+  left: 15px;
+bottom: 5px;
+  border-radius: 2px;
+}
+
+
+
+ .single-key {
+    width: 7px;
+    height: 7px;
+    background: rgb(255, 255, 255);
+    position: absolute;
+   border-radius: 1px;
+   &-1 {
+     top: 5px;
+     left: 5px;
+   }
+   &-2 {
+     top: 5px;
+     left: 15px;
+   }
+    &-3 {
+     top: 5px;
+     left: 25px;
+   }
+    &-4 {
+     top: 5px;
+     left: 35px;
+   }
+       &-5 {
+     top: 5px;
+     left: 45px;
+   }
+       &-6 {
+     top: 5px;
+     left: 55px;
+   }
+       &-7 {
+     top: 5px;
+     left: 65px;
+   }
+       &-8 {
+     top: 5px;
+     left: 65px;
+   }
+          &-9 {
+     top: 16px;
+     left: 20px;
+   }
+             &-10 {
+     top: 16px;
+     left: 30px;
+   }
+   
+  &-11 {
+     top: 16px;
+     left: 40px;
+   }
+  &-12 {
+     top: 16px;
+     left: 50px;
+   }
+     &-13 {
+     bottom: 5px;
+     left: 65px;
+   }
+       &-14 {
+     top: 16px;
+     left: 60px;
+     width: 12px;
+   }
+       &-15 {
+     top: 16px;
+     left: 5px;
+     width: 12px;
+   }
+          &-16 {
+     bottom: 5px;
+     left: 5px;
+   }
+  }
+
+
+.keyPressAnimation {
+  animation: scalor 0.4s ease;
+  &.-delay1 {
+    animation-delay: 0.1;
+  }
+    &.-delay2 {
+    animation-delay: 0.2s;
+  }
+  &.-delay3 {
+    animation-delay: 0.3s;
+  }
+  &.-delay4 {
+    animation-delay: 0.4s;
+  }
+}
+
+@keyframes scalor {
+    0% {
+        transform: scale(1);
+    }
+    20% {
+        transform: scale(0.8);
+    }
+    50% {
+        transform: scale(1.4);
+    }
+    100% {
+       transform: scale(1);
+    }
 }
 
 @{RTL} {
