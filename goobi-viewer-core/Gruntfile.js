@@ -267,17 +267,7 @@ module.exports = function (grunt) {
 	// $ grunt
 	grunt.registerTask('default', ['build']);
 	
+  // Copy dependencies from node_modules/
   grunt.registerTask('copyDeps', ['copy:js', 'copy:css'] )
-
-  // For testing only
-  grunt.registerTask('test',() => {
-    try {
-      console.log(notAVar)
-    }
-    catch (error) {
-      console.error(error); 
-    }
-    
-  });
         
 };

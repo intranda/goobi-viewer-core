@@ -53,6 +53,14 @@ const depsPathsJS = [
     dest:`${jsLibsDir}hcsticky/`
   },
 
+  { // jQuery
+    expand:true,
+    cwd: 'node_modules/jquery/',
+    src: ['LICENSE.txt', 'dist/jquery.min.js'], 
+    flatten: true,
+    dest:`${jsLibsDir}jquery/`
+  },
+
   { // LEAFLET
     expand:true,
     cwd: 'node_modules/leaflet/dist/',
@@ -328,6 +336,19 @@ const depsPathsCSS = [
     cwd: 'node_modules/leaflet.markercluster/dist/',
     src: 'MarkerCluster.css', 
     dest:`${cssLibsDir}leaflet/markercluster`
+  },
+
+  { // MAPBOX GL
+    expand:true,
+    cwd: 'node_modules/mapbox-gl/dist/',
+    src: 'mapbox-gl.css*', 
+    dest:`${cssLibsDir}mapbox/`
+  },
+  { // MAPBOX geocoder
+    expand:true,
+    cwd: 'node_modules/@mapbox/mapbox-gl-geocoder/dist/',
+    src: 'mapbox-gl-geocoder.css', 
+    dest:`${cssLibsDir}mapbox/geocoder/`
   },
 
   { // SWAGGER-UI
