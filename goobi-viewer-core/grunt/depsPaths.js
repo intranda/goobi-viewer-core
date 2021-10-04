@@ -292,7 +292,7 @@ const depsPathsCSS = [
     cwd: 'node_modules/font-awesome/',
     src: 'css/font-awesome.min.css', 
     flatten: true,
-    dest:`${cssLibsDir}font-awesome/`
+    dest:`${cssLibsDir}`
   },
 
   { // LEAFLET
