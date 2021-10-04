@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrException;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class ArchiveEntry {
     // node is search hit
     private boolean searchHit;
     // node type -  @level
-    private String nodeType;
+    private NodeType nodeType;
     // display node in a search result
     private boolean displaySearch;
     // true if the validation of all metadata fields was successful
@@ -49,6 +50,8 @@ public class ArchiveEntry {
     private boolean expanded = false;
 
     private String associatedRecordPi;
+    
+    private boolean containsImage = false;
 
     /* 1. metadata for Identity Statement Area */
     //    Reference code(s)
@@ -138,28 +141,7 @@ public class ArchiveEntry {
         }
         return list;
     }
-
-    public void findAssociatedRecordPi() throws PresentationException {
-        if (id == null) {
-            associatedRecordPi = "";
-            return;
-        }
-        try {
-            //Put quotes around entry id in request, otherwise any document matching any of the '-'-separated parts of the id will be returned
-            SolrDocument doc = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getFirstDoc("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":\"" + id + "\"", Collections.singletonList(SolrConstants.PI));
-            if (doc != null) {
-                associatedRecordPi = (String) doc.getFieldValue(SolrConstants.PI);
-            }
-            if (associatedRecordPi == null) {
-                associatedRecordPi = "";
-            }
-        } catch (SolrException | IndexUnreachableException e) {
-            logger.error("Error reading solr database:" + e);
-        }
-    }
-
+    
     public boolean isHasChildren() {
         return !subEntryList.isEmpty();
     }
@@ -463,7 +445,7 @@ public class ArchiveEntry {
     /**
      * @return the nodeType
      */
-    public String getNodeType() {
+    public NodeType getNodeType() {
         return nodeType;
     }
 
@@ -471,7 +453,7 @@ public class ArchiveEntry {
      * @param nodeType the nodeType to set
      */
     public void setNodeType(String nodeType) {
-        this.nodeType = nodeType;
+        this.nodeType = NodeType.getNodeType(nodeType);
     }
 
     /**
@@ -702,12 +684,16 @@ public class ArchiveEntry {
      * @throws PresentationException
      */
     public String getAssociatedRecordPi() throws PresentationException, IndexUnreachableException {
-        if (associatedRecordPi == null) {
-            findAssociatedRecordPi();
-        }
-
         return associatedRecordPi;
     }
+    
+    /**
+     * @param associatedRecordPi the associatedRecordPi to set
+     */
+    public void setAssociatedRecordPi(String associatedRecordPi) {
+        this.associatedRecordPi = associatedRecordPi;
+    }
+    
 
     /**
      * Get the parent node hierarchy of this node, optionally including the node itself The list is sorted with hightest hierarchy level first, so the
@@ -735,4 +721,20 @@ public class ArchiveEntry {
     public String toString() {
         return id;
     }
+    
+
+    public boolean isContainsImage() {
+        return this.containsImage;
+    }
+
+    public void setContainsImage(boolean containsImage) {
+        this.containsImage = containsImage;
+    }
+    
+    public String getFieldValue(String field) {
+        return getAllAreaLists().stream().filter(entry -> entry.getLabel().equals(field))
+                .map(ArchiveMetadataField::getValue)
+                .filter(StringUtils::isNotBlank)
+                .findAny().orElse(null);
+  }
 }

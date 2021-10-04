@@ -27,10 +27,10 @@
 					<fieldset>
 						<!-- USER DISPLAY NAME -->
 						<div class="form-group form-row">
-							<div class="col-2 control-label admin__form-label">
+							<div class="col-12 col-lg-2 control-label admin__form-label">
 								<label for="displayName">#{msg.admin__user_display_name}:</label>
 							</div>
-							<div class="col-9 admin__form-input">
+							<div class="col-11 col-lg-9 admin__form-input">
 								<h:inputText value="#{cc.attrs.user.nickName}" id="displayName"
 									label="displayName" styleClass="form-control" required="false"
 									requiredMessage="#{msg.loginEnterDisplayName}" />
@@ -47,11 +47,11 @@
 						<!-- USER EMAIL ADDRESS -->
 						<h:panelGroup id="emailGroup" layout="block"
 							styleClass="form-group form-row">
-							<div class="col-2 control-label admin__form-label">
+							<div class="col-12 col-lg-2 control-label admin__form-label">
 								<label for="email">#{msg.email}: </label><span
 									class="admin__label-required-field">(#{msg.form__required_field})</span>
 							</div>
-							<div class="col-9 admin__form-input cms-module__option-control">
+							<div class="col-11 col-lg-9 admin__form-input cms-module__option-control">
 								<div class="cms-module__option-message">
 									<h:messages for="email"
 										infoClass="cms-module__option-message-status success"
@@ -95,10 +95,10 @@
 
 						<!-- USER FIRST NAME -->
 						<div class="form-group form-row">
-							<div class="col-2 control-label admin__form-label">
+							<div class="col-12 col-lg-2 control-label admin__form-label">
 								<label for="firstName">#{msg.nameFirst}:</label>
 							</div>
-							<div class="col-9 admin__form-input">
+							<div class="col-11 col-lg-9 admin__form-input">
 								<h:inputText value="#{cc.attrs.user.firstName}" id="firstName"
 									label="firstName" styleClass="form-control" />
 								<span class="admin__form-help-text">#{msg.admin__user_first_name__help}</span>
@@ -113,10 +113,10 @@
 
 						<!-- USER LAST NAME -->
 						<div class="form-group form-row">
-							<div class="col-2 control-label admin__form-label">
+							<div class="col-12 col-lg-2 control-label admin__form-label">
 								<label for="lastName">#{msg.nameLast}:</label>
 							</div>
-							<div class="col-9 admin__form-input">
+							<div class="col-11 col-lg-9 admin__form-input">
 								<h:inputText value="#{cc.attrs.user.lastName}" id="lastName"
 									label="lastName" styleClass="form-control" />
 								<span class="admin__form-help-text">#{msg.admin__user_last_name__help}</span>
@@ -173,18 +173,18 @@
 						<div class="form-horizontal" role="form">
 							<div class="form-group form-row">
 								<h:outputLabel for="adminPasswordOne"
-									styleClass="col-2 control-label"
+									styleClass="col-12 col-lg-2 control-label"
 									value="#{msg.newUserPasswordOne}:" />
-								<div class="col-9">
+								<div class="col-11 col-lg-9">
 									<h:inputSecret id="adminPasswordOne" styleClass="form-control"
 										value="#{adminBean.passwordOne}" />
 								</div>
 							</div>
 							<div class="form-group form-row">
 								<h:outputLabel for="adminPasswordTwo"
-									styleClass="col-2 control-label"
+									styleClass="col-12 col-lg-2 control-label"
 									value="#{msg.newUserPasswordTwo}:" />
-								<div class="col-9">
+								<div class="col-11 col-lg-9">
 									<h:inputSecret id="adminPasswordTwo" styleClass="form-control"
 										value="#{adminBean.passwordTwo}" />
 								</div>
@@ -257,7 +257,7 @@
 		<div class="modal fade profile-picture-modal"
 			id="changeProfilePicture" tabindex="-1" role="dialog"
 			aria-labelledby="editUserdataModalLabel">
-			<div class="modal-dialog" role="document">
+			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 
 					<div class="modal-header">
