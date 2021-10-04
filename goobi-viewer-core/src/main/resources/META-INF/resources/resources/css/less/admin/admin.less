@@ -2156,7 +2156,22 @@ html[lang="es"] .admin__radio-switch {
 }
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.connected-top, 
+	.connected-middle {
+		display: flex;
+		align-items: flex-start;
+	}
+	.connected-top {
+		input {
+			margin-top: 3px;
+		}
+		label {
+			margin-left: 5px;
+		}
+	}
+	
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}
