@@ -16,6 +16,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.view.ViewScoped;
@@ -25,6 +26,7 @@ import org.jboss.weld.exceptions.IllegalStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.jsf.DynamicContent;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
@@ -44,11 +46,13 @@ public class CmsDynamicContentBean implements Serializable{
     private HtmlPanelGroup topBarGroup = null;
     private CMSPage cmsPage = null;
     
+    @Deprecated //no longer needed to set
     public void setCmsPage(CMSPage page) {
         this.cmsPage = page;
     }
     
     public HtmlPanelGroup getTopBarContent() {
+        this.cmsPage = Optional.ofNullable(BeanUtils.getCmsBean()).map(CmsBean::getCurrentPage).orElse(null);
         if (topBarGroup == null) {
             try {                
                 loadTopBarContent();

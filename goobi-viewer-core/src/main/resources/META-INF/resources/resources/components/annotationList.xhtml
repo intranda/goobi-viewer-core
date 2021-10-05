@@ -29,7 +29,7 @@
 									<div class="widget-annotations__type">
 										<i class="#{content.iconClass}" aria-hidden="true"></i>
 									</div>
-									<h:panelGroup display="block" rendered="#{content.type != 'NORMDATA'}" class="widget-annotations__content">
+									<h:panelGroup display="block" rendered="#{content.type != 'NORMDATA' or cc.attrs.sidebar}" class="widget-annotations__content">
 										<h:outputText value="#{msg[contentBean.cleanUpValue(content.extendendLabel)]}" escape="false">
 										</h:outputText>
 									</h:panelGroup>
@@ -61,7 +61,7 @@
 									<div class="widget-annotations__type">
 										<i class="#{content.iconClass}" aria-hidden="true"></i>
 									</div>
-									<h:panelGroup display="block" rendered="#{content.type != 'NORMDATA'}" class="widget-annotations__content">
+									<h:panelGroup display="block" rendered="#{content.type != 'NORMDATA' or cc.attrs.sidebar}" class="widget-annotations__content">
 										<h:outputText
 											value="#{msg[contentBean.cleanUpValue(content.extendendLabel)]}"
 											escape="false">

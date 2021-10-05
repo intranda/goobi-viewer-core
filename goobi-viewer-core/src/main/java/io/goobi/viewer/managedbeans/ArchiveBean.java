@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -66,6 +68,8 @@ public class ArchiveBean implements Serializable {
     private String searchString;
 
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
+    
+    private Map<String, String> archives = new HashMap<>();
 
     //    @Inject
     //    private FacesContext context;
@@ -93,8 +97,13 @@ public class ArchiveBean implements Serializable {
         String basexUrl = DataManager.getInstance().getConfiguration().getBaseXUrl();
         String databaseName = DataManager.getInstance().getConfiguration().getBaseXDatabase();
         if (StringUtils.isNoneBlank(basexUrl, databaseName)) {
-            BasexEADParser eadParser = new BasexEADParser(basexUrl);
-            this.databaseState = loadDatabase(eadParser, databaseName);
+            try {                
+                BasexEADParser eadParser = new BasexEADParser(basexUrl);
+                this.databaseState = loadDatabase(eadParser, databaseName);
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error("Failed to retrieve associated records from SOLR: {}", e.toString());
+                this.databaseState = DatabaseState.ERROR_NOT_CONFIGURED;
+            }
         } else {
             this.databaseState = DatabaseState.ERROR_NOT_CONFIGURED;
         }

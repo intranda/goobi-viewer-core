@@ -157,8 +157,9 @@
 	                      </c:if>
 	                     </div>
 
-	                     <h:inputHidden value="#{archiveBean.displayEntry.associatedRecordPi}">
+	                     <h:inputHidden value="#{archiveBean.displayEntry.associatedRecordPi}" >
 	                     	<f:passThroughAttribute name="data-name" value="recordPi"/>
+	                     	<f:passThroughAttribute name="data-contains-image" value="#{archiveBean.displayEntry.containsImage}"/>
 	                     </h:inputHidden>
 
 	                      <!-- ASSOCIATED RECORD -->

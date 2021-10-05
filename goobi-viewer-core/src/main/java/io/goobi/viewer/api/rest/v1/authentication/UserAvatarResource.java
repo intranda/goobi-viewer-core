@@ -39,6 +39,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -71,6 +72,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
@@ -90,7 +92,7 @@ public class UserAvatarResource extends ImageResource {
     
     public UserAvatarResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Parameter(description = "User id") @PathParam("userId") Long userId) throws IOException, ContentLibException {
+            @Parameter(description = "User id") @PathParam("userId") Long userId) throws WebApplicationException {
         super(context, request, response, "", getMediaFileUrl(userId).toString());
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         request.setAttribute("filename", this.imageURI.toString());
@@ -120,8 +122,12 @@ public class UserAvatarResource extends ImageResource {
      * @throws IOException 
      * @throws  
      */
-    public static URI getMediaFileUrl(Long userId) throws ContentLibException, IOException {
-        return getUserAvatarFile(userId).map(PathConverter::toURI).orElseThrow(() -> new ContentNotFoundException("No avatar file found for user " + userId));
+    public static URI getMediaFileUrl(Long userId) throws WebApplicationException {
+        try {            
+            return getUserAvatarFile(userId).map(PathConverter::toURI).orElseThrow(() -> new ContentNotFoundException("No avatar file found for user " + userId));
+        } catch(ContentLibException | IOException e) {
+            throw new WebApplicationException(e);
+        }
     }
 
     public static Path getUserAvatarFolder() {
@@ -161,7 +167,8 @@ public class UserAvatarResource extends ImageResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
-    @Operation(tags = {"iiif" }, summary = "IIIF image identifier for an uploaded user avatar image. Returns a IIIF 2.1.1 image information object")
+    @Operation(tags = {"users" }, summary = "IIIF image identifier for an uploaded user avatar image. Returns a IIIF 2.1.1 image information object")
+    @ApiResponse(responseCode = "404", description = "No image for the given user was uploaded")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
        return super.redirectToCanonicalImageInfo();
     }
