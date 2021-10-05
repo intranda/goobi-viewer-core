@@ -93,8 +93,13 @@ public class ArchiveBean implements Serializable {
         String basexUrl = DataManager.getInstance().getConfiguration().getBaseXUrl();
         String databaseName = DataManager.getInstance().getConfiguration().getBaseXDatabase();
         if (StringUtils.isNoneBlank(basexUrl, databaseName)) {
-            BasexEADParser eadParser = new BasexEADParser(basexUrl);
-            this.databaseState = loadDatabase(eadParser, databaseName);
+            try {                
+                BasexEADParser eadParser = new BasexEADParser(basexUrl);
+                this.databaseState = loadDatabase(eadParser, databaseName);
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error("Failed to retrieve associated records from SOLR: {}", e.toString());
+                this.databaseState = DatabaseState.ERROR_NOT_CONFIGURED;
+            }
         } else {
             this.databaseState = DatabaseState.ERROR_NOT_CONFIGURED;
         }

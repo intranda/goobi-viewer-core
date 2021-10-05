@@ -4,22 +4,71 @@
    ==============================================================*/
 /* USERDATA */
 /* BLOCK */
-.userdata {
-	/* ELEMENT */
+.user-settings {
 	h3 {}
-	&__gravatar {
-		img {
-			display: block;
+	&__profile-image-box {
+		background: @white;
+		padding: 1rem;
+	}
+	&__profile-image {
+		margin-bottom: 2rem;
+		max-width: 100%;
+		width: 100%;
+	}
+	&__profile-image-edit-button {
+		width: 100%;
+		display: block;
+	}
+	&__form-wrapper {
+		background: white;
+		padding: 2rem;
+		margin-bottom: 2rem;
+	}
+	&__actions {
+		margin-top: 2rem;
+	}
+	&__image-thumbnail {
+		margin-bottom: 2rem;
+		
+	}
+	&__choose-image-option {
+		padding-right: 2rem;
+		margin-bottom: 0;
+		min-width: 220px;
+		label {
+			margin-left: 0.5rem;
 		}
 	}
-	&__data {
-        overflow-x: auto;
+	&__upload-button-wrapper {
+		position: relative;
 	}
-	&__action {
-		text-align: right;
-		.btn {
-			margin: 0;
-		}
+	&__upload-button-input {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+	}
+	&__delete-image-button {
+		color: #c7254e;
+		margin-left: 2rem;
+	}
+	&__image-actions-wrapper {
+		display: flex;
+	}
+	&__image-actions {
+		display: flex;
+		align-items: center;
+	}
+	&__edit-image-wrapper {
+		display: flex;
+		align-items: center;
+	}
+	&__edit-image-default-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 }
 
@@ -37,7 +86,17 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.user-settings {
+		&__image-actions-wrapper {
+			flex-wrap: wrap;
+		}
+		&__edit-image-default-wrapper,
+		&__edit-image-wrapper {
+			margin-top: 2rem;
+		}
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {

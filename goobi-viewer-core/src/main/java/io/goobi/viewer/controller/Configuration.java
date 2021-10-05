@@ -113,7 +113,7 @@ public final class Configuration extends AbstractConfiguration {
                         .configure(new Parameters().properties()
                                 .setBasePath(Configuration.class.getClassLoader().getResource("").getFile())
                                 .setFileName(configFilePath)
-                                .setListDelimiterHandler(new DefaultListDelimiterHandler(','))
+                                .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
                                 .setThrowExceptionOnMissing(false));
         //alternative to .setBasePath from ClassLoader
         //builder.getFileHandler().setFile(new File(builder.getFileHandler().getURL().getFile()));
@@ -145,11 +145,11 @@ public final class Configuration extends AbstractConfiguration {
                 new ReloadingFileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
                         .configure(new Parameters().properties()
                                 .setFileName(fileLocal.getAbsolutePath())
-                                .setListDelimiterHandler(new DefaultListDelimiterHandler(','))
+                                .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
                                 .setThrowExceptionOnMissing(false));
-        if (builder.getFileHandler().getFile().exists()) {
+        if (builderLocal.getFileHandler().getFile().exists()) {
             try {
-                builder.getConfiguration();
+                builderLocal.getConfiguration();
                 logger.info("Local configuration file '{}' loaded.", fileLocal.getAbsolutePath());
             } catch (ConfigurationException e) {
                 logger.error(e.getMessage(), e);
@@ -421,7 +421,7 @@ public final class Configuration extends AbstractConfiguration {
                             .setTopstructOnly(topstructOnly));
                 }
             }
-            ret.add(new Metadata(label, masterValue, type, paramList, group));
+            ret.add(new Metadata(label, masterValue, paramList).setGroup(group).setType(type));
         }
 
         return ret;
@@ -649,16 +649,19 @@ public final class Configuration extends AbstractConfiguration {
                             int charIndex = sub3.getInt("[@char]");
                             character = (char) charIndex;
                         } catch (NoSuchElementException e) {
+                            //
                         }
                         String string = null;
                         try {
                             string = sub3.getString("[@string]");
                         } catch (NoSuchElementException e) {
+                            //
                         }
                         String regex = null;
                         try {
                             regex = sub3.getString("[@regex]");
                         } catch (NoSuchElementException e) {
+                            //
                         }
                         String replaceWith = sub3.getString("");
                         if (replaceWith == null) {
@@ -691,7 +694,10 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        Metadata ret = new Metadata(label, masterValue, type, paramList, group, number)
+        Metadata ret = new Metadata(label, masterValue, paramList)
+                .setType(type)
+                .setGroup(group)
+                .setNumber(number)
                 .setSingleString(singleString)
                 .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
                 .setCitationTemplate(citationTemplate)
@@ -3696,7 +3702,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isUseViewerLocaleAsRecordLanguage() {
         return getLocalBoolean("viewer.useViewerLocaleAsRecordLanguage", false);
     }
-    
+
     /**
      * 
      * @return
@@ -3705,7 +3711,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getFallbackDefaultLanguage() {
         return getLocalString("viewer.fallbackDefaultLanguage", "en");
     }
-    
+
     /**
      * <p>
      * getFeedbackEmailAddresses.
@@ -4400,6 +4406,11 @@ public final class Configuration extends AbstractConfiguration {
     public String getTempMediaFolder() {
         return getLocalString("tempMediaFolder", "temp_media");
     }
+    
+    public String getUserAvatarFolder() {
+        return getLocalString("userAvatarFolder", "users/avatar");
+    }
+
 
     /**
      * <p>
@@ -5164,6 +5175,8 @@ public final class Configuration extends AbstractConfiguration {
             marker.setShape(config.getString("[@shape]", marker.getShape()));
             marker.setSvg(config.getBoolean("[@svg]", marker.isSvg()));
             marker.setShadow(config.getBoolean("[@shadow]", marker.isShadow()));
+            marker.setUseDefault(config.getBoolean("[@useDefaultIcon]", marker.isUseDefault()));
+            marker.setHighlightIcon(config.getString("[@highlightIcon]", marker.getHighlightIcon()));
         }
         return marker;
     }

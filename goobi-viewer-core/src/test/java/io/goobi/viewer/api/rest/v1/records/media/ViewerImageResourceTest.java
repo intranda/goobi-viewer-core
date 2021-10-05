@@ -23,6 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.util.Collections;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -32,6 +35,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.security.LicenseType;
 
 /**
  * @author florian
@@ -56,6 +63,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        DataManager.getInstance().injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_no_local_access.test.xml").getAbsolutePath()));
     }
 
     /**
@@ -83,9 +91,9 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
-//    @Test
+    @Test
     public void testGetImageInformationFromBaseUrl() {
-        String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME).build();
+        String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         try (Response response = target(url)
                 .request()
@@ -98,7 +106,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             assertTrue("@id should end with '" + id + " but was: " + info.getString("@id"), info.getString("@id").endsWith(id));
         }
     }
-    
+
     @Test
     public void testGetImageInformationSpecialCharacters() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS).build();
@@ -114,7 +122,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             assertTrue(info.getString("@id").endsWith(id.replace(" ", "+")));
         }
     }
-    
+
     @Test
     public void testGetImageSpecialCharacters() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
@@ -128,7 +136,8 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             String contentLocation = response.getHeaderString("Content-Location");
             byte[] entity = response.readEntity(byte[].class);
             assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
-            assertEquals("file:///opt/digiverso/viewer/data/3/media/" + PI_SPECIAL_CHARACTERS.replace("+", "%20") + "/" + FILENAME_SPECIAL_CHARACTERS.replace("+", "%20"), contentLocation);
+            assertEquals("file:///opt/digiverso/viewer/data/3/media/" + PI_SPECIAL_CHARACTERS.replace("+", "%20") + "/"
+                    + FILENAME_SPECIAL_CHARACTERS.replace("+", "%20"), contentLocation);
             assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
         }
     }
@@ -167,4 +176,114 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    @Test
+    public void testGetImageClosedLicense() throws DAOException {
+
+        LicenseType licenseType = new LicenseType("pdf_locked");
+        licenseType.setOpenAccess(false);
+        licenseType.setPrivileges(Collections.emptySet());
+        DataManager.getInstance().getDao().addLicenseType(licenseType);
+        
+        String urlImage = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
+                .params("PPNuag_foto_v4", "00000001.tif", REGION, "!5,5", ROTATION, QUALITY, FORMAT)
+                .build();
+        String urlThumb = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
+                .params("PPNuag_foto_v4", "00000001.tif", REGION, "!1,1", ROTATION, QUALITY, FORMAT)
+                .build();
+        
+        try (Response response = target(urlThumb)
+                .request()
+                .accept("image")
+                .get()) {
+            int status = response.getStatus();
+            byte[] entity = response.readEntity(byte[].class);
+            assertEquals("Should return status 403. Error message: " + new String(entity), 403, status);
+        }
+        
+        
+        try (Response response = target(urlImage)
+                .request()
+                .accept("image")
+                .get()) {
+            int status = response.getStatus();
+            byte[] entity = response.readEntity(byte[].class);
+            assertEquals("Should return status 403. Error message: " + new String(entity), 403, status);
+        }
+
+        DataManager.getInstance().getDao().deleteLicenseType(licenseType);
+
+    }
+    
+    @Test
+    public void testGetImageOpenLicense() throws DAOException {
+
+        LicenseType licenseType = new LicenseType("pdf_locked");
+        licenseType.setOpenAccess(true);
+        DataManager.getInstance().getDao().addLicenseType(licenseType);
+        
+        String urlImage = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
+                .params("PPNuag_foto_v4", "00000001.tif", REGION, "!5,5", ROTATION, QUALITY, FORMAT)
+                .build();
+        String urlThumb = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
+                .params("PPNuag_foto_v4", "00000001.tif", REGION, "!1,1", ROTATION, QUALITY, FORMAT)
+                .build();
+        
+        try (Response response = target(urlThumb)
+                .request()
+                .accept("image")
+                .get()) {
+            int status = response.getStatus();
+            byte[] entity = response.readEntity(byte[].class);
+            assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
+        }
+        
+        
+        try (Response response = target(urlImage)
+                .request()
+                .accept("image")
+                .get()) {
+            int status = response.getStatus();
+            byte[] entity = response.readEntity(byte[].class);
+            assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
+        }
+        
+        DataManager.getInstance().getDao().deleteLicenseType(licenseType);
+    }
+    
+    @Test
+    public void testGetImageThumbnailLicense() throws DAOException {
+
+        LicenseType licenseType = new LicenseType("pdf_locked");
+        licenseType.setOpenAccess(false);
+        licenseType.setPrivileges(Collections.singleton(LicenseType.PRIV_VIEW_THUMBNAILS));
+        DataManager.getInstance().getDao().addLicenseType(licenseType);
+        
+        String urlImage = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
+                .params("PPNuag_foto_v4", "00000001.tif", REGION, "!5,5", ROTATION, QUALITY, FORMAT)
+                .build();
+        String urlThumb = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
+                .params("PPNuag_foto_v4", "00000001.tif", REGION, "!1,1", ROTATION, QUALITY, FORMAT)
+                .build();
+
+        try (Response response = target(urlThumb)
+                .request()
+                .accept("image")
+                .get()) {
+            int status = response.getStatus();
+            byte[] entity = response.readEntity(byte[].class);
+            assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
+        }
+        
+        
+        try (Response response = target(urlImage)
+                .request()
+                .accept("image")
+                .get()) {
+            int status = response.getStatus();
+            byte[] entity = response.readEntity(byte[].class);
+            assertEquals("Should return status 403. Error message: " + new String(entity), 403, status);
+        }
+        
+        DataManager.getInstance().getDao().deleteLicenseType(licenseType);
+    }
 }

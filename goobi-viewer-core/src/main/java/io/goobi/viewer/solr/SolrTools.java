@@ -129,6 +129,16 @@ public class SolrTools {
     public static String getAsString(Object fieldValue) {
         return getAsString(fieldValue, "\n");
     }
+    
+    public static Boolean getAsBoolean(Object fieldValue) {
+        if(fieldValue != null && fieldValue instanceof Boolean) { 
+            return (Boolean) fieldValue;
+        } else if(fieldValue != null) {            
+            return Boolean.parseBoolean(getAsString(fieldValue));
+        } else {
+            return Boolean.FALSE;
+        }
+    }
         
         
     @SuppressWarnings("unchecked")

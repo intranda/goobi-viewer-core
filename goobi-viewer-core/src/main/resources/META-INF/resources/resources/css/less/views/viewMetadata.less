@@ -10,16 +10,9 @@
 	&__title-wrapper {
 		display: flex;
 		margin-bottom: 1.5rem;
-		& + .metadata__wrapper {
-			.metadata__elements-h3:first-child {
-				margin-top: 1rem;
-			}
-		}
-		& + .metadata_element__wrapper {
-			.metadata__wrapper {
+		& + .metadata__element-wrapper {
 				.metadata__elements-h3:first-child {
-					margin-top: 1rem;
-				}
+					margin-top: 1.5rem;
 			}
 		}
 	}
@@ -71,6 +64,18 @@
 	}
 	&__wrapper {
 		margin-bottom: 1rem;
+		&.-isBoxed {
+			background: @white;
+			padding: 1rem 1.5rem;
+			.metadata__ungrouped-wrapper {
+				background: transparent;
+				padding: 0;
+			}
+			.metadata__element-wrapper-single {
+				background: transparent;
+				padding: 0;
+			}
+		}
 	}
 	&__element,
 	&__event {}
@@ -80,8 +85,8 @@
 		grid-template-columns: 240px auto;
 		margin: 0;
 		dt {
-			text-align: left;	
       		margin-right: 10px;
+			text-align: left;
 		}
 		dd {
 			margin-bottom: 0;
@@ -121,24 +126,12 @@
         &-level-4 {}
 	}
 	&__elements {
-		&.level-0 {}
-        &.level-1 {}
-        &.level-2 {}
-        &.level-3 {}
-        &.level-4 {}
-        &.level-5 {}
-        &.level-6 {}
-        &.level-7 {}
-        &.level-8 {}
-        &.level-9 {}
-	}
-	&__elements {
 		&-level-0 {}
         &-level-1 {
 			margin-left: 3rem;
 		}
         &-level-2 {
-				margin-left: 6rem;
+			margin-left: 6rem;
 		}
 	}
 	&__elements-h3 {
@@ -154,7 +147,6 @@
 			font-size: 1.4rem;
 		}
 	}
-	&__element {}
 	&__element-dl {
 		display: grid;
 		grid-template-columns: 250px auto;
@@ -169,7 +161,9 @@
 	&__events {}
 	&__event {}
 	&__event-dl {
-		dt {}
+		dt {
+			width: auto;
+		}
 		dd {}
 	}
 	&__event-value {}
@@ -202,8 +196,6 @@
 			font-size: 1.4rem;
 		}
 	}
-
-	
 	&__heading {
 		font-size: 1.4rem;
 		font-weight: 700;
@@ -231,6 +223,7 @@
 		&.level-2 {
 		}
 	}
+
 }
 
 /* DOWNLOADS */
@@ -259,20 +252,48 @@
     }
 }
 
+
 @{RTL} {
 	.metadata {
 		&__element-dl,
 		&__event-dl {
 			dt {
+				margin-right: unset;
+	    		margin-left: 1rem;
 				text-align: right;
-				max-width: 30%;
-				flex: 0 0 30%;		
 			}
 		}
 	    .fa {
 	    	margin-right: unset;
 	    	margin-left: 5px;
 	    }
+		&__elements {
+			&-level-0 {}
+	        &-level-1 {
+				margin-right: 3rem;
+				margin-left: unset;
+			}
+	        &-level-2 {
+				margin-right: 6rem;
+				margin-left: unset;
+			}
+		}
+		&__heading {
+			&.level-1,
+			&.level-2 {
+				&:before {
+					transform: rotate(90deg);
+					position: absolute;
+					left: unset;
+					right: -43px;
+					content: "\f149"
+				}
+			}
+			&.level-1 {
+			}
+			&.level-2 {
+			}
+		}
 	}
 }
 

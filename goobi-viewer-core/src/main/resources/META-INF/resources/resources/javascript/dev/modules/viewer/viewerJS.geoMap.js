@@ -344,7 +344,7 @@ var viewerJS = ( function( viewer ) {
                     draggable: this.config.allowMovingFeatures,
                     icon: this.getMarkerIcon(geoJsonPoint.properties && geoJsonPoint.properties.highlighted)
                 });
-                return marker;
+                return marker; 
             }.bind(this),
             
             onEachFeature: function(feature, layer) {
@@ -533,16 +533,29 @@ var viewerJS = ( function( viewer ) {
     
     viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function(highlighted) {
         if(this.config.markerIcon && !jQuery.isEmptyObject(this.config.markerIcon)) {
-            let icon = L.ExtraMarkers.icon(this.config.markerIcon);
-        	icon.options.name = "";	//remove name property to avoid it being displayed on the map
-            if(this.config.markerIcon.shadow === false) {                
-                icon.options.shadowSize = [0,0];
+        	if(this.config.markerIcon.useDefault) {
+        		if(this.config.markerIcon.highlightIcon && highlighted) {
+        		let icon = new L.Icon.Default({
+        			imagePath : this.geoMap.config.iconPath + "/"
+        		});
+        		icon.options.iconUrl = this.config.markerIcon.highlightIcon;
+        		//console.log("use hightlight icon ", icon);
+        		return icon; 
+        		} else {
+        			return new L.Icon.Default();
+        		}
+        	} else {
+	            let icon = L.ExtraMarkers.icon(this.config.markerIcon);
+	        	icon.options.name = "";	//remove name property to avoid it being displayed on the map
+	            if(this.config.markerIcon.shadow === false) {                
+	                icon.options.shadowSize = [0,0];
+	            }
+	            if(highlighted) {
+	            console.log(this.config.markerIcon.highlightColor);
+	            	icon.options.markerColor = this.config.markerIcon.highlightColor;
+	            }
+	            return icon;
             }
-            if(highlighted) {
-            console.log(this.config.markerIcon.highlightColor);
-            	icon.options.markerColor = this.config.markerIcon.highlightColor;
-            }
-            return icon;
         } else {
             return new L.Icon.Default();
         }

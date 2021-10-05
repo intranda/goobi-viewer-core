@@ -130,12 +130,12 @@ public class MetadataElement {
          */
         public String getTabName(int viewIndex) {
             String key = KEY_ROOT + "_" + viewIndex + "_" + type;
-            if(ViewerResourceBundle.getTranslation(key, null, true, false, false, false) != null) {
-//            if(ViewerResourceBundle.getAllKeys().contains(key)) {
+            if (ViewerResourceBundle.getTranslation(key, null, true, false, false, false) != null) {
+                //            if(ViewerResourceBundle.getAllKeys().contains(key)) {
                 return key;
-            } else {
-                return "";
             }
+
+            return "";
         }
 
         public void setTabName(String tabName) {
@@ -321,7 +321,7 @@ public class MetadataElement {
 
         return metadataTypes;
     }
-    
+
     public boolean hasMetadataTypeLabels(int viewIndex) {
         return getMetadataTypes().stream().anyMatch(type -> StringUtils.isNotBlank(type.getTabName(viewIndex)));
     }
@@ -441,6 +441,26 @@ public class MetadataElement {
             return metadataList.stream().anyMatch(md -> !md.isBlank());
         }
         return false;
+    }
+
+    /**
+     * Checks whether all metadata fields for this element can be displayed in a single box (i.e. no table type grouped metadata are configured).
+     * 
+     * @return true if all metadata are not configured as single string; false otherwise
+     * @should return false if at least one metadata with same type not single string
+     * @should return true if all metadata of same type single string
+     */
+    public boolean isDisplayBoxed(int type) {
+        for (Metadata md : getMetadataList()) {
+            if (md.getType() != type) {
+                continue;
+            }
+            if (!md.isSingleString()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

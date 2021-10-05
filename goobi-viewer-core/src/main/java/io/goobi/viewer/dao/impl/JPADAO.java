@@ -455,19 +455,14 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateUser(User user) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(user);
-            em.getTransaction().commit();
-            // Refresh the object from the DB so that any new licenses etc. have IDs
-            if (this.getEntityManager().contains(user)) {
-                this.getEntityManager().refresh(user);
-            }
-            return true;
-        } finally {
-            em.close();
+        em.getTransaction().begin();
+        em.merge(user);
+        em.getTransaction().commit();
+        // Refresh the object from the DB so that any new licenses etc. have IDs
+        if (this.getEntityManager().contains(user)) {
+            this.getEntityManager().refresh(user);
         }
+        return true;
     }
 
     /*

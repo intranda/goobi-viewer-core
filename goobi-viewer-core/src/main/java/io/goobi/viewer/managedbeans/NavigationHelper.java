@@ -2012,4 +2012,12 @@ public class NavigationHelper implements Serializable {
         }
         return path;
     }
+    
+    public String getCurrentTime() {
+        return Long.toString(System.currentTimeMillis());
+    }
+    
+    public String returnTo(String page) {
+        return page;
+    }
 }

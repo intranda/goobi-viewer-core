@@ -155,6 +155,9 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String USERS_BOOKMARKS_LIST_SHARED_IIIF = "/shared/{key}/collection.json";
     public static final String USERS_BOOKMARKS_LIST_SHARED_RSS = "/shared/{key}/rss.xml";
     public static final String USERS_BOOKMARKS_LIST_SHARED_RSS_JSON = "/shared/{key}/rss.json";
+
+    public static final String USERS_USER_AVATAR_IMAGE = "/users/{userId}/avatar";
+    public static final String USERS_USER_AVATAR_IMAGE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
     
     public static final String USERS_CURRENT = "/current";
 

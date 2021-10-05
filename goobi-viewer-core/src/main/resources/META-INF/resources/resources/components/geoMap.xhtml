@@ -33,11 +33,12 @@
         	this.geoMap = new viewerJS.GeoMap({
         	    mapId: "#{cc.attrs.mapId}",
            		language: "#{navigationHelper.localeString}",
+           		iconPath: "#{request.contextPath}/resources/images/map",
            		layer : {
 	           		allowMovingFeatures: false,
 	           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
 	           		popoverOnHover: #{cc.attrs.popoverOnHover},
-	           		clusterMarkers: #{cc.attrs.clusterMarkers},
+	           		clusterMarkers: #{cc.attrs.clusterMarkers}
            		}
            	});
         	this.initMap = function(view, features) {

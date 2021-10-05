@@ -5,7 +5,8 @@
 			<div class="timematrix__img">
 			<a href="{getViewerUrl(manifest)}"> <img src="{getImageUrl(manifest)}"
 				class="timematrix__image" data-viewer-thumbnail="thumbnail"  alt="" aria-hidden="true"
-				onError="this.onerror=null;this.src='/viewer/resources/images/access_denied.png'" />
+				onError="this.onerror=null;this.src='/viewer/resources/images/access_denied.png'"
+				onLoad="{imageLoaded}" />
 					<div class="timematrix__text">	
 						<p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p>
 					</div>
@@ -123,6 +124,10 @@
 	            $( '.ui-slider-handle' ).removeClass( 'top' );
 	            $( this ).addClass( 'top' );
 	        } );
+	    }
+	    
+	    imageLoaded(event) {
+	    	$(event.target).parents('.timematrix__img').css("background", "transparent");
 	    }
 	
 	</script> 

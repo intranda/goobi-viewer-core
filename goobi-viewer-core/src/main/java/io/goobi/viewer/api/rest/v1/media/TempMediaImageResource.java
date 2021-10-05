@@ -64,7 +64,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 @AdminLoggedInBinding
 public class TempMediaImageResource extends ImageResource {
 
-    
     public TempMediaImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Parameter(description = "Temp folder name") @PathParam("folder") String folder,

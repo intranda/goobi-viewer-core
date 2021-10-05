@@ -39,6 +39,8 @@ import io.goobi.viewer.model.security.user.User;
  */
 @JsonInclude(Include.NON_NULL)
 public class UserJsonFacade {
+    
+    private static final int AVATAR_IMAGE_SIZE = 150;
 
     public final Long userId;
     public final String name;
@@ -57,7 +59,7 @@ public class UserJsonFacade {
         this.score = user.getScore();
         this.anonymous = user.isAnonymous();
         this.superuser = user.isSuperuser();
-        this.avatar = user.getAvatarUrl(request);
+        this.avatar = user.getAvatarUrl(AVATAR_IMAGE_SIZE, request);
     }
     
     public UserJsonFacade(User user) {

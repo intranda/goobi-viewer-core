@@ -3,15 +3,15 @@
 	<users user_id="1" email="1@users.org" password_hash="abcdef1"
 		active="true" suspended="false" superuser="true" last_name="last 1"
 		first_name="first 1" nickname="admin" comments="no comments 1" score="0"
-		use_gravatar="1" last_login="2012-03-03 11:22:33.000000000" />
+		avatar_type="GRAVATAR" last_login="2012-03-03 11:22:33.000000000" />
 	<users user_id="2" email="2@users.org" password_hash="abcdef2"
 		active="true" suspended="false" superuser="false" last_name="last 2"
 		first_name="first 2" nickname="nick 2" comments="no comments 2" score="120"
-		use_gravatar="0" />
+		avatar_type="DEFAULT" />
     <users user_id="3" email="3@users.org" password_hash="abcdef3"
         active="true" suspended="true" superuser="false" last_name="last 3"
         first_name="first 3" comments="no comments 3" score="-1"
-        use_gravatar="0" />
+        avatar_type="DEFAULT" />
 
 	<openid_accounts user_id="1" claimed_identifier="user_1_claimed_identifier_1" />
 	<openid_accounts user_id="1" claimed_identifier="user_1_claimed_identifier_2" />

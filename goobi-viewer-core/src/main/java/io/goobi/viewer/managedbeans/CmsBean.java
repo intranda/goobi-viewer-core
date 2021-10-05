@@ -469,7 +469,7 @@ public class CmsBean implements Serializable {
         for (CMSContentItem pageItem : allPageItems) {
             CMSContentItemTemplate templateItem = template.getContentItem(pageItem.getItemId());
             if (templateItem == null || ObjectUtils.notEqual(templateItem.getType(), pageItem.getType())) {
-                logger.debug("remove content item "  + pageItem.getItemId());
+                // logger.trace("remove content item "  + pageItem.getItemId());
                 //if not, remove them
                 page.removeContentItem(pageItem.getItemId());
             }
