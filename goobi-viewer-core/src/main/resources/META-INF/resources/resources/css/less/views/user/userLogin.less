@@ -261,13 +261,27 @@
 		    background-color: #fff;
 		}
 	}
+	&__form-row {
+		position: relative;
+		margin-bottom: 2.5rem;
+	}
+	&__form-control {
+		&.-valueEntered {
+			& + .effect-label {
+				top: -8px;
+				left: 10px;
+				background-color: white;
+				padding: 0 0.25em 0 0.25em;
+			}
+		}
+	}
 	.effect-label {
 		color: var(--primary-medium);
-		font-size: 16px;
+		font-size: 1.4rem;
 		position: absolute;
 		pointer-events: none;
 		left: 1rem;
-		top: 10px;
+		top: 6px;
 		transition: 0.2s ease all;
 	}
 	input:focus + .effect-label {
