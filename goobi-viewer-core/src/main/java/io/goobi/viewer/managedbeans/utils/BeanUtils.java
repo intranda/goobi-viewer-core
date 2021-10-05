@@ -516,20 +516,6 @@ public class BeanUtils {
     @SuppressWarnings("unchecked")
     public static <T> Optional<T> getBeanFromRequest(HttpServletRequest request, String beanName, Class<T> clazz) {
         if (request != null && request.getSession() != null) {
-           Object bean = request.getSession().getAttribute(beanName);
-           if(bean != null && bean.getClass().equals(clazz)) {
-               return Optional.of(bean).map(o -> (T)o);
-           } else {
-               return findInstanceInSessionAttributes(request, clazz);
-           }
-        }
-
-        return Optional.empty();
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> Optional<T> getBeanFromRequest(HttpServletRequest request, String beanName, Class<T> clazz) {
-        if (request != null && request.getSession() != null) {
             Object bean = request.getSession().getAttribute(beanName);
             if (bean != null && bean.getClass().equals(clazz)) {
                 return Optional.of(bean).map(o -> (T) o);

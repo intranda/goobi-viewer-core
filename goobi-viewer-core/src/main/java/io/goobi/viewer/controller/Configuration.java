@@ -5140,10 +5140,6 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalBoolean("maps.coordinateFields[@includeMetadataDocs]", false);
     }
 
-    public boolean includeCoordinateFieldsFromMetadataDocs() {
-        return getLocalBoolean("maps.coordinateFields[@includeMetadataDocs]", false);
-    }
-
     public List<GeoMapMarker> getGeoMapMarkers() {
 
         List<GeoMapMarker> markers = new ArrayList<>();

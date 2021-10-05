@@ -545,7 +545,7 @@ public class ViewManager implements Serializable {
 
     /**
      * <p>
-     * getCurrentMasterImageUrl.
+     * getCurrentThumbnailUrlForDownload.
      * </p>
      *
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
@@ -582,35 +582,6 @@ public class ViewManager implements Serializable {
         return sb.toString();
     }
     
-    /**
-     * <p>
-     * getCurrentMasterImageUrl.
-     * </p>
-     *
-     * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String getCurrentThumbnailUrlForDownload(Scale scale) throws IndexUnreachableException, DAOException {
-
-        PageType pageType = Optional.ofNullable(BeanUtils.getNavigationHelper()).map(nh -> nh.getCurrentPageType()).orElse(null);
-        if (pageType == null) {
-            pageType = PageType.viewObject;
-        }
-        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), scale));
-        try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, getCurrentPage().getImageType()) > 0) {
-                sb.append("?ignoreWatermark=false");
-                sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> "&watermarkText=" + text).orElse(""));
-                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> "&watermarkId=" + id).orElse(""));
-            }
-        } catch (ViewerConfigurationException e) {
-            logger.error("Unable to read watermark config, ignore watermark", e);
-        }
-        return sb.toString();
-    }
-
     /**
      * @param view
      * @param size
