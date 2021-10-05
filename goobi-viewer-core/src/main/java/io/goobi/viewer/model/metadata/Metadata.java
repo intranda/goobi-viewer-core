@@ -43,11 +43,9 @@ import de.intranda.digiverso.normdataimporter.model.NormData;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
-import io.goobi.viewer.managedbeans.BrowseBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -69,58 +67,73 @@ public class Metadata implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(Metadata.class);
 
-    /** ID of the owning StructElement. Used for constructing unique value IDs, where required. */
-    private String ownerId;
     /** Label from messages.properties. */
     private final String label;
     /** Value from messages.properties (with placeholders) */
     private final String masterValue;
-    private final int type;
-    private final int number;
     private final List<MetadataValue> values = new ArrayList<>();
     private final List<MetadataParameter> params = new ArrayList<>();
-    private final boolean group;
+    private boolean group = false;
+    private int type = 0;
+    private int number = -1;
+    private boolean singleString = true;
     private boolean hideIfOnlyMetadataField = false;
+    /** Optional metadata field that will provide the label value (if singleString=true) */
+    private String labelField;
     private String ownerDocstrctType;
+    /** ID of the owning StructElement. Used for constructing unique value IDs, where required. */
+    private String ownerStructElementIddoc;
     private String citationTemplate;
     private CitationProcessorWrapper citationProcessorWrapper;
+    private Metadata parentMetadata;
+    private final List<Metadata> childMetadata = new ArrayList<>();
+    private int indentation = 0;
 
     /**
      * <p>
-     * Constructor for Metadata.
+     * Default constructor.
      * </p>
      */
     public Metadata() {
-        this.ownerId = "";
+        this.ownerStructElementIddoc = "";
         this.label = "";
         this.masterValue = "";
-        this.type = 0;
-        this.number = -1;
-        this.group = false;
     }
 
     /**
      * <p>
-     * Constructor for Metadata.
+     * Constructor with a single metadata value.
      * </p>
      *
-     * @param ownerId
+     * @param ownerIddoc
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
      * @param paramValue a {@link java.lang.String} object.
      */
-    public Metadata(String ownerId, String label, String masterValue, String paramValue) {
-        this.ownerId = ownerId;
+    public Metadata(String ownerIddoc, String label, String masterValue, String paramValue) {
+        this.ownerStructElementIddoc = ownerIddoc;
         this.label = label;
         this.masterValue = masterValue;
-        values.add(new MetadataValue(ownerId + "_" + 0, masterValue));
+        values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue, label));
         if (paramValue != null) {
             values.get(0).getParamValues().add(new ArrayList<>());
             values.get(0).getParamValues().get(0).add(paramValue);
         }
-        this.type = 0;
-        this.number = -1;
-        this.group = false;
+    }
+
+    /**
+     * <p>
+     * Constructor with a {@link MetadataParameter} list.
+     * </p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @param masterValue a {@link java.lang.String} object.
+     * @param params a {@link java.util.List} object.
+     */
+    public Metadata(String label, String masterValue, List<MetadataParameter> params) {
+        this.label = label;
+        this.masterValue = masterValue;
+        this.params.addAll(params);
     }
 
     /**
@@ -134,61 +147,17 @@ public class Metadata implements Serializable {
      * @param paramValue a {@link java.lang.String} object.
      * @param locale
      */
-    public Metadata(String ownerId, String label, String masterValue, MetadataParameter param, String paramValue, Locale locale) {
-        this.ownerId = ownerId;
+    public Metadata(String ownerIddoc, String label, String masterValue, MetadataParameter param, String paramValue, Locale locale) {
+        this.ownerStructElementIddoc = ownerIddoc;
         this.label = label;
         this.masterValue = masterValue;
         params.add(param);
-        values.add(new MetadataValue(ownerId + "_" + 0, masterValue));
+        values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue, label));
         if (paramValue != null) {
             setParamValue(0, 0, Collections.singletonList(paramValue), label, null, null, null, locale);
             //            values.get(0).getParamValues().add(new ArrayList<>());
             //            values.get(0).getParamValues().get(0).add(paramValue);
         }
-        this.type = 0;
-        this.number = -1;
-        this.group = false;
-    }
-
-    /**
-     * <p>
-     * Constructor for Metadata.
-     * </p>
-     *
-     * @param label a {@link java.lang.String} object.
-     * @param masterValue a {@link java.lang.String} object.
-     * @param type a int.
-     * @param params a {@link java.util.List} object.
-     * @param group a boolean.
-     */
-    public Metadata(String label, String masterValue, int type, List<MetadataParameter> params, boolean group) {
-        this.label = label;
-        this.masterValue = masterValue;
-        this.type = type;
-        this.params.addAll(params);
-        this.group = group;
-        this.number = -1;
-    }
-
-    /**
-     * <p>
-     * Constructor for Metadata.
-     * </p>
-     *
-     * @param label a {@link java.lang.String} object.
-     * @param masterValue a {@link java.lang.String} object.
-     * @param type a int.
-     * @param params a {@link java.util.List} object.
-     * @param group a boolean.
-     * @param number a int.
-     */
-    public Metadata(String label, String masterValue, int type, List<MetadataParameter> params, boolean group, int number) {
-        this.label = label;
-        this.masterValue = masterValue;
-        this.type = type;
-        this.params.addAll(params);
-        this.group = group;
-        this.number = number;
     }
 
     /* (non-Javadoc)
@@ -290,6 +259,15 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * @param type the type to set
+     * @return this
+     */
+    public Metadata setType(int type) {
+        this.type = type;
+        return this;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>values</code>.
      * </p>
@@ -301,6 +279,28 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * 
+     * @param ownerIddoc
+     * @return Sublist of all values that belong to <code>ownerIddoc</code>; all values if <code>ownerIddoc</code> null
+     * @should return all values if ownerIddoc null
+     * @should return only values for the given ownerIddoc
+     */
+    public List<MetadataValue> getValuesForOwner(String ownerIddoc) {
+        if (ownerIddoc == null) {
+            return values;
+        }
+
+        List<MetadataValue> ret = new ArrayList<>(values.size());
+        for (MetadataValue value : values) {
+            if (ownerIddoc.equals(value.getOwnerIddoc())) {
+                ret.add(value);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * <p>
      * setParamValue.
      * </p>
@@ -308,7 +308,7 @@ public class Metadata implements Serializable {
      * @param valueIndex a int.
      * @param paramIndex a int.
      * @param inValues List with values
-     * @param label a {@link java.lang.String} object.
+     * @param paramLabel a {@link java.lang.String} object.
      * @param url a {@link java.lang.String} object.
      * @param options a {@link java.util.Map} object.
      * @param groupType value of METADATATYPE, if available
@@ -317,7 +317,7 @@ public class Metadata implements Serializable {
      * @should add multivalued param values correctly
      * @should set group type correctly
      */
-    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> options,
+    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String paramLabel, String url, Map<String, String> options,
             String groupType, Locale locale) {
         // logger.trace("setParamValue: {}", label);
         if (inValues == null || inValues.isEmpty()) {
@@ -330,11 +330,13 @@ public class Metadata implements Serializable {
 
         // Adopt indexes to list sizes, if necessary
         while (values.size() - 1 < valueIndex) {
-            values.add(new MetadataValue(ownerId + "_" + valueIndex, masterValue));
+            MetadataValue mdValue = new MetadataValue(ownerStructElementIddoc + "_" + valueIndex, masterValue, this.label);
+            values.add(mdValue);
         }
         MetadataValue mdValue = values.get(valueIndex);
         mdValue.setGroupType(groupType);
         mdValue.setDocstrct(ownerDocstrctType);
+        mdValue.setOwnerIddoc(ownerStructElementIddoc);
         if (StringUtils.isNotEmpty(citationTemplate) && citationProcessorWrapper != null) {
             try {
                 mdValue.setCitationProcessor(citationProcessorWrapper.getCitationProcessor(citationTemplate));
@@ -394,7 +396,7 @@ public class Metadata implements Serializable {
                 // create a link for reach hierarchy level
                 {
                     NavigationHelper nh = BeanUtils.getNavigationHelper();
-                    value = buildHierarchicalValue(label, value, locale, nh != null ? nh.getApplicationUrl() : null);
+                    value = buildHierarchicalValue(paramLabel, value, locale, nh != null ? nh.getApplicationUrl() : null);
                 }
                     break;
                 case MILLISFIELD:
@@ -485,7 +487,7 @@ public class Metadata implements Serializable {
                 while (mdValue.getParamLabels().size() <= paramIndex) {
                     mdValue.getParamLabels().add("");
                 }
-                mdValue.getParamLabels().set(paramIndex, label);
+                mdValue.getParamLabels().set(paramIndex, paramLabel);
                 while (mdValue.getParamValues().size() <= paramIndex) {
                     mdValue.getParamValues().add(new ArrayList<>());
                 }
@@ -506,6 +508,10 @@ public class Metadata implements Serializable {
                     mdValue.getParamUrls().add("");
                 }
                 mdValue.getParamUrls().add(paramIndex, url);
+            }
+            // Set metadata label from labelField
+            if (StringUtils.isNotEmpty(labelField) && labelField.equals(param.getKey())) {
+                mdValue.setLabel(value);
             }
         }
     }
@@ -539,15 +545,15 @@ public class Metadata implements Serializable {
                 sbFullValue.append("<a href=\"").append(applicationUrl).append(PageType.browse.getName()).append("/-/1/");
                 String sortField = "-";
                 // Use configured collection sorting field, if available
-                if(StringUtils.isNotEmpty(field)) {
+                if (StringUtils.isNotEmpty(field)) {
                     String defaultSortField = DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(field, value);
-                    if(StringUtils.isNotEmpty(defaultSortField)) {
+                    if (StringUtils.isNotEmpty(defaultSortField)) {
                         sortField = defaultSortField;
                     }
-                    
+
                 }
                 sbFullValue.append(sortField).append('/');
-                if(StringUtils.isNotEmpty(field)) {
+                if (StringUtils.isNotEmpty(field)) {
                     sbFullValue.append(field).append(':');
                 }
                 sbFullValue.append(sbHierarchy.toString()).append("/\">").append(displayValue).append("</a>");
@@ -594,15 +600,26 @@ public class Metadata implements Serializable {
      * Checks whether any parameter values are set. 'empty' seems to be a reserved word in JSF, so use 'blank'.
      *
      * @return true if all paramValues are empty or blank; false otherwise.
-     * @should return true if all paramValues are empty
-     * @should return false if at least one paramValue is not empty
      */
     public boolean isBlank() {
+        return isBlank(null);
+    }
+
+    /**
+     * 
+     * @param ownerIddoc
+     * @return
+     * @should return true if all paramValues are empty
+     * @should return false if at least one paramValue is not empty
+     * @should return true if all values have different ownerIddoc
+     * @should return true if at least one value has same ownerIddoc
+     */
+    public boolean isBlank(String ownerIddoc) {
         if (values == null || values.isEmpty()) {
             return true;
         }
 
-        for (MetadataValue value : values) {
+        for (MetadataValue value : getValuesForOwner(ownerIddoc)) {
             if (value.getParamValues().isEmpty()) {
                 return true;
             }
@@ -623,16 +640,17 @@ public class Metadata implements Serializable {
      *
      * @param locale a {@link java.util.Locale} object.
      * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param ownerIddoc IDDOC of the owner document (either docstruct or parent metadata)
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should use default value of no value found
      */
-    public boolean populate(StructElement se, Locale locale) throws IndexUnreachableException, PresentationException {
+    public boolean populate(StructElement se, String ownerIddoc, Locale locale) throws IndexUnreachableException, PresentationException {
         if (se == null) {
             return false;
         }
-        ownerId = String.valueOf(se.getLuceneId());
+        this.ownerStructElementIddoc = ownerIddoc;
         ownerDocstrctType = se.getDocStructType();
 
         if (StringUtils.isNotEmpty(citationTemplate)) {
@@ -651,7 +669,12 @@ public class Metadata implements Serializable {
 
         // Grouped metadata
         if (group) {
-            return populateGroup(se, locale);
+            if (se.getMetadataFields().get(label) == null && parentMetadata == null) {
+                // If there is no plain value in the docstruct/event doc or this is a child metadata, then there shouldn't be a metadata Solr doc.
+                // In this case save time by skipping this field.
+                return false;
+            }
+            return populateGroup(se, ownerIddoc, locale);
         }
 
         // Regular, atomic metadata
@@ -740,32 +763,31 @@ public class Metadata implements Serializable {
         }
 
         return found;
-
     }
 
     /**
      * 
-     * @param se
+     * @param se {@link StructElement}
+     * @param ownerIddoc Owner IDDOC (either docstruct or parent metadata)
      * @param locale
      * @return
      * @throws IndexUnreachableException
      */
-    boolean populateGroup(StructElement se, Locale locale) throws IndexUnreachableException {
+    boolean populateGroup(StructElement se, String ownerIddoc, Locale locale) throws IndexUnreachableException {
+        if (ownerIddoc == null) {
+            return false;
+        }
+
         boolean found = false;
 
-        // Metadata grouped in an own Solr document
-        if (se.getMetadataFields().get(label) == null) {
-            // If there is no plain value in the docstruct doc, then there shouldn't be a metadata Solr doc. In this case save time by skipping this field.
-            return false;
-        }
-        if (se.getMetadataFields().get(SolrConstants.IDDOC) == null || se.getMetadataFields().get(SolrConstants.IDDOC).isEmpty()) {
-            return false;
-        }
-        String iddoc = se.getMetadataFields().get(SolrConstants.IDDOC).get(0);
         try {
-            SolrDocumentList groupedMdList = MetadataTools.getGroupedMetadata(iddoc, '+' + SolrConstants.LABEL + ":" + label);
+            SolrDocumentList groupedMdList = MetadataTools.getGroupedMetadata(ownerIddoc, '+' + SolrConstants.LABEL + ":" + label);
+            if (groupedMdList == null || groupedMdList.isEmpty()) {
+                return false;
+            }
             int count = 0;
             for (SolrDocument doc : groupedMdList) {
+                String metadataDocIddoc = null;
                 Map<String, List<String>> groupFieldMap = new HashMap<>();
                 // Collect values for all fields in this metadata doc
                 for (String fieldName : doc.getFieldNames()) {
@@ -780,7 +802,10 @@ public class Metadata implements Serializable {
                         values.add(value);
                     } else if (doc.getFieldValue(fieldName) instanceof Collection) {
                         values.addAll(SolrTools.getMetadataValues(doc, fieldName));
-
+                    }
+                    // Collect IDDOC value for use as owner IDDOC for child metadata
+                    if (fieldName.equals(SolrConstants.IDDOC)) {
+                        metadataDocIddoc = (String) doc.getFieldValue(fieldName);
                     }
                 }
                 String groupType = null;
@@ -811,7 +836,6 @@ public class Metadata implements Serializable {
                             }
                             values.add(value);
                         }
-                        //                        String paramValue = sbValue.toString();
                         if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
                             if (doc.getFieldValue("NORM_TYPE") != null) {
                                 options.put("NORM_TYPE", SolrTools.getSingleFieldStringValue(doc, "NORM_TYPE"));
@@ -826,6 +850,20 @@ public class Metadata implements Serializable {
                         setParamValue(count, i, Collections.singletonList(""), null, null, null, groupType, locale);
                     }
                 }
+                // Set value IDDOC
+                if (metadataDocIddoc != null && values.size() > count) {
+                    MetadataValue val = values.get(count);
+                    val.setIddoc(metadataDocIddoc);
+                    val.setOwnerIddoc(ownerIddoc);
+
+                    if (!getChildMetadata().isEmpty()) {
+                        for (Metadata child : getChildMetadata()) {
+                            logger.trace("populating child metadata: {}", child.getLabel());
+                            child.populate(se, metadataDocIddoc, locale);
+                        }
+                    }
+                }
+
                 count++;
             }
             // logger.trace("GROUP QUERY END");
@@ -891,6 +929,15 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * @param number the number to set
+     * @return this
+     */
+    public Metadata setNumber(int number) {
+        this.number = number;
+        return this;
+    }
+
+    /**
      * <p>
      * isGroup.
      * </p>
@@ -899,6 +946,31 @@ public class Metadata implements Serializable {
      */
     public boolean isGroup() {
         return group;
+    }
+
+    /**
+     * @param group the group to set
+     * @return this
+     */
+    public Metadata setGroup(boolean group) {
+        this.group = group;
+        return this;
+    }
+
+    /**
+     * @return the singleString
+     */
+    public boolean isSingleString() {
+        return singleString;
+    }
+
+    /**
+     * @param singleString the singleString to set
+     * @return this
+     */
+    public Metadata setSingleString(boolean singleString) {
+        this.singleString = singleString;
+        return this;
     }
 
     /**
@@ -918,17 +990,35 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * @return the ownerDocstrct
+     * @return the labelField
      */
-    public String getOwnerDocstrct() {
+    public String getLabelField() {
+        return labelField;
+    }
+
+    /**
+     * @param labelField the labelField to set
+     * @return this
+     */
+    public Metadata setLabelField(String labelField) {
+        this.labelField = labelField;
+        return this;
+    }
+
+    /**
+     * @return the ownerDocstrctType
+     */
+    public String getOwnerDocstrctType() {
         return ownerDocstrctType;
     }
 
     /**
-     * @param ownerDocstrct the ownerDocstrct to set
+     * @param ownerDocstrctType the ownerDocstrctType to set
+     * @return this
      */
-    public void setOwnerDocstrct(String ownerDocstrct) {
-        this.ownerDocstrctType = ownerDocstrct;
+    public Metadata setOwnerDocstrctType(String ownerDocstrctType) {
+        this.ownerDocstrctType = ownerDocstrctType;
+        return this;
     }
 
     /**
@@ -959,6 +1049,52 @@ public class Metadata implements Serializable {
      */
     public void setCitationProcessorWrapper(CitationProcessorWrapper citationProcessorWrapper) {
         this.citationProcessorWrapper = citationProcessorWrapper;
+    }
+
+    /**
+     * @return the parentMetadata
+     */
+    public Metadata getParentMetadata() {
+        return parentMetadata;
+    }
+
+    /**
+     * @param parentMetadata the parentMetadata to set
+     */
+    public void setParentMetadata(Metadata parentMetadata) {
+        this.parentMetadata = parentMetadata;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isHasChildren() {
+        return !childMetadata.isEmpty();
+    }
+
+    /**
+     * @return the childMetadata
+     */
+    public List<Metadata> getChildMetadata() {
+        return childMetadata;
+    }
+
+    /**
+     * @return the indentation
+     */
+    public int getIndentation() {
+        return indentation;
+    }
+
+    /**
+     * @param indentation the indentation to set
+     * @return this
+     * 
+     */
+    public Metadata setIndentation(int indentation) {
+        this.indentation = indentation;
+        return this;
     }
 
     /**

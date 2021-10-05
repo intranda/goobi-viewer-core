@@ -13,29 +13,40 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.managedbeans.utils;
+package io.goobi.viewer.model.archives;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.stream.Stream;
 
-public class BeanUtilsTest {
+import org.jboss.weld.exceptions.IllegalArgumentException;
 
-    /**
-     * @see BeanUtils#escapeCriticalUrlChracters(String)
-     * @verifies replace characters correctly
-     */
-    @Test
-    public void escapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
-        Assert.assertEquals("U002BAU002FU005CU007CU003FZ", BeanUtils.escapeCriticalUrlChracters("+A/\\|?Z"));
-        Assert.assertEquals("U007C", BeanUtils.escapeCriticalUrlChracters("%7C"));
+/**
+ * @author florian
+ *
+ */
+public enum NodeType {
+    FILE("fa fa-file-text-o"),
+    FOLDER("fa fa-folder-open-o"),
+    IMAGE("fa fa-file-image-o"),
+    AUDIO("fa fa-file-audio-o"),
+    VIDEO("fa fa-file-video-o"),
+    OTHER("fa fa-file-o"),
+    COLLECTION("fa fa-folder-open-o"),
+    CLASS("fa fa-files-o");
+    
+    private final String iconClass;
+    
+    private NodeType(String iconClass) {
+        this.iconClass = iconClass;
     }
-
-    /**
-     * @see BeanUtils#unescapeCriticalUrlChracters(String)
-     * @verifies replace characters correctly
-     */
-    @Test
-    public void unescapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
-        Assert.assertEquals("+A/\\|?Z", BeanUtils.unescapeCriticalUrlChracters("U002BAU002FU005CU007CU003FZ"));
+    
+    public String getIconClass() {
+        return this.iconClass;
+    }
+    
+    public static NodeType getNodeType(String type) {
+        return Stream.of(NodeType.values())
+        .filter(nodeType -> nodeType.name().equalsIgnoreCase(type))
+        .findAny()
+        .orElse(OTHER);
     }
 }

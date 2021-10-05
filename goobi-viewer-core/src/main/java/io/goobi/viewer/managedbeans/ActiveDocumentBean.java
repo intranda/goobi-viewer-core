@@ -276,7 +276,7 @@ public class ActiveDocumentBean implements Serializable {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             } catch (RecordNotFoundException | RecordDeletedException | RecordLimitExceededException e) {
                 if (e.getMessage() != null && !"null".equals(e.getMessage())) {
-                    logger.warn(e.getMessage());
+                    logger.warn("{}: {}", e.getClass().getName(), e.getMessage());
                 }
             } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
                 logger.error(e.getMessage(), e);
@@ -467,7 +467,7 @@ public class ActiveDocumentBean implements Serializable {
                 StructElement topSe = viewManager.getCurrentStructElement().getTopStruct();
                 // logger.debug("topSe: " + topSe.getId());
                 for (Metadata md : DataManager.getInstance().getConfiguration().getTitleBarMetadata()) {
-                    md.populate(topSe, BeanUtils.getLocale());
+                    md.populate(topSe, String.valueOf(topSe.getLuceneId()), BeanUtils.getLocale());
                     if (!md.isBlank()) {
                         titleBarMetadata.add(md);
                     }
@@ -2235,10 +2235,10 @@ public class ActiveDocumentBean implements Serializable {
      */
     public synchronized CMSSidebarElement getMapWidget() throws PresentationException, DAOException, IndexUnreachableException {
         CMSSidebarElement widget = this.mapWidget.get(getPersistentIdentifier());
-//        if (widget == null) {
-            widget = generateMapWidget(getPersistentIdentifier());
-            this.mapWidget = Collections.singletonMap(getPersistentIdentifier(), widget);
-//        }
+        //        if (widget == null) {
+        widget = generateMapWidget(getPersistentIdentifier());
+        this.mapWidget = Collections.singletonMap(getPersistentIdentifier(), widget);
+        //        }
         return widget;
     }
 
@@ -2255,7 +2255,7 @@ public class ActiveDocumentBean implements Serializable {
             map.setType(GeoMapType.MANUAL);
             map.setShowPopover(true);
             map.setMarkerTitleField(null);
-            //map.setMarker("default");
+            map.setMarker("default");
 
             String mainDocQuery = String.format("PI:%s", pi);
             List<String> mainDocFields = PrettyUrlTools.getSolrFieldsToDeterminePageType();
@@ -2264,10 +2264,10 @@ public class ActiveDocumentBean implements Serializable {
 
             boolean addMetadataFeatures = DataManager.getInstance().getConfiguration().includeCoordinateFieldsFromMetadataDocs();
             String docTypeFilter = "+DOCTYPE:DOCSTRCT";
-            if(addMetadataFeatures) {
+            if (addMetadataFeatures) {
                 docTypeFilter = "+(DOCTYPE:DOCSTRCT DOCTYPE:METADATA)";
             }
-            
+
             String subDocQuery = String.format("+PI_TOPSTRUCT:%s " + docTypeFilter, pi);
             List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
             List<String> subDocFields = new ArrayList<>();
@@ -2281,10 +2281,12 @@ public class ActiveDocumentBean implements Serializable {
             subDocFields.addAll(coordinateFields);
 
             Collection<GeoMapFeature> features = new ArrayList<>();
-            
+
             String annotationQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:UGC +MD_COORDS:*", pi);
-            SolrDocumentList annoDocs = DataManager.getInstance().getSearchIndex().getDocs(annotationQuery, Arrays.asList("MD_COORDS", "MD_BODY", "MD_ANNOTATION_ID", "MD_VALUE"));
-            if(annoDocs != null) {
+            SolrDocumentList annoDocs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getDocs(annotationQuery, Arrays.asList("MD_COORDS", "MD_BODY", "MD_ANNOTATION_ID", "MD_VALUE"));
+            if (annoDocs != null) {
                 for (SolrDocument solrDocument : annoDocs) {
                     GeoMapFeature feature = new GeoMapFeature(SolrTools.getAsString(solrDocument.getFieldValue("MD_BODY")));
                     features.add(feature);
@@ -2305,7 +2307,7 @@ public class ActiveDocumentBean implements Serializable {
                     } else {
                         docFeatures.forEach(f -> f.setLink(null));
                     }
-                    docFeatures.forEach(f -> f.setDocumentId((String)solrDocument.getFieldValue(SolrConstants.LOGID)));
+                    docFeatures.forEach(f -> f.setDocumentId((String) solrDocument.getFieldValue(SolrConstants.LOGID)));
                     features.addAll(docFeatures);
                 }
             }

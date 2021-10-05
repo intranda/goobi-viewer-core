@@ -95,4 +95,57 @@ public class MetadataElementTest {
         }
         Assert.assertFalse(me.isSkip());
     }
+
+    /**
+     * @see MetadataElement#isDisplayBoxed(int)
+     * @verifies return false if at least one metadata with same type not single string
+     */
+    @Test
+    public void isDisplayBoxed_shouldReturnFalseIfAtLeastOneMetadataWithSameTypeNotSingleString() throws Exception {
+        MetadataElement me = new MetadataElement();
+        {
+            Metadata md = new Metadata();
+            md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
+            md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
+            Assert.assertFalse(md.isBlank());
+            me.getMetadataList().add(md);
+            md.setSingleString(true);
+        }
+        {
+            Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
+            md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
+            md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
+            Assert.assertFalse(md.isBlank());
+            me.getMetadataList().add(md);
+            md.setSingleString(false); // single string false
+        }
+        Assert.assertFalse(me.isDisplayBoxed(0));
+    }
+
+    /**
+     * @see MetadataElement#isDisplayBoxed(int)
+     * @verifies return true if all metadata of same type single string
+     */
+    @Test
+    public void isDisplayBoxed_shouldReturnTrueIfAllMetadataOfSameTypeSingleString() throws Exception {
+        MetadataElement me = new MetadataElement();
+        {
+            Metadata md = new Metadata();
+            md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("foo"));
+            md.setParamValue(0, 0, Collections.singletonList("bar"), "foo", null, null, null, null);
+            Assert.assertFalse(md.isBlank());
+            me.getMetadataList().add(md);
+            md.setSingleString(true);
+        }
+        {
+            Metadata md = new Metadata().setHideIfOnlyMetadataField(true);
+            md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("label"));
+            md.setParamValue(0, 0, Collections.singletonList("value"), "label", null, null, null, null);
+            Assert.assertFalse(md.isBlank());
+            me.getMetadataList().add(md);
+            md.setSingleString(false); // single string false
+            md.setType(1); //different type
+        }
+        Assert.assertTrue(me.isDisplayBoxed(0));
+    }
 }

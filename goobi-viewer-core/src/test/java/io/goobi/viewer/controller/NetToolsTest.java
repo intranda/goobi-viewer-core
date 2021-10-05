@@ -38,7 +38,8 @@ public class NetToolsTest extends AbstractTest {
      */
     @Test
     public void scrambleEmailAddress_shouldModifyStringCorrectly() throws Exception {
-        Assert.assertEquals("foo*****com", NetTools.scrambleEmailAddress("foo@bar.com"));
+        Assert.assertEquals("foo***com", NetTools.scrambleEmailAddress("foo@bar.com"));
+        Assert.assertEquals("foo***com", NetTools.scrambleEmailAddress("foofoofoo@barbarbar.com"));
     }
 
     /**

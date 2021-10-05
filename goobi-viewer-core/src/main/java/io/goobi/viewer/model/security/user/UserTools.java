@@ -243,4 +243,12 @@ public class UserTools {
         User nicknameOwner = DataManager.getInstance().getDao().getUserByNickname(nickname); // This basically resets all changes
         return nicknameOwner != null && nicknameOwner.getId() != null && !nicknameOwner.getId().equals(userId);
     }
+    public static boolean isEmailInUse(String email, Long userId) throws DAOException {
+        if (email == null) {
+            throw new IllegalArgumentException("email may not be null");
+        }
+        
+        User emailOwner = DataManager.getInstance().getDao().getUserByEmail(email); // This basically resets all changes
+        return emailOwner != null && emailOwner.getId() != null && !emailOwner.getId().equals(userId);
+    }
 }

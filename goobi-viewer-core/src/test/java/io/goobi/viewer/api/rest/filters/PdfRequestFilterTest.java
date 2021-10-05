@@ -3,7 +3,9 @@ package io.goobi.viewer.api.rest.filters;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class PdfRequestFilterTest {
+import io.goobi.viewer.AbstractTest;
+
+public class PdfRequestFilterTest extends AbstractTest {
     
     /**
      * @see PdfRequestFilter#getNumAllowedPages(int,int)

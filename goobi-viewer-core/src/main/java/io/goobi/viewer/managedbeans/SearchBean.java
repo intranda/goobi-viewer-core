@@ -893,6 +893,17 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return false;
     }
+    
+    @Override
+    public boolean isSearchInFacetFieldFlag(String fieldName) {
+        for (IFacetItem item : facets.getCurrentFacets()) {
+            if (item.getField().equals(fieldName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * Getter for the invisible (empty) search string. Used for the search field widget for when no search input display is desired.
@@ -1174,19 +1185,20 @@ public class SearchBean implements SearchInterface, Serializable {
      * {@inheritDoc}
      * 
      * @should escape critical chars
-     * @should not url escape string
+     * @should url escape string
      */
     @Override
     public String getExactSearchString() {
         if (searchStringInternal.length() == 0) {
             return "-";
         }
-        logger.trace("getExactSearchString: {}", searchStringInternal);
+        // logger.trace("getExactSearchString: {}", searchStringInternal);
         String ret = BeanUtils.escapeCriticalUrlChracters(searchStringInternal);
         try {
+            // Escape the query here, otherwise Rewrite will spam warnings into catalina.out
             if (!StringTools.isStringUrlEncoded(ret, URL_ENCODING)) {
                 // logger.trace("url pre-encoding: {}", ret);
-                ret = URLEncoder.encode(ret, URL_ENCODING);
+                ret = StringTools.encodeUrl(ret);
                 // logger.trace("url encoded: {}", ret);
             }
         } catch (UnsupportedEncodingException e) {
@@ -1200,6 +1212,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * drill-down, etc.
      *
      * @param inSearchString a {@link java.lang.String} object.
+     * @should perform double unescaping if necessary
      */
     public void setExactSearchString(String inSearchString) {
         logger.debug("setExactSearchString: {}", inSearchString);
@@ -1221,7 +1234,7 @@ public class SearchBean implements SearchInterface, Serializable {
             logger.error(e.getMessage());
         }
         // Then unescape custom sequences
-        searchStringInternal = BeanUtils.unescapeCriticalUrlChracters(searchStringInternal);
+        searchStringInternal = StringTools.unescapeCriticalUrlChracters(searchStringInternal);
 
         // Parse search terms from the query (unescape spaces first)
         String discriminatorValue = null;
@@ -2463,13 +2476,13 @@ public class SearchBean implements SearchInterface, Serializable {
         basePath = ViewerPathBuilder.resolve(basePath, "-");
         // URL-encode query if not yet encoded
         String exactSearchString = getExactSearchString();
-        try {
-            if (!StringTools.isStringUrlEncoded(exactSearchString, URL_ENCODING)) {
-                exactSearchString = StringTools.encodeUrl(exactSearchString);
-            }
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage());
-        }
+        //        try {
+        //            if (!StringTools.isStringUrlEncoded(exactSearchString, URL_ENCODING)) {
+        //                exactSearchString = StringTools.encodeUrl(exactSearchString);
+        //            }
+        //        } catch (UnsupportedEncodingException e) {
+        //            logger.error(e.getMessage());
+        //        }
         basePath = ViewerPathBuilder.resolve(basePath, exactSearchString);
         basePath = ViewerPathBuilder.resolve(basePath, Integer.toString(getCurrentPage()));
         basePath = ViewerPathBuilder.resolve(basePath, getSortString());

@@ -492,7 +492,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
     crowdsourcing.Item.prototype.isReviewMode = function() {
         if (this.pageStatisticMode) {
-//            console.log('statistic mode index ' + (this.currentCanvasIndex+1) + ': '  + (this.pageStatusMap.get(this.currentCanvasIndex+1)))
+            //console.log('statistic mode index ' + (this.currentCanvasIndex) + ': '  + (this.pageStatusMap.get(this.currentCanvasIndex)))
             return this.pageStatusMap.get(this.currentCanvasIndex) == 'review';
         } else {
             return this.reviewMode;

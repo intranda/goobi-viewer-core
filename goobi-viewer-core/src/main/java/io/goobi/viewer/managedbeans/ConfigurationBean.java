@@ -1217,6 +1217,20 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     * @should return correct list
+     */
+    public List<Integer> getMetadataParamNumberList() {
+        List<Integer> ret = new ArrayList<>(DataManager.getInstance().getConfiguration().getMetadataParamNumber());
+        for (int i = 0; i < DataManager.getInstance().getConfiguration().getMetadataParamNumber(); ++i) {
+            ret.add(i);
+        }
+
+        return ret;
+    }
+
+    /**
      * <p>
      * isDisplaySidebarBrowsingTerms.
      * </p>
@@ -1289,7 +1303,7 @@ public class ConfigurationBean implements Serializable {
     public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
         return DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
     }
-    
+
     public boolean isDisplaySidebarWidgetUsagePageDownloadOptions() {
         return DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions();
     }
@@ -1429,7 +1443,7 @@ public class ConfigurationBean implements Serializable {
     public boolean isAnonymousUserEmailAddressValid() {
         return EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
     }
-    
+
     /**
      * 
      * @return
@@ -1459,7 +1473,7 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDocstructNavigationEnabled()
                 && !DataManager.getInstance().getConfiguration().getDocstructNavigationTypes(template, fallbackToDefaultTemplate).isEmpty();
     }
-    
+
     public boolean isDisplayAnnotationTextInImage() {
         return DataManager.getInstance().getConfiguration().isDisplayAnnotationTextInImage();
     }

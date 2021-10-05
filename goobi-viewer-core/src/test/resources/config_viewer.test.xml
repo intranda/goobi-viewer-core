@@ -149,7 +149,7 @@
 		<smtpPort>25</smtpPort>
         <feedbackEmailAddressList>
             <address label="Everyone" default="true">everyone@example.com</address>
-            <address>someone@example.com</address>
+            <address id="someid">someone@example.com</address>
         </feedbackEmailAddressList>
 		
         <!-- anonymousUserEmailAddress: A user with this email address will be automatically created by the application.
@@ -250,7 +250,7 @@
 			<scale>2000</scale>
 			<scale>3000</scale>
 			<tileSize>
-				<scaleFactors>2,4,8</scaleFactors>
+				<scaleFactors>2;4;8</scaleFactors>
 				<size>1024</size>
 			</tileSize>
 		</zoomImageView>
@@ -274,7 +274,7 @@
 			<scale>1500</scale>
 			<scale>3000</scale>
 			<tileSize>
-				<scaleFactors>1,2,3</scaleFactors>
+				<scaleFactors>1;2;3</scaleFactors>
 				<size>512</size>
 			</tileSize>
 		</zoomImageView>
@@ -373,6 +373,9 @@
 			also change the preferred language for record metadata. Default is false. -->
 		<useViewerLocaleAsRecordLanguage>true
 		</useViewerLocaleAsRecordLanguage>
+        
+        <!-- fallbackDefaultLanguage: Language that shall be used for locales in case FacesContext is unavailable. Default is 'en'. -->
+        <fallbackDefaultLanguage>de</fallbackDefaultLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
 		<theme mainTheme="mainTheme_value"
@@ -417,8 +420,7 @@
 			<!-- defaultSortField: Field used for initial sorting. Multiple semicolon-separated 
 				fields can be used for hierarchical sorting (e.g. <defaultSortField>SORT_FIELD1;SORT_FIELD2;SORT_FIELD3</defaultSortField>). 
 				Default is empty. -->
-			<defaultSortField>SORT_DEFAULT1;SORT_DEFAULT2;SORT_DEFAULT3
-			</defaultSortField>
+			<defaultSortField>SORT_DEFAULT1\;SORT_DEFAULT2\;SORT_DEFAULT3</defaultSortField>
 			<!-- Fields used for sorting. Fields must be configured as 'multiValued="false"' 
 				in the Solr schema. Multiple semicolon-separated fields can be used for hierarchical 
 				sorting (e.g. <luceneField>SORT_FIELD1;SORT_FIELD2;SORT_FIELD3</luceneField>). -->
@@ -653,6 +655,22 @@
                         <replace string="foo">bar</replace>
                     </param>
                 </metadata>
+                <metadata label="MD_EVENT" value="MASTERVALUE_EVENT" group="true" singleString="false" labelField="EVENTTYPE" type="3">
+                    <param type="field" key="EVENTTYPE" />
+                    <param type="field" key="MD_MATERIAL" />
+                    <param type="field" key="MD_CITATION_CATALOGUE" value="MASTERVALUE_CITATION_CATALOGUE" />
+                    <param type="field" key="MD_CITATION_ILLUSTRATION" value="MASTERVALUE_CITATION_ILLUSTRATION" />
+                    <param type="field" key="MD_VALUE" value="MASTERVALUE_CITATION_LINKTORECORD" condition="PI:{0}" />
+                    <metadata label="MD_ARTIST" value="MASTERVALUE_WIKINORM" singleString="false" group="true">
+                        <param type="field" key="MD_NAME" />
+                        <param type="field" key="MD_MATERIAL" />
+                        <param type="field" key="MD_STARTDATE" />
+                        <param type="field" key="MD_ENDDATE" />
+                        <param type="field" key="MD_URI_GETTY" value="MASTERVALUE_URI_GETTY" />
+                        <param type="field" key="MD_URI_SIKART" value="MASTERVALUE_URI_SIKART" />
+                        <param type="normdatauri" key="NORM_URI"/>
+                    </metadata>
+                </metadata>
             </template>
         </metadataView>
 
@@ -885,17 +903,17 @@
 
 		<!-- labelConfig: Layout configuration for the label of TOC elements. The 
 			configuration is analogous to a metadata template. -->
-		<labelConfig xml:space="preserve">
+		<labelConfig>
 			<template name="_DEFAULT">
 				<metadata label="" value="{LABEL}{MD_CREATOR}">
 					<param type="field" key="LABEL" />
-					<param xml:space="preserve" type="field" key="MD_CREATOR" prefix=" / " />
+					<param type="field" key="MD_CREATOR" prefix=" / " />
 				</metadata>
 			</template>
 			<template name="PeriodicalVolume">
 				<metadata label="" value="{CURRENTNO}{MD_TITLE}">
-					<param type="field" key="CURRENTNO" prefix="Number_SPACE_" />
-					<param type="field" key="MD_TITLE" altKey="LABEL" prefix=":_SPACE_" />
+					<param type="field" key="CURRENTNO" prefix="Number " />
+					<param type="field" key="MD_TITLE" altKey="LABEL" prefix=": " />
 				</metadata>
 			</template>
 		</labelConfig>

@@ -787,7 +787,11 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h4 class="card-title"><a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h4><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"> {getDescription(collection)} </p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><ul if="{collection.members && collection.members.length > 0}" class="list"><li each="{child in getChildren(collection)}"><a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></li></ul></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
+riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h4 class="card-title"><a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h4><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"><raw html="{getDescription(collection)}"></raw></p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><ul if="{collection.members && collection.members.length > 0}" class="list"><li each="{child in getChildren(collection)}"><a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></li></ul></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
+
+riot.tag('raw', '', function(opts) {
+    this.root.innerHTML = opts.html;
+});
 
 this.collections = this.opts.collections;
 
@@ -1499,7 +1503,7 @@ riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="cro
 
 this.question = this.opts.question;
 this.annotationToMark = null;
-this.addMarkerActive = !this.question.isRegionTarget() && !this.opts.item.isReviewMode();
+this.addMarkerActive = !this.question.isRegionTarget() && !this.opts.item.reviewMode;
 
 this.on("mount", function() {
 	this.opts.item.onItemInitialized( () => {
@@ -2597,23 +2601,30 @@ this.setSearchArea = function(layer) {
     switch(type) {
         case "polygon":
         case "rectangle":
-	        let vertices = [...layer.getLatLngs()[0]];
+            let origLayer = L.polygon(layer.getLatLngs());
+            let wrappedCenter = this.geoMap.map.wrapLatLng(layer.getCenter());
+            let distance = layer.getCenter().lng - wrappedCenter.lng;
+
+	        let vertices = [...layer.getLatLngs()[0]].map(p => L.latLng(p.lat, p.lng-distance)).map(p => this.geoMap.normalizePoint(p));
+
 	        if(vertices[0] != vertices[vertices.length-1]) {
 	        	vertices.push(vertices[0]);
 	        }
+
 	        this.notifyFeatureSet({
 	           type : type,
 	           vertices: vertices.map(p => [p.lat, p.lng])
 	        })
 	        break;
         case "circle":
-            let bounds = layer.getBounds();
+            let bounds = this.geoMap.map.wrapLatLngBounds(layer.getBounds());
+            let center = this.geoMap.map.wrapLatLng(layer.getLatLng());
             let circumgon = this.createCircumgon(bounds.getCenter(), bounds.getSouthWest(), bounds.getSouthWest(), 16);
             let diameterM = bounds.getSouthWest().distanceTo(bounds.getNorthWest());
             this.notifyFeatureSet({
                 type : "circle",
-                vertices: circumgon.map(p => [p.lat, p.lng]),
-                center: layer.getLatLng(),
+                vertices: circumgon.map(p => this.geoMap.normalizePoint(p)).map(p => [p.lat, p.lng]),
+                center: center,
             	radius: layer.getRadius()
             })
             break;
@@ -3106,6 +3117,7 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     		rxjs.operators.filter(element => element != undefined),
     		rxjs.operators.take(this.maxSlides),
     		rxjs.operators.reduce((res, item) => res.concat(item), []),
+    		rxjs.operators.map(array => array.sort( (s1,s2) => s1.order-s2.order ))
     	)
     	.subscribe(slides => this.setSlides(slides))
     });
@@ -3162,7 +3174,8 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     				label : element.label,
     				description : element.description,
     				image : element.thumbnail,
-    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element))
+    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element)),
+    				order : element.order
     		}
     		return slide;
     	} else {
@@ -3653,7 +3666,7 @@ this.getPageStatus = function(index) {
 }.bind(this)
 
 });
-riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
+riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'" onload="{imageLoaded}"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
 	    this.on( 'mount', function() {
 
 	        rxjs.fromEvent($( this.opts.button ), "click").pipe(
@@ -3759,6 +3772,10 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest i
 	            $( '.ui-slider-handle' ).removeClass( 'top' );
 	            $( this ).addClass( 'top' );
 	        } );
+	    }.bind(this)
+
+	    this.imageLoaded = function(event) {
+	    	$(event.target).parents('.timematrix__img').css("background", "transparent");
 	    }.bind(this)
 
 });

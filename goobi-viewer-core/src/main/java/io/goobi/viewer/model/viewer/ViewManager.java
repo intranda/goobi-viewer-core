@@ -527,7 +527,53 @@ public class ViewManager implements Serializable {
         try {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, getCurrentPage().getImageType()) > 0) {
                 sb.append("?ignoreWatermark=false");
-                sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> "&watermarkText=" + text).orElse(""));
+                sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> {
+                    try {
+                        return "&watermarkText=" + URLEncoder.encode(text, StringTools.DEFAULT_ENCODING);
+                    } catch (UnsupportedEncodingException e) {
+                        logger.error(e.getMessage());
+                        return "&watermarkText=" + text;
+                    }
+                }).orElse(""));
+                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> "&watermarkId=" + id).orElse(""));
+            }
+        } catch (ViewerConfigurationException e) {
+            logger.error("Unable to read watermark config, ignore watermark", e);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * <p>
+     * getCurrentMasterImageUrl.
+     * </p>
+     *
+     * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public String getCurrentThumbnailUrlForDownload(Scale scale) throws IndexUnreachableException, DAOException {
+
+        PageType pageType = Optional.ofNullable(BeanUtils.getNavigationHelper()).map(nh -> nh.getCurrentPageType()).orElse(null);
+        if (pageType == null) {
+            pageType = PageType.viewObject;
+        }
+        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), scale));
+        try {
+            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, getCurrentPage().getImageType()) > 0) {
+                sb.append("?ignoreWatermark=false");
+                sb.append(imageDeliveryBean.getFooter()
+                        .getWatermarkTextIfExists(getCurrentPage())
+                        .map(text -> {
+                            try {
+                                return "&watermarkText=" + URLEncoder.encode(text, StringTools.DEFAULT_ENCODING);
+                            } catch (UnsupportedEncodingException e) {
+                                logger.error(e.getMessage());
+                                return "&watermarkText=" + text;
+                            }
+                        })
+                        .orElse(""));
                 sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> "&watermarkId=" + id).orElse(""));
             }
         } catch (ViewerConfigurationException e) {
@@ -577,7 +623,14 @@ public class ViewManager implements Serializable {
         try {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(view, getCurrentPage().getImageType()) > 0) {
                 sb.append("?ignoreWatermark=false");
-                sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> "&watermarkText=" + text).orElse(""));
+                sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> {
+                    try {
+                        return "&watermarkText=" + URLEncoder.encode(text, StringTools.DEFAULT_ENCODING);
+                    } catch (UnsupportedEncodingException e) {
+                        logger.error(e.getMessage());
+                        return "&watermarkText=" + text;
+                    }
+                }).orElse(""));
                 sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> "&watermarkId=" + id).orElse(""));
             }
         } catch (ViewerConfigurationException e) {
@@ -3788,7 +3841,7 @@ public class ViewManager implements Serializable {
         }
         CSL processor = citationProcessorWrapper.getCitationProcessor(citationStyle);
         Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationSource();
-        md.populate(topStructElement, BeanUtils.getLocale());
+        md.populate(topStructElement, String.valueOf(topStructElement.getLuceneId()), BeanUtils.getLocale());
         for (MetadataValue val : md.getValues()) {
             if (!val.getCitationValues().isEmpty()) {
                 Citation citation = new Citation(pi, processor, citationProcessorWrapper.getCitationItemDataProvider(),

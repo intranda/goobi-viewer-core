@@ -49,10 +49,10 @@ public class MetadataElement {
 
         private static final String KEY_ROOT = "metadataTab";
 
-        private int type = 0;
+        private int type;
 
         public MetadataType() {
-            // the emptiness inside
+            this.type = 0;
         }
 
         public MetadataType(int type) {
@@ -129,7 +129,13 @@ public class MetadataElement {
          * @should return correct message key
          */
         public String getTabName(int viewIndex) {
-            return KEY_ROOT + "_" + viewIndex + "_" + type;
+            String key = KEY_ROOT + "_" + viewIndex + "_" + type;
+            if (ViewerResourceBundle.getTranslation(key, null, true, false, false, false) != null) {
+                //            if(ViewerResourceBundle.getAllKeys().contains(key)) {
+                return key;
+            }
+
+            return "";
         }
 
         public void setTabName(String tabName) {
@@ -206,7 +212,7 @@ public class MetadataElement {
 
         for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(metadataViewIndex, se.getDocStructType())) {
             try {
-                if (!metadata.populate(se, sessionLocale)) {
+                if (!metadata.populate(se, String.valueOf(se.getLuceneId()), sessionLocale)) {
                     continue;
                 }
                 if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
@@ -237,7 +243,7 @@ public class MetadataElement {
         // The component is only rendered if sidebarMetadataList != null
         sidebarMetadataList = new ArrayList<>(sidebarMetadataTempList.size());
         for (Metadata metadata : sidebarMetadataTempList) {
-            if (!metadata.populate(se, sessionLocale)) {
+            if (!metadata.populate(se, String.valueOf(se.getLuceneId()), sessionLocale)) {
                 continue;
             }
             if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {
@@ -314,6 +320,10 @@ public class MetadataElement {
         }
 
         return metadataTypes;
+    }
+
+    public boolean hasMetadataTypeLabels(int viewIndex) {
+        return getMetadataTypes().stream().anyMatch(type -> StringUtils.isNotBlank(type.getTabName(viewIndex)));
     }
 
     /**
@@ -431,6 +441,26 @@ public class MetadataElement {
             return metadataList.stream().anyMatch(md -> !md.isBlank());
         }
         return false;
+    }
+
+    /**
+     * Checks whether all metadata fields for this element can be displayed in a single box (i.e. no table type grouped metadata are configured).
+     * 
+     * @return true if all metadata are not configured as single string; false otherwise
+     * @should return false if at least one metadata with same type not single string
+     * @should return true if all metadata of same type single string
+     */
+    public boolean isDisplayBoxed(int type) {
+        for (Metadata md : getMetadataList()) {
+            if (md.getType() != type) {
+                continue;
+            }
+            if (!md.isSingleString()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

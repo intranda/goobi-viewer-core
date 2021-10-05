@@ -57,6 +57,7 @@ public class MediaItem {
     private final String link;
     private final List<String> tags;
     private final boolean important;
+    private final Integer order;
 
     public MediaItem(URI imageURI) {
         this.image = new ImageContent(imageURI);
@@ -66,6 +67,8 @@ public class MediaItem {
         this.description = null;
         this.id = null;
         this.important = false;
+        this.order = null;
+        
     }
     
     public MediaItem(CMSMediaItem source, HttpServletRequest servletRequest) {
@@ -76,6 +79,7 @@ public class MediaItem {
         this.tags = source.getCategories().stream().map(CMSCategory::getName).collect(Collectors.toList());
         this.id = source.getId();
         this.important = source.isImportant();
+        this.order = source.getDisplayOrder();
     }
 
     /**
@@ -144,6 +148,13 @@ public class MediaItem {
      */
     public boolean isImportant() {
         return important;
+    }
+    
+    /**
+     * @return the order
+     */
+    public Integer getOrder() {
+        return order;
     }
 
 }

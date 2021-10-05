@@ -90,6 +90,10 @@ var viewerJS = ( function( viewer ) {
         	//console.log("record pi", $recordPiInput, $recordPiInput.val());
         	this.hideLoader("load_record_image");
         	if($recordPiInput.length > 0) {
+        		let containsImage = $recordPiInput.attr("data-contains-image");
+        		if(!containsImage || containsImage.toLowerCase() == "false") {
+        			return Promise.resolve();
+        		}
         		let recordPi = $recordPiInput.val();
         		let oldPi = this.recordPi;
         		this.recordPi = recordPi;

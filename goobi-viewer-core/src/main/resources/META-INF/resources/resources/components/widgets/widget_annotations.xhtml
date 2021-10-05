@@ -20,7 +20,6 @@
 			rendered="#{!configurationBean.displayUserGeneratedContentBelowImage and !contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).isEmpty()}">
 			<div id="widgetAnnotations" class="widget widget-annotations">
 
-
 				<!-- TODO: IF MORE THAN 3 annotations > ELEMENT COLLAPSED -->
 				<h3
 					class="widget__title #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}">
@@ -28,109 +27,9 @@
 						class="fa fa-angle-down" aria-hidden="true"></i>
 				</h3>
 
-
 				<h:panelGroup layout="block"
 					styleClass="widget__body #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}">
-					<nav id="user_generated_content_nav">
-						<ul>
-							<ui:repeat var="content"
-								value="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi)}">
-								<h:panelGroup rendered="#{content.isEmpty() ? 'false':'true'}">
-									<li id="words-#{content.id}"
-										class="widget-annotations__entry #{content.isOnThisPage(activeDocumentBean.viewManager.currentPage) ? '-onpage' : ''}">
-										<div class="widget-annotations__type">
-											<i class="#{content.iconClass}" aria-hidden="true"></i>
-										</div>
-										<div class="widget-annotations__text">
-											<ui:fragment
-												rendered="#{!content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
-												<h:outputText
-													value="#{msg[contentBean.cleanUpValue(content.extendendLabel)]}"
-													escape="false"></h:outputText>
-											</ui:fragment>
-											<ui:fragment
-												rendered="#{content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
-												<h:outputLink value="#{content.pageUrl}" styleClass="p-0">
-													<h:outputText
-														value="#{msg[contentBean.cleanUpValue(content.extendendLabel)]}"
-														escape="false"></h:outputText>
-												</h:outputLink>
-											</ui:fragment>
-										</div>
-											<ui:fragment rendered="#{content.type == 'NORMDATA'}">
-												<button type="button"
-													data-remotecontent="#{request.contextPath}/api/v1/authority/resolver?id=#{contentBean.getEscapedBodyUrl(content)}&amp;template=ANNOTATION&amp;lang=#{navigationHelper.localeString}/"
-													data-toggle="tooltip" data-placement="top"
-													data-trigger="hover" class="widget-annotations__button">
-													<i class="fa fa-list-ul" aria-hidden="true"></i>
-													<div class="normdata-preloader"></div>
-												</button>
-												<i class="fa fa-times closeAllPopovers" aria-hidden="true"
-												data-toggle="tooltip" data-placement="top"
-												data-trigger="hover" title="#{msg.normdataPopoverCloseAll}"></i>
-											</ui:fragment>
-										<div class="widget-annotations__page">
-											<ui:fragment rendered="#{content.isOnAnyPage()}">
-												<span>#{content.page}</span>
-											</ui:fragment>
-										</div>
-									</li>
-
-								</h:panelGroup>
-
-								<script type="text/javascript">
-									$("#words-#{content.id}").on('click', function(e) {
-										viewImage.overlays.focusBox("ugc", "#{content.id}");
-										highlightCurrentSelection($(this));
-									});
-								</script>
-							</ui:repeat>
-
-							<script type="text/javascript">
-								//<![CDATA[ 
-		                            var highlightCurrentSelection = function( $Obj ) {
-		                            	// reset styles for all li elements
-		                            	$( '#user_generated_content_nav li' ).removeClass( 'ugc-highlight' );
-		                            	
-		                            	// highlight clicked li element
-		                            	$Obj.addClass( 'ugc-highlight' );
-		                            };
-								    function initView() {
-			                            
-			                            var coordinates = {
-			                            	name: 'ugc',
-			                            	displayTooltip: true,
-			                            	coordinates:  #{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}
-			                            };
-			                           
-			                            // console.log("crowdsourcing coordinates: ", coordinates);
-			                            if(configViewer.image && coordinates) {
-			                            	if(!configViewer.image.highlightCoords) {
-			                            		configViewer.image.highlightCoords = [];
-			                            	}
-			                            	configViewer.image.highlightCoords.push(coordinates);
-			                            }
-			                            
-			                           
-			                            
-			                            var normdataConfig = {
-			                                path: "#{request.contextPath}",
-			                                lang: {
-			                                    popoverTitle: "#{msg.normdataPopverTitle}",
-			                                    popoverClose: "#{msg.normdataPopoverClose}",
-			                                    showNormdata: "#{msg.normdataExpand}"
-			                                },
-			                                elemWrapper: $( "#metadataElementWrapper" ),
-			                                linkSelector: ".widget-annotations__button"
-			                            };
-			                            
-			                            viewerJS.normdata.init( normdataConfig );
-								    }
-								    $(document).ready(() => initView());
-		                    	//]]>	
-		                    </script>
-						</ul>
-					</nav>
+					<viewerComponent:annotationList contentList="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi)}" sidebar="true"/>
 				</h:panelGroup>
 			</div>
 		</h:panelGroup>

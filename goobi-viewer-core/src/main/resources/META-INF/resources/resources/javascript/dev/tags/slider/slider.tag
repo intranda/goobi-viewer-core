@@ -51,6 +51,7 @@
     		rxjs.operators.filter(element => element != undefined),		//drop all responses which could not be mapped to a slide
     		rxjs.operators.take(this.maxSlides),						//stop after maxSlides slides have been created
     		rxjs.operators.reduce((res, item) => res.concat(item), []),	//create an array out of the sub-observables
+    		rxjs.operators.map(array => array.sort( (s1,s2) => s1.order-s2.order ))
     	)
     	.subscribe(slides => this.setSlides(slides))		//add the slides and call update
     });
@@ -112,7 +113,8 @@
     				label : element.label,
     				description : element.description,
     				image : element.thumbnail,
-    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element))
+    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element)),
+    				order : element.order
     		}
     		return slide;
     	} else {

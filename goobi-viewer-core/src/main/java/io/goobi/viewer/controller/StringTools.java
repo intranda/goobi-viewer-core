@@ -67,17 +67,46 @@ public class StringTools {
     /** Constant <code>DEFAULT_ENCODING="UTF-8"</code> */
     public static final String DEFAULT_ENCODING = "UTF-8";
 
+    /** Constant <code>SLASH_REPLACEMENT="U002F"</code> */
+    public static final String SLASH_REPLACEMENT = "U002F";
+    /** Constant <code>BACKSLASH_REPLACEMENT="U005C"</code> */
+    public static final String BACKSLASH_REPLACEMENT = "U005C";
+    /** Constant <code>PIPE_REPLACEMENT="U007C"</code> */
+    public static final String PIPE_REPLACEMENT = "U007C";
+    /** Constant <code>QUESTION_MARK_REPLACEMENT="U003F"</code> */
+    public static final String QUESTION_MARK_REPLACEMENT = "U003F";
+    /** Constant <code>PERCENT_REPLACEMENT="U0025"</code> */
+    public static final String PERCENT_REPLACEMENT = "U0025";
+    /** Constant <code>PLUS_REPLACEMENT="U0025"</code> */
+    public static final String PLUS_REPLACEMENT = "U002B";
+
+    /**
+     * 
+     * @param string String to encode
+     * @return URL-encoded string
+     */
+    public static String encodeUrl(String string) {
+        return encodeUrl(string, false);
+    }
+
     /**
      * <p>
      * encodeUrl.
      * </p>
      *
-     * @param string a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param string String to encode
+     * @param escapeCriticalUrlCharacters If true, slashes etc. will be manually escaped prior to URL encoding
+     * @return URL-encoded string
      */
-    public static String encodeUrl(String string) {
+    public static String encodeUrl(String string, boolean escapeCriticalUrlCharacters) {
+        if (StringUtils.isEmpty(string)) {
+            return string;
+        }
+
+        if (escapeCriticalUrlCharacters) {
+            string = BeanUtils.escapeCriticalUrlChracters(string);
+        }
         try {
-            //            return BeanUtils.escapeCriticalUrlChracters(string);
             return URLEncoder.encode(string, StringTools.DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {
             logger.error("Unable to encode '{}' with {}", string, StringTools.DEFAULT_ENCODING);
@@ -105,7 +134,7 @@ public class StringTools {
                 string = encodedString;
                 encodedString = URLDecoder.decode(string, "utf-8");
             } while (!encodedString.equals(string));
-            return BeanUtils.unescapeCriticalUrlChracters(string);
+            return unescapeCriticalUrlChracters(string);
         } catch (NullPointerException | UnsupportedEncodingException e) {
             return string;
         }
@@ -336,6 +365,55 @@ public class StringTools {
 
         String decoded = URLDecoder.decode(s, charset);
         return !s.equals(decoded);
+    }
+
+    /**
+     * <p>
+     * escapeCriticalUrlChracters.
+     * </p>
+     *
+     * @param value a {@link java.lang.String} object.
+     * @should replace characters correctly
+     * @param escapePercentCharacters a boolean.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String escapeCriticalUrlChracters(String value, boolean escapePercentCharacters) {
+        if (value == null) {
+            throw new IllegalArgumentException("value may not be null");
+        }
+
+        value = value.replace("/", SLASH_REPLACEMENT)
+                .replace("\\", BACKSLASH_REPLACEMENT)
+                .replace("|", PIPE_REPLACEMENT)
+                .replace("%7C", PIPE_REPLACEMENT)
+                .replace("?", QUESTION_MARK_REPLACEMENT)
+                .replace("+", PLUS_REPLACEMENT);
+        if (escapePercentCharacters) {
+            value = value.replace("%", PERCENT_REPLACEMENT);
+        }
+        return value;
+    }
+    
+    /**
+     * <p>
+     * unescapeCriticalUrlChracters.
+     * </p>
+     *
+     * @param value a {@link java.lang.String} object.
+     * @should replace characters correctly
+     * @return a {@link java.lang.String} object.
+     */
+    public static String unescapeCriticalUrlChracters(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("value may not be null");
+        }
+
+        return value.replace(SLASH_REPLACEMENT, "/")
+                .replace(BACKSLASH_REPLACEMENT, "\\")
+                .replace(PIPE_REPLACEMENT, "|")
+                .replace(QUESTION_MARK_REPLACEMENT, "?")
+                .replace(PERCENT_REPLACEMENT, "%")
+                .replace(PLUS_REPLACEMENT, "+");
     }
 
     /**

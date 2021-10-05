@@ -27,8 +27,8 @@ public class IIIFPresentationAPIHandlerTest extends AbstractTest {
 
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         this.urls = new ApiUrls();
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
         handler = new IIIFPresentationAPIHandler(urls, DataManager.getInstance().getConfiguration());
     }
 

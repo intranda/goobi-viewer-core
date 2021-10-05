@@ -20,17 +20,14 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLNonTransientConnectionException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -73,7 +70,6 @@ import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
-import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -459,19 +455,14 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateUser(User user) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(user);
-            em.getTransaction().commit();
-            // Refresh the object from the DB so that any new licenses etc. have IDs
-            if (this.getEntityManager().contains(user)) {
-                this.getEntityManager().refresh(user);
-            }
-            return true;
-        } finally {
-            em.close();
+        em.getTransaction().begin();
+        em.merge(user);
+        em.getTransaction().commit();
+        // Refresh the object from the DB so that any new licenses etc. have IDs
+        if (this.getEntityManager().contains(user)) {
+            this.getEntityManager().refresh(user);
         }
+        return true;
     }
 
     /*
@@ -1253,11 +1244,9 @@ public class JPADAO implements IDAO {
         if (filters != null && !filters.isEmpty()) {
             filterKeys.addAll(filters.keySet());
             Collections.sort(filterKeys);
-            int count = 0;
             for (String key : filterKeys) {
                 sbQuery.append(" AND ");
                 sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
-                count++;
             }
         }
         if (StringUtils.isNotEmpty(sortField)) {
@@ -1291,11 +1280,9 @@ public class JPADAO implements IDAO {
         if (filters != null && !filters.isEmpty()) {
             filterKeys.addAll(filters.keySet());
             Collections.sort(filterKeys);
-            int count = 0;
             for (String key : filterKeys) {
                 sbQuery.append(" AND ");
                 sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
-                count++;
             }
         }
         if (StringUtils.isNotEmpty(sortField)) {
@@ -1712,7 +1699,6 @@ public class JPADAO implements IDAO {
     public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT a FROM Comment a");
-        List<String> filterKeys = new ArrayList<>();
         Map<String, String> params = new HashMap<>();
         sbQuery.append(createFilterQuery(null, filters, params));
         if (StringUtils.isNotEmpty(sortField)) {
@@ -2548,7 +2534,6 @@ public class JPADAO implements IDAO {
         AlphabetIterator abc = new AlphabetIterator();
         String mainTableKey = abc.next(); // = a
         //placeholder keys (a,b,c,...) for all tables to query
-        Map<String, String> tableKeys = new HashMap<>();
         List<String> whereStatements = new ArrayList<>();
         for (Entry<String, String> entry : filters.entrySet()) {
             String key = entry.getKey();
@@ -2634,7 +2619,6 @@ public class JPADAO implements IDAO {
         AlphabetIterator abc = new AlphabetIterator();
         String mainTableKey = abc.next(); // = a
         //placeholder keys (a,b,c,...) for all tables to query
-        Map<String, String> tableKeys = new HashMap<>();
         List<String> whereStatements = new ArrayList<>();
         for (Entry<String, String> entry : filters.entrySet()) {
             String key = entry.getKey();
@@ -3249,6 +3233,7 @@ public class JPADAO implements IDAO {
                                 ownerList.add(page);
                             }
                         } catch (NullPointerException e) {
+                            //
                         }
                     }
                 }
@@ -3630,7 +3615,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#addCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
      */
@@ -3748,9 +3732,6 @@ public class JPADAO implements IDAO {
             return 0;
         }
 
-        List<Campaign> campaignsToUpdate = new ArrayList<>();
-        Set<CampaignRecordStatistic> statistics = new HashSet<>();
-
         EntityManager emLocal = factory.createEntityManager();
         try {
             emLocal.getTransaction().begin();
@@ -3786,7 +3767,6 @@ public class JPADAO implements IDAO {
         }
 
     }
-    
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#checkAvailability()
@@ -3799,7 +3779,7 @@ public class JPADAO implements IDAO {
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
-        
+
         return false;
     }
 
@@ -4121,9 +4101,9 @@ public class JPADAO implements IDAO {
             em.merge(collection);
             em.getTransaction().commit();
             // Refresh the object from the DB so that any new licenses etc. have IDs
-//            if (this.getEntityManager().contains(collection)) {
-//                this.getEntityManager().refresh(collection);
-//            }
+            //            if (this.getEntityManager().contains(collection)) {
+            //                this.getEntityManager().refresh(collection);
+            //            }
             return true;
         } finally {
             em.close();
@@ -5022,19 +5002,19 @@ public class JPADAO implements IDAO {
     public List<CMSRecordNote> getRecordNotes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
         preQuery();
-        
+
         try {
-        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");   
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        q.setFlushMode(FlushModeType.COMMIT);
-        List<CMSRecordNote> notes = q.getResultList();
-            notes =  notes.stream()
+            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
+            Query q = getEntityManager().createQuery(sbQuery.toString());
+            q.setFlushMode(FlushModeType.COMMIT);
+            List<CMSRecordNote> notes = q.getResultList();
+            notes = notes.stream()
                     .filter(n -> filters == null || n.matchesFilter(filters.values().stream().findAny().orElse(null)))
                     .skip(first)
                     .limit(pageSize)
                     .collect(Collectors.toList());
-    
-                return notes;
+
+            return notes;
         } catch (PersistenceException e) {
             logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
             return Collections.emptyList();
@@ -5072,7 +5052,7 @@ public class JPADAO implements IDAO {
         if (displayedNotesOnly) {
             query += " AND a.displayNote = :display";
         }
-        logger.trace(query);
+        // logger.trace(query);
         Query q = getEntityManager().createQuery(query.toString());
         q.setParameter("pi", pi);
         if (displayedNotesOnly) {
@@ -5081,7 +5061,7 @@ public class JPADAO implements IDAO {
         q.setFlushMode(FlushModeType.COMMIT);
         return q.getResultList();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSMultiRecordNote> getAllMultiRecordNotes(boolean displayedNotesOnly) throws DAOException {
@@ -5090,7 +5070,7 @@ public class JPADAO implements IDAO {
         if (displayedNotesOnly) {
             query += " WHERE a.displayNote = :display";
         }
-        logger.trace(query);
+        // logger.trace(query);
         Query q = getEntityManager().createQuery(query.toString());
         if (displayedNotesOnly) {
             q.setParameter("display", true);
@@ -5109,14 +5089,12 @@ public class JPADAO implements IDAO {
             CMSRecordNote o = getEntityManager().getReference(CMSRecordNote.class, id);
             if (o != null) {
                 getEntityManager().refresh(o);
-                if(o instanceof CMSMultiRecordNote) {
+                if (o instanceof CMSMultiRecordNote) {
                     return new CMSMultiRecordNote(o);
-                } else {                    
-                    return new CMSSingleRecordNote(o);
                 }
-            } else {
-                return null;
+                return new CMSSingleRecordNote(o);
             }
+            return null;
         } catch (EntityNotFoundException e) {
             return null;
         }

@@ -42,6 +42,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.maps.GeoMap;
+import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchInterface;
@@ -389,13 +390,13 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
         // URL-encoder query, if necessary (otherwise, exceptions might occur)
         String queryString = getQueryString();
-        try {
-            if (!StringTools.isStringUrlEncoded(queryString, StringTools.DEFAULT_ENCODING)) {
-                queryString = URLEncoder.encode(queryString, StringTools.DEFAULT_ENCODING);
-            }
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage());
-        }
+        //        try {
+        //            if (!StringTools.isStringUrlEncoded(queryString, StringTools.DEFAULT_ENCODING)) {
+        //                queryString = URLEncoder.encode(queryString, StringTools.DEFAULT_ENCODING);
+        //            }
+        //        } catch (UnsupportedEncodingException e) {
+        //            logger.error(e.getMessage());
+        //        }
 
         path = ViewerPathBuilder.resolve(path, queryString);
         path = ViewerPathBuilder.resolve(path, Integer.toString(getPageNo()));
@@ -509,6 +510,11 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     @Override
     public boolean isSearchInDcFlag() {
         return getSearchBean().isSearchInDcFlag();
+    }
+    
+    @Override
+    public boolean isSearchInFacetFieldFlag(String fieldName) {
+        return getSearchBean().isSearchInFacetFieldFlag(fieldName);
     }
 
     /* (non-Javadoc)

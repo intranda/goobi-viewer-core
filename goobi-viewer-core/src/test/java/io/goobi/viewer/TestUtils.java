@@ -25,8 +25,10 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
@@ -64,17 +66,23 @@ public class TestUtils {
         return facesContext;
     }
 
-    public static HttpServletRequest mockHttpRequest() {
+    public static HttpServletRequest mockHttpRequest(String page) {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
         HttpSession session = new MockSession();
         Mockito.when(request.getSession()).thenReturn(session);
 
+        ServletContext context = Mockito.mock(ServletContext.class);
+        Mockito.when(request.getServletContext()).thenReturn(context);
+
+        RequestDispatcher dispatcher = Mockito.mock(RequestDispatcher.class);
+        Mockito.when(request.getRequestDispatcher(page)).thenReturn(dispatcher);
+
         return request;
 
-        //        Map<String, Object> sessionMap = new HashMap<>();
-        //        Mockito.when(session.getAttribute(SessionStoreBookshelfManager.BOOKSHELF_ATTRIBUTE_NAME)).thenReturn(sessionMap.get(SessionStoreBookshelfManager.BOOKSHELF_ATTRIBUTE_NAME));
-        //        Mockito.when(session.setAttribute(arg0, arg1);)
+        //                Map<String, Object> sessionMap = new HashMap<>();
+        //                Mockito.when(session.getAttribute(SessionStoreBookshelfManager.BOOKSHELF_ATTRIBUTE_NAME)).thenReturn(sessionMap.get(SessionStoreBookshelfManager.BOOKSHELF_ATTRIBUTE_NAME));
+        //                Mockito.when(session.setAttribute(arg0, arg1);)
     }
 
     public static class MockSession implements HttpSession {

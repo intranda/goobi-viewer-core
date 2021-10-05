@@ -9,41 +9,54 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-	
+
 	    <ui:fragment rendered="#{!metadataElement.skip}">
-            <ui:repeat var="type" value="#{metadataElement.metadataTypes}">
-                <!-- METADATA ELEMENT -->
-                <div class="metadata__elements level-#{status.index}">
-                    <h3 class="metadata__elements-h3">
-                        <h:outputText rendered="#{fn:length(metadataElement.metadataTypes) > 0}"
-                            value="#{msg[type.getTabName(metadataBean.activeMetadataView.index)]}" />
-                    </h3>
-                    
-                    <div class="metadata__element-wrapper">
-                        <ui:repeat value="#{metadataElement.metadataList}" var="metadata">
+	        <div class="metadata__element-wrapper">
+
+    	    	<ui:fragment rendered="#{!metadataElement.hasMetadataTypeLabels(metadataBean.activeMetadataView.index)}">
+    	            <h3 class="metadata__elements-h3">
+    	                <h:outputText value="#{msg[metadataElement.docStructType]}" />
+    	            </h3>
+    	        </ui:fragment>
+
+
+                <c:forEach var="type" items="#{metadataElement.metadataTypes}">
+                   	<ui:fragment rendered="#{not empty type.getTabName(metadataBean.activeMetadataView.index)}">
+                        <h3 class="metadata__elements-h3">
+                            <h:outputText value="#{msg[type.getTabName(metadataBean.activeMetadataView.index)]}" />
+                        </h3>
+                    </ui:fragment>
+
+                    <!-- METADATA ELEMENT -->
+                    <div class="metadata__wrapper #{metadataElement.isDisplayBoxed(type.type) ? '-isBoxed' : ''}">
+                        <c:forEach items="#{metadataElement.metadataList}" var="metadata">
                             <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
-                                <div class="metadata__element">
-                                    <dl class="dl-horizontal metadata__element-dl">
-                                        <dt title="#{msg[metadata.label]}">
-                                            <h:outputText value="#{msg[metadata.label]}:" escape="false" />
-                                        </dt>
-                                        <!-- grouped="true" -->
-                                        <h:panelGroup rendered="#{metadata.group}">
-                                            <dd>
-                                                <ui:repeat value="#{metadata.values}" var="val">
-                                                    <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                        <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
-                                                            <f:param value="#{val.getParamLabelWithColon(ind)}" />
-                                                            <f:param value="#{val.getComboValueShort(ind)}" />
-                                                        </c:forEach>
-                                                    </h:outputFormat>
-                                                    <br />
-                                                </ui:repeat>
-                                            </dd>
+
+                                    <!-- grouped="true" -->
+                                    <h:panelGroup rendered="#{metadata.group}">
+
+                                        <!-- Single label for all values, each value is a single string -->
+                                        <h:panelGroup rendered="#{metadata.singleString}">
+                                            <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                                <ui:param name="metadata" value="#{metadata}" />
+                                            </ui:include>
                                         </h:panelGroup>
-    
-                                        <!-- grouped="false" -->
-                                        <h:panelGroup rendered="#{!metadata.group}">
+
+                                        <!-- Each value has a label column and a value column -->
+                                        <h:panelGroup rendered="#{!metadata.singleString}">
+                                            <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                                <ui:param name="metadata" value="#{metadata}" />
+                                            </ui:include>
+                                        </h:panelGroup>
+
+                                    </h:panelGroup>
+
+                                    <!-- grouped="false" -->
+                                    <h:panelGroup styleClass="metadata__ungrouped-wrapper" layout="block" rendered="#{!metadata.group}">
+                                        <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
+                                            <dt title="#metadata.label}">
+                                                <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+                                            </dt>
                                             <dd>
                                                 <ui:repeat value="#{metadata.values}" var="val">
                                                     <span class="metadata__element-value">
@@ -55,14 +68,14 @@
                                                     </span>
                                                 </ui:repeat>
                                             </dd>
-                                        </h:panelGroup>
-                                    </dl>
-                                </div>
+                                        </dl>
+                                    </h:panelGroup>
+
                             </h:panelGroup>
-                        </ui:repeat>
-                    </div>                    
-                </div>
-            </ui:repeat>
+                        </c:forEach>
+                    </div>
+                </c:forEach>
+    		</div>
         </ui:fragment>
 </ui:composition>
 

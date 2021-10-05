@@ -28,6 +28,7 @@ import de.intranda.api.iiif.image.ImageInformation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
@@ -38,7 +39,7 @@ import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
  * @author Florian Alpers
  *
  */
-public class ImageHandlerTest {
+public class ImageHandlerTest extends AbstractTest{
 
     ImageHandler handler;
 
@@ -47,8 +48,7 @@ public class ImageHandlerTest {
      */
     @Before
     public void setUp() throws Exception {
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-
+        super.setUp();
         handler = new ImageHandler();
     }
 

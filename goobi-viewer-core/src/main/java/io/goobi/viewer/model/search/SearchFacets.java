@@ -27,23 +27,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSSidebarElement;
-import io.goobi.viewer.model.cms.CMSSidebarElementWithQuery;
-import io.goobi.viewer.model.cms.SidebarElementType;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -356,8 +352,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * If the facet for given field is expanded, return the size of the facet, otherwise the initial (collapsed) number of elements as
-     * configured.
+     * If the facet for given field is expanded, return the size of the facet, otherwise the initial (collapsed) number of elements as configured.
      *
      * @should return full facet size if expanded
      * @should return default if collapsed
@@ -394,8 +389,8 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * Returns true if the "(more)" link is to be displayed for a facet box. This is the case if the facet has more elements than the initial
-     * number of displayed elements and the facet hasn't been manually expanded yet.
+     * Returns true if the "(more)" link is to be displayed for a facet box. This is the case if the facet has more elements than the initial number
+     * of displayed elements and the facet hasn't been manually expanded yet.
      *
      * @param field a {@link java.lang.String} object.
      * @should return true if DC facet collapsed and has more elements than default
@@ -532,7 +527,7 @@ public class SearchFacets implements Serializable {
         }
         try {
             facetString = URLDecoder.decode(facetString, "utf-8");
-            facetString = BeanUtils.unescapeCriticalUrlChracters(facetString);
+            facetString = StringTools.unescapeCriticalUrlChracters(facetString);
             facetString = URLDecoder.decode(facetString, "utf-8");
         } catch (UnsupportedEncodingException e) {
         }
@@ -598,7 +593,7 @@ public class SearchFacets implements Serializable {
         if (StringUtils.isNotEmpty(updateValue) && !"-".equals(updateValue)) {
             try {
                 updateValue = URLDecoder.decode(updateValue, "utf-8");
-                updateValue = BeanUtils.unescapeCriticalUrlChracters(updateValue);
+                updateValue = StringTools.unescapeCriticalUrlChracters(updateValue);
             } catch (UnsupportedEncodingException e) {
             }
 
@@ -611,7 +606,7 @@ public class SearchFacets implements Serializable {
             }
             if (fieldItem == null) {
                 String geoFacetField = DataManager.getInstance().getConfiguration().getGeoFacetFields();
-                if (geoFacetField != null && geoFacetField.equals(field)){
+                if (geoFacetField != null && geoFacetField.equals(field)) {
                     fieldItem = new GeoFacetItem(field);
                     fieldItem.setValue(updateValue);
                 } else {
@@ -931,10 +926,19 @@ public class SearchFacets implements Serializable {
 
         List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
 
-        
         for (String field : allFacetFields) {
             if (availableFacets.containsKey(field)) {
                 ret.put(field, availableFacets.get(field));
+            }
+        }
+
+        //add current facets which have no hits. This may happen due to geomap facetting
+        for (IFacetItem currentItem : currentFacets) {
+            // Make a copy of the list to avoid concurrent modification
+            List<IFacetItem> availableFacetItems = new ArrayList<>(ret.getOrDefault(currentItem.getField(), new ArrayList<>()));
+            if (!availableFacetItems.contains(currentItem)) {
+                availableFacetItems.add(currentItem);
+                ret.put(currentItem.getField(), availableFacetItems);
             }
         }
 

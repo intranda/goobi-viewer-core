@@ -58,21 +58,12 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-    }
 
     public static final String PI = "74241";
 
     @Test
     public void test() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException, URISyntaxException,
             ContentNotFoundException, IOException {
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
 
         ManifestBuilder builder = new ManifestBuilder(new ApiUrls("https://viewer.goobi.io/rest/"));
         SequenceBuilder sequenceBuilder = new SequenceBuilder(new ApiUrls("https://viewer.goobi.io/rest/"));

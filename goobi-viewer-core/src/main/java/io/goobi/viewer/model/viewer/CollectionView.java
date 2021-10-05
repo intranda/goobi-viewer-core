@@ -956,6 +956,7 @@ public class CollectionView {
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @should return identifier resolver url if single record and pi known
+     * @should escape critical url chars in collection name
      */
     public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, String baseSearchUrl) {
 
@@ -988,7 +989,7 @@ public class CollectionView {
                     .toString();
         } else {
             String facetString = field + ":" + collection.getLuceneName();
-            String encFacetString = StringTools.encodeUrl(facetString);
+            String encFacetString = StringTools.encodeUrl(facetString, true);
             String ret = new StringBuilder(baseSearchUrl)
                     .append("-/-/1/")
                     .append(collection.getSortField())

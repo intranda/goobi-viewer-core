@@ -144,12 +144,7 @@ public class NavigationHelper implements Serializable {
      */
     @PostConstruct
     public void init() {
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
-            locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
-        } else {
-            locale = Locale.GERMAN;
-            logger.warn("Could not access FacesContext, locale set to DE.");
-        }
+        locale = BeanUtils.getInitialLocale();
         statusMap.put(KEY_CURRENT_PARTNER_PAGE, "");
         statusMap.put(KEY_SELECTED_NEWS_ARTICLE, "");
         statusMap.put(KEY_MENU_PAGE, "user");
@@ -908,14 +903,14 @@ public class NavigationHelper implements Serializable {
      */
     public String getCurrentPrettyUrl() {
         Optional<HttpServletRequest> request = Optional.ofNullable(FacesContext.getCurrentInstance())
-        .map(context -> context.getExternalContext())
-        .map(ExternalContext::getRequest)
-        .map(o -> (HttpServletRequest)o);
-        
+                .map(context -> context.getExternalContext())
+                .map(ExternalContext::getRequest)
+                .map(o -> (HttpServletRequest) o);
+
         Optional<URL> requestUrl = request
-        .map(r -> PrettyContext.getCurrentInstance(r))
-        .map(PrettyContext::getRequestURL);
-        
+                .map(r -> PrettyContext.getCurrentInstance(r))
+                .map(PrettyContext::getRequestURL);
+
         return request.map(r -> ServletUtils.getServletPathWithHostAsUrlFromRequest(r)).orElse("")
                 + requestUrl.map(URL::toURL).orElse("");
     }
@@ -1974,40 +1969,40 @@ public class NavigationHelper implements Serializable {
     public boolean isSolrIndexOnline() {
         return DataManager.getInstance().getSearchIndex().isSolrIndexOnline();
     }
-    
+
     /**
-     * If the current page url is a search page url without or with empty search parameters 
-     * replace {@link ViewHistory#getCurrentView(javax.servlet.ServletRequest)} with a search url containing the default 
-     * sort string.
-     * This is done so the view history contains the current random seed for random search list sorting and returning to the page
-     * yields the same ordering as the original call.
-     * Must be called in the pretty mappings for all search urls which deliver randomly sorted hitlists 
+     * If the current page url is a search page url without or with empty search parameters replace
+     * {@link ViewHistory#getCurrentView(javax.servlet.ServletRequest)} with a search url containing the default sort string. This is done so the view
+     * history contains the current random seed for random search list sorting and returning to the page yields the same ordering as the original
+     * call. Must be called in the pretty mappings for all search urls which deliver randomly sorted hitlists
      */
     public void addSearchUrlWithCurrentSortStringToHistory() {
         ViewHistory.getCurrentView(BeanUtils.getRequest())
-        .ifPresent(path -> {
-            ViewerPath sortStringPath = setupRandomSearchSeed(path);
-            if(sortStringPath != path) {
-                ViewHistory.setCurrentView(sortStringPath, BeanUtils.getSession());
-            }
-        });
+                .ifPresent(path -> {
+                    ViewerPath sortStringPath = setupRandomSearchSeed(path);
+                    if (sortStringPath != path) {
+                        ViewHistory.setCurrentView(sortStringPath, BeanUtils.getSession());
+                    }
+                });
     }
 
     private ViewerPath setupRandomSearchSeed(ViewerPath path) {
         String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
-        if("RANDOM".equalsIgnoreCase(defaultSortField)) {
+        if ("RANDOM".equalsIgnoreCase(defaultSortField)) {
             String parameterPath = path.getParameterPath().toString();
-            if(StringUtils.isBlank(parameterPath) || parameterPath.matches("\\/?-\\/-\\/\\d+\\/-\\/-\\/?")) {
+            if (StringUtils.isBlank(parameterPath) || parameterPath.matches("\\/?-\\/-\\/\\d+\\/-\\/-\\/?")) {
                 SearchBean sb = BeanUtils.getSearchBean();
-                if(sb != null) { 
-                    String pageUrl = PrettyUrlTools.getRelativePageUrl("newSearch5", 
-                            sb.getFacets().getCurrentHierarchicalFacetString(), 
+                if (sb != null) {
+                    String pageUrl = PrettyUrlTools.getRelativePageUrl("newSearch5",
+                            sb.getFacets().getCurrentHierarchicalFacetString(),
                             sb.getExactSearchString(),
                             sb.getCurrentPage(),
                             sb.getSortString(),
                             sb.getFacets().getCurrentFacetString());
                     try {
-                        ViewerPath newPath = ViewerPathBuilder.createPath(path.getApplicationUrl(), path.getApplicationName(), pageUrl, path.getQueryString()).orElse(path);
+                        ViewerPath newPath =
+                                ViewerPathBuilder.createPath(path.getApplicationUrl(), path.getApplicationName(), pageUrl, path.getQueryString())
+                                        .orElse(path);
                         return newPath;
                     } catch (DAOException e) {
                         logger.error("Error creating search url with current random sort string", e);
@@ -2016,5 +2011,13 @@ public class NavigationHelper implements Serializable {
             }
         }
         return path;
+    }
+    
+    public String getCurrentTime() {
+        return Long.toString(System.currentTimeMillis());
+    }
+    
+    public String returnTo(String page) {
+        return page;
     }
 }

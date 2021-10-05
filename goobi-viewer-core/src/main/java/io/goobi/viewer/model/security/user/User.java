@@ -1,5 +1,5 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/**vaserserA
+ * This file is part of the Goobi viewer - a content presentativaon and management application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
@@ -15,8 +15,14 @@
  */
 package io.goobi.viewer.model.security.user;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +41,8 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -46,6 +54,7 @@ import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
+import javax.servlet.http.Part;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.Index;
@@ -53,10 +62,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.timgroup.jgravatar.Gravatar;
-import com.timgroup.jgravatar.GravatarDefaultImage;
-import com.timgroup.jgravatar.GravatarRating;
-
+import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -65,7 +71,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
-import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCategory;
@@ -75,6 +80,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -95,8 +101,8 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     /** Constant <code>ATTRIBUTE_LOGINS="logins"</code> */
     public static final String ATTRIBUTE_LOGINS = "logins";
 
-    /** Constant <code>AVATAR_DEFAULT_SIZE=96</code> */
-    public static final int AVATAR_DEFAULT_SIZE = 96;
+    /** Constant <code>AVATAR_DEFAULT_SIZE=140</code> */
+    public static final int AVATAR_DEFAULT_SIZE = 140;
 
     private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/{id}";
     private static final String URI_ID_REGEX = ".*/users/(\\d+)/?$";
@@ -150,8 +156,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     @Column(name = "score")
     private long score = 0;
 
-    @Column(name = "use_gravatar")
-    private boolean useGravatar = false;
+    @Column(name = "avatar_type")
+    @Enumerated(EnumType.STRING)
+    private UserAvatarOption avatarType = UserAvatarOption.DEFAULT;
 
     @Column(name = "agreed_to_terms_of_use")
     private boolean agreedToTermsOfUse = false;
@@ -269,7 +276,8 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         user.setNickName(nickName);
         user.setComments(comments);
         user.setScore(score);
-        user.setUseGravatar(useGravatar);
+        user.setAgreedToTermsOfUse(agreedToTermsOfUse);
+        user.setAvatarType(this.avatarType);
         for (License license : licenses) {
             user.getLicenses().add(license);
         }
@@ -289,7 +297,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         if (StringUtils.isNotBlank(nickName)) {
             return nickName;
         }
-     // Accessing beans from a different thread will throw an unhandled exception that will result in a white screen when logging in
+        // Accessing beans from a different thread will throw an unhandled exception that will result in a white screen when logging in
         try {
             if (BeanUtils.getUserBean() != null && BeanUtils.getUserBean().isAdmin()) {
                 return email;
@@ -299,26 +307,6 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         }
 
         return NetTools.scrambleEmailAddress(email);
-    }
-
-    /**
-     * If the display name is the e-mail address and the logged in user (!= this user) is not an superuser, obfuscate the address.
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated use {@link #getDisplayName()} instead
-     */
-    @Deprecated
-    public String getDisplayNameObfuscated() {
-        String displayName = getDisplayName();
-        if (!displayName.equals(nickName) && BeanUtils.getUserBean() != null && !BeanUtils.getUserBean().isAdmin()) {
-            return new StringBuilder().append(ViewerResourceBundle.getTranslation("user_anonymous", null))
-                    .append(" (")
-                    .append(id)
-                    .append(')')
-                    .toString();
-        }
-
-        return displayName;
     }
 
     /** {@inheritDoc} */
@@ -661,25 +649,14 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
     /**
      * get the url for the avatar. If useGravatar is active, return {@link #getGravatarUrl(int size)}. Otherwise build a resource url to
-     * 'resources/images/backend/thumbnail_goobi_person.png' from the request or the JSF-Context if no request is provided
+     * 'resources/images/backend/thumbnail_goobi_person.svg' from the request or the JSF-Context if no request is provided
      * 
      * @param size
      * @param request
      * @return
      */
     public String getAvatarUrl(int size, HttpServletRequest request) {
-        if (useGravatar) {
-            return getGravatarUrl(size);
-        }
-
-        if (request != null) {
-            String contextPath = request.getContextPath();
-            return contextPath + "/resources/images/backend/thumbnail_goobi_person.png";
-        }
-
-        return Optional.ofNullable(BeanUtils.getNavigationHelper())
-                .map(NavigationHelper::getApplicationUrl)
-                .orElse("/") + "resources/images/backend/thumbnail_goobi_person.png";
+        return getAvatarType().getAvatar(this).getIconUrl(size, request);
     }
 
     /**
@@ -689,7 +666,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public String getAvatarUrl() {
         return getAvatarUrl(AVATAR_DEFAULT_SIZE, null);
-        }
+    }
 
     /**
      * 
@@ -708,7 +685,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public String getAvatarUrl(int size) {
         return getAvatarUrl(size, null);
-        }
+    }
 
     /**
      * <p>
@@ -716,35 +693,24 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated use {@link #getAvatarUrl()}
      */
+    @Deprecated
     public String getGravatarUrl() {
         return getGravatarUrl(AVATAR_DEFAULT_SIZE);
     }
 
-    /**
-     * Empty setter so that HTML pages do not throw missing property errors.
-     *
-     * @param gravatarUrl a {@link java.lang.String} object.
-     */
-    public void setGravatarUrl(String gravatarUrl) {
-        // nothing
-    }
 
     /**
      * Generates and returns a Gravatar url for the user's e-mail address.
      *
      * @param size a int.
      * @return Gravatar URL
+     * @deprecated use {@link #getAvatarUrl(int)}
      */
+    @Deprecated
     public String getGravatarUrl(int size) {
-        if (StringUtils.isNotEmpty(email)) {
-            Gravatar gravatar =
-                    new Gravatar().setSize(size).setRating(GravatarRating.GENERAL_AUDIENCES).setDefaultImage(GravatarDefaultImage.IDENTICON);
-            String url = gravatar.getUrl(email);
-            return url.replace("http:", "");
-        }
-
-        return "//www.gravatar.com/avatar/";
+        return getAvatarUrl(size);
     }
 
     /**
@@ -1394,9 +1360,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @return the useGravatar
+     * @deprecated decision of avatar type is handled within {@link #getAvatarUrl()}
      */
+    @Deprecated
     public boolean isUseGravatar() {
-        return useGravatar;
+        return UserAvatarOption.GRAVATAR == this.avatarType;
     }
 
     /**
@@ -1406,8 +1374,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      *
      * @param useGravatar the useGravatar to set
      */
+    @Deprecated
     public void setUseGravatar(boolean useGravatar) {
-        this.useGravatar = useGravatar;
+        this.avatarType = useGravatar ? UserAvatarOption.GRAVATAR : UserAvatarOption.DEFAULT;
     }
 
     //    /**
@@ -1716,4 +1685,57 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     public boolean isAgreedToTermsOfUse() {
         return agreedToTermsOfUse;
     }
+
+    /**
+     * @return the avatarType
+     */
+    public UserAvatarOption getAvatarType() {
+        return Optional.ofNullable(avatarType).orElse(UserAvatarOption.DEFAULT);
+    }
+
+    /**
+     * @param avatarType the avatarType to set
+     */
+    public void setAvatarType(UserAvatarOption avatarType) {
+        this.avatarType = avatarType;
+    }
+
+    public boolean hasLocalAvatarImage() {
+        try {
+            return UserAvatarResource.getUserAvatarFile(getId()).isPresent();
+        } catch (IOException e) {
+            logger.error("Error reading local avatar file: {}", e.toString());
+            return false;
+        }
+    }
+
+    public void setAvatarFile(Part uploadedFile) throws IOException {
+        String fileName = Paths.get(uploadedFile.getSubmittedFileName()).getFileName().toString(); // MSIE fix.
+        Path destFile = UserAvatarResource.getAvatarFilePath(fileName, getId());
+        deleteAvatarFile();
+        UserAvatarResource.removeFromImageCache(destFile);
+        try (InputStream initialStream = uploadedFile.getInputStream()) {
+            if(!Files.isDirectory(destFile.getParent())) {
+                Files.createDirectories(destFile.getParent());
+            }
+            java.nio.file.Files.copy(
+                    uploadedFile.getInputStream(),
+                    destFile,
+                    StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            logger.error("Error uploaded avatar file: {}", e.toString());
+        }
+    }
+    
+    public void deleteAvatarFile() throws IOException {
+        UserAvatarResource.getUserAvatarFile(getId()).ifPresent(file -> {
+            try {
+                Files.delete(file);
+            } catch (IOException e) {
+                logger.error("Error deleting avatar file: {}", e.toString());
+
+            }
+        });
+    }
+
 }

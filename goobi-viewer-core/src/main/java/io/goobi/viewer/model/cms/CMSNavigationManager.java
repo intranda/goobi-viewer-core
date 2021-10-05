@@ -16,7 +16,6 @@
 package io.goobi.viewer.model.cms;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Optional;
@@ -194,6 +193,7 @@ public class CMSNavigationManager {
         List<CMSNavigationItem> daoList = loadItemsFromDatabase().stream().collect(Collectors.toList());
         daoList = cloneItemHierarchy(daoList);
         setVisibleItems(daoList);
+        logger.trace("visible items: {}", visibleItems.size());
         return visibleItems;
     }
 
@@ -224,6 +224,8 @@ public class CMSNavigationManager {
      */
     public List<CMSNavigationItem> loadItemsFromDatabase() throws DAOException {
         String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
+        // logger.trace("main theme: {}", mainTheme);
+        // logger.trace("associated theme: {}", getAssociatedTheme());
         List<CMSNavigationItem> daoList = DataManager.getInstance()
                 .getDao()
                 .getAllTopCMSNavigationItems()
@@ -231,6 +233,7 @@ public class CMSNavigationManager {
                 .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(getAssociatedTheme()))
                         || getAssociatedTheme().equalsIgnoreCase(item.getAssociatedTheme()))
                 .collect(Collectors.toList());
+        // logger.trace("dao list: {}", daoList.size());
         return daoList;
     }
 

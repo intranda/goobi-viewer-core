@@ -55,6 +55,8 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataTools;
+import io.goobi.viewer.model.metadata.MetadataValue;
+import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -98,6 +100,8 @@ public class BrowseElement implements Serializable {
     /** StructElementStubs for hierarchy URLs. */
     @JsonIgnore
     private final List<StructElementStub> structElements = new ArrayList<>();
+    @JsonIgnore
+    private List<EventElement> events;
     @JsonIgnore
     private boolean anchor = false;
     @JsonIgnore
@@ -177,16 +181,18 @@ public class BrowseElement implements Serializable {
      * @throws DAOException
      * @throws ViewerConfigurationException
      */
-    BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext,
-            Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, Map<String, Set<String>> searchTerms,
+            ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         this.metadataList = metadataList;
+        if (this.metadataList == null) {
+            this.metadataList = new ArrayList<>();
+        }
         this.locale = locale;
         this.fulltext = fulltext;
 
         // Collect the docstruct hierarchy
         StructElement anchorStructElement = null;
-        StructElement topStructElement = null;
+        StructElement topStructElement = null; // this can be null in unit tests
         StructElement tempElement = structElement;
         while (tempElement != null && !tempElement.isWork()) {
             structElements.add(tempElement.createStub());
@@ -198,9 +204,9 @@ public class BrowseElement implements Serializable {
             topStructElement = tempElement;
         }
         // TODO this should be obsolete
-        if (structElement.isWork()) {
-            topStructElement = structElement;
-        }
+        //        if (structElement.isWork()) {
+        //            topStructElement = structElement;
+        //        }
 
         // Determine Solr document type. Must happen before certain things, such as label generation.
         docType = DocType.getByName(structElement.getMetadataValue(SolrConstants.DOCTYPE));
@@ -212,9 +218,6 @@ public class BrowseElement implements Serializable {
 
         // If the topstruct is a volume of any kind or a subelement, add the anchor and volume labels to
         if (!structElement.isAnchor() && topStructElement != null) {
-            if (this.metadataList == null) {
-                this.metadataList = new ArrayList<>();
-            }
             int position = 0;
             // Add anchor label to volumes
             if (!structElement.isAnchor()) {
@@ -253,10 +256,16 @@ public class BrowseElement implements Serializable {
             }
         }
 
-        if (this.metadataList != null) {
+        // Populate metadata
+        if (!this.metadataList.isEmpty()) {
             int length = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueLength();
             int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
             populateMetadataList(structElement, topStructElement, anchorStructElement, searchTerms, length, number, locale);
+
+            // Add event metadata for LIDO records
+            if (topStructElement != null && topStructElement.isLidoRecord()) {
+                populateEvents(topStructElement, searchTerms);
+            }
         }
 
         if (navigationHelper == null) {
@@ -294,7 +303,6 @@ public class BrowseElement implements Serializable {
         if (StringUtils.isEmpty(filename)) {
             filename = structElement.getFirstPageFieldValue(SolrConstants.FILENAME_HTML_SANDBOXED);
         }
-        //        try {
         if (anchor) {
             mimeType = structElement.getFirstVolumeFieldValue(SolrConstants.MIMETYPE);
         } else {
@@ -306,9 +314,6 @@ public class BrowseElement implements Serializable {
         if (mimeType == null) {
             mimeType = "";
         }
-        //        } catch (NullPointerException | IndexOutOfBoundsException e) {
-        //            //no children
-        //        }
 
         String imageNoStr = structElement.getMetadataValue(SolrConstants.ORDER);
         if (StringUtils.isNotEmpty(imageNoStr)) {
@@ -379,8 +384,7 @@ public class BrowseElement implements Serializable {
      * @throws PresentationException
      */
     void populateMetadataList(StructElement structElement, StructElement topStructElement, StructElement anchorStructElement,
-            Map<String, Set<String>> searchTerms, int length,
-            int number, Locale locale) throws IndexUnreachableException, PresentationException {
+            Map<String, Set<String>> searchTerms, int length, int number, Locale locale) throws IndexUnreachableException, PresentationException {
         for (Metadata md : this.metadataList) {
             for (MetadataParameter param : md.getParams()) {
                 StructElement elementToUse = structElement;
@@ -447,6 +451,46 @@ public class BrowseElement implements Serializable {
                             param.isAddUrl() ? elementToUse.getUrl() : null, null, null, locale);
                     this.existingMetadataFields.add(md.getLabel());
                     count++;
+                }
+            }
+        }
+    }
+
+    /**
+     * Looks up LIDO events and search hit metadata for the given record topstruct element. Applies search hit value highlighting, if search terms are
+     * provided.
+     * 
+     * @param topStructElement Top structure element of the LIDO record
+     * @param searchTerms Map containing all generated search terms
+     * @throws IndexUnreachableException
+     */
+    private void populateEvents(StructElement topStructElement, Map<String, Set<String>> searchTerms) throws IndexUnreachableException {
+        if (topStructElement == null || !topStructElement.isLidoRecord()) {
+            return;
+        }
+        logger.trace("populateEvents: {}, {}", topStructElement.getLabel(), searchTerms);
+
+        this.events = topStructElement.generateEventElements(locale, true);
+        if (this.events.isEmpty()) {
+            return;
+        }
+
+        Collections.sort(this.events);
+
+        // Value highlighting
+        if (searchTerms == null) {
+            return;
+        }
+        for (EventElement event : events) {
+            for (Metadata md : event.getSearchHitMetadata()) {
+                for (MetadataParameter param : md.getParams()) {
+                    for (MetadataValue mdValue : md.getValues()) {
+                        if (searchTerms.get(md.getLabel()) != null) {
+                            mdValue.applyHighlightingToParamValue(md.getParams().indexOf(param), searchTerms.get(md.getLabel()));
+                        } else if (searchTerms.get(SolrConstants.DEFAULT) != null) {
+                            mdValue.applyHighlightingToParamValue(md.getParams().indexOf(param), searchTerms.get(SolrConstants.DEFAULT));
+                        }
+                    }
                 }
             }
         }
@@ -661,6 +705,7 @@ public class BrowseElement implements Serializable {
             URL fileUrl = new URL(filename);
             return ImageFileFormat.getImageFileFormatFromFileExtension(fileUrl.getPath()).getMimeType();
         } catch (MalformedURLException e) {
+            logger.warn(e.getMessage());
         }
         return "";
     }
@@ -942,6 +987,13 @@ public class BrowseElement implements Serializable {
         }
 
         return structElements.get(structElements.size() - 1);
+    }
+
+    /**
+     * @return the events
+     */
+    public List<EventElement> getEvents() {
+        return events;
     }
 
     /**

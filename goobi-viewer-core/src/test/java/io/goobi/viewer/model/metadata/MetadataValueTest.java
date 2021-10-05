@@ -16,9 +16,15 @@
 package io.goobi.viewer.model.metadata;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import io.goobi.viewer.model.search.SearchHelper;
 
 public class MetadataValueTest {
 
@@ -28,7 +34,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldConstructParamCorrectly() throws Exception {
-        MetadataValue value = new MetadataValue("", "");
+        MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("pre_");
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("val");
@@ -46,7 +52,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldConstructMultivaluedParamCorrectly() throws Exception {
-        MetadataValue value = new MetadataValue("", "");
+        MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("pre_");
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("val");
@@ -65,7 +71,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldReturnEmptyStringIfValueIndexLargerThanNumberOfValues() throws Exception {
-        MetadataValue value = new MetadataValue("", "");
+        MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("value");
@@ -79,7 +85,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldReturnEmptyStringIfValueIsEmpty() throws Exception {
-        MetadataValue value = new MetadataValue("", "");
+        MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("");
@@ -93,7 +99,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldNotAddPrefixIfFirstParam() throws Exception {
-        MetadataValue value = new MetadataValue("", "");
+        MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("value");
@@ -107,7 +113,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldNotAddNullSuffix() throws Exception {
-        MetadataValue value = new MetadataValue("", "");
+        MetadataValue value = new MetadataValue("", "", "");
         value.getParamSuffixes().add(null);
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("value1");
@@ -123,7 +129,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldNotAddEmptyPrefix() throws Exception {
-        MetadataValue value = new MetadataValue("", "");
+        MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add(null);
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("value1");
@@ -139,7 +145,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldNotAddEmptySuffix() throws Exception {
-        MetadataValue value = new MetadataValue("", "");
+        MetadataValue value = new MetadataValue("", "", "");
         value.getParamSuffixes().add(null);
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("value1");
@@ -155,7 +161,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldAddSeparatorBetweenValuesIfNoPrefixUsed() throws Exception {
-        MetadataValue value = new MetadataValue("", "");
+        MetadataValue value = new MetadataValue("", "", "");
         value.getParamSuffixes().add(null);
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(0).add("value1");
@@ -169,7 +175,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldUseMasterValueFragmentCorrectly() throws Exception {
-        MetadataValue value = new MetadataValue("", "");
+        MetadataValue value = new MetadataValue("", "", "");
         value.getParamMasterValueFragments().add("foo {0} bar");
         value.getParamSuffixes().add("pre_");
         value.getParamSuffixes().add("_suf");
@@ -183,5 +189,18 @@ public class MetadataValueTest {
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(1).add("minus");
         Assert.assertEquals("foo minus bar", value.getComboValueShort(1));
+    }
+
+    /**
+     * @see MetadataValue#applyHighlightingToParamValue(int,Set)
+     * @verifies apply highlighting correctly
+     */
+    @Test
+    public void applyHighlightingToParamValue_shouldApplyHighlightingCorrectly() throws Exception {
+        MetadataValue mdValue = new MetadataValue("", "", "");
+        List<String> values = Arrays.asList("foobar", "something");
+        mdValue.getParamValues().add(values);
+        mdValue.applyHighlightingToParamValue(0, Collections.singleton("foo"));
+        Assert.assertEquals("<span class=\"search-list--highlight\">foo</span>bar", mdValue.getParamValues().get(0).get(0));
     }
 }

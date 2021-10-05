@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import io.goobi.viewer.model.citation.Citation;
 import io.goobi.viewer.model.citation.CitationDataProvider;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.search.SearchHelper;
 
 /**
  * Wrapper class for metadata parameter value groups, so that JSF can iterate through them properly.
@@ -55,10 +57,16 @@ public class MetadataValue implements Serializable {
     private final List<String> paramUrls = new ArrayList<>();
     private final Map<String, String> normDataUrls = new HashMap<>();
     private final Map<String, List<String>> citationValues = new HashMap<>();
+    private final List<MetadataValue> childValues = new ArrayList<>();
+    /** Unique ID for citation item generation */
     private String id;
+    /** IDDOC of the grouped metadata Solr doc. */
+    private String iddoc;
+    private String ownerIddoc;
     private String masterValue;
     private String groupType;
     private String docstrct = null;
+    private String label;
     private CSL citationProcessor = null;
     private CitationDataProvider citationItemDataProvider = null;
     private String citationString = null;
@@ -66,11 +74,23 @@ public class MetadataValue implements Serializable {
     /**
      * Package-private constructor.
      * 
+     * @param id
      * @param masterValue
+     * @param label
      */
-    MetadataValue(String id, String masterValue) {
+    MetadataValue(String id, String masterValue, String label) {
         this.id = id;
         this.masterValue = masterValue;
+        this.label = label;
+    }
+
+    /**
+     * 
+     * @param index
+     * @return
+     */
+    public boolean isParamValueBlank(int index) {
+        return StringUtils.isBlank(getComboValueShort(index));
     }
 
     /**
@@ -304,6 +324,13 @@ public class MetadataValue implements Serializable {
     }
 
     /**
+     * @return the childValues
+     */
+    public List<MetadataValue> getChildValues() {
+        return childValues;
+    }
+
+    /**
      * <p>
      * hasParamValue.
      * </p>
@@ -333,6 +360,60 @@ public class MetadataValue implements Serializable {
             return paramValues.get(index).get(0);
         }
         return "";
+    }
+
+    /**
+     * Applies (full HTML) search hit value highlighting to all values for the given parameter index.
+     * 
+     * @param paramIndex Metadata parameter index
+     * @param searchTerms Set of search terms
+     * @should apply highlighting correctly
+     */
+    public void applyHighlightingToParamValue(int paramIndex, Set<String> searchTerms) {
+        if (paramValues.size() <= paramIndex || paramValues.get(paramIndex) == null) {
+            return;
+        }
+        if (searchTerms == null || searchTerms.isEmpty()) {
+            return;
+        }
+        logger.trace("applyHighlightingToParamValue: {}", paramIndex, searchTerms);
+
+        List<String> values = paramValues.get(paramIndex);
+        for (int i = 0; i < values.size(); ++i) {
+            String value = values.get(i);
+            String newValue = SearchHelper.replaceHighlightingPlaceholders(SearchHelper.applyHighlightingToPhrase(value, searchTerms));
+            if (!newValue.equals(value)) {
+                values.set(paramIndex, newValue);
+            }
+        }
+    }
+
+    /**
+     * @return the iddoc
+     */
+    public String getIddoc() {
+        return iddoc;
+    }
+
+    /**
+     * @param iddoc the iddoc to set
+     */
+    public void setIddoc(String iddoc) {
+        this.iddoc = iddoc;
+    }
+
+    /**
+     * @return the ownerIddoc
+     */
+    public String getOwnerIddoc() {
+        return ownerIddoc;
+    }
+
+    /**
+     * @param ownerIddoc the ownerIddoc to set
+     */
+    public void setOwnerIddoc(String ownerIddoc) {
+        this.ownerIddoc = ownerIddoc;
     }
 
     /**
@@ -401,6 +482,22 @@ public class MetadataValue implements Serializable {
      */
     public MetadataValue setDocstrct(String docstrct) {
         this.docstrct = docstrct;
+        return this;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     * @return this
+     */
+    public MetadataValue setLabel(String label) {
+        this.label = label;
         return this;
     }
 

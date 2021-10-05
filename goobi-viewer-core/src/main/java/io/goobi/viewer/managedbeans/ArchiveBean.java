@@ -26,11 +26,11 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration2.HierarchicalConfiguration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.common.SolrDocument;
@@ -67,10 +67,6 @@ public class ArchiveBean implements Serializable {
 
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 
-    @Deprecated
-    @Inject
-    private PersistentStorageBean storage;
-
     //    @Inject
     //    private FacesContext context;
 
@@ -97,8 +93,13 @@ public class ArchiveBean implements Serializable {
         String basexUrl = DataManager.getInstance().getConfiguration().getBaseXUrl();
         String databaseName = DataManager.getInstance().getConfiguration().getBaseXDatabase();
         if (StringUtils.isNoneBlank(basexUrl, databaseName)) {
-            BasexEADParser eadParser = new BasexEADParser(basexUrl);
-            this.databaseState = loadDatabase(eadParser, databaseName);
+            try {                
+                BasexEADParser eadParser = new BasexEADParser(basexUrl);
+                this.databaseState = loadDatabase(eadParser, databaseName);
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error("Failed to retrieve associated records from SOLR: {}", e.toString());
+                this.databaseState = DatabaseState.ERROR_NOT_CONFIGURED;
+            }
         } else {
             this.databaseState = DatabaseState.ERROR_NOT_CONFIGURED;
         }
@@ -113,7 +114,7 @@ public class ArchiveBean implements Serializable {
         //        if(context.getExternalContext().getSessionMap().containsKey(storageKey)) {
         //            eadParser = new BasexEADParser((BasexEADParser)context.getExternalContext().getSessionMap().containsKey(storageKey));
         //        } else {
-        HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
+        HierarchicalConfiguration<ImmutableNode> baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
         try {
             eadParser.readConfiguration(baseXMetadataConfig);
             Document databaseDoc = eadParser.retrieveDatabaseDocument(databaseName);
@@ -175,16 +176,14 @@ public class ArchiveBean implements Serializable {
         return ret;
     }
 
-    
     public void toggleEntryExpansion(ArchiveEntry entry) {
-        if(entry.isExpanded())  {
+        if (entry.isExpanded()) {
             collapseEntry(entry);
         } else {
             expandEntry(entry);
         }
     }
 
-    
     /**
      * <p>
      * expandEntry.

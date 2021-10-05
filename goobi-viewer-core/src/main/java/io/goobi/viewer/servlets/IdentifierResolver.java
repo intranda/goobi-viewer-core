@@ -117,6 +117,8 @@ public class IdentifierResolver extends HttpServlet {
      * @should return 404 if record not found
      * @should return 500 if record field name bad
      * @should return 500 if record field value bad
+     * @should forward to relative url
+     * @should redirect to full url
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
