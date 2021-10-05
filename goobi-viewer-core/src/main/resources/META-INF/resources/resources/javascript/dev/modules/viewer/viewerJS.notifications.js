@@ -44,6 +44,12 @@ var viewerJS = ( function( viewer ) {
 						confirmButtonText: confirmText,
 	  					cancelButtonText: denyText,
 					    buttonsStyling: false,
+						showClass: {
+							popup: '-sweetAlertShowAnimation'
+						},
+						hideClass: {
+							popup: '-sweetAlertHideAnimation'
+						},
 	  					customClass: {
 						    confirmButton: 'btn btn--full',
 						    cancelButton: 'btn btn--default'
@@ -65,6 +71,12 @@ var viewerJS = ( function( viewer ) {
 					text: message,
 					icon: type,
 				    buttonsStyling: false,
+					showClass: {
+						popup: '-sweetAlertShowAnimation'
+					},
+					hideClass: {
+						popup: '-sweetAlertHideAnimation'
+					},
 					customClass: {
 					    confirmButton: 'btn btn--full',
 					    cancelButton: 'btn btn--default'

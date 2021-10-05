@@ -385,6 +385,26 @@ button {
     background: rgba(0,0,0,.8);
 }
 
+.-sweetAlertShowAnimation {
+	animation: swalAnimShow 0.2s ease;
+}
+
+.-sweetAlertHideAnimation {
+	animation: swalAnimHide 0.2s ease;
+}
+
+@keyframes swalAnimShow {
+  0% {opacity: 0;}
+  100% { opacity: 1; }
+}
+
+@keyframes swalAnimHide {
+  0% {opacity: 1;}
+  100% { opacity: 0; }
+}
+
+
+
 /* add a focus ring for better accessibility */
 /* set to important, because of styles in bootstrap.custom.css */
 /* focus ring on form elements can be switched off (-no-outline), instead a blue border can be added
