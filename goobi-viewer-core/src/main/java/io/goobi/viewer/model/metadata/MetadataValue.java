@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import io.goobi.viewer.model.citation.Citation;
 import io.goobi.viewer.model.citation.CitationDataProvider;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.search.SearchHelper;
 
 /**
  * Wrapper class for metadata parameter value groups, so that JSF can iterate through them properly.
@@ -358,6 +360,32 @@ public class MetadataValue implements Serializable {
             return paramValues.get(index).get(0);
         }
         return "";
+    }
+
+    /**
+     * Applies (full HTML) search hit value highlighting to all values for the given parameter index.
+     * 
+     * @param paramIndex Metadata parameter index
+     * @param searchTerms Set of search terms
+     * @should apply highlighting correctly
+     */
+    public void applyHighlightingToParamValue(int paramIndex, Set<String> searchTerms) {
+        if (paramValues.size() <= paramIndex || paramValues.get(paramIndex) == null) {
+            return;
+        }
+        if (searchTerms == null || searchTerms.isEmpty()) {
+            return;
+        }
+        logger.trace("applyHighlightingToParamValue: {}", paramIndex, searchTerms);
+
+        List<String> values = paramValues.get(paramIndex);
+        for (int i = 0; i < values.size(); ++i) {
+            String value = values.get(i);
+            String newValue = SearchHelper.replaceHighlightingPlaceholders(SearchHelper.applyHighlightingToPhrase(value, searchTerms));
+            if (!newValue.equals(value)) {
+                values.set(paramIndex, newValue);
+            }
+        }
     }
 
     /**

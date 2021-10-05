@@ -91,9 +91,9 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
-    //    @Test
+    @Test
     public void testGetImageInformationFromBaseUrl() {
-        String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME).build();
+        String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         try (Response response = target(url)
                 .request()

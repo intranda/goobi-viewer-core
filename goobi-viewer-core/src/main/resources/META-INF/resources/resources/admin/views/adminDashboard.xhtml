@@ -29,26 +29,23 @@
 
                             <!-- WELCOME -->
                             <div class="admin__boxed-entry -no-actions -w33">
-                                <div class="row">
-                                    <h3 class="col-9">#{msg.admin__dashboard_hello} #{userBean.user.nickName}</h3>
-                                    <div class="col-3 d-flex justify-content-end">
-                                    	<img src="#{user.getAvatarUrl(230)}"
-												class="rounded-circle admin__dashboard-user-icon"
-												alt="User Avatar" />
-                                    </div>
+                                <div class="admin__dashboard-user-welcome">
+                                	<div class="admin__dashboard-user-welcome-left">
+	                                    <h3>#{msg.admin__dashboard_hello} #{userBean.user.nickName}</h3>
+	                                    <p>#{msg.admin__dashboard_documentation}:<br/>
+	                                        <a class="-bluelink" href="https://docs.goobi.io" target="_blank" rel="noopener">https://docs.goobi.io</a>
+	                                    </p>
+	                                    <p>#{msg.admin__dashboard_community_board}:<br/>
+	                                        <a class="-bluelink" href="https://community.goobi.io" target="_blank" rel="noopener">https://community.goobi.io</a>
+	                                    </p>
+	                            	</div>
+                                	<div class="admin__dashboard-user-welcome-right">
+	                                	<div class="admin__dashboard-user-icon-wrapper">
+		                                	<img src="#{user.getAvatarUrl(230)}" class="rounded-circle admin__dashboard-user-icon" alt="User Avatar" />
+										</div>
+                                	</div>
                                 </div>
-                                <div class="row mb-3">
-                                    <div class="col-9">
-                                        #{msg.admin__dashboard_documentation}:<br/>
-                                        <a class="-bluelink" href="https://docs.goobi.io" target="_blank" rel="noopener">https://docs.goobi.io</a>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-9">
-                                        #{msg.admin__dashboard_community_board}:<br/>
-                                        <a class="-bluelink" href="https://community.goobi.io" target="_blank" rel="noopener">https://community.goobi.io</a>
-                                    </div>
-                                </div>
+                                
                                 <div class="row">
                                     <div class="col-12">
                                         <h:outputText value="#{msg.admin__dashboard_support}" escape="false" />

@@ -309,26 +309,6 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         return NetTools.scrambleEmailAddress(email);
     }
 
-    /**
-     * If the display name is the e-mail address and the logged in user (!= this user) is not an superuser, obfuscate the address.
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated use {@link #getDisplayName()} instead
-     */
-    @Deprecated
-    public String getDisplayNameObfuscated() {
-        String displayName = getDisplayName();
-        if (!displayName.equals(nickName) && BeanUtils.getUserBean() != null && !BeanUtils.getUserBean().isAdmin()) {
-            return new StringBuilder().append(ViewerResourceBundle.getTranslation("user_anonymous", null))
-                    .append(" (")
-                    .append(id)
-                    .append(')')
-                    .toString();
-        }
-
-        return displayName;
-    }
-
     /** {@inheritDoc} */
     @Override
     public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
