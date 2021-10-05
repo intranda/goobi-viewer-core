@@ -112,10 +112,10 @@
 			}
 			&-text-edit {
 				textarea {
-					padding: 0.8rem;
+					padding: 1rem;
 					border: 1px solid @middlegray;
 					&:focus {
-						padding: 10px;
+						padding: 1rem;
 						border: 1px solid @middlegray;
 						opacity: 1;
 					}
@@ -215,8 +215,17 @@
 	&__delete-comment-button {
 		color: @red;
 		margin-left: 2rem;
+		background: none;
+		border: none;
+		padding: none;
 		&:hover {
 			color: @red;
+			background: none;
+			border: none;
+			text-decoration: underline;
+		}
+		&.-hidden {
+			display: none;
 		}
 	}
 }

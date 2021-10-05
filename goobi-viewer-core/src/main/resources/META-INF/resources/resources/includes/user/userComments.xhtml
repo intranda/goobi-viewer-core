@@ -63,55 +63,23 @@
 								rendered="#{userBean.loggedIn or comment.dateUpdated != null}">
 								<div class="user-comments__comment-content-options">
 								
-								
-								
-								
-								
 									<!-- LAST CHANGE -->
 									<h:panelGroup rendered="#{comment.dateUpdated != null}"
 										styleClass="user-comments__comment-content-options-last-change">
                                         #{msg.lastEdited} #{navigationHelper.getLocalDate(comment.dateUpdated)}
                                     </h:panelGroup>
 
-
-
-
-
-
-
-
-
-
-
-
-
 								</div>
 							</ui:fragment>
-
 
 								<!-- COMMENT TEXT -->
 								<div class="user-comments__comment-content-options-text in">
 									#{comment.displayText}</div>
 
-								
 									<!-- EDIT COMMENT -->
 									<ui:fragment
 										rendered="#{userBean.user == comment.owner or userBean.user.superuser}">
-										
-										
-<!-- 										<span class="user-comments__comment-content-options-save"> -->
-<!-- 											<h:commandLink -->
-<!-- 												action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}" -->
-<!-- 												title="#{msg.userCommentSave}"> -->
-<!-- 												<i class="fa fa-floppy-o" aria-hidden="true"></i> -->
-<!-- 												<f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
-<!-- 												<f:passThroughAttribute name="data-placement" value="bottom" /> -->
-<!-- 												<f:passThroughAttribute name="data-edit" value="save" /> -->
-<!-- 												<f:ajax execute="userCommentEditableText" render="@form" /> -->
-<!-- 											</h:commandLink> -->
-<!-- 										</span> -->
 
-										
 										<div class="user-comments__action-wrapper">
 											<!-- TRIGGER EDIT COMMENT MODAL -->
 											<button type="button" class="btn--clean user-comments__edit-comment-button" data-backdrop="false" data-toggle="modal" data-target="#modalUserCommentEdit">
@@ -121,32 +89,44 @@
 											<!-- DELETE COMMENT -->
 											<ui:fragment
 												rendered="#{userBean.loggedIn and (userBean.user == comment.owner or userBean.user.superuser)}">
-													<h:commandLink styleClass="user-comments__delete-comment-button"
-														onclick="if ( !confirm( &quot;#{msg.userCommentDeleteText}&quot; ) ) { return false; }"
+												
+												<div class="user-comments__delete-comment-wrapper">
+													<!-- INVISIBLE BUTTON FUNCTIONALITY-->
+													<h:commandButton styleClass="user-comments__delete-comment-button -hidden"
 														action="#{activeDocumentBean.viewManager.currentPage.deleteCommentAction(comment)}"
-														title="#{msg.userCommentDelete}">
-														#{msg.delete}
+														title="#{msg.userCommentDelete}"
+														data-trigger="delete-comment-final"
+														value="#{msg.delete}">
+														<f:passThroughAttribute name="data-trigger" value="delete-comment-final" />
 														<f:ajax render="@form" />
-													</h:commandLink>
+													</h:commandButton>
+
+													<!-- VISIBLE BUTTON -->
+													<h:commandButton styleClass="user-comments__delete-comment-button" value="#{msg.delete}">
+														<f:ajax execute="@form" render="@none" />
+														<f:passThroughAttribute name="data-trigger" value="delete-comment" />
+													</h:commandButton>
+												</div>
 											</ui:fragment>
-											
-											
 										</div>
 									</ui:fragment>
-
-
 								</div>	
-
-
-
-
 						</div>
-
 				</ui:repeat>
 				
+				<!-- DELETE COMMENT JS FUNCTIONALITY/SWEET ALERT CONFIRM + NOTIFICATION -->
+	            <script>
+					$('[data-trigger="delete-comment"]').on('click', function() {
+						viewerJS.notifications.confirm("#{msg.userCommentDeleteText}")
+							.then((result) => {
+								  $(this).prev('.user-comments__delete-comment-button').click();
+								  viewerJS.notifications.success("#{msg.commentDeleteSuccess}", "");
+						});
+					});
+	        	</script>
+
+				<!-- EDIT COMMENT MODAL -->
 				<viewerComponent:modalUserCommentEdit id="modalUserCommentEdit" />
-													
-													
 
 				<!-- ADD COMMENT -->
 				<ui:fragment rendered="#{userBean.loggedIn}">
