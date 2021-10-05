@@ -117,7 +117,7 @@
 				<!-- DELETE COMMENT JS FUNCTIONALITY/SWEET ALERT CONFIRM + NOTIFICATION -->
 	            <script>
 					$('[data-trigger="delete-comment"]').on('click', function() {
-						viewerJS.notifications.confirm("#{msg.userCommentDeleteText}")
+						viewerJS.notifications.confirm('', '' ,'', '#{msg.userCommentDeleteText}')
 							.then((result) => {
 								  $(this).prev('.user-comments__delete-comment-button').click();
 								  viewerJS.notifications.success("#{msg.commentDeleteSuccess}", "");

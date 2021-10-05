@@ -31,13 +31,14 @@ var viewerJS = ( function( viewer ) {
 		success : (titleAlert, message) => viewer.notifications.notify(titleAlert, message, "success"),
 		error : (titleAlert, message) => viewer.notifications.notify(titleAlert, message, "error"),
 		warn : (titleAlert, message) => viewer.notifications.notify(titleAlert, message, "warn"),
-		confirm : (message, confirmText, denyText) => {
+		confirm : (message, confirmText, denyText, titleAlert) => {
 			return viewer.translator.addTranslations(["cancel", "ok"])
 			.then( () => {
 				confirmText = confirmText ? confirmText : viewerJS.translator.translate("ok");
 				denyText = denyText ? denyText : viewerJS.translator.translate("cancel");
 				if(typeof(Swal) !== 'undefined') {
 					return Swal.fire({
+						title: titleAlert,
 						text: message,
 						icon: 'warning',
 						showCancelButton: true,
