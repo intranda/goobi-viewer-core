@@ -528,8 +528,10 @@ public class NetTools {
                 sb.append(email.charAt(i));
             }
         }
+        String ret = sb.toString();
+        ret = ret.replaceAll("[*]+", "***");
 
-        return sb.toString();
+        return ret;
     }
 
     /**

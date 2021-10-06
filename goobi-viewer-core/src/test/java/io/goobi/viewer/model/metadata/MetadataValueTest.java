@@ -16,9 +16,15 @@
 package io.goobi.viewer.model.metadata;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import io.goobi.viewer.model.search.SearchHelper;
 
 public class MetadataValueTest {
 
@@ -183,5 +189,18 @@ public class MetadataValueTest {
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(1).add("minus");
         Assert.assertEquals("foo minus bar", value.getComboValueShort(1));
+    }
+
+    /**
+     * @see MetadataValue#applyHighlightingToParamValue(int,Set)
+     * @verifies apply highlighting correctly
+     */
+    @Test
+    public void applyHighlightingToParamValue_shouldApplyHighlightingCorrectly() throws Exception {
+        MetadataValue mdValue = new MetadataValue("", "", "");
+        List<String> values = Arrays.asList("foobar", "something");
+        mdValue.getParamValues().add(values);
+        mdValue.applyHighlightingToParamValue(0, Collections.singleton("foo"));
+        Assert.assertEquals("<span class=\"search-list--highlight\">foo</span>bar", mdValue.getParamValues().get(0).get(0));
     }
 }

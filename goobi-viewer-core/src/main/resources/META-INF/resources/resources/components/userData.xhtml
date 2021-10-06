@@ -290,7 +290,7 @@
 										</h:selectOneRadio>
 									</div>
 									<div class="connected-middle">
-										<!-- TO DO: UPLOAD OWN IMAGE FILE -->
+										<!-- UPLOAD OWN IMAGE FILE -->
 										<h:selectOneRadio group="imageModeRadio"
 											value="#{cc.attrs.user.avatarType}" immediate="true">
 											<f:selectItem itemValue="LOCAL"
@@ -336,7 +336,7 @@
 									<div class="user-settings__image-actions">
 										<div class="user-settings__upload-button-wrapper">
 										
-											<div class="btn btn--default">Upload</div>
+											<div class="btn btn--default">#{msg.admin__cms_collections_image_mode_upload}</div>
 											<o:inputFile styleClass="user-settings__upload-button-input" id="localFileUpload"
 												value="#{adminBean.uploadedAvatarFile}">
 												<f:ajax
@@ -345,7 +345,7 @@
 											</o:inputFile>
 										</div>
 										
-										<h:commandLink styleClass="user-settings__delete-image-button" value="Delete file"
+										<h:commandLink styleClass="user-settings__delete-image-button" value="#{msg.delete}"
 											rendered="#{cc.attrs.user.hasLocalAvatarImage()}"
 											action="#{cc.attrs.user.deleteAvatarFile}">
 											<f:ajax render="@form"></f:ajax>
