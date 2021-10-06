@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class ArchiveResource {
 
-    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     private final String databaseName;
@@ -87,9 +87,10 @@ public class ArchiveResource {
 
     public String getResourceId() {
         try {
-            return URLEncoder.encode(resourceName, "utf-8");
+            return URLEncoder.encode(resourceName, "utf-8").replaceAll("(?i)\\.xml", "");
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("'utf-8' is unsupported encoding");
         }
     }
+
 }

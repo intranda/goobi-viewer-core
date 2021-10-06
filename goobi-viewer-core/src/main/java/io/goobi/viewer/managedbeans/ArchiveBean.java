@@ -17,6 +17,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -94,7 +96,11 @@ public class ArchiveBean implements Serializable {
             try {
                 eadParser = new BasexEADParser(basexUrl);
                 //initialize archives with 'null' archive tree values
-                this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
+                List<ArchiveResource> databases = eadParser.getPossibleDatabases();
+                for (ArchiveResource db : databases) {
+                    this.archives.put(db, null);
+                }
+                //this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
                 this.databaseState = DatabaseState.ARCHIVES_LOADED;
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.error("Failed to retrieve associated records from SOLR: {}", e.toString());
@@ -106,13 +112,25 @@ public class ArchiveBean implements Serializable {
         }
         this.eadParser = eadParser;
     }
+    
+    public void reset() {
+        this.currentDatabase = null;
+        this.currentResource = null;
+        if(this.databaseState == DatabaseState.ARCHIVE_TREE_LOADED) {            
+            this.databaseState = DatabaseState.ARCHIVES_LOADED;
+        }
+    }
 
     public void initializeArchiveTree() {
         if (this.databaseState == DatabaseState.ARCHIVES_LOADED && getCurrentArchive() != null) {
             try {
-                ArchiveTree archiveTree = loadDatabase(eadParser, getCurrentArchive());
-                if(archiveTree != null) {
-                    
+                if(this.archives.get(getCurrentArchive()) == null) {
+                    ArchiveTree archiveTree = loadDatabase(eadParser, getCurrentArchive());
+                    if(archiveTree != null) {
+                        this.archives.put(getCurrentArchive(), archiveTree);
+                        this.databaseState = DatabaseState.ARCHIVE_TREE_LOADED;
+                    } 
+                } else {
                     this.databaseState = DatabaseState.ARCHIVE_TREE_LOADED;
                 }
             } catch (IOException | HTTPException e) {
@@ -474,5 +492,22 @@ public class ArchiveBean implements Serializable {
             return null;
         }
     }
+    
+    public List<ArchiveResource> getDatabases() {
+        List<ArchiveResource> databases = new ArrayList<>(this.archives.keySet());
+        databases.sort((db1, db2) -> db1.getCombinedName().compareTo(db2.getCombinedName()));
+        return databases;
+    }
+    
+    public String getArchiveUrl() {
+        return "";
+    }
 
+    public void setArchiveUrl(String archiveName) {
+        ArchiveResource database = this.archives.keySet().stream().filter(db -> db.getCombinedName().equals(archiveName)).findAny().orElse(null);
+        this.currentDatabase = database.getDatabaseId();
+        this.currentResource = database.getResourceId();
+    }
+    
+  
 }

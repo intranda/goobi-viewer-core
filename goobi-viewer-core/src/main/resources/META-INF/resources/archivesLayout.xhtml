@@ -87,6 +87,17 @@
 						<span>#{msg.error__archives_failed_to_read_database}</span>
 					</div>
 				</c:when>
+				<c:when test="#{archiveBean.databaseState == 'ARCHIVES_LOADED'}">
+					<div class="archives__select">
+						<h:form>
+							<h:selectOneMenu value="#{archiveBean.archiveUrl}">
+								<f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true"/>
+								<f:selectItems value="#{archiveBean.databases}" var="database" itemValue="#{database.combinedName}" itemLabel="#{database.combinedName}" ></f:selectItems>
+							</h:selectOneMenu>
+							<h:commandButton value="#{msg.select}" action="pretty:archives2"></h:commandButton>
+						</h:form>
+					</div>
+				</c:when>
 				<c:otherwise>
 					<ui:insert name="content" />
 				</c:otherwise>

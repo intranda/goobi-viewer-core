@@ -16,7 +16,7 @@
         <class>io.goobi.viewer.model.cms.CMSCollectionTranslation</class>
         <class>io.goobi.viewer.model.cms.CMSMediaItem</class>
         <class>io.goobi.viewer.model.cms.CMSMediaItemMetadata</class>
-        <class>io.goobi.viewer.model.cms.navigation.CMSNavigationItem</class>
+        <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
         <class>io.goobi.viewer.model.cms.CMSPage</class>
         <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
         <class>io.goobi.viewer.model.cms.CMSPageTemplateEnabled</class>
