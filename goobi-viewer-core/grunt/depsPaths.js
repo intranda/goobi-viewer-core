@@ -143,12 +143,15 @@ const depsPathsJS = [
     dest:`${jsLibsDir}mirador/`
   },
 
+  /* current versions are not compatible with viewer core
+   * => pdfJS will not be updated when running grunt copyDeps
   { // PDFJS
     expand:true,
     cwd: 'node_modules/pdfjs-dist/build/',
     src: ['pdf*'],
     dest: `${jsLibsDir}pdfjs/`
   },
+  */
 
   { // Q-PROMISES
     expand:true,
