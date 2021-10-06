@@ -19,7 +19,6 @@
     "grunt-sync": "^0.8.2",
     "less-plugin-autoprefix": "^2.0.0",
     "michelangelo": "^0.8.0",
-    "pdfjs-dist": "^2.9.359",
     "webpack": "5.51.1"
   },
   "dependencies": {
@@ -41,7 +40,7 @@
     "masonry-layout": "~4.1.1",
     "mirador": "~3.2.0",
     "openseadragon": "~2.2.1",
-    "pdfjs": "~2.4.6",
+    "pdfjs-dist": "~2.10.377",
     "pixl-xml": "~1.0.13",
     "q": "~1.5.1",
     "riot": "~3.12.0",
