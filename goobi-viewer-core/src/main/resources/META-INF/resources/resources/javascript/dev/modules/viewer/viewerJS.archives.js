@@ -91,15 +91,13 @@ var viewerJS = ( function( viewer ) {
         	this.hideLoader("load_record_image");
         	if($recordPiInput.length > 0) {
         		let containsImage = $recordPiInput.attr("data-contains-image");
-        		if(!containsImage || containsImage.toLowerCase() == "false") {
-        			return Promise.resolve();
-        		}
         		let recordPi = $recordPiInput.val();
         		let oldPi = this.recordPi;
         		this.recordPi = recordPi;
         		//console.log("record pi is " + recordPi + " old pi is " + oldPi);
-        		if(recordPi && recordPi != oldPi) {
-        			this.recordPi = recordPi;
+        		if(!containsImage || containsImage.toLowerCase() == "false") {
+        			return Promise.resolve();
+        		} else if(this.recordPi && this.recordPi != oldPi) {
         			let manifestUrl = rootURL + "/api/v2/records/" + recordPi + "/manifest/";
         			this.showLoader("load_record_image");
         			//console.log("load ", manifestUrl);

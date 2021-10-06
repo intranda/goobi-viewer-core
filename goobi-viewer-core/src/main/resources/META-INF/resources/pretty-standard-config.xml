@@ -96,13 +96,7 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
-	
-    <!-- ARCHIVES -->
-    <url-mapping id="archivetree">
-        <pattern value="/archivetree/" />
-        <view-id value="/archiveTree.xhtml" />
-        <query-param name="selected">#{archiveBean.selectedEntryId}</query-param>
-    </url-mapping>
+
     <!-- ARCHIVES -->
     <url-mapping id="archives">
         <pattern value="/archives/" />
