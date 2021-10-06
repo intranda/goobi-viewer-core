@@ -126,7 +126,8 @@ public class BasexEADParser {
                 for (Element resource : details.getChildren()) {
                     String resourceName = resource.getText();
                     String lastUpdated = resource.getAttributeValue("modified-date");
-                    ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, lastUpdated);
+                    String size = resource.getAttributeValue("size");
+                    ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, lastUpdated, size);
                     ret.add(eadResource);
                 }
 
@@ -148,10 +149,9 @@ public class BasexEADParser {
      * @throws HTTPException
      * @throws JDOMException
      */
-    public Document retrieveDatabaseDocument(String database) throws IOException, IllegalStateException, HTTPException, JDOMException {
-        if (StringUtils.isNotBlank(database)) {
-            String[] parts = database.split(" - ");
-            String url = basexUrl + "db/" + parts[0] + "/" + parts[1];
+    public Document retrieveDatabaseDocument(ArchiveResource archive) throws IOException, IllegalStateException, HTTPException, JDOMException {
+        if (archive != null) {
+            String url = basexUrl + "db/" + archive.getDatabaseName() + "/" + archive.getResourceName();
             logger.trace("URL: {}", url);
             String response;
             response = NetTools.getWebContentGET(url);
@@ -175,7 +175,7 @@ public class BasexEADParser {
      * @throws JDOMException
      * @throws ConfigurationException
      */
-    public ArchiveEntry loadDatabase(String database, Document document)
+    public ArchiveEntry loadDatabase(ArchiveResource database, Document document)
             throws IllegalStateException, IOException, HTTPException, JDOMException, ConfigurationException {
 
         if (document == null) {
@@ -190,7 +190,7 @@ public class BasexEADParser {
         List<String> answer = new ArrayList<>();
         List<ArchiveResource> completeList = getPossibleDatabases();
         for (ArchiveResource resource : completeList) {
-            String dbName = resource.databaseName;
+            String dbName = resource.getCombinedName();
             if (!answer.contains(dbName)) {
                 answer.add(dbName);
             }

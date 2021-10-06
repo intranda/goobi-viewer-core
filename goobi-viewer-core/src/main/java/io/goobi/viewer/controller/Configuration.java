@@ -4406,11 +4406,10 @@ public final class Configuration extends AbstractConfiguration {
     public String getTempMediaFolder() {
         return getLocalString("tempMediaFolder", "temp_media");
     }
-    
+
     public String getUserAvatarFolder() {
         return getLocalString("userAvatarFolder", "users/avatar");
     }
-
 
     /**
      * <p>
@@ -5238,22 +5237,25 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      */
     public String getBaseXUrl() {
-        return getLocalString("urls.basex.url");
+        return getLocalString("urls.basex");
+    }
+
+    public boolean isArchivesEnabled() {
+        return getLocalBoolean("archives[@enabled]", false);
+    }
+
+    public Map<String, String> getArchiveNodeTypes() {
+        List<HierarchicalConfiguration<ImmutableNode>> nodeTypes = getLocalConfigurationsAt("archives.nodeTypes.node");
+        nodeTypes.get(0).getString(getReCaptchaSiteKey());
+        return nodeTypes.stream()
+                .collect(Collectors.toMap(node -> node.getString("[@name]"), node -> node.getString("[@icon]")));
     }
 
     /**
      * @return
      */
-    public String getBaseXDatabase() {
-        return getLocalString("urls.basex.defaultDatabase");
-
-    }
-
-    /**
-     * @return
-     */
-    public HierarchicalConfiguration<ImmutableNode> getBaseXMetadataConfig() {
-        return getLocalConfigurationAt("metadata.basexMetadataList");
+    public HierarchicalConfiguration<ImmutableNode> getArchiveMetadataConfig() {
+        return getLocalConfigurationAt("archives.metadataList");
     }
 
     public boolean isDisplayUserGeneratedContentBelowImage() {

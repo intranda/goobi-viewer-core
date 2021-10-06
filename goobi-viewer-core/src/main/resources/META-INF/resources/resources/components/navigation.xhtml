@@ -19,54 +19,54 @@
 	            <ul>
 	                <!-- STANDARD MENU -->
 	                <h:panelGroup rendered="#{cc.attrs.megaMenu == false}">
-	                    <ui:repeat var="navItem" value="#{cmsBean.navigationMenuItems}">
+	                    <ui:repeat var="navItem" value="#{cmsNavigationBean.activeNavigationMenuItems}">
 	                        <h:panelGroup rendered="#{navItem.valid and navItem.shouldDisplay}">
-	                            <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
+	                            <li class="#{!navItem.activeChildItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                <!-- WITHOUT SUBMENU -->
-	                                <h:panelGroup rendered="#{navItem.childItems.isEmpty()}">
+	                                <h:panelGroup rendered="#{navItem.activeChildItems.isEmpty()}">
 	                                    <component:navigationLink navItem="#{navItem}" />
 	                                </h:panelGroup>
 	                                <!-- WITH SUBMENU -->
-	                                <h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
+	                                <h:panelGroup rendered="#{!navItem.activeChildItems.isEmpty()}">
 	                                    <button type="button" class="btn btn--clean" data-toggle="submenu">
 	                                        #{msg[navItem.itemLabel]}
 	                                        <span class="caret"></span>
 	                                    </button>
 	                                </h:panelGroup>
-	                                <h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
+	                                <h:panelGroup rendered="#{!navItem.activeChildItems.isEmpty()}">
 	                                    <ui:param name="parentItem" value="#{navItem}" />
 	
 	                                    <!-- LEVEL 1 -->
 	                                    <div class="navigation__submenu level-1">
 	                                        <ul>
-	                                            <ui:repeat varStatus="count" var="child" value="#{parentItem.childItems}">
+	                                            <ui:repeat varStatus="count" var="child" value="#{parentItem.activeChildItems}">
 	                                                <h:panelGroup rendered="#{child.valid and child.shouldDisplay}">
-	                                                    <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
+	                                                    <li class="#{!navItem.activeChildItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                                        <!-- WITHOUT SUBMENU -->
-	                                                        <h:panelGroup rendered="#{child.childItems.isEmpty()}">
+	                                                        <h:panelGroup rendered="#{child.activeChildItems.isEmpty()}">
 	                                                            <component:navigationLink navItem="#{child}" />
 	                                                        </h:panelGroup>
 	                                                        <!-- WITH SUBMENU -->
-	                                                        <h:panelGroup rendered="#{!child.childItems.isEmpty()}">
+	                                                        <h:panelGroup rendered="#{!child.activeChildItems.isEmpty()}">
 	                                                            <button type="button" class="btn btn--clean"
 	                                                                data-toggle="submenu">
 	                                                                #{msg[child.itemLabel]}
 	                                                                <span class="caret"></span>
 	                                                            </button>
 	                                                        </h:panelGroup>
-	                                                        <h:panelGroup rendered="#{!child.childItems.isEmpty()}">
+	                                                        <h:panelGroup rendered="#{!child.activeChildItems.isEmpty()}">
 	                                                            <!-- LEVEL 2 -->
 	                                                            <div class="navigation__submenu level-2">
 	                                                                <ul>
-	                                                                    <ui:repeat varStatus="count" var="child1" value="#{child.childItems}">
+	                                                                    <ui:repeat varStatus="count" var="child1" value="#{child.activeChildItems}">
 	                                                                        <h:panelGroup rendered="#{child1.valid and child1.shouldDisplay}">
-	                                                                            <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
+	                                                                            <li class="#{!navItem.activeChildItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                                                                <!-- WITHOUT SUBMENU -->
-	                                                                                <h:panelGroup rendered="#{child1.childItems.isEmpty()}">
+	                                                                                <h:panelGroup rendered="#{child1.activeChildItems.isEmpty()}">
 	                                                                                    <component:navigationLink navItem="#{child1}" />
 	                                                                                </h:panelGroup>
 	                                                                                <!-- WITH SUBMENU -->
-	                                                                                <h:panelGroup rendered="#{!child1.childItems.isEmpty()}">
+	                                                                                <h:panelGroup rendered="#{!child1.activeChildItems.isEmpty()}">
 	                                                                                    <button type="button"
 	                                                                                        class="btn btn--clean"
 	                                                                                        data-toggle="submenu">
@@ -74,19 +74,19 @@
 	                                                                                        <span class="caret"></span>
 	                                                                                    </button>
 	                                                                                </h:panelGroup>
-	                                                                                <h:panelGroup rendered="#{!child1.childItems.isEmpty()}">
+	                                                                                <h:panelGroup rendered="#{!child1.activeChildItems.isEmpty()}">
 	                                                                                    <!-- LEVEL 3 -->
 	                                                                                    <div class="navigation__submenu level-3">
 	                                                                                        <ul>
-	                                                                                            <ui:repeat varStatus="count" var="child2" value="#{child1.childItems}">
+	                                                                                            <ui:repeat varStatus="count" var="child2" value="#{child1.activeChildItems}">
 	                                                                                                <h:panelGroup rendered="#{child2.valid and child2.shouldDisplay}">
-	                                                                                                    <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
+	                                                                                                    <li class="#{!navItem.activeChildItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                                                                                        <!-- WITHOUT SUBMENU -->
-	                                                                                                        <h:panelGroup rendered="#{child2.childItems.isEmpty()}">
+	                                                                                                        <h:panelGroup rendered="#{child2.activeChildItems.isEmpty()}">
 	                                                                                                            <component:navigationLink navItem="#{child2m}" />
 	                                                                                                        </h:panelGroup>
 	                                                                                                        <!-- WITH SUBMENU -->
-	                                                                                                        <h:panelGroup rendered="#{!child2.childItems.isEmpty()}">
+	                                                                                                        <h:panelGroup rendered="#{!child2.activeChildItems.isEmpty()}">
 	                                                                                                            <button
 	                                                                                                                type="button"
 	                                                                                                                class="btn btn--clean"
@@ -95,19 +95,19 @@
 	                                                                                                                <span class="caret"></span>
 	                                                                                                            </button>
 	                                                                                                        </h:panelGroup>
-	                                                                                                        <h:panelGroup rendered="#{!child2.childItems.isEmpty()}">
+	                                                                                                        <h:panelGroup rendered="#{!child2.activeChildItems.isEmpty()}">
 	                                                                                                            <!-- LEVEL 4 -->
 	                                                                                                            <div class="navigation__submenu level-4">
 	                                                                                                                <ul>
-	                                                                                                                    <ui:repeat varStatus="count" var="child3" value="#{child2.childItems}">
+	                                                                                                                    <ui:repeat varStatus="count" var="child3" value="#{child2.activeChildItems}">
 	                                                                                                                        <h:panelGroup rendered="#{child3.valid and child3.shouldDisplay}">
-	                                                                                                                            <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
+	                                                                                                                            <li class="#{!navItem.activeChildItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                                                                                                                <!-- WITHOUT SUBMENU -->
-	                                                                                                                                <h:panelGroup rendered="#{child3.childItems.isEmpty()}">
+	                                                                                                                                <h:panelGroup rendered="#{child3.activeChildItems.isEmpty()}">
 	                                                                                                                                    <component:navigationLink navItem="#{child3}" />
 	                                                                                                                                </h:panelGroup>
 	                                                                                                                                <!-- WITH SUBMENU -->
-	                                                                                                                                <h:panelGroup rendered="#{!child3.childItems.isEmpty()}">
+	                                                                                                                                <h:panelGroup rendered="#{!child3.activeChildItems.isEmpty()}">
 	                                                                                                                                    <button
 	                                                                                                                                        type="button"
 	                                                                                                                                        class="btn btn--clean"
@@ -116,13 +116,13 @@
 	                                                                                                                                        <span class="caret"></span>
 	                                                                                                                                    </button>
 	                                                                                                                                </h:panelGroup>
-	                                                                                                                                <h:panelGroup rendered="#{!child3.childItems.isEmpty()}">
+	                                                                                                                                <h:panelGroup rendered="#{!child3.activeChildItems.isEmpty()}">
 	                                                                                                                                    <!-- LEVEL 5 -->
 	                                                                                                                                    <div class="navigation__submenu level-5">
 	                                                                                                                                        <ul>
-	                                                                                                                                            <ui:repeat varStatus="count" var="child4" value="#{child3.childItems}">
+	                                                                                                                                            <ui:repeat varStatus="count" var="child4" value="#{child3.activeChildItems}">
 	                                                                                                                                                <h:panelGroup rendered="#{child4.valid and child4.shouldDisplay}">
-	                                                                                                                                                    <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
+	                                                                                                                                                    <li class="#{!navItem.activeChildItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                                                                                                                                        <component:navigationLink navItem="#{child4}" />
 	                                                                                                                                                    </li>
 	                                                                                                                                                </h:panelGroup>

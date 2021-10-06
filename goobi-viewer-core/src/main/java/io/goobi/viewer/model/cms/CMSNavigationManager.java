@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * <p>
@@ -101,7 +102,7 @@ public class CMSNavigationManager {
         addAvailableItem(user);
         SelectableNavigationItem campaigns = new SelectableNavigationItem("campaigns", "admin__crowdsourcing_campaigns");
         addAvailableItem(campaigns);
-        SelectableNavigationItem archives = new SelectableNavigationItem("archives", "archives");
+        SelectableNavigationItem archives = new SelectableNavigationItem(PageType.archives.getName(), PageType.archives.getLabel());
         addAvailableItem(archives);
 
         addModuleItems();
@@ -324,7 +325,7 @@ public class CMSNavigationManager {
      * addVisibleItem.
      * </p>
      *
-     * @param navigationItem a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param navigationItem a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
      */
     public void addVisibleItem(CMSNavigationItem navigationItem) {
         if (navigationItem.getItemLabel() == null || navigationItem.getPageUrl() == null) {
@@ -353,7 +354,7 @@ public class CMSNavigationManager {
      * getItem.
      * </p>
      *
-     * @param id the item's {@link io.goobi.viewer.model.cms.CMSNavigationItem#getSortingListId()}
+     * @param id the item's {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem#getSortingListId()}
      * @return The first matching item from all visible items as optional. Empty optional if no matching item was found
      */
     public Optional<CMSNavigationItem> getItem(String id) {

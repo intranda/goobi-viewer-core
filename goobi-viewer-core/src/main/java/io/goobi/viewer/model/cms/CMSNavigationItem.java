@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.faces.application.NavigationHandler;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,10 +41,12 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * <p>
@@ -126,7 +127,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     /**
      * Created a copy of the passed item ignoring all data concerning the item hierarchy (order, child and parent items)
      *
-     * @param original a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param original a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
      */
     public CMSNavigationItem(CMSNavigationItem original) {
         setItemLabel(original.getItemLabel());
@@ -317,6 +318,11 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     public List<CMSNavigationItem> getChildItems() {
         return childItems;
     }
+    
+    public List<CMSNavigationItem> getActiveChildItems() {
+        return getChildItems().stream().filter(CMSNavigationItem::isEnabled).collect(Collectors.toList());
+
+    }
 
     /**
      * <p>
@@ -334,7 +340,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      * addChildItem.
      * </p>
      *
-     * @param child a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param child a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
      */
     public void addChildItem(CMSNavigationItem child) {
         if (!childItems.contains(child)) {
@@ -347,7 +353,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      * removeChildItem.
      * </p>
      *
-     * @param child a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param child a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
      */
     public void removeChildItem(CMSNavigationItem child) {
         if (childItems.contains(child)) {
@@ -624,7 +630,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      * Setter for the field <code>displayRule</code>.
      * </p>
      *
-     * @param rule a {@link io.goobi.viewer.model.cms.CMSNavigationItem.DisplayRule} object.
+     * @param rule a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem.DisplayRule} object.
      */
     public void setDisplayRule(DisplayRule rule) {
         this.displayRule = rule;
@@ -635,7 +641,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      * Getter for the field <code>displayRule</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationItem.DisplayRule} object.
+     * @return a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem.DisplayRule} object.
      */
     public DisplayRule getDisplayRule() {
         if (this.displayRule == null) {
@@ -774,14 +780,27 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
 
         return "";
     }
-    
+
     public boolean matchesPage(String page) {
-        if(StringUtils.isBlank(page)) {
+        if (StringUtils.isBlank(page)) {
             return false;
-        } else if(hasCmsPage()) {
+        } else if (hasCmsPage()) {
             return NavigationHelper.getCMSPageNavigationId(getCmsPage()).equals(page);
         } else {
             return page.equals(getPageUrl()) || page.equals(getItemLabel());
+        }
+    }
+
+    public boolean isEnabled() {
+        try {
+            switch (PageType.getByName(this.pageUrl)) {
+                case archives:
+                    return DataManager.getInstance().getConfiguration().isArchivesEnabled();
+                default:
+                    return true;
+            }
+        } catch (NullPointerException e) {
+            return true;
         }
     }
 
