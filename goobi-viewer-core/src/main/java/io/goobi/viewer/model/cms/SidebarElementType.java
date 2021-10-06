@@ -29,7 +29,6 @@ public enum SidebarElementType {
     searchDrillDown("widgetSearchDrillDown"),
     //    chronology("widgetChronology"),
     browsing("widgetBrowsing"),
-    bookshelves("widgetBookshelfList"),
     crowdsourcing("widgetCrowdsourcing"),
     mySearches("widgetMySearches"),
     fieldDrillDown("widgetFieldDrillDown", Category.fieldQuery),
