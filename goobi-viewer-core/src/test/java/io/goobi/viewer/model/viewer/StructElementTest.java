@@ -148,14 +148,43 @@ public class StructElementTest extends AbstractSolrEnabledTest {
 
     /**
      * @see StructElement#getTopStruct()
-     * @verifies return self if topstruct or anchor
+     * @verifies return self if topstruct
      */
     @Test
-    public void getTopStruct_shouldReturnSelfIfTopstructOrAnchor() throws Exception {
+    public void getTopStruct_shouldReturnSelfIfTopstruct() throws Exception {
         StructElement element = new StructElement(iddocKleiuniv);
+        Assert.assertTrue(element.isWork());
         StructElement topStruct = element.getTopStruct();
         Assert.assertEquals(element, topStruct);
         Assert.assertEquals(iddocKleiuniv, topStruct.getLuceneId());
+    }
+
+    /**
+     * @see StructElement#getTopStruct()
+     * @verifies return self if anchor
+     */
+    @Test
+    public void getTopStruct_shouldReturnSelfIfAnchor() throws Exception {
+        long iddoc = 1593684706691L;
+        StructElement element = new StructElement(iddoc);
+        Assert.assertTrue(element.isAnchor());
+        StructElement topStruct = element.getTopStruct();
+        Assert.assertEquals(element, topStruct);
+        Assert.assertEquals(iddoc, topStruct.getLuceneId());
+    }
+
+    /**
+     * @see StructElement#getTopStruct()
+     * @verifies return self if group
+     */
+    @Test
+    public void getTopStruct_shouldReturnSelfIfGroup() throws Exception {
+        long iddoc = 1593684709030L;
+        StructElement element = new StructElement(iddoc);
+        Assert.assertTrue(element.isGroup());
+        StructElement topStruct = element.getTopStruct();
+        Assert.assertEquals(element, topStruct);
+        Assert.assertEquals(iddoc, topStruct.getLuceneId());
     }
 
     /**
