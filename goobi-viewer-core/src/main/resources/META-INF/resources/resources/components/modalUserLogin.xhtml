@@ -51,14 +51,11 @@
 									rendered="#{userBean.showAuthenticationProviderSelection()}">
 									<div id="userLoginSelectLoginWrapper"
 										class="user-login-modal__body-login-select">
-										<div class="form-row form-group no-gutters">
-											<label id="labelUserLoginSelectLogin" for="userLoginSelectLogin"
-												class="control-label col-12 col-lg-3">#{msg.login__select_login_title}:</label>
-											<div class="col-12 col-lg-9">
-												<div class="custom-control custom-control--select">
-													<h:selectOneMenu id="userLoginSelectLogin"
+										<div class="user-login-modal__form-row">
+												<div class="custom-control custom-control--select user-login-modal__form-control -valueEntered">
+													<h:selectOneMenu id="userLoginSelectLogin" styleClass="abc"
 														value="#{userBean.authenticationProviderName}">
-														<f:passThroughAttribute 
+														<f:passThroughAttribute
 															name="aria-labelledby"
 															value="labelUserLoginSelectLogin" />
 														<f:selectItem
@@ -72,7 +69,8 @@
 															render="#{cc.attrs.id}:userLoginForm" />
 													</h:selectOneMenu>
 												</div>
-											</div>
+												<label id="labelUserLoginSelectLogin" for="userLoginSelectLogin"
+													class="control-label effect-label">#{msg.login__select_login_title}:</label>
 										</div>
 									</div>
 								</h:form>
@@ -88,9 +86,9 @@
 												<!-- LOGIN TYPE LOCAL -->
 												<ui:fragment
 													rendered="#{userBean.authenticationProvider.type == 'local'}">
-													<div class="form-row form-group no-gutters">
+													<div class="user-login-modal__form-row">
 
-															<h:inputText id="userEMail" styleClass="form-control"
+															<h:inputText id="userEMail" styleClass="form-control user-login-modal__form-control"
 																value="#{userBean.email}" required="true"
 																requiredMessage="#{msg.loginEnterUserName}">
 																<f:validator validatorId="emailValidator" />
@@ -106,12 +104,12 @@
 													</div>
 												</ui:fragment>
 
-												<!-- LOGIN TYPE USERPASSWORD -->
+												<!-- LOGIN TYPE EMAIL -->
 												<ui:fragment
 													rendered="#{userBean.authenticationProvider.type == 'userPassword'}">
-													<div class="form-row form-group no-gutters">
+													<div class="user-login-modal__form-row">
 															<h:inputText id="externalUserName"
-																styleClass="form-control" value="#{userBean.email}"
+																styleClass="form-control user-login-modal__form-control" value="#{userBean.email}"
 																required="true"
 																requiredMessage="#{msg.loginEnterUserName}">
 																<f:passThroughAttribute name="placeholder"
@@ -126,22 +124,19 @@
 
 												<!-- ENTER PASSWORD -->
 												<div
-													class="form-row form-group no-gutters mb-0 user-login-modal__password">
-													<label id="labelUserPassword" for="userPassword"
-														class="control-label col-12 col-lg-3">#{msg.password}:</label>
-													<div class="col-12 col-lg-9">
-														<h:inputSecret id="userPassword" styleClass="form-control"
+													class="user-login-modal__form-row user-login-modal__password">
+													
+														<h:inputSecret id="userPassword" styleClass="form-control user-login-modal__form-control"
 															type="password" value="#{userBean.password}"
 															required="true"
 															requiredMessage="#{msg.login__enter_password}">
-															<f:passThroughAttribute name="placeholder"
-																value="#{msg.login__enter_password}" />
 															<f:passThroughAttribute name="aria-labelledby"
 																value="labelUserPassword" />
 															<f:passThroughAttribute name="current-password"
 																value="on" />
 														</h:inputSecret>
-													</div>
+														<label id="labelUserPassword" for="userPassword"
+															class="control-label effect-label">#{msg.password}:</label>
 												</div>
 
 												<!-- RETRIEVE LOST PASSWORD -->
@@ -162,15 +157,36 @@
 												<!-- USER LOGIN BODY ACTION -->
 												<div class="row user-login-modal__body-action">
 
-													<!--  LOGIN -->
-													<div class="col-12 mb-2">
+
+												<!--  LOGIN BUTTONB -->
+													<div class="user-login-modal__buttons-wrapper">
 														<h:commandButton styleClass="btn btn--full"
 															value="#{msg.login}" action="#{userBean.login}">
 															<f:passThroughAttribute name="aria-label"
 																value="#{msg.login}" />
 														</h:commandButton>
+
+														<h:panelGroup
+															rendered="#{userBean.userRegistrationEnabled}">
+															<div id="userLoginCreateAccount"
+																class="user-login-modal__new-account">
+																<h4>
+																	<span>#{msg.login__new_to_goobi_viewer}</span>
+																</h4>
+																<button type="button"
+																	class="btn btn--clean user-login-modal__new-account-submit"
+																	aria-label="#{msg.user_createNewAccount}"
+																	data-open="create-account">
+																	#{msg.login__create_new_account}</button>
+
+															</div>
+														</h:panelGroup>
+
 													</div>
-												</div>
+
+
+
+													</div>
 											</div>
 										</ui:fragment>
 									</h:form>
@@ -305,6 +321,10 @@
 														</div>															
 													</div>
 												</ui:fragment>
+												
+												
+												
+												
 												<!-- USER LOGIN BODY ACTION -->
 												<div class="user-login-modal__body-action">
 													<h:commandButton
@@ -327,19 +347,7 @@
 									</ui:fragment>
 								</div>
 
-								<h:panelGroup rendered="#{userBean.userRegistrationEnabled}">
-									<div id="userLoginCreateAccount" class="user-login-modal__new-account">
-										<h4>
-											<span>#{msg.login__new_to_goobi_viewer}</span>
-										</h4>
-										<button type="button"
-											class="btn user-login-modal__new-account-submit"
-											aria-label="#{msg.user_createNewAccount}"
-											data-open="create-account">
-											#{msg.login__create_new_account}</button>
 
-									</div>
-								</h:panelGroup>
 							</div>
 						</div>
 					</div>
@@ -352,15 +360,17 @@
 					<div class="user-login-modal__right">
 					
 <!-- 						<div class="svgtest"> -->
-<!-- <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 125 500"> -->
-<!--  <title>goobi</title> -->
-
-<!--  <g style="/*! height: 500px; */"> -->
-<!--   <title>Layer 1</title> -->
-<!--   <path fill="white" transform="rotate(-90, 49.2423, 251.422)" d="m-200.7578,200.85411c159.37601,203.31412 294.7763,-144.57749 502.98821,127.24425l-0.00797,-153.35268l-505.96824,0l2.988,26.10842z" id="svg_1"/> -->
-<!--  </g> -->
-<!-- </svg> -->
+<!-- 							<svg preserveAspectRatio="none" viewBox="0 0 125 500"> -->
+<!-- 							 <title>goobi</title> -->
+							
+<!-- 							 <g style="/*! height: 500px; */"> -->
+<!-- 							  <title>Layer 1</title> -->
+<!-- 							  <path fill="white" transform="rotate(-90, 49.2423, 251.422)" d="m-200.7578,200.85411c159.37601,203.31412 294.7763,-144.57749 502.98821,127.24425l-0.00797,-153.35268l-505.96824,0l2.988,26.10842z" id="svg_1"/> -->
+<!-- 							 </g> -->
+<!-- 							</svg> -->
 <!-- 						</div> -->
+						
+						
 					
 					
 						<!-- CLOSE BUTTON -->
@@ -443,5 +453,16 @@
 				</div>
 			</div>
 		</div>
+		<script>
+			  
+			 $('.user-login-modal__form-control').on('change keyup blur', function() {
+				  if ($(this).val().length > 0) {
+					    $(this).addClass('-valueEntered');
+					  } else {
+						 $(this).removeClass('-valueEntered');
+					  }
+			 });
+
+		</script>
 	</composite:implementation>
 </ui:composition>
