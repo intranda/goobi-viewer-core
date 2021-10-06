@@ -303,14 +303,17 @@
 												<ui:fragment rendered="#{userBean.securityQuestion != null}">
 													<div class="form-group form-row no-gutters">
 														<label for="userCreateAccountConfirm"
-															class="control-label col-12 col-lg-3">#{msg[userBean.securityQuestion.questionKey]}:</label>
-														<h:inputSecret id="userCreateAccountConfirm"
-															styleClass="form-control col-12 col-lg-9"
-															autocomplete="off" value="#{userBean.securityAnswer}"
-															required="true"
-															requiredMessage="#{msg.user__security_question_required_msg}">
-														<f:passThroughAttribute name="autocomplete" value="new-password" />
-													</h:inputSecret>
+															class="control-label col-12 col-lg-3">#{msg.user__security_question}:</label>
+													<div class="col-12 col-lg-9">	
+															<span>#{msg[userBean.securityQuestion.questionKey]}:</span>
+															<h:inputSecret id="userCreateAccountConfirm"
+																styleClass="form-control"
+																autocomplete="off" value="#{userBean.securityAnswer}"
+																required="true"
+																requiredMessage="#{msg.user__security_question_required_msg}">
+																<f:passThroughAttribute name="autocomplete" value="new-password" />
+															</h:inputSecret>
+													</div>
 															
 													</div>
 												</ui:fragment>
