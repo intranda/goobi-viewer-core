@@ -275,7 +275,15 @@ const depsPathsJS = [
     cwd: 'node_modules/tinymce/themes/',
     src: ['**/*'],
     dest: `${jsLibsDir}tinymce/themes/`
+  },
+
+  { // x3dom
+    expand:true,
+    cwd: 'node_modules/x3dom/',
+    src: ['x3dom.js', 'README.md'],
+    dest: `${jsLibsDir}x3dom/`
   }
+
 ];
 
   /////////////////////
