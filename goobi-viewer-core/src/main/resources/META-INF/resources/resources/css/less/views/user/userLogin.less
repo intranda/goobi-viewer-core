@@ -123,7 +123,7 @@
 	}
 	&__body-login-open-id {
 		max-width: 80%;	
-		min-width: 140px;
+		min-width: 130px;
 	}
 	&__body-login-open-id, &__new-account  {
 		ul {
@@ -473,6 +473,35 @@
 		&.active {
 			align-items: flex-start;
 			padding-top: 25px;
+		}
+		&__inner {
+			flex-direction: row;
+			flex-wrap: wrap;
+		}
+		&__left {
+			max-width: 100%;
+			flex: 0 0 100%;
+		}
+		&__right {
+			max-width: 100%;
+			flex: 0 0 100%;
+			position: static;
+		}
+		&__keyboard {
+			display: none;
+		}
+		&__body-login-open-id {
+			margin-top: 2rem;
+			margin-bottom: 2rem;
+		}
+		.modal-header {
+			padding-right: 7rem;
+		}
+		.fancy-close {
+			&::before,
+			&::after {
+			    background-color: @black;
+			}
 		}
 	}
 }
