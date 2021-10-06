@@ -399,13 +399,15 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * be resolved, null is returned
      *
      * @should retrieve top struct correctly
-     * @should return self if topstruct or anchor
+     * @should return self if topstruct
+     * @should return self if anchor
+     * @should return self if group
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
-        if (work || anchor) {
+        if (work || anchor || isGroup()) {
             this.topStruct = this;
             return this;
         }
