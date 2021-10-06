@@ -1,0 +1,72 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface />
+
+    <composite:implementation>
+
+		<ui:fragment>
+			<!-- MODAL -->
+			<div class="modal fade" id="#{cc.attrs.id}" tabindex="-1"
+				role="dialog"
+				aria-labelledby="#{termsOfUseBean.getTitleForDisplay()}"
+				aria-hidden="true">
+				<div
+					class="modal-dialog modal-dialog-centered widget-usage__citelinks-box"
+					role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h2 class="modal-title">#{msg.userCommentEdit}</h2>
+							<button type="button" class="fancy-close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">x</span>
+							</button>
+						</div>
+						<div class="modal-body">
+
+							<!-- COMMENT TEXT EDIT -->
+							<div class="user-comments__modal-inside-wrapper">
+								<div class="row">
+
+									<div class="col-3">#{msg.userCommentText}:</div>
+									<div
+										class="col-9 user-comments__comment-content-options-text-edit">
+										<h:inputTextarea id="userCommentEditableText"
+											value="#{comment.text}" />
+									</div>
+								</div>
+							</div>
+
+							<!-- ACTION -->
+							<div class="form-group form-row user-comments__modal-actions">
+								<div class="col-sm-12 mt-3 d-flex justify-content-end">
+									<button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
+									<h:commandButton styleClass="btn btn--success accept ml-3"
+										value="#{msg.save}"
+										action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}">
+										<f:ajax execute="@this" />
+										<f:passThroughAttribute name="data-dismiss" value="modal"></f:passThroughAttribute>
+									</h:commandButton>
+								</div>
+							</div>
+							
+							
+						</div>
+					</div>
+				</div>
+				<div class="alt-backdrop" data-dismiss="modal"></div>
+			</div>
+		</ui:fragment>
+
+	</composite:implementation>
+</ui:composition>
