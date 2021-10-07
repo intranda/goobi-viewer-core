@@ -19,7 +19,7 @@
 	            <ul>
 	                <!-- STANDARD MENU -->
 	                <h:panelGroup rendered="#{cc.attrs.megaMenu == false}">
-	                    <ui:repeat var="navItem" value="#{cmsNavigationBean.activeNavigationMenuItems}">
+	                    <ui:repeat var="navItem" value="#{cmsBean.navigationMenuItems}">
 	                        <h:panelGroup rendered="#{navItem.valid and navItem.shouldDisplay}">
 	                            <li class="#{!navItem.activeChildItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
 	                                <!-- WITHOUT SUBMENU -->
