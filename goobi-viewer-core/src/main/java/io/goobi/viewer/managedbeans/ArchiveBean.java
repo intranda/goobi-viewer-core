@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
@@ -54,6 +53,7 @@ import io.goobi.viewer.model.archives.ArchiveEntry;
 import io.goobi.viewer.model.archives.ArchiveResource;
 import io.goobi.viewer.model.archives.ArchiveTree;
 import io.goobi.viewer.model.archives.BasexEADParser;
+import io.goobi.viewer.model.archives.NodeType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -72,6 +72,8 @@ public class ArchiveBean implements Serializable {
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 
     private Map<ArchiveResource, ArchiveTree> archives = new HashMap<>();
+    
+    private final List<NodeType> nodeTypes;
 
     private final BasexEADParser eadParser;
 
@@ -112,8 +114,17 @@ public class ArchiveBean implements Serializable {
             }
         }
         this.eadParser = eadParser;
+        this.nodeTypes = loadNodeTypes(DataManager.getInstance().getConfiguration().getArchiveNodeTypes());
     }
     
+    /**
+     * @param archiveNodeTypes
+     * @return
+     */
+    private List<NodeType> loadNodeTypes(Map<String, String> archiveNodeTypes) {
+        return archiveNodeTypes.entrySet().stream().map(entry-> new NodeType(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+    }
+
     public void reset() {
         this.currentDatabase = "";
         this.currentResource = "";
@@ -528,6 +539,10 @@ public class ArchiveBean implements Serializable {
                 logger.error("Error redirecting to database url {}: {}", url, e.toString());
             }
         }
+    }
+    
+    public NodeType getNodeType(String name) {
+        return this.nodeTypes.stream().filter(node -> node.getName().equals(name)).findAny().orElse(new NodeType("", ""));
     }
   
 }

@@ -284,7 +284,10 @@ public class BasexEADParser {
         List<Element> clist = null;
         Element archdesc = element.getChild("archdesc", NAMESPACE_EAD);
         if (archdesc != null) {
-            String type = archdesc.getAttributeValue("level");
+            String type = archdesc.getAttributeValue("otherlevel");
+            if(StringUtils.isBlank(type)) {
+                type = archdesc.getAttributeValue("level");                
+            }
             entry.setNodeType(type);
             Element dsc = archdesc.getChild("dsc", NAMESPACE_EAD);
             if (dsc != null) {
