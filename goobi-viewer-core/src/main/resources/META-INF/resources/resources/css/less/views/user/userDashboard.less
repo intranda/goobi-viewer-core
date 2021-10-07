@@ -1,0 +1,168 @@
+/* ==============================================================
+   User
+   style declarations for userDashboard.xhtml
+   ==============================================================*/
+/* USER DASHBOARD */
+.user-dashboard {
+	&__form-wrapper-container {
+		display: flex;
+		justify-content: space-between;
+	}
+	&__form-wrapper {
+		position: relative;
+	    display: flex;
+	    flex-direction: column;
+		background: white;
+		padding: 2rem;
+		margin-bottom: 2rem;
+		border: 1px solid #d5d5d5;
+		&.-w50 {
+			flex: 0 0 calc(~"50% - 1rem");
+			max-width: calc(~"50% - 1rem");
+		}
+		&.-w100 {
+			flex: 0 0 calc(~"100%");
+			max-width: calc(~"100%");
+		}
+	}
+	&__show-all-link {
+		color: @blue;
+		font-size: 1.4rem;
+		position: relative;
+	}
+	&__last-activities-wrapper {
+		padding-left: 1rem;
+	}
+	&__last-activities-timeline-wrapper {
+		position: relative;
+	}
+	&__last-activities-timeline-item {
+		display: grid; 
+		grid-template-columns: 1fr 1fr 1fr; 
+		grid-template-rows: 1fr; 
+		gap: 0px 20px; 
+		grid-template-areas: ". . ."; 
+		position: relative;
+		max-width: 100%;
+		padding-left: 3rem;
+		padding-bottom: 1rem;
+		&::after {
+			position: absolute;
+			display: block;
+			left: -8px;
+			border-radius: 100%;
+			height: 11px;
+			width: 11px;
+			content: "";
+			top: 6px;
+			background: #f0f0f0;
+		}
+		&::before {
+			content: '';
+			display: block;
+			position: absolute;
+			width: 3px;
+			background: #f0f0f0;
+			left: -4px;
+			top: 0;
+			height: 100%;
+		}
+		&:first-child {
+			&:before {
+				margin-top: 7px;
+			}	
+			&:after {
+				position: absolute;
+				display: inline-block;
+				color: #f0f0f0;
+				box-sizing: border-box;
+				width: 0;
+				height: 0;
+				border: 7px solid transparent;
+				border-top: 7px solid;
+				border-right: 7px solid;
+				margin: 15px;
+				transform: rotate(-45deg);
+				border-radius: 0;
+				background: transparent;
+				left: -24px;
+				top: -8px;
+
+			}
+		}
+		&:last-child {
+			&:before {
+				top: -20px;
+			}
+		}
+	}
+	&__last-activities-timeline-item-type {
+		.fa {
+			width: 20px;
+			margin-right: 0.5rem;
+		}
+	}
+	&__bookmarks-list,
+	&__searches-list {
+			padding-left: 3rem;
+	}
+	&__last-activities-wrapper,
+	&__searches-wrapper, 
+	&__comments-wrapper {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		flex-grow: 1;
+		padding-left: 2.5rem;
+	}
+	&__comments-wrapper {
+		padding-left: 2rem;
+	}
+	&__searches-wrapper {
+		padding-left: 0;
+	}
+	&__searches-list {}
+	&__searches-list-item {}
+	
+	&__searches-count,
+	&__comments-count,
+	&__bookmarks-count {
+		margin-bottom: 1rem;
+	}
+	
+	&__comments-wrapper {}
+	&__comments-list {
+		padding-bottom: 2rem;
+	}
+	&__comments-count {
+		
+	}
+	&__comments-item {
+		display: flex;
+		flex-wrap: wrap;
+		border-left: 2px solid #f0f0f0;
+		padding-left: 1rem;
+		margin-bottom: 1.5rem;
+	}
+	&__comments-text {
+		flex: 0 0 100%;
+		max-width: 100%;
+	}
+
+	&__comments-open-record {
+		flex: 0 0 100%;
+		max-width: 100%;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

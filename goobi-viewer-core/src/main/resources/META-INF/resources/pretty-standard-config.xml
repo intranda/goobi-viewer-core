@@ -130,7 +130,7 @@
 	<url-mapping id="user">
 		<pattern value="/user/" />
          <!-- TODO: dashboard -->
-		<view-id value="/user.xhtml" />
+		<view-id value="/userDashboard.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="userSettings">
