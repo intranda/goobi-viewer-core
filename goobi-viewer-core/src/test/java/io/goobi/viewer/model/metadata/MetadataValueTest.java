@@ -203,4 +203,31 @@ public class MetadataValueTest {
         mdValue.applyHighlightingToParamValue(0, Collections.singleton("foo"));
         Assert.assertEquals("<span class=\"search-list--highlight\">foo</span>bar", mdValue.getParamValues().get(0).get(0));
     }
+
+    /**
+     * @see MetadataValue#isAllParamValuesBlank()
+     * @verifies return true if all param values blank
+     */
+    @Test
+    public void isAllParamValuesBlank_shouldReturnTrueIfAllParamValuesBlank() throws Exception {
+        MetadataValue mdValue = new MetadataValue("", "", "");
+        List<String> values = Arrays.asList("", "");
+        mdValue.getParamValues().add(values);
+        mdValue.getParamValues().add(values);
+
+        Assert.assertTrue(mdValue.isAllParamValuesBlank());
+    }
+
+    /**
+     * @see MetadataValue#isAllParamValuesBlank()
+     * @verifies return false if any param value not blank
+     */
+    @Test
+    public void isAllParamValuesBlank_shouldReturnFalseIfAnyParamValueNotBlank() throws Exception {
+        MetadataValue mdValue = new MetadataValue("", "", "");
+        List<String> values = Arrays.asList("", "foo");
+        mdValue.getParamValues().add(values);
+
+        Assert.assertFalse(mdValue.isAllParamValuesBlank());
+    }
 }

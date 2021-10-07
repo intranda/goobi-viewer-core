@@ -95,6 +95,12 @@ public class MetadataValue implements Serializable {
         return StringUtils.isBlank(getComboValueShort(index));
     }
 
+    /**
+     * 
+     * @return true if all of the param values are empty or blank; false otherwise
+     * @should return true if all param values blank
+     * @should return false if any param value not blank
+     */
     public boolean isAllParamValuesBlank() {
         for (int i = 0; i < paramValues.size(); ++i)
             if (StringUtils.isNotBlank(getComboValueShort(i))) {
