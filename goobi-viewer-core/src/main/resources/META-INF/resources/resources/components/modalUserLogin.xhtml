@@ -303,9 +303,9 @@
 												<ui:fragment rendered="#{userBean.securityQuestion != null}">
 													<div class="form-group form-row no-gutters">
 														<label for="userCreateAccountConfirm"
-															class="control-label col-12 col-lg-3">#{msg.user__security_question}:</label>
-													<div class="col-12 col-lg-9">	
-															<span>#{msg[userBean.securityQuestion.questionKey]}:</span>
+															class="control-label col-12 col-lg-12">#{msg.user__security_question}: #{msg[userBean.securityQuestion.questionKey]}</label>
+													<div class="col-12 col-lg-12">	
+															<span></span>
 															<h:inputSecret id="userCreateAccountConfirm"
 																styleClass="form-control"
 																autocomplete="off" value="#{userBean.securityAnswer}"
