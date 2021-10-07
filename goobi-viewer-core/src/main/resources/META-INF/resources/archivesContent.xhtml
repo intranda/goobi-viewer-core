@@ -29,14 +29,12 @@
 	
 					<div class="archives__select-database-dropdown-wrapper">
 						<div class="archives__select-database-dropdown-label">Aktueller Bestand:</div>
-	                    <h:selectOneMenu styleClass="archives__select-database-dropdown" value="EMPTY">
-		                    <f:selectItem itemValue = "1" itemLabel = "#{archiveBean.trueRoot.label}" /> 
-		   					<f:selectItem itemValue = "2" itemLabel = "Database 2 Long Name for Testing This and That" />
-	
-		   					<!-- TO DO: POPULATE SELECTABLE ITEMS FROM DATABASE AND TRIGGER PAGE RELOAD/ARCHIVE TREE RELOAD -->
-							<!-- <f:selectItems value="#{bean.names}" /> -->
-						
-						</h:selectOneMenu>
+	                    <h:form>
+		                    <h:selectOneMenu value="#{archiveBean.archiveId}" styleClass="archives__select-database-dropdown" onchange="$(this).next().click()">
+								<f:selectItems value="#{archiveBean.databases}" var="database" itemValue="#{database.combinedId}" itemLabel="#{database.combinedName}" ></f:selectItems>
+							</h:selectOneMenu>
+							<h:commandButton styleClass="d-none" action="pretty:archives2"></h:commandButton>
+	                    </h:form>
 					</div>
 
                     <div class="archives__tree-heading">

@@ -76,6 +76,10 @@ public class ArchiveResource {
     public String getCombinedName() {
         return databaseName + " - " + resourceName;
     }
+    
+    public String getCombinedId() {
+        return getDatabaseId() + " - " + getResourceId();
+    }
 
     public String getDatabaseId() {
         try {

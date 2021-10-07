@@ -90,9 +90,9 @@
 				<c:when test="#{archiveBean.databaseState == 'ARCHIVES_LOADED'}">
 					<div class="archives__select">
 						<h:form>
-							<h:selectOneMenu value="#{archiveBean.archiveUrl}">
+							<h:selectOneMenu value="#{archiveBean.archiveId}">
 								<f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true"/>
-								<f:selectItems value="#{archiveBean.databases}" var="database" itemValue="#{database.combinedName}" itemLabel="#{database.combinedName}" ></f:selectItems>
+								<f:selectItems value="#{archiveBean.databases}" var="database" itemValue="#{database.combinedId}" itemLabel="#{database.combinedName}" ></f:selectItems>
 							</h:selectOneMenu>
 							<h:commandButton value="#{msg.select}" action="pretty:archives2"></h:commandButton>
 						</h:form>

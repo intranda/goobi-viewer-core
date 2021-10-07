@@ -114,15 +114,15 @@ public class ArchiveBean implements Serializable {
     }
     
     public void reset() {
-        this.currentDatabase = null;
-        this.currentResource = null;
+        this.currentDatabase = "";
+        this.currentResource = "";
         if(this.databaseState == DatabaseState.ARCHIVE_TREE_LOADED) {            
             this.databaseState = DatabaseState.ARCHIVES_LOADED;
         }
     }
 
     public void initializeArchiveTree() {
-        if (this.databaseState == DatabaseState.ARCHIVES_LOADED && getCurrentArchive() != null) {
+        if (getCurrentArchive() != null) {
             try {
                 if(this.archives.get(getCurrentArchive()) == null) {
                     ArchiveTree archiveTree = loadDatabase(eadParser, getCurrentArchive());
@@ -499,14 +499,19 @@ public class ArchiveBean implements Serializable {
         return databases;
     }
     
-    public String getArchiveUrl() {
-        return "";
+    public String getArchiveId() {
+        return Optional.ofNullable(getCurrentArchive()).map(ArchiveResource::getCombinedId).orElse("");
     }
 
-    public void setArchiveUrl(String archiveName) {
-        ArchiveResource database = this.archives.keySet().stream().filter(db -> db.getCombinedName().equals(archiveName)).findAny().orElse(null);
-        this.currentDatabase = database.getDatabaseId();
-        this.currentResource = database.getResourceId();
+    public void setArchiveId(String archiveName) {
+        ArchiveResource database = this.archives.keySet().stream().filter(db -> db.getCombinedId().equals(archiveName)).findAny().orElse(null);
+        if(database != null) {            
+            this.currentDatabase = database.getDatabaseId();
+            this.currentResource = database.getResourceId();
+            this.initializeArchiveTree();
+        } else {
+            this.reset();
+        }
     }
     
   
