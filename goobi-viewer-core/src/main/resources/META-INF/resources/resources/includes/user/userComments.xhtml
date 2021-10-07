@@ -82,8 +82,9 @@
 
 										<div class="user-comments__action-wrapper">
 											<!-- TRIGGER EDIT COMMENT MODAL -->
-											<button type="button" class="btn--clean user-comments__edit-comment-button" data-backdrop="false" data-toggle="modal" data-target="#modalUserCommentEdit">
+											<button jsf:action="#{activeDocumentBean.viewManager.currentPage.setCurrentComment(comment)}" class="btn--clean user-comments__edit-comment-button" data-backdrop="false" data-toggle="modal" data-target="#modalUserCommentEdit">
 											  #{msg.edit}
+											  <f:ajax render="modalUserCommentEdit:editForm"/> 
 											</button>
 											
 											<!-- DELETE COMMENT -->
@@ -125,8 +126,6 @@
 					});
 	        	</script>
 
-				<!-- EDIT COMMENT MODAL -->
-				<viewerComponent:modalUserCommentEdit id="modalUserCommentEdit" />
 
 				<!-- ADD COMMENT -->
 				<ui:fragment rendered="#{userBean.loggedIn}">
@@ -139,7 +138,6 @@
 						</div>
 						<div class="user-comments__add-comment-submit">
 							<h:commandButton
-								rendered="#{activeDocumentBean.viewManager.currentPage.currentComment.id == null}"
 								action="#{activeDocumentBean.viewManager.currentPage.createNewCommentAction(userBean.user)}"
 								styleClass="btn btn--success" value="#{msg.addNoteText}">
 								<f:ajax execute="userCommentAdd" render="@form" />
@@ -149,6 +147,8 @@
 				</ui:fragment>
 			</h:form>
 		</div>
+				<!-- EDIT COMMENT MODAL -->
+				<viewerComponent:modalUserCommentEdit id="modalUserCommentEdit" render="userCommentsForm" comment="#{activeDocumentBean.viewManager.currentPage.currentComment}"/>
 
 		<script type="text/javascript">
             $( document ).ready( function() {

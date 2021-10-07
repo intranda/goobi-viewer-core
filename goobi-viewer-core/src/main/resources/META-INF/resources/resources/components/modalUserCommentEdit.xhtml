@@ -11,10 +11,12 @@
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
-	<composite:interface />
+	<composite:interface>
+		<composite:attribute name="comment" required="true" type="io.goobi.viewer.model.annotation.Comment" />
+		<composite:attribute name="render" required="false" default="@none" />
+	</composite:interface>
 
     <composite:implementation>
-
 		<ui:fragment>
 			<!-- MODAL -->
 			<div class="modal fade" id="#{cc.attrs.id}" tabindex="-1"
@@ -27,13 +29,14 @@
 					<div class="modal-content">
 						<div class="modal-header">
 							<h2 class="modal-title">#{msg.userCommentEdit}</h2>
-							<button type="button" class="fancy-close" data-dismiss="modal"
+							<button jsf:action="#{activeDocumentBean.viewManager.currentPage.resetCurrentComment()}" class="fancy-close" data-dismiss="modal"
 								aria-label="Close">
 								<span aria-hidden="true">x</span>
+								<f:ajax render="#{cc.attrs.render}"/>
 							</button>
 						</div>
 						<div class="modal-body">
-
+							<h:form id="editForm">
 							<!-- COMMENT TEXT EDIT -->
 							<div class="user-comments__modal-inside-wrapper">
 								<div class="row">
@@ -42,7 +45,7 @@
 									<div
 										class="col-9 user-comments__comment-content-options-text-edit">
 										<h:inputTextarea id="userCommentEditableText"
-											value="#{comment.text}" />
+											value="#{cc.attrs.comment.text}" />
 									</div>
 								</div>
 							</div>
@@ -50,21 +53,22 @@
 							<!-- ACTION -->
 							<div class="form-group form-row user-comments__modal-actions">
 								<div class="col-sm-12 mt-3 d-flex justify-content-end">
-									<button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
+									<button jsf:action="#{activeDocumentBean.viewManager.currentPage.resetCurrentComment()}" class="btn" data-dismiss="modal">#{msg.cancel}
+										<f:ajax render="@none"/>
+									</button>
 									<h:commandButton styleClass="btn btn--success accept ml-3"
 										value="#{msg.save}"
-										action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}">
-										<f:ajax execute="@this" />
+										action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(cc.attrs.comment)}">
+										<f:ajax execute="@form" render="#{cc.attrs.render}"/>
 										<f:passThroughAttribute name="data-dismiss" value="modal"></f:passThroughAttribute>
 									</h:commandButton>
 								</div>
 							</div>
-							
-							
+							</h:form>							
 						</div>
 					</div>
 				</div>
-				<div class="alt-backdrop" data-dismiss="modal"></div>
+				<div class="alt-backdrop"></div>
 			</div>
 		</ui:fragment>
 
