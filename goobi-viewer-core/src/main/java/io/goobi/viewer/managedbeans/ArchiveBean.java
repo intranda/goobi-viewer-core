@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
@@ -514,5 +515,19 @@ public class ArchiveBean implements Serializable {
         }
     }
     
+    /**
+     * If only one archive database exists and database status is {@link DatabaseState#ARCHIVES_LOADED}, redirect to the matching url.
+     */
+    public void redirectToOnlyDatabase() {
+        if(this.databaseState == DatabaseState.ARCHIVES_LOADED && this.archives.size() == 1) {
+            ArchiveResource resource = this.archives.keySet().iterator().next();
+            String url = PrettyUrlTools.getAbsolutePageUrl("archives2", resource.getDatabaseId(), resource.getResourceId());
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+            } catch (IOException | NullPointerException e) {
+                logger.error("Error redirecting to database url {}: {}", url, e.toString());
+            }
+        }
+    }
   
 }
