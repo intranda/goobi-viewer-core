@@ -45,10 +45,12 @@ public class MetadataValue implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(MetadataValue.class);
 
+    static final String MASTERVALUE_NULL = "MASTERVALUE_NULL";
+
     private final List<String> paramLabels = new ArrayList<>();
     /**
      * List of lists with parameter values. The top list represents the different parameters, with each containing one or more values for that
-     * parameters.
+     * parameter.
      */
     private final List<List<String>> paramValues = new ArrayList<>();
     private final List<String> paramMasterValueFragments = new ArrayList<>();
@@ -91,6 +93,15 @@ public class MetadataValue implements Serializable {
      */
     public boolean isParamValueBlank(int index) {
         return StringUtils.isBlank(getComboValueShort(index));
+    }
+
+    public boolean isAllParamValuesBlank() {
+        for (int i = 0; i < paramValues.size(); ++i)
+            if (StringUtils.isNotBlank(getComboValueShort(i))) {
+                return false;
+            }
+
+        return true;
     }
 
     /**
@@ -153,7 +164,7 @@ public class MetadataValue implements Serializable {
                 addPrefix = false;
                 addSuffix = false;
                 masterFragment = ViewerResourceBundle.getTranslation(paramMasterValueFragments.get(index), null);
-                logger.trace("master fragment: {}", masterFragment);
+                // logger.trace("master fragment: {}", masterFragment);
             }
             // Only add prefix if the total parameter value lengths is > 0 so far
             if (addPrefix && paramPrefixes.size() > index && StringUtils.isNotEmpty(paramPrefixes.get(index))) {

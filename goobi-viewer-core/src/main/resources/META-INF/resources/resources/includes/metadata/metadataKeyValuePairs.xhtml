@@ -13,6 +13,8 @@
 	<ui:param name="metadata" value="#{metadata}"></ui:param>
 
 	<c:forEach items="#{metadata.values}" var="val">
+	
+	    <c:if test="#{!val.allParamValuesBlank}">
 
 		<div class="metadata__elements metadata__elements-level-#{metadata.indentation} metadata__grouped-wrapper">
 
@@ -55,6 +57,8 @@
 				</ui:fragment>
 			</ui:fragment>
 		</c:forEach>
+		
+		</c:if>
 
 	</c:forEach>
 
