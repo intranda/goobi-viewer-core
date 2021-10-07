@@ -49,10 +49,11 @@
 	                <ui:repeat var="entry" value="#{archiveBean.getArchiveHierarchyForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">
 					    <li class="widget-archives__entry">#{entry.label}</li>
 					</ui:repeat>
-					<li class="widget-archives__archives-link">
-					    <h:outputLink
-					        value="#{navigationHelper.applicationUrl}archives/?selected=#{activeDocumentBean.viewManager.archiveEntryIdentifier}#selected">#{msg.openArchiveView}</h:outputLink>
-					</li>
+					<!-- TODO: request matching database name from basex to build archive url -->
+<!-- 					<li class="widget-archives__archives-link"> -->
+<!-- 					    <h:outputLink -->
+<!-- 					        value="#{navigationHelper.applicationUrl}archives/?selected=#{activeDocumentBean.viewManager.archiveEntryIdentifier}#selected">#{msg.openArchiveView}</h:outputLink> -->
+<!-- 					</li> -->
 				</ul>
             </div>
 		</c:if>
