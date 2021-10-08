@@ -101,7 +101,7 @@
 		font-size: 1.6rem;
 	}
     &__header-exit {
-		margin-right: 5rem;
+		margin-right: 2rem;
     	margin-left: auto;
 		display: flex;
     	a {
@@ -527,24 +527,59 @@
 		background: #f2f3f4;
 		padding-bottom: 2rem;
 	}
+	&__select-database-dropdown-element {
+		overflow: hidden;
+	}
 	&__select-database-dropdown-label {
 		font-weight: 700;
 		font-size: 1.6rem;
 		white-space: nowrap;
+		padding-right: 1.5rem;
 	}
 	&__select-database-dropdown {
 		border: none;
 		background: transparent;
 		font-size: 1.6rem;
 		flex: 1;
-		margin-left: 1.5rem;
+		background: @white;
+		border: 1px solid @middlegray;
+		padding: 0.5rem 1rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 100%;
+	}
+	&__modal {
+		display: block;
+	}
+	&__modal-select-database-dropdown-wrapper {
+		display: flex;
+		align-items: center;
+		padding-bottom: 2rem;
+	}
+	&__modal-select-database-dropdown-label {
+		font-weight: 700;
+		font-size: 1.6rem;
+		white-space: nowrap;
+	}
+	&__modal-select-database-dropdown {
+		border: none;
+		background: transparent;
+		font-size: 1.6rem;
+		flex: 1;
 		background: @white;
 		border: 1px solid @middlegray;
 		padding: 0.5rem 1rem;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
+	&__modal-select-database-confirm {
+		border: none;
+		// background: 
+	}
+	
+	
 	// invisible element for JS functionality
+	// TO DEL?
 	#tempWidthSelect {
 		display: none;
 		border: none;
