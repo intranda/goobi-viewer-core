@@ -166,6 +166,7 @@ public class MetadataElement {
     private String title = null;
     private String docType = null;
     private String docStructType = null;
+    private String groupType = null;
     private String mimeType = null;
     private String url = null;
     private List<Metadata> metadataList = new ArrayList<>();
@@ -231,6 +232,7 @@ public class MetadataElement {
 
         if (se.isGroup()) {
             docStructType = "_GROUPS";
+            groupType = se.getMetadataValue(SolrConstants.GROUPTYPE);
         }
         List<Metadata> sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(docStructType);
         if (sidebarMetadataTempList.isEmpty()) {
@@ -511,6 +513,21 @@ public class MetadataElement {
     }
 
     /**
+     * Returns the docstruct type or the group type if this is a record group.
+     * 
+     * @return docstruct type if record; group type if group
+     * @should return docstruct type if record
+     * @should return group type if group
+     */
+    public String getDocStructTypeLabel() {
+        if (StringUtils.isNotEmpty(getGroupType())) {
+            return getGroupType();
+        }
+
+        return getDocStructType();
+    }
+
+    /**
      * <p>
      * Getter for the field <code>label</code>.
      * </p>
@@ -529,9 +546,10 @@ public class MetadataElement {
      * Setter for the field <code>label</code>.
      * </p>
      *
-     * @param string a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
      */
-    public void setLabel(String string) {
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     /**
@@ -596,6 +614,27 @@ public class MetadataElement {
      */
     public String getDocStructType() {
         return docStructType;
+    }
+
+    /**
+     * @param docStructType the docStructType to set
+     */
+    void setDocStructType(String docStructType) {
+        this.docStructType = docStructType;
+    }
+
+    /**
+     * @return the groupType
+     */
+    public String getGroupType() {
+        return groupType;
+    }
+
+    /**
+     * @param groupType the groupType to set
+     */
+    void setGroupType(String groupType) {
+        this.groupType = groupType;
     }
 
     /**

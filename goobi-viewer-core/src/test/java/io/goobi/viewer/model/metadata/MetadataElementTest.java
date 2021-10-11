@@ -148,4 +148,27 @@ public class MetadataElementTest {
         }
         Assert.assertTrue(me.isDisplayBoxed(0));
     }
+
+    /**
+     * @see MetadataElement#getDocStructTypeLabel()
+     * @verifies return docstruct type if record
+     */
+    @Test
+    public void getDocStructTypeLabel_shouldReturnDocstructTypeIfRecord() throws Exception {
+        MetadataElement me = new MetadataElement();
+        me.setDocStructType("manuscript");
+        Assert.assertEquals("manuscript", me.getDocStructTypeLabel());
+    }
+
+    /**
+     * @see MetadataElement#getDocStructTypeLabel()
+     * @verifies return group type if group
+     */
+    @Test
+    public void getDocStructTypeLabel_shouldReturnGroupTypeIfGroup() throws Exception {
+        MetadataElement me = new MetadataElement();
+        me.setDocStructType("_GROUPS");
+        me.setGroupType("Series");
+        Assert.assertEquals("Series", me.getDocStructTypeLabel());
+    }
 }
