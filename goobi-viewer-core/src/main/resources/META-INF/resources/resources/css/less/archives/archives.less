@@ -2,10 +2,6 @@
    Archives Layout
    ==============================================================*/
 
-#archivesWrapper {
-	background: #f2f3f4;
-}
-
 .archives {
 	width: 100vw;
 	&__top-wrapper {
@@ -15,18 +11,6 @@
 		background-color: @white;
 		z-index: 2020;
 		width: 100%;
-		.container {
-			width: auto;	
-		}
-		.login-navigation [data-login="true"] .login-navigation__user-dropdown {
-			top: calc(~"100% + 18px");
-		}
-		.login-navigation [data-login="true"] button[data-toggle="user-dropdown"] {
-			font-size: 1.6rem;
-		}
-		.login-navigation [data-login="false"] {
-			display: flex;
-		}
 	}
 	&__header {
 		display: -webkit-box;
@@ -38,46 +22,18 @@
 		-ms-flex-align: center;
 		align-items: center;
 		min-height: 70px;
-		a, .btn, button {
+		a {
 			&:hover,
 			&:focus,
 			&:active {
-				color: white;
+				color: @black;
 			}
 		}
 	}
 	&__header-brand {
 		padding: 0.5rem 2rem;
 	}
-	&__top {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		min-height: 70px;
-		color: white;
-		a, button {
-			color: white;
-			&:hover,
-			&:active,
-			&:focus {
-				text-decoration: none;
-			}
-		}
-		.bookmark-navigation {
-			&__dropdown-list {
-				a {
-					color: black;
-				}
-			}
-		}
-	}
-	&__top-mobile-nav,
-	&__top-mobile-sidebar {
-		display: none;
-		flex: 0 0 0%;
-		max-width: 0%;
-	}
-	&__top-brand {
+	&__top-title {
 		padding: 1.5rem;
 		padding-left: 0;
 		margin-right: auto;
@@ -95,11 +51,6 @@
 		    display: inline;
 		}
 	}
-	&__top-title {
-		text-align: center;
-		font-weight: 700;
-		font-size: 1.6rem;
-	}
     &__header-exit {
 		margin-right: 2rem;
     	margin-left: auto;
@@ -114,50 +65,6 @@
     		background-size: 28px;
     	}
     }
-	&__top-actions-language,
-	&__top-actions-bookmark,
-	&__top-actions-login {
-		margin-left: 1.5rem;
-	}
-	&__top-actions-language {
-		position: relative;
-		display: flex;
-		[data-toggle="local"] {
-			.fa {
-				padding-right: .5rem;
-			}
-		} 
-		.change-local {
-			background: #444;
-			display: none;
-			position: absolute;
-			top: 3.2rem;
-			left: 0;
-			padding-top: .1rem;
-			z-index: 2000;
-			box-shadow: none;
-			ul {}
-			li {
-				display: list-item;
-				float: none;
-				margin: 0;
-				margin-bottom: .1rem;
-			}
-			a {
-				padding: .3rem 1.4rem;
-				&:hover,
-				&:active,
-				&:focus {
-					background-color: #606060;
-					text-decoration: none;
-				}
-				&.activeLang {
-					background-color: #606060;
-				}
-			}
-			img {}
-		}
-	}
 	&__wrapper {
 		padding: 2rem;
 		display: flex;
@@ -237,8 +144,10 @@
 		flex-wrap: wrap;
 	}
 	&__object-metadata-entry {
-		display: flex;
+		display: grid;
 		margin-bottom: 0.2rem;
+		grid-template-columns: 200px auto;
+		grid-gap: 1.5rem;
 	}
 	&__object-title {
 		font-weight: 700;
@@ -254,14 +163,10 @@
 	}
 	&__object-field-name {
 		font-weight: 700;
-		width: 250px;
-		max-width: 250px;
-		flex-shrink: 0;
-		flex: 0 0 250px;
+		text-overflow: ellipsis;
+		overflow: hidden;
 	}
 	&__object-field-value {
-		margin-left: 1rem;
-		min-width: 145px;
 	}
 	&__object-image {
 		flex: 0 0 40%;
@@ -327,6 +232,7 @@
 		width: 100%;
 		text-align: center;
 	}
+	// THUMBNAILS
 	&__object-thumbnail-wrapper {
 		flex: 0 0 100%;
 	}
@@ -430,6 +336,7 @@
 			}
 		}
 	}
+	// SEARCH FIELD
 	&__search-input-wrapper {
 		position: relative;
 		margin-bottom: 2rem;
@@ -476,7 +383,6 @@
 		}
 	}
 	&__search-input {}
-	
 	.login-navigation [data-login="true"] .login-navigation__bookmarks-list {
 		display: none;
 	}
@@ -521,6 +427,7 @@
 			}
 		}
 	}
+	// SELECT DATABASE DROPDOWN
 	&__select-database-dropdown-wrapper {
 		display: flex;
 		align-items: center;
@@ -529,6 +436,7 @@
 	}
 	&__select-database-dropdown-element {
 		overflow: hidden;
+		flex-grow: 1;
 	}
 	&__select-database-dropdown-label {
 		font-weight: 700;
@@ -547,7 +455,9 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		max-width: 100%;
+		width: 100%;
 	}
+	// PRESELECT ARCHIVES MODAL
 	&__modal {
 		display: block;
 	}
@@ -574,20 +484,6 @@
 	}
 	&__modal-select-database-confirm {
 		border: none;
-		// background: 
-	}
-	
-	
-	// invisible element for JS functionality
-	// TO DEL?
-	#tempWidthSelect {
-		display: none;
-		border: none;
-		background: transparent;
-		font-weight: 700;
-		font-size: 1.6rem;
-		margin-bottom: 1rem;
-		text-align: right;
 	}
 }
 
@@ -627,6 +523,13 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+	.archives {
+		&__object-metadata-entry {
+			grid-template-columns: unset;
+			margin-bottom: 1rem;
+			grid-gap: unset;
+		}	
+	}
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
