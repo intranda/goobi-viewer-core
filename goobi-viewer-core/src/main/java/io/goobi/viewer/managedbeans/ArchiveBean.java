@@ -348,6 +348,12 @@ public class ArchiveBean implements Serializable {
      */
     public void setSearchString(String searchString) {
         logger.trace("setSearchString: {}", searchString);
+        if(!StringUtils.equals(this.searchString, searchString)) {
+            try {
+                this.setSelectedEntryId(null);
+            } catch (BaseXException e) {
+            }
+        }
         this.searchString = searchString;
     }
 
@@ -357,7 +363,7 @@ public class ArchiveBean implements Serializable {
      */
     public String getSelectedEntryId() {
         if (getArchiveTree() == null || getArchiveTree().getSelectedEntry() == null) {
-            return "-";
+            return null;
         }
 
         return getArchiveTree().getSelectedEntry().getId();
@@ -377,9 +383,9 @@ public class ArchiveBean implements Serializable {
 
         // Select root element if no ID given
         if (StringUtils.isBlank(id)) {
-            id = "-";
+            id = "";
         }
-        if ("-".equals(id)) {
+        if ("".equals(id)) {
             getArchiveTree().setSelectedEntry(null);
             return;
         }
