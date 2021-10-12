@@ -1480,7 +1480,7 @@ public interface IDAO {
      * </p>
      *
      * @param id a long.
-     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @return a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSNavigationItem getCMSNavigationItem(long id) throws DAOException;
@@ -1490,7 +1490,7 @@ public interface IDAO {
      * addCMSNavigationItem.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1501,7 +1501,7 @@ public interface IDAO {
      * updateCMSNavigationItem.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1512,7 +1512,7 @@ public interface IDAO {
      * deleteCMSNavigationItem.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

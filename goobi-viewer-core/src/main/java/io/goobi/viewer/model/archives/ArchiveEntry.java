@@ -37,7 +37,7 @@ public class ArchiveEntry {
     // node is search hit
     private boolean searchHit;
     // node type -  @level
-    private NodeType nodeType;
+    private String nodeType;
     // display node in a search result
     private boolean displaySearch;
     // true if the validation of all metadata fields was successful
@@ -445,7 +445,7 @@ public class ArchiveEntry {
     /**
      * @return the nodeType
      */
-    public NodeType getNodeType() {
+    public String getNodeType() {
         return nodeType;
     }
 
@@ -453,7 +453,7 @@ public class ArchiveEntry {
      * @param nodeType the nodeType to set
      */
     public void setNodeType(String nodeType) {
-        this.nodeType = NodeType.getNodeType(nodeType);
+        this.nodeType = nodeType;
     }
 
     /**
