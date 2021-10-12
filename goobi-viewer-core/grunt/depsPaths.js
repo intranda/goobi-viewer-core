@@ -18,6 +18,8 @@ const nodeModules = 'node_modules/';
 
 // Goobi viewer keeps JS libraries here
 const jsLibsDir = 'src/main/resources/META-INF/resources/resources/javascript/libs/';
+// Goobi viewer keeps CSS libraries here, mostly (some can be found in corresponding JS Lib dirs)
+const cssLibsDir = 'src/main/resources/META-INF/resources/resources/css/libs/'
 
 const depsPathsJS = [
   
@@ -308,92 +310,103 @@ const depsPathsJS = [
  /////// CCS /////////
 /////////////////////
 
-// Goobi viewer keeps CSS libraries here, mostly (some can be found in corresponding JS Lib dirs)
-const cssLibsDir = 'src/main/resources/META-INF/resources/resources/css/libs/'
 
 const depsPathsCSS = [
 
   { // FONT-AWESOME
-    expand:true,
-    cwd: 'node_modules/font-awesome/',
-    src: ['css/font-awesome.min.css', 'fonts/*', 'README.md'], 
-    dest:`${cssLibsDir}font-awesome/`
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'font-awesome/css/font-awesome.min.css',
+      'font-awesome/fonts/*',
+      'font-awesome/README.md'
+    ], 
+    flatten: false,
+    dest:`${cssLibsDir}`
   },
 
   { // LEAFLET
-    expand:true,
-    cwd: 'node_modules/leaflet/dist/',
-    src: 'leaflet.css', 
+    expand: true,
+    cwd: `${nodeModules}/leaflet/dist/`,
+    src: [
+      'leaflet.css', 
+      'images/*'
+    ], 
+    flatten: false,
     dest:`${cssLibsDir}leaflet/`
   },
-  {
-    expand:true,
-    cwd: 'node_modules/leaflet/dist/images/',
-    src: '*', 
-    dest:`${cssLibsDir}leaflet/images/`
-  },
+
   { // Leaflet draw
     expand:true,
-    cwd: 'node_modules/leaflet-draw/dist/',
-    src: 'leaflet.draw.css', 
+    cwd: `${nodeModules}/leaflet-draw/dist/`,
+    src: [
+      'leaflet.draw.css', 
+      'images/*'
+    ],
+    flatten: false,
     dest:`${cssLibsDir}leaflet/draw/`
   },
-  {
-    expand:true,
-    cwd: 'node_modules/leaflet-draw/dist/images/',
-    src: '*', 
-    dest:`${cssLibsDir}leaflet/draw/images`
-  },
+
   { // Leaflet extra-markers 
-    expand:true,
-    cwd: 'node_modules/leaflet-extra-markers/dist/css/',
-    src: 'leaflet.extra-markers.min.css', 
+    expand: true,
+    cwd: nodeModules,
+    src: 'leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css', 
+    flatten: true,
     dest:`${cssLibsDir}leaflet/extra-markers`
   },
-  { // this folder is copied into the leaflet root dir 
-    expand:true,
-    cwd: 'node_modules/leaflet-extra-markers/dist/',
-    src: 'img/*', 
-    dest:`${cssLibsDir}leaflet/`
+  { // ! extra-markers images folder is copied into the leaflet root dir !
+    expand: true,
+    cwd: nodeModules,
+    src: 'leaflet-extra-markers/dist/img/*', 
+    flatten: true,
+    dest:`${cssLibsDir}leaflet/img`
   },
+
   { // Leaflet markerCluster
-    expand:true,
-    cwd: 'node_modules/leaflet.markercluster/dist/',
-    src: 'MarkerCluster.css', 
+    expand: true,
+    cwd: nodeModules,
+    src: 'leaflet.markercluster/dist/MarkerCluster.css', 
+    flatten: true,
     dest:`${cssLibsDir}leaflet/markercluster`
   },
 
   { // MAPBOX GL
-    expand:true,
-    cwd: 'node_modules/mapbox-gl/dist/',
-    src: 'mapbox-gl.css*', 
+    expand: true,
+    cwd: nodeModules,
+    src: 'mapbox-gl/dist/mapbox-gl.css*', 
+    flatten: true,
     dest:`${cssLibsDir}mapbox/`
   },
+
   { // MAPBOX geocoder
-    expand:true,
-    cwd: 'node_modules/@mapbox/mapbox-gl-geocoder/dist/',
-    src: 'mapbox-gl-geocoder.css', 
+    expand: true,
+    cwd: nodeModules,
+    src: '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css', 
+    flatten: true,
     dest:`${cssLibsDir}mapbox/geocoder/`
   },
 
   { // SWAGGER-UI
-    expand:true,
-    cwd: 'node_modules/swagger-ui-dist/',
-    src: ['swagger-ui.css*'],
+    expand: true,
+    cwd: nodeModules,
+    src: ['swagger-ui-dist/swagger-ui.css*'],
+    flatten: true,
     dest: `${cssLibsDir}swagger/`
   },
 
   { // SWEETALERT2 
-    expand:true,
-    cwd: 'node_modules/sweetalert2/dist/',
-    src: ['sweetalert2.min.css'],
+    expand: true,
+    cwd: nodeModules,
+    src: ['sweetalert2/dist/sweetalert2.min.css'],
+    flatten: true,
     dest: `${cssLibsDir}sweetalert/`
   },
 
   { // SWIPER
-    expand:true,
-    cwd: 'node_modules/swiper/',
-    src: ['swiper-bundle.min.css'],
+    expand: true,
+    cwd: nodeModules,
+    src: ['swiper/swiper-bundle.min.css'],
+    flatten: true,
     dest: `${cssLibsDir}swiper/`
   },
 ]
