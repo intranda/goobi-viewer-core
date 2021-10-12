@@ -211,6 +211,7 @@ var viewerJS = ( function( viewer ) {
 				}
 				else {
 					$('.archives__search-input-wrapper').slideToggle('fast');
+					$('.archives__search-input').focus();
 				}
 				
 

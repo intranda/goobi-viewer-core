@@ -17,6 +17,8 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -40,10 +43,13 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -532,6 +538,12 @@ public class ArchiveBean implements Serializable {
         }
     }
     
+    public void loadDatabaseResource(String databaseId, String resourceId) {
+        this.currentDatabase = databaseId;
+        this.currentResource = resourceId;
+        this.initializeArchiveTree();
+    }
+    
     /**
      * If only one archive database exists and database status is {@link DatabaseState#ARCHIVES_LOADED}, redirect to the matching url.
      */
@@ -551,4 +563,23 @@ public class ArchiveBean implements Serializable {
         return this.nodeTypes.stream().filter(node -> node.getName().equals(name)).findAny().orElse(new NodeType("", ""));
     }
   
+    public String loadArchiveForId(String identifier) {
+        URI archiveUri = URI.create(DataManager.getInstance().getConfiguration().getBaseXUrl());
+        URI requestUri = UriBuilder.fromUri(archiveUri).path("dbname").path(identifier).build();
+        
+        try(Time time = DataManager.getInstance().getTiming().takeTime("getArchiveUrl")) {
+            String response = NetTools.getWebContentGET(requestUri.toString());
+            Document doc = new SAXBuilder().build(new StringReader(response));
+            String database = doc.getRootElement().getChild("record", null).getAttributeValue("database");
+            String filename = doc.getRootElement().getChild("record", null).getAttributeValue("filename");
+            this.loadDatabaseResource(BasexEADParser.getIdForName(database), BasexEADParser.getIdForName(filename));
+            return "archives/{database}/{filename}/?selected={identifier}#selected"
+                    .replace("{database}", BasexEADParser.getIdForName(database))
+                    .replace("{filename}", BasexEADParser.getIdForName(filename))
+                    .replace("{identifier}", identifier);
+        } catch (IOException | HTTPException | JDOMException e) {
+            logger.error("Error retrieving data base for " + identifier, e);
+            return "archives/";
+        }  
+    }
 }

@@ -17,6 +17,7 @@ package io.goobi.viewer.model.archives;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URLEncoder;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -480,5 +482,9 @@ public class BasexEADParser {
      */
     public String getBasexUrl() {
         return basexUrl;
+    }
+    
+    public static String getIdForName(String name) {
+        return StringTools.encodeUrl(name).replaceAll("(?i)\\.xml", "");
     }
 }
