@@ -61,6 +61,14 @@ const depsPathsJS = [
     dest:`${jsLibsDir}jquery/`
   },
 
+  { // jQuery UI
+    expand:true,
+    cwd: 'node_modules/jquery-ui-dist/',
+    src: ['LICENSE.txt', 'jquery-ui.min.js'], 
+    flatten: true,
+    dest:`${jsLibsDir}jqueryUI/1.12.1`
+  },
+
   { // LEAFLET
     expand:true,
     cwd: 'node_modules/leaflet/dist/',
