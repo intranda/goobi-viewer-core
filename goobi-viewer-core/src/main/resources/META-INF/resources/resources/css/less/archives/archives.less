@@ -5,21 +5,13 @@
 .archives {
 	width: 100vw;
 	&__top-wrapper {
-		height: 70px;
-		position: fixed;
-		top: 0;
-		background-color: @white;
+		position: relative;
+		background-color: #fff;
 		z-index: 2020;
 		width: 100%;
 	}
 	&__header {
-		display: -webkit-box;
-		display: -ms-flexbox;
 		display: flex;
-		-ms-flex-wrap: wrap;
-		flex-wrap: wrap;
-		-webkit-box-align: center;
-		-ms-flex-align: center;
 		align-items: center;
 		min-height: 70px;
 		a {
@@ -291,8 +283,6 @@
 		background-color: #f2f3f4;
 		width: 100vw;
 		display: block;
-		margin-top: 70px;
-		min-height: calc(~"100vh - 70px");
 	}
 	&__content-wrapper {
 		width: 100%;
@@ -534,7 +524,7 @@
 			grid-template-columns: unset;
 			margin-bottom: 1rem;
 			grid-gap: unset;
-		}	
+		}
 	}
 }
 
