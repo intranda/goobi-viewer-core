@@ -1,221 +1,247 @@
-// Static path definitions for goobi viewer JS + CSS dependencies 
-// They define what will be copied from node_modules to which gv core lib directory when using a grunt task called `copyDeps`
-// Run this task after updating dependencies with `npm update` etc
+/*
+Static path definitions for Goobi viewer JS + CSS dependencies 
+They define what will be copied from node_modules to which Goobi viewer core lib directory
+
+They are feed into the copy tasks `copy:js` and `copy:css`,
+which can be called separately (`grunt copy:js` / `grunt copy:css`), or at once (`grunt copyDeps`)
+Run these tasks after updating dependencies with `npm update`
+Add new definitions after installing new packages with `npm install [<@scope>/]<name>` 
+*/
 
 
   /////////////////////
  /////// JS  /////////
 /////////////////////
 
-// Goobi viewer keeps JS libraries here
-const jsLibsDir = 'src/main/resources/META-INF/resources/resources/javascript/libs/'
+// Path to node modules, relative to Gruntfile.js
+const nodeModules = 'node_modules/';
 
-// These paths, renames etc. are feed to the copy task,
-// which can be called with 'grunt copy' as well as 'grunt copyDeps'
+// Goobi viewer keeps JS libraries here
+const jsLibsDir = 'src/main/resources/META-INF/resources/resources/javascript/libs/';
+
 const depsPathsJS = [
   
   { // Bootstrap
-    expand:true,
-    cwd: 'node_modules/bootstrap/dist/js/',
-    src: ['bootstrap.bundle.min.js*'],
-    dest:`${jsLibsDir}bs/`
-  },
-  {
-    expand:true,
-    cwd: 'node_modules/bootstrap/',
-    src: 'LICENSE',
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'bootstrap/dist/js/bootstrap.bundle.min.js*', 
+      'bootstrap/LICENSE'
+    ],
+    flatten: true, // write files to dest without creating subfolders
     dest:`${jsLibsDir}bs/`
   },
 
   { // Clipboard
-    expand:true,
-    cwd: 'node_modules/clipboard/dist/',
-    src: 'clipboard.min.js',
-    dest:`${jsLibsDir}clipboard/`
-  },
-  {
-    expand:true,
-    cwd: 'node_modules/clipboard/',
-    src: 'LICENSE',
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'clipboard/dist/clipboard.min.js', 
+      'clipboard/LICENSE'
+    ],
+    flatten: true,
     dest:`${jsLibsDir}clipboard/`
   },
 
   { // HC-STICKY 
-    expand:true,
-    cwd: 'node_modules/hc-sticky/dist/',
-    src: 'hc-sticky.js', 
-    dest:`${jsLibsDir}hcsticky/`
-  },
-  {
-    expand:true,
-    cwd: 'node_modules/hc-sticky/',
-    src: 'LICENSE', 
+    expand: true,
+    cwd: nodeModules,
+    src:  [
+      'hc-sticky/dist/hc-sticky.js', 
+      'hc-sticky/LICENSE'
+    ],
+    flatten: true,
     dest:`${jsLibsDir}hcsticky/`
   },
 
   { // jQuery
-    expand:true,
-    cwd: 'node_modules/jquery/',
-    src: ['LICENSE.txt', 'dist/jquery.min.js'], 
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'jquery/dist/jquery.min.js', 
+      'jquery/LICENSE.txt'
+    ], 
     flatten: true,
     dest:`${jsLibsDir}jquery/`
   },
 
   { // LEAFLET
-    expand:true,
-    cwd: 'node_modules/leaflet/dist/',
-    src: 'leaflet.js*', 
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'leaflet/dist/leaflet.js*', 
+      'leaflet/LICENSE'
+    ], 
+    flatten: true,
     dest:`${jsLibsDir}leaflet/`
   },
-  {
-    expand:true,
-    cwd: 'node_modules/leaflet/',
-    src: 'LICENSE', 
-    dest:`${jsLibsDir}leaflet/`
-  },
-  { // Leaflet extra-markers 
-    expand:true,
-    cwd: 'node_modules/leaflet-extra-markers/dist/js/',
-    src: 'leaflet.extra-markers.*', 
+
+  { // LEAFLET EXTRA-MARKERS 
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'leaflet-extra-markers/dist/js/leaflet.extra-markers.*',
+      'leaflet-extra-markers/LICENSE'
+    ], 
+    flatten: true,
     dest:`${jsLibsDir}leaflet/extra-markers/`
   },
-  { 
-    expand:true,
-    cwd: 'node_modules/leaflet-extra-markers/',
-    src: 'LICENSE', 
-    dest:`${jsLibsDir}leaflet/extra-markers/`
-  },
-  { // Leaflet markercluster 
-    expand:true,
-    cwd: 'node_modules/leaflet.markercluster/dist/',
-    src: 'leaflet.markercluster.js*', 
+
+  { // LEAFLET MARKERCLUSTER 
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'leaflet.markercluster/dist/leaflet.markercluster.js*',
+      'leaflet.markercluster/MIT-LICENCE.txt'
+    ], 
+    flatten: true,
     dest:`${jsLibsDir}leaflet/markercluster/`
   },
-  { 
-    expand:true,
-    cwd: 'node_modules/leaflet.markercluster/',
-    src: 'MIT-LICENCE.txt', 
-    dest:`${jsLibsDir}leaflet/markercluster/`
-  },
-  { // Leaflet draw
-    expand:true,
-    cwd: 'node_modules/leaflet-draw/dist/',
-    src: 'leaflet.draw.js', 
+
+  { // LEAFLET DRAW
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'leaflet-draw/dist/leaflet.draw.js'
+    ],
+    flatten: true,
     dest:`${jsLibsDir}leaflet/draw/`
-  },
-  { 
-    expand:true,
-    cwd: 'node_modules/leaflet.markercluster/',
-    src: 'MIT-LICENCE.txt', 
-    dest:`${jsLibsDir}leaflet/markercluster`
   },
 
   { // MAPBOX GL
-    expand:true,
-    cwd: 'node_modules/mapbox-gl/dist/',
-    src: 'mapbox-gl.js*', 
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'mapbox-gl/dist/mapbox-gl.js*'
+    ], 
+    flatten: true,
     dest:`${jsLibsDir}mapbox/`
   },
-  { // MAPBOX geocoder
-    expand:true,
-    cwd: 'node_modules/@mapbox/mapbox-gl-geocoder/dist/',
-    src: 'mapbox-gl-geocoder.min.js*', 
+
+  { // MAPBOX GEOCODER
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.min.js*'
+    ], 
+    flatten: true,
     dest:`${jsLibsDir}mapbox/geocoder/`
   },
 
   { // MASONRY LAYOUT 
-    expand:true,
-    cwd: 'node_modules/masonry-layout/dist/',
-    src: 'masonry.pkgd.min.js*', 
-    rename: () => `${jsLibsDir}masonry/masonry.min.js`
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'masonry-layout/dist/masonry.pkgd.min.js*'
+    ], 
+    flatten: true,
+    dest: `${jsLibsDir}masonry/`,
+    rename: (dest) => `${dest}masonry.min.js`
   },
+
   { // IMAGES LOADED (masonry layout dependency)
-    expand:true,
-    cwd: 'node_modules/imagesloaded/',
-    src: 'imagesloaded.pkgd.min.js*', 
-    rename: () => `${jsLibsDir}masonry/imagesloaded.min.js`
+    expand: true,
+    cwd: nodeModules,
+    src: 'imagesloaded/imagesloaded.pkgd.min.js*', 
+    flatten: true,
+    dest: `${jsLibsDir}masonry/`,
+    rename: (dest) => `${dest}imagesloaded.min.js`
   },
 
   { // MIRADOR
-    expand:true,
-    cwd: 'node_modules/mirador/dist/',
-    src: 'mirador.min.js*', 
+    expand: true,
+    cwd: nodeModules,
+    src: 'mirador/dist/mirador.min.js*', 
+    flatten: true,
     dest:`${jsLibsDir}mirador/`
   },
 
   /* current versions are not compatible with viewer core
    * => pdfJS will not be updated when running grunt copyDeps
   { // PDFJS
-    expand:true,
-    cwd: 'node_modules/pdfjs-dist/build/',
-    src: ['pdf*'],
+    expand: true,
+    cwd: nodeModules,
+    src: ['pdfjs-dist/build/pdf*'],
+    flatten: true,
     dest: `${jsLibsDir}pdfjs/`
   },
   */
 
   { // Q-PROMISES
-    expand:true,
-    cwd: 'node_modules/q/',
-    src: 'q.js', 
-    rename: () => `${jsLibsDir}q-promises/q.min.js`
+    expand: true,
+    cwd: nodeModules,
+    src: 'q/q.js', 
+    flatten: true,
+    dest: `${jsLibsDir}q-promises/`,
+    rename: (dest) => `${dest}q.min.js`
   },
   {
-    expand:true,
-    cwd: 'node_modules/q/',
-    src: 'LICENSE', 
+    expand: true,
+    cwd: nodeModules,
+    src: 'q/LICENSE', 
+    flatten: true,
     dest:`${jsLibsDir}q-promises/`
   },
 
   { // RIOT
-    expand:true,
-    cwd: 'node_modules/riot/',
-    src: ['riot.min.js', 'riot+compiler.min.js', 'LICENSE.txt'],
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'riot/riot.min.js',
+      'riot/riot+compiler.min.js',
+      'riot/LICENSE.txt'
+    ],
+    flatten: true,
     dest: `${jsLibsDir}riot/`
   },
 
   { // RXJS (reactiveX)
-    expand:true,
-    cwd: 'node_modules/@reactivex/rxjs/dist/package/bundles/',
-    src: ['rxjs.umd.min.js*'],
-    dest: `${jsLibsDir}reactiveX/`
-  },
-  { 
-    expand:true,
-    cwd: 'node_modules/@reactivex/rxjs/',
-    src: ['LICENSE.txt'],
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      '@reactivex/rxjs/dist/package/bundles/rxjs.umd.min.js*',
+      '@reactivex/rxjs/LICENSE.txt'
+    ],
+    flatten: true,
     dest: `${jsLibsDir}reactiveX/`
   },
 
   { // SWAGGER-UI
-    expand:true,
-    cwd: 'node_modules/swagger-ui-dist/',
-    src: ['swagger-ui-bundle.js*'],
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'swagger-ui-dist/swagger-ui-bundle.js*'
+    ],
+    flatten: true,
     dest: `${jsLibsDir}swagger/`
   },
 
   { // SWEETALERT2 
-    expand:true,
-    cwd: 'node_modules/sweetalert2/dist',
-    src: ['sweetalert2.min.js'],
-    dest: `${jsLibsDir}sweetalert/`
-  },
-  {
-    expand:true,
-    cwd: 'node_modules/sweetalert2/',
-    src: ['LICENSE'],
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'sweetalert2/dist/sweetalert2.min.js',
+      'sweetalert2/LICENSE'
+    ],
+    flatten: true,
     dest: `${jsLibsDir}sweetalert/`
   },
 
   { // SWIPER
-    expand:true,
-    cwd: 'node_modules/swiper/',
-    src: ['swiper-bundle.min.js*', 'LICENSE'],
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'swiper/swiper-bundle.min.js*', 
+      'swiper/LICENSE'
+    ],
+    flatten: true,
     dest: `${jsLibsDir}swiper/`
   },
   
   /*
   { // ThreeJS
-    expand:true,
+    expand: true,
+    cwd: nodeModules,
     cwd: 'node_modules/three/build/',
     src: ['three.min.js*'],
     dest: `${jsLibsDir}three/`
@@ -250,41 +276,30 @@ const depsPathsJS = [
   */
 
   { // TINYMCE
-    expand:true,
-    cwd: 'node_modules/tinymce/',
-    src: ['jquery.tinymce.min.js*','tinymce.min.js*','license.txt'],
-    dest: `${jsLibsDir}tinymce/`
-  },
-  { // icons (tinymce)
-    expand:true,
-    cwd: 'node_modules/tinymce/icons/',
-    src: ['**/*'],
-    dest: `${jsLibsDir}tinymce/icons/`
-  },
-  { // plugins (tinymce)
-    expand:true,
-    cwd: 'node_modules/tinymce/plugins/',
-    src: ['**/*'],
-    dest: `${jsLibsDir}tinymce/plugins/`
-  },
-  { // skins (tinymce)
-    expand:true,
-    cwd: 'node_modules/tinymce/skins/',
-    src: ['**/*'],
-    dest: `${jsLibsDir}tinymce/skins/`
-  },
-  { // themes (tinymce)
-    expand:true,
-    cwd: 'node_modules/tinymce/themes/',
-    src: ['**/*'],
-    dest: `${jsLibsDir}tinymce/themes/`
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'tinymce/jquery.tinymce.min.js*',
+      'tinymce/tinymce.min.js*',
+      'tinymce/license.txt',
+      'tinymce/icons/**/*',
+      'tinymce/plugins/**/*',
+      'tinymce/skins/**/*',
+      'tinymce/themes/**/*',
+    ],
+    flatten: false,
+    dest: `${jsLibsDir}`
   },
 
   { // x3dom
-    expand:true,
-    cwd: 'node_modules/x3dom/',
-    src: ['x3dom.js', 'README.md'],
-    dest: `${jsLibsDir}x3dom/`
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'x3dom/x3dom.js',
+      'x3dom/README.md'
+    ],
+    flatten: false,
+    dest: `${jsLibsDir}`
   }
 
 ];
