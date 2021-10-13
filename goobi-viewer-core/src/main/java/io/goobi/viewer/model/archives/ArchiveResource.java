@@ -74,7 +74,7 @@ public class ArchiveResource {
      * @return
      */
     public String getCombinedName() {
-        return databaseName + " - " + resourceName;
+        return databaseName + " - " + resourceName.replaceAll("(?i)\\.xml", "");
     }
     
     public String getCombinedId() {
