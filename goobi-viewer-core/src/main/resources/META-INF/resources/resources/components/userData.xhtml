@@ -197,11 +197,13 @@
 				<div class="row no-gutters justify-content-end admin__final-actions">
 					<h:commandLink id="cancelNewUserCreationButton"
 						styleClass="btn admin__cancel-button" value="#{msg.cancel}"
-						action="#{navigationHelper.returnTo(cc.attrs.parentPage)}" immediate="true" />
+						action="#{adminBean.resetUserAction(cc.attrs.user, cc.attrs.parentPage)}" immediate="true">
+						<f:ajax render="editUser messages"/>
+					</h:commandLink>
 					<h:commandLink id="saveNewUserCreationButton"
 						styleClass="btn btn--success" value="#{msg.save}"
 						action="#{adminBean.saveUserAction(cc.attrs.user, cc.attrs.parentPage)}">
-						<f:ajax execute="@all"/>
+						<f:ajax execute="editUser" render="editUser messages"/>
 					</h:commandLink>
 				</div>
 			</h:form>

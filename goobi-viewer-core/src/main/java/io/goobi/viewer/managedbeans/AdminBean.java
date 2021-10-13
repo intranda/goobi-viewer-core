@@ -268,6 +268,10 @@ public class AdminBean implements Serializable {
         return returnPage;
     }
 
+    public String resetUserAction(User user, String returnPage) throws DAOException {
+        user.backupFields(); //resets user.copy to the values of user
+        return returnPage;
+    }
     
     /**
      * <p>
