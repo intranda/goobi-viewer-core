@@ -134,6 +134,7 @@ public class ArchiveBean implements Serializable {
     public void reset() {
         this.currentDatabase = "";
         this.currentResource = "";
+        this.searchString = "";
         if(this.databaseState == DatabaseState.ARCHIVE_TREE_LOADED) {            
             this.databaseState = DatabaseState.ARCHIVES_LOADED;
         }
@@ -159,6 +160,8 @@ public class ArchiveBean implements Serializable {
                 this.databaseState =  DatabaseState.ERROR_INVALID_FORMAT;
             }
         }
+        this.searchString = "";
+        getArchiveTree().resetSearch();
     }
 
     ArchiveTree loadDatabase(BasexEADParser eadParser, ArchiveResource archive)
