@@ -17,6 +17,7 @@ package io.goobi.viewer.model.archives;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URLEncoder;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -126,7 +128,8 @@ public class BasexEADParser {
                 for (Element resource : details.getChildren()) {
                     String resourceName = resource.getText();
                     String lastUpdated = resource.getAttributeValue("modified-date");
-                    ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, lastUpdated);
+                    String size = resource.getAttributeValue("size");
+                    ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, lastUpdated, size);
                     ret.add(eadResource);
                 }
 
@@ -148,10 +151,9 @@ public class BasexEADParser {
      * @throws HTTPException
      * @throws JDOMException
      */
-    public Document retrieveDatabaseDocument(String database) throws IOException, IllegalStateException, HTTPException, JDOMException {
-        if (StringUtils.isNotBlank(database)) {
-            String[] parts = database.split(" - ");
-            String url = basexUrl + "db/" + parts[0] + "/" + parts[1];
+    public Document retrieveDatabaseDocument(ArchiveResource archive) throws IOException, IllegalStateException, HTTPException, JDOMException {
+        if (archive != null) {
+            String url = basexUrl + "db/" + archive.getDatabaseName() + "/" + archive.getResourceName();
             logger.trace("URL: {}", url);
             String response;
             response = NetTools.getWebContentGET(url);
@@ -175,7 +177,7 @@ public class BasexEADParser {
      * @throws JDOMException
      * @throws ConfigurationException
      */
-    public ArchiveEntry loadDatabase(String database, Document document)
+    public ArchiveEntry loadDatabase(ArchiveResource database, Document document)
             throws IllegalStateException, IOException, HTTPException, JDOMException, ConfigurationException {
 
         if (document == null) {
@@ -190,7 +192,7 @@ public class BasexEADParser {
         List<String> answer = new ArrayList<>();
         List<ArchiveResource> completeList = getPossibleDatabases();
         for (ArchiveResource resource : completeList) {
-            String dbName = resource.databaseName;
+            String dbName = resource.getCombinedName();
             if (!answer.contains(dbName)) {
                 answer.add(dbName);
             }
@@ -284,7 +286,10 @@ public class BasexEADParser {
         List<Element> clist = null;
         Element archdesc = element.getChild("archdesc", NAMESPACE_EAD);
         if (archdesc != null) {
-            String type = archdesc.getAttributeValue("level");
+            String type = archdesc.getAttributeValue("otherlevel");
+            if(StringUtils.isBlank(type)) {
+                type = archdesc.getAttributeValue("level");                
+            }
             entry.setNodeType(type);
             Element dsc = archdesc.getChild("dsc", NAMESPACE_EAD);
             if (dsc != null) {
@@ -477,5 +482,9 @@ public class BasexEADParser {
      */
     public String getBasexUrl() {
         return basexUrl;
+    }
+    
+    public static String getIdForName(String name) {
+        return StringTools.encodeUrl(name).replaceAll("(?i)\\.xml", "");
     }
 }

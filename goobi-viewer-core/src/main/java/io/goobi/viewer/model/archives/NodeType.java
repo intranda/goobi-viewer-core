@@ -23,30 +23,22 @@ import org.jboss.weld.exceptions.IllegalArgumentException;
  * @author florian
  *
  */
-public enum NodeType {
-    FILE("fa fa-file-text-o"),
-    FOLDER("fa fa-folder-open-o"),
-    IMAGE("fa fa-file-image-o"),
-    AUDIO("fa fa-file-audio-o"),
-    VIDEO("fa fa-file-video-o"),
-    OTHER("fa fa-file-o"),
-    COLLECTION("fa fa-folder-open-o"),
-    CLASS("fa fa-files-o");
-    
+public class NodeType {
+
+    private final String name;
     private final String iconClass;
     
-    private NodeType(String iconClass) {
+    public NodeType(String name, String iconClass) {
+        this.name = name;
         this.iconClass = iconClass;
+    }
+    
+    public String getName() {
+        return name;
     }
     
     public String getIconClass() {
         return this.iconClass;
     }
-    
-    public static NodeType getNodeType(String type) {
-        return Stream.of(NodeType.values())
-        .filter(nodeType -> nodeType.name().equalsIgnoreCase(type))
-        .findAny()
-        .orElse(OTHER);
-    }
+
 }

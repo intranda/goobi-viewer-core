@@ -29,6 +29,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -72,6 +74,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.ArchiveBean;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
@@ -160,6 +163,7 @@ public class ViewManager implements Serializable {
     private List<String> downloadFilenames = null;
     private String citationStyle = null;
     private CitationProcessorWrapper citationProcessorWrapper;
+    private String archiveEntryUri;
 
     /**
      * <p>
@@ -211,6 +215,14 @@ public class ViewManager implements Serializable {
         }
         this.mainMimeType = mainMimeType;
         logger.trace("mainMimeType: {}", mainMimeType);
+                
+        String archiveId = getArchiveEntryIdentifier();
+        if(StringUtils.isNotBlank(archiveId)) {
+            ArchiveBean archiveBean = (ArchiveBean)BeanUtils.getBeanByName("archiveBean", ArchiveBean.class);
+            this.archiveEntryUri = archiveBean.loadArchiveForId(archiveId);
+        } else {
+            this.archiveEntryUri = null;
+        }
     }
 
     /**
@@ -3867,6 +3879,13 @@ public class ViewManager implements Serializable {
         return topStructElement.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID);
     }
 
+    /**
+     * @return the archiveEntryUri
+     */
+    public String getArchiveEntryUri() {
+        return archiveEntryUri;
+    }
+    
     /**
      * Creates an instance of ViewManager loaded with the record with the given identifier.
      * 

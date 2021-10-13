@@ -50,8 +50,8 @@ public enum PageType {
     expandCollection("expandCollection"),
     firstWorkInCollection("rest/redirect/toFirstWork"),
     sitelinks("sitelinks"),
-    archive("archive"),
     archives("archives"),
+    archive("archive"),
     timematrix("timematrix"),
     //user
     user("user"),
@@ -122,7 +122,7 @@ public enum PageType {
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(PageType.class);
 
-    private final String path;
+    public final String path;
     private final String label;
     private final PageTypeHandling handling;
 

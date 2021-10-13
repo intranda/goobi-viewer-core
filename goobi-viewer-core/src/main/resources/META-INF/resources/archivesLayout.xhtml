@@ -1,113 +1,143 @@
-<ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-	<ui:define name="metadata">
-		<f:metadata>
-		</f:metadata>
-	</ui:define>
+	<!-- MESSAGES -->
+	<div class="messages">
+		<h:messages id="messages" globalOnly="false" infoClass="alert alert-success" errorClass="alert alert-danger" />
+	</div>
 
-    <!-- MESSAGES -->
-    <div class="messages">
-        <h:messages id="messages" globalOnly="false" infoClass="alert alert-success" errorClass="alert alert-danger" />
-    </div>
+	<div id="Archives" class="archives">
+	
+		<!-- ARCHIVES HEADER BOX -->
+		<header id="Header" class="archives__top-wrapper">
+			<div class="archives__header">
 
-
-    <div id="Archives" class="archives">
-		<header id="pageHeaderTop" class="archives__top-wrapper">
-            <div class="archives__header">
-	            <!-- OPEN MOBILE NAVIGATION -->
-            	<div class="archives__top-mobile-nav">
-					<button type="button" class="btn btn--clean" data-open="menu" aria-label="#{msg.aria_label__open_navigation}">
-						<span></span>
-					</button>
+				<!-- LOGO OF INSTITUTION -->
+				<div class="archives__header-brand">
+					<a href="#{request.contextPath}/"> <img
+						src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/fullscreen_logo.png"
+						alt="Logo" />
+					</a>
 				</div>
 
-                <!-- PAGE HEADER TOP BRAND -->
-                <div class="archives__top-brand">
-				<a href="#{request.contextPath}/" target="_self" rel="noopener">#{configurationBean.name}</a> › <h1>#{msg.archives__archiveViewHeading}</h1>
-                </div>
-
-
-                <!-- PAGE HEADER TOP ARCHIVE TITLE -->
-                <div class="archives__top-title">
-                	<span>#{archiveBean.trueRoot.label}</span>
-                </div>
-                
-                <!-- PAGE HEADER TOP ACTIONS -->
-                <div class="archives__top-actions">
-                    <!-- CHANGE LOCAL -->
-                    <ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}">
-	                    <div id="changeLocalWrapper" class="archives__top-actions-language">
-							<button type="button"
-		                  class="btn btn--clean"
-		                  data-toggle="local"
-		                  aria-label="#{msg.aria_label__switch_language}">
-		                  <span class="fa fa-globe"></span>#{msg.language}</button>
-		                  <viewerComponent:changeLocal toggleLanguage="false" longLanguageStrings="true"/>
-	                    </div>
-                    </ui:fragment>
-
-                    <!-- LOGIN NAVIGATION -->
-                    <div class="archives__top-actions-login">
-                        <viewerComponent:loginNavigation />
-                    </div>
-                </div>
-
-	            <!-- OPEN MOBILE NAVIGATION -->
-            	<div class="archives__top-mobile-sidebar">
-					<button type="button" class="btn btn--clean" data-open="sidebar" aria-label="#{msg.aria_label__open_sidebar}">
-						<span></span>
-					</button>
+				<!-- ARCHIVE TITLE -->
+				<div class="archives__top-title">
+					<a href="#{request.contextPath}/archives" target="_self" rel="noopener">#{msg.archives__archiveViewHeading}</a> › <h1><span>#{archiveBean.trueRoot.label}</span></h1>
 				</div>
-            </div>
-	    </header>
 
-		<!-- CONTENT -->
+				<!-- EXIT -->
+				<div class="archives__header-exit">
+					<h:outputLink value="#{request.contextPath}/">
+					</h:outputLink>
+				</div>
+
+			</div>
+		</header>
+
+		<!-- ARCHIVES CONTENT -->
 		<main id="ArchivesContent" class="archives__main">
-			<!-- <ui:insert name="breadcrumbs" /> -->
 			<c:choose>
-				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_CONFIGURED'}">
+				<!-- CONDITION ERROR -->
+				<c:when
+					test="#{archiveBean.databaseState == 'ERROR_NOT_CONFIGURED'}">
 					<div class="archives__error">
 						<span>#{msg.error__archives_database_configuration_missing}</span>
 					</div>
 				</c:when>
+				<!-- CONDITION ERROR -->
 				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_REACHABLE'}">
 					<div class="archives__error">
 						<span>#{msg.error__archives_database_not_reachable}</span>
 					</div>
 				</c:when>
-				<c:when test="#{archiveBean.databaseState == 'ERROR_INVALID_FORMAT'}">
+				<!-- CONDITION ERROR -->
+				<c:when
+					test="#{archiveBean.databaseState == 'ERROR_INVALID_FORMAT'}">
 					<div class="archives__error">
 						<span>#{msg.error__archives_failed_to_read_database}</span>
 					</div>
 				</c:when>
+				
+				<!-- CONDITION IF MORE THAN ONE ARCHIVE EXISTENT -->
+				<c:when test="#{archiveBean.databaseState == 'ARCHIVES_LOADED'}">
+
+					<!-- SHOW ARCHIVE SELECTION AS MODAL WITH BACKDROP -->
+					<div class="modal fade archives__modal show" id="#{cc.attrs.id}" tabindex="-1" role="dialog" aria-labelledby="#{termsOfUseBean.getTitleForDisplay()}" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered widget-usage__citelinks-box" role="document">
+							<div class="modal-content">
+
+								<!-- MODAL HEADER/TITLE -->
+								<div class="modal-header">
+									<h2 class="modal-title">#{msg.archives__archiveViewHeading}</h2>
+								</div>
+
+								<div class="modal-body">
+								<!-- MODAL CONTENT -->
+
+									<div class="archives__select">
+										<p>#{msg.archives__choose_database}:</p>
+
+										<!-- SELECT BOX ARCHIVE -->
+										<h:form>
+											<div class="archives__modal-select-database-dropdown-wrapper">
+												<h:selectOneMenu
+													styleClass="archives__modal-select-database-dropdown"
+													value="#{archiveBean.archiveId}">
+													<f:selectItem itemLabel="#{msg.select}" itemValue=""
+														noSelectionOption="true" />
+													<f:selectItems value="#{archiveBean.databases}"
+														var="database" itemValue="#{database.combinedId}"
+														itemLabel="#{database.combinedName}"></f:selectItems>
+												</h:selectOneMenu>
+											</div>
+
+											<div class="form-group form-row archives__modal-action">
+												<div class="col-sm-12 d-flex justify-content-end">
+													<h:commandButton
+														styleClass="btn btn--full archives__modal-select-database-confirm"
+														value="#{msg.apply}" action="pretty:archives2"></h:commandButton>
+												</div>
+											</div>
+										</h:form>
+
+									</div>
+								</div>
+
+							</div>
+						</div>
+						<div class="alt-backdrop"></div>
+					</div>
+
+				</c:when>
+				
+				<!-- CONDITION ONLY ONE ARCHIVE AND LOADED WITHOUT ERRORS -->
 				<c:otherwise>
 					<ui:insert name="content" />
 				</c:otherwise>
+				
 			</c:choose>
 		</main>
 
-		    <!-- USER LOGIN + TERMS -->
-		<viewerComponent:modalUserLogin id="userLoginModal"/>
-		<viewerComponent:modalUserTerms id="userTermsModal"/>
-
+		<!-- USER TERMS MODAL -->
+		<viewerComponent:modalUserTerms id="userTermsModal" />
+		
+		<!-- HC STICKY INIT FOR ARCHIVES -->
 		<script type="text/javascript">
         	viewerJS.archives.init({
                 initHcSticky: true,
                 initSearch: true,
-                initTextTree: true
+                initTextTree: true,
         });
         </script>
 
-    </div>
+	</div>
 </ui:composition>

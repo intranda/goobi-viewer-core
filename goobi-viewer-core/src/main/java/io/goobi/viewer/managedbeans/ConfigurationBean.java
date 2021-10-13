@@ -1481,4 +1481,8 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplayAddressSearchInMap() {
         return DataManager.getInstance().getConfiguration().isDisplayAddressSearchInMap();
     }
+    
+    public boolean isArchivesEnabled() {
+        return DataManager.getInstance().getConfiguration().isArchivesEnabled();
+    }
 }
