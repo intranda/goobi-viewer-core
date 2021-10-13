@@ -33,10 +33,12 @@
 						
 						<div class="archives__select-database-dropdown-element">
 		                    <h:form>
+		                    <div class="custom-control custom-control--select">
 			                    <h:selectOneMenu value="#{archiveBean.archiveId}" styleClass="archives__select-database-dropdown" onchange="$(this).next().click()">
 									<f:selectItems value="#{archiveBean.databases}" var="database" itemValue="#{database.combinedId}" itemLabel="#{database.combinedName}" ></f:selectItems>
 								</h:selectOneMenu>
 								<h:commandButton styleClass="d-none" action="pretty:archives2"></h:commandButton>
+								</div>
 		                    </h:form>
 	                    </div>
 					</div>
