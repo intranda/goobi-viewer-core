@@ -266,7 +266,7 @@ var viewerJS = ( function( viewer ) {
 //            $('.archives__left-side, .archives__right-side').hcSticky('refresh');
             $('.archives__left-side, .archives__right-side').hcSticky('update', {
                 stickTo: $('.archives__wrapper')[0],
-                top: 80,
+                top: 20,
                 bottom: 20,
                 responsive: {
                     993: {
@@ -297,7 +297,7 @@ var viewerJS = ( function( viewer ) {
             // Sticky right side of archives view
             $('.archives__right-side').hcSticky({
                 stickTo: $('.archives__wrapper')[0],
-                top: 80,
+                top: 20,
                 bottom: 20,
                 responsive: {
                     993: {
