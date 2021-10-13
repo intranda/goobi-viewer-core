@@ -315,8 +315,8 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      *
      * @return a {@link java.util.List} object.
      */
-    public List<CMSNavigationItem> getChildItems() {
-        return childItems;
+    public synchronized List<CMSNavigationItem> getChildItems() {
+        return new ArrayList<>(childItems);
     }
     
     public List<CMSNavigationItem> getActiveChildItems() {
