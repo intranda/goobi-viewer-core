@@ -34,9 +34,11 @@
 					<h:commandScript id="url-updater" name="updateUrl">
 					</h:commandScript>
 					
+					<h:outputLabel value="#{msg.hitsZero}" rendered="#{empty visibleTree}"></h:outputLabel>
+					
 					<!-- EXPAND ALL -->
 					<div class="archives-tree__expand-minimize-all">
-						<h:commandLink
+						<h:commandLink rendered="#{not empty visibleTree}"
 							action="#{archiveBean.archiveTree.collapseAll(true)}"
 							title="#{msg.allClose}">#{msg.allClose}
 							<f:passThroughAttribute name="data-toggle" value="tooltip" />
