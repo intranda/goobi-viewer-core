@@ -171,28 +171,28 @@ var viewerJS = ( function( viewer ) {
         	}
         	return Promise.resolve();
         },
-        
+
         showLoader: function(loader) {
         	let $loader = $("[data-loader='"+loader+"']");
         	if($loader.length > 0) {
         		$loader.show();
         	}
         },
-        
+
         hideLoader: function(loader) {
         	let $loader = $("[data-loader='"+loader+"']");
         	if($loader.length > 0) {
         		$loader.hide();
         	}
         },
-        
+
         initTextTree: function() {
          // toggle text-tree view from stairs to one line
             $('body').on("click", '.archives__text-tree', function() {
                 $('.archives__text-tree').toggleClass('-showAsOneLine');
             });
         },
-        
+
         initSearch: function() {
 			/* Trigger for search */
 			$('#archivesSearchTrigger').on('click', function(){
@@ -213,15 +213,9 @@ var viewerJS = ( function( viewer ) {
 					$('.archives__search-input-wrapper').slideToggle('fast');
 					$('.archives__search-input').focus();
 				}
-				
-
-		
-		
-
-
 		
 			});
-	
+
             /* check search field for input value and show clear button */
             if(!$('.archives__search-input').val() == ''){
                 $('.archives__search-clear').show();
@@ -246,7 +240,7 @@ var viewerJS = ( function( viewer ) {
                  }, 1300);
              });
         },
-        
+
         /**
          * In chome with small window size (1440x900) hcSticky breaks on ajax reload if the page is scrolled
          * all the way to the button. To prevent this we quickly scroll to the top, refresh hcSticky and then scroll back down.
@@ -260,10 +254,10 @@ var viewerJS = ( function( viewer ) {
                 $('html').scrollTop(currentScrollPosition);
             }
         },
-        
+
         refreshHcSticky: function() {
             if(_debug)console.log("update hc sticky");
-//            $('.archives__left-side, .archives__right-side').hcSticky('refresh');
+			// $('.archives__left-side, .archives__right-side').hcSticky('refresh');
             $('.archives__left-side, .archives__right-side').hcSticky('update', {
                 stickTo: $('.archives__wrapper')[0],
                 top: 20,
@@ -275,7 +269,7 @@ var viewerJS = ( function( viewer ) {
                 }
            });
         },
-        
+
         /**
          * In chome with small window size (1440x900) hcSticky breaks on page load if the view was previously scrolled
          * all the way to the bottom. To prevent this we scroll 5 px up before refreshing hcSticky.
@@ -285,12 +279,8 @@ var viewerJS = ( function( viewer ) {
             let currentScrollPosition = $('html').scrollTop();
             $('html').scrollTop(currentScrollPosition-5);
             this.initHcSticky();
-//            if(currentScrollPosition) {
-//                $('html').scrollTop(currentScrollPosition);
-//            }
         },
 
-        
         initHcSticky: function() {
             if(_debug)console.log("init hc sticky");
                         
@@ -305,7 +295,7 @@ var viewerJS = ( function( viewer ) {
                     }
                 }
             });
-            
+
             // Sticky left side of archives view
             $('.archives__left-side').hcSticky({
                 stickTo: $('.archives__wrapper')[0],
@@ -318,7 +308,7 @@ var viewerJS = ( function( viewer ) {
                 }
             });
         },
-        
+
         setLocation: function(element) {
             if(_debug)console.log(" clicked data-select-entry", element);
             let select = $(element).attr("data-select-entry");
@@ -334,7 +324,6 @@ var viewerJS = ( function( viewer ) {
         },
 
     };
-
 
     return viewer;
 } )( viewerJS || {}, jQuery );
