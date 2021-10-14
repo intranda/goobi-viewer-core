@@ -269,7 +269,7 @@ public class AdminBean implements Serializable {
     }
 
     public String resetUserAction(User user, String returnPage) throws DAOException {
-        user.backupFields(); //resets user.copy to the values of user
+        user.backupFields();
         return returnPage;
     }
     
@@ -345,11 +345,7 @@ public class AdminBean implements Serializable {
 
         return true;
     }
-    
-    public void resetUser(User user) {
-        if(user.getCopy() != null) {
-        }
-    }
+
 
     /**
      * <p>

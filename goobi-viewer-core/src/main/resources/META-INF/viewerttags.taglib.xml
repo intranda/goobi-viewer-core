@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<facelet-taglib 
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd"
+    version="2.0">
+    <namespace>http://example.com/jsf/facelets</namespace>
+    <!-- USER -->
+    <tag>
+        <tag-name>userData</tag-name>
+        <source>resources/resources/tags/user/userData.xhtml</source>
+        <attribute>
+            <name>user</name>
+        </attribute>
+    </tag>
+    <tag>
+        <tag-name>deleteUser</tag-name>
+        <source>resources/resources/tags/user/deleteUser.xhtml</source>
+        <attribute>
+            <name>user</name>
+        </attribute>
+    </tag>
+    <tag>
+        <tag-name>userAvatar</tag-name>
+        <source>resources/resources/tags/user/userAvatar.xhtml</source>
+        <attribute>
+            <name>user</name>
+        </attribute>
+    </tag>
+</facelet-taglib>

@@ -7,6 +7,7 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	xmlns:facelet="http://example.com/jsf/facelets"
 	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
 	<ui:define name="metadata">
@@ -23,7 +24,7 @@
 	<ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="adminUser">
-				<h:panelGroup
+				<h:panelGroup id="adminUserGroup"
 					rendered="#{userBean.admin == true and adminBean.currentUser != null}">
 					<div class="admin__title-bar">
 						<ui:fragment rendered="#{adminBean.currentUser.id == null}">
@@ -38,7 +39,26 @@
 
 						<div class="admin__content-wrapper">
 							<div class="admin__content-main -refreshHCsticky">
-								<viewerComponent:userData user="#{adminBean.currentUser.copy}" parentPage="pretty:adminUsers"/>
+								<h:form id="editUser" styleClass="form-horizontal form-group" role="form" prependId="false">
+									<facelet:userData user="#{adminBean.currentUser.copy}"
+										confirmEmailChange="false" />
+									<div class="row no-gutters justify-content-end admin__final-actions">
+										<h:commandLink id="cancelNewUserCreationButton"
+											styleClass="btn admin__cancel-button" value="#{msg.cancel}"
+											action="#{adminBean.resetUserAction(adminBean.currentUser, 'pretty:adminUsers')}"
+											immediate="true">
+											<f:ajax render="@all"></f:ajax>
+										</h:commandLink>
+										<h:commandLink id="saveNewUserCreationButton"
+											styleClass="btn btn--success" value="#{msg.save}"
+											action="#{adminBean.saveUserAction(adminBean.currentUser.copy, 'pretty:adminUsers')}">
+											<f:ajax execute="@all" render="@all"></f:ajax>
+										</h:commandLink>
+									</div>
+								</h:form>
+								<h:form id="deleteUser" styleClass="form-horizontal form-group" role="form" prependId="false">
+									<facelet:deleteUser user="#{adminBean.currentUser.copy}" />
+								</h:form>
 							</div>
 
 
@@ -94,17 +114,7 @@
 							
 								<!-- USER PROFILE PICTURE -->
 								<ui:fragment rendered="#{not empty adminBean.currentUser.id}">
-									<div class="admin__default-block">
-										<h3>#{msg.admin__user_avatar}</h3>
-										<div class="form-group form-row admin__profile-image-wrapper">
-	
-											<img class="admin__profile-image"
-												src="#{adminBean.currentUser.getAvatarUrl(300)}" alt="User Avatar" />
-											<button data-toggle="modal" data-backdrop="false"
-												data-target="#changeProfilePicture"
-												class="btn btn--default user-settings__profile-image-edit-button">#{msg.edit}</button>
-										</div>
-									</div>
+									<facelet:userAvatar user="#{adminBean.currentUser.copy}" />
 								</ui:fragment>
 								
 								<!-- USER ADMIN RIGHTS -->
