@@ -38,7 +38,7 @@
             <ui:fragment rendered="#{userBean.loggedIn}">
             
             	<!-- ACTIVITIES BLOCK -->
-				<h3>Aktivität</h3>
+				<h3>#{msg.label__user_crowdsourcing_activity}</h3>
 				<div class="user-dashboard__form-wrapper">
 					<div class="user-dashboard__last-activities-wrapper">
 						<div class="user-dashboard__last-activities-list">
@@ -93,12 +93,12 @@
 				</div>
 				
 				<!-- OVERVIEW BLOCK -->
-				<h3>Übersicht</h3>
+				<h3>#{msg.admin__overview}</h3>
 				<div class="user-dashboard__form-wrapper-container">
 				
 					<!-- BOOKMARKS BOX -->
 					<div class="user-dashboard__form-wrapper -w50 ">
-					<h4>Merklisten</h4>
+					<h4>#{msg.bookmarks}</h4>
 						<div class="user-dashboard__bookmarks-wrapper">
 								<ul class="user-dashboard__bookmarks-list">
 									<ui:repeat
@@ -111,18 +111,21 @@
 									</ui:repeat>
 								</ul>
 						</div>
-						
-						<div class="user-dashboard__searches-count">Insgesamt wurden 7 Merklisten gespeichert.</div>	
+						<div class="user-dashboard__searches-count">
+							<h:outputFormat value="#{msg.user_dashboard__bookmarklists_stored}">
+								 <f:param value="#{bookmarkBean.getNumBookmarkListsForUser(userBean.user)}" />
+							</h:outputFormat>
+						</div>	
 						<!-- GO TO BOOKMARKS OVERVIEW PAGE -->
 						<a styleClass="user-dashboard__show-all-link" href="#{request.contextPath}/user/bookmarks/">
-							Übersicht aller Merklisten
+							#{msg.bookmarkList_overview_all}
 						</a>
 					</div>
 
 					<!-- SEARCHES BOX -->
 					<div class="user-dashboard__form-wrapper -w50 ">
 					
-					<h4>Gespeicherte Suchen</h4>
+					<h4>#{msg.label__user_searches}</h4>
 						<div class="user-dashboard__searches-wrapper">
 
 								<!-- SHOW IF NO SEARCHES EXIST -->
@@ -138,10 +141,14 @@
 									</ul>
 						</div>
 						
-						<div class="user-dashboard__searches-count">Insgesamt wurden 3 Suchen gespeichert.</div>
+						<div class="user-dashboard__searches-count">
+							<h:outputFormat value="#{msg.user_dashboard__searches_stored}">
+								 <f:param value="#{userDataBean.numSearches}" />
+							</h:outputFormat>
+						</div>
 						<!-- GO TO SEARCHES OVERVIEW PAGE -->
 						<a styleClass="user-dashboard__show-all-link" href="#{request.contextPath}/user/searches/">
-							Übersicht aller gespeicherter Suchen
+							#{msg.searches_overview_all}
 						</a>
 					</div>
 					
@@ -150,7 +157,7 @@
 					<div class="user-dashboard__form-wrapper-container">
 					<!-- COMMENTS BOX -->
 					<div class="user-dashboard__form-wrapper -w100 ">
-					<h4>Kommentare</h4>
+					<h4>#{msg.userComments}</h4>
 						<div class="user-dashboard__comments-wrapper">
 
 								<!-- TO DO: RENDER IF NO COMMENTS EXIST -->
@@ -177,7 +184,7 @@
 					<div class="user-dashboard__searches-count">Insgesamt wurden 2 Kommentare in 2 Werken verfasst.</div>
 					<!-- TO DO: THERE IS NO OVERVIEW PAGE FOR COMMENTS YET? -->
 					<h:commandLink styleClass="user-dashboard__show-all-link" action="#{searchBean.executeSavedSearchAction(search)}">
-						Übersicht aller Kommentare
+						#{msg.comments_overview_all}
 					</h:commandLink>
 					</div>
 					</div>
@@ -192,8 +199,9 @@
 				
 				
 					<div class="user-dashboard__sidebar-welcome-text">
-						
-						<span>#{msg.admin__dashboard_hello}</span><ui:fragment rendered="#{not empty userBean.user.firstName}"><span><b> #{userBean.user.firstName}</b></span></ui:fragment><span>, schön, dass du da bist.</span>
+						<h:outputFormat value="#{msg.user_dashboard__hello}" escape="false">
+							 <f:param value="#{userBean.user.displayName}" />
+						</h:outputFormat>
 					</div>
 
 		</h:panelGroup>
