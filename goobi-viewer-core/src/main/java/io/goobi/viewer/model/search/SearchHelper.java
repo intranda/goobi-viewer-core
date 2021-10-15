@@ -122,6 +122,7 @@ public final class SearchHelper {
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
     public static final String AGGREGATION_QUERY_PREFIX = "{!join from=PI_TOPSTRUCT to=PI}";
+    public static final String BOOSTING_QUERY_TEMPLATE = "((" + SolrConstants.PI + ":* AND " + SolrConstants.TITLE + ":({0})) OR _query_:\"{1}\")";
     /** Standard Solr query for all records and anchors. */
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
     /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */
@@ -439,6 +440,7 @@ public final class SearchHelper {
      * @param searchTerms a {@link java.util.Map} object.
      * @param locale a {@link java.util.Locale} object.
      * @param aggregateHits a boolean.
+     * @param boostTopLevelDocstructs
      * @should return correct hit for non-aggregated search
      * @should return correct hit for aggregated search
      * @param filterQueries a {@link java.util.List} object.
@@ -450,10 +452,15 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
-            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
+            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, boolean boostTopLevelDocstructs,
+            HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String finalQuery = prepareQuery(query);
-        finalQuery = buildFinalQuery(finalQuery, aggregateHits);
+        String termQuery = null;
+        if (boostTopLevelDocstructs) {
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SolrConstants.DEFAULT));
+        }
+        finalQuery = buildFinalQuery(finalQuery, termQuery, aggregateHits, boostTopLevelDocstructs);
         logger.trace("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits = aggregateHits
                 ? SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale)
@@ -1645,7 +1652,7 @@ public final class SearchHelper {
         }
 
         // logger.trace("getFilteredTermsFromIndex startsWith: {}", startsWith);
-        String query = buildFinalQuery(sbQuery.toString(), false);
+        String query = buildFinalQuery(sbQuery.toString(), null, false, false);
         logger.trace("getFilteredTermsFromIndex query: {}", query);
         if (logger.isTraceEnabled()) {
             for (String fq : filterQueries) {
@@ -1756,18 +1763,17 @@ public final class SearchHelper {
      *
      * @param query a {@link java.lang.String} object.
      * @param discriminatorValue a {@link java.lang.String} object.
+     * @return a {@link java.util.Map} object.
      * @should extract all values from query except from NOT blocks
      * @should handle multiple phrases in query correctly
      * @should skip discriminator value
      * @should not remove truncation
      * @should throw IllegalArgumentException if query is null
-     * @return a {@link java.util.Map} object.
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
         if (query == null) {
             throw new IllegalArgumentException("query may not be null");
         }
-        Map<String, Set<String>> ret = new HashMap<>();
 
         Set<String> stopwords = DataManager.getInstance().getConfiguration().getStopwords();
         // Do not extract a currently set discriminator value
@@ -1782,6 +1788,8 @@ public final class SearchHelper {
 
         // Remove parentheses, ANDs and ORs
         query = query.replace("(", "").replace(")", "").replace(" AND ", " ").replace(" OR ", " ");
+
+        Map<String, Set<String>> ret = new HashMap<>();
 
         // Extract phrases and add them directly
         {
@@ -1894,6 +1902,12 @@ public final class SearchHelper {
      */
     public static Map<String, String> generateQueryParams() {
         Map<String, String> params = new HashMap<>();
+        if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs()) {
+            // Add a boost query to promote anchors and works to the top of the list (Extended DisMax query parser is required for this)
+            params.put("defType", "edismax");
+            params.put("uf", "* _query_");
+            // params.put("bq", "(PI:* AND " + SolrConstants.TITLE + ":(" + searchTerms + "))^10.0");
+        }
         if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
             return params;
         }
@@ -1902,12 +1916,6 @@ public final class SearchHelper {
             params.put(GroupParams.GROUP, "true");
             params.put(GroupParams.GROUP_MAIN, "true");
             params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
-        }
-        if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs()) {
-            // Add a boost query to promote anchors and works to the top of the list (Extended Dismax query parser is
-            // required for this)
-            params.put("defType", "edismax");
-            params.put("bq", "ISANCHOR:true^10 OR ISWORK:true^5");
         }
 
         return params;
@@ -2379,16 +2387,29 @@ public final class SearchHelper {
     }
 
     /**
-     * Constructs the complete query using the raw query and adding all available suffixes.
-     *
-     * @param rawQuery a {@link java.lang.String} object.
-     * @param aggregateHits a boolean.
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * 
+     * @param searchTerms
+     * @return
      */
-    public static String buildFinalQuery(String rawQuery, boolean aggregateHits) throws IndexUnreachableException {
-        return buildFinalQuery(rawQuery, aggregateHits, null);
+    public static String buildTermQuery(Collection<String> searchTerms) {
+        if (searchTerms == null) {
+            return "";
+        }
+
+        // Construct inner query part
+        StringBuilder sbInner = new StringBuilder();
+        for (String term : searchTerms) {
+            if (sbInner.length() > 0) {
+                sbInner.append(" AND ");
+            }
+            if (!term.contains(" OR ")) {
+                sbInner.append(term);
+            } else {
+                sbInner.append('(').append(term).append(')');
+            }
+        }
+
+        return sbInner.toString();
     }
 
     /**
@@ -2396,15 +2417,33 @@ public final class SearchHelper {
      *
      * @param rawQuery a {@link java.lang.String} object.
      * @param aggregateHits a boolean.
-     * @param nh
+     * @param boostTopLevelDocstructs
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * 
+     */
+    public static String buildFinalQuery(String rawQuery, String termQuery, boolean aggregateHits, boolean boostTopLevelDocstructs)
+            throws IndexUnreachableException {
+        return buildFinalQuery(rawQuery, termQuery, aggregateHits, boostTopLevelDocstructs, null);
+    }
+
+    /**
+     * Constructs the complete query using the raw query and adding all available suffixes.
+     *
+     * @param rawQuery a {@link java.lang.String} object.
+     * @param termQuery
+     * @param aggregateHits If true, a join parser query part will be added
+     * @param boostTopLevelDocstructs If true, query elements for boosting will be added
      * @param request
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should add query prefix if boostTopLevelDocstructs true
      * @should add join statement if aggregateHits true
      * @should not add join statement if aggregateHits false
      * @should remove existing join statement
      */
-    public static String buildFinalQuery(String rawQuery, boolean aggregateHits, HttpServletRequest request) throws IndexUnreachableException {
+    public static String buildFinalQuery(String rawQuery, String termQuery, boolean aggregateHits, boolean boostTopLevelDocstructs,
+            HttpServletRequest request) throws IndexUnreachableException {
         if (rawQuery == null) {
             throw new IllegalArgumentException("rawQuery may not be null");
         }
@@ -2420,12 +2459,20 @@ public final class SearchHelper {
             // https://wiki.apache.org/solr/Join
         }
         sbQuery.append("+(").append(rawQuery).append(")");
+
+        // Boosting
+        if (boostTopLevelDocstructs && StringUtils.isNotEmpty(termQuery)) {
+            String template = BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery).replace("{1}", sbQuery.toString());
+            sbQuery = new StringBuilder(template);
+        }
+        
+        // Suffixes
         String suffixes = getAllSuffixes(request, true,
                 true);
-
         if (StringUtils.isNotBlank(suffixes)) {
             sbQuery.append(suffixes);
         }
+
         return sbQuery.toString();
     }
 

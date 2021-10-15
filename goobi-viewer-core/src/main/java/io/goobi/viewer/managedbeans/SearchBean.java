@@ -816,7 +816,8 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         currentSearch.execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, navigationHelper.getLocale(),
-                DataManager.getInstance().getConfiguration().isAggregateHits());
+                DataManager.getInstance().getConfiguration().isAggregateHits(),
+                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
     }
 
     /** {@inheritDoc} */
@@ -893,7 +894,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return false;
     }
-    
+
     @Override
     public boolean isSearchInFacetFieldFlag(String fieldName) {
         for (IFacetItem item : facets.getCurrentFacets()) {
@@ -1114,54 +1115,45 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                 }
                 // Construct inner query part
-                StringBuilder sbInner = new StringBuilder();
-                for (String term : preparedTerms) {
-                    if (sbInner.length() > 0) {
-                        sbInner.append(" AND ");
-                    }
-                    if (!term.contains(" OR ")) {
-                        sbInner.append(term);
-                    } else {
-                        sbInner.append('(').append(term).append(')');
-                    }
-                }
-                if (sbInner.length() > 0) {
+                String innerQuery = SearchHelper.buildTermQuery(preparedTerms);
+                if (innerQuery.length() > 0) {
                     StringBuilder sbOuter = new StringBuilder();
                     if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
                         // No filters defined or ALL
+                        sbOuter.append("(").append(SolrConstants.PI).append(":* AND MD_TITLE:(").append(innerQuery).append(")) OR ");
                         if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
-                            sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(sbInner.toString());
-                            sbOuter.append(") OR ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(sbInner.toString());
-                            sbOuter.append(") OR ").append(SolrConstants.SUPERUGCTERMS).append(":(").append(sbInner.toString());
-                            sbOuter.append(") OR ");
+                            sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(innerQuery);
+                            sbOuter.append(") ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery);
+                            sbOuter.append(") ").append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery);
+                            sbOuter.append(") ");
                         }
-                        sbOuter.append(SolrConstants.DEFAULT).append(":(").append(sbInner.toString());
-                        sbOuter.append(") OR ").append(SolrConstants.FULLTEXT).append(":(").append(sbInner.toString());
-                        sbOuter.append(") OR ").append(SolrConstants.NORMDATATERMS).append(":(").append(sbInner.toString());
-                        sbOuter.append(") OR ").append(SolrConstants.UGCTERMS).append(":(").append(sbInner.toString());
-                        sbOuter.append(") OR ").append(SolrConstants.CMS_TEXT_ALL).append(":(").append(sbInner.toString()).append(')');
+                        sbOuter.append(SolrConstants.DEFAULT).append(":(").append(innerQuery);
+                        sbOuter.append(") ").append(SolrConstants.FULLTEXT).append(":(").append(innerQuery);
+                        sbOuter.append(") ").append(SolrConstants.NORMDATATERMS).append(":(").append(innerQuery);
+                        sbOuter.append(") ").append(SolrConstants.UGCTERMS).append(":(").append(innerQuery);
+                        sbOuter.append(") ").append(SolrConstants.CMS_TEXT_ALL).append(":(").append(innerQuery).append(')');
                     } else {
                         // Specific filter selected
                         if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
                             switch (currentSearchFilter.getField()) {
                                 case SolrConstants.DEFAULT:
-                                    sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(sbInner.toString()).append(") OR ");
-                                    sbOuter.append(SolrConstants.DEFAULT).append(":(").append(sbInner.toString()).append(')');
+                                    sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(innerQuery).append(") OR ");
+                                    sbOuter.append(SolrConstants.DEFAULT).append(":(").append(innerQuery).append(')');
                                     break;
                                 case SolrConstants.FULLTEXT:
-                                    sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(sbInner.toString()).append(") OR ");
-                                    sbOuter.append(SolrConstants.FULLTEXT).append(":(").append(sbInner.toString()).append(')');
+                                    sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery).append(") OR ");
+                                    sbOuter.append(SolrConstants.FULLTEXT).append(":(").append(innerQuery).append(')');
                                     break;
                                 case SolrConstants.UGCTERMS:
-                                    sbOuter.append(SolrConstants.SUPERUGCTERMS).append(":(").append(sbInner.toString()).append(") OR ");
-                                    sbOuter.append(SolrConstants.UGCTERMS).append(":(").append(sbInner.toString()).append(')');
+                                    sbOuter.append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery).append(") OR ");
+                                    sbOuter.append(SolrConstants.UGCTERMS).append(":(").append(innerQuery).append(')');
                                     break;
                                 default:
-                                    sbOuter.append(currentSearchFilter.getField()).append(":(").append(sbInner.toString()).append(')');
+                                    sbOuter.append(currentSearchFilter.getField()).append(":(").append(innerQuery).append(')');
                                     break;
                             }
                         } else {
-                            sbOuter.append(currentSearchFilter.getField()).append(":(").append(sbInner.toString()).append(')');
+                            sbOuter.append(currentSearchFilter.getField()).append(":(").append(innerQuery).append(')');
                         }
                     }
                     searchStringInternal += sbOuter.toString();
@@ -1613,12 +1605,14 @@ public class SearchBean implements SearchInterface, Serializable {
             //            return currentSearch.getHits().get(currentHitIndex + 1).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex + 1, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
-                    BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
+                    BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(),
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
         }
         //        return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
         return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(),
                 facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
-                BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
+                BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(),
+                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
     }
 
     /**
@@ -1640,12 +1634,14 @@ public class SearchBean implements SearchInterface, Serializable {
             //            return currentSearch.getHits().get(currentHitIndex - 1).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex - 1, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
-                    BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
+                    BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(),
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
         } else if (currentSearch.getHitsCount() > 0) {
             //            return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
-                    BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
+                    BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(),
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
         }
 
         return null;
@@ -2150,7 +2146,8 @@ public class SearchBean implements SearchInterface, Serializable {
         final FacesContext facesContext = FacesContext.getCurrentInstance();
 
         String currentQuery = SearchHelper.prepareQuery(searchStringInternal);
-        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
+        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, searchString, DataManager.getInstance().getConfiguration().isAggregateHits(),
+                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
         Locale locale = navigationHelper.getLocale();
         int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
 
@@ -2358,7 +2355,9 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public long getTotalNumberOfVolumes() throws IndexUnreachableException, PresentationException {
-        String query = SearchHelper.buildFinalQuery(SearchHelper.ALL_RECORDS_QUERY, DataManager.getInstance().getConfiguration().isAggregateHits());
+        String query =
+                SearchHelper.buildFinalQuery(SearchHelper.ALL_RECORDS_QUERY, null, DataManager.getInstance().getConfiguration().isAggregateHits(),
+                        false);
         return DataManager.getInstance().getSearchIndex().count(query);
     }
 
@@ -2724,9 +2723,9 @@ public class SearchBean implements SearchInterface, Serializable {
     public List<String> getHitsLocations() {
         if (this.currentSearch != null) {
             return this.currentSearch.getHitsLocationList().stream().map(l -> l.getGeoJson()).collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
         }
+
+        return Collections.emptyList();
     }
 
     /**
@@ -2737,9 +2736,9 @@ public class SearchBean implements SearchInterface, Serializable {
     public boolean isShowGeoFacetMap() {
         if (currentSearch != null && facets != null && (currentSearch.isHasGeoLocationHits() || facets.getGeoFacetting().hasFeature())) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     public GeoMap getHitsMap() {

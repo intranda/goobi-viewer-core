@@ -621,7 +621,7 @@ public class ViewerResourceBundle extends ResourceBundle {
         try {
             FacesContext.getCurrentInstance().getApplication().getSupportedLocales().forEachRemaining(locales::add);
         } catch (NullPointerException e) {
-            logger.warn("No faces context instance available");
+            // logger.warn("No faces context instance available");
             return Arrays.asList(Locale.GERMAN, Locale.ENGLISH);
         }
         return locales;

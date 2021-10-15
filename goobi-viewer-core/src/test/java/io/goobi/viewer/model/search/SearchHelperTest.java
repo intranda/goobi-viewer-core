@@ -616,6 +616,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("FACET_DOCSTRCT", SearchHelper.facetifyField(SolrConstants.DOCSTRCT));
         //        Assert.assertEquals("FACET_SUPERDOCSTRCT", SearchHelper.facetifyField(SolrConstants.SUPERDOCSTRCT));
         Assert.assertEquals("FACET_TITLE", SearchHelper.facetifyField("MD_TITLE_UNTOKENIZED"));
+        Assert.assertEquals("FACET_FOO", SearchHelper.facetifyField("MD2_FOO_UNTOKENIZED"));
     }
 
     /**
@@ -1009,12 +1010,13 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getBrowseElement_shouldReturnCorrectHitForAggregatedSearch() throws Exception {
         String rawQuery = SolrConstants.IDDOC + ":*";
-        List<SearchHit> hits = SearchHelper.searchWithFulltext(SearchHelper.buildFinalQuery(rawQuery, true), 0, 10, null, null, null, null, null,
-                null, Locale.ENGLISH, null);
+        List<SearchHit> hits =
+                SearchHelper.searchWithFulltext(SearchHelper.buildFinalQuery(rawQuery, null, true, false), 0, 10, null, null, null, null, null,
+                        null, Locale.ENGLISH, null);
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
-            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true, null);
+            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true, false, null);
             Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
         }
     }
@@ -1231,12 +1233,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void testBuildFinalQuery() throws IndexUnreachableException, PresentationException {
         String query = "DC:dctei";
 
-        String finalQuery = SearchHelper.buildFinalQuery(query, false, null);
+        String finalQuery = SearchHelper.buildFinalQuery(query, null, false, false);
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(65, docs.size());
 
-        finalQuery = SearchHelper.buildFinalQuery(query, false,
-                null);
+        finalQuery = SearchHelper.buildFinalQuery(query, null, false, false);
         docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(65, docs.size());
     }
@@ -1322,7 +1323,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildFinalQuery_shouldAddJoinStatementIfAggregateHitsTrue() throws Exception {
-        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", true, null);
+        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", null, true, false, null);
         Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
 
@@ -1332,7 +1333,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildFinalQuery_shouldNotAddJoinStatementIfAggregateHitsFalse() throws Exception {
-        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", false, null);
+        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", null, false, false, null);
         Assert.assertEquals("+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
 
@@ -1342,7 +1343,21 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildFinalQuery_shouldRemoveExistingJoinStatement() throws Exception {
-        String finalQuery = SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:*", true, null);
+        String finalQuery = SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:*", null, true, false, null);
         Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
+    }
+
+    /**
+     * @see SearchHelper#buildFinalQuery(String,String,boolean,boolean,HttpServletRequest)
+     * @verifies add query prefix if boostTopLevelDocstructs true
+     */
+    @Test
+    public void buildFinalQuery_shouldAddQueryPrefixIfBoostTopLevelDocstructsTrue() throws Exception {
+        String finalQuery =
+                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", "foo bar", true, true, null);
+        Assert.assertEquals(
+                SearchHelper.BOOSTING_QUERY_TEMPLATE.replace("{0}", "foo bar").replace("{1}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(foo bar))")
+                        + " -BOOL_HIDE:true -DC:collection1 -DC:collection2",
+                finalQuery);
     }
 }

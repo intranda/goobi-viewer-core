@@ -96,7 +96,7 @@ public class NetTools {
      *         or the error message.
      */
     public static String[] callUrlGET(String url) {
-        logger.trace("callUrlGET: {}", url);
+        // logger.trace("callUrlGET: {}", url);
         String[] ret = new String[2];
         try (CloseableHttpClient httpClient = HttpClients.custom().build()) {
             HttpGet httpGet = new HttpGet(url);
@@ -114,7 +114,7 @@ public class NetTools {
                         ret[1] = response.getStatusLine().getReasonPhrase();
                         break;
                     default:
-                        logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
+                        // logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
                         ret[1] = response.getStatusLine().getReasonPhrase();
                         break;
                 }

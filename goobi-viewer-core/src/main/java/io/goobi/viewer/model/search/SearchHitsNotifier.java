@@ -61,7 +61,7 @@ public class SearchHitsNotifier {
             for (Search search : searches) {
                 // TODO access condition filters for each user
                 List<SearchHit> newHits = getNewHits(search);
-                if(newHits.size() > 0) {   
+                if (newHits.size() > 0) {
                     String email = search.getOwner().getEmail();
                     sendEmailNotification(newHits, search.getName(), email);
                     DataManager.getInstance().getDao().updateSearch(search);
@@ -102,17 +102,17 @@ public class SearchHitsNotifier {
                 logger.error(e.getMessage(), e);
             }
         }
-        
+
     }
 
     /**
-     * Executes the given search. If after {@link Search#execute(SearchFacets, Map, int, int, java.util.Locale, boolean, boolean) execution} 
-     * the {@link Search#getHitsCount()} is larger than {@link Search#getLastHitsCount()}
-     * the newest (hitsCount - lastHitsCount) hits are returned and the lastHitsCount of the search is updated
+     * Executes the given search. If after {@link Search#execute(SearchFacets, Map, int, int, java.util.Locale, boolean, boolean) execution} the
+     * {@link Search#getHitsCount()} is larger than {@link Search#getLastHitsCount()} the newest (hitsCount - lastHitsCount) hits are returned and the
+     * lastHitsCount of the search is updated
      * 
      * 
      * @param search
-     * @return  A list of new hits (based on {@link Search#getLastHitsCount()}
+     * @return A list of new hits (based on {@link Search#getLastHitsCount()}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -124,18 +124,20 @@ public class SearchHitsNotifier {
         Search tempSearch = new Search(search);
         SearchFacets facets = new SearchFacets();
         facets.setCurrentFacetString(tempSearch.getFacetString());
-        tempSearch.execute(facets, null, 0, 0, null, DataManager.getInstance().getConfiguration().isAggregateHits());
+        tempSearch.execute(facets, null, 0, 0, null, DataManager.getInstance().getConfiguration().isAggregateHits(),
+                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
         // TODO what if there're >100 new hits?
         if (tempSearch.getHitsCount() > tempSearch.getLastHitsCount()) {
             int newHitsCount = (int) (tempSearch.getHitsCount() - tempSearch.getLastHitsCount());
-            newHitsCount = Math.min(100, newHitsCount);  //don't query more than 100 hits
+            newHitsCount = Math.min(100, newHitsCount); //don't query more than 100 hits
             //sort so newest hits come first
             tempSearch.setSortString('!' + SolrConstants.DATECREATED);
             //after last execution, page is 0, set back to 1 to actually get some results
             tempSearch.setPage(1);
             //reset hits count to 0 to actually perform search
             tempSearch.setHitsCount(0);
-            tempSearch.execute(facets, null, newHitsCount, 0, null, DataManager.getInstance().getConfiguration().isAggregateHits());
+            tempSearch.execute(facets, null, newHitsCount, 0, null, DataManager.getInstance().getConfiguration().isAggregateHits(),
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
             List<SearchHit> newHits = tempSearch.getHits();
 
             // Update last count
