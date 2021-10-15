@@ -1136,6 +1136,15 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(Long.valueOf(3), boomarkLists.get(0).getId());
         Assert.assertEquals(user, boomarkLists.get(0).getOwner());
     }
+    
+    @Test
+    public void countAllBookmarkListsForUserTest() throws DAOException {
+        User user = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(user);
+        List<BookmarkList> boomarkLists = DataManager.getInstance().getDao().getBookmarkLists(user);
+        long count = DataManager.getInstance().getDao().getBookmarkListCount(user);
+        Assert.assertEquals(boomarkLists.size(), count);
+    }
 
     @Test
     public void getBookmarkListByIdTest() throws DAOException {

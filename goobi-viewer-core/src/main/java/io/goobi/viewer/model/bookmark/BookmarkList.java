@@ -102,7 +102,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     @Column(name = "share_key", unique = true, columnDefinition = "VARCHAR(64)")
     private String shareKey;
 
-    @Column(name = "date_updated")
+    @Column(name = "date_updated", nullable=true)
     @JsonIgnore
     private LocalDateTime dateUpdated;
 

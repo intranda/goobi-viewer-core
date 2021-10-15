@@ -719,6 +719,15 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public long getBookmarkListCount(User user) throws DAOException {
+        preQuery();
+        Query q = getEntityManager().createQuery("SELECT COUNT(o) FROM BookmarkList o WHERE o.owner = :user");
+        q.setParameter("user", user);
+        return (long) q.getSingleResult();
+    }
+    
     /*
      * (non-Javadoc)
      *
