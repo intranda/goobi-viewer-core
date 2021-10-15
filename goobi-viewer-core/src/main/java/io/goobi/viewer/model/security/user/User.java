@@ -1778,4 +1778,5 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         return DataManager.getInstance().getDao().getSearchCount(this, null);
     }
 
+    
 }
