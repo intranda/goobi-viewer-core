@@ -29,8 +29,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -1734,11 +1732,11 @@ public class ViewManager implements Serializable {
      * getMetsResolverUrl.
      * </p>
      *
-     * @return METS resolver link for the DFG Viewer
+     * @return METS resolver link
      */
     public String getMetsResolverUrl() {
         try {
-            String url = DataManager.getInstance().getConfiguration().getMetsUrl();
+            String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
             if (StringUtils.isNotEmpty(url)) {
                 return url + getPi();
             }
@@ -1759,7 +1757,7 @@ public class ViewManager implements Serializable {
      */
     public String getLidoResolverUrl() {
         try {
-            String url = DataManager.getInstance().getConfiguration().getMetsUrl();
+            String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
             if (StringUtils.isNotEmpty(url)) {
                 return url + getPi();
             }
@@ -1780,7 +1778,7 @@ public class ViewManager implements Serializable {
      */
     public String getDenkxwebResolverUrl() {
         try {
-            String url = DataManager.getInstance().getConfiguration().getMetsUrl();
+            String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
             if (StringUtils.isNotEmpty(url)) {
                 return url + getPi();
             }
@@ -1801,7 +1799,7 @@ public class ViewManager implements Serializable {
      */
     public String getDublinCoreResolverUrl() {
         try {
-            String url = DataManager.getInstance().getConfiguration().getMetsUrl();
+            String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
             if (StringUtils.isNotEmpty(url)) {
                 return url + getPi();
             }
@@ -1823,7 +1821,7 @@ public class ViewManager implements Serializable {
     public String getAnchorMetsResolverUrl() {
         if (anchorStructElement != null) {
             String parentPi = anchorStructElement.getMetadataValue(SolrConstants.PI);
-            String url = DataManager.getInstance().getConfiguration().getMetsUrl();
+            String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
             if (StringUtils.isNotEmpty(url)) {
                 return url + parentPi;
             }
