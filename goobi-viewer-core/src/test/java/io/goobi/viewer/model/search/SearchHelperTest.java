@@ -1355,9 +1355,10 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void buildFinalQuery_shouldAddQueryPrefixIfBoostTopLevelDocstructsTrue() throws Exception {
         String finalQuery =
                 SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", "foo bar", true, true, null);
-        Assert.assertEquals(
-                SearchHelper.BOOSTING_QUERY_TEMPLATE.replace("{0}", "foo bar").replace("{1}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(foo bar))")
-                        + " -BOOL_HIDE:true -DC:collection1 -DC:collection2",
+        Assert.assertEquals("+(" +
+                SearchHelper.BOOSTING_QUERY_TEMPLATE.replace("{0}", "foo bar") + " "
+                + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(foo bar))")
+                + ") -BOOL_HIDE:true -DC:collection1 -DC:collection2",
                 finalQuery);
     }
 }
