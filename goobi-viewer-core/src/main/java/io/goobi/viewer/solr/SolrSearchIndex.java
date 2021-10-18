@@ -236,6 +236,7 @@ public final class SolrSearchIndex {
                         sortField.setOne(SolrTools.generateRandomSortField());
                     }
                     solrQuery.addSort(sortField.getOne(), "desc".equals(sortField.getTwo()) ? ORDER.desc : ORDER.asc);
+                    // logger.trace("sort field: {} {}", sortField.getOne(), sortField.getTwo());
                 }
             }
         }
@@ -268,7 +269,7 @@ public final class SolrSearchIndex {
         if (params != null && !params.isEmpty()) {
             for (String key : params.keySet()) {
                 solrQuery.set(key, params.get(key));
-                 logger.trace("&{}={}", key, params.get(key));
+                 // logger.trace("&{}={}", key, params.get(key));
             }
         }
 
