@@ -182,7 +182,7 @@ public class SearchQueryItem implements Serializable {
         if (searchBean == null) {
             searchBean = BeanUtils.getSearchBean();
         }
-        if ( field != null) {
+        if (displaySelectItems && field != null) {
             List<StringPair> ret = searchBean.getAdvancedSearchSelectItems(field, language, isHierarchical());
             if (ret == null) {
                 ret = new ArrayList<>();
