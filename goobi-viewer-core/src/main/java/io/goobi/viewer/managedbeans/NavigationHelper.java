@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -2021,5 +2022,15 @@ public class NavigationHelper implements Serializable {
     
     public String returnTo(String page) {
         return page;
+    }
+    
+    public String getTranslationsAsJson(List<String> keys) {
+        Locale locale = getLocale();
+        JSONObject json = new JSONObject();
+        for (String key : keys) {
+            String translation = ViewerResourceBundle.getTranslation(key, locale);
+            json.put(key, translation);
+        }
+        return json.toString();
     }
 }

@@ -3684,8 +3684,6 @@ riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematri
 	        }
 
 	        this.updateTimeMatrix = new rxjs.Subject();
-	        viewerJS.translator.addTranslations(["hitsZero", "timematrix__timePeriod", "aria_label__timeline_period_start", "aria_label__timeline_period_end", "timematrix__maxResults", "aria_label__timeline_hits", "timematrix__calculate"])
-	        .then(() => this.update());
 
 	        this.updateTimeMatrix.pipe(
 	                rxjs.operators.map( e => this.getIIIFApiUrl()),
@@ -3802,11 +3800,7 @@ riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematri
 	    }.bind(this)
 
 	    this.translate = function(key) {
-	        if(viewerJS && viewerJS.translator) {
-	        	return viewerJS.translator.translate(key);
-	        } else {
-	            return key;
-	        }
+	        return this.opts.msg[key];
 	    }.bind(this)
 	    this.updateHitsPerPage = function(event) {
 	        this.maxHits = event.target.value;

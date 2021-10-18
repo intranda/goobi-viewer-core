@@ -66,8 +66,6 @@
 	        
 	        
 	        this.updateTimeMatrix = new rxjs.Subject();
-	        viewerJS.translator.addTranslations(["hitsZero", "timematrix__timePeriod", "aria_label__timeline_period_start", "aria_label__timeline_period_end", "timematrix__maxResults", "aria_label__timeline_hits", "timematrix__calculate"])
-	        .then(() => this.update());
 	        
 	//         $( this.opts.button ).on( "click", this.updateRange );
 	        this.updateTimeMatrix.pipe(
@@ -188,11 +186,7 @@
 	    }
 	    
 	    translate(key) {
-	        if(viewerJS && viewerJS.translator) {	            
-	        	return viewerJS.translator.translate(key);
-	        } else {
-	            return key;
-	        }
+	        return this.opts.msg[key];
 	    }
 	    updateHitsPerPage(event) {
 	        this.maxHits = event.target.value;

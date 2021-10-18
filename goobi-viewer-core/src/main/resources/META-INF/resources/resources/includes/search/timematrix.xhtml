@@ -14,14 +14,10 @@
 	<timematrix></timematrix>
 
    	<script>
-   		viewerJS.initialized.subscribe(() => {  
-   		    
-   		    
-   		    
 	   		riot.mount('timematrix', {
-	      		msg: {
-	      			timematrixCalculate: "#{msg.timematrix__calculate}"
-	      		},
+	      		msg: #{navigationHelper.getTranslationsAsJson(
+	      		        ["hitsZero", "timematrix__timePeriod", "aria_label__timeline_period_start", "timematrix__maxResults",
+	      		    	"aria_label__timeline_period_end", "aria_label__timeline_hits", "timematrix__calculate"])},
 	           	minYear: #{configurationBean.getTimeMatrixStartYear(subtheme)},
 	           	maxYear: #{configurationBean.getTimeMatrixEndYear(subtheme)},
 	           	contextPath: "#{request.contextPath}/",
@@ -31,7 +27,6 @@
 	           	thumbnailSize: "500,600",
 	           	language: "#{navigationHelper.localeString}"
 	         });
-   		})
    	</script>
 
 
