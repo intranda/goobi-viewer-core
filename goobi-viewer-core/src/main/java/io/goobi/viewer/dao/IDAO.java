@@ -378,6 +378,14 @@ public interface IDAO {
      */
     public List<BookmarkList> getBookmarkLists(User user) throws DAOException;
 
+    /** Get number of bookmark lists owned by the given user
+    * 
+    * @param user
+    * @return number of owned bookmark lists
+    * @throws DAOException
+    */
+   long getBookmarkListCount(User user) throws DAOException;
+    
     /**
      * <p>
      * getBookmarkList.

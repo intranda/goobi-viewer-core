@@ -160,7 +160,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     @Enumerated(EnumType.STRING)
     private UserAvatarOption avatarType = UserAvatarOption.DEFAULT;
     
-    @Column(name = "local_avatar_updated")
+    @Column(name = "local_avatar_updated", nullable = true)
     private Long localAvatarUpdated = null;
 
     @Column(name = "agreed_to_terms_of_use")
@@ -1760,5 +1760,23 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     public void setLocalAvatarUpdated(Long localAvatarUpdated) {
         this.localAvatarUpdated = localAvatarUpdated;
     }
+    
+    /**
+     * <p>
+     * getNumBookmarkListsForUser.
+     * </p>
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @return a int.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public long getNumBookmarkLists() throws DAOException {
+        return DataManager.getInstance().getDao().getBookmarkListCount(this);
+    }
+    
+    public long getNumSearches() throws DAOException {
+        return DataManager.getInstance().getDao().getSearchCount(this, null);
+    }
 
+    
 }

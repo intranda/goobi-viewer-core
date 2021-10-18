@@ -412,24 +412,8 @@ public class BookmarkBean implements Serializable {
     public List<BookmarkList> getBookmarkListsForUser(User user) throws DAOException {
         return DataManager.getInstance().getDao().getBookmarkLists(user);
     }
+    
 
-    /**
-     * <p>
-     * getNumBookmarkListsForUser.
-     * </p>
-     *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @return a int.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public int getNumBookmarkListsForUser(User user) throws DAOException {
-        List<BookmarkList> bookmarkLists = getBookmarkListsForUser(user);
-        if (bookmarkLists != null) {
-            return bookmarkLists.size();
-        }
-
-        return 0;
-    }
 
     /**
      * <p>

@@ -113,7 +113,7 @@
 						</div>
 						<div class="user-dashboard__searches-count">
 							<h:outputFormat value="#{msg.user_dashboard__bookmarklists_stored}">
-								 <f:param value="#{bookmarkBean.getNumBookmarkListsForUser(userBean.user)}" />
+								 <f:param value="#{userBean.user.numBookmarkLists}" />
 							</h:outputFormat>
 						</div>	
 						<!-- GO TO BOOKMARKS OVERVIEW PAGE -->
