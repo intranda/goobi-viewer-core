@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.api.annotation.ITypedResource;
@@ -567,7 +568,7 @@ public class PersistentAnnotation {
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String getContentString() throws IOException, DAOException {
+    public String getContentString() {
 
         if (StringUtils.isNotBlank(body)) {
             try {
@@ -578,7 +579,10 @@ public class PersistentAnnotation {
                     return ((de.intranda.api.annotation.wa.TextualResource) resource).getText();
                 }
 
-            } catch (Throwable e) {
+            } catch (JsonProcessingException e) {
+                logger.error("Error reading body as json value:'{}'. Error message is '{}'", body, e.toString());
+                return body;
+            } finally {
             }
         }
 
