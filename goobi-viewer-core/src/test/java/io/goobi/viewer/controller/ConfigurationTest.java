@@ -462,12 +462,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getMetsUrl()
+     * @see Configuration#getSourceFileUrl()
      * @verifies return correct value
      */
     @Test
-    public void getMetsUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("mets_value", DataManager.getInstance().getConfiguration().getMetsUrl());
+    public void getSourceFileUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("sourcefile_value", DataManager.getInstance().getConfiguration().getSourceFileUrl());
     }
 
     /**
