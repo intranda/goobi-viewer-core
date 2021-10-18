@@ -215,10 +215,10 @@ public class ViewManager implements Serializable {
         }
         this.mainMimeType = mainMimeType;
         logger.trace("mainMimeType: {}", mainMimeType);
-                
+
         String archiveId = getArchiveEntryIdentifier();
-        if(StringUtils.isNotBlank(archiveId)) {
-            ArchiveBean archiveBean = (ArchiveBean)BeanUtils.getBeanByName("archiveBean", ArchiveBean.class);
+        if (StringUtils.isNotBlank(archiveId)) {
+            ArchiveBean archiveBean = (ArchiveBean) BeanUtils.getBeanByName("archiveBean", ArchiveBean.class);
             this.archiveEntryUri = archiveBean.loadArchiveForId(archiveId);
         } else {
             this.archiveEntryUri = null;
@@ -1738,6 +1738,10 @@ public class ViewManager implements Serializable {
      */
     public String getMetsResolverUrl() {
         try {
+            String url = DataManager.getInstance().getConfiguration().getMetsUrl();
+            if (StringUtils.isNotEmpty(url)) {
+                return url + getPi();
+            }
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/metsresolver?id=" + getPi();
         } catch (Exception e) {
             logger.error("Could not get METS resolver URL for {}.", topStructElementIddoc);
@@ -1755,6 +1759,10 @@ public class ViewManager implements Serializable {
      */
     public String getLidoResolverUrl() {
         try {
+            String url = DataManager.getInstance().getConfiguration().getMetsUrl();
+            if (StringUtils.isNotEmpty(url)) {
+                return url + getPi();
+            }
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/lidoresolver?id=" + getPi();
         } catch (Exception e) {
             logger.error("Could not get LIDO resolver URL for {}.", topStructElementIddoc);
@@ -1772,6 +1780,10 @@ public class ViewManager implements Serializable {
      */
     public String getDenkxwebResolverUrl() {
         try {
+            String url = DataManager.getInstance().getConfiguration().getMetsUrl();
+            if (StringUtils.isNotEmpty(url)) {
+                return url + getPi();
+            }
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/denkxwebresolver?id=" + getPi();
         } catch (Exception e) {
             logger.error("Could not get DenkXweb resolver URL for {}.", topStructElementIddoc);
@@ -1789,6 +1801,10 @@ public class ViewManager implements Serializable {
      */
     public String getDublinCoreResolverUrl() {
         try {
+            String url = DataManager.getInstance().getConfiguration().getMetsUrl();
+            if (StringUtils.isNotEmpty(url)) {
+                return url + getPi();
+            }
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/dublincoreresolver?id=" + getPi();
         } catch (Exception e) {
             logger.error("Could not get DublinCore resolver URL for {}.", topStructElementIddoc);
@@ -1807,6 +1823,10 @@ public class ViewManager implements Serializable {
     public String getAnchorMetsResolverUrl() {
         if (anchorStructElement != null) {
             String parentPi = anchorStructElement.getMetadataValue(SolrConstants.PI);
+            String url = DataManager.getInstance().getConfiguration().getMetsUrl();
+            if (StringUtils.isNotEmpty(url)) {
+                return url + parentPi;
+            }
             return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/metsresolver?id=").append(parentPi).toString();
         }
 
@@ -3885,7 +3905,7 @@ public class ViewManager implements Serializable {
     public String getArchiveEntryUri() {
         return archiveEntryUri;
     }
-    
+
     /**
      * Creates an instance of ViewManager loaded with the record with the given identifier.
      * 
