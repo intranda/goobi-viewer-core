@@ -122,7 +122,7 @@ public final class SearchHelper {
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
     public static final String AGGREGATION_QUERY_PREFIX = "{!join from=PI_TOPSTRUCT to=PI}";
-    public static final String BOOSTING_QUERY_TEMPLATE = "((" + SolrConstants.PI + ":* AND " + SolrConstants.TITLE + ":({0})) OR _query_:\"{1}\")";
+    public static final String BOOSTING_QUERY_TEMPLATE = "+((+" + SolrConstants.PI + ":* +" + SolrConstants.TITLE + ":({0}))^20.0 _query_:\"{1}\")";
     /** Standard Solr query for all records and anchors. */
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
     /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */

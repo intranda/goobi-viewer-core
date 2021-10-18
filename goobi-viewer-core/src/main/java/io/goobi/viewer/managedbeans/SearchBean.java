@@ -1120,7 +1120,6 @@ public class SearchBean implements SearchInterface, Serializable {
                     StringBuilder sbOuter = new StringBuilder();
                     if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
                         // No filters defined or ALL
-                        sbOuter.append("(").append(SolrConstants.PI).append(":* AND MD_TITLE:(").append(innerQuery).append(")) OR ");
                         if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
                             sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(innerQuery);
                             sbOuter.append(") ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery);
