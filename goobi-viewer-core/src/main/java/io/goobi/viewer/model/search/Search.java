@@ -308,7 +308,7 @@ public class Search implements Serializable {
         Map<String, String> params = SearchHelper.generateQueryParams();
         QueryResponse resp = null;
         String termQuery = null;
-        if (boostTopLevelDocstructs) {
+        if (boostTopLevelDocstructs && searchTerms != null) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SolrConstants.DEFAULT));
         }
         String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, aggregateHits, boostTopLevelDocstructs);
