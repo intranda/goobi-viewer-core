@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.apache.commons.lang3.StringUtils;
@@ -42,14 +43,18 @@ import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.LukeRequest;
+import org.apache.solr.client.solrj.request.QueryRequest;
 import org.apache.solr.client.solrj.response.LukeResponse;
 import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
+import org.apache.solr.client.solrj.response.SpellCheckResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.luke.FieldFlag;
+import org.apache.solr.common.params.CommonParams;
+import org.apache.solr.common.params.SpellingParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -271,13 +276,19 @@ public final class SolrSearchIndex {
                  logger.trace("&{}={}", key, params.get(key));
             }
         }
+        
 
         try {
             //             logger.trace("Solr query : {}", solrQuery.getQuery());
             //             logger.debug("range: {} - {}", first, first + rows);
             //             logger.debug("facetFields: {}", facetFields);
             //             logger.debug("fieldList: {}", fieldList);
+            solrQuery.set(CommonParams.QT, "/spell");
+            solrQuery.set("spellcheck", true);            
+            
             QueryResponse resp = client.query(solrQuery);
+            QueryRequest request = new QueryRequest(solrQuery);
+            SpellCheckResponse response = request.process(client).getSpellCheckResponse();
             //             logger.debug("found: {}", resp.getResults().getNumFound());
             //             logger.debug("fetched: {}", resp.getResults().size());
 
@@ -305,6 +316,22 @@ public final class SolrSearchIndex {
         }
     }
 
+    public List<String> querySpellingSuggestions(String query, float accuracy, boolean build) throws IndexUnreachableException {
+        SolrQuery solrQuery = new SolrQuery(query);
+        solrQuery.set(CommonParams.QT, "/spell");
+        solrQuery.set("spellcheck", true);  
+        solrQuery.set(SpellingParams.SPELLCHECK_ACCURACY, Float.toString(accuracy));
+        solrQuery.set(SpellingParams.SPELLCHECK_BUILD, build);
+        try {
+            QueryResponse resp = client.query(solrQuery);
+            QueryRequest request = new QueryRequest(solrQuery);
+            SpellCheckResponse response = request.process(client).getSpellCheckResponse(); 
+            return response.getSuggestions().stream().flatMap(suggestion -> suggestion.getAlternatives().stream()).collect(Collectors.toList());
+        } catch(IOException | SolrException | SolrServerException e) {
+            throw new IndexUnreachableException(e.toString());
+        }
+    }
+    
     /**
      * <p>
      * search.

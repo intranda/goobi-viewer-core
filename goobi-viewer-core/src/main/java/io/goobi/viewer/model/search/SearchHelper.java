@@ -127,7 +127,9 @@ public final class SearchHelper {
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
     /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */
     public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -IDDOC_PARENT:*";
-
+    /** Constant <code>FUZZY_SEARCH_TERM_TEMPLATE="{0}~{1}". {0} is the actual search term, {1} the maximal edit distance to search</code> */
+    public static final String FUZZY_SEARCH_TERM_TEMPLATE = "{0}~{1}";
+    
     private static final Object lock = new Object();
 
     private static final Random random = new SecureRandom();
@@ -2721,6 +2723,22 @@ public final class SearchHelper {
         }
         return AGGREGATION_QUERY_PREFIX + "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC)" + " +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition
                 + "\"";
+    }
+
+    /**
+     * @param term  the search term. Must be a single word
+     * @param distance the maximum Damerau-Levenshtein distance to a matching word. Must be from 0 to 2, where 0 means no fuzzy search
+     * @return
+     */
+    public static String addFuzzySearchToken(String term, int distance) {
+        if(distance < 0 || distance > 2) {
+            throw new IllegalArgumentException("Edit distance in fuzzy search must be in the range from 0 to 2. The given distance is " + distance);
+        } else if(StringUtils.isBlank(term) || term.contains(" ")) {
+            throw new IllegalArgumentException("For fuzzy search, term must not be empty and must consist only of a single word. The given term is " + term);
+        } else {
+            return FUZZY_SEARCH_TERM_TEMPLATE.replace("{0}", term).replace("{1}", Integer.toString(distance));
+        }
+        
     }
 
 }
