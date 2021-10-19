@@ -2705,7 +2705,7 @@ public class SearchBean implements SearchInterface, Serializable {
             this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setValue(queryValue);
         }
         this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setOperator(SearchItemOperator.IS);
-        this.getAdvancedQueryGroups().get(0).getQueryItems().get(1).setField("searchAdvanced_allFields");
+        this.getAdvancedQueryGroups().get(0).getQueryItems().get(1).setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
         this.getAdvancedQueryGroups().get(0).getQueryItems().get(1).setOperator(SearchItemOperator.AUTO);
         this.setActiveSearchType(1);
 
