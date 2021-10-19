@@ -282,13 +282,8 @@ public final class SolrSearchIndex {
             //             logger.trace("Solr query : {}", solrQuery.getQuery());
             //             logger.debug("range: {} - {}", first, first + rows);
             //             logger.debug("facetFields: {}", facetFields);
-            //             logger.debug("fieldList: {}", fieldList);
-            solrQuery.set(CommonParams.QT, "/spell");
-            solrQuery.set("spellcheck", true);            
-            
+            //             logger.debug("fieldList: {}", fieldList);                  
             QueryResponse resp = client.query(solrQuery);
-            QueryRequest request = new QueryRequest(solrQuery);
-            SpellCheckResponse response = request.process(client).getSpellCheckResponse();
             //             logger.debug("found: {}", resp.getResults().getNumFound());
             //             logger.debug("fetched: {}", resp.getResults().size());
 
