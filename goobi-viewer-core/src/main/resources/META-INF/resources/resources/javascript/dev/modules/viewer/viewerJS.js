@@ -300,6 +300,7 @@ var viewerJS = (function () {
 		viewer.initialized.complete();
 		viewer.setCheckedStatus();
 		viewer.slider.init();
+    viewer.accessibility.init();
 	// EOL viewerJS function
     };
     
