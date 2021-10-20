@@ -2438,7 +2438,9 @@ public final class SearchHelper {
      * @param request
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @should add query prefix if boostTopLevelDocstructs true
+     * @should add embedded query template if boostTopLevelDocstructs true
+     * @should add query prefix if boostTopLevelDocstructs true and termQuery not empty
+     * @should escape quotation marks in embedded query
      * @should add join statement if aggregateHits true
      * @should not add join statement if aggregateHits false
      * @should remove existing join statement
@@ -2464,9 +2466,10 @@ public final class SearchHelper {
 
         // Boosting
         if (boostTopLevelDocstructs) {
+            String prefix = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) + " "
+                    : "";
             String template =
-                    "+(" + (StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) + " "
-                            : "") + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString()) + ")";
+                    "+(" + prefix + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString().replace("\"", "\\\"")) + ")";
             sbQuery = new StringBuilder(template);
         }
 
