@@ -83,7 +83,7 @@ public class RSSResourceTest extends AbstractRestApiTest {
             String entity = response.readEntity(String.class);
             Channel channel = mapper.readValue(entity, Channel.class);
             for (RssItem item : channel.getItems()) {
-                assertTrue("Result doesn't match query 'MD_TITLE:Berlin'", item.getTitle().contains("Berlin"));
+                assertTrue("Result doesn't match query 'MD_TITLE:Berlin': " + item.getTitle(), item.getTitle().contains("Berlin"));
             }
         }
     }
