@@ -276,7 +276,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("((SUPERDEFAULT:(foo OR bar) OR SUPERFULLTEXT:(foo OR bar) OR SUPERUGCTERMS:(foo OR bar) OR DEFAULT:(foo OR bar)"
                 + " OR FULLTEXT:(foo OR bar) OR NORMDATATERMS:(foo OR bar) OR UGCTERMS:(foo OR bar) OR CMS_TEXT_ALL:(foo OR bar))"
                 + " OR (MD_TITLE:(bla AND \\\"blup\\\" -nein))) OR (((SUPERFULLTEXT:\"lorem ipsum dolor sit amet\" OR FULLTEXT:\"lorem ipsum dolor sit amet\")))",
-                sb.generateAdvancedSearchString(true));
+                sb.generateAdvancedSearchString());
     }
 
     /**
@@ -319,7 +319,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
                 item.setValue("lorem ipsum dolor sit amet");
             }
         }
-        sb.generateAdvancedSearchString(true);
+        sb.generateAdvancedSearchString();
         Assert.assertEquals("(All fields: foo bar OR Title: bla \"blup\" -nein) OR\n<br />(Full text: \"lorem ipsum dolor sit amet\")",
                 sb.getAdvancedSearchQueryInfo());
     }
@@ -349,7 +349,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("bar");
             Assert.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString(true);
+        bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
                 bean.getFacets().getCurrentFacetString());
@@ -381,7 +381,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("bar");
             Assert.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString(true);
+        bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
                 bean.getFacets().getCurrentFacetString());
@@ -412,7 +412,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString(true);
+        bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
                 bean.getFacets().getCurrentFacetString());
@@ -445,7 +445,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString(true);
+        bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
                 bean.getFacets().getCurrentFacetString());
@@ -480,7 +480,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString(true);
+        bean.generateAdvancedSearchString();
 
         // Only one DC:foo should be in the facets
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
@@ -508,7 +508,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setField(SolrConstants.DC);
             item.setValue("foo");
         }
-        bean.generateAdvancedSearchString(true);
+        bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
                 bean.getFacets().getCurrentFacetString());

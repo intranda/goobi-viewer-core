@@ -398,7 +398,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
                 "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
                 null);
-        Assert.assertEquals(4, result.size());
+        Assert.assertEquals(5, result.size());
         {
             Set<String> terms = result.get("MD_X");
             Assert.assertNotNull(terms);
@@ -1031,8 +1031,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getBrowseElement_shouldReturnCorrectHitForAggregatedSearch() throws Exception {
         String rawQuery = SolrConstants.IDDOC + ":*";
         List<SearchHit> hits =
-                SearchHelper.searchWithFulltext(SearchHelper.buildFinalQuery(rawQuery, null, true, false), 0, 10, null, null, null, null, null,
-                        null, Locale.ENGLISH, null);
+                SearchHelper.searchWithAggregation(SearchHelper.buildFinalQuery(rawQuery, null, true, false), 0, 10, null, null, null, null, null,
+                        null, Locale.ENGLISH);
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
@@ -1275,7 +1275,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_LANGUAGE_UNTOKENIZED", null, null, false, false, false);
         for (int i = 0; i < 100; ++i) {
             List<BrowseTerm> terms =
-                    SearchHelper.getFilteredTerms(bmfc, null, null, 0, SolrSearchIndex.MAX_HITS, new BrowseTermComparator(Locale.ENGLISH), true);
+                    SearchHelper.getFilteredTerms(bmfc, null, null, 0, SolrSearchIndex.MAX_HITS, new BrowseTermComparator(Locale.ENGLISH));
             Assert.assertFalse(terms.isEmpty());
             Assert.assertTrue(previousSize == -1 || terms.size() == previousSize);
             previousSize = terms.size();
@@ -1295,9 +1295,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateQueryParams_shouldReturnEmptyMapIfSearchHitAggregationOn() throws Exception {
-        DataManager.getInstance().getConfiguration().overrideValue("search.aggregateHits", true);
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAggregateHits());
-
         Map<String, String> params = SearchHelper.generateQueryParams();
         Assert.assertNotNull(params);
         Assert.assertEquals(0, params.size());

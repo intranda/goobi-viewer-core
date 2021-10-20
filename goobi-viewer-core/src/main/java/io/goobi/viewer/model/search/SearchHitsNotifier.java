@@ -124,8 +124,7 @@ public class SearchHitsNotifier {
         Search tempSearch = new Search(search);
         SearchFacets facets = new SearchFacets();
         facets.setCurrentFacetString(tempSearch.getFacetString());
-        tempSearch.execute(facets, null, 0, 0, null, DataManager.getInstance().getConfiguration().isAggregateHits(),
-                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
+        tempSearch.execute(facets, null, 0, 0, null, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
         // TODO what if there're >100 new hits?
         if (tempSearch.getHitsCount() > tempSearch.getLastHitsCount()) {
             int newHitsCount = (int) (tempSearch.getHitsCount() - tempSearch.getLastHitsCount());
@@ -136,8 +135,7 @@ public class SearchHitsNotifier {
             tempSearch.setPage(1);
             //reset hits count to 0 to actually perform search
             tempSearch.setHitsCount(0);
-            tempSearch.execute(facets, null, newHitsCount, 0, null, DataManager.getInstance().getConfiguration().isAggregateHits(),
-                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
+            tempSearch.execute(facets, null, newHitsCount, 0, null, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
             List<SearchHit> newHits = tempSearch.getHits();
 
             // Update last count

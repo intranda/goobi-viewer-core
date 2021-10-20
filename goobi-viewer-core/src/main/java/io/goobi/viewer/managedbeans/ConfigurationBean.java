@@ -1412,8 +1412,9 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDisplaySocialMediaShareLinks();
     }
 
+    @Deprecated
     public boolean isAggregateSearchHits() {
-        return DataManager.getInstance().getConfiguration().isAggregateHits();
+        return true;
     }
 
     public String getMapBoxToken() {

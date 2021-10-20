@@ -2300,15 +2300,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isGroupDuplicateHits()
-     * @verifies return correct value
-     */
-    @Test
-    public void isGroupDuplicateHits_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isGroupDuplicateHits());
-    }
-
-    /**
      * @see Configuration#getRecordGroupIdentifierFields()
      * @verifies return all configured values
      */
@@ -2395,7 +2386,8 @@ public class ConfigurationTest extends AbstractTest {
 
     @Test
     public void testBrokenConfig() {
-        DataManager.getInstance().injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_broken.test.xml").getAbsolutePath()));
+        DataManager.getInstance()
+                .injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_broken.test.xml").getAbsolutePath()));
         String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
         Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
         String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
@@ -2441,7 +2433,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isTranskribusEnabled());
     }
 
-
     /**
      * @see Configuration#getDocstructTargetPageType(String)
      * @verifies return correct value
@@ -2477,7 +2468,6 @@ public class ConfigurationTest extends AbstractTest {
     public void isUseViewerLocaleAsRecordLanguage_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage());
     }
-    
 
     /**
      * @see Configuration#getFallbackDefaultLanguage()
@@ -2508,15 +2498,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isSearchExcelExportEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isSearchExcelExportEnabled());
-    }
-
-    /**
-     * @see Configuration#isAggregateHits()
-     * @verifies return correct value
-     */
-    @Test
-    public void isAggregateHits_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isAggregateHits());
     }
 
     /**

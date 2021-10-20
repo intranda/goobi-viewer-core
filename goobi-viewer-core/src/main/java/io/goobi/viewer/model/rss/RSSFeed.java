@@ -761,8 +761,8 @@ public class RSSFeed {
             }
             query = createQuery(query, null, subtheme, servletRequest, false);
             if (StringUtils.isNotBlank(query)) {
-                query = SearchHelper.buildFinalQuery(query, null, DataManager.getInstance().getConfiguration().isAggregateHits(),
-                        DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), servletRequest);
+                query = SearchHelper.buildFinalQuery(query, null, true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
+                        servletRequest);
             }
 
             // Optional faceting
@@ -793,11 +793,8 @@ public class RSSFeed {
             }
             query = createQuery(query, null, subtheme, servletRequest, false);
             if (StringUtils.isNotBlank(query)) {
-                query = SearchHelper.buildFinalQuery(query, null, DataManager
-                        .getInstance()
-                        .getConfiguration()
-                        .isAggregateHits(),
-                        DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), servletRequest);
+                query = SearchHelper.buildFinalQuery(query, null, true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
+                        servletRequest);
             }
 
             // Optional faceting

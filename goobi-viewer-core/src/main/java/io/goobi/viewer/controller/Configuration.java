@@ -1567,18 +1567,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isAggregateHits.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isAggregateHits() {
-        return getLocalBoolean("search.aggregateHits", true);
-    }
-
-    /**
-     * <p>
      * isDisplayAdditionalMetadataEnabled.
      * </p>
      *
@@ -4251,18 +4239,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isBoostTopLevelDocstructs() {
         return getLocalBoolean("search.boostTopLevelDocstructs", true);
-    }
-
-    /**
-     * <p>
-     * isGroupDuplicateHits.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isGroupDuplicateHits() {
-        return getLocalBoolean("search.groupDuplicateHits", true);
     }
 
     /**
