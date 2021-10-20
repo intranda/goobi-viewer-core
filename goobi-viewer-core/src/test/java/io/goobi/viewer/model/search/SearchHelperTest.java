@@ -437,7 +437,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void extractSearchTermsFromQuery_shouldHandleMultiplePhrasesInQueryCorrectly() throws Exception {
         Map<String, Set<String>> result =
                 SearchHelper.extractSearchTermsFromQuery("(MD_A:\"value1\" OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value2\")", null);
-        Assert.assertEquals(4, result.size());
+        Assert.assertEquals(5, result.size());
         {
             Set<String> terms = result.get("MD_A");
             Assert.assertNotNull(terms);
@@ -472,7 +472,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void extractSearchTermsFromQuery_shouldSkipDiscriminatorValue() throws Exception {
         Map<String, Set<String>> result =
                 SearchHelper.extractSearchTermsFromQuery("(MD_A:\"value1\" OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value3\")", "value1");
-        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(3, result.size());
         {
             Set<String> terms = result.get("MD_C");
             Assert.assertNotNull(terms);
@@ -498,12 +498,32 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies add title terms field
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldAddTitleTermsField() throws Exception {
+        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
+                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
+                null);
+        Set<String> terms = result.get(SearchHelper._TITLE_TERMS);
+        Assert.assertNotNull(terms);
+        Assert.assertEquals(6, terms.size());
+        Assert.assertTrue(terms.contains("(value1)"));
+        Assert.assertTrue(terms.contains("(value2)"));
+        Assert.assertTrue(terms.contains("(value3)"));
+        Assert.assertTrue(terms.contains("(:value4:)"));
+        Assert.assertTrue(terms.contains("\"hello-world\""));
+        Assert.assertTrue(terms.contains("\"comment\""));
+    }
+
+    /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
      * @verifies not remove truncation
      */
     @Test
     public void extractSearchTermsFromQuery_shouldNotRemoveTruncation() throws Exception {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery("MD_A:*foo*", null);
-        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(2, result.size());
         {
             Set<String> terms = result.get("MD_A");
             Assert.assertNotNull(terms);
@@ -1368,9 +1388,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void buildFinalQuery_shouldAddQueryPrefixIfBoostTopLevelDocstructsTrueAndTermQueryNotEmpty() throws Exception {
         String finalQuery =
-                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", "foo bar", true, true, null);
+                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", "(foo AND bar)", true, true, null);
         Assert.assertEquals("+(" +
-                SearchHelper.BOOSTING_QUERY_TEMPLATE.replace("{0}", "foo bar") + " "
+                SearchHelper.BOOSTING_QUERY_TEMPLATE.replace("{0}", "(foo AND bar)") + " "
                 + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(foo bar))")
                 + ") -BOOL_HIDE:true -DC:collection1 -DC:collection2",
                 finalQuery);

@@ -121,8 +121,9 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_CALENDAR = 3;
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
+    public static final String _TITLE_TERMS = "_TITLE_TERMS";
     public static final String AGGREGATION_QUERY_PREFIX = "{!join from=PI_TOPSTRUCT to=PI}";
-    public static final String BOOSTING_QUERY_TEMPLATE = "(+" + SolrConstants.PI + ":* +" + SolrConstants.TITLE + ":({0}))^20.0";
+    public static final String BOOSTING_QUERY_TEMPLATE = "(+" + SolrConstants.PI + ":* +" + SolrConstants.TITLE + ":{0})^20.0";
     public static final String EMBEDDED_QUERY_TEMPLATE = "_query_:\"{0}\"";
     /** Standard Solr query for all records and anchors. */
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
@@ -459,7 +460,7 @@ public final class SearchHelper {
         String finalQuery = prepareQuery(query);
         String termQuery = null;
         if (boostTopLevelDocstructs) {
-            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SolrConstants.DEFAULT));
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
         }
         finalQuery = buildFinalQuery(finalQuery, termQuery, aggregateHits, boostTopLevelDocstructs);
         logger.trace("getBrowseElement final query: {}", finalQuery);
@@ -1770,6 +1771,7 @@ public final class SearchHelper {
      * @should skip discriminator value
      * @should not remove truncation
      * @should throw IllegalArgumentException if query is null
+     * @should add title terms field
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
         if (query == null) {
@@ -1791,6 +1793,7 @@ public final class SearchHelper {
         query = query.replace("(", "").replace(")", "").replace(" AND ", " ").replace(" OR ", " ");
 
         Map<String, Set<String>> ret = new HashMap<>();
+        ret.put(_TITLE_TERMS, new HashSet<>());
 
         // Extract phrases and add them directly
         {
@@ -1810,15 +1813,16 @@ public final class SearchHelper {
                 } else if (field.endsWith(SolrConstants._UNTOKENIZED)) {
                     field = field.substring(0, field.length() - SolrConstants._UNTOKENIZED.length());
                 }
-                String phraseWoQuot = phraseSplit[1].replace("\"", "");
-                if (phraseWoQuot.length() > 0 && !stopwords.contains(phraseWoQuot)) {
+                String phraseWithoutQuotation = phraseSplit[1].replace("\"", "");
+                if (phraseWithoutQuotation.length() > 0 && !stopwords.contains(phraseWithoutQuotation)) {
                     if (ret.get(field) == null) {
                         ret.put(field, new HashSet<String>());
                     }
-                    logger.trace("phraseWoQuot: {}", phraseWoQuot);
-                    ret.get(field).add(phraseWoQuot);
+                    logger.trace("phraseWoQuot: {}", phraseWithoutQuotation);
+                    ret.get(field).add(phraseWithoutQuotation);
                 }
                 query = query.replace(phrase, "");
+                ret.get(_TITLE_TERMS).add("\"" + phraseWithoutQuotation + "\"");
             }
         }
 
@@ -1857,6 +1861,7 @@ public final class SearchHelper {
                             ret.put(currentField, new HashSet<String>());
                         }
                         ret.get(currentField).add(value);
+                        ret.get(_TITLE_TERMS).add("(" + value + ")");
                     }
                 }
             } else if (s.length() > 0 && !stopwords.contains(s)) {
@@ -1870,6 +1875,7 @@ public final class SearchHelper {
                     ret.put(currentField, new HashSet<String>());
                 }
                 ret.get(currentField).add(s);
+                ret.get(_TITLE_TERMS).add("(" + s + ")");
             }
         }
 
