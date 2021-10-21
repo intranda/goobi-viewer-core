@@ -1595,15 +1595,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isDisplayTopstructLabel()
-     * @verifies return correct value
-     */
-    @Test
-    public void isDisplayTopstructLabel_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplayTopstructLabel());
-    }
-
-    /**
      * @see Configuration#getAdvancedSearchDefaultItemNumber()
      * @verifies return correct value
      */
@@ -2395,7 +2386,8 @@ public class ConfigurationTest extends AbstractTest {
 
     @Test
     public void testBrokenConfig() {
-        DataManager.getInstance().injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_broken.test.xml").getAbsolutePath()));
+        DataManager.getInstance()
+                .injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_broken.test.xml").getAbsolutePath()));
         String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
         Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
         String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
@@ -2441,7 +2433,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isTranskribusEnabled());
     }
 
-
     /**
      * @see Configuration#getDocstructTargetPageType(String)
      * @verifies return correct value
@@ -2477,7 +2468,6 @@ public class ConfigurationTest extends AbstractTest {
     public void isUseViewerLocaleAsRecordLanguage_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage());
     }
-    
 
     /**
      * @see Configuration#getFallbackDefaultLanguage()
