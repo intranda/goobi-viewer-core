@@ -3549,18 +3549,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isDisplayTopstructLabel.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isDisplayTopstructLabel() {
-        return this.getLocalBoolean("metadata.searchHitMetadataList.displayTopstructLabel", false);
-    }
-
-    /**
-     * <p>
      * getDisplayStructType.
      * </p>
      *

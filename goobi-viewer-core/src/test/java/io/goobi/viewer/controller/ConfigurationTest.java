@@ -1595,15 +1595,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isDisplayTopstructLabel()
-     * @verifies return correct value
-     */
-    @Test
-    public void isDisplayTopstructLabel_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplayTopstructLabel());
-    }
-
-    /**
      * @see Configuration#getAdvancedSearchDefaultItemNumber()
      * @verifies return correct value
      */
