@@ -330,6 +330,11 @@ public class TranslationGroup {
 
         return true;
     }
+    
+    public boolean isHasEntries() {
+        List<MessageEntry> allEntries = getAllEntries();
+        return allEntries != null && !allEntries.isEmpty();
+    }
 
     /**
      * 
