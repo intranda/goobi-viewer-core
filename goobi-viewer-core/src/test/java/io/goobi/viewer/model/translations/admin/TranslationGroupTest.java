@@ -24,6 +24,7 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class TranslationGroupTest extends AbstractSolrEnabledTest {
 
@@ -144,7 +145,7 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
             Assert.assertEquals(TranslationStatus.PARTIAL, entry.getTranslationStatus());
         }
         Assert.assertFalse(group.isAllFilteredEntriesFullyTranslated());
-        
+
         group.setSelectedEntry(item.getEntries().get(0));
         Assert.assertEquals("1", group.getSelectedEntry().getKey());
         // Next
@@ -153,7 +154,7 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
         // Previous
         group.selectEntry(-1);
         Assert.assertEquals("1", group.getSelectedEntry().getKey());
-        
+
     }
 
     /**
@@ -202,7 +203,7 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
             Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
         }
         Assert.assertTrue(group.isAllFilteredEntriesFullyTranslated());
-        
+
         group.setSelectedEntry(item.getEntries().get(0));
         Assert.assertEquals("1", group.getSelectedEntry().getKey());
         // Next
@@ -259,7 +260,7 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
             Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
         }
         Assert.assertTrue(group.isAllFilteredEntriesFullyTranslated());
-        
+
         group.setSelectedEntry(item.getEntries().get(2));
         Assert.assertEquals("3", group.getSelectedEntry().getKey());
         group.selectEntry(1);
@@ -304,10 +305,32 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
             Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
         }
         Assert.assertTrue(group.isAllFilteredEntriesFullyTranslated());
-        
+
         group.setSelectedEntry(item.getEntries().get(0));
         Assert.assertEquals("1", group.getSelectedEntry().getKey());
         group.selectEntry(-1);
         Assert.assertEquals("3", group.getSelectedEntry().getKey());
+    }
+
+    /**
+     * @see TranslationGroup#isHasEntries()
+     * @verifies return false if group has no entries
+     */
+    @Test
+    public void isHasEntries_shouldReturnFalseIfGroupHasNoEntries() throws Exception {
+        TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.SOLR_FIELD_VALUES, "group", null, 2);
+        group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_VALUES, "MD_FOO", false));
+        Assert.assertFalse(group.isHasEntries());
+    }
+
+    /**
+     * @see TranslationGroup#isHasEntries()
+     * @verifies return true if group has entries
+     */
+    @Test
+    public void isHasEntries_shouldReturnTrueIfGroupHasEntries() throws Exception {
+        TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.SOLR_FIELD_VALUES, "group", null, 2);
+        group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_VALUES, SolrConstants.DC, false));
+        Assert.assertTrue(group.isHasEntries());
     }
 }

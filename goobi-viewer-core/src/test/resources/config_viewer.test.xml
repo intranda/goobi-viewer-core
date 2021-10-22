@@ -709,10 +709,6 @@
 				</metadata>
 			</template>
 
-			<!-- displayTopstructLabel: Display the label of the top structure type 
-				and label (default is false) -->
-			<displayTopstructLabel>true</displayTopstructLabel>
-
 			<!-- displayStructType: if false, the structtype is hidden -->
 			<displayStructType>false</displayStructType>
 

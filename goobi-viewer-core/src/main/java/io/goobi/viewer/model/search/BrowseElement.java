@@ -218,40 +218,12 @@ public class BrowseElement implements Serializable {
 
         // If the topstruct is a volume of any kind or a subelement, add the anchor and volume labels to
         if (!structElement.isAnchor() && topStructElement != null) {
-            int position = 0;
             // Add anchor label to volumes
             if (!structElement.isAnchor()) {
                 anchorStructElement = topStructElement.getParent();
                 if (anchorStructElement != null) {
                     // Add anchor to the docstruct hierarchy
                     structElements.add(anchorStructElement.createStub());
-                    if (DataManager.getInstance().getConfiguration().isDisplayTopstructLabel()) {
-                        String anchorLabel = generateLabel(anchorStructElement, locale);
-                        if (StringUtils.isNotEmpty(anchorLabel)) {
-                            this.metadataList
-                                    .add(position,
-                                            new Metadata(String.valueOf(anchorStructElement.getLuceneId()), anchorStructElement.getDocStructType(),
-                                                    null, new MetadataParameter().setType(MetadataParameterType.FIELD)
-                                                            .setKey(anchorStructElement.getDocStructType()),
-                                                    StringTools.intern(anchorLabel), locale));
-                            position++;
-                        }
-                    }
-                }
-            }
-            // Add topstruct label to lower docstructs
-            if (!structElement.isWork() && DataManager.getInstance().getConfiguration().isDisplayTopstructLabel()) {
-                String topstructLabel = generateLabel(topStructElement, locale);
-                if (StringUtils.isNotEmpty(topstructLabel)) {
-                    // Add volume number, if the parent is a volume
-                    if (topStructElement.isAnchorChild() && StringUtils.isNotEmpty(topStructElement.getVolumeNo())) {
-                        topstructLabel = new StringBuilder(topstructLabel).append(" (").append(topStructElement.getVolumeNo()).append(')').toString();
-                    }
-                    this.metadataList.add(position,
-                            new Metadata(String.valueOf(topStructElement.getLuceneId()), topStructElement.getDocStructType(), null,
-                                    new MetadataParameter().setType(MetadataParameterType.FIELD)
-                                            .setKey(topStructElement.getDocStructType()),
-                                    StringTools.intern(topstructLabel), locale));
                 }
             }
         }
