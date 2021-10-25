@@ -34,6 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.iiif.IIIFUrlResolver;
@@ -79,6 +81,9 @@ import io.goobi.viewer.solr.SolrTools;
  *
  */
 public class IIIFPresentation2ResourceBuilder {
+    
+    private static final Logger logger = LoggerFactory.getLogger(IIIFPresentation2ResourceBuilder.class);
+
 
     private ManifestBuilder manifestBuilder;
     private StructureBuilder structureBuilder;
@@ -349,6 +354,7 @@ public class IIIFPresentation2ResourceBuilder {
             throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
 
         String finalQuery = query + " " + SearchHelper.ALL_RECORDS_QUERY;
+        logger.trace("getManifestForQuery: {}", finalQuery);
 
         List<StringPair> sortFieldList = SolrTools.getSolrSortFieldsAsList(sortFields == null ? "" : sortFields, ",", " ");
         SolrDocumentList queryResults = DataManager.getInstance()
