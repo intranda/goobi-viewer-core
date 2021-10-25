@@ -145,8 +145,13 @@ var viewerJS = (function () {
 
         // toggle collapseable widgets
         $('body').on('click', '.widget__title.collapseable', function () {
-            $(this).toggleClass('in').next().slideToggle('fast');
-        });
+            $(this).toggleClass('in').next().slideToggle(300, function() {
+					 viewer.refreshHCsticky();
+				console.log('promise nach jquery animation aufklappen');
+		});
+		});
+
+
 
         // fade out message box if it exists
         (function () {
@@ -316,7 +321,7 @@ var viewerJS = (function () {
 
     		});
 
-    	// console.log('refresh hc sticky done');
+    	console.log('refresh hc sticky done');
     }
     
     viewer.initTinyMCE  = function(event) {

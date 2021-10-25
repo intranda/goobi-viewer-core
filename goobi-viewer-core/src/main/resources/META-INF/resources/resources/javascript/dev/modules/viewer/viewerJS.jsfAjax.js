@@ -78,6 +78,7 @@ var viewerJS = ( function ( viewer ) {
                             }
                             // hc sticky recalculation
                             if ( $('.-refreshHCsticky' ).length > 0 ) {
+								console.log('sticky refresh abc');
                             	setTimeout(
                             			  function() 
                             			  {
