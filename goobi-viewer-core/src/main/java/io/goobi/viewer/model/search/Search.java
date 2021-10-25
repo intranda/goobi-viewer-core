@@ -262,16 +262,15 @@ public class Search implements Serializable {
      * @param hitsPerPage a int.
      * @param advancedSearchGroupOperator a int.
      * @param locale Selected locale
-     * @param aggregateHits
+     * @param boostTopLevelDocstructs
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
-            boolean aggregateHits, boolean boostTopLevelDocstructs)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, aggregateHits, boostTopLevelDocstructs, false);
+            boolean boostTopLevelDocstructs) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, boostTopLevelDocstructs, false);
     }
 
     /**
@@ -284,7 +283,6 @@ public class Search implements Serializable {
      * @param hitsPerPage a int.
      * @param advancedSearchGroupOperator a int.
      * @param locale Selected locale
-     * @param aggregateHits
      * @param boostTopLevelDocstructs
      * @param keepSolrDoc
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -293,7 +291,7 @@ public class Search implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
-            boolean aggregateHits, boolean boostTopLevelDocstructs, boolean keepSolrDoc)
+            boolean boostTopLevelDocstructs, boolean keepSolrDoc)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("execute");
         if (facets == null) {
@@ -308,10 +306,10 @@ public class Search implements Serializable {
         Map<String, String> params = SearchHelper.generateQueryParams();
         QueryResponse resp = null;
         String termQuery = null;
-        if (boostTopLevelDocstructs) {
-            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SolrConstants.DEFAULT));
+        if (boostTopLevelDocstructs && searchTerms != null) {
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
         }
-        String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, aggregateHits, boostTopLevelDocstructs);
+        String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, true, boostTopLevelDocstructs);
 
         // Apply current facets
         List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true);
@@ -363,7 +361,7 @@ public class Search implements Serializable {
             }
 
             // Extra search for child element facet values
-            if (DataManager.getInstance().getConfiguration().isAggregateHits() && !facets.getConfiguredSubelementFacetFields().isEmpty()) {
+            if (!facets.getConfiguredSubelementFacetFields().isEmpty()) {
                 String extraQuery =
                         new StringBuilder().append(SearchHelper.buildFinalQuery(currentQuery, null, false, false))
                                 .append(subElementQueryFilterSuffix)
@@ -493,11 +491,9 @@ public class Search implements Serializable {
         }
 
         List<StringPair> useSortFields = getAllSortFields();
-        List<SearchHit> hits = aggregateHits
-                ? SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
-                        searchTerms, null, BeanUtils.getLocale(), keepSolrDoc)
-                : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
-                        searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc);
+        List<SearchHit> hits =
+                SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
+                        searchTerms, null, BeanUtils.getLocale(), keepSolrDoc);
         this.hits.addAll(hits);
     }
 

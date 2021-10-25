@@ -161,7 +161,7 @@ public class IndexResource {
         String termQuery = null;
         if (params.boostTopLevelDocstructs) {
             Map<String, Set<String>> searchTerms = SearchHelper.extractSearchTermsFromQuery(params.query.replace("\\", ""), null);
-            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SolrConstants.DEFAULT));
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
         }
         String query = SearchHelper.buildFinalQuery(params.query, termQuery, params.includeChildHits, params.boostTopLevelDocstructs);
 
