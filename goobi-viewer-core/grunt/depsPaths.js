@@ -299,19 +299,7 @@ const depsPathsJS = [
     ],
     flatten: false,
     dest: `${jsLibsDir}`
-  },
-
-  { // x3dom
-    expand: true,
-    cwd: nodeModules,
-    src: [
-      'x3dom/x3dom.js',
-      'x3dom/README.md'
-    ],
-    flatten: false,
-    dest: `${jsLibsDir}`
   }
-
 ];
 
   /////////////////////

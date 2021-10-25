@@ -1396,14 +1396,14 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getMetsUrl.
+     * getSourceFileUrl.
      * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
      */
-    public String getMetsUrl() {
-        return getLocalString("urls.metadata.mets");
+    public String getSourceFileUrl() {
+        return getLocalString("urls.metadata.sourcefile");
     }
 
     /**
@@ -3557,18 +3557,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public int getBreadcrumbsClipping() {
         return getLocalInt("webGuiDisplay.breadcrumbsClipping", 50);
-    }
-
-    /**
-     * <p>
-     * isDisplayTopstructLabel.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isDisplayTopstructLabel() {
-        return this.getLocalBoolean("metadata.searchHitMetadataList.displayTopstructLabel", false);
     }
 
     /**

@@ -64,8 +64,8 @@
 	<urls>
 		<!-- ##### ADDRESSES FOR DOWNLOAD OF METADATA VIA OAI ##### -->
 		<metadata>
-			<!-- Path to METS-file via OAI for linking in bibliographic data -->
-			<mets>mets_value</mets>
+			<!-- sourcefile: Path to source file via the internal resolver  -->
+			<sourcefile>sourcefile_value</sourcefile>
 			<!-- Path to MarcXML-record via OAI for linking in bibliographic data -->
 			<marc>marc_value</marc>
 			<!-- Path to DublinCore record via OAI for linking in bibliographic data -->
@@ -708,10 +708,6 @@
 					<param type="field" key="DC" />
 				</metadata>
 			</template>
-
-			<!-- displayTopstructLabel: Display the label of the top structure type 
-				and label (default is false) -->
-			<displayTopstructLabel>true</displayTopstructLabel>
 
 			<!-- displayStructType: if false, the structtype is hidden -->
 			<displayStructType>false</displayStructType>

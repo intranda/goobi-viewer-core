@@ -80,5 +80,29 @@
                 <ignoreVersion>2.0.2</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <!-- ignore newer mariadb-java-clients because newer versions than 2.3.0 fail to update the schema 
+             see https://jira.mariadb.org/browse/CONJ-702 -->
+        <rule groupId="org.mariadb.jdbc" artifactId="mariadb-java-client">
+            <ignoreVersions>
+                <ignoreVersion>2.4.0</ignoreVersion>
+                <ignoreVersion>2.4.1</ignoreVersion>
+                <ignoreVersion>2.4.2</ignoreVersion>
+                <ignoreVersion>2.4.3</ignoreVersion>
+                <ignoreVersion>2.4.4</ignoreVersion>
+                <ignoreVersion>2.5.0</ignoreVersion>
+                <ignoreVersion>2.5.1</ignoreVersion>
+                <ignoreVersion>2.5.2</ignoreVersion>
+                <ignoreVersion>2.5.3</ignoreVersion>
+                <ignoreVersion>2.5.4</ignoreVersion>
+                <ignoreVersion>2.6.0</ignoreVersion>
+                <ignoreVersion>2.6.1</ignoreVersion>
+                <ignoreVersion>2.6.2</ignoreVersion>
+                <ignoreVersion>2.7.0</ignoreVersion>
+                <ignoreVersion>2.7.1</ignoreVersion>
+                <ignoreVersion>2.7.2</ignoreVersion>
+                <ignoreVersion>2.7.3</ignoreVersion>
+                <ignoreVersion>2.7.4</ignoreVersion>
+            </ignoreVersions>
+        </rule>
     </rules>
 </ruleset>
