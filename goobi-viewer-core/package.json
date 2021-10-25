@@ -1,6 +1,6 @@
 {
   "name": "goobi-viewer",
-  "version": "21.02",
+  "version": "1.0.0",
   "description": "A highly flexible digital library framework - made by the Goobi developer team",
   "author": "intranda GmbH",
   "repository": {
