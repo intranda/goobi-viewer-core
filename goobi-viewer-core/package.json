@@ -8,18 +8,25 @@
     "url": "https://github.com/intranda/goobi-viewer-core"
   },
   "license": "GPL-2.0-or-later",
+  "scripts": {
+    "grunt-watch":"grunt watch",
+    "grunt-dev":"grunt dev",
+    "grunt-devsync":"grunt devsync",
+    "grunt-default":"grunt default",
+    "grunt-copyDeps":"grunt copyDeps"
+  },
   "devDependencies": {
-    "grunt": "^1.4.1",
-    "grunt-concurrent": "^3.0.0",
-    "grunt-contrib-concat": "*",
+    "grunt": "~1.4.1",
+    "grunt-concurrent": "~3.0.0",
+    "grunt-contrib-concat": "~1.0.1",
     "grunt-contrib-copy": "~1.0.0",
-    "grunt-contrib-less": "^3.0.0",
-    "grunt-contrib-watch": "*",
-    "grunt-riot": "*",
-    "grunt-sync": "^0.8.2",
-    "less-plugin-autoprefix": "^2.0.0",
-    "michelangelo": "^0.8.0",
-    "webpack": "5.51.1"
+    "grunt-contrib-less": "~3.0.0",
+    "grunt-contrib-watch": "~1.1.0",
+    "grunt-riot": "~0.1.8",
+    "grunt-sync": "~0.8.2",
+    "less-plugin-autoprefix": "~2.0.0",
+    "michelangelo": "~0.8.0",
+    "webpack": "~5.51.1"
   },
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "~4.7.4",
