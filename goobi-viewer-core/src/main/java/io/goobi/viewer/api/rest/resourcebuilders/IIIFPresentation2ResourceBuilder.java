@@ -353,7 +353,7 @@ public class IIIFPresentation2ResourceBuilder {
     public List<IPresentationModelElement> getManifestsForQuery(String query, String sortFields, int first, int rows)
             throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
 
-        String finalQuery = query + " " + SearchHelper.ALL_RECORDS_QUERY;
+        String finalQuery = SearchHelper.buildFinalQuery(query, true, request);
         logger.trace("getManifestForQuery: {}", finalQuery);
 
         List<StringPair> sortFieldList = SolrTools.getSolrSortFieldsAsList(sortFields == null ? "" : sortFields, ",", " ");
