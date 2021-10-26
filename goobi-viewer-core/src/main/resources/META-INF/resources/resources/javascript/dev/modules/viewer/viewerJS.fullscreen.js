@@ -615,8 +615,14 @@ var viewerJS = ( function( viewer ) {
     	else {
     		delay = 5000;
     	}
+
+      // Check if keyboard is used to navigate the page
+      var usingKeyboard = false;
+      if(document.body.classList.contains('using-keyboard')) {
+        usingKeyboard = true;
+      }
     	
-    	if ( trigger ) {
+    	if ( trigger && !usingKeyboard) {
     		if ( _fadeout ) {
     			clearTimeout( _fadeout );
     			$( '#fullscreenHeader' ).show();
