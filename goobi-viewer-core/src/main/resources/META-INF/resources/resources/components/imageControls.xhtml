@@ -309,20 +309,20 @@
                         <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext'}">
                             <!-- ROTATE -->
                             <li class="image-controls__action rotate-left">
-                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.rotateLeft}" role="button" tabindex="0">
+                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.rotateLeft}" role="button" tabindex="0" aria-label="#{msg.rotateLeft}">
                                     <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-rotate-left.svg')}" />
                                     <span class="labeltext">#{msg.rotateLeft}</span>
                                 </a>
                             </li>
                             <li class="image-controls__action rotate-right">
-                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.rotateRight}" role="button" tabindex="0">
+                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.rotateRight}" role="button" tabindex="0" aria-label="#{msg.rotateRight}">
                                     <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-rotate-right.svg')}" />
                                     <span class="labeltext">#{msg.rotateRight}</span>
                                 </a>
                             </li>
                             <!-- RESET -->
                             <li class="image-controls__action reset">
-                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.resetImage}" role="button" tabindex="0">
+                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.resetImage}" role="button" tabindex="0" aria-label="#{msg.resetImage}">
                                     <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-reset.svg')}" />
                                     <span class="labeltext">#{msg.resetImage}</span>
                                 </a>
