@@ -20,12 +20,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.Query;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +42,12 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserActivity;
 
 @Named
 @SessionScoped
@@ -157,7 +166,7 @@ public class UserDataBean implements Serializable {
             return Collections.emptyList();
         }
 
-        return DataManager.getInstance().getDao().getAnnotationsForUserId(userBean.getUser().getId());
+        return DataManager.getInstance().getDao().getAnnotationsForUserId(userBean.getUser().getId(), null, null, false);
     }
 
     /**
@@ -209,5 +218,53 @@ public class UserDataBean implements Serializable {
      */
     public TableDataProvider<PersistentAnnotation> getLazyModelAnnotations() {
         return lazyModelAnnotations;
+    }
+
+    public long getNumBookmarkLists(User user) throws DAOException {
+        return DataManager.getInstance().getDao().getBookmarkListCount(user);
+    }
+    
+    public long getNumSearches(User user) throws DAOException {
+        return DataManager.getInstance().getDao().getSearchCount(user, null);
+    }
+    
+    public long getNumComments(User user) throws DAOException {
+        return DataManager.getInstance().getDao().getCommentCount(null, user);
+    }
+    
+    public Long getNumRecordsWithComments(User user) throws DAOException {
+        Query query = DataManager.getInstance().getDao().createNativeQuery("SELECT COUNT(DISTINCT pi) FROM comments WHERE comments.owner_id=" + user.getId());
+        return (Long) query.getSingleResult();
+    }
+
+    public List<Comment> getLatestComments(User user, int numEntries) throws DAOException {
+        List<Comment> lastCreatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateCreated", true);
+        List<Comment> lastUpdatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateUpdated", true);
+
+        return CollectionUtils.union(lastCreatedComments, lastUpdatedComments).stream().distinct().limit(numEntries).collect(Collectors.toList());
+    }
+    
+    public List<UserActivity> getLatestActivity(User user, int numEntries) throws DAOException {
+        List<Search> searches = DataManager.getInstance().getDao().getSearches(user, 0, numEntries, "dateUpdated", true, null);
+        List<Bookmark> bookmarks = DataManager.getInstance().getDao().getBookmarkLists(user)
+                .stream().flatMap(list -> list.getItems().stream())
+                .sorted((bm1, bm2) -> bm1.getDateAdded().compareTo(bm2.getDateAdded()))
+                .limit(numEntries)
+                .collect(Collectors.toList());
+        List<Comment> lastCreatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateCreated", true);
+        List<Comment> lastUpdatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateUpdated", true);
+        List<PersistentAnnotation> lastCreatedCrowdsourcingAnnotations = DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId(), numEntries, "dateCreated", true);
+        List<PersistentAnnotation> lastUpdatedCrowdsourcingAnnotations = DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId(), numEntries, "dateModified", true);
+
+        Stream<UserActivity> activities = Stream.of(
+                searches.stream().map(UserActivity::getFromSearch),
+                bookmarks.stream().map(UserActivity::getFromBookmark),
+                lastCreatedComments.stream().map(UserActivity::getFromComment),
+                lastUpdatedComments.stream().map(UserActivity::getFromCommentUpdate),
+                lastCreatedCrowdsourcingAnnotations.stream().map(UserActivity::getFromCampaignAnnotation),
+                lastUpdatedCrowdsourcingAnnotations.stream().map(UserActivity::getFromCampaignAnnotationUpdate))
+                .distinct()
+                .flatMap(Function.identity());
+       return activities.limit(numEntries).collect(Collectors.toList());
     }
 }

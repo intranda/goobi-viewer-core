@@ -1723,6 +1723,23 @@ public class JPADAO implements IDAO {
         return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
     }
 
+    @Override
+    public List<Comment> getCommentsOfUser(User user, int maxResults, String sortField, boolean descending) throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder(80);
+        sbQuery.append("SELECT o FROM Comment o WHERE o.owner = :owner");
+        Query q = getEntityManager().createQuery(sbQuery.toString());
+        q.setParameter("owner", user);
+        if (StringUtils.isNotEmpty(sortField)) {
+            sbQuery.append(" ORDER BY a.").append(sortField);
+            if (descending) {
+                sbQuery.append(" DESC");
+            }
+        }
+        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.setMaxResults(maxResults).setFlushMode(FlushModeType.COMMIT).getResultList();
+    }
+    
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getCommentsForPage(java.lang.String, int)
      */
@@ -2755,17 +2772,11 @@ public class JPADAO implements IDAO {
                         if (keyPartCount > 0) {
                             where.append(" OR ");
                         }
-                        //                        if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
-                        //                            where.append("UPPER(" + tableKey + ".").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
-                        //                        } else if ("categories".equals(joinTable)) {
-                        //                            where.append(tableKey).append(" LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
-                        //
-                        //                        } else {
+
                         where.append("UPPER(" + tableKey + ".")
                                 .append(keyPart.replace("-", "."))
                                 .append(") LIKE :")
                                 .append(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""));
-                        //                        }
                         keyPartCount++;
                     }
                     where.append(" ) ");
@@ -3867,8 +3878,20 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public long getCommentCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("Comment", null, filters);
+    public long getCommentCount(Map<String, String> filters, User owner) throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Comment a");
+        Map<String, String> params = new HashMap<>();
+        if(owner != null) {
+            sbQuery.append(" WHERE a.owner = :owner");
+        }
+        Query q = getEntityManager().createQuery(sbQuery.append(createFilterQuery(null, filters, params)).toString());
+        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+        if(owner != null) {
+            q.setParameter("owner", owner);
+        }
+
+        return (long) q.getSingleResult();
     }
 
     /** {@inheritDoc} */
@@ -4668,15 +4691,26 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId) throws DAOException {
+    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending) throws DAOException {
         if (userId == null) {
             return Collections.emptyList();
         }
 
         preQuery();
-        String query = "SELECT a FROM PersistentAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
+        String queryString = "SELECT a FROM PersistentAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
 
-        return getEntityManager().createQuery(query).setParameter("userId", userId).getResultList();
+        if (StringUtils.isNotEmpty(sortField)) {
+            queryString += " ORDER BY a." + sortField;
+            if (descending) {
+                queryString += " DESC";
+            }
+        }
+        
+        Query query = getEntityManager().createQuery(queryString).setParameter("userId", userId);
+        if(maxResults != null) {
+            query.setMaxResults(maxResults);
+        }
+        return query.getResultList();
     }
 
     /**

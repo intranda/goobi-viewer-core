@@ -639,7 +639,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCommentCount_shouldReturnCorrectCount() throws Exception {
-        Assert.assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null));
+        Assert.assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null, null));
     }
 
     /**
@@ -650,7 +650,19 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void getCommentCount_shouldFilterCorrectly() throws Exception {
         Map<String, String> filters = new HashMap<>();
         filters.put("page", "1");
-        Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(filters));
+        Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(filters, null));
+    }
+    
+    @Test
+    public void getCommentCount_shouldFilterForUserCorrectly() throws Exception {
+        {
+            User owner = DataManager.getInstance().getDao().getUser(1l);
+            Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(null, owner));
+        }
+        {            
+            User owner = DataManager.getInstance().getDao().getUser(2l);
+            Assert.assertEquals(1L, DataManager.getInstance().getDao().getCommentCount(null, owner));
+        }
     }
 
     @Test
@@ -2516,7 +2528,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getAnnotationsForUserId_shouldReturnCorrectRows() throws Exception {
-        List<PersistentAnnotation> result = DataManager.getInstance().getDao().getAnnotationsForUserId(1L);
+        List<PersistentAnnotation> result = DataManager.getInstance().getDao().getAnnotationsForUserId(1L, null, null, false);
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
         Assert.assertEquals(Long.valueOf(1), result.get(0).getId());
