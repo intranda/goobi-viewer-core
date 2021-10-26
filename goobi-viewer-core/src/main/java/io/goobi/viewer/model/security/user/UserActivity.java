@@ -21,6 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.bookmark.Bookmark;
+import io.goobi.viewer.model.search.Search;
 
 /**
  * @author florian
@@ -28,7 +30,7 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
  */
 public class UserActivity {
 
-    public static final int MAX_LABEL_LENGTH = 100;
+    public static final int MAX_LABEL_LENGTH = 50;
     public static final String LABEL_TRUNCATE_SUFFIX = "...";
     
     public enum ActivityType {
@@ -78,7 +80,49 @@ public class UserActivity {
     
     public static UserActivity getFromCampaignAnnotation(PersistentAnnotation anno) {
         return new UserActivity(ActivityType.campaignAnnotation, truncate(anno.getContentString()), anno.getDateCreated(), false);
-
+    }
+    
+    public static UserActivity getFromCampaignAnnotationUpdate(PersistentAnnotation anno) {
+        return new UserActivity(ActivityType.campaignAnnotation, truncate(anno.getContentString()), anno.getDateModified(), true);
+    }
+    
+    public static UserActivity getFromBookmark(Bookmark bookmark) {
+        String listName = truncate(bookmark.getBookmarkList().getName(), 22);
+        String bookmarkName = truncate(bookmark.getName(), MAX_LABEL_LENGTH-listName.length()-3);
+        String label = bookmarkName + " (" + listName + ")";
+        return new UserActivity(ActivityType.bookmark, label, bookmark.getDateAdded(), false);
+    }
+    
+    public static UserActivity getFromSearch(Search search) {
+        return new UserActivity(ActivityType.search, truncate(search.getName()), search.getDateUpdated(), false);
+    }
+    
+    /**
+     * @return the type
+     */
+    public ActivityType getType() {
+        return type;
+    }
+    
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+    
+    /**
+     * @return the date
+     */
+    public LocalDateTime getDate() {
+        return date;
+    }
+    
+    /**
+     * @return the update
+     */
+    public boolean isUpdate() {
+        return update;
     }
  
     /**
@@ -86,13 +130,15 @@ public class UserActivity {
      * @return
      */
     private static String truncate(String text) {
-        if(StringUtils.isNotBlank(text) && text.length() > MAX_LABEL_LENGTH) {
-            return text.substring(0, MAX_LABEL_LENGTH) + LABEL_TRUNCATE_SUFFIX;
+        return truncate(text, MAX_LABEL_LENGTH);
+    }
+    
+    private static String truncate(String text, int length) {
+        if(StringUtils.isNotBlank(text) && text.length() > length) {
+            return text.substring(0, length) + LABEL_TRUNCATE_SUFFIX;
         } else {
             return text;
         }
     }
-   
-    
-    
+ 
 }

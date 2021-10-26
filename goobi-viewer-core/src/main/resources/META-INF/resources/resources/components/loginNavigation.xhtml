@@ -54,7 +54,7 @@
                                 <ul class="login-navigation__list">
                                     
                                     <!-- BOOKMARKS -->
-                                    <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and userBean.user.numBookmarkLists > 0}">
+                                    <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and userDataBean.getNumBookmarkLists(userBean.user) > 0}">
                                         <li class="login-navigation__bookmarks-list-wrapper">
                                             <div class="login-navigation__user-dropdown-item login-navigation__bookmarks-list">
                                                 <div class="login-navigation__user-dropdown-item-icon">
@@ -69,7 +69,7 @@
                                     </ui:fragment>
                                     
                                     <!-- SAVED SEARCHES -->
-                                    <ui:fragment rendered="#{searchBean.searchSavingEnabled and userBean.user.numSearches > 0}">
+                                    <ui:fragment rendered="#{searchBean.searchSavingEnabled and userDataBean.getNumSearches(userBean.user) > 0}">
                                         <li>
                                             <div class="login-navigation__user-dropdown-item">
                                                 <div class="login-navigation__user-dropdown-item-icon">

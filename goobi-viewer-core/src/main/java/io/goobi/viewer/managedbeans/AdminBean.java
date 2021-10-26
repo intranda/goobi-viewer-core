@@ -207,7 +207,7 @@ public class AdminBean implements Serializable {
                 @Override
                 public long getTotalNumberOfRecords(Map<String, String> filters) {
                     try {
-                        return DataManager.getInstance().getDao().getCommentCount(filters);
+                        return DataManager.getInstance().getDao().getCommentCount(filters, null);
                     } catch (DAOException e) {
                         logger.error(e.getMessage(), e);
                         return 0;
