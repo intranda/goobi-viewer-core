@@ -338,7 +338,7 @@ public class JsonTools {
                     + " " + jsonObj.getString("build-date")
                     + " " + jsonObj.getString("git-revision");
         } catch (JSONException e) {
-            logger.error(e.getMessage());
+            logger.warn(e.getMessage());
             return notAvailableKey;
         }
     }
