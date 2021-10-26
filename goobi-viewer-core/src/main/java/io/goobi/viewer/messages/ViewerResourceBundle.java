@@ -787,6 +787,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param value Message value
      * @param language ISO 639-1 language code
      * @return
+     * @should preserve spaces
      */
     public static boolean updateLocalMessageKey(String key, String value, String language) {
         if (StringUtils.isEmpty(key)) {
