@@ -708,6 +708,9 @@
 
 								<!-- The jersey-container-servlet dependency is used for startup during runtime Unit tests run without it though -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.containers:jersey-container-servlet</ignoredUnusedDeclaredDependency>
+                                
+                                <!-- commons-configuration (1) is required by ICS -->
+                                <ignoredUnusedDeclaredDependency>commons-configuration:commons-configuration</ignoredUnusedDeclaredDependency>
 
 								<!-- JXPath is used at XPathExpressionEngine from org.apache.commons.configuration2, i.e. LanguageHelper -->
 								<ignoredUnusedDeclaredDependency>commons-jxpath:commons-jxpath</ignoredUnusedDeclaredDependency>
