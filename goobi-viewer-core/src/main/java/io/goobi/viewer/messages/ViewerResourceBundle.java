@@ -807,7 +807,7 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
         }
 
-        try (StringWriter writer = new StringWriter()) {
+        try {
             ConfigurationBuilder<PropertiesConfiguration> builder =
                     new FileBasedConfigurationBuilder<PropertiesConfiguration>(PropertiesConfiguration.class)
                             .configure(new Parameters().properties()
@@ -834,8 +834,6 @@ public class ViewerResourceBundle extends ResourceBundle {
             logger.trace("File written: {}", file.getAbsolutePath());
             return true;
         } catch (ConfigurationException e) {
-            logger.error(e.getMessage());
-        } catch (IOException e) {
             logger.error(e.getMessage());
         }
 
