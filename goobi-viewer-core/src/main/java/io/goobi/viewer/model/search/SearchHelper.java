@@ -103,6 +103,12 @@ public final class SearchHelper {
     // public static final String[] FULLTEXT_SEARCH_FIELDS = { LuceneConstants.FULLTEXT, LuceneConstants.IDDOC_OWNER,
     // LuceneConstants.IDDOC_IMAGEOWNER };
 
+    /**
+     * All configured facet fields. Used for {@link #defacetifyField(String)} and stored here for quick access
+     */
+    private static final List<String> CONFIGURED_FACET_FIELDS = DataManager.getInstance().getConfiguration().getFacetFields();
+
+    
     /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code> */
     public static final String PARAM_NAME_FILTER_QUERY_SUFFIX = "filterQuerySuffix";
     /** Constant <code>SEARCH_TERM_SPLIT_REGEX="[ ]|[,]|[-]"</code> */
@@ -138,6 +144,7 @@ public final class SearchHelper {
 
     /** Filter subquery for collection listing (no volumes). */
     static volatile String collectionBlacklistFilterSuffix = null;
+    
 
     /**
      * Main search method for flat search.
@@ -2058,6 +2065,17 @@ public final class SearchHelper {
         if (fieldName == null) {
             return null;
         }
+        
+        /**
+         * If the given fieldname is a facetified version of a configured facet field, return the configured field
+         */
+        for (String field : CONFIGURED_FACET_FIELDS) {
+            String facetField = facetifyField(field);
+            if(facetField.equals(fieldName)) {
+                return field;
+            }
+        }
+        
 
         switch (fieldName) {
             case SolrConstants.FACET_DC:
