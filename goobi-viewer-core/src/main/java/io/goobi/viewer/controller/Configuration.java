@@ -3516,7 +3516,7 @@ public final class Configuration extends AbstractConfiguration {
      *
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @param imageType a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
-     * @return a {@link org.apache.commons.configuration.SubnodeConfiguration} object.
+     * @return a {@link org.apache.commons.configuration2.SubnodeConfiguration} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BaseHierarchicalConfiguration getZoomImageViewConfig(PageType pageType, ImageType imageType) throws ViewerConfigurationException {

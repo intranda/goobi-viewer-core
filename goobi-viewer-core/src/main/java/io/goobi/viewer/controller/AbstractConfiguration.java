@@ -268,7 +268,7 @@ public abstract class AbstractConfiguration {
      * </p>
      *
      * @param inPath a {@link java.lang.String} object.
-     * @return a {@link org.apache.commons.configuration.HierarchicalConfiguration} object.
+     * @return a {@link org.apache.commons.configuration2.HierarchicalConfiguration} object.
      */
     protected HierarchicalConfiguration<ImmutableNode> getLocalConfigurationAt(String inPath) {
         List<HierarchicalConfiguration<ImmutableNode>> ret = null;
