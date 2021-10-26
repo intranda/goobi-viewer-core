@@ -39,29 +39,36 @@
             
             	<!-- ACTIVITIES BLOCK -->
 				<h3>#{msg.label__user_crowdsourcing_activity}</h3>
+				<c:set value="#{userDataBean.getLatestActivity(userBean.user, 6)}" var="activities" scope="view"/>
 				<div class="user-dashboard__form-wrapper">
-					<div class="user-dashboard__last-activities-wrapper">
-						<div class="user-dashboard__last-activities-list">
-
-							
-							
-							<div class="user-dashboard__last-activities-timeline-wrapper">
-								<ui:repeat value="#{userDataBean.getLatestActivity(userBean.user, 6)}" var="activity">
-									<div class="user-dashboard__last-activities-timeline-item">
-										<div class="user-dashboard__last-activities-timeline-item-type"><i class="#{activity.type.icon}"></i>#{msg[activity.type.label]}</div>
-										<div class="user-dashboard__last-activities-timeline-item-date">
-											<h:outputText value="#{activity.date}">
-	                                            <f:converter converterId="localDateTimeConverter" />
-	                                            <f:attribute name="pattern" value="#{navigationHelper.datePattern}" />
-	                                        </h:outputText>
-                                    	</div>
-										<div class="user-dashboard__last-activitiestimeline-item-name">#{activity.label}</div>
+					<c:choose>
+						<c:when test="#{not empty activities}">
+							<div class="user-dashboard__last-activities-wrapper">
+								<div class="user-dashboard__last-activities-list">
+									<div class="user-dashboard__last-activities-timeline-wrapper">
+										<ui:repeat value="#{activities}" var="activity">
+											<div class="user-dashboard__last-activities-timeline-item">
+												<div class="user-dashboard__last-activities-timeline-item-type"><i class="#{activity.type.icon}"></i>#{msg[activity.type.label]}</div>
+												<div class="user-dashboard__last-activities-timeline-item-date">
+													<h:outputText value="#{activity.date}">
+			                                            <f:converter converterId="localDateTimeConverter" />
+			                                            <f:attribute name="pattern" value="#{navigationHelper.datePattern}" />
+			                                        </h:outputText>
+		                                    	</div>
+												<div class="user-dashboard__last-activitiestimeline-item-name">#{activity.label}</div>
+											</div>
+										</ui:repeat>
 									</div>
-								</ui:repeat>
+								</div>
 							</div>
-					
-					</div>
-				</div>
+						</c:when>
+						<c:otherwise>
+							<div class="user-dashboard__last-activities-wrapper">
+								<div class="alert alert-warning" role="alert">#{msg.warning__no_user_activity}</div>
+							</div>
+						</c:otherwise>
+					</c:choose>
+
 				</div>
 				
 				<!-- OVERVIEW BLOCK -->
@@ -96,7 +103,7 @@
 								</a>
 							</c:when>
 							<c:otherwise>
-								<div class="user-dashboard__searches-wrapper">
+								<div class="user-dashboard__bookmarks-wrapper">
 									<div class="alert alert-warning" role="alert">#{msg.warning__no_bookmarks}</div>
 								</div>
 							</c:otherwise>
@@ -106,7 +113,7 @@
 					<!-- SEARCHES BOX -->
 					<div class="user-dashboard__form-wrapper -w50 ">
 					
-					<h4>#{msg.label__user_searches}</h4>
+						<h4>#{msg.label__user_searches}</h4>
 								<!-- SAVED SEARCHES -->
 						<c:choose>
 							<c:when test="#{userDataBean.getNumSearches(userBean.user) > 0}">
@@ -142,7 +149,10 @@
 						<!-- COMMENTS BOX -->
 						<div class="user-dashboard__form-wrapper -w100 ">
 							<h4>#{msg.userComments}</h4>
-								<div class="user-dashboard__comments-wrapper">
+							
+							<c:choose>
+								<c:when test="#{userDataBean.getNumComments(userBean.user) > 0}">
+									<div class="user-dashboard__comments-wrapper">
 										<!-- USER COMMENTS -->
 										<ui:repeat value="#{userDataBean.getLatestComments(userBean.user, 2)}" var="comment">
 											<div class="user-dashboard__comments-item">
@@ -150,17 +160,24 @@
 												<a href="#{request.contextPath}#{comment.linkToRecord}" class="user-dashboard__comments-open-record">#{msg.action__open_record}</a>
 											</div>
 										</ui:repeat>
-								</div>
-							<div class="user-dashboard__searches-count">
-								<h:outputFormat value="#{msg.user_dashboard__comments_created}">
-									 <f:param value="#{userDataBean.getNumComments(userBean.user)}" />
-									 <f:param value="#{userDataBean.getNumRecordsWithComments(userBean.user)}" />
-								</h:outputFormat>
-							</div>
-							<!-- TO DO: THERE IS NO OVERVIEW PAGE FOR COMMENTS YET? -->
-<!-- 							<h:commandLink styleClass="user-dashboard__show-all-link" action="#{searchBean.executeSavedSearchAction(search)}"> -->
-<!-- 								#{msg.comments_overview_all} -->
-<!-- 							</h:commandLink> -->
+									</div>
+									<div class="user-dashboard__searches-count">
+										<h:outputFormat value="#{msg.user_dashboard__comments_created}">
+											 <f:param value="#{userDataBean.getNumComments(userBean.user)}" />
+											 <f:param value="#{userDataBean.getNumRecordsWithComments(userBean.user)}" />
+										</h:outputFormat>
+									</div>
+									<!-- TO DO: THERE IS NO OVERVIEW PAGE FOR COMMENTS YET? -->
+		<!-- 							<h:commandLink styleClass="user-dashboard__show-all-link" action="#{searchBean.executeSavedSearchAction(search)}"> -->
+		<!-- 								#{msg.comments_overview_all} -->
+		<!-- 							</h:commandLink> -->
+								</c:when>
+								<c:otherwise>
+									<div class="user-dashboard__comments-wrapper">
+										<div class="alert alert-warning" role="alert">#{msg.warning__no_comments}</div>
+									</div>
+								</c:otherwise>
+							</c:choose>
 						</div>
 					</div>
 
