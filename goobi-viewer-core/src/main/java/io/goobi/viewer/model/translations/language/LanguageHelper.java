@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
-import org.apache.commons.configuration2.SubnodeConfiguration;
 import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.configuration2.builder.ReloadingFileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
@@ -114,7 +113,7 @@ public class LanguageHelper {
      * @return a {@link io.goobi.viewer.model.translations.language.Language} object.
      */
     public Language getLanguage(String isoCode) {
-        SubnodeConfiguration languageConfig = null;
+        HierarchicalConfiguration<ImmutableNode> languageConfig = null;
         try {
             if (isoCode.length() == 3) {
                 List<HierarchicalConfiguration<ImmutableNode>> nodes = getConfig().configurationsAt("language[iso_639-2=\"" + isoCode + "\"]");
@@ -124,9 +123,9 @@ public class LanguageHelper {
                 if (nodes.isEmpty()) {
                     nodes = getConfig().configurationsAt("language[iso_639-2B=\"" + isoCode + "\"]");
                 }
-                languageConfig = (SubnodeConfiguration) nodes.get(0);
+                languageConfig = nodes.get(0);
             } else if (isoCode.length() == 2) {
-                languageConfig = (SubnodeConfiguration) getConfig().configurationsAt("language[iso_639-1=\"" + isoCode + "\"]").get(0);
+                languageConfig = getConfig().configurationsAt("language[iso_639-1=\"" + isoCode + "\"]").get(0);
             }
         } catch (IndexOutOfBoundsException e) {
             throw new IllegalArgumentException("No matching language found for " + isoCode);
