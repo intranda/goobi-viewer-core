@@ -1,55 +1,112 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- VIEW -->
     <div id="fullscreenView" class="fullscreen__view">
+
+        <!-- FULLSCREEN HEADER -->
+        <ui:include src="/resources/includes/fullscreen/fs_header.xhtml" />
+
+        <!-- IMAGE -->
+        <main id="fullscreenViewImage" class="fullscreen__view-image">
+
+        	<!-- heading for screen readers -->
+        	<h1 class="-sr-only">Goobi viewer</h1>
+
+            <div class="fullscreen__view-image-inner">
+                <!-- VIEW IMAGE -->
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
+                    <ui:include src="/resources/includes/object/image.xhtml" />
+                </ui:fragment>
+
+                <!-- VIEW VIDEO -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'video'}">
+                    <ui:insert name="viewVideo">
+                        <ui:include src="/resources/includes/object/video.xhtml" />
+                    </ui:insert>
+                </h:panelGroup>
+
+                <!-- VIEW AUDIO -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'audio'}">
+                    <ui:insert name="viewAudio">
+                        <ui:include src="/resources/includes/object/audio.xhtml" />
+                    </ui:insert>
+                </h:panelGroup>
+
+                <!-- VIEW 3D OBJECT -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'object'}">
+                    <ui:insert name="viewObject3d">
+                        <ui:include src="/resources/includes/object/object3d.xhtml" />
+                    </ui:insert>
+                </h:panelGroup>
+
+                <!-- THUMBNAILS -->
+                <h:panelGroup layout="block">
+	                <c:if test="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+	                    <f:attribute name="styleClass" value="fullscreen__view-image-thumbs-wrapper -ltr"/>
+	                </c:if>
+	                <c:if test="#{activeDocumentBean.viewManager.topDocument.rtl}">
+	                    <f:attribute name="styleClass" value="fullscreen__view-image-thumbs-wrapper -rtl"/>
+	                </c:if>
+                    <fsThumbnails></fsThumbnails>
+                </h:panelGroup>
+
+                <!-- OPEN SIDEBAR -->
+                <div id="viewSidebarOpen" class="fullscreen__view-sidebar-open">
+                    <button class="btn btn--clean" data-open="fs-sidebar" tabindex='-1'>
+                        <span>#{msg.fullscreen_openSidebar}</span>
+                    </button>
+                </div>
+
+            </div>
+        </main>
         <!-- SIDEBAR -->
-        <aside id="fullscreenViewSidebar" class="fullscreen__view-sidebar">
+        <aside id="fullscreenViewSidebar" class="fullscreen__view-sidebar" tabindex="-1">
             <!-- SIDEBAR PANEL CONTROLS -->
             <div id="fullscreenSidebarPanelControls" class="fullscreen__view-sidebar-panel-controls">
                 <button class="btn btn--clean" data-close="all-tabs" title="#{msg.allClose}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allClose}"></button>
                 <button class="btn btn--clean" data-open="all-tabs" title="#{msg.allOpen}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allOpen}"></button>
-            </div>     
-            
-            <div class="fullscreen__view-sidebar-inner">            
+            </div>
+
+            <div class="fullscreen__view-sidebar-inner">
                 <!-- SIDEBAR CONTROLS -->
                 <div class="fullscreen__view-sidebar-controls">
                     <button class="btn btn--clean" title="#{msg.fullscreen_hideSidebar}" data-close="fs-sidebar" data-toggle="tooltip" data-placement="right" aria-label="#{msg.fullscreen_hideSidebar}"></button>
                 </div>
-                
+
                 <div class="fullscreen__view-sidebar-share">
                     <widgetComponent:widget_copyright />
                		<widgetComponent:widget_socialMedia_share />
                 </div>
-                
+
                 <!-- SIDEBAR WORK TITLE -->
                 <div class="fullscreen__view-sidebar-work-title">
                     <h2>#{activeDocumentBean.titleBarLabel}</h2>
                 </div>
-                
+
                <!-- SEARCH IN CURRENT ITEM -->
                <div class="fullscreen__view-sidebar-search-in-current-item">
                		<widgetComponent:widget_searchInCurrentItem />
                </div>
-                
+
                 <!-- SIDEBAR ACCORDEON -->
                 <div class="fullscreen__view-sidebar-accordeon">
-                   
+
                     <!-- METADATA -->
                     <div id="panel-1" class="fullscreen__view-sidebar-accordeon-panel fs-metadata">
-                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                             <span>#{msg.bibData}</span>
                         </h3>
-                        
+
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             <ui:include src="/resources/includes/metadata/metadata.xhtml" />
                         </div>
@@ -58,36 +115,36 @@
                     <!-- TOC -->
 					<ui:fragment rendered="#{configurationBean.sidebarTocWidgetVisibleInFullscreen and (activeDocumentBean.toc.hasChildren or configurationBean.displayEmptyTocInSidebar)}">
                         <div id="panel-2" class="fullscreen__view-sidebar-accordeon-panel fs-toc">
-                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.sidebarToc}</span>
                             </h3>
-                            
+
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <widgetComponent:widget_toc />
                             </div>
                         </div>
                     </ui:fragment>
-                    
+
                     <!-- FULLTEXT -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.fulltextAvailable}">
                         <div id="panel-3" class="fullscreen__view-sidebar-accordeon-panel fs-fulltext">
-                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.fulltext}</span>
                             </h3>
-    
+
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <ui:include src="/resources/includes/object/fulltext.xhtml" />
                             </div>
                         </div>
                     </ui:fragment>
-                    
+
                     <!-- KARTE -->
 <!--                     <ui:fragment rendered="#{activeDocumentBean.mapWidget.geoMapId > -1}"> -->
 <!--                         <div id="panel-11" class="fullscreen__view-sidebar-accordeon-panel fs-fulltext"> -->
 <!--                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title"> -->
 <!--                                 <span>#{msg.geomap}</span> -->
 <!--                             </h3> -->
-    
+
 <!--                             <div class="fullscreen__view-sidebar-accordeon-panel-body"> -->
 <!--                                 <widgetComponent:widget_geoMap  -->
 <!-- 							        widget="#{activeDocumentBean.mapWidget}"  -->
@@ -105,10 +162,10 @@
 					<c:if test="#{(!configurationBean.displayUserGeneratedContentBelowImage) and (!contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).isEmpty())}">
 	                <!-- ANNOTATIONS -->
 	                    <div id="panel-9" class="fullscreen__view-sidebar-accordeon-panel fs-annotations">
-	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
 	                            <span>#{msg.admin__crowdsourcing_annotations}</span>
 	                        </h3>
-	
+
 	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
 	                            <widgetComponent:widget_annotations collapsible="false" />
 	                        </div>
@@ -120,10 +177,10 @@
                     <c:if test="#{not empty recordNotes}">
 	                    <ui:repeat var="note" varStatus="status" value="#{recordNotes}">
 		                    <div id="panel-note-#{status.index+1}" class="fullscreen__view-sidebar-accordeon-panel fs-record-note">
-		                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+		                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
 		                            <span>#{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}</span>
 		                        </h3>
-		
+
 		                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
 		                            <h:outputText escape="false" value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}" />
 			                    	<ui:fragment rendered="#{userBean.admin}">
@@ -135,10 +192,10 @@
 		                    </div>
 	                    </ui:repeat>
                     </c:if>
-	
+
                     <!-- DOWNLOADS -->
                     <div id="panel-4" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
-                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                             <span>#{msg.widgetUsage}</span>
                         </h3>
 
@@ -150,49 +207,49 @@
                     <!-- SEARCH HIT NAVIGATION -->
                     <ui:fragment rendered="#{searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
                         <div id="panel-6" class="fullscreen__view-sidebar-accordeon-panel fs-search-hit-navigation">
-                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.searchHitNavigation}</span>
                             </h3>
-                            
+
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <widgetComponent:widget_searchResultNavigation />
                             </div>
-                        </div>                    
+                        </div>
                     </ui:fragment>
-                    
+
                     <!-- IMAGE FILTER -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.hasPages}">
                         <div id="panel-7" class="fullscreen__view-sidebar-accordeon-panel fs-imagefilters">
-                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.label__image_filter_toolkit}</span>
                             </h3>
-                            
+
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             	<span class="fullscreen__view-sidebar-accordeon-panel-error">
                             		#{msg.label__image_filter_toolkit__error}
                             	</span>
                            		<imageFilters/>
                             </div>
-                        </div>                    
+                        </div>
                     </ui:fragment>
-                    
+
                     <!-- SHARE IMAGE AREA -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
                         <div id="panel-8" class="fullscreen__view-sidebar-accordeon-panel share-image-area">
-                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.action__share_image_region}</span>
                             </h3>
                             <div class="fullscreen__view-sidebar-accordeon-panel-body share-image-area">
 								<div class="share-image-area__instructions">#{msg.help__share_image_area__select}</div>
-						
+
 								<div class="share-image-area__links">
-								<div>#{msg.help__share_image_area__share}</div> 
+								<div>#{msg.help__share_image_area__share}</div>
 									<ul>
 										<li>
 											<a data-copy="image-region-page" data-copy-done="#{msg.copyUrlDone}"
 												data-clipboard-text="image-region-page"
 												title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_page}</a>
-										</li> 
+										</li>
 										<li>
 											<a data-copy="image-region-image"
 												data-copy-done="#{msg.copyUrlDone}"
@@ -201,84 +258,29 @@
 										</li>
 									</ul>
 								</div>
-						
+
 								<div class="share-image-area__controls">
 									<button type="button" data-popover="close" class="btn btn--full">#{msg.closeWindow}</button>
 								</div>
 							</div>
-                        </div>                    
+                        </div>
                     </ui:fragment>
-                    
-                    
+
+
                 </div>
             </div>
         </aside>
-        
-        <!-- FULLSCREEN HEADER -->
-        <ui:include src="/resources/includes/fullscreen/fs_header.xhtml" />
 
-        <!-- IMAGE -->
-        <main id="fullscreenViewImage" class="fullscreen__view-image">
-        	
-        	<!-- heading for screen readers -->
-        	<h1 class="-sr-only">Goobi viewer</h1>
-            
-            <div class="fullscreen__view-image-inner">
-                <!-- VIEW IMAGE -->
-                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
-                    <ui:include src="/resources/includes/object/image.xhtml" />                   
-                </ui:fragment>
-                
-                <!-- VIEW VIDEO -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'video'}">
-                    <ui:insert name="viewVideo">
-                        <ui:include src="/resources/includes/object/video.xhtml" />        
-                    </ui:insert>                    
-                </h:panelGroup>
 
-                <!-- VIEW AUDIO -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'audio'}">
-                    <ui:insert name="viewAudio">
-                        <ui:include src="/resources/includes/object/audio.xhtml" />        
-                    </ui:insert>                    
-                </h:panelGroup>
-                
-                <!-- VIEW 3D OBJECT -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'object'}">
-                    <ui:insert name="viewObject3d">
-                        <ui:include src="/resources/includes/object/object3d.xhtml" />        
-                    </ui:insert>                    
-                </h:panelGroup>
-                
-                <!-- THUMBNAILS -->
-                <h:panelGroup layout="block">
-	                <c:if test="#{!activeDocumentBean.viewManager.topDocument.rtl}">
-	                    <f:attribute name="styleClass" value="fullscreen__view-image-thumbs-wrapper -ltr"/>
-	                </c:if>
-	                <c:if test="#{activeDocumentBean.viewManager.topDocument.rtl}">
-	                    <f:attribute name="styleClass" value="fullscreen__view-image-thumbs-wrapper -rtl"/>
-	                </c:if>
-                    <fsThumbnails></fsThumbnails>
-                </h:panelGroup>
-                
-                <!-- OPEN SIDEBAR -->
-                <div id="viewSidebarOpen" class="fullscreen__view-sidebar-open">
-                    <button class="btn btn--clean" data-open="fs-sidebar">
-                        <span>#{msg.fullscreen_openSidebar}</span>
-                    </button>                    
-                </div>
-                
-            </div>
-        </main>
     </div>
-    
+
 	<script type="text/javascript">
        $(function () {
                $('[data-toggle="popover"]').popover()
              })
-             
+
         //init imageFilters
-		if(viewImage) {	
+		if(viewImage) {
        	 	viewImage.observables.viewportUpdate.pipe(RxOp.first()).subscribe( () => {
        	 	    let originClean = viewImage.isOriginClean();
        	 	    if(originClean) {
@@ -286,7 +288,7 @@
        	 	        $("imageFilters").css("display", "block");
        	 	    }
        	 	});
-       	 	
+
 			riot.mount("imageFilters", {
 			    image: viewImage,
 			    config: {
@@ -330,6 +332,6 @@
 		    console.error("viewImage is not defined");
 		}
     </script>
-    
+
 </ui:composition>
 
