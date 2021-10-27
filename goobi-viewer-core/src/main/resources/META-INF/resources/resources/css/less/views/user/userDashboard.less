@@ -162,7 +162,19 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.user-dashboard {
+		&__form-wrapper-container {
+			flex-wrap: wrap;
+		}
+		&__form-wrapper{
+			&.-w50 {
+				flex: 0 0 100%;
+				max-width: 100%;
+			}
+		}
+	}	
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}
