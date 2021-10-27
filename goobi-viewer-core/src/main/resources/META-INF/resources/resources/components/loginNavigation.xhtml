@@ -53,6 +53,17 @@
                             <h:form id="userDropdownForm" prependId="false">
                                 <ul class="login-navigation__list">
                                     
+                                    <!-- DASHBOARD -->
+                                    <li class="login-navigation__user-dropdown-item">
+                                    	<div class="login-navigation__user-dropdown-item-icon">
+                                             <i class="fa fa-tachometer" aria-hidden="true"></i>
+                                         </div>
+                                         
+                                         <div class="login-navigation__user-dropdown-item-string">
+                                              <a href="#{navigationHelper.applicationUrl}user/">#{msg.admin__user_profile}</a>
+                                          </div>
+                                    </li>
+                                    
                                     <!-- BOOKMARKS -->
                                     <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and userDataBean.getNumBookmarkLists(userBean.user) > 0}">
                                         <li class="login-navigation__bookmarks-list-wrapper">
@@ -95,6 +106,8 @@
 										    </div>
 									    </li>
 									</ui:fragment>
+									
+									<!-- TODO: INSERT COMMENTS -->
                                     
                                     <!-- MODULE CONTRIBUTIONS -->
                                     <c:forEach var="module" items="#{configurationBean.modules}">
@@ -110,7 +123,7 @@
                                                 <i class="fa fa-wrench" aria-hidden="true"></i>
                                             </div>
                                             <div class="login-navigation__user-dropdown-item-string">
-                                                <a href="#{navigationHelper.applicationUrl}user/settings/">#{msg.account}</a>
+                                                <a href="#{navigationHelper.applicationUrl}user/settings/">#{msg.accountSettings}</a>
                                             </div>
                                         </div>
                                     </li>

@@ -135,10 +135,10 @@ public class UserDataBean implements Serializable {
      * @should return searches for correct user
      * @should return null if no user logged in
      */
-    public List<Search> getSearches(User user, int numEntries) throws DAOException {
+    public List<Search> getSearches(User user, Integer numEntries) throws DAOException {
         return DataManager.getInstance().getDao().getSearches(user).stream()
                 .sorted((s1,s2) -> s2.getDateUpdated().compareTo(s1.getDateUpdated()))
-                .limit(numEntries)
+                .limit(numEntries == null ? Integer.MAX_VALUE : numEntries)
                 .collect(Collectors.toList());
     }
     
