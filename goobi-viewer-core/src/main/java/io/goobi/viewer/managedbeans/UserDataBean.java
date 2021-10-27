@@ -45,6 +45,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.bookmark.Bookmark;
+import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserActivity;
@@ -134,12 +135,11 @@ public class UserDataBean implements Serializable {
      * @should return searches for correct user
      * @should return null if no user logged in
      */
-    public List<Search> getSearches() throws DAOException {
-        if (userBean == null || userBean.getUser() == null) {
-            return null;
-        }
-
-        return DataManager.getInstance().getDao().getSearches(userBean.getUser());
+    public List<Search> getSearches(User user, int numEntries) throws DAOException {
+        return DataManager.getInstance().getDao().getSearches(user).stream()
+                .sorted((s1,s2) -> s2.getDateUpdated().compareTo(s1.getDateUpdated()))
+                .limit(numEntries)
+                .collect(Collectors.toList());
     }
     
     /**
@@ -244,6 +244,13 @@ public class UserDataBean implements Serializable {
         return CollectionUtils.union(lastCreatedComments, lastUpdatedComments).stream().distinct().limit(numEntries).collect(Collectors.toList());
     }
     
+    public List<BookmarkList> getBookmarkListsForUser(User user, int numEntries) throws DAOException {
+        return DataManager.getInstance().getDao().getBookmarkLists(user).stream()
+                .sorted()
+                .limit(numEntries)
+                .collect(Collectors.toList());
+    }
+    
     public List<UserActivity> getLatestActivity(User user, int numEntries) throws DAOException {
         List<Search> searches = DataManager.getInstance().getDao().getSearches(user, 0, numEntries, "dateUpdated", true, null);
         List<Bookmark> bookmarks = DataManager.getInstance().getDao().getBookmarkLists(user)
@@ -252,9 +259,9 @@ public class UserDataBean implements Serializable {
                 .limit(numEntries)
                 .collect(Collectors.toList());
         List<Comment> lastCreatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateCreated", true);
-        List<Comment> lastUpdatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateUpdated", true);
+        List<Comment> lastUpdatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateUpdated", true).stream().filter(c -> c.getDateUpdated() != null).collect(Collectors.toList());
         List<PersistentAnnotation> lastCreatedCrowdsourcingAnnotations = DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId(), numEntries, "dateCreated", true);
-        List<PersistentAnnotation> lastUpdatedCrowdsourcingAnnotations = DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId(), numEntries, "dateModified", true);
+        List<PersistentAnnotation> lastUpdatedCrowdsourcingAnnotations = DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId(), numEntries, "dateModified", true).stream().filter(c -> c.getDateModified() != null).collect(Collectors.toList());
 
         Stream<UserActivity> activities = Stream.of(
                 searches.stream().map(UserActivity::getFromSearch),
@@ -263,8 +270,9 @@ public class UserDataBean implements Serializable {
                 lastUpdatedComments.stream().map(UserActivity::getFromCommentUpdate),
                 lastCreatedCrowdsourcingAnnotations.stream().map(UserActivity::getFromCampaignAnnotation),
                 lastUpdatedCrowdsourcingAnnotations.stream().map(UserActivity::getFromCampaignAnnotationUpdate))
+                .flatMap(Function.identity())
                 .distinct()
-                .flatMap(Function.identity());
+                .sorted((a1,a2) -> a2.getDate().compareTo(a1.getDate()));
        return activities.limit(numEntries).collect(Collectors.toList());
     }
 }

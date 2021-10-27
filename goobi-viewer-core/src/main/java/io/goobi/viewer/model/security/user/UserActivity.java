@@ -141,4 +141,24 @@ public class UserActivity {
         }
     }
  
+    /**
+     * Equals if label and type are equal
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(this.getClass())) {
+            UserActivity other = (UserActivity)obj;
+            return this.type.equals(other.type) && StringUtils.equals(this.label, other.label);
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Build from label and  type
+     */
+    @Override
+    public int hashCode() {
+        return (this.type.label + this.label).hashCode();
+    }
 }

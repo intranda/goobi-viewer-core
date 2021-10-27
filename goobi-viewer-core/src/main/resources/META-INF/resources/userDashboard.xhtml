@@ -83,12 +83,13 @@
 								<div class="user-dashboard__bookmarks-wrapper">
 										<ul class="user-dashboard__bookmarks-list">
 											<ui:repeat
-												value="#{bookmarkBean.getBookmarkListsForUser(userBean.user)}"
+												value="#{userDataBean.getBookmarkListsForUser(userBean.user, 5)}"
 												var="bookmarkList" varStatus="status">
-												<ui:fragment
-													rendered="#{bookmarkList.isOwnedBy(userBean.user)}">
-													<li>#{bookmarkList.name}</li>
-												</ui:fragment>
+												<li>
+													<a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">
+														#{bookmarkList.name}
+													</a>
+												</li>
 											</ui:repeat>
 										</ul>
 								</div>
@@ -119,11 +120,17 @@
 							<c:when test="#{userDataBean.getNumSearches(userBean.user) > 0}">
 								<div class="user-dashboard__searches-wrapper">
 									<!-- SHOW IF NO SEARCHES EXIST -->
-									<ul class="user-dashboard__searches-list">
-										<ui:repeat value="#{userDataBean.searches}" var="search">
-											<li class="user-dashboard__searches-list-item"><h:outputText value="#{search.name}" escape="true" /></li>
-										</ui:repeat>
-									</ul>
+									<h:form>
+										<ul class="user-dashboard__searches-list">
+											<ui:repeat value="#{userDataBean.getSearches(userBean.user, 5)}" var="search">
+												<li class="user-dashboard__searches-list-item">
+													<h:commandLink action="#{searchBean.executeSavedSearchAction(search)}">
+						                                <h:outputText value="#{search.name}" escape="true" />
+						                            </h:commandLink>
+												</li>
+											</ui:repeat>
+										</ul>
+									</h:form>
 								</div>
 								<div class="user-dashboard__searches-count">
 									<h:outputFormat value="#{msg.user_dashboard__searches_stored}">
@@ -154,7 +161,7 @@
 								<c:when test="#{userDataBean.getNumComments(userBean.user) > 0}">
 									<div class="user-dashboard__comments-wrapper">
 										<!-- USER COMMENTS -->
-										<ui:repeat value="#{userDataBean.getLatestComments(userBean.user, 2)}" var="comment">
+										<ui:repeat value="#{userDataBean.getLatestComments(userBean.user, 3)}" var="comment">
 											<div class="user-dashboard__comments-item">
 												<div class="user-dashboard__comments-text">#{comment.text}</div>
 												<a href="#{request.contextPath}#{comment.linkToRecord}" class="user-dashboard__comments-open-record">#{msg.action__open_record}</a>
