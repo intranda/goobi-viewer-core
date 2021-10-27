@@ -141,20 +141,6 @@ public class UserDataBean implements Serializable {
                 .limit(numEntries == null ? Integer.MAX_VALUE : numEntries)
                 .collect(Collectors.toList());
     }
-    
-    /**
-     * Returns number of searches for the logged in user
-     * 
-     * @return the number of searchs
-     * @throws DAOException
-     */
-    public long getNumSearches() throws DAOException {
-        if (userBean == null || userBean.getUser() == null) {
-            return 0;
-        }
-
-        return DataManager.getInstance().getDao().getSearchCount(userBean.getUser(),null);
-    }
 
     /**
      * 

@@ -131,7 +131,7 @@
 								</div>
 								<div class="user-dashboard__searches-count">
 									<h:outputFormat value="#{msg.user_dashboard__searches_stored}">
-										 <f:param value="#{userDataBean.getNumSearches(numSearches)}" />
+										 <f:param value="#{userDataBean.getNumSearches(userBean.user)}" />
 									</h:outputFormat>
 								</div>
 								<!-- GO TO SEARCHES OVERVIEW PAGE -->
