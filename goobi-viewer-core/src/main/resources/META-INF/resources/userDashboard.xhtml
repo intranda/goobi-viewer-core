@@ -63,8 +63,9 @@
 							</div>
 						</c:when>
 						<c:otherwise>
-							<div class="user-dashboard__last-activities-wrapper">
-								<div class="alert alert-warning" role="alert">#{msg.warning__no_user_activity}</div>
+							<div class="user-dashboard__last-activities-wrapper -noEntry">
+								<div class="user-dashboard__last-activities-placeholder-wrappper"><i class="fa fa-rocket" aria-hidden="true"></i>
+								<p>#{msg.warning__no_user_activity}</p></div>
 							</div>
 						</c:otherwise>
 					</c:choose>
@@ -181,7 +182,7 @@
 		<!-- 							</h:commandLink> -->
 								</c:when>
 								<c:otherwise>
-									<div class="user-dashboard__comments-wrapper">
+									<div class="user-dashboard__comments-wrapper -noEntry">
 										<div class="alert alert-warning" role="alert">#{msg.warning__no_comments}</div>
 									</div>
 								</c:otherwise>
