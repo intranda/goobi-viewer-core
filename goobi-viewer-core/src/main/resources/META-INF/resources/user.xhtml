@@ -44,12 +44,10 @@
 							styleClass="btn admin__cancel-button" value="#{msg.cancel}"
 							action="#{adminBean.resetUserAction(userBean.user, '')}"
 							immediate="true">
-							<f:ajax render="@all"></f:ajax>
 						</h:commandLink>
 						<h:commandLink id="saveNewUserCreationButton"
 							styleClass="btn btn--success" value="#{msg.save}"
 							action="#{adminBean.saveUserAction(userBean.user.copy, '')}">
-							<f:ajax execute="@all" render="@all"></f:ajax>
 						</h:commandLink>
 					</div>
 				</h:form>
