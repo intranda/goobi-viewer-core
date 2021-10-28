@@ -727,7 +727,7 @@ public class JPADAO implements IDAO {
         q.setParameter("user", user);
         return (long) q.getSingleResult();
     }
-    
+
     /*
      * (non-Javadoc)
      *
@@ -1723,23 +1723,28 @@ public class JPADAO implements IDAO {
         return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
     }
 
+    /**
+     * {@inheritDoc}
+     * @should sort correctly
+     */
+    @SuppressWarnings("unchecked")
     @Override
     public List<Comment> getCommentsOfUser(User user, int maxResults, String sortField, boolean descending) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
         sbQuery.append("SELECT o FROM Comment o WHERE o.owner = :owner");
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        q.setParameter("owner", user);
         if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY a.").append(sortField);
+            sbQuery.append(" ORDER BY o.").append(sortField);
             if (descending) {
                 sbQuery.append(" DESC");
             }
         }
+        Query q = getEntityManager().createQuery(sbQuery.toString());
+        q.setParameter("owner", user);
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.setMaxResults(maxResults).setFlushMode(FlushModeType.COMMIT).getResultList();
     }
-    
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getCommentsForPage(java.lang.String, int)
      */
@@ -3882,12 +3887,12 @@ public class JPADAO implements IDAO {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Comment a");
         Map<String, String> params = new HashMap<>();
-        if(owner != null) {
+        if (owner != null) {
             sbQuery.append(" WHERE a.owner = :owner");
         }
         Query q = getEntityManager().createQuery(sbQuery.append(createFilterQuery(null, filters, params)).toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-        if(owner != null) {
+        if (owner != null) {
             q.setParameter("owner", owner);
         }
 
@@ -4691,7 +4696,8 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending) throws DAOException {
+    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending)
+            throws DAOException {
         if (userId == null) {
             return Collections.emptyList();
         }
@@ -4705,9 +4711,9 @@ public class JPADAO implements IDAO {
                 queryString += " DESC";
             }
         }
-        
+
         Query query = getEntityManager().createQuery(queryString).setParameter("userId", userId);
-        if(maxResults != null) {
+        if (maxResults != null) {
             query.setMaxResults(maxResults);
         }
         return query.getResultList();

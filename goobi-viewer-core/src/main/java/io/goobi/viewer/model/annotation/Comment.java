@@ -125,7 +125,16 @@ public class Comment implements Comparable<Comment> {
     /** {@inheritDoc} */
     @Override
     public int compareTo(Comment o) {
+        if (dateUpdated != null) {
+            if (o.getDateUpdated() != null) {
+                return dateUpdated.compareTo(o.getDateUpdated());
+            }
+            return dateUpdated.compareTo(o.getDateCreated());
+        }
         if (dateCreated != null) {
+            if (o.getDateUpdated() != null) {
+                return dateCreated.compareTo(o.getDateUpdated());
+            }
             return dateCreated.compareTo(o.getDateCreated());
         }
 
@@ -392,6 +401,7 @@ public class Comment implements Comparable<Comment> {
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
+
     public String getLinkToRecord() {
         return PrettyUrlTools.getRecordURI(this.pi, Optional.ofNullable(this.page).map(i -> i.toString()).orElse(""), null, PageType.viewObject);
     }

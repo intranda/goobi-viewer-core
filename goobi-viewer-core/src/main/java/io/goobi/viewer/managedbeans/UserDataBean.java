@@ -136,8 +136,11 @@ public class UserDataBean implements Serializable {
      * @should return null if no user logged in
      */
     public List<Search> getSearches(User user, Integer numEntries) throws DAOException {
-        return DataManager.getInstance().getDao().getSearches(user).stream()
-                .sorted((s1,s2) -> s2.getDateUpdated().compareTo(s1.getDateUpdated()))
+        return DataManager.getInstance()
+                .getDao()
+                .getSearches(user)
+                .stream()
+                .sorted((s1, s2) -> s2.getDateUpdated().compareTo(s1.getDateUpdated()))
                 .limit(numEntries == null ? Integer.MAX_VALUE : numEntries)
                 .collect(Collectors.toList());
     }
@@ -209,45 +212,77 @@ public class UserDataBean implements Serializable {
     public long getNumBookmarkLists(User user) throws DAOException {
         return DataManager.getInstance().getDao().getBookmarkListCount(user);
     }
-    
+
     public long getNumSearches(User user) throws DAOException {
         return DataManager.getInstance().getDao().getSearchCount(user, null);
     }
-    
+
     public long getNumComments(User user) throws DAOException {
         return DataManager.getInstance().getDao().getCommentCount(null, user);
     }
-    
+
     public Long getNumRecordsWithComments(User user) throws DAOException {
-        Query query = DataManager.getInstance().getDao().createNativeQuery("SELECT COUNT(DISTINCT pi) FROM comments WHERE comments.owner_id=" + user.getId());
+        Query query = DataManager.getInstance()
+                .getDao()
+                .createNativeQuery("SELECT COUNT(DISTINCT pi) FROM comments WHERE comments.owner_id=" + user.getId());
         return (Long) query.getSingleResult();
     }
 
+    /**
+     * 
+     * @param user
+     * @param numEntries
+     * @return
+     * @throws DAOException
+     * @should return the latest comments
+     */
     public List<Comment> getLatestComments(User user, int numEntries) throws DAOException {
         List<Comment> lastCreatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateCreated", true);
         List<Comment> lastUpdatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateUpdated", true);
 
-        return CollectionUtils.union(lastCreatedComments, lastUpdatedComments).stream().distinct().limit(numEntries).collect(Collectors.toList());
+        return CollectionUtils.union(lastCreatedComments, lastUpdatedComments)
+                .stream()
+                .distinct()
+                .sorted((c1, c2) -> c1.compareTo(c2) * -1)
+                .limit(numEntries)
+                .collect(Collectors.toList());
     }
-    
+
     public List<BookmarkList> getBookmarkListsForUser(User user, int numEntries) throws DAOException {
-        return DataManager.getInstance().getDao().getBookmarkLists(user).stream()
+        return DataManager.getInstance()
+                .getDao()
+                .getBookmarkLists(user)
+                .stream()
                 .sorted()
                 .limit(numEntries)
                 .collect(Collectors.toList());
     }
-    
+
     public List<UserActivity> getLatestActivity(User user, int numEntries) throws DAOException {
         List<Search> searches = DataManager.getInstance().getDao().getSearches(user, 0, numEntries, "dateUpdated", true, null);
-        List<Bookmark> bookmarks = DataManager.getInstance().getDao().getBookmarkLists(user)
-                .stream().flatMap(list -> list.getItems().stream())
+        List<Bookmark> bookmarks = DataManager.getInstance()
+                .getDao()
+                .getBookmarkLists(user)
+                .stream()
+                .flatMap(list -> list.getItems().stream())
                 .sorted((bm1, bm2) -> bm1.getDateAdded().compareTo(bm2.getDateAdded()))
                 .limit(numEntries)
                 .collect(Collectors.toList());
         List<Comment> lastCreatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateCreated", true);
-        List<Comment> lastUpdatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateUpdated", true).stream().filter(c -> c.getDateUpdated() != null).collect(Collectors.toList());
-        List<PersistentAnnotation> lastCreatedCrowdsourcingAnnotations = DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId(), numEntries, "dateCreated", true);
-        List<PersistentAnnotation> lastUpdatedCrowdsourcingAnnotations = DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId(), numEntries, "dateModified", true).stream().filter(c -> c.getDateModified() != null).collect(Collectors.toList());
+        List<Comment> lastUpdatedComments = DataManager.getInstance()
+                .getDao()
+                .getCommentsOfUser(user, numEntries, "dateUpdated", true)
+                .stream()
+                .filter(c -> c.getDateUpdated() != null)
+                .collect(Collectors.toList());
+        List<PersistentAnnotation> lastCreatedCrowdsourcingAnnotations =
+                DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId(), numEntries, "dateCreated", true);
+        List<PersistentAnnotation> lastUpdatedCrowdsourcingAnnotations = DataManager.getInstance()
+                .getDao()
+                .getAnnotationsForUserId(user.getId(), numEntries, "dateModified", true)
+                .stream()
+                .filter(c -> c.getDateModified() != null)
+                .collect(Collectors.toList());
 
         Stream<UserActivity> activities = Stream.of(
                 searches.stream().map(UserActivity::getFromSearch),
@@ -258,7 +293,7 @@ public class UserDataBean implements Serializable {
                 lastUpdatedCrowdsourcingAnnotations.stream().map(UserActivity::getFromCampaignAnnotationUpdate))
                 .flatMap(Function.identity())
                 .distinct()
-                .sorted((a1,a2) -> a2.getDate().compareTo(a1.getDate()));
-       return activities.limit(numEntries).collect(Collectors.toList());
+                .sorted((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
+        return activities.limit(numEntries).collect(Collectors.toList());
     }
 }
