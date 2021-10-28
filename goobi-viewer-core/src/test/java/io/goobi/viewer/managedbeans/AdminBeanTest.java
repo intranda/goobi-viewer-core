@@ -39,21 +39,22 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see AdminBean#init()
-     * @verifies sort lazyModelComments by dateUpdated desc by default
+     * @verifies sort lazyModelComments by dateCreated desc by default
      */
     @Test
-    public void init_shouldSortLazyModelCommentsByDateUpdatedDescByDefault() throws Exception {
+    public void init_shouldSortLazyModelCommentsByDateCreatedDescByDefault() throws Exception {
         AdminBean bean = new AdminBean();
         bean.init();
         Assert.assertNotNull(bean.getLazyModelComments());
         Assert.assertEquals(4, bean.getLazyModelComments().getSizeOfDataList());
         LocalDateTime prevDate = null;
         for (Comment comment : bean.getLazyModelComments().getPaginatorList()) {
-            if (prevDate != null) {
-                Assert.assertTrue(DateTools.getMillisFromLocalDateTime(prevDate, false) >= DateTools
-                        .getMillisFromLocalDateTime(comment.getDateUpdated(), false));
+            if (prevDate != null && comment.getDateCreated() != null) {
+                Assert.assertTrue(DateTools.getMillisFromLocalDateTime(prevDate, false)
+                        >= DateTools
+                        .getMillisFromLocalDateTime(comment.getDateCreated(), false));
             }
-            prevDate = comment.getDateUpdated();
+            prevDate = comment.getDateCreated();
         }
     }
 
