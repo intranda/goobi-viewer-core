@@ -1962,6 +1962,7 @@ public class CmsBean implements Serializable {
         } else {
             validateSidebarElement(this.selectedSidebarElement);
             this.selectedPage.addSidebarElement(this.selectedSidebarElement);
+            this.selectedSidebarElement = null;
         }
     }
 
