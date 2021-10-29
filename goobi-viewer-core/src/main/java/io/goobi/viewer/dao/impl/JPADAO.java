@@ -455,19 +455,14 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateUser(User user) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(user);
-            em.getTransaction().commit();
-            // Refresh the object from the DB so that any new licenses etc. have IDs
-            if (this.getEntityManager().contains(user)) {
-                this.getEntityManager().refresh(user);
-            }
-            return true;
-        } finally {
-            em.close();
+        em.getTransaction().begin();
+        em.merge(user);
+        em.getTransaction().commit();
+        // Refresh the object from the DB so that any new licenses etc. have IDs
+        if (this.getEntityManager().contains(user)) {
+            this.getEntityManager().refresh(user);
         }
+        return true;
     }
 
     /*
@@ -722,6 +717,15 @@ public class JPADAO implements IDAO {
         q.setParameter("user", user);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public long getBookmarkListCount(User user) throws DAOException {
+        preQuery();
+        Query q = getEntityManager().createQuery("SELECT COUNT(o) FROM BookmarkList o WHERE o.owner = :user");
+        q.setParameter("user", user);
+        return (long) q.getSingleResult();
     }
 
     /*
@@ -1717,6 +1721,28 @@ public class JPADAO implements IDAO {
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
+    }
+
+    /**
+     * {@inheritDoc}
+     * @should sort correctly
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Comment> getCommentsOfUser(User user, int maxResults, String sortField, boolean descending) throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder(80);
+        sbQuery.append("SELECT o FROM Comment o WHERE o.owner = :owner");
+        if (StringUtils.isNotEmpty(sortField)) {
+            sbQuery.append(" ORDER BY o.").append(sortField);
+            if (descending) {
+                sbQuery.append(" DESC");
+            }
+        }
+        Query q = getEntityManager().createQuery(sbQuery.toString());
+        q.setParameter("owner", user);
+        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.setMaxResults(maxResults).setFlushMode(FlushModeType.COMMIT).getResultList();
     }
 
     /* (non-Javadoc)
@@ -2751,17 +2777,11 @@ public class JPADAO implements IDAO {
                         if (keyPartCount > 0) {
                             where.append(" OR ");
                         }
-                        //                        if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
-                        //                            where.append("UPPER(" + tableKey + ".").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
-                        //                        } else if ("categories".equals(joinTable)) {
-                        //                            where.append(tableKey).append(" LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
-                        //
-                        //                        } else {
+
                         where.append("UPPER(" + tableKey + ".")
                                 .append(keyPart.replace("-", "."))
                                 .append(") LIKE :")
                                 .append(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""));
-                        //                        }
                         keyPartCount++;
                     }
                     where.append(" ) ");
@@ -3863,8 +3883,20 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public long getCommentCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("Comment", null, filters);
+    public long getCommentCount(Map<String, String> filters, User owner) throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Comment a");
+        Map<String, String> params = new HashMap<>();
+        if (owner != null) {
+            sbQuery.append(" WHERE a.owner = :owner");
+        }
+        Query q = getEntityManager().createQuery(sbQuery.append(createFilterQuery(null, filters, params)).toString());
+        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+        if (owner != null) {
+            q.setParameter("owner", owner);
+        }
+
+        return (long) q.getSingleResult();
     }
 
     /** {@inheritDoc} */
@@ -4664,15 +4696,27 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId) throws DAOException {
+    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending)
+            throws DAOException {
         if (userId == null) {
             return Collections.emptyList();
         }
 
         preQuery();
-        String query = "SELECT a FROM PersistentAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
+        String queryString = "SELECT a FROM PersistentAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
 
-        return getEntityManager().createQuery(query).setParameter("userId", userId).getResultList();
+        if (StringUtils.isNotEmpty(sortField)) {
+            queryString += " ORDER BY a." + sortField;
+            if (descending) {
+                queryString += " DESC";
+            }
+        }
+
+        Query query = getEntityManager().createQuery(queryString).setParameter("userId", userId);
+        if (maxResults != null) {
+            query.setMaxResults(maxResults);
+        }
+        return query.getResultList();
     }
 
     /**

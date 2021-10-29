@@ -1,0 +1,134 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+	<h:panelGroup id="userAvatarPreview" layout="block" styleClass="user-settings__profile-image-box">
+		<img class="user-settings__profile-image" src="#{user.getAvatarUrl(300)}" alt="User Avatar" />
+		<button data-toggle="modal" data-backdrop="false" data-target="#changeProfilePicture" class="btn btn--default user-settings__profile-image-edit-button">#{msg.user_change_profile_picture}</button>
+	</h:panelGroup>
+
+<!-- EDIT USERDATA MODAL -->
+		<div class="modal fade profile-picture-modal"
+			id="changeProfilePicture" tabindex="-1" role="dialog"
+			aria-labelledby="editUserdataModalLabel">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+
+					<div class="modal-header">
+						<h3 class="modal-title" id="editUserdataModalLabel">#{msg.user_change_profile_picture}</h3>
+						<button type="button" class="fancy-close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">x</span>
+						</button>
+					</div>
+					<div class="modal-body">
+
+						<p>#{msg.user_change_profile_picture_text}</p>
+
+
+						<h:panelGroup layout="block" id="avatarModeGroup"
+							styleClass="user-settings__image-actions-wrapper">
+
+							<h:form id="changeAvatarForm">
+								<div
+									class="form-group user-settings__choose-image-option">
+									<div class="connected-top">
+										<!-- STANDARD PLACEHOLDER PERSON IMAGE -->
+										<h:selectOneRadio group="imageModeRadio"
+											value="#{user.avatarType}" immediate="true">
+											<f:selectItem itemValue="DEFAULT"
+												itemLabel="#{msg.user_change_profile_picture_label_standard}" />
+											<f:ajax render="avatarModeGroup" />
+										</h:selectOneRadio>
+									</div>
+									<div class="connected-middle">
+										<!-- UPLOAD OWN IMAGE FILE -->
+										<h:selectOneRadio group="imageModeRadio"
+											value="#{user.avatarType}" immediate="true">
+											<f:selectItem itemValue="LOCAL"
+												itemLabel="#{msg.user_change_profile_picture_upload_image}" />
+											<f:ajax render="avatarModeGroup" />
+										</h:selectOneRadio>
+									</div>
+									<div class="connected-bottom">
+										<!-- CHOOSE GRAVATAR AS PROFILE PICTURE -->
+										<h:selectOneRadio group="imageModeRadio"
+											value="#{user.avatarType}" immediate="true">
+											<f:selectItem itemValue="GRAVATAR"
+												itemLabel="#{msg.gravatar}" />
+											<f:ajax render="avatarModeGroup" />
+										</h:selectOneRadio>
+									</div>
+								</div>
+							</h:form>
+							
+							<h:panelGroup layout="block"
+								styleClass="user-settings__edit-image-default-wrapper"
+								rendered="#{user.avatarType != 'LOCAL'}">
+								<img src="#{user.avatarUrl}"
+									class="img-fluid" alt="" />
+							</h:panelGroup>
+
+							<h:panelGroup layout="block"
+								styleClass="user-settings__edit-image-wrapper"
+								id="mediaGroup"
+								rendered="#{user.avatarType == 'LOCAL'}">
+								<h:form id="mediaForm" prependId="false"
+									enctype="multipart/form-data">
+									<!-- THUMBNAIL -->
+									<ui:fragment rendered="#{user.hasLocalAvatarImage()}">
+										<div class="user-settings__image-thumbnail">
+												<img
+													src="#{user.avatarUrl}"
+													class="img-fluid" alt="" />
+										</div>
+									</ui:fragment>	
+
+									<!-- ACTIONS -->
+									<div class="user-settings__image-actions">
+										<div class="user-settings__upload-button-wrapper">
+										
+											<div class="btn btn--default">#{msg.admin__cms_collections_image_mode_upload}</div>
+											<o:inputFile styleClass="user-settings__upload-button-input" id="localFileUpload"
+												value="#{adminBean.uploadedAvatarFile}">
+												<f:ajax
+													listener="#{user.setAvatarFile(adminBean.uploadedAvatarFile)}"
+													execute="@this" render="@form" />
+											</o:inputFile>
+										</div>
+										
+										<h:commandLink styleClass="user-settings__delete-image-button" value="#{msg.delete}"
+											rendered="#{user.hasLocalAvatarImage()}"
+											action="#{user.deleteAvatarFile}">
+											<f:ajax render="@form"></f:ajax>
+										</h:commandLink>
+									</div>
+
+								</h:form>
+							</h:panelGroup>
+
+						</h:panelGroup>
+
+
+					</div>
+					<div class="modal-footer">
+						<h:form>
+							<h:commandButton value="#{msg.ok}"
+								styleClass="btn btn--success" pt:aria-label="#{msg.ok}" pt:data-dismiss="modal">
+								<f:ajax execute="changeAvatarForm mediaForm @form" render="changeAvatarForm mediaForm userAvatarPreview"></f:ajax>
+							</h:commandButton>
+						</h:form>
+					</div>
+
+				</div>
+			</div>
+			<div class="alt-backdrop" data-dismiss="modal"></div>
+		</div>
+
+</ui:composition>

@@ -408,7 +408,7 @@ public class CMSPageLanguageVersion {
         if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
             if (!getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                 addContentItem(item);
-                logger.trace("Added new template item '{}' to language version: {}", templateItem.getId(), getLanguage());
+                // logger.trace("Added new template item '{}' to language version: {}", templateItem.getId(), getLanguage());
                 return true;
             }
         } else {

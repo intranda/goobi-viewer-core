@@ -147,9 +147,9 @@ public final class Configuration extends AbstractConfiguration {
                                 .setFileName(fileLocal.getAbsolutePath())
                                 .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
                                 .setThrowExceptionOnMissing(false));
-        if (builder.getFileHandler().getFile().exists()) {
+        if (builderLocal.getFileHandler().getFile().exists()) {
             try {
-                builder.getConfiguration();
+                builderLocal.getConfiguration();
                 logger.info("Local configuration file '{}' loaded.", fileLocal.getAbsolutePath());
             } catch (ConfigurationException e) {
                 logger.error(e.getMessage(), e);
@@ -169,8 +169,11 @@ public final class Configuration extends AbstractConfiguration {
         // Load stopwords
         try {
             stopwords = loadStopwords(getStopwordsFilePath());
+        } catch (FileNotFoundException e) {
+            logger.error(e.getMessage());
+            stopwords = new HashSet<>(0);
         } catch (IOException | IllegalArgumentException e) {
-            logger.warn(e.getMessage());
+            logger.error(e.getMessage(), e);
             stopwords = new HashSet<>(0);
         }
     }
@@ -1396,14 +1399,14 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getMetsUrl.
+     * getSourceFileUrl.
      * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
      */
-    public String getMetsUrl() {
-        return getLocalString("urls.metadata.mets");
+    public String getSourceFileUrl() {
+        return getLocalString("urls.metadata.sourcefile");
     }
 
     /**
@@ -3516,7 +3519,7 @@ public final class Configuration extends AbstractConfiguration {
      *
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @param imageType a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
-     * @return a {@link org.apache.commons.configuration.SubnodeConfiguration} object.
+     * @return a {@link org.apache.commons.configuration2.SubnodeConfiguration} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BaseHierarchicalConfiguration getZoomImageViewConfig(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
@@ -3557,18 +3560,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public int getBreadcrumbsClipping() {
         return getLocalInt("webGuiDisplay.breadcrumbsClipping", 50);
-    }
-
-    /**
-     * <p>
-     * isDisplayTopstructLabel.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isDisplayTopstructLabel() {
-        return this.getLocalBoolean("metadata.searchHitMetadataList.displayTopstructLabel", false);
     }
 
     /**
@@ -4407,6 +4398,10 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalString("tempMediaFolder", "temp_media");
     }
 
+    public String getUserAvatarFolder() {
+        return getLocalString("userAvatarFolder", "users/avatar");
+    }
+
     /**
      * <p>
      * getCmsClassifications.
@@ -5233,22 +5228,25 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      */
     public String getBaseXUrl() {
-        return getLocalString("urls.basex.url");
+        return getLocalString("urls.basex");
+    }
+
+    public boolean isArchivesEnabled() {
+        return getLocalBoolean("archives[@enabled]", false);
+    }
+
+    public Map<String, String> getArchiveNodeTypes() {
+        List<HierarchicalConfiguration<ImmutableNode>> nodeTypes = getLocalConfigurationsAt("archives.nodeTypes.node");
+        nodeTypes.get(0).getString(getReCaptchaSiteKey());
+        return nodeTypes.stream()
+                .collect(Collectors.toMap(node -> node.getString("[@name]"), node -> node.getString("[@icon]")));
     }
 
     /**
      * @return
      */
-    public String getBaseXDatabase() {
-        return getLocalString("urls.basex.defaultDatabase");
-
-    }
-
-    /**
-     * @return
-     */
-    public HierarchicalConfiguration<ImmutableNode> getBaseXMetadataConfig() {
-        return getLocalConfigurationAt("metadata.basexMetadataList");
+    public HierarchicalConfiguration<ImmutableNode> getArchiveMetadataConfig() {
+        return getLocalConfigurationAt("archives.metadataList");
     }
 
     public boolean isDisplayUserGeneratedContentBelowImage() {

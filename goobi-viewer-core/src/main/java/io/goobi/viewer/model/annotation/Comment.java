@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import javax.mail.MessagingException;
 import javax.persistence.Column;
@@ -38,9 +39,11 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * <p>
@@ -122,7 +125,16 @@ public class Comment implements Comparable<Comment> {
     /** {@inheritDoc} */
     @Override
     public int compareTo(Comment o) {
+        if (dateUpdated != null) {
+            if (o.getDateUpdated() != null) {
+                return dateUpdated.compareTo(o.getDateUpdated());
+            }
+            return dateUpdated.compareTo(o.getDateCreated());
+        }
         if (dateCreated != null) {
+            if (o.getDateUpdated() != null) {
+                return dateCreated.compareTo(o.getDateUpdated());
+            }
             return dateCreated.compareTo(o.getDateCreated());
         }
 
@@ -388,6 +400,10 @@ public class Comment implements Comparable<Comment> {
      */
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
+    }
+
+    public String getLinkToRecord() {
+        return PrettyUrlTools.getRecordURI(this.pi, Optional.ofNullable(this.page).map(i -> i.toString()).orElse(""), null, PageType.viewObject);
     }
 
 }

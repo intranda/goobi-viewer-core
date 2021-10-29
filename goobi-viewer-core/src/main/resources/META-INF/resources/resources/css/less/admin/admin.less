@@ -818,12 +818,28 @@
 			display: inline-block;
 		}
 	}
+	&__dashboard-user-welcome {
+		display: flex;
+	}
+	&__dashboard-user-welcome-left {
+		flex: 0 0 calc(~"100% - 135px");
+		max-width: calc(~"100% - 135px");
+	}
+	&__dashboard-user-welcome-right {
+		flex: 0 0 120px;
+		max-width: 120px;
+		margin-left: 1.5rem;
+	}
+	&__dashboard-user-icon-wrapper {
+		flex: 0 0 150px;
+		min-width: 150px;
+	}
 	&__dashboard-user-icon {
-		position: absolute;
+		position: relative;
 		max-width: 100%;
-		top: 0;
-		padding: 1rem;
-		right: 15px;
+		object-fit: cover;
+		width: 120px;
+		height: 120px;
 	}
 	// FANCY RADIO SWITCH/TOGGLE
 	&__radio-switch {
@@ -1257,6 +1273,24 @@
 		.btn {
 			padding: .6rem 1.2rem;
 		}
+	}
+	// USERS + PROFILE PICTURE
+	&__profile-image-wrapper {
+		display: flex;
+		justify-content: center;
+	}
+	&__profile-image {
+		max-width: 75%;
+		margin-top: 1rem;
+		margin-bottom: 3rem;
+		width: 100%;
+	}
+	.user-settings__form-wrapper {
+		border: 1px solid #ccc;
+	}
+	.user-settings__profile-image-box {
+		margin-bottom: 3rem;
+		border: 1px solid #ccc;
 	}
 	
 	
@@ -2126,7 +2160,22 @@ html[lang="es"] .admin__radio-switch {
 }
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.connected-top, 
+	.connected-middle {
+		display: flex;
+		align-items: flex-start;
+	}
+	.connected-top {
+		input {
+			margin-top: 3px;
+		}
+		label {
+			margin-left: 5px;
+		}
+	}
+	
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}

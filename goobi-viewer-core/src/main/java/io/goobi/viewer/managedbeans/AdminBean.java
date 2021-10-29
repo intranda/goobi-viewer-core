@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -36,6 +37,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.Part;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -100,7 +102,7 @@ public class AdminBean implements Serializable {
     private static final Object TRANSLATION_LOCK = new Object();
 
     private static String translationGroupsEditorSession = null;
-    
+
     @Inject
     @Push
     PushContext hotfolderFileCount;
@@ -128,6 +130,8 @@ public class AdminBean implements Serializable {
 
     private Role memberRole;
 
+    private Part uploadedAvatarFile;
+
     /**
      * <p>
      * Constructor for AdminBean.
@@ -142,7 +146,7 @@ public class AdminBean implements Serializable {
      * init.
      * </p>
      *
-     * @should sort lazyModelComments by dateUpdated desc by default
+     * @should sort lazyModelComments by dateCreated desc by default
      */
     @PostConstruct
     public void init() {
@@ -205,7 +209,7 @@ public class AdminBean implements Serializable {
                 @Override
                 public long getTotalNumberOfRecords(Map<String, String> filters) {
                     try {
-                        return DataManager.getInstance().getDao().getCommentCount(filters);
+                        return DataManager.getInstance().getDao().getCommentCount(filters, null);
                     } catch (DAOException e) {
                         logger.error(e.getMessage(), e);
                         return 0;
@@ -253,6 +257,24 @@ public class AdminBean implements Serializable {
         return ret;
     }
 
+    public String saveCurrentUserAction() throws DAOException {
+        if (this.saveUserAction(getCurrentUser())) {
+            return "pretty:adminUsers";
+        }
+
+        return "";
+    }
+
+    public String saveUserAction(User user, String returnPage) throws DAOException {
+        this.saveUserAction(user);
+        return returnPage;
+    }
+
+    public String resetUserAction(User user, String returnPage) {
+        user.backupFields();
+        return returnPage;
+    }
+
     /**
      * <p>
      * saveUserAction.
@@ -261,65 +283,69 @@ public class AdminBean implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String saveUserAction() throws DAOException {
-        // Retrieving a new user from the DB overrides the current object and resets the field, so save a copy
-        User copy = currentUser.clone();
-        // Copy of the copy contains the previous nickname, in case the chosen one is already taken
-        copy.setCopy(currentUser.getCopy().clone());
+    public boolean saveUserAction(User user) throws DAOException {
+
+        //first check if current user has the right to edit the given user
+        User activeUser = BeanUtils.getUserBean().getUser();
+        if (user == null || (!activeUser.isSuperuser() && !activeUser.getId().equals(user.getId()))) {
+            Messages.error("errSave");
+            return false;
+        }
+
         // Do not allow the same nickname being used for multiple users
-        if (currentUser.getNickName() != null) {
-            currentUser.setNickName(currentUser.getNickName().trim());
+        if (user.getNickName() != null) {
+            user.setNickName(user.getNickName().trim());
         }
-        if (UserTools.isNicknameInUse(currentUser.getNickName(), currentUser.getId())) {
-            Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", currentUser.getNickName().trim()));
-            currentUser = copy;
-            currentUser.setNickName(copy.getCopy().getNickName());
-            return "";
+        if (UserTools.isEmailInUse(user.getEmail(), user.getId())) {
+            Messages.error("email", ViewerResourceBundle.getTranslation("user_emailTaken", null).replace("{0}", user.getEmail().trim()));
+            return false;
         }
-        currentUser = copy;
-        if (getCurrentUser().getId() != null) {
+        if (UserTools.isNicknameInUse(user.getNickName(), user.getId())) {
+            Messages.error("displayName", ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", user.getNickName().trim()));
+            return false;
+        }
+        if (user.getId() != null) {
             // Existing user
             if (StringUtils.isNotEmpty(passwordOne) || StringUtils.isNotEmpty(passwordTwo)) {
                 if (!passwordOne.equals(passwordTwo)) {
                     Messages.error("user_passwordMismatch");
-                    return "";
+                    return false;
                 }
-                currentUser.setNewPassword(passwordOne);
+                user.setNewPassword(passwordOne);
             }
-            if (DataManager.getInstance().getDao().updateUser(getCurrentUser())) {
+            if (DataManager.getInstance().getDao().updateUser(user)) {
                 Messages.info("user_saveSuccess");
             } else {
                 Messages.error("errSave");
-                return "";
+                return false;
             }
         } else {
             // New user
-            if (DataManager.getInstance().getDao().getUserByEmail(currentUser.getEmail()) != null) {
+            if (DataManager.getInstance().getDao().getUserByEmail(user.getEmail()) != null) {
                 // Do not allow the same email address being used for multiple users
                 Messages.error("newUserExist");
-                logger.debug("User account already exists for '" + currentUser.getEmail() + "'.");
-                return "";
+                logger.debug("User account already exists for '" + user.getEmail() + "'.");
+                return false;
             }
             if (StringUtils.isEmpty(passwordOne) || StringUtils.isEmpty(passwordTwo)) {
                 Messages.error("newUserPasswordOneRequired");
-                return "";
+                return false;
             } else if (!passwordOne.equals(passwordTwo)) {
                 Messages.error("user_passwordMismatch");
-                return "";
+                return false;
             } else {
-                getCurrentUser().setNewPassword(passwordOne);
+                user.setNewPassword(passwordOne);
 
             }
-            if (DataManager.getInstance().getDao().addUser(getCurrentUser())) {
+            if (DataManager.getInstance().getDao().addUser(user)) {
                 Messages.info("newUserCreated");
             } else {
-                Messages.info("errSave");
-                return "";
+                Messages.error("errSave");
+                return false;
             }
         }
-        setCurrentUser(null);
 
-        return "pretty:adminUsers";
+        return true;
     }
 
     /**
@@ -597,8 +623,13 @@ public class AdminBean implements Serializable {
         }
 
         try {
-            for (UserRole userRole : dirtyUserRoles.keySet()) {
-                switch (dirtyUserRoles.get(userRole)) {
+            //the userRoles don't match the keys of dirtyUserRoles after saving (dirtyUserRoles.get(userRole) returns null for the second entry), 
+            //so dirty status for each user role is matched by the user behind the userGroup
+            Map<User, String> dirtyUsers = dirtyUserRoles.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getUser(), e -> e.getValue()));
+            for (User user : dirtyUsers.keySet()) {
+                String dirty = dirtyUsers.get(user);
+                UserRole userRole = dirtyUserRoles.keySet().stream().filter(r -> r.getUser().equals(user)).findFirst().orElse(null);
+                switch (dirty) {
                     case "save":
                         logger.trace("Saving UserRole: {}", userRole);
                         // If this the user group is not yet persisted, add it to DB first
@@ -2045,7 +2076,7 @@ public class AdminBean implements Serializable {
         logger.trace("setTranslationGroupsEditorSession: {}", translationGroupsEditorSession);
         AdminBean.translationGroupsEditorSession = translationGroupsEditorSession;
     }
-    
+
     /**
      * 
      */
@@ -2067,5 +2098,19 @@ public class AdminBean implements Serializable {
      */
     public boolean hasAccessPermissingForTranslationFiles() {
         return TranslationGroup.isHasFileAccess();
+    }
+
+    /**
+     * @param uploadedAvatarFile the uploadedAvatarFile to set
+     */
+    public void setUploadedAvatarFile(Part uploadedAvatarFile) {
+        this.uploadedAvatarFile = uploadedAvatarFile;
+    }
+
+    /**
+     * @return the uploadedAvatarFile
+     */
+    public Part getUploadedAvatarFile() {
+        return uploadedAvatarFile;
     }
 }

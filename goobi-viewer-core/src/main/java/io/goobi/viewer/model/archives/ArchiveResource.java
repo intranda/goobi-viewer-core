@@ -15,7 +15,11 @@
  */
 package io.goobi.viewer.model.archives;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author florian
@@ -23,28 +27,74 @@ import java.time.Instant;
  */
 public class ArchiveResource {
 
-    public final String databaseName;
-    public final String resourceName;
-    public final Instant lastModified;
-    
+    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+
+    private final String databaseName;
+    private final String resourceName;
+    private final LocalDateTime modifiedDate;
+    private final Long size;
+
+    public ArchiveResource(String databaseName, String resourceName, String modifiedDate, String size) {
+        this.databaseName = databaseName;
+        this.resourceName = resourceName;
+        this.modifiedDate = LocalDateTime.parse(modifiedDate, DATE_TIME_FORMATTER);
+        this.size = Long.parseLong(size);
+    }
+
     /**
-     * 
+     * @return the databaseName
      */
-    public ArchiveResource(String database, String resource, String modifiedDate) {
-        this.databaseName = database;
-        this.resourceName = resource;
-        this.lastModified = Instant.parse(modifiedDate);
+    public String getDatabaseName() {
+        return databaseName;
     }
-    
+
+    /**
+     * @return the resourceName
+     */
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    /**
+     * @return the modifiedDate
+     */
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
+    }
+
+    /**
+     * @return the size
+     */
+    public Long getSize() {
+        return size;
+    }
+
+    /**
+     * @return
+     */
     public String getCombinedName() {
-        return databaseName + " - " + resourceName;
+        return databaseName + " - " + resourceName.replaceAll("(?i)\\.xml", "");
     }
     
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return getCombinedName();
+    public String getCombinedId() {
+        return getDatabaseId() + " - " + getResourceId();
     }
+
+    public String getDatabaseId() {
+        try {
+            return URLEncoder.encode(databaseName, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("'utf-8' is unsupported encoding");
+        }
+    }
+
+    public String getResourceId() {
+        try {
+            return URLEncoder.encode(resourceName, "utf-8").replaceAll("(?i)\\.xml", "");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("'utf-8' is unsupported encoding");
+        }
+    }
+
 }

@@ -90,12 +90,14 @@ var viewerJS = ( function( viewer ) {
         	//console.log("record pi", $recordPiInput, $recordPiInput.val());
         	this.hideLoader("load_record_image");
         	if($recordPiInput.length > 0) {
+        		let containsImage = $recordPiInput.attr("data-contains-image");
         		let recordPi = $recordPiInput.val();
         		let oldPi = this.recordPi;
         		this.recordPi = recordPi;
         		//console.log("record pi is " + recordPi + " old pi is " + oldPi);
-        		if(recordPi && recordPi != oldPi) {
-        			this.recordPi = recordPi;
+        		if(!containsImage || containsImage.toLowerCase() == "false") {
+        			return Promise.resolve();
+        		} else if(this.recordPi && this.recordPi != oldPi) {
         			let manifestUrl = rootURL + "/api/v2/records/" + recordPi + "/manifest/";
         			this.showLoader("load_record_image");
         			//console.log("load ", manifestUrl);
@@ -169,29 +171,51 @@ var viewerJS = ( function( viewer ) {
         	}
         	return Promise.resolve();
         },
-        
+
         showLoader: function(loader) {
         	let $loader = $("[data-loader='"+loader+"']");
         	if($loader.length > 0) {
         		$loader.show();
         	}
         },
-        
+
         hideLoader: function(loader) {
         	let $loader = $("[data-loader='"+loader+"']");
         	if($loader.length > 0) {
         		$loader.hide();
         	}
         },
-        
+
         initTextTree: function() {
          // toggle text-tree view from stairs to one line
             $('body').on("click", '.archives__text-tree', function() {
                 $('.archives__text-tree').toggleClass('-showAsOneLine');
             });
         },
-        
+
         initSearch: function() {
+			/* Trigger for search */
+			$('#archivesSearchTrigger').on('click', function(){
+				$(this).toggleClass('-active');
+				
+				if ($('.archives__search-input-wrapper').is(":visible")) {
+				$('.archives__search-input-wrapper').slideToggle('fast');
+				
+				setTimeout(
+				  function() {
+					$('.archives__search-input').val("");
+                	/* trigger empty search on click */
+                	$('.archives__search-submit-button').click();
+				  }, 200);
+
+				}
+				else {
+					$('.archives__search-input-wrapper').slideToggle('fast');
+					$('.archives__search-input').focus();
+				}
+		
+			});
+
             /* check search field for input value and show clear button */
             if(!$('.archives__search-input').val() == ''){
                 $('.archives__search-clear').show();
@@ -216,7 +240,7 @@ var viewerJS = ( function( viewer ) {
                  }, 1300);
              });
         },
-        
+
         /**
          * In chome with small window size (1440x900) hcSticky breaks on ajax reload if the page is scrolled
          * all the way to the button. To prevent this we quickly scroll to the top, refresh hcSticky and then scroll back down.
@@ -230,13 +254,13 @@ var viewerJS = ( function( viewer ) {
                 $('html').scrollTop(currentScrollPosition);
             }
         },
-        
+
         refreshHcSticky: function() {
             if(_debug)console.log("update hc sticky");
-//            $('.archives__left-side, .archives__right-side').hcSticky('refresh');
+			// $('.archives__left-side, .archives__right-side').hcSticky('refresh');
             $('.archives__left-side, .archives__right-side').hcSticky('update', {
                 stickTo: $('.archives__wrapper')[0],
-                top: 80,
+                top: 20,
                 bottom: 20,
                 responsive: {
                     993: {
@@ -245,7 +269,7 @@ var viewerJS = ( function( viewer ) {
                 }
            });
         },
-        
+
         /**
          * In chome with small window size (1440x900) hcSticky breaks on page load if the view was previously scrolled
          * all the way to the bottom. To prevent this we scroll 5 px up before refreshing hcSticky.
@@ -255,19 +279,15 @@ var viewerJS = ( function( viewer ) {
             let currentScrollPosition = $('html').scrollTop();
             $('html').scrollTop(currentScrollPosition-5);
             this.initHcSticky();
-//            if(currentScrollPosition) {
-//                $('html').scrollTop(currentScrollPosition);
-//            }
         },
 
-        
         initHcSticky: function() {
             if(_debug)console.log("init hc sticky");
                         
             // Sticky right side of archives view
             $('.archives__right-side').hcSticky({
                 stickTo: $('.archives__wrapper')[0],
-                top: 80,
+                top: 20,
                 bottom: 20,
                 responsive: {
                     993: {
@@ -275,7 +295,7 @@ var viewerJS = ( function( viewer ) {
                     }
                 }
             });
-            
+
             // Sticky left side of archives view
             $('.archives__left-side').hcSticky({
                 stickTo: $('.archives__wrapper')[0],
@@ -288,7 +308,7 @@ var viewerJS = ( function( viewer ) {
                 }
             });
         },
-        
+
         setLocation: function(element) {
             if(_debug)console.log(" clicked data-select-entry", element);
             let select = $(element).attr("data-select-entry");
@@ -301,9 +321,9 @@ var viewerJS = ( function( viewer ) {
             //Call the commandscript "updateUrl" in archivesTreeView.xhtml to trigger an ajax call 
             //and update the page url to show the selected record 
             updateUrl();
-        }
-    };
+        },
 
+    };
 
     return viewer;
 } )( viewerJS || {}, jQuery );

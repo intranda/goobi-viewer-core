@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import io.goobi.viewer.model.citation.Citation;
 import io.goobi.viewer.model.citation.CitationDataProvider;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.search.SearchHelper;
 
 /**
  * Wrapper class for metadata parameter value groups, so that JSF can iterate through them properly.
@@ -43,10 +45,12 @@ public class MetadataValue implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(MetadataValue.class);
 
+    static final String MASTERVALUE_NULL = "MASTERVALUE_NULL";
+
     private final List<String> paramLabels = new ArrayList<>();
     /**
      * List of lists with parameter values. The top list represents the different parameters, with each containing one or more values for that
-     * parameters.
+     * parameter.
      */
     private final List<List<String>> paramValues = new ArrayList<>();
     private final List<String> paramMasterValueFragments = new ArrayList<>();
@@ -89,6 +93,21 @@ public class MetadataValue implements Serializable {
      */
     public boolean isParamValueBlank(int index) {
         return StringUtils.isBlank(getComboValueShort(index));
+    }
+
+    /**
+     * 
+     * @return true if all of the param values are empty or blank; false otherwise
+     * @should return true if all param values blank
+     * @should return false if any param value not blank
+     */
+    public boolean isAllParamValuesBlank() {
+        for (int i = 0; i < paramValues.size(); ++i)
+            if (StringUtils.isNotBlank(getComboValueShort(i))) {
+                return false;
+            }
+
+        return true;
     }
 
     /**
@@ -151,7 +170,7 @@ public class MetadataValue implements Serializable {
                 addPrefix = false;
                 addSuffix = false;
                 masterFragment = ViewerResourceBundle.getTranslation(paramMasterValueFragments.get(index), null);
-                logger.trace("master fragment: {}", masterFragment);
+                // logger.trace("master fragment: {}", masterFragment);
             }
             // Only add prefix if the total parameter value lengths is > 0 so far
             if (addPrefix && paramPrefixes.size() > index && StringUtils.isNotEmpty(paramPrefixes.get(index))) {
@@ -358,6 +377,32 @@ public class MetadataValue implements Serializable {
             return paramValues.get(index).get(0);
         }
         return "";
+    }
+
+    /**
+     * Applies (full HTML) search hit value highlighting to all values for the given parameter index.
+     * 
+     * @param paramIndex Metadata parameter index
+     * @param searchTerms Set of search terms
+     * @should apply highlighting correctly
+     */
+    public void applyHighlightingToParamValue(int paramIndex, Set<String> searchTerms) {
+        if (paramValues.size() <= paramIndex || paramValues.get(paramIndex) == null) {
+            return;
+        }
+        if (searchTerms == null || searchTerms.isEmpty()) {
+            return;
+        }
+        logger.trace("applyHighlightingToParamValue: {}", paramIndex, searchTerms);
+
+        List<String> values = paramValues.get(paramIndex);
+        for (int i = 0; i < values.size(); ++i) {
+            String value = values.get(i);
+            String newValue = SearchHelper.replaceHighlightingPlaceholders(SearchHelper.applyHighlightingToPhrase(value, searchTerms));
+            if (!newValue.equals(value)) {
+                values.set(paramIndex, newValue);
+            }
+        }
     }
 
     /**

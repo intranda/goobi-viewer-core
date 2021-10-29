@@ -55,6 +55,7 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataTools;
+import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -180,9 +181,8 @@ public class BrowseElement implements Serializable {
      * @throws DAOException
      * @throws ViewerConfigurationException
      */
-    BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext,
-            Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, Map<String, Set<String>> searchTerms,
+            ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         this.metadataList = metadataList;
         if (this.metadataList == null) {
             this.metadataList = new ArrayList<>();
@@ -218,40 +218,12 @@ public class BrowseElement implements Serializable {
 
         // If the topstruct is a volume of any kind or a subelement, add the anchor and volume labels to
         if (!structElement.isAnchor() && topStructElement != null) {
-            int position = 0;
             // Add anchor label to volumes
             if (!structElement.isAnchor()) {
                 anchorStructElement = topStructElement.getParent();
                 if (anchorStructElement != null) {
                     // Add anchor to the docstruct hierarchy
                     structElements.add(anchorStructElement.createStub());
-                    if (DataManager.getInstance().getConfiguration().isDisplayTopstructLabel()) {
-                        String anchorLabel = generateLabel(anchorStructElement, locale);
-                        if (StringUtils.isNotEmpty(anchorLabel)) {
-                            this.metadataList
-                                    .add(position,
-                                            new Metadata(String.valueOf(anchorStructElement.getLuceneId()), anchorStructElement.getDocStructType(),
-                                                    null, new MetadataParameter().setType(MetadataParameterType.FIELD)
-                                                            .setKey(anchorStructElement.getDocStructType()),
-                                                    StringTools.intern(anchorLabel), locale));
-                            position++;
-                        }
-                    }
-                }
-            }
-            // Add topstruct label to lower docstructs
-            if (!structElement.isWork() && DataManager.getInstance().getConfiguration().isDisplayTopstructLabel()) {
-                String topstructLabel = generateLabel(topStructElement, locale);
-                if (StringUtils.isNotEmpty(topstructLabel)) {
-                    // Add volume number, if the parent is a volume
-                    if (topStructElement.isAnchorChild() && StringUtils.isNotEmpty(topStructElement.getVolumeNo())) {
-                        topstructLabel = new StringBuilder(topstructLabel).append(" (").append(topStructElement.getVolumeNo()).append(')').toString();
-                    }
-                    this.metadataList.add(position,
-                            new Metadata(String.valueOf(topStructElement.getLuceneId()), topStructElement.getDocStructType(), null,
-                                    new MetadataParameter().setType(MetadataParameterType.FIELD)
-                                            .setKey(topStructElement.getDocStructType()),
-                                    StringTools.intern(topstructLabel), locale));
                 }
             }
         }
@@ -261,13 +233,10 @@ public class BrowseElement implements Serializable {
             int length = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueLength();
             int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
             populateMetadataList(structElement, topStructElement, anchorStructElement, searchTerms, length, number, locale);
-            
+
             // Add event metadata for LIDO records
             if (topStructElement != null && topStructElement.isLidoRecord()) {
-                this.events = topStructElement.generateEventElements(locale, true);
-                if (!this.events.isEmpty()) {
-                    Collections.sort(this.events);
-                }
+                populateEvents(topStructElement, searchTerms);
             }
         }
 
@@ -454,6 +423,46 @@ public class BrowseElement implements Serializable {
                             param.isAddUrl() ? elementToUse.getUrl() : null, null, null, locale);
                     this.existingMetadataFields.add(md.getLabel());
                     count++;
+                }
+            }
+        }
+    }
+
+    /**
+     * Looks up LIDO events and search hit metadata for the given record topstruct element. Applies search hit value highlighting, if search terms are
+     * provided.
+     * 
+     * @param topStructElement Top structure element of the LIDO record
+     * @param searchTerms Map containing all generated search terms
+     * @throws IndexUnreachableException
+     */
+    private void populateEvents(StructElement topStructElement, Map<String, Set<String>> searchTerms) throws IndexUnreachableException {
+        if (topStructElement == null || !topStructElement.isLidoRecord()) {
+            return;
+        }
+        logger.trace("populateEvents: {}, {}", topStructElement.getLabel(), searchTerms);
+
+        this.events = topStructElement.generateEventElements(locale, true);
+        if (this.events.isEmpty()) {
+            return;
+        }
+
+        Collections.sort(this.events);
+
+        // Value highlighting
+        if (searchTerms == null) {
+            return;
+        }
+        for (EventElement event : events) {
+            for (Metadata md : event.getSearchHitMetadata()) {
+                for (MetadataParameter param : md.getParams()) {
+                    for (MetadataValue mdValue : md.getValues()) {
+                        if (searchTerms.get(md.getLabel()) != null) {
+                            mdValue.applyHighlightingToParamValue(md.getParams().indexOf(param), searchTerms.get(md.getLabel()));
+                        } else if (searchTerms.get(SolrConstants.DEFAULT) != null) {
+                            mdValue.applyHighlightingToParamValue(md.getParams().indexOf(param), searchTerms.get(SolrConstants.DEFAULT));
+                        }
+                    }
                 }
             }
         }

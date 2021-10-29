@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -121,17 +124,14 @@ public class CollectionView {
                     if (!shouldOpenInOwnWindow(collectionName) && showAllHierarchyLevels) {
                         dc.setShowSubElements(true);
                     }
+                    
+                    String applicationUrl = DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> urls.getApplicationUrl()).orElse(null);
+
                     // Set single record PI if collection has one one record
-                    if (collectionSize == 1) {
-                        // Retrieve the first record for the given collection (considering filtering and access rights)
-                        StringPair piAndPageType =
-                                SearchHelper.getFirstRecordPiAndPageType(field, dcName, true, displayParentCollections, collectionName, null);
-                        if (piAndPageType != null) {
-                            String url = "/" + DataManager.getInstance()
-                                    .getUrlBuilder()
-                                    .buildPageUrl(piAndPageType.getOne(), 1, null, PageType.getByName(piAndPageType.getTwo()));
-                            dc.setSingleRecordUrl(url);
-                        }
+                    if (collectionSize == 1 && StringUtils.isNotBlank(applicationUrl)) {
+                        String recordUrl = UriBuilder.fromPath("/browse/{field}/{collection}/record/").build(field, dcName).toString();
+                        //String recordUrl = PrettyUrlTools.getRelativePageUrl("browseFirstRecord", field, dcName);
+                        dc.setSingleRecordUrl(recordUrl);
                     }
 
                     if (ignoreHierarchy) {

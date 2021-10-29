@@ -133,7 +133,7 @@ public class MetsResolver extends HttpServlet {
                 out.flush();
             } catch (FileNotFoundException e) {
                 logger.error(e.getMessage());
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found: " + file.getAbsolutePath());
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found: " + file.getName());
             }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());

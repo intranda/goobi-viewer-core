@@ -115,8 +115,8 @@ public class FilterTools {
      */
     public static boolean isThumbnail(HttpServletRequest servletRequest) {
 
-        String size = (String) servletRequest.getAttribute("size");
-        String region = (String) servletRequest.getAttribute("region");
+        String size = (String) servletRequest.getAttribute("iiif-size");
+        String region = (String) servletRequest.getAttribute("iiif-region");
 
         if (StringUtils.isAnyBlank(size, region)) {
             return false;

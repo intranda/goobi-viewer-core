@@ -7,6 +7,8 @@
     overflow-y: hidden;
 } */
 
+
+
 .modal-dialog {
 	z-index: 2031;
 }
@@ -22,6 +24,7 @@ a {
 	}
 	&:focus {}
 }
+
 button, .btn {
 	color: @lowerblack;
 	&:hover {
@@ -105,11 +108,11 @@ button, .btn {
   &:hover {
     transition: all 150ms 100ms ease-in;
   }
-  
+
   &:before, &:after {
     content: '';
     position: absolute;
-    left: 50%; 
+    left: 50%;
     top: 50%;
     display: block;
     background-color: @black;
@@ -129,18 +132,18 @@ button, .btn {
 	height: 26px;
 	margin: -13px auto auto -1px;
   }
-  
-  &:hover:before {
-    width: 12px;
-    height: 2px;
-    margin: -1px auto auto -6px;
-  }
-  &:hover:after {
-    width: 2px;
-    height: 12px;
-    margin: -6px auto auto -1px;
-  }
-  
+
+//  &:hover:before {
+//    width: 12px;
+//    height: 2px;
+//    margin: -1px auto auto -6px;
+//  }
+//  &:hover:after {
+//    width: 2px;
+//    height: 12px;
+//    margin: -6px auto auto -1px;
+//  }
+
 }
 
 
@@ -169,7 +172,7 @@ button:focus {
 	background-color: @badge-info;
 	@badge-info: #008295;
 }
- 
+
 .page-header {
     padding-bottom: 0;
     margin: 0;
@@ -264,14 +267,14 @@ button:focus {
 .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12,
 .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6,
 .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12 {
-	&.no-padding { 
-		padding:0;	
+	&.no-padding {
+		padding:0;
 	}
 }
 .no-gutters {
 	margin-right: 0;
-	margin-left: 0; 
-	> [class*="col-"] { 
+	margin-left: 0;
+	> [class*="col-"] {
 		padding-right : 0;
 		padding-left: 0;
 	}
@@ -384,6 +387,26 @@ button {
 .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
     background: rgba(0,0,0,.8);
 }
+
+.-sweetAlertShowAnimation {
+	animation: swalAnimShow 0.2s ease;
+}
+
+.-sweetAlertHideAnimation {
+	animation: swalAnimHide 0.2s ease;
+}
+
+@keyframes swalAnimShow {
+  0% {opacity: 0;}
+  100% { opacity: 1; }
+}
+
+@keyframes swalAnimHide {
+  0% {opacity: 1;}
+  100% { opacity: 0; }
+}
+
+
 
 /* add a focus ring for better accessibility */
 /* set to important, because of styles in bootstrap.custom.css */

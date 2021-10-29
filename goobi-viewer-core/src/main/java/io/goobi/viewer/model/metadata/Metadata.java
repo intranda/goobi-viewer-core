@@ -512,6 +512,11 @@ public class Metadata implements Serializable {
             // Set metadata label from labelField
             if (StringUtils.isNotEmpty(labelField) && labelField.equals(param.getKey())) {
                 mdValue.setLabel(value);
+                // Remove value from the actual metadata value list if null master value is set
+                if (MetadataValue.MASTERVALUE_NULL.equals(param.getMasterValueFragment())) {
+                    logger.trace("clearing {}", mdValue.getParamValues().get(paramIndex).get(0));
+                    mdValue.getParamValues().get(paramIndex).clear();
+                }
             }
         }
     }
@@ -858,7 +863,7 @@ public class Metadata implements Serializable {
 
                     if (!getChildMetadata().isEmpty()) {
                         for (Metadata child : getChildMetadata()) {
-                            logger.trace("populating child metadata: {}", child.getLabel());
+                            // logger.trace("populating child metadata: {}", child.getLabel());
                             child.populate(se, metadataDocIddoc, locale);
                         }
                     }

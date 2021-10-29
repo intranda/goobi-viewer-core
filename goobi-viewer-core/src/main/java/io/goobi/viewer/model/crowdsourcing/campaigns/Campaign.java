@@ -694,6 +694,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         if (status == null) {
             return false;
         }
+        if(getQuestions().isEmpty()) {
+            return false;
+        }
         if (!isHasStarted() || isHasEnded()) {
             return false;
         }

@@ -103,6 +103,12 @@ public final class SearchHelper {
     // public static final String[] FULLTEXT_SEARCH_FIELDS = { LuceneConstants.FULLTEXT, LuceneConstants.IDDOC_OWNER,
     // LuceneConstants.IDDOC_IMAGEOWNER };
 
+    /**
+     * All configured facet fields. Used for {@link #defacetifyField(String)} and stored here for quick access
+     */
+    private static final List<String> CONFIGURED_FACET_FIELDS = DataManager.getInstance().getConfiguration().getFacetFields();
+
+    
     /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code> */
     public static final String PARAM_NAME_FILTER_QUERY_SUFFIX = "filterQuerySuffix";
     /** Constant <code>SEARCH_TERM_SPLIT_REGEX="[ ]|[,]|[-]"</code> */
@@ -138,6 +144,7 @@ public final class SearchHelper {
 
     /** Filter subquery for collection listing (no volumes). */
     static volatile String collectionBlacklistFilterSuffix = null;
+    
 
     /**
      * Main search method for flat search.
@@ -474,24 +481,24 @@ public final class SearchHelper {
      * @param value a {@link java.lang.String} object.
      * @param filterForWhitelist a boolean.
      * @param filterForBlacklist a boolean.
-     * @param separatorString a {@link java.lang.String} object.
+     * @param splittingChar a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
      * @return StringPair containing the PI and the target page type of the first record.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public static StringPair getFirstRecordPiAndPageType(String luceneField, String value, boolean filterForWhitelist,
-            boolean filterForBlacklist, String separatorString, Locale locale)
+            boolean filterForBlacklist, String splittingChar, Locale locale)
             throws IndexUnreachableException, PresentationException {
         if (luceneField == null || value == null) {
             return null;
         }
 
-        if (StringUtils.isEmpty(separatorString)) {
-            separatorString = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(luceneField);
+        if (StringUtils.isEmpty(splittingChar)) {
+            splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(luceneField);
         }
 
-        StringBuilder sbQuery = new StringBuilder();
+        StringBuilder sbQuery = new StringBuilder(SolrConstants.PI).append(":*");
         if (filterForWhitelist) {
             if (sbQuery.length() > 0) {
                 sbQuery.append(" AND ");
@@ -506,7 +513,7 @@ public final class SearchHelper {
                 .append(" OR ")
                 .append(luceneField)
                 .append(":")
-                .append(value + separatorString + "*)");
+                .append(value + splittingChar + "*)");
         if (filterForBlacklist) {
             sbQuery.append(getCollectionBlacklistFilterSuffix(luceneField));
         }
@@ -514,7 +521,7 @@ public final class SearchHelper {
         List<String> fields =
                 Arrays.asList(SolrConstants.PI, SolrConstants.MIMETYPE, SolrConstants.DOCSTRCT, SolrConstants.THUMBNAIL, SolrConstants.ISANCHOR,
                         SolrConstants.ISWORK, SolrConstants.LOGID);
-        // logger.trace("query: {}", sbQuery.toString());
+        //        logger.trace("first record query: {}", sbQuery.toString());
         QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 1, null, null, fields);
         // logger.trace("query done");
 
@@ -540,7 +547,11 @@ public final class SearchHelper {
                             doc.containsKey(SolrConstants.THUMBNAIL), false);
             return new StringPair(pi, pageType.name());
         } catch (Throwable e) {
-            logger.error("Failed to retrieve record", e);
+            if (e instanceof RecordNotFoundException) {
+                //
+            } else {
+                logger.error("Failed to retrieve record", e);
+            }
         }
 
         return null;
@@ -2054,6 +2065,17 @@ public final class SearchHelper {
         if (fieldName == null) {
             return null;
         }
+        
+        /**
+         * If the given fieldname is a facetified version of a configured facet field, return the configured field
+         */
+        for (String field : CONFIGURED_FACET_FIELDS) {
+            String facetField = facetifyField(field);
+            if(facetField.equals(fieldName)) {
+                return field;
+            }
+        }
+        
 
         switch (fieldName) {
             case SolrConstants.FACET_DC:
