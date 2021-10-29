@@ -652,14 +652,14 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         filters.put("page", "1");
         Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(filters, null));
     }
-    
+
     @Test
     public void getCommentCount_shouldFilterForUserCorrectly() throws Exception {
         {
             User owner = DataManager.getInstance().getDao().getUser(1l);
             Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(null, owner));
         }
-        {            
+        {
             User owner = DataManager.getInstance().getDao().getUser(2l);
             Assert.assertEquals(1L, DataManager.getInstance().getDao().getCommentCount(null, owner));
         }
@@ -1148,7 +1148,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(Long.valueOf(3), boomarkLists.get(0).getId());
         Assert.assertEquals(user, boomarkLists.get(0).getOwner());
     }
-    
+
     @Test
     public void countAllBookmarkListsForUserTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
@@ -2328,7 +2328,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
             Assert.assertEquals("+PI:PI_5", campaign.getSolrQuery());
 
-
             Assert.assertEquals(1, campaign.getStatistics().size());
             CampaignRecordStatistic recordStatistic = campaign.getStatistics().get("PI_5");
             Assert.assertNotNull(recordStatistic);
@@ -2942,13 +2941,13 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         assertTrue(DataManager.getInstance().getDao().addRecordNote(note));
         assertNotNull(note.getId());
-        CMSSingleRecordNote pNote = (CMSSingleRecordNote)DataManager.getInstance().getDao().getRecordNote(note.getId());
+        CMSSingleRecordNote pNote = (CMSSingleRecordNote) DataManager.getInstance().getDao().getRecordNote(note.getId());
         assertNotNull(pNote);
         pNote.getRecordTitle().setSelectedLocale(Locale.GERMAN);
         assertEquals(title, pNote.getRecordTitle().getText());
         assertEquals(title, pNote.getRecordTitle().getText(Locale.GERMAN));
     }
-    
+
     @Test
     public void testAddCMSMultiRecordNote() throws DAOException {
 
@@ -2957,7 +2956,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         assertTrue(DataManager.getInstance().getDao().addRecordNote(note));
         assertNotNull(note.getId());
-        CMSMultiRecordNote pNote = (CMSMultiRecordNote)DataManager.getInstance().getDao().getRecordNote(note.getId());
+        CMSMultiRecordNote pNote = (CMSMultiRecordNote) DataManager.getInstance().getDao().getRecordNote(note.getId());
         assertNotNull(pNote);
         assertEquals("DC:dc3d", pNote.getQuery());
     }
@@ -2995,7 +2994,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", true).size());
         assertEquals(0, DataManager.getInstance().getDao().getRecordNotesForPi("PI5", false).size());
     }
-    
+
     @Test
     public void testGetAllMultiRecordNotes() throws DAOException {
         assertEquals(1, DataManager.getInstance().getDao().getAllMultiRecordNotes(true).size());
@@ -3063,6 +3062,27 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<CMSPage> pages = DataManager.getInstance().getDao().getPagesUsingSlider(slider);
         assertEquals(1, pages.size());
         assertEquals(Long.valueOf(2l), pages.iterator().next().getId());
+    }
+
+    /**
+     * @see JPADAO#getCommentsOfUser(User,int,String,boolean)
+     * @verifies sort correctly
+     */
+    @Test
+    public void getCommentsOfUser_shouldSortCorrectly() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(user);
+        {
+            List<Comment> comments = DataManager.getInstance().getDao().getCommentsOfUser(user, 2, "dateCreated", true);
+            assertEquals(2, comments.size());
+            assertEquals(Long.valueOf(3), comments.get(0).getId());
+            assertEquals(Long.valueOf(4), comments.get(1).getId());
+        }
+        {
+            List<Comment> comments = DataManager.getInstance().getDao().getCommentsOfUser(user, 2, "dateUpdated", true);
+            assertEquals(2, comments.size());
+            assertEquals(Long.valueOf(4), comments.get(0).getId());
+        }
     }
 
 }

@@ -31,7 +31,17 @@
 		position: relative;
 	}
 	&__last-activities-wrapper {
-		padding-left: 1rem;
+	}
+	&__last-activities-placeholder-wrappper {
+		display: flex;
+		align-items: center;
+		p {
+			margin-bottom: 0;
+		}
+		.fa-rocket {
+			font-size: 60px;
+			margin-right: 5rem;
+		}
 	}
 	&__last-activities-timeline-wrapper {
 		position: relative;
@@ -64,12 +74,13 @@
 			width: 3px;
 			background: #f0f0f0;
 			left: -4px;
-			top: 0;
+			top: 6px;
 			height: 100%;
 		}
 		&:first-child {
 			&:before {
 				margin-top: 7px;
+				// display: none;
 			}	
 			&:after {
 				position: absolute;
@@ -93,6 +104,7 @@
 		&:last-child {
 			&:before {
 				top: -20px;
+				display: none;
 			}
 		}
 	}
@@ -114,6 +126,10 @@
 		justify-content: space-between;
 		flex-grow: 1;
 		padding-left: 2.5rem;
+		&.-noEntry {
+			padding-left: 0;
+		}
+		
 	}
 	&__comments-wrapper {
 		padding-left: 2rem;
@@ -152,6 +168,12 @@
 	&__comments-open-record {
 		flex: 0 0 100%;
 		max-width: 100%;
+	}
+	&__sidebar-settings-button-wrapper {
+		margin-top: 2rem;
+	}
+	&__sidebar-settings-button {
+		width: 100%;
 	}
 }
 

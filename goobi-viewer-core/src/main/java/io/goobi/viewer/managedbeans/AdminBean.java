@@ -101,7 +101,7 @@ public class AdminBean implements Serializable {
     private static final Object TRANSLATION_LOCK = new Object();
 
     private static String translationGroupsEditorSession = null;
-    
+
     @Inject
     @Push
     PushContext hotfolderFileCount;
@@ -130,6 +130,7 @@ public class AdminBean implements Serializable {
     private Role memberRole;
 
     private Part uploadedAvatarFile;
+
     /**
      * <p>
      * Constructor for AdminBean.
@@ -144,7 +145,7 @@ public class AdminBean implements Serializable {
      * init.
      * </p>
      *
-     * @should sort lazyModelComments by dateUpdated desc by default
+     * @should sort lazyModelComments by dateCreated desc by default
      */
     @PostConstruct
     public void init() {
@@ -256,23 +257,23 @@ public class AdminBean implements Serializable {
     }
 
     public String saveCurrentUserAction() throws DAOException {
-        if(this.saveUserAction(getCurrentUser()))  {
+        if (this.saveUserAction(getCurrentUser())) {
             return "pretty:adminUsers";
-        } else {
-            return "";
         }
+
+        return "";
     }
-    
+
     public String saveUserAction(User user, String returnPage) throws DAOException {
         this.saveUserAction(user);
         return returnPage;
     }
 
-    public String resetUserAction(User user, String returnPage) throws DAOException {
+    public String resetUserAction(User user, String returnPage) {
         user.backupFields();
         return returnPage;
     }
-    
+
     /**
      * <p>
      * saveUserAction.
@@ -282,10 +283,10 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean saveUserAction(User user) throws DAOException {
-        
+
         //first check if current user has the right to edit the given user
         User activeUser = BeanUtils.getUserBean().getUser();
-        if(user == null || (!activeUser.isSuperuser() && !activeUser.getId().equals(user.getId()))) {
+        if (user == null || (!activeUser.isSuperuser() && !activeUser.getId().equals(user.getId()))) {
             Messages.error("errSave");
             return false;
         }
@@ -345,7 +346,6 @@ public class AdminBean implements Serializable {
 
         return true;
     }
-
 
     /**
      * <p>
@@ -2070,7 +2070,7 @@ public class AdminBean implements Serializable {
         logger.trace("setTranslationGroupsEditorSession: {}", translationGroupsEditorSession);
         AdminBean.translationGroupsEditorSession = translationGroupsEditorSession;
     }
-    
+
     /**
      * 
      */
@@ -2093,14 +2093,14 @@ public class AdminBean implements Serializable {
     public boolean hasAccessPermissingForTranslationFiles() {
         return TranslationGroup.isHasFileAccess();
     }
-    
+
     /**
      * @param uploadedAvatarFile the uploadedAvatarFile to set
      */
     public void setUploadedAvatarFile(Part uploadedAvatarFile) {
         this.uploadedAvatarFile = uploadedAvatarFile;
     }
-    
+
     /**
      * @return the uploadedAvatarFile
      */
