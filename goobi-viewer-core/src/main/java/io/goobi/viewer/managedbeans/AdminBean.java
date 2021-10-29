@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -622,8 +623,13 @@ public class AdminBean implements Serializable {
         }
 
         try {
-            for (UserRole userRole : dirtyUserRoles.keySet()) {
-                switch (dirtyUserRoles.get(userRole)) {
+            //the userRoles don't match the keys of dirtyUserRoles after saving (dirtyUserRoles.get(userRole) returns null for the second entry), 
+            //so dirty status for each user role is matched by the user behind the userGroup
+            Map<User, String> dirtyUsers = dirtyUserRoles.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getUser(), e -> e.getValue()));
+            for (User user : dirtyUsers.keySet()) {
+                String dirty = dirtyUsers.get(user);
+                UserRole userRole = dirtyUserRoles.keySet().stream().filter(r -> r.getUser().equals(user)).findFirst().orElse(null);
+                switch (dirty) {
                     case "save":
                         logger.trace("Saving UserRole: {}", userRole);
                         // If this the user group is not yet persisted, add it to DB first
