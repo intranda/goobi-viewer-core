@@ -141,6 +141,12 @@
 		display: flex;
 		flex-wrap: wrap;
 	}
+	&__object-metadata {
+		&.-singleImage {
+			max-width: 60%;
+			flex: 0 0 60%;
+		}
+	}
 	&__object-metadata-entry {
 		display: grid;
 		margin-bottom: 0.2rem;
@@ -518,6 +524,7 @@
 	}
 	.archives__object-metadata {
 		flex: 0 0 100%;
+		max-width: 100%;
 	}
 	.archives__object-image {
 		flex: 0 0 100%;
