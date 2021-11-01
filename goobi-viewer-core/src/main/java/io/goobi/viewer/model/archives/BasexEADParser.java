@@ -28,12 +28,17 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.core.UriBuilder;
+
+import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.utils.URIBuilder;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -153,7 +158,7 @@ public class BasexEADParser {
      */
     public Document retrieveDatabaseDocument(ArchiveResource archive) throws IOException, IllegalStateException, HTTPException, JDOMException {
         if (archive != null) {
-            String url = basexUrl + "db/" + archive.getDatabaseName() + "/" + archive.getResourceName();
+            String url = UriBuilder.fromPath(basexUrl).path("db").path(archive.getDatabaseName()).path(archive.getResourceName()).build().toString();
             logger.trace("URL: {}", url);
             String response;
             response = NetTools.getWebContentGET(url);
@@ -485,6 +490,6 @@ public class BasexEADParser {
     }
     
     public static String getIdForName(String name) {
-        return StringTools.encodeUrl(name).replaceAll("(?i)\\.xml", "");
+        return name.replaceAll("(?i)\\.xml", "");
     }
 }

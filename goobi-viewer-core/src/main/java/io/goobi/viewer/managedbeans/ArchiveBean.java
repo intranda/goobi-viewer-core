@@ -51,6 +51,7 @@ import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -164,9 +165,9 @@ public class ArchiveBean implements Serializable {
                 logger.error("Error reading database {} from {}", getCurrentArchive().getCombinedName(), eadParser.getBasexUrl());
                 this.databaseState = DatabaseState.ERROR_INVALID_FORMAT;
             }
+            this.searchString = "";
+            getArchiveTree().resetSearch();
         }
-        this.searchString = "";
-        getArchiveTree().resetSearch();
 
         //load selected entry
         if (isDatabaseLoaded() && StringUtils.isNotBlank(selectedEntryId)) {
@@ -512,17 +513,19 @@ public class ArchiveBean implements Serializable {
      * @param currentResource the currentResource to set
      */
     public void setCurrentResource(String currentResource) {
-        this.currentResource = currentResource;
+        this.currentResource = StringTools.decodeUrl(currentResource);
     }
 
     public ArchiveResource getCurrentArchive() {
         if (StringUtils.isNoneBlank(currentDatabase, currentResource)) {
-            return this.archives.keySet()
+            ArchiveResource archive = this.archives.keySet()
                     .stream()
-                    .filter(archive -> archive.getDatabaseId().equals(currentDatabase))
-                    .filter(archive -> archive.getResourceId().equals(currentResource))
+//                    .peek(a -> System.out.println("Archive " + a.getDatabaseId() + " - " + a.getResourceId()))
+                    .filter(a -> a.getDatabaseId().equals(currentDatabase))
+                    .filter(a -> a.getResourceId().equals(currentResource))
                     .findAny()
                     .orElse(null);
+            return archive;
         } else {
             return null;
         }

@@ -82,19 +82,21 @@ public class ArchiveResource {
     }
 
     public String getDatabaseId() {
-        try {
-            return URLEncoder.encode(databaseName, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("'utf-8' is unsupported encoding");
-        }
+        return databaseName;
+//        try {
+//            return URLEncoder.encode(databaseName, "utf-8");
+//        } catch (UnsupportedEncodingException e) {
+//            throw new IllegalStateException("'utf-8' is unsupported encoding");
+//        }
     }
 
     public String getResourceId() {
-        try {
-            return URLEncoder.encode(resourceName, "utf-8").replaceAll("(?i)\\.xml", "");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("'utf-8' is unsupported encoding");
-        }
+//        try {
+            String id = resourceName.replaceAll("(?i)\\.xml", "");
+            return id;
+//        } catch (UnsupportedEncodingException e) {
+//            throw new IllegalStateException("'utf-8' is unsupported encoding");
+//        }
     }
 
 }
