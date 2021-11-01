@@ -141,7 +141,7 @@ public class ConfigurationBean implements Serializable {
         }
         return csWrapperUrl;
     }
-
+    
     /**
      * <p>
      * isBookshelvesEnabled.
@@ -163,6 +163,10 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isBookmarksEnabled() {
         return DataManager.getInstance().getConfiguration().isBookmarksEnabled();
+    }
+    
+    public boolean isSearchSavingEnabled() {
+        return DataManager.getInstance().getConfiguration().isSearchSavingEnabled();
     }
 
     /**
@@ -1480,5 +1484,9 @@ public class ConfigurationBean implements Serializable {
     
     public boolean isDisplayAddressSearchInMap() {
         return DataManager.getInstance().getConfiguration().isDisplayAddressSearchInMap();
+    }
+    
+    public boolean isArchivesEnabled() {
+        return DataManager.getInstance().getConfiguration().isArchivesEnabled();
     }
 }

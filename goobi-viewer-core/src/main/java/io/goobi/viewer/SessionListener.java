@@ -54,7 +54,7 @@ public class SessionListener implements HttpSessionListener {
     public void sessionDestroyed(HttpSessionEvent event) {
         if (DataManager.getInstance().getSessionMap().remove(event.getSession().getId()) != null) {
             String sessionId = event.getSession().getId();
-            logger.trace("Session destroyed: {}", sessionId);
+            // logger.trace("Session destroyed: {}", sessionId);
             DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(sessionId, null);
             if (sessionId.equals(AdminBean.getTranslationGroupsEditorSession())) {
                 AdminBean.setTranslationGroupsEditorSession(null);

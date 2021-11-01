@@ -76,6 +76,7 @@ var viewerJS = ( function( viewer ) {
         $(".share-image-area [data-popover='close']").on("click", (e) => {
             this.endFragmentSelect();
             $(e.target).closest(".fullscreen__view-sidebar-accordeon-panel").find("h3").click();
+            $(e.target).closest(".fullscreen__view-sidebar-accordeon-panel").find("h3").focus();
         })
         
         // init area select

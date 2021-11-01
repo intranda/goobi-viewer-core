@@ -3666,14 +3666,31 @@ this.getPageStatus = function(index) {
 }.bind(this)
 
 });
-riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'" onload="{imageLoaded}"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
+riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematrix__loader" ref="loader"><img if="{loading}" riot-src="{opts.contextPath}/resources/images/infinity_loader.gif" class="img-fluid" alt="Timematrix Loader"></span></div><div class="timematrix__selection"><div id="locateTimematrix"><div class="timematrix__bar"><div class="timematrix__period"><span>{translate(⁗timematrix__timePeriod⁗)}:</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_start\')}" class="timematrix__selectionRangeInput" ref="inputStartYear" riot-value="{this.startYear}" maxlength="4"> &#xA0;<span>-</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_end\')}" class="timematrix__selectionRangeInput" ref="inputEndYear" riot-value="{this.endYear}" maxlength="4"></div><div class="timematrix__hitsForm"><div class="timematrix__hitsInput"><span>{translate(⁗timematrix__maxResults⁗)}: &#xA0;</span><input onchange="{updateHitsPerPage}" type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" riot-value="{this.maxHits}" placeholder="" maxlength="5" aria-label="{translate(\'aria_label__timeline_hits\')}"></div></div></div><div id="slider-range" ref="sliderRange"></div><button type="submit" ref="setTimematrix" class="btn btn--full setTimematrix">{translate(⁗timematrix__calculate⁗)}</button></div></div><div class="timematrix__objects"><label if="{!loading && manifests.length == 0}">{translate(⁗hitsZero⁗)}</label><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'" onload="{imageLoaded}"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
+		this.manifests = [];
+		this.loading = true;
+
 	    this.on( 'mount', function() {
 
-	        rxjs.fromEvent($( this.opts.button ), "click").pipe(
+	        let restoredValues = this.restoreValues();
+	        if(restoredValues) {
+	            this.startYear = restoredValues.startYear;
+		        this.endYear = restoredValues.endYear;
+		        this.maxHits = restoredValues.maxHits;
+	        } else {
+		        this.startYear = this.opts.minYear;
+		        this.endYear = this.opts.maxYear;
+		        this.maxHits = this.opts.maxHits;
+	        }
+
+	        this.updateTimeMatrix = new rxjs.Subject();
+
+	        this.updateTimeMatrix.pipe(
 	                rxjs.operators.map( e => this.getIIIFApiUrl()),
 	                rxjs.operators.switchMap( url => {
 
-	                    this.opts.loading.show();
+	                    this.loading = true;
+	                    this.update();
 	                    return fetch(url);
 	                }),
 	                rxjs.operators.switchMap( result => {
@@ -3681,15 +3698,14 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest i
 	                    return result.json();
 	                }),
 	                ).subscribe(json => {
-	                    this.manifests = json.orderedItems;
+	                    this.manifests = json.orderedItems ? json.orderedItems : [];
+
+	                    this.loading = false;
 	                    this.update();
-	                    this.opts.loading.hide();
 	                })
 
-	        this.manifests = [];
-	        this.startDate = parseInt( $( this.opts.startInput ).val() );
-	        this.endDate = parseInt( $( this.opts.endInput ).val() );
-	        this.initSlider( this.opts.slider, this.startDate, this.endDate );
+	        this.initSlider( this.opts.slider, this.startYear, this.endYear, this.opts.minYear, this.opts.maxYear );
+	        this.updateTimeMatrix.next();
 	    } );
 
 	    this.getViewerUrl = function(manifest) {
@@ -3722,9 +3738,9 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest i
 	    this.getIIIFApiUrl = function() {
 	        var apiTarget = this.opts.contextPath;
 	        apiTarget += "api/v1/records/list";
-	        apiTarget += "?start=" + $( this.opts.startInput ).val();
-	        apiTarget += "&end=" + $( this.opts.endInput ).val();
-	        apiTarget += "&rows=" + $( this.opts.count ).val();
+	        apiTarget += "?start=" + this.startYear;
+	        apiTarget += "&end=" + this.endYear;
+	        apiTarget += "&rows=" + this.maxHits;
 	        apiTarget += "&sort=RANDOM";
 	        if ( this.opts.subtheme ) {
 	            apiTarget += ( "&subtheme=" + this.opts.subtheme );
@@ -3740,7 +3756,7 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest i
 	        apiTarget += "/";
 	        apiTarget += $( this.opts.endInput ).val();
 	        apiTarget += '/';
-	        apiTarget += $( this.opts.count ).val();
+	        apiTarget += $( this.maxHits ).val();
 	        apiTarget += '/';
 
 	        if ( this.opts.subtheme ) {
@@ -3750,22 +3766,27 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest i
 	        return apiTarget;
 	    }.bind(this)
 
-	    this.initSlider = function( sliderSelector, startDate, endDate ) {
-	        let $slider = $( sliderSelector );
-	        let rtl = $( sliderSelector ).closest('[dir="rtl"]').length > 0;
+	    this.initSlider = function( sliderSelector, startYear, endYear, minYear, maxYear ) {
+	        let $slider = $( this.refs.sliderRange );
+
+	        let rtl = $slider.closest('[dir="rtl"]').length > 0;
 
 	        $slider.slider( {
 	            range: true,
 	            isRTL: rtl,
-	            min: parseInt( startDate ),
-	            max: parseInt( endDate ),
-	            values: [ startDate, endDate ],
+	            min: minYear,
+	            max: maxYear,
+	            values: [ startYear, endYear ],
 	            slide: function( event, ui ) {
-	                $( this.opts.startInput ).val( ui.values[ 0 ] ).change();
-	                this.startDate = parseInt( ui.values[ 0 ] );
-	                $( this.opts.endInput ).val( ui.values[ 1 ] ).change();
-	                this.endDate = parseInt( ui.values[ 1 ] );
-	            }.bind( this )
+	                $( this.refs.inputStartYear ).val( ui.values[ 0 ] ).change();
+	                this.startYear = parseInt( ui.values[ 0 ] );
+	                $( this.refs.inputEndYear ).val( ui.values[ 1 ] ).change();
+	                this.endYear = parseInt( ui.values[ 1 ] );
+	            }.bind( this ),
+	            stop: (event, ui) => {
+	                this.updateTimeMatrix.next();
+                    this.storeValues();
+	            }
 	        } );
 
 	        $slider.find( ".ui-slider-handle" ).on( 'mousedown', function() {
@@ -3776,6 +3797,33 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest i
 
 	    this.imageLoaded = function(event) {
 	    	$(event.target).parents('.timematrix__img').css("background", "transparent");
+	    }.bind(this)
+
+	    this.translate = function(key) {
+	        return this.opts.msg[key];
+	    }.bind(this)
+	    this.updateHitsPerPage = function(event) {
+	        this.maxHits = event.target.value;
+	        this.storeValues();
+	        this.updateTimeMatrix.next();
+	    }.bind(this)
+
+	    this.restoreValues = function() {
+	        let string = sessionStorage.getItem("viewer_timematrix");
+	        if(string) {
+	            let json = JSON.parse(string);
+	            console.log("restoreValues", json);
+	            return json;
+	        } else {
+	            return undefined;
+	        }
+	    }.bind(this)
+
+	    this.storeValues = function() {
+	        let json = {startYear: this.startYear, endYear: this.endYear, maxHits: this.maxHits}
+	        console.log("store values ", json);
+	        let string = JSON.stringify(json);
+	        sessionStorage.setItem("viewer_timematrix", string);
 	    }.bind(this)
 
 });

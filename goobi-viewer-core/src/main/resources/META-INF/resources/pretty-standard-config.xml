@@ -96,24 +96,20 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
-	
-    <!-- ARCHIVES -->
-    <url-mapping id="archivetree">
-        <pattern value="/archivetree/" />
-        <view-id value="/archiveTree.xhtml" />
-        <query-param name="selected">#{archiveBean.selectedEntryId}</query-param>
-    </url-mapping>
+
     <!-- ARCHIVES -->
     <url-mapping id="archives">
         <pattern value="/archives/" />
         <view-id value="/archivesContent.xhtml" />
-        <query-param onPostback="false" name="selected">#{archiveBean.selectedEntryId}</query-param>
+        <action onPostback="false">#{archiveBean.reset()}</action>
     </url-mapping>
-    <url-mapping id="archives1">
-        <pattern value="/archives/#{selectedEntryId:ArchiveBean.selectedEntryId}/" />
+    <url-mapping id="archives2">
+        <pattern value="/archives/#{archiveBean.currentDatabase}/#{archiveBean.currentResource}/" />
         <view-id value="/archivesContent.xhtml" />
+        <query-param onPostback="false" name="selected">#{selectedEntryId}</query-param>
+        <action onPostback="false">#{archiveBean.initializeArchiveTree(selectedEntryId)}</action>
     </url-mapping>
-	
+
 	<!-- FEEDBACK -->
 	<url-mapping id="feedback">
 		<pattern value="/feedback/" />
@@ -130,7 +126,7 @@
 	<url-mapping id="user">
 		<pattern value="/user/" />
          <!-- TODO: dashboard -->
-		<view-id value="/user.xhtml" />
+		<view-id value="/userDashboard.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="userSettings">

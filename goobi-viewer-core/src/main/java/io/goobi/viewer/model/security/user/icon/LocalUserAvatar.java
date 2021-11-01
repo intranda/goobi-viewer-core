@@ -26,6 +26,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.security.user.User;
 
 /**
  * @author florian
@@ -34,9 +35,12 @@ import io.goobi.viewer.controller.DataManager;
 public class LocalUserAvatar implements UserAvatar {
     
     private final Long userId;
+    private final Long updated;
 
-    public LocalUserAvatar(Long userId) {
-        this.userId = userId;
+    public LocalUserAvatar(User user) {
+        this.userId = user.getId();
+        this.updated = user.getLocalAvatarUpdated();
+        
     }
 
     /* (non-Javadoc)
@@ -53,7 +57,11 @@ public class LocalUserAvatar implements UserAvatar {
         try {            
             String sizeString = "!" + size + "," + size;
             String format = UserAvatarResource.getAvatarFileSuffix(userId);
-            return urls.path(USERS_USER_AVATAR_IMAGE, USERS_USER_AVATAR_IMAGE_IIIF).params(userId, Region.FULL_IMAGE, sizeString, 0, "default", format).build();
+            return urls.path(USERS_USER_AVATAR_IMAGE, USERS_USER_AVATAR_IMAGE_IIIF)
+                    .params(userId, Region.FULL_IMAGE, sizeString, 0, "default", format)
+                    .query("updated", this.updated)
+//                    .query("timestamp", System.currentTimeMillis())
+                    .build();
         } catch(IOException e) {
             return "";
         }

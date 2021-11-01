@@ -159,6 +159,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     @Column(name = "avatar_type")
     @Enumerated(EnumType.STRING)
     private UserAvatarOption avatarType = UserAvatarOption.DEFAULT;
+    
+    @Column(name = "local_avatar_updated", nullable = true)
+    private Long localAvatarUpdated = null;
 
     @Column(name = "agreed_to_terms_of_use")
     private boolean agreedToTermsOfUse = false;
@@ -278,6 +281,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         user.setScore(score);
         user.setAgreedToTermsOfUse(agreedToTermsOfUse);
         user.setAvatarType(this.avatarType);
+        user.setLocalAvatarUpdated(this.localAvatarUpdated);
         for (License license : licenses) {
             user.getLicenses().add(license);
         }
@@ -1611,6 +1615,10 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      */
     public void backupFields() {
+        //keep avatar update date of copy because a change in the avatar file is recorded in the copy
+        if(copy != null) {
+            this.setLocalAvatarUpdated(copy.getLocalAvatarUpdated());
+        }
         copy = clone();
     }
 
@@ -1722,6 +1730,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
                     uploadedFile.getInputStream(),
                     destFile,
                     StandardCopyOption.REPLACE_EXISTING);
+            this.localAvatarUpdated = System.currentTimeMillis();
         } catch (IOException e) {
             logger.error("Error uploaded avatar file: {}", e.toString());
         }
@@ -1737,5 +1746,21 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             }
         });
     }
+    
+    /**
+     * @return the localAvatarUpdated
+     */
+    public Long getLocalAvatarUpdated() {
+        return localAvatarUpdated;
+    }
+    
+    /**
+     * @param localAvatarUpdated the localAvatarUpdated to set
+     */
+    public void setLocalAvatarUpdated(Long localAvatarUpdated) {
+        this.localAvatarUpdated = localAvatarUpdated;
+    }
 
+
+    
 }

@@ -118,6 +118,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>MetsResolver</servlet-name>
+        <url-pattern>/sourcefile</url-pattern>
         <url-pattern>/metsresolver</url-pattern>
         <url-pattern>/lidoresolver</url-pattern>
         <url-pattern>/denkxwebresolver</url-pattern>

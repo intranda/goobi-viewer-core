@@ -694,6 +694,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         if (status == null) {
             return false;
         }
+        if (getQuestions().isEmpty()) {
+            return false;
+        }
         if (!isHasStarted() || isHasEnded()) {
             return false;
         }
@@ -1461,11 +1464,12 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
                 .filter(result -> isEligibleToEdit(result, status, user))
                 .collect(Collectors.toList());
         int currentIndex = piList.indexOf(currentPi);
-        if(piList.isEmpty()) {
+        if (piList.isEmpty()) {
             return "";
-        } if(currentIndex+1 < piList.size()) {
-            return piList.get(currentIndex+1);
-        } else if(currentIndex != 0) {
+        }
+        if (currentIndex + 1 < piList.size()) {
+            return piList.get(currentIndex + 1);
+        } else if (currentIndex != 0) {
             return piList.get(0);
         } else {
             return "";
@@ -1601,7 +1605,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @return true if record status for the given pi equals status; false otherwise. If no record
      */
     boolean isRecordStatus(String pi, CrowdsourcingStatus status) {
-        boolean ret = Optional.ofNullable(statistics.get(pi)).map(stat -> StatisticMode.RECORD.equals(this.statisticMode) ?  status.equals(stat.getStatus()) : stat.containsPageStatus(status)).orElse(CrowdsourcingStatus.ANNOTATE.equals(status));
+        boolean ret = Optional.ofNullable(statistics.get(pi))
+                .map(stat -> StatisticMode.RECORD.equals(this.statisticMode) ? status.equals(stat.getStatus()) : stat.containsPageStatus(status))
+                .orElse(CrowdsourcingStatus.ANNOTATE.equals(status));
         return ret;
     }
 
@@ -1616,9 +1622,12 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public CrowdsourcingStatus getRecordStatus(String pi) {
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CrowdsourcingStatus.ANNOTATE);
     }
-    
+
     public CrowdsourcingStatus getPageStatus(String pi, int page) {
-        return Optional.ofNullable(statistics.get(pi)).map(s -> s.getPageStatistics().get(pi + "_" + Integer.toString(page))).map(CampaignRecordPageStatistic::getStatus).orElse(CrowdsourcingStatus.ANNOTATE);
+        return Optional.ofNullable(statistics.get(pi))
+                .map(s -> s.getPageStatistics().get(pi + "_" + Integer.toString(page)))
+                .map(CampaignRecordPageStatistic::getStatus)
+                .orElse(CrowdsourcingStatus.ANNOTATE);
     }
 
     /**

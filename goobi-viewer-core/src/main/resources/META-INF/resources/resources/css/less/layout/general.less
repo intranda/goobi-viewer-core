@@ -13,6 +13,11 @@ html {
 body {
     font-family: @fontFamily;
     font-size: @fontNormal;
+
+    // Styling for fucussed elements
+    &.using-keyboard :focus-visible {
+      .mx-focus-visible !important;
+    }
 }
 
 @{RTL} body {
@@ -23,24 +28,24 @@ body {
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {}
 
-h1, .h1 { 
-    font-size: 2.8rem;     
+h1, .h1 {
+    font-size: 2.8rem;
 }
 
-h2, .h2 { 
+h2, .h2 {
     font-size: 2.1rem;
 }
 
-h3, .h3 { 
+h3, .h3 {
     font-size: 1.8rem;
 }
 
-h4, .h4 { 
+h4, .h4 {
     font-size: 1.8rem;
 }
 
 h5, h6,
-.h5, .h6 { 
+.h5, .h6 {
     font-size: @fontNormal;
 }
 
@@ -96,7 +101,7 @@ table,
 
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {}

@@ -115,6 +115,7 @@ var viewerJS = ( function( viewer ) {
             	
             	// set sidebar left position
             	$( '#fullscreenViewSidebar' ).css( 'left', 'inherit' );
+
             	
             	// reset resizable
             	if ( window.matchMedia( '(min-width: 769px)' ).matches) {
@@ -128,9 +129,19 @@ var viewerJS = ( function( viewer ) {
             	$( '#fullscreenViewSidebar' ).animate( {
             		right: '-' + _sidebarWidth + 'px'
             	}, 300, function() {            		
+
             		// show sidebar open
-            		$( '#viewSidebarOpen' ).addClass( 'in' );
-            		
+                let sidebarOpenDiv = $( '#viewSidebarOpen' );
+                let sidebarOpenBtn = sidebarOpenDiv[0].querySelector('[data-open="fs-sidebar"]');
+            		sidebarOpenDiv.addClass( 'in' );
+
+                // ACCESSIBILITY
+                // make btn focusable 
+                sidebarOpenBtn.setAttribute('tabindex', '0');
+                // add display:none
+                // prevents focusable elements in the sidebar from beeing focused using the tab key
+            	  $( '#fullscreenViewSidebar' ).css( 'display', 'none' );
+
             		// show back and forward on small devices
                 	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
                 		$( '.image-controls__action.back, .image-controls__action.forward' ).show();
@@ -139,6 +150,7 @@ var viewerJS = ( function( viewer ) {
             		// save sidebar status
             		sessionStorage.setItem( 'fsSidebarStatus', false );
             	} );
+
             	
             	if ( $( '.fullscreen__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
             		$( '.fullscreen__view-image-thumbs-wrapper' ).animate( {
@@ -146,19 +158,33 @@ var viewerJS = ( function( viewer ) {
             		}, 300 );
     			}
             } );
+
+            // Open Sidebar
             $( '[data-open="fs-sidebar"]' ).on( 'click', function() {
-            	// hide sidebar open
-            	$( '#viewSidebarOpen' ).removeClass( 'in' );
+                let sidebarOpenDiv = $( '#viewSidebarOpen' );
+                let sidebarOpenBtn = sidebarOpenDiv[0].querySelector('[data-open="fs-sidebar"]');
+
+                // hide sidebar open
+                sidebarOpenDiv.removeClass( 'in' );
+
+                // ACCESIBILITY
+                // prevent hidden btn from being focusable
+                sidebarOpenBtn.setAttribute('tabindex', '-1');
             	
             	// show back and forward on small devices
             	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
             		$( '.image-controls__action.back, .image-controls__action.forward' ).hide();
             	}
             	
+              // Remove display:none => make slide in animation possible (see below)
+              // Originally set so focusable elements in the closed sidebar cannot be reached using the tab key 
+              $( '#fullscreenViewSidebar' ).css( 'display', '' );
+
             	// slide in sidebar
             	$( '#fullscreenViewSidebar' ).animate( {
             		right: 0
             	}, 300, function() {
+
             		// set sidebar left position
             		$( '#fullscreenViewSidebar' ).css( 'left', _sidebarLeft );
             		
@@ -199,7 +225,10 @@ var viewerJS = ( function( viewer ) {
             } );
             
             // toggle sidebar panels
-            $( '.fullscreen__view-sidebar-accordeon-panel-title' ).on( 'click', function() {
+            $( '.fullscreen__view-sidebar-accordeon-panel-title' ).on( 'click keydown', function(e) {
+
+              if((e.type == 'keydown' && e.key == 'Enter') || e.type == 'click') {
+
                 var parentPanelId = $( this ).parent().attr( 'id' );
                 var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'fsPanelStatus' ) );
                 // scroll sidebar to top
@@ -234,6 +263,9 @@ var viewerJS = ( function( viewer ) {
                     panelSessionStatus[ parentPanelId ] = true;
                     sessionStorage.setItem( 'fsPanelStatus', JSON.stringify( panelSessionStatus ) );
                 }
+
+              }
+
             } );
 
             // hide all panels
@@ -369,17 +401,23 @@ var viewerJS = ( function( viewer ) {
     		console.log( 'width: ', width );
     	}
     	
-    	// set sidebar left position
-		$( '#fullscreenViewSidebar' ).css( {
-			'right': '-' + width + 'px',
-			'left': 'inherit'
-		} );
-		
-		// hide panel controls
-		$( '#fullscreenSidebarPanelControls' ).hide();
-		
-		// show sidebar open
-		$( '#viewSidebarOpen' ).addClass( 'in' );
+      // set sidebar left position
+      $( '#fullscreenViewSidebar' ).css( {
+        'right': '-' + width + 'px',
+        'left': 'inherit'
+      } );
+      
+      // hide panel controls
+      $( '#fullscreenSidebarPanelControls' ).hide();
+      
+      // show sidebar open
+      let sidebarOpenDiv = $( '#viewSidebarOpen' );
+      let sidebarOpenBtn = sidebarOpenDiv[0].querySelector('[data-open="fs-sidebar"]');
+      sidebarOpenDiv.addClass( 'in' );
+
+      // ACCESSIBILITY
+      // prevent hidden btn from being focused
+      sidebarOpenBtn.setAttribute('tabindex', '-1');
     }
     
     /**
@@ -577,8 +615,14 @@ var viewerJS = ( function( viewer ) {
     	else {
     		delay = 5000;
     	}
+
+      // Check if keyboard is used to navigate the page
+      var usingKeyboard = false;
+      if(document.body.classList.contains('using-keyboard')) {
+        usingKeyboard = true;
+      }
     	
-    	if ( trigger ) {
+    	if ( trigger && !usingKeyboard) {
     		if ( _fadeout ) {
     			clearTimeout( _fadeout );
     			$( '#fullscreenHeader' ).show();

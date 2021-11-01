@@ -1,0 +1,186 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+	    <h3>#{msg.general}</h3>
+				<div class="user-settings__form-wrapper">
+
+					<!-- prevent autocomplete in IE, Chrome and Firefox -->
+					<input type="text" class="hidden" /> <input type="password"
+						class="hidden" />
+
+					<fieldset>
+						<!-- USER DISPLAY NAME -->
+						<div class="form-group form-row">
+							<div class="col-12 col-lg-2 control-label admin__form-label">
+								<label for="displayName">#{msg.admin__user_display_name}:</label>
+							</div>
+							<div class="col-11 col-lg-9 admin__form-input">
+								<h:inputText value="#{user.nickName}" id="displayName"
+									label="displayName" styleClass="form-control" required="false"
+									requiredMessage="#{msg.loginEnterDisplayName}" />
+								<span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>
+							</div>
+							<div class="col-1 admin__form-help-icon">
+								<button type="button" class="btn btn--clean"
+									data-toggle="helptext" aria-label="inline help icon">
+									<i class="fa fa-question-circle" aria-hidden="true"></i>
+								</button>
+							</div>
+						</div>
+
+						<!-- USER EMAIL ADDRESS -->
+						<h:panelGroup id="emailGroup" layout="block"
+							styleClass="form-group form-row">
+							<div class="col-12 col-lg-2 control-label admin__form-label">
+								<label for="email">#{msg.email}: </label><span
+									class="admin__label-required-field">(#{msg.form__required_field})</span>
+							</div>
+							<div class="col-11 col-lg-9 admin__form-input cms-module__option-control">
+								<div class="cms-module__option-message">
+									<h:messages for="email"
+										infoClass="cms-module__option-message-status success"
+										warnClass="cms-module__option-message-status warning"
+										errorClass="cms-module__option-message-status danger" />
+									<div class="cms-module__option-message-mark">
+										<i class="fa fa-check" aria-hidden="true"></i> <i
+											class="fa fa-exclamation" aria-hidden="true"></i>
+									</div>
+								</div>
+								<h:inputText disabled="#{user.anonymous}"
+									value="#{user.email}" id="email" label="email"
+									pt:data-confirm="email"
+									immediate="true" required="true" styleClass="form-control">
+									<f:validator validatorId="emailValidator" for="email" />
+									<f:ajax render="emailGroup" onevent="confirmEmailChange" />
+								</h:inputText>
+								<span class="admin__form-help-text">#{msg.admin__user_email__help}</span>
+							</div>
+							<div class="col-1 admin__form-help-icon">
+								<button type="button" class="btn btn--clean"
+									data-toggle="helptext" aria-label="inline help icon">
+									<i class="fa fa-question-circle" aria-hidden="true"></i>
+								</button>
+							</div>
+							<script>
+							
+							function confirmEmailChange(e) {
+							    if(#{confirmEmailChange}) {
+							    	if(e.status == 'begin') {
+									    let value = e.source.value;
+									    let originalValue = e.source.defaultValue
+									    viewerJS.notifications.confirm("#{msg.user__change_email__confirm}")
+									    .catch(() => $("[data-confirm='email']").val(originalValue))
+								    }
+							    }
+							}
+							
+							</script>
+						</h:panelGroup>
+
+						<!-- USER FIRST NAME -->
+						<div class="form-group form-row">
+							<div class="col-12 col-lg-2 control-label admin__form-label">
+								<label for="firstName">#{msg.nameFirst}:</label>
+							</div>
+							<div class="col-11 col-lg-9 admin__form-input">
+								<h:inputText value="#{user.firstName}" id="firstName"
+									label="firstName" styleClass="form-control" />
+								<span class="admin__form-help-text">#{msg.admin__user_first_name__help}</span>
+							</div>
+							<div class="col-1 admin__form-help-icon">
+								<button type="button" class="btn btn--clean"
+									data-toggle="helptext" aria-label="inline help icon">
+									<i class="fa fa-question-circle" aria-hidden="true"></i>
+								</button>
+							</div>
+						</div>
+
+						<!-- USER LAST NAME -->
+						<div class="form-group form-row">
+							<div class="col-12 col-lg-2 control-label admin__form-label">
+								<label for="lastName">#{msg.nameLast}:</label>
+							</div>
+							<div class="col-11 col-lg-9 admin__form-input">
+								<h:inputText value="#{user.lastName}" id="lastName"
+									label="lastName" styleClass="form-control" />
+								<span class="admin__form-help-text">#{msg.admin__user_last_name__help}</span>
+							</div>
+							<div class="col-1 admin__form-help-icon">
+								<button type="button" class="btn btn--clean"
+									data-toggle="helptext" aria-label="inline help icon">
+									<i class="fa fa-question-circle" aria-hidden="true"></i>
+								</button>
+							</div>
+						</div>
+
+					</fieldset>
+				</div>
+
+				<!-- PASSWORD NEW USER -->
+				<ui:fragment rendered="#{user.id == null}">
+					<h3>#{msg.password}</h3>
+					<div class="user-settings__form-wrapper">
+						<p>#{msg.admin__user_create_password_info_text}</p>
+						<div class="form-horizontal" role="form">
+							<div class="form-group form-row">
+								<h:outputLabel for="adminPasswordOneNew"
+									styleClass="col-sm-2 control-label"
+									value="#{msg.newUserPasswordOne}:" />
+								<div class="col-sm-9">
+									<h:inputSecret id="adminPasswordOneNew"
+										styleClass="form-control" value="#{adminBean.passwordOne}"
+										required="true"
+										requiredMessage="#{msg.newUserPasswordOneRequired}" />
+								</div>
+							</div>
+							<div class="form-group form-row">
+								<h:outputLabel for="adminPasswordTwoNew"
+									styleClass="col-sm-2 control-label"
+									value="#{msg.newUserPasswordTwo}:" />
+								<div class="col-sm-9">
+									<h:inputSecret id="adminPasswordTwoNew"
+										styleClass="form-control" value="#{adminBean.passwordTwo}"
+										required="true"
+										requiredMessage="#{msg.newUserPasswordOneRequired}" />
+								</div>
+							</div>
+						</div>
+					</div>
+				</ui:fragment>
+
+				<!-- PASSWORD CHANGE FOR EXISTING USER -->
+				<ui:fragment
+					rendered="#{user.id != null and !user.anonymous}">
+					<h3>#{msg.changePassword}</h3>
+					<div class="user-settings__form-wrapper">
+						<p>#{msg.admin__user_password_info_text}</p>
+						<div class="form-horizontal" role="form">
+							<div class="form-group form-row">
+								<h:outputLabel for="adminPasswordOne"
+									styleClass="col-12 col-lg-2 control-label"
+									value="#{msg.newUserPasswordOne}:" />
+								<div class="col-11 col-lg-9">
+									<h:inputSecret id="adminPasswordOne" styleClass="form-control"
+										value="#{adminBean.passwordOne}" />
+								</div>
+							</div>
+							<div class="form-group form-row">
+								<h:outputLabel for="adminPasswordTwo"
+									styleClass="col-12 col-lg-2 control-label"
+									value="#{msg.newUserPasswordTwo}:" />
+								<div class="col-11 col-lg-9">
+									<h:inputSecret id="adminPasswordTwo" styleClass="form-control"
+										value="#{adminBean.passwordTwo}" />
+								</div>
+							</div>
+						</div>
+					</div>
+				</ui:fragment>
+</ui:composition>

@@ -1,11 +1,11 @@
 /* ==============================================================
    View Object
-   style declarations for viewObject.xhtml 
+   style declarations for viewObject.xhtml
    ==============================================================*/
 /* VIEW OBJECT */
 /* BLOCK */
 .view-object {
-	/* ELEMENT */ 
+	/* ELEMENT */
 	/* IMAGE */
 	&__object-3d,
 	&__image {
@@ -33,9 +33,13 @@
 	            border: 2px solid red;
 	        }
 	        &.drawing {
-	            border: 2px solid blue;   
+	            border: 2px solid blue;
 	        }
 	    }
+			.openseadragon-canvas:focus-visible {
+				background: rgba(255, 0, 0, 0.4) !important;
+				z-index: 1 !important;
+			}
 	}
 	&__access-denied {
 		text-align: center;
@@ -44,7 +48,7 @@
 			max-width: 100%;
 		}
 	}
-	/* IMAGE MOBILE OVERLAY */ 
+	/* IMAGE MOBILE OVERLAY */
 	&__image-mobile-overlay {
 		display: none;
 		position: absolute;
@@ -54,7 +58,7 @@
 		left: 0;
 		z-index: 10;
 	}
-	
+
 	/* VIDEO, AUDIO, TEXT */
 	&__video,
 	&__audio,
@@ -70,7 +74,7 @@
 		cursor: pointer;
 	}
 	/* AUDIO */
-	&__audio {} 
+	&__audio {}
 	/* TEXT */
 	&__text {
 		text-align: center;
@@ -81,12 +85,12 @@
 	}
 }
 .view-object-content {
-	background-color: white; 
+	background-color: white;
 	border: 1px solid @middlegray;
 	padding: 1.5rem;
 	display: flex;
 	margin-bottom: 1.5rem;
-	&__thumb { 
+	&__thumb {
 		flex: 0 0 30%;
 		img {
 			width: 100%;
@@ -106,26 +110,26 @@
 		audio {
 			width: 100%;
 			border-radius: 1rem;
-			margin-left: auto; 
-			margin-right: auto; 
+			margin-left: auto;
+			margin-right: auto;
 		}
 	}
-}	
+}
 
 .image-fragment {
 	background-color: rgba(255,255,255,0.3);
     border-color: #FF2523;
     border-style: solid;
-    border-width: 2px;  
+    border-width: 2px;
     &.focus {
     	background-color: transparent;
-    }      	
+    }
 }
 .page-area {
 	display: none;
     border-color: rgba(51,101,169,0.5);
     border-style: solid;
-    border-width: 2px;  
+    border-width: 2px;
     cursor: pointer;
     z-index: 2;
     &.active {
@@ -146,15 +150,15 @@
 	    	width: 100%;
 	    	padding: 2px 5px;
 	    	vertical-align: top;
-	    	font-size: 1.6rem;	    	
+	    	font-size: 1.6rem;
     	}
     	&.active,
     	&.hover {
-    		.page-area-label-text {    			
+    		.page-area-label-text {
     			display: inline-block;
     		}
     	}
-    } 
+    }
 }
 
 popover [data-copy] {
@@ -168,12 +172,12 @@ popover [data-copy] {
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
 	.view-object-content {
-		&__thumb { 
+		&__thumb {
 			display: none;
 		}
 		&__objects {

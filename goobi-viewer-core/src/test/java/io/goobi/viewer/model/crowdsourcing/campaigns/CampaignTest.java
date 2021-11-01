@@ -17,6 +17,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -199,9 +200,9 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void isUserAllowedAction_shouldReturnTrueIfCampaignPublic() throws Exception {
-        User user = new User();
         Campaign campaign = new Campaign();
         campaign.setVisibility(CampaignVisibility.PUBLIC);
+        campaign.getQuestions().add(new Question(campaign));
         Assert.assertTrue(campaign.isUserAllowedAction(null, CrowdsourcingStatus.ANNOTATE));
     }
 
@@ -230,6 +231,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
     public void isUserAllowedAction_shouldReturnTrueIfUserOwnerOfGroup() throws Exception {
         User user = new User();
         Campaign campaign = new Campaign();
+        campaign.getQuestions().add(new Question(campaign));
         campaign.setLimitToGroup(true);
         campaign.setUserGroup(new UserGroup());
         campaign.getUserGroup().setOwner(user);
@@ -250,6 +252,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(role);
 
         Campaign campaign = new Campaign();
+        campaign.getQuestions().add(new Question(campaign));
         campaign.setLimitToGroup(true);
         campaign.setUserGroup(userGroup);
         campaign.getUserGroup().addMember(user, role);

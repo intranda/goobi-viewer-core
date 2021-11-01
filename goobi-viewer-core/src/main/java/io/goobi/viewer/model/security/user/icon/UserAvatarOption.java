@@ -30,7 +30,7 @@ public enum UserAvatarOption {
     public UserAvatar getAvatar(User user) {
         switch(this) {
             case LOCAL:
-                return new LocalUserAvatar(user.getId());
+                return new LocalUserAvatar(user);
             case GRAVATAR:
                 return new GravatarUserAvatar(user.getEmail());
             case DEFAULT:

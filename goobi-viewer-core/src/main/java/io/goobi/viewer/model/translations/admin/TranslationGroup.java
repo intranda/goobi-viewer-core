@@ -333,6 +333,17 @@ public class TranslationGroup {
 
     /**
      * 
+     * @return true if the allEntries list for this group is not empty; false otherwise
+     * @should return true if group has entries
+     * @should return false if group has no entries
+     */
+    public boolean isHasEntries() {
+        List<MessageEntry> allEntries = getAllEntries();
+        return allEntries != null && !allEntries.isEmpty();
+    }
+
+    /**
+     * 
      * @return
      * @should filter by key correctly
      * @should filter by value correctly

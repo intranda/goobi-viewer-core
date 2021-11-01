@@ -1,6 +1,7 @@
 const fs = require("fs")
 const XML = require('pixl-xml');
 const process = require('process');
+const { depsPathsCSS, depsPathsJS }  = require('./grunt/depsPaths');
 
 function getTomcatDir() {
 	let homedir = require("os").homedir();
@@ -146,52 +147,6 @@ module.exports = function (grunt) {
 				dest: '<%=src.jsDistFolder%>riot-tags.js'
 			}
 		},
-		copydeps : {
-            target : {
-                options : {
-                    minified : true,
-                    unminified : false,
-                    css : true,
-                    ignore: ["tinymce"],
-                    include : {
-                        js : {
-                            "tinymce/plugins" : "tinymce/",
-                            "tinymce/skins" : "tinymce/",
-                            "tinymce/themes" : "tinymce/",
-                            "tinymce/icons" : "tinymce/",
-                            "tinymce/tinymce.min.js*" : "tinymce/",
-                            "leaflet/dist/leaflet.js*" : "leaflet/",
-                            "leaflet.markercluster/dist/leaflet.markercluster.js*" : "leaflet/markercluster",
-                            "swagger-ui-dist/swagger-ui-bundle.js*" : "swagger/",
-                            "hc-sticky/dist/hc-sticky.js*" : "hcsticky/",
-                            "mirador/dist/mirador.min.js*" : "mirador/",
-                            "swiper/swiper-bundle.min.js*" : "swiper/",
-                            "sweetalert2/dist/sweetalert2.min.js*" : "sweetalert/",
-                            "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.min.js*" : "mapbox/geocoder/",
-                            "mapbox-gl/dist/mapbox-gl.js*" : "mapbox/",
-                            "leaflet-draw/dist/leaflet.draw.js*" : "leaflet/draw"
-                        },
-                        css : {
-                            "leaflet/dist/leaflet.css*" : "leaflet/",
-                            "leaflet/dist/images" : "leaflet",
-                            "leaflet.markercluster/dist/MarkerCluster.css*" : "leaflet/markercluster",
-                            "swagger-ui-dist/swagger-ui.css*" : "swagger/",
-                            "swiper/swiper-bundle.min.css*" :  "swiper/",
-                            "sweetalert2/dist/sweetalert2.min.css*" : "sweetalert/",
-                            "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css*" : "mapbox/geocoder/",
-                            "mapbox-gl/dist/mapbox-gl.css*" : "mapbox/",
-                            "leaflet-draw/dist/leaflet.draw.css*" : "leaflet/draw",
-                            "leaflet-draw/dist/images" : "leaflet/draw",
-                        }
-                    }
-                },
-                pkg : 'package.json',
-                dest : {
-                    js : '<%=src.jsLibsFolder %>',
-                    css : '<%=src.cssLibsFolder %>',
-                }
-            }
-        },
 		watch: {
 			configFiles: {
 				files: ['Gruntfile.js'],
@@ -256,9 +211,21 @@ module.exports = function (grunt) {
 				tasks: ['watch:configFiles', 'watch:less', 'watch:scripts', 'watch:riot', 'watch:static']
 			}
 		},
+    copy: {
+      // copy JS + CSS dependencies from node modules
+      // find path definitions here: ./grunt/depsPath.js
+      js: {
+        files: depsPathsJS
+      }, 
+      css: {
+        files: depsPathsCSS
+      }
+    }
+        
 	});
 
-	// ---------- LOAD TASKS ----------
+	// ---------- LOAD TASKS ---------
+  grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-kss');
 	grunt.loadNpmTasks('grunt-contrib-concat');
@@ -300,5 +267,7 @@ module.exports = function (grunt) {
 	// $ grunt
 	grunt.registerTask('default', ['build']);
 	
-    grunt.registerTask('updatelibs', ["copydeps"]);
+  // Copy dependencies from node_modules/
+  grunt.registerTask('copyDeps', ['copy:js', 'copy:css'] )
+        
 };

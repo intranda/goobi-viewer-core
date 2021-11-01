@@ -1,0 +1,153 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+	<c:set var="archiveEntry"
+		value="archiveEntry != null ? archiveEntry : 'archiveBean.displayEntry'}"
+		scope="request"></c:set>
+
+	<div class="archives__object-info-heading">#{msg.archives__archive_area_unit}</div>
+	<div class="archives__object-info">
+		<div class="archives__object-metadata">
+			<!-- METADATA -->
+			<!-- Replacing these with c:forEach will result in get*List() being called for each iteration -->
+			<div class="archives__object-title">#{archiveEntry.label}</div>
+			<!-- Identity statement metadata -->
+			<c:if
+				test="#{archiveEntry.identityStatementAreaList.stream().filter(field -> field.filled).count() > 0}">
+				<div class="archives__object-block-label">#{msg.archives__archive_area_identity}</div>
+				<ui:repeat var="field"
+					value="#{archiveEntry.identityStatementAreaList}">
+					<h:panelGroup layout="block"
+						styleClass="archives__object-metadata-entry"
+						rendered="#{field.filled}">
+						<div class="archives__object-field-name">#{msg[field.label]}:</div>
+						<div class="archives__object-field-value">#{field.value}</div>
+					</h:panelGroup>
+				</ui:repeat>
+			</c:if>
+			<!-- Context metadata -->
+			<c:if
+				test="#{archiveEntry.contextAreaList.stream().filter(field -> field.filled).count() > 0}">
+				<div class="archives__object-block-label">#{msg.archives__archive_area_context}</div>
+				<ui:repeat var="field"
+					value="#{archiveEntry.contextAreaList}">
+					<h:panelGroup layout="block"
+						styleClass="archives__object-metadata-entry"
+						rendered="#{field.filled}">
+						<div class="archives__object-field-name">#{msg[field.label]}:</div>
+						<div class="archives__object-field-value">#{field.value}</div>
+					</h:panelGroup>
+				</ui:repeat>
+			</c:if>
+			<!-- Content and structure metadata -->
+			<c:if
+				test="#{archiveEntry.contentAndStructureAreaAreaList.stream().filter(field -> field.filled).count() > 0}">
+				<div class="archives__object-block-label">#{msg.archives__archive_area_content}</div>
+				<ui:repeat var="field"
+					value="#{archiveEntry.contentAndStructureAreaAreaList}">
+					<h:panelGroup layout="block"
+						styleClass="archives__object-metadata-entry"
+						rendered="#{field.filled}">
+						<div class="archives__object-field-name">#{msg[field.label]}:</div>
+						<div class="archives__object-field-value">#{field.value}</div>
+					</h:panelGroup>
+				</ui:repeat>
+			</c:if>
+			<!-- Access and terms of usage metadata -->
+			<c:if
+				test="#{archiveEntry.accessAndUseAreaList.stream().filter(field -> field.filled).count() > 0}">
+				<div class="archives__object-block-label">#{msg.archives__archive_area_access}</div>
+				<ui:repeat var="field"
+					value="#{archiveEntry.accessAndUseAreaList}">
+					<h:panelGroup layout="block"
+						styleClass="archives__object-metadata-entry"
+						rendered="#{field.filled}">
+						<div class="archives__object-field-name">#{msg[field.label]}:</div>
+						<div class="archives__object-field-value">#{field.value}</div>
+					</h:panelGroup>
+				</ui:repeat>
+			</c:if>
+			<!-- Related matarials metadata -->
+			<c:if
+				test="#{archiveEntry.alliedMaterialsAreaList.stream().filter(field -> field.filled).count() > 0}">
+				<div class="archives__object-block-label">#{msg.archives__archive_area_materials}</div>
+				<ui:repeat var="field"
+					value="#{archiveEntry.alliedMaterialsAreaList}">
+					<h:panelGroup layout="block"
+						styleClass="archives__object-metadata-entry"
+						rendered="#{field.filled}">
+						<div class="archives__object-field-name">#{msg[field.label]}:</div>
+						<div class="archives__object-field-value">#{field.value}</div>
+					</h:panelGroup>
+				</ui:repeat>
+			</c:if>
+			<!-- Notes metadata -->
+			<c:if
+				test="#{archiveEntry.notesAreaList.stream().filter(field -> field.filled).count() > 0}">
+				<div class="archives__object-block-label">#{msg.archives__archive_area_notes}</div>
+				<ui:repeat var="field"
+					value="#{archiveEntry.notesAreaList}">
+					<h:panelGroup layout="block"
+						styleClass="archives__object-metadata-entry"
+						rendered="#{field.filled}">
+						<div class="archives__object-field-name">#{msg[field.label]}:</div>
+						<div class="archives__object-field-value">#{field.value}</div>
+					</h:panelGroup>
+				</ui:repeat>
+			</c:if>
+			<!-- Description control metadata -->
+			<c:if
+				test="#{archiveEntry.descriptionControlAreaList.stream().filter(field -> field.filled).count() > 0}">
+				<div class="archives__object-block-label">#{msg.archives__archive_area_descriptionControl}</div>
+				<ui:repeat var="field"
+					value="#{archiveEntry.descriptionControlAreaList}">
+					<h:panelGroup layout="block"
+						styleClass="archives__object-metadata-entry"
+						rendered="#{field.filled}">
+						<div class="archives__object-field-name">#{msg[field.label]}:</div>
+						<div class="archives__object-field-value">#{field.value}</div>
+					</h:panelGroup>
+				</ui:repeat>
+			</c:if>
+		</div>
+
+		<h:inputHidden value="#{archiveEntry.associatedRecordPi}">
+			<f:passThroughAttribute name="data-name" value="recordPi" />
+			<f:passThroughAttribute name="data-contains-image"
+				value="#{archiveEntry.containsImage}" />
+		</h:inputHidden>
+
+		<!-- ASSOCIATED RECORD -->
+		<div class="archives__object-image">
+			<h:outputLink styleClass="archives__object-image-link"
+				rendered="#{archiveEntry != null and archiveEntry.associatedRecordPi != ''}"
+				value="#{navigationHelper.objectUrl}/#{archiveEntry.associatedRecordPi}/1/">
+				<!-- TODO less trivial image display -->
+				<div class="archives__object-image-overlay"></div>
+				<img />
+				<!-- set src from javascript -->
+				<div class="archives__object-image-hover-text">#{msg.archives__showRecord}</div>
+				<div class="archives__object-image-hover-icon">
+					<i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i>
+				</div>
+			</h:outputLink>
+		</div>
+		<div class="archives-object-thumbnails-wrapper">
+			<div class="archives__object-ajax-loader ajax_loader"
+				data-loader="load_record_image">
+				<img
+					src="#{request.contextPath}/resources/images/infinity_loader.gif"
+					class="img-responsive" alt="Waiting..." />
+			</div>
+			<div class="archives__object-thumbnails"
+				source="#{request.contextPath}/api/v2/records/#{archiveEntry.associatedRecordPi}/manifest"></div>
+		</div>
+	</div>
+
+</ui:composition>
