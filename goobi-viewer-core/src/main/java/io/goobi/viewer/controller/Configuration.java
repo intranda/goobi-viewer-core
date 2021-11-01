@@ -370,7 +370,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return Connector URL
      */
     public String getConnectorVersionUrl() {
-        return getLocalString("urls.connectorVersion", "http://localhost:8080/M2M/oai/tools?action=getVersion");
+        return getLocalString("urls.connectorVersion", "http://localhost:8080/viewer/oai/tools?action=getVersion");
     }
 
     /**
