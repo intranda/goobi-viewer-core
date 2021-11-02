@@ -536,6 +536,9 @@ public class ArchiveBean implements Serializable {
         databases.sort((db1, db2) -> db1.getCombinedName().compareTo(db2.getCombinedName()));
         return databases;
     }
+    public int getNumArchives() {
+        return this.archives.size();
+    }
 
     public String getArchiveId() {
         return Optional.ofNullable(getCurrentArchive()).map(ArchiveResource::getCombinedId).orElse("");
