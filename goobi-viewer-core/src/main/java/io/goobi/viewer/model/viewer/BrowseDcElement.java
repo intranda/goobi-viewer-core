@@ -67,8 +67,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * @param number a long.
      * @param field a {@link java.lang.String} object.
      * @param sortField a {@link java.lang.String} object.
+     * @param splittingChar 
      */
-    public BrowseDcElement(String name, long number, String field, String sortField) {
+    public BrowseDcElement(String name, long number, String field, String sortField, String splittingChar, int displayNumberOfVolumesLevel) {
         this.name = name != null ? name.intern() : name;
         this.field = field;
         this.number = number;
@@ -78,9 +79,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         } else {
             this.sortField = this.sortField.intern();
         }
-        this.displayNumberOfVolumesLevel = DataManager.getInstance().getConfiguration().getCollectionDisplayNumberOfVolumesLevel(field);
+        this.displayNumberOfVolumesLevel = displayNumberOfVolumesLevel;
         this.info = new SimpleBrowseElementInfo(name);
-        splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(field);
+        this.splittingChar = splittingChar;
     }
 
     /**

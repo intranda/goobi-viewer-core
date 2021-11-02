@@ -17,15 +17,18 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +40,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSNavigationManager;
+import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.SelectableNavigationItem;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -189,7 +193,7 @@ public class CmsNavigationBean implements Serializable {
      * getNavigationItem.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @return a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
      */
     public CMSNavigationItem getNavigationItem() {
         if (selectedNavigationItem == null) {
@@ -241,7 +245,7 @@ public class CmsNavigationBean implements Serializable {
      * Getter for the field <code>itemManager</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationManager} object.
+     * @return a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationManager} object.
      */
     public CMSNavigationManager getItemManager() {
         return itemManager;
@@ -252,7 +256,7 @@ public class CmsNavigationBean implements Serializable {
      * Setter for the field <code>itemManager</code>.
      * </p>
      *
-     * @param itemManager a {@link io.goobi.viewer.model.cms.CMSNavigationManager} object.
+     * @param itemManager a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationManager} object.
      */
     public void setItemManager(CMSNavigationManager itemManager) {
         this.itemManager = itemManager;
@@ -293,7 +297,7 @@ public class CmsNavigationBean implements Serializable {
         if (selectableThemes == null) {
             selectableThemes = new ArrayList<>(cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.getUser()));
             // Add main theme to the list of allowed themes if user either has access to all themes or no subthemes exist in the index
-            if (userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues() || SolrTools.getExistingSubthemes().isEmpty()) {
+            if ((userBean.getUser() != null && userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) || SolrTools.getExistingSubthemes().isEmpty()) {
                 selectableThemes.add(0, DataManager.getInstance().getConfiguration().getTheme());
             }
         }
@@ -332,5 +336,8 @@ public class CmsNavigationBean implements Serializable {
     public void addSelectedItemsToMenu() {
         getItemManager().addSelectedItemsToMenu();
     }
+    
+
+
 
 }

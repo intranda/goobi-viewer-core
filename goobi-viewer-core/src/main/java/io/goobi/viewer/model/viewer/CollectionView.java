@@ -18,17 +18,24 @@ package io.goobi.viewer.model.viewer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.configuration2.HierarchicalConfiguration;
+import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -61,6 +68,7 @@ public class CollectionView {
     private boolean displayParentCollections = true;
     private String searchUrl = "";
     boolean ignoreHierarchy = false;
+    private final int displayNumberOfVolumesLevel;
 
     private List<String> ignoreList = new ArrayList<>();
 
@@ -77,6 +85,8 @@ public class CollectionView {
         this.field = field;
         this.splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(field);
         this.dataProvider = dataProvider;
+        this.displayNumberOfVolumesLevel = DataManager.getInstance().getConfiguration().getCollectionDisplayNumberOfVolumesLevel(field);
+
     }
 
     /**
@@ -91,6 +101,7 @@ public class CollectionView {
         this.splittingChar = blueprint.splittingChar;
         this.dataProvider = blueprint.dataProvider;
         this.searchUrl = blueprint.searchUrl;
+        this.displayNumberOfVolumesLevel = blueprint.displayNumberOfVolumesLevel;
     }
 
     /**
@@ -110,28 +121,26 @@ public class CollectionView {
                 completeCollectionList = new ArrayList<>(); // this has to be null and not empty at first; make sure it is initialized after the call to Solr
                 HierarchicalBrowseDcElement lastElement = null;
                 List<String> list = new ArrayList<>(dcStrings.keySet());
+                Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(field);
                 Collections.sort(list);
                 for (String dcName : list) {
                     String collectionName = dcName.intern();
                     long collectionSize = dcStrings.get(dcName).getCount();
-                    HierarchicalBrowseDcElement dc = new HierarchicalBrowseDcElement(collectionName, collectionSize, field,
-                            DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(field, collectionName));
+                    String sortField = CollectionView.getCollectionDefaultSortField(collectionName, sortFields);
+                    HierarchicalBrowseDcElement dc = new HierarchicalBrowseDcElement(collectionName, collectionSize, field, sortField, this.splittingChar, this.displayNumberOfVolumesLevel);
                     dc.setFacetValues(dcStrings.get(dcName).getFacetValues());
                     dc.setOpensInNewWindow(shouldOpenInOwnWindow(collectionName));
                     if (!shouldOpenInOwnWindow(collectionName) && showAllHierarchyLevels) {
                         dc.setShowSubElements(true);
                     }
+                    
+                    String applicationUrl = DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> urls.getApplicationUrl()).orElse(null);
+
                     // Set single record PI if collection has one one record
-                    if (collectionSize == 1) {
-                        // Retrieve the first record for the given collection (considering filtering and access rights)
-                        StringPair piAndPageType =
-                                SearchHelper.getFirstRecordPiAndPageType(field, dcName, true, displayParentCollections, collectionName, null);
-                        if (piAndPageType != null) {
-                            String url = "/" + DataManager.getInstance()
-                                    .getUrlBuilder()
-                                    .buildPageUrl(piAndPageType.getOne(), 1, null, PageType.getByName(piAndPageType.getTwo()));
-                            dc.setSingleRecordUrl(url);
-                        }
+                    if (collectionSize == 1 && StringUtils.isNotBlank(applicationUrl)) {
+                        String recordUrl = UriBuilder.fromPath("/browse/{field}/{collection}/record/").build(field, dcName).toString();
+                        //String recordUrl = PrettyUrlTools.getRelativePageUrl("browseFirstRecord", field, dcName);
+                        dc.setSingleRecordUrl(recordUrl);
                     }
 
                     if (ignoreHierarchy) {
@@ -284,7 +293,7 @@ public class CollectionView {
      */
     public void associateElementsWithCMSData() {
         try {
-            this.visibleCollectionList = associateWithCMSCollections(this.visibleCollectionList, this.field);
+            this.visibleCollectionList = associateWithCMSCollections(this.visibleCollectionList, this.field, this.splittingChar, this.displayNumberOfVolumesLevel);
         } catch (PresentationException | DAOException e) {
             logger.error("Failed to associate collections with media items: " + e.getMessage());
         }
@@ -301,7 +310,7 @@ public class CollectionView {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField)
+    public static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField, String splittingChar, int displayNumberOfVolumesLevel)
             throws DAOException, PresentationException {
         List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(solrField);
         if (cmsCollections == null || cmsCollections.isEmpty()) {
@@ -312,7 +321,7 @@ public class CollectionView {
             if (StringUtils.isBlank(collectionName)) {
                 continue;
             }
-            HierarchicalBrowseDcElement searchItem = new HierarchicalBrowseDcElement(collectionName, 0, null, null);
+            HierarchicalBrowseDcElement searchItem = new HierarchicalBrowseDcElement(collectionName, 0, null, null, splittingChar, displayNumberOfVolumesLevel);
             int index = collections.indexOf(searchItem);
             if (index > -1) {
                 HierarchicalBrowseDcElement element = collections.get(index);
@@ -1144,5 +1153,40 @@ public class CollectionView {
      */
     public void setIgnoreHierarchy(boolean ignoreHierarchy) {
         this.ignoreHierarchy = ignoreHierarchy;
+    }
+    
+    public static String getCollectionDefaultSortField(String name, Map<String, String> configuredSortFields) {
+
+        String exactMatch = null;
+        String inheritedMatch = null;
+        for (String key : configuredSortFields.keySet()) {
+            if (name.equals(key)) {
+                exactMatch = configuredSortFields.get(key);
+            } else if (key.endsWith("*") && name.startsWith(key.substring(0, key.length() - 1))) {
+                inheritedMatch = configuredSortFields.get(key);
+            }
+        }
+        // Exact match is given priority so that it is possible to override the inherited sort field
+        if (StringUtils.isNotEmpty(exactMatch)) {
+            return exactMatch;
+        }
+        if (StringUtils.isNotEmpty(inheritedMatch)) {
+            return inheritedMatch;
+        }
+        return "-";
+    }
+    
+    /**
+     * @return the splittingChar
+     */
+    public String getSplittingChar() {
+        return splittingChar;
+    }
+    
+    /**
+     * @return the displayNumberOfVolumesLevel
+     */
+    public int getDisplayNumberOfVolumesLevel() {
+        return displayNumberOfVolumesLevel;
     }
 }

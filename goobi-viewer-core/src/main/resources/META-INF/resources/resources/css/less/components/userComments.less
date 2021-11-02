@@ -37,13 +37,17 @@
 			border-radius: 50%;
 			border: 5px solid @white;
 			z-index: 999;
+			width: 100px;
+			height: 100px;
+			object-fit: cover;
 		}
+		
 	}
 	&__comment-metadata {
 		grid-area: metadata;
 		position: relative;
-		padding: 10px;
-		padding-top: 20px;
+		padding: 1rem;
+		padding-top: 1.5rem;
 		text-align: center;
 		background-color: @lightgray;
 		span {
@@ -60,6 +64,7 @@
 	&__comment-content {
 		position: relative;
 		grid-area: content;
+		padding-bottom: 3rem;
 		&-options {
 			display: flex;
     		justify-content: flex-end;
@@ -85,7 +90,7 @@
 			&-cancel,
 			&-edit,
 			&-save {
-				display: none;
+				// display: none;
 				&.in {
 					display: inline;					
 				}
@@ -100,29 +105,27 @@
 				padding: 10px 15px;
 			}
 			&-text {
-				display: none;
+				// display: none;
 				&.in {
 					display: block;
 				}
 			}
 			&-text-edit {
-				display: none;
-				&.in {
-					display: block;
-				}
 				textarea {
-					width: 100%;
-					padding: 0;
-					border: none;
-					resize: vertical;
-					opacity: 0.4;
-					transition: all 0.3s ease-in;
+					padding: 1rem;
+					border: 1px solid @middlegray;
 					&:focus {
-						padding: 10px;
+						padding: 1rem;
 						border: 1px solid @middlegray;
 						opacity: 1;
 					}
 				}
+			}
+		}
+		&:hover {
+			.user-comments__edit-comment-button,
+			.user-comments__delete-comment-button {
+				opacity: 1;
 			}
 		}
 	}
@@ -189,7 +192,42 @@
 				margin: 0;
 			}
 		}
-	}	
+	}
+	&__action-wrapper {
+		position: absolute;
+		display: flex;
+		bottom: 0;
+		left: 0;
+		padding: 10px 15px;
+	}
+	.user-comments__edit-comment-button,
+	.user-comments__delete-comment-button {
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+	&__edit-comment-button {
+		color: @blue;
+		background: none;
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+	&__delete-comment-button {
+		color: @red;
+		margin-left: 2rem;
+		background: none;
+		border: none;
+		padding: none;
+		&:hover {
+			color: @red;
+			background: none;
+			border: none;
+			text-decoration: underline;
+		}
+		&.-hidden {
+			display: none;
+		}
+	}
 }
 
 @{RTL} {

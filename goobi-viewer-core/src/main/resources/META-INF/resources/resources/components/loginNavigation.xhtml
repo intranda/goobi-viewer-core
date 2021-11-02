@@ -34,25 +34,9 @@
                             <button type="button" class="btn btn--clean" data-toggle="user-dropdown">
                                 <!-- USER NAME -->
 								<span class="login-navigation__user-name" data-toggle="tooltip" data-placement="bottom">#{userBean.user.displayName}</span>
-                                
-<!--                                 <ui:fragment rendered="#{userBean.user.nickName != ''}"> -->
-<!--                                     <span class="login-navigation__user-name" title="#{userBean.user.nickName}" data-toggle="tooltip" data-placement="bottom">#{userBean.user.nickName}</span> -->
-<!--                                 </ui:fragment> -->
-<!--                                 <ui:fragment rendered="#{userBean.user.nickName eq ''}"> -->
-<!--                                     <span class="login-navigation__user-name" title="#{userBean.user.email}" data-toggle="tooltip" data-placement="bottom">#{userBean.user.email}</span> -->
-<!--                                 </ui:fragment> -->
-                                
                                 <!-- USER ICON -->
                                 <span class="login-navigation__user-icon">
-                                    <!-- GRAVATAR -->
-                                    <ui:fragment rendered="#{user.useGravatar}">
-                                        <img src="#{user.getGravatarUrl(96)}" class="rounded-circle" alt="User Gravatar" />
-                                    </ui:fragment>
-                                    
-                                    <!-- ICON -->
-                                    <ui:fragment rendered="#{!user.useGravatar}">
-                                        <i class="fa fa-user-circle-o" aria-hidden="true"></i>
-                                    </ui:fragment>
+									<img class="login-navigation__mini-avatar" src="#{userBean.user.getAvatarUrl(50)}" alt="User Avatar" />
                                 </span>
                             </button>
                         </ui:fragment>
@@ -68,20 +52,20 @@
                         <div class="login-navigation__user-dropdown">
                             <h:form id="userDropdownForm" prependId="false">
                                 <ul class="login-navigation__list">
-                                    <!-- USERDATA -->
-                                    <li>
-                                        <div class="login-navigation__user-dropdown-item">
-                                            <div class="login-navigation__user-dropdown-item-icon">
-                                                <i class="fa fa-user-circle-o" aria-hidden="true"></i>
-                                            </div>
-                                            <div class="login-navigation__user-dropdown-item-string">
-                                                <a href="#{navigationHelper.applicationUrl}user/">#{msg.admin__user_profile}</a>
-                                            </div>
-                                        </div>
+                                    
+                                    <!-- DASHBOARD -->
+                                    <li class="login-navigation__user-dropdown-item">
+                                    	<div class="login-navigation__user-dropdown-item-icon">
+                                             <i class="fa fa-tachometer" aria-hidden="true"></i>
+                                         </div>
+                                         
+                                         <div class="login-navigation__user-dropdown-item-string">
+                                              <a href="#{navigationHelper.applicationUrl}user/">#{msg.admin__user_profile}</a>
+                                          </div>
                                     </li>
                                     
                                     <!-- BOOKMARKS -->
-                                    <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
+                                    <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and userDataBean.getNumBookmarkLists(userBean.user) > 0}">
                                         <li class="login-navigation__bookmarks-list-wrapper">
                                             <div class="login-navigation__user-dropdown-item login-navigation__bookmarks-list">
                                                 <div class="login-navigation__user-dropdown-item-icon">
@@ -96,14 +80,14 @@
                                     </ui:fragment>
                                     
                                     <!-- SAVED SEARCHES -->
-                                    <ui:fragment rendered="#{searchBean.searchSavingEnabled}">
+                                    <ui:fragment rendered="#{searchBean.searchSavingEnabled and userDataBean.getNumSearches(userBean.user) > 0}">
                                         <li>
                                             <div class="login-navigation__user-dropdown-item">
                                                 <div class="login-navigation__user-dropdown-item-icon">
                                                     <i class="fa fa-search" aria-hidden="true"></i>
                                                 </div>
                                                 <div class="login-navigation__user-dropdown-item-string">
-                                                    <a href="#{navigationHelper.applicationUrl}user/searches/">#{msg.search}</a>
+                                                    <a href="#{navigationHelper.applicationUrl}user/searches/">#{msg.user_mySearches}</a>
                                                 </div>
                                             </div>
                                         </li>
@@ -122,6 +106,8 @@
 										    </div>
 									    </li>
 									</ui:fragment>
+									
+									<!-- TODO: INSERT COMMENTS -->
                                     
                                     <!-- MODULE CONTRIBUTIONS -->
                                     <c:forEach var="module" items="#{configurationBean.modules}">
@@ -129,6 +115,18 @@
                                             <ui:include src="/#{contribution}" />
                                         </c:forEach>
                                     </c:forEach>
+                                    
+                                    <!-- USERDATA/PROFILE SETTINGS -->
+                                    <li>
+                                        <div class="login-navigation__user-dropdown-item">
+                                            <div class="login-navigation__user-dropdown-item-icon">
+                                                <i class="fa fa-wrench" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="login-navigation__user-dropdown-item-string">
+                                                <a href="#{navigationHelper.applicationUrl}user/settings/">#{msg.accountSettings}</a>
+                                            </div>
+                                        </div>
+                                    </li>
                                     
                                     <!-- ADMINISTRATION -->
                                     <ui:fragment

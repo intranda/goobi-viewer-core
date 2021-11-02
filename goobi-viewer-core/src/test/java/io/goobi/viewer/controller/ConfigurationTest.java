@@ -120,34 +120,13 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(2, ret.size());
     }
 
-    /**
-     * @see Configuration#getCollectionDefaultSortField(String)
-     * @verifies return correct field for collection
-     */
+    
     @Test
-    public void getCollectionDefaultSortField_shouldReturnCorrectFieldForCollection() throws Exception {
-        Assert.assertEquals("SORT_CREATOR",
-                DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(SolrConstants.DC, "collection1.sub1"));
-    }
-
-    /**
-     * @see Configuration#getCollectionDefaultSortField(String)
-     * @verifies give priority to exact matches
-     */
-    @Test
-    public void getCollectionDefaultSortField_shouldGivePriorityToExactMatches() throws Exception {
-        Assert.assertEquals("SORT_TITLE",
-                DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(SolrConstants.DC, "collection1"));
-    }
-
-    /**
-     * @see Configuration#getCollectionDefaultSortField(String)
-     * @verifies return hyphen if collection not found
-     */
-    @Test
-    public void getCollectionDefaultSortField_shouldReturnHyphenIfCollectionNotFound() throws Exception {
-        Assert.assertEquals("-",
-                DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(SolrConstants.DC, "nonexistingcollection"));
+    public void getCollectionDefaultSortFields_shouldReturnAllFields() {
+        Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
+        assertEquals(2, sortFields.size());
+        assertEquals("SORT_CREATOR", sortFields.get("collection1*"));
+        assertEquals("SORT_TITLE", sortFields.get("collection1"));
     }
 
     /**
@@ -462,12 +441,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getMetsUrl()
+     * @see Configuration#getSourceFileUrl()
      * @verifies return correct value
      */
     @Test
-    public void getMetsUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("mets_value", DataManager.getInstance().getConfiguration().getMetsUrl());
+    public void getSourceFileUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("sourcefile_value", DataManager.getInstance().getConfiguration().getSourceFileUrl());
     }
 
     /**
@@ -1595,15 +1574,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isDisplayTopstructLabel()
-     * @verifies return correct value
-     */
-    @Test
-    public void isDisplayTopstructLabel_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplayTopstructLabel());
-    }
-
-    /**
      * @see Configuration#getAdvancedSearchDefaultItemNumber()
      * @verifies return correct value
      */
@@ -2395,7 +2365,8 @@ public class ConfigurationTest extends AbstractTest {
 
     @Test
     public void testBrokenConfig() {
-        DataManager.getInstance().injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_broken.test.xml").getAbsolutePath()));
+        DataManager.getInstance()
+                .injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_broken.test.xml").getAbsolutePath()));
         String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
         Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
         String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
@@ -2441,7 +2412,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isTranskribusEnabled());
     }
 
-
     /**
      * @see Configuration#getDocstructTargetPageType(String)
      * @verifies return correct value
@@ -2477,7 +2447,6 @@ public class ConfigurationTest extends AbstractTest {
     public void isUseViewerLocaleAsRecordLanguage_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage());
     }
-    
 
     /**
      * @see Configuration#getFallbackDefaultLanguage()

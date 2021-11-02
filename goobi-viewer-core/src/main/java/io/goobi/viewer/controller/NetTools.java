@@ -203,7 +203,7 @@ public class NetTools {
      * getWebContent.
      * </p>
      *
-     * @param method POST or PUT
+     * @param method POST | PUT | DELETE
      * @param url a {@link java.lang.String} object.
      * @param params a {@link java.util.Map} object.
      * @param cookies a {@link java.util.Map} object.
@@ -528,8 +528,10 @@ public class NetTools {
                 sb.append(email.charAt(i));
             }
         }
+        String ret = sb.toString();
+        ret = ret.replaceAll("[*]+", "***");
 
-        return sb.toString();
+        return ret;
     }
 
     /**

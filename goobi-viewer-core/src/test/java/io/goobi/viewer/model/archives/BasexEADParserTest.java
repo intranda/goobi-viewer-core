@@ -19,11 +19,11 @@ import org.jdom2.Document;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.XmlTools;
 
-public class BasexEADParserTest extends AbstractTest {
+public class BasexEADParserTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see BasexEADParser#parseEadFile(Document)
@@ -37,7 +37,7 @@ public class BasexEADParserTest extends AbstractTest {
         Assert.assertNotNull(doc.getRootElement());
         ArchiveEntry root =
                 new BasexEADParser(null)
-                        .readConfiguration(DataManager.getInstance().getConfiguration().getBaseXMetadataConfig())
+                        .readConfiguration(DataManager.getInstance().getConfiguration().getArchiveMetadataConfig())
                         .parseEadFile(doc);
         Assert.assertNotNull(root);
         Assert.assertEquals(1, root.getSubEntryList().size());

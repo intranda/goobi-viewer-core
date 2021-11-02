@@ -18,6 +18,7 @@ package io.goobi.viewer.model.viewer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.NavigationHelper;
 
 /**
  * <p>
@@ -87,16 +87,19 @@ public class CompoundLabeledLink extends LabeledLink {
         logger.trace("getSubLinks");
         List<LabeledLink> links = new ArrayList<>(hierarchy.size());
         List<HierarchicalBrowseDcElement> collectionElements = new ArrayList<>(hierarchy.size());
+        String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(field);
+        Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(field);
+        int displayNumberOfVolumesLevel = DataManager.getInstance().getConfiguration().getCollectionDisplayNumberOfVolumesLevel(field);
         try {
             for (String col : hierarchy) {
-                String sortField = DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(field, col);
-                HierarchicalBrowseDcElement collectionElement = new HierarchicalBrowseDcElement(col, 1, field, sortField);
+                String sortField = CollectionView.getCollectionDefaultSortField(col, sortFields);
+                HierarchicalBrowseDcElement collectionElement = new HierarchicalBrowseDcElement(col, 1, field, sortField, splittingChar, displayNumberOfVolumesLevel);
                 collectionElement.setInfo(new SimpleBrowseElementInfo(col, null, null));
                 // Actual collection size is expensive to determine at this point, so instead pretend it's larger than one so that no redirection to the first volume takes place for all collections
                 collectionElement.addToNumber(1);
                 collectionElements.add(collectionElement);
             }
-            CollectionView.associateWithCMSCollections(collectionElements, field);
+            CollectionView.associateWithCMSCollections(collectionElements, field, splittingChar, displayNumberOfVolumesLevel);
             int subLinkWeight = weight;
             // Add collection hierarchy links with the same weight
             for (HierarchicalBrowseDcElement collectionElement : collectionElements) {

@@ -55,7 +55,6 @@ public class PrettyUrlTools {
     }
     
     
-    
     public static PageType getPreferredPageType(SolrDocument doc) {
         if(!doc.containsKey(SolrConstants.PI)) {
             throw new IllegalArgumentException("Can only get preferred pageType from main record document, i.e. one containing a PI field");
@@ -82,7 +81,7 @@ public class PrettyUrlTools {
                 SolrConstants.MIMETYPE);
     }
     
-    private static String getRecordURI(String pi, PageType pageType) {
+    public static String getRecordURI(String pi, PageType pageType) {
         String prettyId = "";
         switch(pageType) {
             case viewMetadata:
@@ -114,7 +113,7 @@ public class PrettyUrlTools {
     }
 
     
-    private static String getRecordURI(String pi, String imageNo, String logId, PageType pageType) {
+    public static String getRecordURI(String pi, String imageNo, String logId, PageType pageType) {
         String prettyId = "";
         imageNo = StringUtils.isNotBlank(imageNo) ? imageNo : "-";
         logId = StringUtils.isNotBlank(logId) ? logId : "-";

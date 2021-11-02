@@ -1192,7 +1192,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (searchStringInternal.length() == 0) {
             return "-";
         }
-        logger.trace("getExactSearchString: {}", searchStringInternal);
+        // logger.trace("getExactSearchString: {}", searchStringInternal);
         String ret = BeanUtils.escapeCriticalUrlChracters(searchStringInternal);
         try {
             // Escape the query here, otherwise Rewrite will spam warnings into catalina.out

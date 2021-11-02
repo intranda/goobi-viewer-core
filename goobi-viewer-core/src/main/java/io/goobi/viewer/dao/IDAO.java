@@ -378,6 +378,14 @@ public interface IDAO {
      */
     public List<BookmarkList> getBookmarkLists(User user) throws DAOException;
 
+    /** Get number of bookmark lists owned by the given user
+    * 
+    * @param user
+    * @return number of owned bookmark lists
+    * @throws DAOException
+    */
+   long getBookmarkListCount(User user) throws DAOException;
+    
     /**
      * <p>
      * getBookmarkList.
@@ -903,7 +911,7 @@ public interface IDAO {
      * @return a long.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public long getCommentCount(Map<String, String> filters) throws DAOException;
+    public long getCommentCount(Map<String, String> filters, User owner) throws DAOException;
 
     /**
      * <p>
@@ -920,6 +928,19 @@ public interface IDAO {
      */
     public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
 
+    /**
+     * Get Comments created by a specific user
+     * 
+     * @param user          the creator/owner of the comment
+     * @param maxResults    maximum number of results to return
+     * @param sortField     class field to sort results by
+     * @param descending    set to "true" to sort descending
+     * @return              A list of at most maxResults comments.
+     * @throws DAOException
+     */
+    List<Comment> getCommentsOfUser(User user, int maxResults, String sortField, boolean descending) throws DAOException;
+
+    
     /**
      * <p>
      * getCommentsForPage.
@@ -1480,7 +1501,7 @@ public interface IDAO {
      * </p>
      *
      * @param id a long.
-     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @return a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSNavigationItem getCMSNavigationItem(long id) throws DAOException;
@@ -1490,7 +1511,7 @@ public interface IDAO {
      * addCMSNavigationItem.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1501,7 +1522,7 @@ public interface IDAO {
      * updateCMSNavigationItem.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1512,7 +1533,7 @@ public interface IDAO {
      * deleteCMSNavigationItem.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1888,7 +1909,8 @@ public interface IDAO {
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.view@Override
+    er.exceptions.DAOException if any.
      */
     public CMSPage getCMSPageForEditing(long id) throws DAOException;
 
@@ -2029,7 +2051,7 @@ public interface IDAO {
      * @return
      * @throws DAOException
      */
-    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId) throws DAOException;
+    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending) throws DAOException;
 
     /**
      * <p>

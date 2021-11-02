@@ -533,7 +533,6 @@ var viewerJS = ( function( viewer ) {
     
     viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function(highlighted) {
         if(this.config.markerIcon && !jQuery.isEmptyObject(this.config.markerIcon)) {
-        	console.log("use marker icon config",this.config.markerIcon); 
         	if(this.config.markerIcon.useDefault) {
         		if(this.config.markerIcon.highlightIcon && highlighted) {
         		let icon = new L.Icon.Default({

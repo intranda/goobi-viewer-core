@@ -33,6 +33,7 @@ import org.junit.Test;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -132,7 +133,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
         
         CollectionView col = new CollectionView("foo", getTestProvider());
-        HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("bar", 1, "foo", null);
+        HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("bar", 1, "foo", null, col.getSplittingChar(), col.getDisplayNumberOfVolumesLevel());
         element.setSingleRecordUrl("/object/PI123/1/LOG_0001/");
         Assert.assertEquals("/object/PI123/1/LOG_0001/", col.getCollectionUrl(element));
     }
@@ -144,7 +145,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getCollectionUrl_shouldEscapeCriticalUrlCharsInCollectionName() throws Exception {
         CollectionView col = new CollectionView("foo", getTestProvider());
-        HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("foo/bar", 2, SolrConstants.DC, null);
+        HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("foo/bar", 2, SolrConstants.DC, null, col.getSplittingChar(), col.getDisplayNumberOfVolumesLevel());
         Assert.assertEquals("/search/-/-/1/-/foo%3AfooU002Fbar/", col.getCollectionUrl(element));
     }
     
@@ -165,4 +166,37 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         CMSMediaItem mediaItem = DataManager.getInstance().getDao().getCMSMediaItem(1l);
         assertEquals(mediaItem.getIconURI(), element.getInfo().getIconURI());
     }
+    
+
+    /**
+     * @see Configuration#getCollectionDefaultSortField(String)
+     * @verifies give priority to exact matches
+     */
+    @Test
+    public void getCollectionDefaultSortField_shouldGivePriorityToExactMatches() throws Exception {
+        Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
+        Assert.assertEquals("SORT_TITLE", CollectionView.getCollectionDefaultSortField("collection1", sortFields));
+    }
+
+    
+
+    /**
+     * @see Configuration#getCollectionDefaultSortField(String)
+     * @verifies return correct field for collection
+     */
+    @Test
+    public void getCollectionDefaultSortField_shouldReturnCorrectFieldForCollection() throws Exception {
+        Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
+        Assert.assertEquals("SORT_CREATOR", CollectionView.getCollectionDefaultSortField("collection1.sub1", sortFields));
+    }
+    /**
+     * @see Configuration#getCollectionDefaultSortField(String)
+     * @verifies return hyphen if collection not found
+     */
+    @Test
+    public void getCollectionDefaultSortField_shouldReturnHyphenIfCollectionNotFound() throws Exception {
+        Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
+        Assert.assertEquals("-", CollectionView.getCollectionDefaultSortField("nonexistingcollection", sortFields));
+    }
+
 }

@@ -52,6 +52,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
@@ -67,22 +68,22 @@ public class Metadata implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(Metadata.class);
 
-    /** ID of the owning StructElement. Used for constructing unique value IDs, where required. */
-    private String ownerStructElementIddoc;
     /** Label from messages.properties. */
     private final String label;
     /** Value from messages.properties (with placeholders) */
     private final String masterValue;
-    private final int number;
     private final List<MetadataValue> values = new ArrayList<>();
     private final List<MetadataParameter> params = new ArrayList<>();
-    private final boolean group;
-    private int type;
+    private boolean group = false;
+    private int type = 0;
+    private int number = -1;
     private boolean singleString = true;
     private boolean hideIfOnlyMetadataField = false;
     /** Optional metadata field that will provide the label value (if singleString=true) */
     private String labelField;
     private String ownerDocstrctType;
+    /** ID of the owning StructElement. Used for constructing unique value IDs, where required. */
+    private String ownerStructElementIddoc;
     private String citationTemplate;
     private CitationProcessorWrapper citationProcessorWrapper;
     private Metadata parentMetadata;
@@ -91,21 +92,18 @@ public class Metadata implements Serializable {
 
     /**
      * <p>
-     * Constructor for Metadata.
+     * Default constructor.
      * </p>
      */
     public Metadata() {
         this.ownerStructElementIddoc = "";
         this.label = "";
         this.masterValue = "";
-        this.type = 0;
-        this.number = -1;
-        this.group = false;
     }
 
     /**
      * <p>
-     * Constructor for Metadata.
+     * Constructor with a single metadata value.
      * </p>
      *
      * @param ownerIddoc
@@ -122,9 +120,21 @@ public class Metadata implements Serializable {
             values.get(0).getParamValues().add(new ArrayList<>());
             values.get(0).getParamValues().get(0).add(paramValue);
         }
-        this.type = 0;
-        this.number = -1;
-        this.group = false;
+    }
+
+    /**
+     * <p>
+     * Constructor with a {@link MetadataParameter} list.
+     * </p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @param masterValue a {@link java.lang.String} object.
+     * @param params a {@link java.util.List} object.
+     */
+    public Metadata(String label, String masterValue, List<MetadataParameter> params) {
+        this.label = label;
+        this.masterValue = masterValue;
+        this.params.addAll(params);
     }
 
     /**
@@ -149,50 +159,6 @@ public class Metadata implements Serializable {
             //            values.get(0).getParamValues().add(new ArrayList<>());
             //            values.get(0).getParamValues().get(0).add(paramValue);
         }
-        this.type = 0;
-        this.number = -1;
-        this.group = false;
-    }
-
-    /**
-     * <p>
-     * Constructor for Metadata.
-     * </p>
-     *
-     * @param label a {@link java.lang.String} object.
-     * @param masterValue a {@link java.lang.String} object.
-     * @param type a int.
-     * @param params a {@link java.util.List} object.
-     * @param group a boolean.
-     */
-    public Metadata(String label, String masterValue, int type, List<MetadataParameter> params, boolean group) {
-        this.label = label;
-        this.masterValue = masterValue;
-        this.type = type;
-        this.params.addAll(params);
-        this.group = group;
-        this.number = -1;
-    }
-
-    /**
-     * <p>
-     * Constructor for Metadata.
-     * </p>
-     *
-     * @param label a {@link java.lang.String} object.
-     * @param masterValue a {@link java.lang.String} object.
-     * @param type a int.
-     * @param params a {@link java.util.List} object.
-     * @param group a boolean.
-     * @param number a int.
-     */
-    public Metadata(String label, String masterValue, int type, List<MetadataParameter> params, boolean group, int number) {
-        this.label = label;
-        this.masterValue = masterValue;
-        this.type = type;
-        this.params.addAll(params);
-        this.group = group;
-        this.number = number;
     }
 
     /* (non-Javadoc)
@@ -295,9 +261,11 @@ public class Metadata implements Serializable {
 
     /**
      * @param type the type to set
+     * @return this
      */
-    public void setType(int type) {
+    public Metadata setType(int type) {
         this.type = type;
+        return this;
     }
 
     /**
@@ -545,6 +513,11 @@ public class Metadata implements Serializable {
             // Set metadata label from labelField
             if (StringUtils.isNotEmpty(labelField) && labelField.equals(param.getKey())) {
                 mdValue.setLabel(value);
+                // Remove value from the actual metadata value list if null master value is set
+                if (MetadataValue.MASTERVALUE_NULL.equals(param.getMasterValueFragment())) {
+                    logger.trace("clearing {}", mdValue.getParamValues().get(paramIndex).get(0));
+                    mdValue.getParamValues().get(paramIndex).clear();
+                }
             }
         }
     }
@@ -563,6 +536,7 @@ public class Metadata implements Serializable {
         String[] valueSplit = value.split("[.]");
         StringBuilder sbFullValue = new StringBuilder();
         StringBuilder sbHierarchy = new StringBuilder();
+        Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(field);
         for (String s : valueSplit) {
             if (sbFullValue.length() > 0) {
                 sbFullValue.append(" > ");
@@ -579,7 +553,7 @@ public class Metadata implements Serializable {
                 String sortField = "-";
                 // Use configured collection sorting field, if available
                 if (StringUtils.isNotEmpty(field)) {
-                    String defaultSortField = DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(field, value);
+                    String defaultSortField = CollectionView.getCollectionDefaultSortField(value, sortFields);
                     if (StringUtils.isNotEmpty(defaultSortField)) {
                         sortField = defaultSortField;
                     }
@@ -891,7 +865,7 @@ public class Metadata implements Serializable {
 
                     if (!getChildMetadata().isEmpty()) {
                         for (Metadata child : getChildMetadata()) {
-                            logger.trace("populating child metadata: {}", child.getLabel());
+                            // logger.trace("populating child metadata: {}", child.getLabel());
                             child.populate(se, metadataDocIddoc, locale);
                         }
                     }
@@ -962,6 +936,15 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * @param number the number to set
+     * @return this
+     */
+    public Metadata setNumber(int number) {
+        this.number = number;
+        return this;
+    }
+
+    /**
      * <p>
      * isGroup.
      * </p>
@@ -970,6 +953,15 @@ public class Metadata implements Serializable {
      */
     public boolean isGroup() {
         return group;
+    }
+
+    /**
+     * @param group the group to set
+     * @return this
+     */
+    public Metadata setGroup(boolean group) {
+        this.group = group;
+        return this;
     }
 
     /**
@@ -1021,17 +1013,19 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * @return the ownerDocstrct
+     * @return the ownerDocstrctType
      */
-    public String getOwnerDocstrct() {
+    public String getOwnerDocstrctType() {
         return ownerDocstrctType;
     }
 
     /**
-     * @param ownerDocstrct the ownerDocstrct to set
+     * @param ownerDocstrctType the ownerDocstrctType to set
+     * @return this
      */
-    public void setOwnerDocstrct(String ownerDocstrct) {
-        this.ownerDocstrctType = ownerDocstrct;
+    public Metadata setOwnerDocstrctType(String ownerDocstrctType) {
+        this.ownerDocstrctType = ownerDocstrctType;
+        return this;
     }
 
     /**

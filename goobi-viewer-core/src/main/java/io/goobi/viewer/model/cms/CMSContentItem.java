@@ -1179,7 +1179,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
             public Map<String, CollectionResult> getData() throws IndexUnreachableException {
                 Map<String, CollectionResult> dcStrings =
                         SearchHelper.findAllCollectionsFromField(useCollectionField, facetField, filterQuery, true, true,
-                                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(useCollectionField));
+                                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
                 return dcStrings;
             }
         });

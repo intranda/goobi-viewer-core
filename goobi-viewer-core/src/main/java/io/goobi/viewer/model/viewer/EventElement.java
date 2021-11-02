@@ -54,6 +54,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     private String displayDate;
     private List<Metadata> metadata;
     private List<Metadata> sidebarMetadata;
+    private List<Metadata> searchHitMetadata;
 
     /**
      * <p>
@@ -62,12 +63,14 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      *
      * @param doc Event Solr document
      * @param locale a {@link java.util.Locale} object.
-     * @should fill in missing dateStart from displayDate
-     * @should fill in missing dateEnd from dateStart
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @should fill in missing dateStart from displayDate
+     * @should fill in missing dateEnd from dateStart
+     * @should populate search hit metadata correctly
+     * @should populate non search metadata correctly
      */
-    public EventElement(SolrDocument doc, Locale locale) throws IndexUnreachableException, PresentationException {
+    public EventElement(SolrDocument doc, Locale locale, boolean forSearchHit) throws IndexUnreachableException, PresentationException {
         type = (String) doc.getFieldValue(SolrConstants.EVENTTYPE);
         logger.debug("new EventElement: {}", (type == null ? "(no type)" : type));
 
@@ -103,14 +106,25 @@ public class EventElement implements Comparable<EventElement>, Serializable {
             }
         }
         checkDates();
-        metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, type);
-        populateMetadata(metadata, type, doc, locale);
-        sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(type);
-        if (sidebarMetadata.isEmpty()) {
-            // Use default if no elements are defined for the current event type
-            sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate("_DEFAULT");
+
+        if (forSearchHit) {
+            // Search metadata
+            searchHitMetadata = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(type);
+            logger.trace("event search hit metadata: {}", searchHitMetadata.size());
+            populateMetadata(searchHitMetadata, type, doc, locale);
+        } else {
+            // Main metadata
+            metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, type);
+            populateMetadata(metadata, type, doc, locale);
+
+            // Sidebar metadata
+            sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(type);
+            if (sidebarMetadata.isEmpty()) {
+                // Use default if no elements are defined for the current event type
+                sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate("_DEFAULT");
+            }
+            populateMetadata(sidebarMetadata, type, doc, locale);
         }
-        populateMetadata(sidebarMetadata, type, doc, locale);
     }
 
     /*
@@ -349,4 +363,12 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     public List<Metadata> getSidebarMetadata() {
         return sidebarMetadata;
     }
+
+    /**
+     * @return the searchHitMetadata
+     */
+    public List<Metadata> getSearchHitMetadata() {
+        return searchHitMetadata;
+    }
+
 }

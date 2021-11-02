@@ -229,15 +229,15 @@ public abstract class AbstractPageLoader implements IPageLoader {
         if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
             pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
         }
-        if (!pe.hasIndividualSize()) {
+        if (pe.getMimeType() != null && pe.getMimeType().startsWith("image") && !pe.hasIndividualSize()) {
             try {
                 Optional.ofNullable(BeanUtils.getImageDeliveryBean().getImages().getImageInformation(pe))
                         .ifPresent(info -> {
                             pe.setHeight(info.getHeight());
                             pe.setWidth(info.getWidth());
                         });
-            } catch (ContentLibException | URISyntaxException | PresentationException | IndexUnreachableException e) {
-                logger.error("Error reading image size of " + pe.getFilename() + ": " + e.toString());
+            } catch (Throwable e) {
+                logger.warn("Error reading image size of " + pe.getFilename() + ": " + e.toString());
             }
         }
 

@@ -24,7 +24,7 @@
 
 this.question = this.opts.question;
 this.annotationToMark = null;
-this.addMarkerActive = !this.question.isRegionTarget() && !this.opts.item.isReviewMode();
+this.addMarkerActive = !this.question.isRegionTarget() && !this.opts.item.reviewMode;
 
 this.on("mount", function() {
 	this.opts.item.onItemInitialized( () => {	    
