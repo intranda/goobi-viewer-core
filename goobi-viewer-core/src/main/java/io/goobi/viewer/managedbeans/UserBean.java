@@ -1413,5 +1413,11 @@ public class UserBean implements Serializable {
         Messages.info(messageKey);
 
     }
+    
+    public void createBackupOfCurrentUser() {
+        if(getUser() != null) {
+            getUser().backupFields();
+        }
+    }
 
 }
