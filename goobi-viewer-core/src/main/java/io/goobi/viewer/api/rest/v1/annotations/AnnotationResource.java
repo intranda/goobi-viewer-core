@@ -22,6 +22,8 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -59,7 +61,8 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -155,7 +158,7 @@ public class AnnotationResource {
             description = "Persisting this king of annotation or its target is not implemented. Only W3C Web Annotations targeting a manifest, canvas or part of a canvas may be persisted")
     public IAnnotation addAnnotation(IAnnotation anno) throws DAOException, NotImplementedException {
         AnnotationConverter converter = new AnnotationConverter(urls);
-        PersistentAnnotation pAnno = createPersistentAnnotation(anno);
+        CrowdsourcingAnnotation pAnno = createPersistentAnnotation(anno);
         if (pAnno != null) {
             DataManager.getInstance().getDao().addAnnotation(pAnno);
             return converter.getAsWebAnnotation(pAnno);
@@ -181,7 +184,7 @@ public class AnnotationResource {
     public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException, ViewerConfigurationException {
         AnnotationConverter converter = new AnnotationConverter(urls);
-        PersistentAnnotation pAnno = DataManager.getInstance().getDao().getAnnotation(id);
+        CrowdsourcingAnnotation pAnno = DataManager.getInstance().getDao().getAnnotation(id);
         if (pAnno == null) {
             throw new ContentNotFoundException();
         }
@@ -195,7 +198,11 @@ public class AnnotationResource {
             } else if (!user.getId().equals(creator.getId()) && !user.isSuperuser()) {
                 throw new ServiceNotAllowedException("May not delete annotations made by another user if not logged in as admin");
             } else {
-                pAnno.delete();
+                try {
+                    new SqlAnnotationDeleter(DataManager.getInstance().getDao()).delete(pAnno);
+                } catch (IOException e) {
+                    throw new DAOException(e.toString());
+                }
             }
         }
 
@@ -208,8 +215,8 @@ public class AnnotationResource {
      * @param builder
      * @return
      */
-    public PersistentAnnotation createPersistentAnnotation(IAnnotation anno) {
-        PersistentAnnotation pAnno = null;
+    public CrowdsourcingAnnotation createPersistentAnnotation(IAnnotation anno) {
+        CrowdsourcingAnnotation pAnno = null;
         if (anno instanceof WebAnnotation) {
             IResource target = anno.getTarget();
             String template;
@@ -231,7 +238,7 @@ public class AnnotationResource {
             if (StringUtils.isNotBlank(pageNoString) && pageNoString.matches("\\d+")) {
                 pageNo = Integer.parseInt(pageNoString);
             }
-            pAnno = new PersistentAnnotation((WebAnnotation) anno, null, pi, pageNo);
+            pAnno = new CrowdsourcingAnnotation((WebAnnotation) anno, null, pi, pageNo);
             User user = getUser();
             if (user != null) {
                 pAnno.setCreator(user);

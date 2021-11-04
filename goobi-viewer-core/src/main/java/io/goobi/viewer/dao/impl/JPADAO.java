@@ -52,8 +52,8 @@ import io.goobi.viewer.controller.AlphabetIterator;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
@@ -4491,13 +4491,13 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public PersistentAnnotation getAnnotation(Long id) throws DAOException {
+    public CrowdsourcingAnnotation getAnnotation(Long id) throws DAOException {
         preQuery();
         Query q = getEntityManager().createQuery("SELECT a FROM PersistentAnnotation a WHERE a.id = :id");
         q.setParameter("id", id);
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        PersistentAnnotation annotation = (PersistentAnnotation) getSingleResult(q).orElse(null);
+        CrowdsourcingAnnotation annotation = (CrowdsourcingAnnotation) getSingleResult(q).orElse(null);
         return annotation;
     }
 
@@ -4508,7 +4508,7 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT a FROM PersistentAnnotation a");
         if (!campaign.getQuestions().isEmpty()) {
@@ -4542,7 +4542,7 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForWork(String pi) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotationsForWork(String pi) throws DAOException {
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
         Query q = getEntityManager().createQuery(query);
@@ -4553,7 +4553,7 @@ public class JPADAO implements IDAO {
     }
     
     @Override
-    public List<PersistentAnnotation> getAllAnnotations(String sortField, boolean descending) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean descending) throws DAOException {
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a";
         if(StringUtils.isNotBlank(sortField)) {
@@ -4584,7 +4584,7 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#getAllAnnotationsByMotivation(java.lang.String)
      */
     @Override
-    public List<PersistentAnnotation> getAllAnnotationsByMotivation(String motivation) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String motivation) throws DAOException {
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a WHERE a.motivation = :motivation";
         Query q = getEntityManager().createQuery(query);
@@ -4613,13 +4613,13 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException {
         return getAnnotationsForTarget(pi, page, null);
     }
     
     
     @Override
-    public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page, String motivation) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page, String motivation) throws DAOException {
         
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
@@ -4676,7 +4676,7 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi");
         if (!campaign.getQuestions().isEmpty()) {
@@ -4716,7 +4716,7 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi");
         if (page != null) {
@@ -4757,7 +4757,7 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending)
+    public List<CrowdsourcingAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending)
             throws DAOException {
         if (userId == null) {
             return Collections.emptyList();
@@ -4788,7 +4788,7 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
+    public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters) throws DAOException {
         Map<String, Object> params = new HashMap<>();
         String filterString = createAnnotationsFilterQuery(null, filters, params);
@@ -4797,7 +4797,7 @@ public class JPADAO implements IDAO {
     
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
+    public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
             String filterString, Map<String,Object> params) throws DAOException {
         params = params == null ? new HashMap<>() : params;
         synchronized (crowdsourcingRequestLock) {
@@ -4843,7 +4843,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addAnnotation(PersistentAnnotation annotation) throws DAOException {
+    public boolean addAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
         if (getAnnotation(annotation.getId()) != null) {
             return false;
         }
@@ -4864,7 +4864,7 @@ public class JPADAO implements IDAO {
      */
     /** {@inheritDoc} */
     @Override
-    public boolean updateAnnotation(PersistentAnnotation annotation) throws DAOException {
+    public boolean updateAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
         preQuery();
         try {
             em.getTransaction().begin();
@@ -4881,11 +4881,11 @@ public class JPADAO implements IDAO {
      */
     /** {@inheritDoc} */
     @Override
-    public boolean deleteAnnotation(PersistentAnnotation annotation) throws DAOException {
+    public boolean deleteAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
         preQuery();
         try {
             em.getTransaction().begin();
-            PersistentAnnotation o = em.getReference(PersistentAnnotation.class, annotation.getId());
+            CrowdsourcingAnnotation o = em.getReference(CrowdsourcingAnnotation.class, annotation.getId());
             em.remove(o);
             em.getTransaction().commit();
             return true;

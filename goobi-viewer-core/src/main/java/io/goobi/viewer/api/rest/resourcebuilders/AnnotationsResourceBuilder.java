@@ -46,8 +46,8 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
-import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
@@ -124,7 +124,7 @@ public class AnnotationsResourceBuilder {
      * @param request2
      * @return
      */
-    private boolean isAccessible(PersistentAnnotation anno, HttpServletRequest request) {
+    private boolean isAccessible(CrowdsourcingAnnotation anno, HttpServletRequest request) {
         // TODO Auto-generated method stub
         if(StringUtils.isBlank(anno.getAccessCondition()) ||  anno.getAccessCondition().equals(SolrConstants.OPEN_ACCESS_VALUE)) {
             return true;
@@ -181,7 +181,7 @@ public class AnnotationsResourceBuilder {
      * @throws DAOException
      */
     public AnnotationList getOAnnotationListForRecord(String pi, URI uri) throws DAOException {
-        List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
+        List<CrowdsourcingAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
         AnnotationList list = new AnnotationList(uri);
         data.stream().map(converter::getAsOpenAnnotation).forEach(oa -> list.addResource(oa));
         return list;
@@ -195,7 +195,7 @@ public class AnnotationsResourceBuilder {
      * @throws DAOException
      */
     public IAnnotationCollection getOAnnotationListForPage(String pi, Integer pageNo, URI uri) throws DAOException {
-        List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, pageNo);
+        List<CrowdsourcingAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, pageNo);
         AnnotationList list = new AnnotationList(uri);
         data.stream().map(converter::getAsOpenAnnotation).forEach(oa -> list.addResource(oa));
         return list;
@@ -212,7 +212,7 @@ public class AnnotationsResourceBuilder {
         if (page == null || page < 1) {
             throw new IllegalRequestException("Page number must be at least 1");
         }
-        List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
+        List<CrowdsourcingAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
         if (data.isEmpty()) {
             throw new IllegalRequestException("Page number is out of bounds");
         }
@@ -226,7 +226,7 @@ public class AnnotationsResourceBuilder {
         if (page == null || page < 1) {
             throw new IllegalRequestException("Page number must be at least 1");
         }
-        List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, pageNo);
+        List<CrowdsourcingAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, pageNo);
         if (data.isEmpty()) {
             throw new IllegalRequestException("Page number is out of bounds");
         }

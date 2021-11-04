@@ -16,8 +16,6 @@
 package io.goobi.viewer.model.annotation.serialization;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
@@ -25,7 +23,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 
 /**
  * @author florian

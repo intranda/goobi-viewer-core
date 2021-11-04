@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 
 /**
  * @author florian
@@ -39,13 +39,13 @@ public class SqlAnnotationListerTest {
     @Before
     public void setup() throws DAOException {
         
-        PersistentAnnotation a1 = createAnnotation(1l, "OPENACCESS", "Text 1", 10l, 100l, "describing", "PI01", 5);
-        PersistentAnnotation a2 = createAnnotation(2l, "OPENACCESS", "Text 2", 10l, 101l, "describing", "PI02", 10);
-        PersistentAnnotation a3 = createAnnotation(3l, "OPENACCESS", "Text 3", 11l, 101l, "commenting", "PI03", 5);
-        PersistentAnnotation a4 = createAnnotation(4l, "OPENACCESS", "Text 4", 11l, 102l, "commenting", "PI03", 8);
-        PersistentAnnotation a5 = createAnnotation(5l, "OPENACCESS", "Text 5", 12l, 102l, "annotating", "PI04", 1);
-        PersistentAnnotation a6 = createAnnotation(6l, "RESTRICTED", "Text 6", 11l, 102l, "describing", "PI04", 5);
-        PersistentAnnotation a7 = createAnnotation(7l, "RESTRICTED", "Text 7", 12l, 103l, "describing", "PI03", 5);
+        CrowdsourcingAnnotation a1 = createAnnotation(1l, "OPENACCESS", "Text 1", 10l, 100l, "describing", "PI01", 5);
+        CrowdsourcingAnnotation a2 = createAnnotation(2l, "OPENACCESS", "Text 2", 10l, 101l, "describing", "PI02", 10);
+        CrowdsourcingAnnotation a3 = createAnnotation(3l, "OPENACCESS", "Text 3", 11l, 101l, "commenting", "PI03", 5);
+        CrowdsourcingAnnotation a4 = createAnnotation(4l, "OPENACCESS", "Text 4", 11l, 102l, "commenting", "PI03", 8);
+        CrowdsourcingAnnotation a5 = createAnnotation(5l, "OPENACCESS", "Text 5", 12l, 102l, "annotating", "PI04", 1);
+        CrowdsourcingAnnotation a6 = createAnnotation(6l, "RESTRICTED", "Text 6", 11l, 102l, "describing", "PI04", 5);
+        CrowdsourcingAnnotation a7 = createAnnotation(7l, "RESTRICTED", "Text 7", 12l, 103l, "describing", "PI03", 5);
         dao = Mockito.mock(IDAO.class);
         Mockito.when(dao.getAllAnnotations(Mockito.anyString(), Mockito.anyBoolean()))
         .thenReturn(Arrays.asList(a1, a2, a3, a4, a5, a6, a7));
@@ -77,8 +77,8 @@ public class SqlAnnotationListerTest {
     }
 
     
-    private PersistentAnnotation createAnnotation(long id, String accessCondition, String text, long creatorId, long reviewerId, String motivation, String pi, int page) {
-        PersistentAnnotation anno = new PersistentAnnotation();
+    private CrowdsourcingAnnotation createAnnotation(long id, String accessCondition, String text, long creatorId, long reviewerId, String motivation, String pi, int page) {
+        CrowdsourcingAnnotation anno = new CrowdsourcingAnnotation();
         anno.setId(id);
         anno.setAccessCondition(accessCondition);
         anno.setBody(text);

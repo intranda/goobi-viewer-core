@@ -48,6 +48,7 @@ import de.intranda.api.iiif.presentation.v3.Manifest3;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -66,40 +67,7 @@ public class AnnotationConverter {
     public AnnotationConverter(AbstractApiUrlManager urls) {
         this.urls = urls;
     }
-    
-    /**
-     * Used for backwards compatibility
-     */
-    public OpenAnnotation getAsOpenAnnotation(Comment comment) {
-        OpenAnnotation anno = new OpenAnnotation(getOpenAnnotationCommentURI(comment.getPi(), comment.getPage(), comment.getId()));
-        anno.setMotivation(Motivation.COMMENTING);
-        if (comment.getPage() != null) {
-            anno.setTarget(
-                    new Canvas2(URI.create(urls.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(comment.getPi(), comment.getPage()).build())));
-        } else {
-            anno.setTarget(new Manifest2(URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(comment.getPi()).build())));
-        }
-        TextualResource body = new TextualResource(comment.getText());
-        anno.setBody(body);
-        return anno;
-    }
 
-    /**
-     * Used for backwards compatibility
-     */
-    public WebAnnotation getAsWebAnnotation(Comment comment) {
-        WebAnnotation anno = new WebAnnotation(getWebAnnotationCommentURI(comment.getId()));
-        anno.setMotivation(de.intranda.api.annotation.wa.Motivation.COMMENTING);
-        if (comment.getPage() != null) {
-            anno.setTarget(
-                    new Canvas3(URI.create(urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(comment.getPi(), comment.getPage()).build())));
-        } else {
-            anno.setTarget(new Manifest3(URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(comment.getPi()).build())));
-        }
-        IResource body = new de.intranda.api.annotation.wa.TextualResource(comment.getText());
-        anno.setBody(body);
-        return anno;
-    }
 
     private URI getWebAnnotationURI(Long id) {
         return URI.create(this.urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(id).build());
@@ -125,7 +93,7 @@ public class AnnotationConverter {
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public IResource getTargetAsResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
+    public IResource getTargetAsResource(CrowdsourcingAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
         if (anno.getTarget() != null) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -149,7 +117,7 @@ public class AnnotationConverter {
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public IResource getTargetAsOAResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
+    public IResource getTargetAsOAResource(CrowdsourcingAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
         IResource resource = getTargetAsResource(anno);
         if (resource != null) {
             if (resource instanceof SpecificResource && ((SpecificResource) resource).getSelector() instanceof FragmentSelector) {
@@ -172,7 +140,7 @@ public class AnnotationConverter {
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public IResource getBodyAsResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
+    public IResource getBodyAsResource(CrowdsourcingAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
         if (anno.getBody() != null) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -193,7 +161,7 @@ public class AnnotationConverter {
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public IResource getBodyAsOAResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
+    public IResource getBodyAsOAResource(CrowdsourcingAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
         TextualResource resource = (TextualResource) getBodyAsResource(anno);
         if (resource != null) {
             IResource oaResource = new de.intranda.api.annotation.oa.TextualResource(resource.getText());
@@ -208,7 +176,7 @@ public class AnnotationConverter {
      * @return a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
      * @throws DAOException
      */
-    public WebAnnotation getAsWebAnnotation(PersistentAnnotation anno) {
+    public WebAnnotation getAsWebAnnotation(CrowdsourcingAnnotation anno) {
         URI uri = getWebAnnotationURI(anno.getId());
         WebAnnotation annotation = new WebAnnotation(uri);
         try {
@@ -243,7 +211,7 @@ public class AnnotationConverter {
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public OpenAnnotation getAsOpenAnnotation(PersistentAnnotation anno) {
+    public OpenAnnotation getAsOpenAnnotation(CrowdsourcingAnnotation anno) {
         URI uri = getOpenAnnotationURI(anno.getId());
         OpenAnnotation annotation = new OpenAnnotation(uri);
         try {
@@ -257,37 +225,16 @@ public class AnnotationConverter {
         return annotation;
     } 
     
-    public PersistentAnnotation getAsPersistentAnnotation(WebAnnotation anno) {
-        PersistentAnnotation pa = new PersistentAnnotation(anno, getPersistenceId(anno), getPI(anno.getTarget()).orElse(null), getPageNo(anno.getTarget()).orElse(null));
+    public CrowdsourcingAnnotation getAsPersistentAnnotation(WebAnnotation anno) {
+        CrowdsourcingAnnotation pa = new CrowdsourcingAnnotation(anno, getPersistenceId(anno), getPI(anno.getTarget()).orElse(null), getPageNo(anno.getTarget()).orElse(null));
         return pa;
     }
-    
-    public Comment getAsComment(WebAnnotation anno) {
-        String pi = getPI(anno.getTarget()).orElse(null);
-        Integer page = getPageNo(anno.getTarget()).orElse(null);
-        String text = anno.getBody().toString();
-        Long annoId = getPersistenceId(anno);
-        
-        User user = Optional.ofNullable(anno.getCreator())
-        .flatMap(this::getUserId)
-        .map(id -> {
-            try {
-                return DataManager.getInstance().getDao().getUser(id);
-            } catch (DAOException e) {
-                return null;
-            }
-        })
-        .orElse(null);
-        
-        Comment comment = new Comment(pi, page, user, text, null);
-        comment.setId(annoId);
-        return comment;
-    }
+
 
     /**
      * Used for backwards compatibility
      */
-    public PersistentAnnotation getAsPersistentAnnotation(Comment comment) {
+    public CrowdsourcingAnnotation getAsPersistentAnnotation(Comment comment) {
         WebAnnotation anno = getAsWebAnnotation(comment);
         return getAsPersistentAnnotation(anno);
     }

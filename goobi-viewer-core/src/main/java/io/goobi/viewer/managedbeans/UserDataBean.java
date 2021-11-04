@@ -42,8 +42,8 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.search.Search;
@@ -64,7 +64,7 @@ public class UserDataBean implements Serializable {
     @Inject
     private UserBean userBean;
 
-    private TableDataProvider<PersistentAnnotation> lazyModelAnnotations;
+    private TableDataProvider<CrowdsourcingAnnotation> lazyModelAnnotations;
 
     /**
      * Required setter for ManagedProperty injection
@@ -81,12 +81,12 @@ public class UserDataBean implements Serializable {
     @PostConstruct
     public void init() {
         if (lazyModelAnnotations == null) {
-            lazyModelAnnotations = new TableDataProvider<>(new TableDataSource<PersistentAnnotation>() {
+            lazyModelAnnotations = new TableDataProvider<>(new TableDataSource<CrowdsourcingAnnotation>() {
 
                 private Optional<Long> numCreatedPages = Optional.empty();
 
                 @Override
-                public List<PersistentAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
+                public List<CrowdsourcingAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
                         Map<String, String> filters) {
                     try {
                         if (StringUtils.isBlank(sortField)) {
@@ -94,7 +94,7 @@ public class UserDataBean implements Serializable {
                             sortOrder = SortOrder.DESCENDING;
                         }
                         filters.put("creatorId_reviewerId", String.valueOf(userBean.getUser().getId()));
-                        List<PersistentAnnotation> ret =
+                        List<CrowdsourcingAnnotation> ret =
                                 DataManager.getInstance().getDao().getAnnotations(first, pageSize, sortField, sortOrder.asBoolean(), filters);
                         return ret;
                     } catch (DAOException e) {
@@ -150,7 +150,7 @@ public class UserDataBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public List<PersistentAnnotation> getAnnotations() throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotations() throws DAOException {
         if (userBean == null || userBean.getUser() == null) {
             return Collections.emptyList();
         }
@@ -205,7 +205,7 @@ public class UserDataBean implements Serializable {
      *
      * @return the lazyModelAnnotations
      */
-    public TableDataProvider<PersistentAnnotation> getLazyModelAnnotations() {
+    public TableDataProvider<CrowdsourcingAnnotation> getLazyModelAnnotations() {
         return lazyModelAnnotations;
     }
 
@@ -273,11 +273,11 @@ public class UserDataBean implements Serializable {
                 .getDao()
                 .getCommentsOfUser(user, numEntries, "dateUpdated", true)
                 .stream()
-                .filter(c -> c.getDateUpdated() != null)
+                .filter(c -> c.getDateModified() != null)
                 .collect(Collectors.toList());
-        List<PersistentAnnotation> lastCreatedCrowdsourcingAnnotations =
+        List<CrowdsourcingAnnotation> lastCreatedCrowdsourcingAnnotations =
                 DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId(), numEntries, "dateCreated", true);
-        List<PersistentAnnotation> lastUpdatedCrowdsourcingAnnotations = DataManager.getInstance()
+        List<CrowdsourcingAnnotation> lastUpdatedCrowdsourcingAnnotations = DataManager.getInstance()
                 .getDao()
                 .getAnnotationsForUserId(user.getId(), numEntries, "dateModified", true)
                 .stream()

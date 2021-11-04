@@ -26,7 +26,7 @@ import org.mockito.Mockito;
 
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.serialization.SolrAnnotationSaver.Target;
 
 /**
@@ -41,8 +41,8 @@ public class AnnotationSolrSaverTest {
         String pi1 = "PI1";
         Integer page1 = 5;
         
-        PersistentAnnotation anno1 = new PersistentAnnotation(new WebAnnotation(), 1l, pi1, page1);
-        PersistentAnnotation anno2 = new PersistentAnnotation(new WebAnnotation(), 2l, pi1, page1);
+        CrowdsourcingAnnotation anno1 = new CrowdsourcingAnnotation(new WebAnnotation(), 1l, pi1, page1);
+        CrowdsourcingAnnotation anno2 = new CrowdsourcingAnnotation(new WebAnnotation(), 2l, pi1, page1);
         SolrAnnotationSaver saver = Mockito.spy(SolrAnnotationSaver.class);
         saver.save(anno1, anno2);
         ArgumentCaptor<Target> targetArgument = ArgumentCaptor.forClass(Target.class);
@@ -58,11 +58,11 @@ public class AnnotationSolrSaverTest {
         Integer page1 = 5;
         Integer page2 = 11;
         
-        PersistentAnnotation anno1 = new PersistentAnnotation(new WebAnnotation(), 1l, pi1, page1);
-        PersistentAnnotation anno2 = new PersistentAnnotation(new WebAnnotation(), 2l, pi1, page1);
-        PersistentAnnotation anno3 = new PersistentAnnotation(new WebAnnotation(), 3l, pi1, page2);
-        PersistentAnnotation anno4 = new PersistentAnnotation(new WebAnnotation(), 4l, pi2, page2);
-        PersistentAnnotation anno5 = new PersistentAnnotation(new WebAnnotation(), 4l, pi2, noPage);
+        CrowdsourcingAnnotation anno1 = new CrowdsourcingAnnotation(new WebAnnotation(), 1l, pi1, page1);
+        CrowdsourcingAnnotation anno2 = new CrowdsourcingAnnotation(new WebAnnotation(), 2l, pi1, page1);
+        CrowdsourcingAnnotation anno3 = new CrowdsourcingAnnotation(new WebAnnotation(), 3l, pi1, page2);
+        CrowdsourcingAnnotation anno4 = new CrowdsourcingAnnotation(new WebAnnotation(), 4l, pi2, page2);
+        CrowdsourcingAnnotation anno5 = new CrowdsourcingAnnotation(new WebAnnotation(), 4l, pi2, noPage);
 
         
         SolrAnnotationSaver saver = Mockito.spy(SolrAnnotationSaver.class);

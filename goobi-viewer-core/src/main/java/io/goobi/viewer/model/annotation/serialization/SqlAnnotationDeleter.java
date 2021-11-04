@@ -17,10 +17,14 @@ package io.goobi.viewer.model.annotation.serialization;
 
 import java.io.IOException;
 
+import org.jboss.weld.exceptions.IllegalArgumentException;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.comments.Comment;
 
 /**
  * @author florian
@@ -41,7 +45,13 @@ public class SqlAnnotationDeleter implements AnnotationDeleter {
     @Override
     public void delete(PersistentAnnotation annotation) throws IOException {
         try {
-            dao.deleteAnnotation(annotation);
+            if(annotation instanceof Comment) {
+                dao.deleteComment((Comment)annotation);
+            } else if(annotation instanceof CrowdsourcingAnnotation) {
+                dao.deleteAnnotation((CrowdsourcingAnnotation)annotation);
+            } else {
+                throw new IllegalArgumentException("Deleting not implemented for annotation class " + annotation.getClass());
+            }
         } catch (DAOException e) {
             throw new IOException(e);
         }

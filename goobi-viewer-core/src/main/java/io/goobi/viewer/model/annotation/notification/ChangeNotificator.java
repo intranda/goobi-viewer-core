@@ -17,7 +17,7 @@ package io.goobi.viewer.model.annotation.notification;
 
 import java.util.Locale;
 
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 
 /**
  * @author florian
@@ -25,8 +25,8 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
  */
 public interface ChangeNotificator {
 
-    public void notifyCreation(PersistentAnnotation annotation, Locale locale);
-    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation, Locale locale);
-    public void notifyDeletion(PersistentAnnotation annotation, Locale locale);
+    public void notifyCreation(CrowdsourcingAnnotation annotation, Locale locale);
+    public void notifyEdit(CrowdsourcingAnnotation oldAnnotation, CrowdsourcingAnnotation newAnnotation, Locale locale);
+    public void notifyDeletion(CrowdsourcingAnnotation annotation, Locale locale);
     public void notifyError(Exception exception, Locale locale);
 }

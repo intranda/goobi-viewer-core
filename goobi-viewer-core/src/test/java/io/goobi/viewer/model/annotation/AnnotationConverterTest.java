@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.model.annotation.comments.Comment;
 
 /**
  * @author florian
@@ -82,7 +83,7 @@ public class AnnotationConverterTest {
     public void testConvertComment() throws JsonMappingException, JsonProcessingException {
         WebAnnotation webAnno = mapper.readValue(commentAnnotation, WebAnnotation.class);
         assertEquals("https://viewer.goobi.io/api/v1/annotations/comment_19/", webAnno.getId().toString());
-        PersistentAnnotation pAnno = converter.getAsPersistentAnnotation(webAnno);
+        CrowdsourcingAnnotation pAnno = converter.getAsPersistentAnnotation(webAnno);
         Comment comment = converter.getAsComment(webAnno);
         
         WebAnnotation commentAnno = converter.getAsWebAnnotation(comment);

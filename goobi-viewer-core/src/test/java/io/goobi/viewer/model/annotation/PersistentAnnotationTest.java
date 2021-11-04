@@ -66,7 +66,7 @@ import io.goobi.viewer.model.security.user.User;
 public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
     private WebAnnotation annotation;
-    private PersistentAnnotation daoAnno;
+    private CrowdsourcingAnnotation daoAnno;
     private User creator;
     private Question generator;
     private IResource body;
@@ -120,7 +120,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         annotation.setBody(body);
         annotation.setTarget(target);
 
-        daoAnno = new PersistentAnnotation(annotation, null, "7", 10);
+        daoAnno = new CrowdsourcingAnnotation(annotation, null, "7", 10);
     }
 
     /**
@@ -171,10 +171,10 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
         em = dao.getFactory().createEntityManager();
         try {
-            List<PersistentAnnotation> list = getAnnotations(em);
+            List<CrowdsourcingAnnotation> list = getAnnotations(em);
             Assert.assertEquals(existingAnnotations + 1, list.size());
 
-            PersistentAnnotation retrieved = list.get(list.size() - 1);
+            CrowdsourcingAnnotation retrieved = list.get(list.size() - 1);
             Assert.assertEquals(body, converter.getBodyAsResource(retrieved));
             Assert.assertEquals(target, converter.getTargetAsResource(retrieved));
 
@@ -188,10 +188,10 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
      * @return
      */
     @SuppressWarnings("unchecked")
-    private static List<PersistentAnnotation> getAnnotations(EntityManager em) {
+    private static List<CrowdsourcingAnnotation> getAnnotations(EntityManager em) {
         Query q = em.createQuery("SELECT c FROM PersistentAnnotation c");
         q.setFlushMode(FlushModeType.COMMIT);
-        List<PersistentAnnotation> list = q.getResultList();
+        List<CrowdsourcingAnnotation> list = q.getResultList();
         return list;
     }
 
@@ -200,7 +200,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         boolean added = DataManager.getInstance().getDao().addAnnotation(daoAnno);
         Assert.assertTrue(added);
         URI uri = URI.create(Long.toString(daoAnno.getId()));
-        PersistentAnnotation fromDAO = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
+        CrowdsourcingAnnotation fromDAO = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
         WebAnnotation webAnno = converter.getAsWebAnnotation(daoAnno);
         WebAnnotation fromDAOWebAnno = converter.getAsWebAnnotation(daoAnno);
         Assert.assertEquals(webAnno.getBody(), fromDAOWebAnno.getBody());
@@ -211,7 +211,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         fromDAO.setDateModified(changed);
         boolean updated = DataManager.getInstance().getDao().updateAnnotation(fromDAO);
 
-        PersistentAnnotation fromDAO2 = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
+        CrowdsourcingAnnotation fromDAO2 = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
         Assert.assertEquals(fromDAO.getDateModified(), fromDAO2.getDateModified());
     }
 
@@ -222,7 +222,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
                 "        \"format\": \"text/plain\",\n" +
                 "        \"chars\": \"GROSHERZOGLICH\"\n" +
                 "    }";
-        PersistentAnnotation pAnno = new PersistentAnnotation();
+        CrowdsourcingAnnotation pAnno = new CrowdsourcingAnnotation();
         pAnno.setBody(content);
         assertEquals("GROSHERZOGLICH", pAnno.getContentString());
     }
@@ -234,7 +234,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
                 "        \"format\": \"text/plain\",\n" +
                 "        \"value\": \"GROSHERZOGLICH\"\n" +
                 "    }";
-        PersistentAnnotation pAnno = new PersistentAnnotation();
+        CrowdsourcingAnnotation pAnno = new CrowdsourcingAnnotation();
         pAnno.setBody(content);
         assertEquals("GROSHERZOGLICH", pAnno.getContentString());
     }

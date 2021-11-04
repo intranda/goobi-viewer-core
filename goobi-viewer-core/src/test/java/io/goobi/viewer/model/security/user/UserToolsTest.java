@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 
 public class UserToolsTest extends AbstractDatabaseEnabledTest {

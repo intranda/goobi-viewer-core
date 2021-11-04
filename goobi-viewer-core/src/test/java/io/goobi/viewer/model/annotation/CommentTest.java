@@ -18,7 +18,7 @@ package io.goobi.viewer.model.annotation;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.security.user.User;
 
 public class CommentTest {

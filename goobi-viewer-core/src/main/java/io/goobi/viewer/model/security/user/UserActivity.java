@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.search.Search;
 
@@ -75,14 +75,14 @@ public class UserActivity {
     }
     
     public static UserActivity getFromCommentUpdate(Comment comment) {
-        return new UserActivity(ActivityType.comment, truncate(comment.getDisplayText()), comment.getDateUpdated(), true);
+        return new UserActivity(ActivityType.comment, truncate(comment.getDisplayText()), comment.getDateModified(), true);
     }
     
-    public static UserActivity getFromCampaignAnnotation(PersistentAnnotation anno) {
+    public static UserActivity getFromCampaignAnnotation(CrowdsourcingAnnotation anno) {
         return new UserActivity(ActivityType.campaignAnnotation, truncate(anno.getContentString()), anno.getDateCreated(), false);
     }
     
-    public static UserActivity getFromCampaignAnnotationUpdate(PersistentAnnotation anno) {
+    public static UserActivity getFromCampaignAnnotationUpdate(CrowdsourcingAnnotation anno) {
         return new UserActivity(ActivityType.campaignAnnotation, truncate(anno.getContentString()), anno.getDateModified(), true);
     }
     

@@ -16,14 +16,11 @@
 package io.goobi.viewer.model.annotation.serialization;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.NumberUtils;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 
 /**
  * @author florian
@@ -58,7 +55,7 @@ public class SqlAnnotationLister implements AnnotationLister {
      * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAllAnnotations()
      */
     @Override
-    public List<PersistentAnnotation> getAllAnnotations() {
+    public List<CrowdsourcingAnnotation> getAllAnnotations() {
         try {
             return dao.getAllAnnotations("id", false);
         } catch (DAOException e) {
@@ -84,11 +81,11 @@ public class SqlAnnotationLister implements AnnotationLister {
      * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotations(int, int, java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer, java.lang.String, boolean)
      */
     @Override
-    public List<PersistentAnnotation> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators,
+    public List<CrowdsourcingAnnotation> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators,
             List<Long> creators, String targetPi, Integer targetPage, String sortField, boolean sortDescending) {
         try {
-            List<PersistentAnnotation> allAnnos = dao.getAllAnnotations(sortField, sortDescending);
-            Stream<PersistentAnnotation> stream = allAnnos.stream();
+            List<CrowdsourcingAnnotation> allAnnos = dao.getAllAnnotations(sortField, sortDescending);
+            Stream<CrowdsourcingAnnotation> stream = allAnnos.stream();
             if (StringUtils.isNotBlank(textQuery)) {
                 stream = stream.filter(a -> a.getContentString().toLowerCase().contains(textQuery.toLowerCase()));
             }

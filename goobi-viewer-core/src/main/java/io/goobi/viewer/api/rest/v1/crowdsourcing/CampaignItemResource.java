@@ -58,7 +58,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
@@ -232,7 +232,7 @@ public class CampaignItemResource {
         }
         
         Integer annotationPage = StatisticMode.PAGE.equals(campaign.getStatisticMode()) ? page : null;
-        List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, pi, annotationPage);
+        List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, pi, annotationPage);
 
         DataManager.getInstance().getDao().updateCampaign(campaign);
         // Re-index finished record to have its annotations indexed
@@ -269,10 +269,10 @@ public class CampaignItemResource {
             throws URISyntaxException, DAOException {
         logger.debug("getAnnotationsForManifest: {}", pi);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
-        List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
+        List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
 
         List<WebAnnotation> webAnnotations = new ArrayList<>();
-        for (PersistentAnnotation anno : annotations) {
+        for (CrowdsourcingAnnotation anno : annotations) {
             WebAnnotation webAnno = new AnnotationConverter(urls).getAsWebAnnotation(anno);
             webAnnotations.add(webAnno);
         }
@@ -308,12 +308,12 @@ public class CampaignItemResource {
                     "{pageNo}");
             Integer pageOrder = StringUtils.isBlank(pageOrderString) ? null : Integer.parseInt(pageOrderString);
 
-            List<PersistentAnnotation> existingAnnotations = dao.getAnnotationsForCampaignAndTarget(campaign, pi, pageOrder);
-            List<PersistentAnnotation> newAnnotations =
+            List<CrowdsourcingAnnotation> existingAnnotations = dao.getAnnotationsForCampaignAndTarget(campaign, pi, pageOrder);
+            List<CrowdsourcingAnnotation> newAnnotations =
                     page.annotations.stream().map(anno -> createPersistentAnnotation(pi, pageOrder, anno)).collect(Collectors.toList());
 
             //delete existing annotations not contained in response
-            for (PersistentAnnotation anno : existingAnnotations) {
+            for (CrowdsourcingAnnotation anno : existingAnnotations) {
                 if (newAnnotations.stream().noneMatch(annoNew -> anno.getId().equals(annoNew.getId()))) {
                     try {
                         dao.deleteAnnotation(anno);
@@ -324,7 +324,7 @@ public class CampaignItemResource {
             }
 
             //add new annotation and update existing ones
-            for (PersistentAnnotation anno : newAnnotations) {
+            for (CrowdsourcingAnnotation anno : newAnnotations) {
                     anno.setAccessCondition(CrowdsourcingStatus.ANNOTATE.name());
                 try {
                     if (anno.getId() == null) {
@@ -343,9 +343,9 @@ public class CampaignItemResource {
      * @param pi
      * @param pageOrder
      * @param anno
-     * @return a {@link PersistentAnnotation}. Either with an existing database id, or without id if ann doesn't has an empty id property
+     * @return a {@link CrowdsourcingAnnotation}. Either with an existing database id, or without id if ann doesn't has an empty id property
      */
-    public PersistentAnnotation createPersistentAnnotation(String pi, Integer pageOrder, WebAnnotation anno) {
+    public CrowdsourcingAnnotation createPersistentAnnotation(String pi, Integer pageOrder, WebAnnotation anno) {
         Long id = null;
         if (anno.getId() != null) {
             String uri = anno.getId().toString();
@@ -354,7 +354,7 @@ public class CampaignItemResource {
                 id = Long.parseLong(idString);
             }
         }
-        PersistentAnnotation pAnno = new PersistentAnnotation(anno, id, pi, pageOrder);
+        CrowdsourcingAnnotation pAnno = new CrowdsourcingAnnotation(anno, id, pi, pageOrder);
         return pAnno;
     }
 

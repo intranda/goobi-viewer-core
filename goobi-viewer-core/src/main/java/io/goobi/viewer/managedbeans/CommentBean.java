@@ -28,7 +28,7 @@ import javax.inject.Named;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.annotation.notification.CommentMailNotificator;
@@ -73,19 +73,19 @@ public class CommentBean implements Serializable {
         this.commentManager.createComment(text, userBean.getUser(), activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), getLicense(restricted), getInitialPublicationStatus());
     }
 
-    public void editComment(PersistentAnnotation original, String text, boolean restricted) throws IndexUnreachableException {
+    public void editComment(CrowdsourcingAnnotation original, String text, boolean restricted) throws IndexUnreachableException {
         this.commentManager.editComment(original, text, userBean.getUser(), getLicense(restricted), getInitialPublicationStatus());
     }
     
-    public void deleteComment(PersistentAnnotation annotation) throws IndexUnreachableException {
+    public void deleteComment(CrowdsourcingAnnotation annotation) throws IndexUnreachableException {
         this.commentManager.deleteComment(annotation);
     }
     
-    public List<PersistentAnnotation> getComments(int startIndex, int numItems, String filter, User user, String sortField, boolean descending) {
+    public List<CrowdsourcingAnnotation> getComments(int startIndex, int numItems, String filter, User user, String sortField, boolean descending) {
         return this.commentManager.getAnnotations(startIndex, numItems, filter, null, null, Collections.singletonList(user.getId()), null, null, sortField, descending);
     }
     
-    public List<PersistentAnnotation> getCommentsForCurrentPage() throws IndexUnreachableException {
+    public List<CrowdsourcingAnnotation> getCommentsForCurrentPage() throws IndexUnreachableException {
         return this.commentManager.getAnnotations(0, Integer.MAX_VALUE, null, null, null, null, activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), null, false)
                 .stream()
                 .filter(c -> PublicationStatus.PUBLISHED.equals(c.getPublicationStatus()) || Optional.ofNullable(c.getCreatorId()).map(id -> id.equals(getCurrentUserId())).orElse(false))
@@ -98,7 +98,7 @@ public class CommentBean implements Serializable {
         return Optional.ofNullable(userBean).map(UserBean::getUser).map(User::getId).orElse(null);
     }
     
-    public boolean isRestricted(PersistentAnnotation anno) {
+    public boolean isRestricted(CrowdsourcingAnnotation anno) {
         return REQUIRES_COMMENT_RIGHTS.equals(anno.getAccessCondition());
     }
     

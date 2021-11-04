@@ -29,7 +29,7 @@ import de.intranda.api.annotation.wa.TypedResource;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 
 /**
  * @author florian
@@ -51,16 +51,16 @@ public class AnnotationSheetWriter {
      * @param annotations
      * @throws IOException 
      */
-    public void createExcelSheet(OutputStream os, List<PersistentAnnotation> annotations) throws IOException {
+    public void createExcelSheet(OutputStream os, List<CrowdsourcingAnnotation> annotations) throws IOException {
         
-        Map<String, List<PersistentAnnotation>> annoMap = annotations.stream().collect(Collectors.groupingBy(this::getBodyType));
+        Map<String, List<CrowdsourcingAnnotation>> annoMap = annotations.stream().collect(Collectors.groupingBy(this::getBodyType));
 
         HSSFWorkbook wb = excelRenderer.render(annoMap);
         wb.write(os);
         os.flush();
     }
     
-    private String getBodyType(PersistentAnnotation anno) {
+    private String getBodyType(CrowdsourcingAnnotation anno) {
         try {
             IResource body = annotationConverter.getBodyAsResource(anno);
             if(body instanceof TypedResource) {

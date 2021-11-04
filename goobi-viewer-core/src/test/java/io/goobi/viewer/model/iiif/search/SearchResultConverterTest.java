@@ -35,7 +35,7 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
 import io.goobi.viewer.solr.SolrConstants;
@@ -82,7 +82,7 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
 
     /**
      * Test method for
-     * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#convertCommentToHit(java.lang.String, java.lang.String, io.goobi.viewer.model.annotation.Comment)}.
+     * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#convertCommentToHit(java.lang.String, java.lang.String, io.goobi.viewer.model.annotation.comments.Comment)}.
      */
     @Test
     public void testConvertCommentToHit() {

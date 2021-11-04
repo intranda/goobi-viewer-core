@@ -36,7 +36,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.notification.ChangeNotificator;
 import io.goobi.viewer.model.annotation.serialization.AnnotationDeleter;
@@ -69,7 +69,7 @@ public class CommentManager implements AnnotationLister {
 
     public void createComment(String text, User creator, String pi, Integer pageOrder, String license, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, creator, pi, pageOrder);
-        PersistentAnnotation comment =
+        CrowdsourcingAnnotation comment =
                 createAnnotation(createTextualBody(textCleaned), createTarget(pi, pageOrder), Motivation.COMMENTING, createAgent(creator), license);
         comment.setPublicationStatus(publicationStatus);
         try {
@@ -80,9 +80,9 @@ public class CommentManager implements AnnotationLister {
         }
     }
 
-    public void editComment(PersistentAnnotation comment, String text, User editor, String license, PublicationStatus publicationStatus) {
+    public void editComment(CrowdsourcingAnnotation comment, String text, User editor, String license, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, editor, comment.getTargetPI(), comment.getTargetPageOrder());
-        PersistentAnnotation editedComment = new PersistentAnnotation(comment);
+        CrowdsourcingAnnotation editedComment = new CrowdsourcingAnnotation(comment);
         editedComment.setBody(createTextualBody(textCleaned).toString());
         comment.setPublicationStatus(publicationStatus);
         try {
@@ -93,7 +93,7 @@ public class CommentManager implements AnnotationLister {
         }
     }
 
-    public void deleteComment(PersistentAnnotation comment) {
+    public void deleteComment(CrowdsourcingAnnotation comment) {
         try {
             deleter.delete(comment);
             notificators.forEach(n -> n.notifyDeletion(comment, BeanUtils.getLocale()));
@@ -110,7 +110,7 @@ public class CommentManager implements AnnotationLister {
      * @param license
      * @return
      */
-    private PersistentAnnotation createAnnotation(IResource body, IResource target, String motivation, Agent creator, String license) {
+    private CrowdsourcingAnnotation createAnnotation(IResource body, IResource target, String motivation, Agent creator, String license) {
         WebAnnotation annotation = new WebAnnotation();
         annotation.setBody(body);
         annotation.setTarget(target);
@@ -156,7 +156,7 @@ public class CommentManager implements AnnotationLister {
      * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAllAnnotations()
      */
     @Override
-    public List<PersistentAnnotation> getAllAnnotations() {
+    public List<CrowdsourcingAnnotation> getAllAnnotations() {
         return lister.getAnnotations(0, Integer.MAX_VALUE, null, Arrays.asList(Motivation.COMMENTING), null, null, null, null, null, false);
     }
 
@@ -172,7 +172,7 @@ public class CommentManager implements AnnotationLister {
      * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotations(int, int, java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer, java.lang.String, boolean)
      */
     @Override
-    public List<PersistentAnnotation> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators,
+    public List<CrowdsourcingAnnotation> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators,
             List<Long> creators, String targetPi, Integer targetPage, String sortField, boolean sortDescending) {
         List<String> allMotivations = new ArrayList<>();
         allMotivations.add(Motivation.COMMENTING);

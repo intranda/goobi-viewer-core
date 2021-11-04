@@ -29,6 +29,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -37,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.api.annotation.ITypedResource;
@@ -47,11 +48,9 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
@@ -60,14 +59,12 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * An Annotation class to store annotation in a database
- *
  * @author florian
+ *
  */
 @Entity
-@Table(name = "annotations")
-public class PersistentAnnotation {
-
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+public abstract class PersistentAnnotation {
     private static final Logger logger = LoggerFactory.getLogger(PersistentAnnotation.class);
 
     @Id
@@ -630,30 +627,6 @@ public class PersistentAnnotation {
         }
 
         return ret;
-    }
-
-    /**
-     * Deletes this annotation from the database. If successful, deletes any JSON files in the file system and creates a re-indexing job.
-     * 
-     * @return
-     * @throws DAOException
-     * @throws ViewerConfigurationException
-     */
-    public boolean delete() throws DAOException, ViewerConfigurationException {
-        if (!DataManager.getInstance().getDao().deleteAnnotation(this)) {
-            return false;
-        }
-
-        if (deleteExportedTextFiles() > 0) {
-            try {
-                IndexerTools.reIndexRecord(targetPI);
-                logger.debug("Re-indexing record: {}", targetPI);
-            } catch (RecordNotFoundException e) {
-                logger.error(e.getMessage());
-            }
-        }
-
-        return true;
     }
 
     /**

@@ -66,7 +66,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.Selectable;
@@ -1165,15 +1165,15 @@ public class AdminBean implements Serializable {
      * saveCommentAction.
      * </p>
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveCommentAction(Comment comment) throws DAOException {
         logger.trace("saveCommentAction");
         if (comment.getId() != null) {
             // Set updated timestamp
-            comment.setDateUpdated(LocalDateTime.now());
-            logger.trace(comment.getText());
+            comment.setDateModified(LocalDateTime.now());
+            logger.trace(comment.getContentString());
             if (DataManager.getInstance().getDao().updateComment(comment)) {
                 Messages.info("updatedSuccessfully");
             } else {
@@ -1194,7 +1194,7 @@ public class AdminBean implements Serializable {
      * deleteCommentAction.
      * </p>
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

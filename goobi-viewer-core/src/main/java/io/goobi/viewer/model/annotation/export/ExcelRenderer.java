@@ -44,7 +44,7 @@ import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
@@ -62,7 +62,7 @@ public class ExcelRenderer {
        this.annotationConverter = annotationConverter;
     }
 
-    public HSSFWorkbook render(Map<String, List<PersistentAnnotation>> annotationMap) {
+    public HSSFWorkbook render(Map<String, List<CrowdsourcingAnnotation>> annotationMap) {
         if (annotationMap == null) {
             throw new IllegalArgumentException("No annotations given");
         }
@@ -79,7 +79,7 @@ public class ExcelRenderer {
             short height = 300;
             sheet.setDefaultRowHeight(height);
             createHeaderRow(sheet);
-            List<PersistentAnnotation> annotations = annotationMap.get(type);
+            List<CrowdsourcingAnnotation> annotations = annotationMap.get(type);
             createDataRows(sheet, annotations);
         }
 
@@ -90,9 +90,9 @@ public class ExcelRenderer {
      * @param sheet
      * @param annotations
      */
-    public void createDataRows(HSSFSheet sheet, List<PersistentAnnotation> annotations) {
+    public void createDataRows(HSSFSheet sheet, List<CrowdsourcingAnnotation> annotations) {
         int rowCounter = 1;
-        for (PersistentAnnotation annotation : annotations) {
+        for (CrowdsourcingAnnotation annotation : annotations) {
             try {
                 createDataRow(annotation, sheet, rowCounter);
             } catch (DAOException e) {
@@ -108,7 +108,7 @@ public class ExcelRenderer {
      * @param rowCounter
      * @throws DAOException
      */
-    public void createDataRow(PersistentAnnotation annotation, HSSFSheet sheet, int rowCounter) throws DAOException {
+    public void createDataRow(CrowdsourcingAnnotation annotation, HSSFSheet sheet, int rowCounter) throws DAOException {
         HSSFRow row = sheet.createRow(rowCounter);
         row.setRowStyle(getDataCellStyle(sheet.getWorkbook()));
         HSSFCell idCell = row.createCell(0, CellType.STRING);
@@ -154,7 +154,7 @@ public class ExcelRenderer {
         setCellStyles(titleRow, getHeaderCellStyle(sheet.getWorkbook()));
     }
     
-    private List<String> getBodyValues(PersistentAnnotation anno) {
+    private List<String> getBodyValues(CrowdsourcingAnnotation anno) {
         try {            
             IResource bodyResource = annotationConverter.getBodyAsResource(anno);
             String type = "unknown";

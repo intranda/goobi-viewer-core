@@ -37,7 +37,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -164,7 +164,7 @@ public class AbstractAnnotationBuilder {
         Long id = Long.parseLong(idString.substring(underscoreIndex > -1 ? underscoreIndex+1 : 0));
        
         try {
-            PersistentAnnotation pa = DataManager.getInstance().getDao().getAnnotation(id);
+            CrowdsourcingAnnotation pa = DataManager.getInstance().getDao().getAnnotation(id);
             return Optional.ofNullable(pa).map(a -> new AnnotationConverter().getAsWebAnnotation(a));
         } catch (DAOException e) {
             logger.error("Error getting annotation " + idString + " from DAO: " + e.toString());

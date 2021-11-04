@@ -43,7 +43,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -61,11 +61,11 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
     /** Constant <code>SUFFIX_ANNOTATIONS="_annotations"</code> */
     public static final String SUFFIX_ANNOTATIONS = "_annotations";
 
-    private final List<PersistentAnnotation> annotations;
+    private final List<CrowdsourcingAnnotation> annotations;
     private final AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
     private final AnnotationConverter converter = new AnnotationConverter(urls);
 
-    public AnnotationIndexAugmenter(Collection<PersistentAnnotation> annotations) {
+    public AnnotationIndexAugmenter(Collection<CrowdsourcingAnnotation> annotations) {
         this.annotations = new ArrayList<>(annotations);
     }
 
@@ -80,7 +80,7 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
     @Override
     public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws Exception {
 
-        Collection<PersistentAnnotation> annotations = this.annotations != null ? this.annotations : loadAllAnnotations(pi);
+        Collection<CrowdsourcingAnnotation> annotations = this.annotations != null ? this.annotations : loadAllAnnotations(pi);
 
         if (!annotations.isEmpty()) {
             logger.debug("Found {} annotations for this record.", annotations.size());
@@ -94,7 +94,7 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
     @Override
     public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme) throws Exception {
 
-        Collection<PersistentAnnotation> annotations = this.annotations != null ? this.annotations : loadAllAnnotations(pi, page);
+        Collection<CrowdsourcingAnnotation> annotations = this.annotations != null ? this.annotations : loadAllAnnotations(pi, page);
 
         if (!annotations.isEmpty()) {
             logger.debug("Found {} annotations for this record.", annotations.size());
@@ -103,9 +103,9 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
         return true;
     }
 
-    private void writeToHotfolder(String namingScheme, Collection<PersistentAnnotation> annotations) {
+    private void writeToHotfolder(String namingScheme, Collection<CrowdsourcingAnnotation> annotations) {
         File annotationDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), namingScheme + SUFFIX_ANNOTATIONS);
-        for (PersistentAnnotation annotation : annotations) {
+        for (CrowdsourcingAnnotation annotation : annotations) {
             try {
                 WebAnnotation webAnno = converter.getAsWebAnnotation(annotation);
                 String json = webAnno.toString();
@@ -121,24 +121,24 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
         }
     }
     
-    private Collection<PersistentAnnotation> loadAllAnnotations(String pi) throws DAOException {
-        List<PersistentAnnotation> annotations = new ArrayList<>();
+    private Collection<CrowdsourcingAnnotation> loadAllAnnotations(String pi) throws DAOException {
+        List<CrowdsourcingAnnotation> annotations = new ArrayList<>();
         annotations.addAll(loadAllCampaignAnnotations(pi));
         annotations.addAll(loadAllCommentAnnotations(pi));
         return annotations;
     }
     
-    private Collection<PersistentAnnotation> loadAllAnnotations(String pi, int page) throws DAOException {
-        List<PersistentAnnotation> annotations = new ArrayList<>();
+    private Collection<CrowdsourcingAnnotation> loadAllAnnotations(String pi, int page) throws DAOException {
+        List<CrowdsourcingAnnotation> annotations = new ArrayList<>();
         annotations.addAll(loadAllCampaignAnnotations(pi, page));
         annotations.addAll(loadAllCommentAnnotations(pi, page));
         return annotations;
     }
 
-    private Collection<PersistentAnnotation> loadAllCampaignAnnotations(String pi) throws DAOException {
+    private Collection<CrowdsourcingAnnotation> loadAllCampaignAnnotations(String pi) throws DAOException {
         List<CampaignRecordStatistic> statistics =
                 DataManager.getInstance().getDao().getCampaignStatisticsForRecord(pi, CrowdsourcingStatus.FINISHED);
-        List<PersistentAnnotation> annotations = new ArrayList<>();
+        List<CrowdsourcingAnnotation> annotations = new ArrayList<>();
         for (CampaignRecordStatistic statistic : statistics) {
             Campaign campaign = statistic.getOwner();
             annotations.addAll(DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi));
@@ -155,7 +155,7 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
         return annotations;
     }
 
-    private Collection<PersistentAnnotation> loadAllCampaignAnnotations(String pi, int page) throws DAOException {
+    private Collection<CrowdsourcingAnnotation> loadAllCampaignAnnotations(String pi, int page) throws DAOException {
         List<CampaignRecordPageStatistic> pageStatistics =
                 DataManager.getInstance().getDao().getCampaignPageStatisticsForRecord(pi, CrowdsourcingStatus.FINISHED);
         CampaignRecordPageStatistic statistic = pageStatistics.stream()
@@ -163,17 +163,17 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("No page number " + page + " found"));
         Campaign campaign = statistic.getOwner().getOwner();
-        List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, pi, page);
+        List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, pi, page);
         return annotations;
     }
     
-    private Collection<PersistentAnnotation> loadAllCommentAnnotations(String pi, int page) throws DAOException {
-        List<PersistentAnnotation> comments = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page, Motivation.COMMENTING);
+    private Collection<CrowdsourcingAnnotation> loadAllCommentAnnotations(String pi, int page) throws DAOException {
+        List<CrowdsourcingAnnotation> comments = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page, Motivation.COMMENTING);
         return comments;
     }
     
-    private Collection<PersistentAnnotation> loadAllCommentAnnotations(String pi) throws DAOException {
-        List<PersistentAnnotation> comments = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, null, Motivation.COMMENTING);
+    private Collection<CrowdsourcingAnnotation> loadAllCommentAnnotations(String pi) throws DAOException {
+        List<CrowdsourcingAnnotation> comments = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, null, Motivation.COMMENTING);
         return comments;
     }
 

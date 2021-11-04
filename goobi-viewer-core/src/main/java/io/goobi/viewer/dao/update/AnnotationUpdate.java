@@ -36,8 +36,9 @@ import de.intranda.api.annotation.wa.TextualResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.serialization.AnnotationSaver;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationSaver;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -81,10 +82,8 @@ public class AnnotationUpdate implements IModelUpdate {
                 String pi = Optional.ofNullable(comment[4]).map(o -> (String) o).orElse(null);
                 String text = Optional.ofNullable(comment[5]).map(o -> (String) o).orElse(null);
                 User owner = Optional.ofNullable(comment[6]).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
-                //Id of a comment this one is a response to. Not used
-                Long parenId = Optional.ofNullable(comment[7]).map(o -> (Long) o).orElse(null);
 
-                PersistentAnnotation anno = new PersistentAnnotation();
+                Comment anno = new Comment();
                 anno.setDateCreated(dateCreated);
                 anno.setDateModified(dateUpdated);
                 anno.setTargetPI(pi);
@@ -95,7 +94,7 @@ public class AnnotationUpdate implements IModelUpdate {
                 anno.setPublicationStatus(PublicationStatus.PUBLISHED);
                 anno.setAccessCondition(SolrConstants.OPEN_ACCESS_VALUE);
 
-//                saver.save(anno);
+                saver.save(anno);
             } catch (IOException e) {
                 throw new DAOException(e.toString());
             }
@@ -103,6 +102,41 @@ public class AnnotationUpdate implements IModelUpdate {
 //        dao.startTransaction();
 //        dao.createNativeQuery("DROP TABLE comments").executeUpdate();
 //        dao.commitTransaction();
+        
+        List<Object[]> annotations = dao.createNativeQuery("SELECT * FROM annotations").getResultList();
+        for (Object[] annotation : annotations) {
+
+            try {
+                Long annotationId = (Long)annotation[0];
+                String accessCondition = Optional.ofNullable(annotation[1]).map(o -> (String) o).orElse(null);
+                String body = Optional.ofNullable(annotation[2]).map(o -> (String) o).orElse(null);
+                User owner = Optional.ofNullable(annotation[3]).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
+                LocalDateTime dateCreated = Optional.ofNullable(annotation[4]).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
+                LocalDateTime dateUpdated = Optional.ofNullable(annotation[5]).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
+                Long generatorId = Optional.ofNullable(annotation[6]).map(o -> (Long) o).orElse(null);
+                //motivation
+                //reviewer
+                //target
+                String pi = Optional.ofNullable(annotation[10]).map(o -> (String) o).orElse(null);
+                Integer page = Optional.ofNullable(annotation[11]).map(o -> (Integer) o).orElse(null);
+                //publicationStatus
+
+                Comment anno = new Comment();
+                anno.setDateCreated(dateCreated);
+                anno.setDateModified(dateUpdated);
+                anno.setTargetPI(pi);
+                anno.setTargetPageOrder(page);
+                anno.setCreator(owner);
+                anno.setBody(getAsJson(text));
+                anno.setMotivation(Motivation.COMMENTING);
+                anno.setPublicationStatus(PublicationStatus.PUBLISHED);
+                anno.setAccessCondition(SolrConstants.OPEN_ACCESS_VALUE);
+
+                saver.save(anno);
+            } catch (IOException e) {
+                throw new DAOException(e.toString());
+            }
+        }
     }
 
     /**
@@ -124,9 +158,9 @@ public class AnnotationUpdate implements IModelUpdate {
     }
 
     private void updateCrowdsourcingAnnotations(IDAO dao) throws DAOException {
-        List<PersistentAnnotation> annotations =
+        List<CrowdsourcingAnnotation> annotations =
                 dao.getAnnotations(0, Integer.MAX_VALUE, null, false, Collections.singletonMap("motivation", "NULL"));
-        for (PersistentAnnotation pa : annotations) {
+        for (CrowdsourcingAnnotation pa : annotations) {
             pa.setMotivation(Motivation.DESCRIBING);
             if (StringUtils.isBlank(pa.getAccessCondition())) {
                 CrowdsourcingStatus status = pa.getReviewStatus();
@@ -144,7 +178,7 @@ public class AnnotationUpdate implements IModelUpdate {
         }
     }
 
-    private String getAccessConditionForAnnotation(PersistentAnnotation pa) throws DAOException {
+    private String getAccessConditionForAnnotation(CrowdsourcingAnnotation pa) throws DAOException {
         String access = Optional.ofNullable(pa.getGenerator())
                 .map(Question::getOwner)
                 .filter(Campaign::isRestrictAnnotationAccess)

@@ -17,12 +17,12 @@ package io.goobi.viewer.model.annotation.serialization;
 
 import java.io.IOException;
 
-import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.annotation.AnnotationConverter;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.comments.Comment;
 
 /**
  * @author florian
@@ -30,27 +30,42 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
  */
 public class SqlAnnotationSaver implements AnnotationSaver {
 
-    private final IDAO dao; 
+    private final IDAO dao;
 
     public SqlAnnotationSaver() throws DAOException {
         this.dao = DataManager.getInstance().getDao();
     }
-    
+
     public SqlAnnotationSaver(IDAO dao) {
         this.dao = dao;
     }
-    
+
     @Override
     public void save(PersistentAnnotation... annotations) throws IOException {
-        for (PersistentAnnotation annotation : annotations) {            
-            try {            
-                if(annotation.getId() != null) {
-                    dao.updateAnnotation(annotation);
-                } else {
-                    dao.addAnnotation(annotation);
+        for (PersistentAnnotation annotation : annotations) {
+            if (annotation instanceof Comment) {
+                Comment comment = (Comment) annotation;
+                try {
+                    if (comment.getId() != null) {
+                        dao.updateComment(comment);
+                    } else {
+                        dao.addComment(comment);
+                    }
+                } catch (DAOException e) {
+                    throw new IOException(e);
                 }
-            } catch(DAOException e) {
-                throw new IOException(e);
+            } else if(annotation instanceof CrowdsourcingAnnotation) {
+                try {
+                    if (annotation.getId() != null) {
+                        dao.updateAnnotation((CrowdsourcingAnnotation)annotation);
+                    } else {
+                        dao.addAnnotation((CrowdsourcingAnnotation)annotation);
+                    }
+                } catch (DAOException e) {
+                    throw new IOException(e);
+                }
+            } else {
+                throw new IllegalArgumentException("Saving not implemented for class " + annotation.getClass());
             }
         }
     }

@@ -65,7 +65,7 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
-import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
@@ -168,7 +168,7 @@ public class SearchResultConverter {
     };
 
     /**
-     * Generates a search hit from a {@link io.goobi.viewer.model.annotation.Comment}
+     * Generates a search hit from a {@link io.goobi.viewer.model.annotation.comments.Comment}
      *
      * @param pi The PI of the work containing the comment
      * @param queryRegex The regex matching the search terms
@@ -546,9 +546,9 @@ public class SearchResultConverter {
     private IAnnotation createAnnotation(String pi, Comment comment) {
         OpenAnnotation anno = new OpenAnnotation(getCommentAnnotationURI(comment.getId().toString()));
         anno.setMotivation(Motivation.COMMENTING);
-        IResource canvas = createSimpleCanvasResource(pi, comment.getPage());
+        IResource canvas = createSimpleCanvasResource(pi, comment.getTargetPageOrder());
         anno.setTarget(canvas);
-        TextualResource body = new TextualResource(comment.getText());
+        TextualResource body = new TextualResource(comment.getContentString());
         anno.setBody(body);
         return anno;
     }

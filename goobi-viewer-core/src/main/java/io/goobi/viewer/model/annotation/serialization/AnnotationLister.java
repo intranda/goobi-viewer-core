@@ -17,7 +17,7 @@ package io.goobi.viewer.model.annotation.serialization;
 
 import java.util.List;
 
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 
 /**
  * @author florian
@@ -25,11 +25,11 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
  */
 public interface AnnotationLister {
 
-    public List<PersistentAnnotation> getAllAnnotations();
+    public List<CrowdsourcingAnnotation> getAllAnnotations();
     
     public long getTotalAnnotationCount();
 
-    public List<PersistentAnnotation> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi, Integer targetPage ,String sortField, boolean sortDescending);    
+    public List<CrowdsourcingAnnotation> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi, Integer targetPage ,String sortField, boolean sortDescending);    
 
     public long getAnnotationCount(String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi, Integer targetPage);    
 }

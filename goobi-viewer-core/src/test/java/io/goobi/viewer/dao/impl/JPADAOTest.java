@@ -41,8 +41,8 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
@@ -2412,7 +2412,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getAnnotation_shouldReturnCorrectRow() throws Exception {
-        PersistentAnnotation annotation = DataManager.getInstance().getDao().getAnnotation(1L);
+        CrowdsourcingAnnotation annotation = DataManager.getInstance().getDao().getAnnotation(1L);
         Assert.assertNotNull(annotation);
         Assert.assertEquals(Long.valueOf(1), annotation.getId());
     }
@@ -2426,7 +2426,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
         Assert.assertNotNull(campaign);
 
-        List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaign(campaign);
+        List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaign(campaign);
         Assert.assertEquals(3, annotations.size());
         Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
         Assert.assertEquals(Long.valueOf(2), annotations.get(1).getId());
@@ -2442,7 +2442,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
         Assert.assertNotNull(campaign);
 
-        List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForWork("PI_1");
+        List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForWork("PI_1");
         Assert.assertEquals(3, annotations.size());
         Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
         Assert.assertEquals(Long.valueOf(3), annotations.get(1).getId());
@@ -2466,12 +2466,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getAnnotationsForTarget_shouldReturnCorrectRows() throws Exception {
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI_1", 1);
+            List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI_1", 1);
             Assert.assertEquals(1, annotations.size());
             Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
         }
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI_1", null);
+            List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI_1", null);
             Assert.assertEquals(2, annotations.size());
             Assert.assertEquals(Long.valueOf(3), annotations.get(0).getId());
             Assert.assertEquals(Long.valueOf(4), annotations.get(1).getId());
@@ -2488,17 +2488,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(campaign);
 
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_1", 1);
+            List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_1", 1);
             Assert.assertEquals(1, annotations.size());
             Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
         }
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_1", null);
+            List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_1", null);
             Assert.assertEquals(1, annotations.size());
             Assert.assertEquals(Long.valueOf(3), annotations.get(0).getId());
         }
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_2", 6);
+            List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_2", 6);
             Assert.assertEquals(1, annotations.size());
             Assert.assertEquals(Long.valueOf(2), annotations.get(0).getId());
         }
@@ -2514,7 +2514,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(campaign);
 
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, "PI_1");
+            List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, "PI_1");
             Assert.assertEquals(2, annotations.size());
             Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
             Assert.assertEquals(Long.valueOf(3), annotations.get(1).getId());
@@ -2527,7 +2527,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getAnnotationsForUserId_shouldReturnCorrectRows() throws Exception {
-        List<PersistentAnnotation> result = DataManager.getInstance().getDao().getAnnotationsForUserId(1L, null, null, false);
+        List<CrowdsourcingAnnotation> result = DataManager.getInstance().getDao().getAnnotationsForUserId(1L, null, null, false);
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
         Assert.assertEquals(Long.valueOf(1), result.get(0).getId());
@@ -2561,7 +2561,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getAnnotations_shouldFilterByCampaignNameCorrectly() throws Exception {
-        List<PersistentAnnotation> result =
+        List<CrowdsourcingAnnotation> result =
                 DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("campaign", "english"));
         Assert.assertEquals(3, result.size());
     }
