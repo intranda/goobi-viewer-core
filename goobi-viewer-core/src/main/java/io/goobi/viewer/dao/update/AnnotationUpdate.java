@@ -61,9 +61,93 @@ public class AnnotationUpdate implements IModelUpdate {
      */
     @Override
     public boolean update(IDAO dao) throws DAOException, SQLException {
-        updateCrowdsourcingAnnotations(dao);
-        updateComments(dao);
-        return true;
+        
+        List<String> tables = dao.createNativeQuery("show tables").getResultList();
+        int updates = 0;
+        
+        if(tables.contains("annotations")) {            
+            updateCrowdsourcingAnnotations(dao);
+            updates++;
+        }
+        if(tables.contains("comments")) {            
+            updateComments(dao);
+            updates++;
+        }
+        
+        return updates > 0;
+    }
+
+    /**
+     * @param dao
+     * @throws DAOException 
+     */
+    private void updateCrowdsourcingAnnotations(IDAO dao) throws DAOException {
+        AnnotationSaver saver = new SqlAnnotationSaver(dao);
+        List<Object[]> annotations = dao.createNativeQuery("SELECT * FROM annotations").getResultList();
+        for (Object[] annotation : annotations) {
+
+            try {
+                int index = 0;
+                Long annotationId = (Long)annotation[index];
+                index++;
+                String accessCondition = SolrConstants.OPEN_ACCESS_VALUE;
+                if(annotation.length > 11) {                    
+                    accessCondition = Optional.ofNullable(annotation[index]).map(o -> (String) o).orElse(SolrConstants.OPEN_ACCESS_VALUE);
+                    index++;
+                }
+                String body = Optional.ofNullable(annotation[index]).map(o -> (String) o).orElse(null);
+                index++;
+                User owner = Optional.ofNullable(annotation[index]).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
+                index++;
+                LocalDateTime dateCreated = Optional.ofNullable(annotation[index]).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
+                index++;
+                LocalDateTime dateUpdated = Optional.ofNullable(annotation[index]).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
+                index++;
+                Question generator = Optional.ofNullable(annotation[index]).map(o -> (Long) o).flatMap(id -> getCampaignQuestion(id, dao)).orElse(null);
+                index++;
+                String motivation = Optional.ofNullable(annotation[index]).map(o -> (String)o).orElse(Motivation.DESCRIBING);
+                index++;
+                User reviewer = Optional.ofNullable(annotation[index]).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
+                index++;
+                String target = Optional.ofNullable(annotation[index]).map(o -> (String) o).orElse(null);
+                index++;
+                String pi = Optional.ofNullable(annotation[index]).map(o -> (String) o).orElse(null);
+                index++;
+                Integer page = Optional.ofNullable(annotation[index]).map(o -> (Integer) o).orElse(null);
+                index++;
+                PublicationStatus status = Optional.of(index).filter(l -> annotation.length > l).map(l -> annotation[l]).map(o -> (Integer)o).map(i -> PublicationStatus.values()[i]).orElse(PublicationStatus.PUBLISHED);
+                if("ANNOTATE".equals(accessCondition)) {
+                    accessCondition = getAccessConditionForAnnotation(generator);
+                    status = PublicationStatus.CREATING;
+                } else if("REVIEW".equals(accessCondition)) {
+                    accessCondition = getAccessConditionForAnnotation(generator);
+                    status = PublicationStatus.REVIEW;
+                }
+                
+                
+                CrowdsourcingAnnotation anno = new CrowdsourcingAnnotation();
+                anno.setDateCreated(dateCreated);
+                anno.setDateModified(dateUpdated);
+                anno.setTargetPI(pi);
+                anno.setTargetPageOrder(page);
+                anno.setCreator(owner);
+                anno.setBody(body);
+                anno.setMotivation(motivation);
+                anno.setPublicationStatus(status);
+                anno.setAccessCondition(accessCondition);
+                anno.setGenerator(generator);
+                anno.setReviewer(reviewer);
+                anno.setTarget(target);
+
+                saver.save(anno);
+            } catch (IOException e) {
+                throw new DAOException(e.toString());
+            }
+            
+        }
+        dao.startTransaction();
+        dao.createNativeQuery("DROP TABLE annotations").executeUpdate();
+        dao.commitTransaction();
     }
 
     /**
@@ -99,43 +183,22 @@ public class AnnotationUpdate implements IModelUpdate {
                 throw new DAOException(e.toString());
             }
         }
-//        dao.startTransaction();
-//        dao.createNativeQuery("DROP TABLE comments").executeUpdate();
-//        dao.commitTransaction();
-        
-        List<Object[]> annotations = dao.createNativeQuery("SELECT * FROM annotations").getResultList();
-        for (Object[] annotation : annotations) {
+        dao.startTransaction();
+        dao.createNativeQuery("DROP TABLE comments").executeUpdate();
+        dao.commitTransaction();
 
-            try {
-                Long annotationId = (Long)annotation[0];
-                String accessCondition = Optional.ofNullable(annotation[1]).map(o -> (String) o).orElse(null);
-                String body = Optional.ofNullable(annotation[2]).map(o -> (String) o).orElse(null);
-                User owner = Optional.ofNullable(annotation[3]).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
-                LocalDateTime dateCreated = Optional.ofNullable(annotation[4]).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
-                LocalDateTime dateUpdated = Optional.ofNullable(annotation[5]).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
-                Long generatorId = Optional.ofNullable(annotation[6]).map(o -> (Long) o).orElse(null);
-                //motivation
-                //reviewer
-                //target
-                String pi = Optional.ofNullable(annotation[10]).map(o -> (String) o).orElse(null);
-                Integer page = Optional.ofNullable(annotation[11]).map(o -> (Integer) o).orElse(null);
-                //publicationStatus
+    }
 
-                Comment anno = new Comment();
-                anno.setDateCreated(dateCreated);
-                anno.setDateModified(dateUpdated);
-                anno.setTargetPI(pi);
-                anno.setTargetPageOrder(page);
-                anno.setCreator(owner);
-                anno.setBody(getAsJson(text));
-                anno.setMotivation(Motivation.COMMENTING);
-                anno.setPublicationStatus(PublicationStatus.PUBLISHED);
-                anno.setAccessCondition(SolrConstants.OPEN_ACCESS_VALUE);
-
-                saver.save(anno);
-            } catch (IOException e) {
-                throw new DAOException(e.toString());
-            }
+    /**
+     * @param id
+     * @param dao
+     * @return
+     */
+    private Optional<Question> getCampaignQuestion(Long id, IDAO dao) {
+        try {
+            return Optional.ofNullable(dao.getQuestion(id));
+        } catch (DAOException e) {
+            return Optional.empty();
         }
     }
 
@@ -157,32 +220,11 @@ public class AnnotationUpdate implements IModelUpdate {
         }
     }
 
-    private void updateCrowdsourcingAnnotations(IDAO dao) throws DAOException {
-        List<CrowdsourcingAnnotation> annotations =
-                dao.getAnnotations(0, Integer.MAX_VALUE, null, false, Collections.singletonMap("motivation", "NULL"));
-        for (CrowdsourcingAnnotation pa : annotations) {
-            pa.setMotivation(Motivation.DESCRIBING);
-            if (StringUtils.isBlank(pa.getAccessCondition())) {
-                CrowdsourcingStatus status = pa.getReviewStatus();
-                switch (status) {
-                    case ANNOTATE:
-                    case REVIEW:
-                        pa.setAccessCondition(status.name());
-                        break;
-                    case FINISHED:
-                        String access = getAccessConditionForAnnotation(pa);
-                        pa.setAccessCondition(access);
-                }
-            }
-            DataManager.getInstance().getDao().updateAnnotation(pa);
-        }
-    }
-
-    private String getAccessConditionForAnnotation(CrowdsourcingAnnotation pa) throws DAOException {
-        String access = Optional.ofNullable(pa.getGenerator())
+    private String getAccessConditionForAnnotation(Question generator) throws DAOException {
+        String access = Optional.ofNullable(generator)
                 .map(Question::getOwner)
                 .filter(Campaign::isRestrictAnnotationAccess)
-                .map(c -> c.getTitle(IPolyglott.getDefaultLocale().getLanguage()))
+                .map(Campaign::getAccessConditionValue)
                 .orElse(SolrConstants.OPEN_ACCESS_VALUE);
         return access;
     }

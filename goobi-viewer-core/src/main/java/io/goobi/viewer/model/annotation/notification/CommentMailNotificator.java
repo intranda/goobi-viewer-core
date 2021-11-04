@@ -21,16 +21,14 @@ import java.util.Locale;
 
 import javax.mail.MessagingException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
-import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -51,7 +49,7 @@ public class CommentMailNotificator implements ChangeNotificator {
      * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyCreation(io.goobi.viewer.model.annotation.PersistentAnnotation)
      */
     @Override
-    public void notifyCreation(CrowdsourcingAnnotation annotation, Locale locale) {
+    public void notifyCreation(PersistentAnnotation annotation, Locale locale) {
 
             String subject = ViewerResourceBundle.getTranslation("commentNewNotificationEmailSubject", locale);
             subject = subject.replace("{0}", getCreator(annotation))
@@ -68,7 +66,7 @@ public class CommentMailNotificator implements ChangeNotificator {
      * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyEdit(io.goobi.viewer.model.annotation.PersistentAnnotation, io.goobi.viewer.model.annotation.PersistentAnnotation)
      */
     @Override
-    public void notifyEdit(CrowdsourcingAnnotation oldAnnotation, CrowdsourcingAnnotation newAnnotation, Locale locale) {
+    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation, Locale locale) {
 
 
             String subject = ViewerResourceBundle.getTranslation("commentChangedNotificationEmailSubject", locale);
@@ -84,7 +82,7 @@ public class CommentMailNotificator implements ChangeNotificator {
      * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyDeletion(io.goobi.viewer.model.annotation.PersistentAnnotation)
      */
     @Override
-    public void notifyDeletion(CrowdsourcingAnnotation annotation, Locale locale) {
+    public void notifyDeletion(PersistentAnnotation annotation, Locale locale) {
 
         //no notification
     }
@@ -121,7 +119,7 @@ public class CommentMailNotificator implements ChangeNotificator {
         return false;
     }
     
-    private String getCreator(CrowdsourcingAnnotation annotation) {
+    private String getCreator(PersistentAnnotation annotation) {
         try {
             User user = annotation.getCreator();
             if(user != null) {                

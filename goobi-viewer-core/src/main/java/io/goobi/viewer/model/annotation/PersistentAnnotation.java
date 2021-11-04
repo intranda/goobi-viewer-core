@@ -26,12 +26,13 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
@@ -123,6 +124,7 @@ public abstract class PersistentAnnotation {
     private String accessCondition;
     
     @Column(name = "publication_status")
+    @Enumerated(EnumType.STRING)
     private PublicationStatus publicationStatus = PublicationStatus.CREATING;
 
      @Transient
@@ -289,7 +291,9 @@ public abstract class PersistentAnnotation {
      */
     public void setCreator(User creator) {
         this.creator = creator;
-        this.creatorId = creator.getId();
+        if(creator != null) {            
+            this.creatorId = creator.getId();
+        }
     }
 
     /**
@@ -343,7 +347,7 @@ public abstract class PersistentAnnotation {
      * @param generator the generator to set
      */
     public void setGenerator(Question generator) {
-        this.generatorId = generator.getId();
+        this.generatorId = Optional.ofNullable(generator).map(Question::getId).orElse(null);
     }
 
     /**

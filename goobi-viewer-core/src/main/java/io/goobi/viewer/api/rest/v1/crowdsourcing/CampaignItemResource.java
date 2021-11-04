@@ -239,7 +239,7 @@ public class CampaignItemResource {
         if (status.equals(CrowdsourcingStatus.FINISHED)) {
                 annotations.forEach(anno -> {
                     if (campaign.isRestrictAnnotationAccess()) {
-                        anno.setAccessCondition(campaign.getTitle(IPolyglott.getDefaultLocale().getLanguage()));
+                        anno.setAccessCondition(campaign.getAccessConditionValue());
                     } else {
                         anno.setAccessCondition(SolrConstants.OPEN_ACCESS_VALUE);
                     }

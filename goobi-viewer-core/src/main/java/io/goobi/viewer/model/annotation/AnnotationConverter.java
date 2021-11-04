@@ -93,7 +93,7 @@ public class AnnotationConverter {
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public IResource getTargetAsResource(CrowdsourcingAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
+    public IResource getTargetAsResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
         if (anno.getTarget() != null) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -117,7 +117,7 @@ public class AnnotationConverter {
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public IResource getTargetAsOAResource(CrowdsourcingAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
+    public IResource getTargetAsOAResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
         IResource resource = getTargetAsResource(anno);
         if (resource != null) {
             if (resource instanceof SpecificResource && ((SpecificResource) resource).getSelector() instanceof FragmentSelector) {
@@ -140,7 +140,7 @@ public class AnnotationConverter {
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public IResource getBodyAsResource(CrowdsourcingAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
+    public IResource getBodyAsResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
         if (anno.getBody() != null) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -161,7 +161,7 @@ public class AnnotationConverter {
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public IResource getBodyAsOAResource(CrowdsourcingAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
+    public IResource getBodyAsOAResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
         TextualResource resource = (TextualResource) getBodyAsResource(anno);
         if (resource != null) {
             IResource oaResource = new de.intranda.api.annotation.oa.TextualResource(resource.getText());
@@ -176,7 +176,7 @@ public class AnnotationConverter {
      * @return a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
      * @throws DAOException
      */
-    public WebAnnotation getAsWebAnnotation(CrowdsourcingAnnotation anno) {
+    public WebAnnotation getAsWebAnnotation(PersistentAnnotation anno) {
         URI uri = getWebAnnotationURI(anno.getId());
         WebAnnotation annotation = new WebAnnotation(uri);
         try {
@@ -211,7 +211,7 @@ public class AnnotationConverter {
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public OpenAnnotation getAsOpenAnnotation(CrowdsourcingAnnotation anno) {
+    public OpenAnnotation getAsOpenAnnotation(PersistentAnnotation anno) {
         URI uri = getOpenAnnotationURI(anno.getId());
         OpenAnnotation annotation = new OpenAnnotation(uri);
         try {
@@ -225,18 +225,9 @@ public class AnnotationConverter {
         return annotation;
     } 
     
-    public CrowdsourcingAnnotation getAsPersistentAnnotation(WebAnnotation anno) {
+    public PersistentAnnotation getAsPersistentAnnotation(WebAnnotation anno) {
         CrowdsourcingAnnotation pa = new CrowdsourcingAnnotation(anno, getPersistenceId(anno), getPI(anno.getTarget()).orElse(null), getPageNo(anno.getTarget()).orElse(null));
         return pa;
-    }
-
-
-    /**
-     * Used for backwards compatibility
-     */
-    public CrowdsourcingAnnotation getAsPersistentAnnotation(Comment comment) {
-        WebAnnotation anno = getAsWebAnnotation(comment);
-        return getAsPersistentAnnotation(anno);
     }
 
     /**

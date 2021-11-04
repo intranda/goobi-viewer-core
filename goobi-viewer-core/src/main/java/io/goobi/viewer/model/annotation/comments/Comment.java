@@ -21,6 +21,7 @@ import javax.persistence.Table;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
  * @author florian
@@ -28,22 +29,20 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
  */
 @Entity
 @Table(name = "annotations_comments")
-public class Comment extends CrowdsourcingAnnotation implements Comparable<Comment>{
+public class Comment extends PersistentAnnotation implements Comparable<Comment>{
 
     /**
      * 
      */
     public Comment() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
      * @param source
      */
-    public Comment(CrowdsourcingAnnotation source) {
+    public Comment(PersistentAnnotation source) {
         super(source);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -54,13 +53,16 @@ public class Comment extends CrowdsourcingAnnotation implements Comparable<Comme
      */
     public Comment(WebAnnotation source, Long id, String targetPI, Integer targetPage) {
         super(source, id, targetPI, targetPage);
-        // TODO Auto-generated constructor stub
     }
     
     public String getDisplayText() {
         return StringTools.stripJS(getContentString());
     }
 
+    public String getText() {
+        return getContentString();
+    }
+    
     /**
      * @param c2
      * @return
