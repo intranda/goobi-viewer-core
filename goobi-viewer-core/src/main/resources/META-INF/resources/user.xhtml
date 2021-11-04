@@ -17,7 +17,7 @@
 			<f:event type="preRenderView"
 				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.accountSettings, 2)}" />
 			<f:viewAction onPostback="false"
-				action="#{userBean.createBackupForCurrentUser()}" />
+				action="#{userBean.createBackupOfCurrentUser()}" />
 		</f:metadata>
 	</ui:define>
 
