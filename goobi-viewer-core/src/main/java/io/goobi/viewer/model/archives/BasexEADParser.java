@@ -17,7 +17,6 @@ package io.goobi.viewer.model.archives;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URLEncoder;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,15 +29,12 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.utils.URIBuilder;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -53,9 +49,9 @@ import org.jdom2.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -97,13 +93,15 @@ public class BasexEADParser {
     }
     
     private static Map<String, Entry<String, Boolean>> getAssociatedRecordPis() throws PresentationException, IndexUnreachableException {
+        try (Time time  = DataManager.getInstance().getTiming().takeTime("getAssociatedRecordPis")){
         return DataManager.getInstance()
                 .getSearchIndex()
                 .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*", Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI, SolrConstants.BOOL_IMAGEAVAILABLE))
                 .stream()
                 .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)), 
                         doc -> new SimpleEntry<String, Boolean>(SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI)), SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE)))));
-    }
+        }
+        }
 
     /**
      * Get the database names and file names from the basex databases
@@ -114,14 +112,21 @@ public class BasexEADParser {
      * @throws ClientProtocolException
      */
     public List<ArchiveResource> getPossibleDatabases() throws ClientProtocolException, IOException, HTTPException {
-        String response = NetTools.getWebContentGET(basexUrl + "databases");
+        String response = "";
+        try(Time time = DataManager.getInstance().getTiming().takeTime("load database")) {            
+            response = NetTools.getWebContentGET(basexUrl + "databases");
+        }
         if (StringUtils.isBlank(response)) {
             return Collections.emptyList();
         }
 
         Document document;
         try {
-            document = openDocument(response);
+            try(Time time = DataManager.getInstance().getTiming().takeTime("openDocument")) {            
+                document = openDocument(response);
+            }
+
+            try(Time time = DataManager.getInstance().getTiming().takeTime("parseElements")) {            
 
             Element root = document.getRootElement();
             List<Element> databaseList = root.getChildren("database");
@@ -137,10 +142,10 @@ public class BasexEADParser {
                     ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, lastUpdated, size);
                     ret.add(eadResource);
                 }
-
+            }
+            return ret;
             }
 
-            return ret;
         } catch (JDOMException e) {
             logger.error("Failed to parse response from " + (basexUrl + "databases"), e);
             return Collections.emptyList();
