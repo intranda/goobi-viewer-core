@@ -74,7 +74,7 @@ public class BasexEADParser {
     private String selectedDatabase;
 
     private List<ArchiveMetadataField> configuredFields;
-    
+
     private final Map<String, Entry<String, Boolean>> associatedRecordMap;
 
     //    private List<StringPair> eventList;
@@ -83,25 +83,25 @@ public class BasexEADParser {
     /**
      * 
      * @param configFilePath
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      * @throws ConfigurationException
      */
     public BasexEADParser(String basexUrl) throws PresentationException, IndexUnreachableException {
-        this.basexUrl = basexUrl;   
-        this.associatedRecordMap = getAssociatedRecordPis();        
+        this.basexUrl = basexUrl;
+        this.associatedRecordMap = getAssociatedRecordPis();
     }
-    
+
     private static Map<String, Entry<String, Boolean>> getAssociatedRecordPis() throws PresentationException, IndexUnreachableException {
-        try (Time time  = DataManager.getInstance().getTiming().takeTime("getAssociatedRecordPis")){
         return DataManager.getInstance()
                 .getSearchIndex()
-                .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*", Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI, SolrConstants.BOOL_IMAGEAVAILABLE))
+                .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*",
+                        Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI, SolrConstants.BOOL_IMAGEAVAILABLE))
                 .stream()
-                .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)), 
-                        doc -> new SimpleEntry<String, Boolean>(SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI)), SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE)))));
-        }
-        }
+                .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)),
+                        doc -> new SimpleEntry<String, Boolean>(SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI)),
+                                SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE)))));
+    }
 
     /**
      * Get the database names and file names from the basex databases
@@ -113,20 +113,13 @@ public class BasexEADParser {
      */
     public List<ArchiveResource> getPossibleDatabases() throws ClientProtocolException, IOException, HTTPException {
         String response = "";
-        try(Time time = DataManager.getInstance().getTiming().takeTime("load database")) {            
             response = NetTools.getWebContentGET(basexUrl + "databases");
-        }
         if (StringUtils.isBlank(response)) {
             return Collections.emptyList();
         }
 
-        Document document;
         try {
-            try(Time time = DataManager.getInstance().getTiming().takeTime("openDocument")) {            
-                document = openDocument(response);
-            }
-
-            try(Time time = DataManager.getInstance().getTiming().takeTime("parseElements")) {            
+            Document document = openDocument(response);
 
             Element root = document.getRootElement();
             List<Element> databaseList = root.getChildren("database");
@@ -144,7 +137,6 @@ public class BasexEADParser {
                 }
             }
             return ret;
-            }
 
         } catch (JDOMException e) {
             logger.error("Failed to parse response from " + (basexUrl + "databases"), e);
@@ -163,14 +155,14 @@ public class BasexEADParser {
      */
     public Document retrieveDatabaseDocument(ArchiveResource archive) throws IOException, IllegalStateException, HTTPException, JDOMException {
         if (archive != null) {
-            String url = UriBuilder.fromPath(basexUrl).path("db").path(archive.getDatabaseName()).path(archive.getResourceName()).build().toString();
-            logger.trace("URL: {}", url);
             String response;
-            response = NetTools.getWebContentGET(url);
+                String url = UriBuilder.fromPath(basexUrl).path("db").path(archive.getDatabaseName()).path(archive.getResourceName()).build().toString();
+                logger.trace("URL: {}", url);
+                response = NetTools.getWebContentGET(url);
 
             // get xml root element
-            Document document = openDocument(response);
-            return document;
+                Document document = openDocument(response);
+                return document;
         }
         throw new IllegalStateException("Must provide database name before loading database");
     }
@@ -241,7 +233,9 @@ public class BasexEADParser {
      * @param configuredFields
      * @return
      */
-    private static ArchiveEntry parseElement(int order, int hierarchy, Element element, List<ArchiveMetadataField> configuredFields, Map<String, Entry<String, Boolean>> associatedPIs) {
+    private static ArchiveEntry parseElement(int order, int hierarchy, Element element, List<ArchiveMetadataField> configuredFields,
+            Map<String, Entry<String, Boolean>> associatedPIs) {
+        try(Time time = DataManager.getInstance().getTiming().takeTime("parseElement")) {
         if (element == null) {
             throw new IllegalArgumentException("element may not be null");
         }
@@ -251,8 +245,6 @@ public class BasexEADParser {
 
         ArchiveEntry entry = new ArchiveEntry(order, hierarchy);
 
-        
-        
         for (ArchiveMetadataField emf : configuredFields) {
 
             List<String> stringValues = new ArrayList<>();
@@ -297,8 +289,8 @@ public class BasexEADParser {
         Element archdesc = element.getChild("archdesc", NAMESPACE_EAD);
         if (archdesc != null) {
             String type = archdesc.getAttributeValue("otherlevel");
-            if(StringUtils.isBlank(type)) {
-                type = archdesc.getAttributeValue("level");                
+            if (StringUtils.isBlank(type)) {
+                type = archdesc.getAttributeValue("level");
             }
             entry.setNodeType(type);
             Element dsc = archdesc.getChild("dsc", NAMESPACE_EAD);
@@ -317,11 +309,11 @@ public class BasexEADParser {
         }
 
         Entry<String, Boolean> associatedRecordEntry = associatedPIs.get(entry.getId());
-        if(associatedRecordEntry != null) {
+        if (associatedRecordEntry != null) {
             entry.setAssociatedRecordPi(associatedRecordEntry.getKey());
             entry.setContainsImage(associatedRecordEntry.getValue());
         }
-        
+
         // Set description level value
         entry.setDescriptionLevel(element.getAttributeValue("level"));
 
@@ -335,19 +327,20 @@ public class BasexEADParser {
                 ArchiveEntry child = parseElement(subOrder, subHierarchy, c, configuredFields, associatedPIs);
                 entry.addSubEntry(child);
                 child.setParentNode(entry);
-                if(child.isContainsImage()) {
+                if (child.isContainsImage()) {
                     entry.setContainsImage(true);
                 }
                 subOrder++;
             }
         }
-                
+
         // generate new id, if id is null
         if (entry.getId() == null) {
             entry.setId(String.valueOf(UUID.randomUUID()));
         }
 
         return entry;
+        }
     }
 
     /**
@@ -493,7 +486,7 @@ public class BasexEADParser {
     public String getBasexUrl() {
         return basexUrl;
     }
-    
+
     public static String getIdForName(String name) {
         return name.replaceAll("(?i)\\.xml", "");
     }
