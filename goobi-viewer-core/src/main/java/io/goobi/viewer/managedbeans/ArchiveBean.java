@@ -211,6 +211,7 @@ public class ArchiveBean implements Serializable {
      * @return
      */
     ArchiveTree loadTree(ArchiveEntry rootElement) {
+
         ArchiveTree ret = new ArchiveTree();
         ret.generate(rootElement);
         if (ret.getSelectedEntry() == null) {
@@ -220,6 +221,7 @@ public class ArchiveBean implements Serializable {
         ret.getTreeView();
 
         return ret;
+
     }
 
     public void toggleEntryExpansion(ArchiveEntry entry) {
@@ -327,6 +329,7 @@ public class ArchiveBean implements Serializable {
      * @throws BaseXException
      */
     void search(boolean resetSelectedEntry, boolean collapseAll) throws BaseXException {
+       
         if (!isDatabaseLoaded()) {
             logger.warn("Archive not loaded, cannot search.");
             return;
@@ -339,7 +342,8 @@ public class ArchiveBean implements Serializable {
         }
 
         getArchiveTree().search(searchString);
-        List<ArchiveEntry> results = getArchiveTree().getFlatEntryList();
+        List<ArchiveEntry> results;
+        results = getArchiveTree().getFlatEntryList();
         if (results == null || results.isEmpty()) {
             return;
         }
@@ -520,7 +524,7 @@ public class ArchiveBean implements Serializable {
         if (StringUtils.isNoneBlank(currentDatabase, currentResource)) {
             ArchiveResource archive = this.archives.keySet()
                     .stream()
-//                    .peek(a -> System.out.println("Archive " + a.getDatabaseId() + " - " + a.getResourceId()))
+                    //                    .peek(a -> System.out.println("Archive " + a.getDatabaseId() + " - " + a.getResourceId()))
                     .filter(a -> a.getDatabaseId().equals(currentDatabase))
                     .filter(a -> a.getResourceId().equals(currentResource))
                     .findAny()
@@ -536,6 +540,7 @@ public class ArchiveBean implements Serializable {
         databases.sort((db1, db2) -> db1.getCombinedName().compareTo(db2.getCombinedName()));
         return databases;
     }
+
     public int getNumArchives() {
         return this.archives.size();
     }

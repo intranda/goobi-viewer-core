@@ -27,6 +27,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
+import io.goobi.viewer.controller.DataManager;
+
 /**
  * Table of contents and associated functionality for a record.
  */
@@ -68,17 +71,11 @@ public class ArchiveTree implements Serializable {
         if (root == null) {
             throw new IllegalArgumentException("root may not be null");
         }
-        
+
         setTrueRootElement(root);
 
-        //        // If root has just one child, use it as new root
-        //        if (root.getSubEntryList().size() == 1) {
-        //            root = root.getSubEntryList().get(0);
-        //            root.shiftHierarchy(-1);
-        //        }
-
-        List<ArchiveEntry> tree = root.getAsFlatList(true);
-        entryMap.put(DEFAULT_GROUP, tree);
+            List<ArchiveEntry> tree = root.getAsFlatList(true);
+            entryMap.put(DEFAULT_GROUP, tree);
     }
 
     /**
@@ -135,17 +132,17 @@ public class ArchiveTree implements Serializable {
     public List<ArchiveEntry> getTreeView() {
         return getTreeViewForGroup(DEFAULT_GROUP);
     }
-    
+
     public List<ArchiveEntry> getFilteredTreeView(boolean searchActive) {
         logger.debug("getFilteredTreeView");
         List<ArchiveEntry> ret = new ArrayList<>();
-        
-        for(ArchiveEntry entry : getTreeView()) {
-            if(entry.isVisible()  && (!searchActive || entry.isDisplaySearch() )) {
+
+        for (ArchiveEntry entry : getTreeView()) {
+            if (entry.isVisible() && (!searchActive || entry.isDisplaySearch())) {
                 ret.add(entry);
             }
         }
-        
+
         logger.debug("getFilteredTreeView END");
         return ret;
     }
@@ -156,6 +153,7 @@ public class ArchiveTree implements Serializable {
      * @param collapseLevel
      */
     private void buildTree(String group, int collapseLevel) {
+
         logger.trace("buildTree");
         if (group == null) {
             throw new IllegalArgumentException("group may not be null");
@@ -167,27 +165,24 @@ public class ArchiveTree implements Serializable {
             }
             int lastLevel = 0;
             int lastParent = 0;
-            for (ArchiveEntry entry : entryMap.get(group)) {
+            List<ArchiveEntry> entries = entryMap.get(group);
+            for(int index = 0; index < entries.size(); index++) {
                 // Current element index
-                int index = entryMap.get(group).indexOf(entry);
-                if (lastLevel < entry.getHierarchyLevel() && index > 0) {
-                    if (entry.getHierarchyLevel() > collapseLevel) {
-                        entryMap.get(group).get(index - 1).setExpanded(false);
-                        entry.setVisible(false);
-                    } else {
-                        entryMap.get(group).get(index - 1).setExpanded(true);
-                    }
-
-                    for (int i = index + 1; i < entryMap.get(group).size(); i++) {
-                        ArchiveEntry tc = entryMap.get(group).get(i);
-                        if (tc.getHierarchyLevel() > collapseLevel) {
-                            tc.setVisible(false);
+                try (Time time = DataManager.getInstance().getTiming().takeTime("buildEntry")) {
+                    ArchiveEntry entry = entries.get(index);
+                    if (lastLevel < entry.getHierarchyLevel() && index > 0) {
+                        if (entry.getHierarchyLevel() > collapseLevel) {
+                            entries.get(index - 1).setExpanded(false);
+                            entry.setVisible(false);
+                        } else {
+                            entries.get(index - 1).setExpanded(true);
                         }
+                    } else if (entry.getHierarchyLevel() > collapseLevel) {
+                        entry.setVisible(false);
                     }
-
+                    lastParent = index;
+                    lastLevel = entry.getHierarchyLevel();
                 }
-                lastParent = index;
-                lastLevel = entry.getHierarchyLevel();
             }
             treeBuilt = true;
             resetCollapseLevel(getRootElement(), collapseLevel);
@@ -234,15 +229,14 @@ public class ArchiveTree implements Serializable {
         logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getId() : null);
         this.selectedEntry = selectedEntry;
     }
-    
+
     public void toggleSelectedEntry(ArchiveEntry selectedEntry) {
-        if(selectedEntry != null && selectedEntry.equals(this.selectedEntry)) {
+        if (selectedEntry != null && selectedEntry.equals(this.selectedEntry)) {
             this.selectedEntry = null;
         } else {
             this.selectedEntry = selectedEntry;
         }
     }
-
 
     /**
      * @return the trueRootElement
