@@ -2732,6 +2732,10 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalString("search.facets.geoField");
     }
 
+    public String getGeoFacetFieldPredicate() {
+        return getLocalString("search.facets.geoField[@predicate]", "ISWITHIN");
+    }
+
     /**
      * @return
      */
@@ -5299,5 +5303,6 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplayAnnotationTextInImage() {
         return getLocalBoolean("webGuiDisplay.displayAnnotationTextInImage", true);
     }
+
 
 }

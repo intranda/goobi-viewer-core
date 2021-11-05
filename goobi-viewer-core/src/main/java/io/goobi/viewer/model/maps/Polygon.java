@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.JSONObject;
 
 /**
@@ -81,6 +82,28 @@ public class Polygon implements IArea {
             maxLat = Math.max(maxLat, point.lat);
         }
         return Math.sqrt((maxLng-minLng)*(maxLng-minLng)+(maxLat-minLat)*(maxLat-minLat));
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return this.vertices.size();
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(this.getClass())) {
+            Polygon other = (Polygon)obj;
+            return this.vertices.size() == other.vertices.size() &&
+                   this.vertices.stream().filter(v -> other.vertices.contains(v)).count() == this.vertices.size();
+        } else {
+            return false;
+        }
     }
 
 }

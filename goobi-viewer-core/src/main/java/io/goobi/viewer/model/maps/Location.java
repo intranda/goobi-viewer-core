@@ -17,8 +17,10 @@ package io.goobi.viewer.model.maps;
 
 import java.net.URI;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.json.JSONObject;
 
+import com.google.common.base.Objects;
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
@@ -96,4 +98,26 @@ public class Location {
         return feature.toString();
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(this.getClass())) {
+            Location other = (Location)obj;
+            return StringUtils.equals(this.label, other.label) &&
+                   Objects.equal(this.uri, other.uri) && 
+                   Objects.equal(this.area, other.area);
+        } else {
+            return false;
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return this.label == null ? 0 : this.label.hashCode();
+    }
 }

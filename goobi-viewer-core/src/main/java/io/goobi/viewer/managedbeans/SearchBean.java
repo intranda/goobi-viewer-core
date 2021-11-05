@@ -43,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -2723,7 +2724,12 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public List<String> getHitsLocations() {
         if (this.currentSearch != null) {
-            return this.currentSearch.getHitsLocationList().stream().map(l -> l.getGeoJson()).collect(Collectors.toList());
+            List<String> locations = this.currentSearch.getHitsLocationList()
+                    .stream()
+//                    .distinct()
+                    .map(l -> l.getGeoJson())
+                    .collect(Collectors.toList());
+            return locations;
         } else {
             return Collections.emptyList();
         }
@@ -2751,12 +2757,14 @@ public class SearchBean implements SearchInterface, Serializable {
                 "\"zoom\": 5," +
                 "\"center\": [11.073397, -49.451993]" +
                 "}");
-        List<String> features = new ArrayList<>();
+        
         if (this.currentSearch != null) {
 
-            for (Location location : this.currentSearch.getHitsLocationList()) {
-                features.add(location.getGeoJson());
-            }
+            List<String> features = this.currentSearch.getHitsLocationList().stream()
+            .map(Location::getGeoJson)
+//            .distinct()
+            .collect(Collectors.toList());
+
             map.setFeatures(features);
         }
         return map;
