@@ -849,6 +849,16 @@
         <action onPostback="false">#{adminBean.lockTranslation}</action>
     </url-mapping>
 
+	<!-- THEME CONFIGS -->
+    <url-mapping id="adminThemes">
+        <pattern value="/admin/themes/" />
+		<view-id value="/resources/admin/views/adminThemes.xhtml" />
+    </url-mapping>
+    <url-mapping id="adminEditThemes">
+        <pattern value="/admin/translations/edit/#{themeName}/" />
+        <view-id value="/resources/admin/views/adminThemesEdit.xhtml" />
+    </url-mapping>
+
     <!-- ADMIN STYLES FOR DEVS -->
     <url-mapping id="adminEditTranslations">
         <pattern value="/admin/styles/" />
