@@ -37,8 +37,6 @@ import org.apache.http.util.EntityUtils;
 
 import io.goobi.viewer.controller.StringTools;
 
-//import com.google.common.io.CharStreams;
-
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**

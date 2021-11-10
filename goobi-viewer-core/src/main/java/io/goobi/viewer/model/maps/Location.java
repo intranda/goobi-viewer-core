@@ -16,11 +16,11 @@
 package io.goobi.viewer.model.maps;
 
 import java.net.URI;
+import java.util.Objects;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.json.JSONObject;
 
-import com.google.common.base.Objects;
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
@@ -106,8 +106,8 @@ public class Location {
         if(obj != null && obj.getClass().equals(this.getClass())) {
             Location other = (Location)obj;
             return StringUtils.equals(this.label, other.label) &&
-                   Objects.equal(this.uri, other.uri) && 
-                   Objects.equal(this.area, other.area);
+                   Objects.equals(this.uri, other.uri) && 
+                   Objects.equals(this.area, other.area);
         } else {
             return false;
         }
