@@ -15,6 +15,9 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -39,21 +42,22 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see AdminBean#init()
-     * @verifies sort lazyModelComments by dateUpdated desc by default
+     * @verifies sort lazyModelComments by dateCreated desc by default
      */
     @Test
-    public void init_shouldSortLazyModelCommentsByDateUpdatedDescByDefault() throws Exception {
+    public void init_shouldSortLazyModelCommentsByDateCreatedDescByDefault() throws Exception {
         AdminBean bean = new AdminBean();
         bean.init();
         Assert.assertNotNull(bean.getLazyModelComments());
         Assert.assertEquals(4, bean.getLazyModelComments().getSizeOfDataList());
         LocalDateTime prevDate = null;
         for (Comment comment : bean.getLazyModelComments().getPaginatorList()) {
-            if (prevDate != null) {
-                Assert.assertTrue(DateTools.getMillisFromLocalDateTime(prevDate, false) >= DateTools
-                        .getMillisFromLocalDateTime(comment.getDateUpdated(), false));
+            if (prevDate != null && comment.getDateCreated() != null) {
+                Assert.assertTrue(DateTools.getMillisFromLocalDateTime(prevDate, false)
+                        >= DateTools
+                        .getMillisFromLocalDateTime(comment.getDateCreated(), false));
             }
-            prevDate = comment.getDateUpdated();
+            prevDate = comment.getDateCreated();
         }
     }
 
@@ -192,5 +196,42 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         Assert.assertTrue(bean.dirtyUserRoles.containsKey(userRole));
         bean.updateUserRoles();
         Assert.assertFalse(DataManager.getInstance().getDao().getUserRoles(group, user, role).isEmpty());
+    }
+    
+
+    @Test
+    public void updateUserRoles_multipleRolesAddedOnNewGroup() throws Exception {
+        AdminBean bean = new AdminBean();
+        bean.init();
+
+        User u1 = DataManager.getInstance().getDao().getUser(1l);
+        User u2 = DataManager.getInstance().getDao().getUser(2l);
+        
+        UserGroup group = new UserGroup();
+        group.setName("test");
+        group.setOwner(u1);
+        bean.setCurrentUserGroup(group);
+        
+        Role r1 = DataManager.getInstance().getDao().getRole("member");
+        UserRole ur1 = new UserRole(group, u1, r1);
+        bean.setCurrentUserRole(ur1);
+        bean.addUserRoleAction();
+        
+        Role r2 = DataManager.getInstance().getDao().getRole("member");
+        UserRole ur2 = new UserRole(group, u2, r2);
+        bean.setCurrentUserRole(ur2);
+        bean.addUserRoleAction();
+        
+        assertEquals(2, bean.dirtyUserRoles.size());
+        assertEquals(bean.dirtyUserRoles.get(ur1), "save");
+        assertEquals(bean.dirtyUserRoles.get(ur2), "save");
+        
+        bean.saveUserGroupAction();
+        
+        UserGroup loadedGroup = DataManager.getInstance().getDao().getUserGroup("test");
+        assertEquals(group, loadedGroup);
+        assertEquals(2, loadedGroup.getMemberships().size());
+        assertTrue(loadedGroup.getMemberships().contains(ur1));
+        assertTrue(loadedGroup.getMemberships().contains(ur2));
     }
 }

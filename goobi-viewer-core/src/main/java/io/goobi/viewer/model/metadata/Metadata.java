@@ -52,6 +52,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
@@ -535,6 +536,7 @@ public class Metadata implements Serializable {
         String[] valueSplit = value.split("[.]");
         StringBuilder sbFullValue = new StringBuilder();
         StringBuilder sbHierarchy = new StringBuilder();
+        Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(field);
         for (String s : valueSplit) {
             if (sbFullValue.length() > 0) {
                 sbFullValue.append(" > ");
@@ -551,7 +553,7 @@ public class Metadata implements Serializable {
                 String sortField = "-";
                 // Use configured collection sorting field, if available
                 if (StringUtils.isNotEmpty(field)) {
-                    String defaultSortField = DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(field, value);
+                    String defaultSortField = CollectionView.getCollectionDefaultSortField(value, sortFields);
                     if (StringUtils.isNotEmpty(defaultSortField)) {
                         sortField = defaultSortField;
                     }

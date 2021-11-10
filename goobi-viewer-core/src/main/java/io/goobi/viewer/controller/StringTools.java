@@ -80,7 +80,10 @@ public class StringTools {
     /** Constant <code>PLUS_REPLACEMENT="U0025"</code> */
     public static final String PLUS_REPLACEMENT = "U002B";
 
+
+    
     /**
+     * Escpae url for submitted form data. A space is encoded as '+'.
      * 
      * @param string String to encode
      * @return URL-encoded string

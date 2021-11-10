@@ -13,9 +13,11 @@
 			<f:event type="preRenderView"
 				listener="#{navigationHelper.setCurrentPageUser()}" />
 			<f:event type="preRenderView"
-				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(userBean.loggedIn ? msg.userLoggedIn : msg.userNotLoggedIn,1)}" />
+				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.admin__user_profile, request.contextPath.concat('/user/'), 1)}" />
+			<f:event type="preRenderView"
+				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.accountSettings, 2)}" />
 			<f:viewAction onPostback="false"
-				action="#{userBean.user.backupFields()}" />
+				action="#{userBean.createBackupOfCurrentUser()}" />
 		</f:metadata>
 	</ui:define>
 
@@ -25,7 +27,7 @@
 
 	<ui:define name="content">
 		<div id="userAccount" class="user-account">
-			<h2>#{msg.account}</h2>
+			<h2>#{msg.accountSettings}</h2>
 			<!-- USER NOT LOGGED IN -->
 			<ui:fragment rendered="#{!userBean.loggedIn}">
 				<div class="alert alert-warning" role="alert">
@@ -42,12 +44,10 @@
 							styleClass="btn admin__cancel-button" value="#{msg.cancel}"
 							action="#{adminBean.resetUserAction(userBean.user, '')}"
 							immediate="true">
-							<f:ajax render="@all"></f:ajax>
 						</h:commandLink>
 						<h:commandLink id="saveNewUserCreationButton"
 							styleClass="btn btn--success" value="#{msg.save}"
 							action="#{adminBean.saveUserAction(userBean.user.copy, '')}">
-							<f:ajax execute="@all" render="@all"></f:ajax>
 						</h:commandLink>
 					</div>
 				</h:form>

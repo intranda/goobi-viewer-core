@@ -34,7 +34,7 @@ public class GeoCoordinateFeatureTest {
         String referencePointsString = "1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2, 1.1 1.2";
         String referenceQuery = "IsWithin(POLYGON(("+referencePointsString+")))";
         // System.out.println("query = " + referenceQuery);
-        GeoCoordinateFeature feature = new GeoCoordinateFeature(points);
+        GeoCoordinateFeature feature = new GeoCoordinateFeature(points, "IsWithin", "POLYGON");
         String query = feature.getSearchString();
         assertEquals(referenceQuery, query);
     }

@@ -51,6 +51,7 @@ import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -78,7 +79,7 @@ public class ArchiveBean implements Serializable {
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 
     private Map<ArchiveResource, ArchiveTree> archives = new HashMap<>();
-    
+
     private final List<NodeType> nodeTypes;
 
     private final BasexEADParser eadParser;
@@ -122,46 +123,56 @@ public class ArchiveBean implements Serializable {
         this.eadParser = eadParser;
         this.nodeTypes = loadNodeTypes(DataManager.getInstance().getConfiguration().getArchiveNodeTypes());
     }
-    
+
     /**
      * @param archiveNodeTypes
      * @return
      */
     private List<NodeType> loadNodeTypes(Map<String, String> archiveNodeTypes) {
-        return archiveNodeTypes.entrySet().stream().map(entry-> new NodeType(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+        return archiveNodeTypes.entrySet().stream().map(entry -> new NodeType(entry.getKey(), entry.getValue())).collect(Collectors.toList());
     }
 
     public void reset() {
         this.currentDatabase = "";
         this.currentResource = "";
         this.searchString = "";
-        if(this.databaseState == DatabaseState.ARCHIVE_TREE_LOADED) {            
+        if (this.databaseState == DatabaseState.ARCHIVE_TREE_LOADED) {
             this.databaseState = DatabaseState.ARCHIVES_LOADED;
         }
     }
 
     public void initializeArchiveTree() {
+        initializeArchiveTree(null);
+    }
+
+    public void initializeArchiveTree(String selectedEntryId) {
+
         if (getCurrentArchive() != null) {
             try {
-                if(this.archives.get(getCurrentArchive()) == null) {
+                if (this.archives.get(getCurrentArchive()) == null) {
                     ArchiveTree archiveTree = loadDatabase(eadParser, getCurrentArchive());
-                    if(archiveTree != null) {
+                    if (archiveTree != null) {
                         this.archives.put(getCurrentArchive(), archiveTree);
                         this.databaseState = DatabaseState.ARCHIVE_TREE_LOADED;
-                    } 
+                    }
                 } else {
                     this.databaseState = DatabaseState.ARCHIVE_TREE_LOADED;
                 }
             } catch (IOException | HTTPException e) {
                 logger.error("Error retrieving database {} from {}", getCurrentArchive().getCombinedName(), eadParser.getBasexUrl());
-                this.databaseState =  DatabaseState.ERROR_NOT_REACHABLE;
+                this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
             } catch (JDOMException | ConfigurationException e) {
                 logger.error("Error reading database {} from {}", getCurrentArchive().getCombinedName(), eadParser.getBasexUrl());
-                this.databaseState =  DatabaseState.ERROR_INVALID_FORMAT;
+                this.databaseState = DatabaseState.ERROR_INVALID_FORMAT;
             }
+            this.searchString = "";
+            getArchiveTree().resetSearch();
         }
-        this.searchString = "";
-        getArchiveTree().resetSearch();
+
+        //load selected entry
+        if (isDatabaseLoaded() && StringUtils.isNotBlank(selectedEntryId)) {
+            this.setSelectedEntryId(selectedEntryId);
+        }
     }
 
     ArchiveTree loadDatabase(BasexEADParser eadParser, ArchiveResource archive)
@@ -192,7 +203,7 @@ public class ArchiveBean implements Serializable {
      * @throws BaseXException
      */
     public ArchiveTree getArchiveTree() {
-            return archives.get(getCurrentArchive());
+        return archives.get(getCurrentArchive());
     }
 
     /**
@@ -200,6 +211,7 @@ public class ArchiveBean implements Serializable {
      * @return
      */
     ArchiveTree loadTree(ArchiveEntry rootElement) {
+
         ArchiveTree ret = new ArchiveTree();
         ret.generate(rootElement);
         if (ret.getSelectedEntry() == null) {
@@ -209,6 +221,7 @@ public class ArchiveBean implements Serializable {
         ret.getTreeView();
 
         return ret;
+
     }
 
     public void toggleEntryExpansion(ArchiveEntry entry) {
@@ -316,6 +329,7 @@ public class ArchiveBean implements Serializable {
      * @throws BaseXException
      */
     void search(boolean resetSelectedEntry, boolean collapseAll) throws BaseXException {
+       
         if (!isDatabaseLoaded()) {
             logger.warn("Archive not loaded, cannot search.");
             return;
@@ -328,7 +342,8 @@ public class ArchiveBean implements Serializable {
         }
 
         getArchiveTree().search(searchString);
-        List<ArchiveEntry> results = getArchiveTree().getFlatEntryList();
+        List<ArchiveEntry> results;
+        results = getArchiveTree().getFlatEntryList();
         if (results == null || results.isEmpty()) {
             return;
         }
@@ -357,11 +372,8 @@ public class ArchiveBean implements Serializable {
      */
     public void setSearchString(String searchString) {
         logger.trace("setSearchString: {}", searchString);
-        if(!StringUtils.equals(this.searchString, searchString)) {
-            try {
-                this.setSelectedEntryId(null);
-            } catch (BaseXException e) {
-            }
+        if (!StringUtils.equals(this.searchString, searchString)) {
+            this.setSelectedEntryId(null);
         }
         this.searchString = searchString;
     }
@@ -384,7 +396,7 @@ public class ArchiveBean implements Serializable {
      * @param id Entry ID
      * @throws BaseXException
      */
-    public void setSelectedEntryId(String id) throws BaseXException {
+    public void setSelectedEntryId(String id) {
         logger.trace("setSelectedEntryId: {}", id);
         if (!isDatabaseLoaded()) {
             return;
@@ -505,34 +517,41 @@ public class ArchiveBean implements Serializable {
      * @param currentResource the currentResource to set
      */
     public void setCurrentResource(String currentResource) {
-        this.currentResource = currentResource;
+        this.currentResource = StringTools.decodeUrl(currentResource);
     }
 
     public ArchiveResource getCurrentArchive() {
         if (StringUtils.isNoneBlank(currentDatabase, currentResource)) {
-            return this.archives.keySet().stream()
-                    .filter(archive -> archive.getDatabaseId().equals(currentDatabase))
-                    .filter(archive -> archive.getResourceId().equals(currentResource))
+            ArchiveResource archive = this.archives.keySet()
+                    .stream()
+                    //                    .peek(a -> System.out.println("Archive " + a.getDatabaseId() + " - " + a.getResourceId()))
+                    .filter(a -> a.getDatabaseId().equals(currentDatabase))
+                    .filter(a -> a.getResourceId().equals(currentResource))
                     .findAny()
                     .orElse(null);
+            return archive;
         } else {
             return null;
         }
     }
-    
+
     public List<ArchiveResource> getDatabases() {
         List<ArchiveResource> databases = new ArrayList<>(this.archives.keySet());
         databases.sort((db1, db2) -> db1.getCombinedName().compareTo(db2.getCombinedName()));
         return databases;
     }
-    
+
+    public int getNumArchives() {
+        return this.archives.size();
+    }
+
     public String getArchiveId() {
         return Optional.ofNullable(getCurrentArchive()).map(ArchiveResource::getCombinedId).orElse("");
     }
 
     public void setArchiveId(String archiveName) {
         ArchiveResource database = this.archives.keySet().stream().filter(db -> db.getCombinedId().equals(archiveName)).findAny().orElse(null);
-        if(database != null) {            
+        if (database != null) {
             this.currentDatabase = database.getDatabaseId();
             this.currentResource = database.getResourceId();
             this.initializeArchiveTree();
@@ -540,18 +559,18 @@ public class ArchiveBean implements Serializable {
             this.reset();
         }
     }
-    
+
     public void loadDatabaseResource(String databaseId, String resourceId) {
         this.currentDatabase = databaseId;
         this.currentResource = resourceId;
         this.initializeArchiveTree();
     }
-    
+
     /**
      * If only one archive database exists and database status is {@link DatabaseState#ARCHIVES_LOADED}, redirect to the matching url.
      */
     public void redirectToOnlyDatabase() {
-        if(this.databaseState == DatabaseState.ARCHIVES_LOADED && this.archives.size() == 1) {
+        if (this.databaseState == DatabaseState.ARCHIVES_LOADED && this.archives.size() == 1) {
             ArchiveResource resource = this.archives.keySet().iterator().next();
             String url = PrettyUrlTools.getAbsolutePageUrl("archives2", resource.getDatabaseId(), resource.getResourceId());
             try {
@@ -561,16 +580,16 @@ public class ArchiveBean implements Serializable {
             }
         }
     }
-    
+
     public NodeType getNodeType(String name) {
         return this.nodeTypes.stream().filter(node -> node.getName().equals(name)).findAny().orElse(new NodeType("", ""));
     }
-  
+
     public String loadArchiveForId(String identifier) {
         URI archiveUri = URI.create(DataManager.getInstance().getConfiguration().getBaseXUrl());
         URI requestUri = UriBuilder.fromUri(archiveUri).path("dbname").path(identifier).build();
-        
-        try(Time time = DataManager.getInstance().getTiming().takeTime("getArchiveUrl")) {
+
+        try (Time time = DataManager.getInstance().getTiming().takeTime("getArchiveUrl")) {
             String response = NetTools.getWebContentGET(requestUri.toString());
             Document doc = new SAXBuilder().build(new StringReader(response));
             String database = doc.getRootElement().getChild("record", null).getAttributeValue("database");
@@ -583,6 +602,6 @@ public class ArchiveBean implements Serializable {
         } catch (IOException | HTTPException | JDOMException e) {
             logger.error("Error retrieving data base for " + identifier, e);
             return "archives/";
-        }  
+        }
     }
 }

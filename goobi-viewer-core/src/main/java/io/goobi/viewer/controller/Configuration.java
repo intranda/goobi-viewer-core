@@ -169,8 +169,11 @@ public final class Configuration extends AbstractConfiguration {
         // Load stopwords
         try {
             stopwords = loadStopwords(getStopwordsFilePath());
+        } catch (FileNotFoundException e) {
+            logger.error(e.getMessage());
+            stopwords = new HashSet<>(0);
         } catch (IOException | IllegalArgumentException e) {
-            logger.warn(e.getMessage());
+            logger.error(e.getMessage(), e);
             stopwords = new HashSet<>(0);
         }
     }
@@ -367,7 +370,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return Connector URL
      */
     public String getConnectorVersionUrl() {
-        return getLocalString("urls.connectorVersion", "http://localhost:8080/M2M/oai/tools?action=getVersion");
+        return getLocalString("urls.connectorVersion", "http://localhost:8080/viewer/oai/tools?action=getVersion");
     }
 
     /**
@@ -1111,24 +1114,24 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the collection config block for the given field.
+     * Returns the config block for the given field.
      *
      * @param field
      * @return
      */
     private HierarchicalConfiguration<ImmutableNode> getCollectionConfiguration(String field) {
-        List<HierarchicalConfiguration<ImmutableNode>> collectionList = getLocalConfigurationsAt("collections.collection");
-        if (collectionList == null) {
-            return null;
-        }
-
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = collectionList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
-            if (subElement.getString("[@field]").equals(field)) {
-                return subElement;
-
+            List<HierarchicalConfiguration<ImmutableNode>> collectionList = getLocalConfigurationsAt("collections.collection");
+            if (collectionList == null) {
+                return null;
             }
-        }
+
+            for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = collectionList.iterator(); it.hasNext();) {
+                HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+                if (subElement.getString("[@field]").equals(field)) {
+                    return subElement;
+
+                }
+            }
 
         return null;
     }
@@ -1152,6 +1155,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<DcSortingList> getCollectionSorting(String field) {
+
         List<DcSortingList> superlist = new ArrayList<>();
         HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
         if (collection == null) {
@@ -1181,7 +1185,7 @@ public final class Configuration extends AbstractConfiguration {
             return null;
         }
         return getLocalList(collection, null, "blacklist.collection", Collections.<String> emptyList());
-    }
+        }
 
     /**
      * Returns the index field by which records in the collection with the given name are to be sorted in a listing.
@@ -1193,37 +1197,24 @@ public final class Configuration extends AbstractConfiguration {
      * @should give priority to exact matches
      * @should return hyphen if collection not found
      */
-    public String getCollectionDefaultSortField(String field, String name) {
+    public Map<String, String> getCollectionDefaultSortFields(String field) {
+            Map<String, String> map = new HashMap<>();
         HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
         if (collection == null) {
-            return "-";
+            return map;
         }
 
         List<HierarchicalConfiguration<ImmutableNode>> fields = collection.configurationsAt("defaultSortFields.field");
         if (fields == null) {
-            return "-";
+            return map;
         }
 
-        String exactMatch = null;
-        String inheritedMatch = null;
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fields.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> sub : fields) {
             String key = sub.getString("[@collection]");
-            if (name.equals(key)) {
-                exactMatch = sub.getString("");
-            } else if (key.endsWith("*") && name.startsWith(key.substring(0, key.length() - 1))) {
-                inheritedMatch = sub.getString("");
-            }
+            String value = sub.getString("");
+            map.put(key, value);
         }
-        // Exact match is given priority so that it is possible to override the inherited sort field
-        if (StringUtils.isNotEmpty(exactMatch)) {
-            return exactMatch;
-        }
-        if (StringUtils.isNotEmpty(inheritedMatch)) {
-            return inheritedMatch;
-        }
-
-        return "-";
+        return map;
     }
 
     /**
@@ -1254,6 +1245,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getCollectionDisplayDepthForSearch(String field) {
+
         HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
         if (collection == null) {
             return -1;
@@ -1270,6 +1262,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getCollectionHierarchyField() {
+
         for (String field : getConfiguredCollections()) {
             if (isAddCollectionHierarchyToBreadcrumbs(field)) {
                 return field;
@@ -2727,6 +2720,10 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalString("search.facets.geoField");
     }
 
+    public String getGeoFacetFieldPredicate() {
+        return getLocalString("search.facets.geoField[@predicate]", "ISWITHIN");
+    }
+
     /**
      * @return
      */
@@ -3504,7 +3501,7 @@ public final class Configuration extends AbstractConfiguration {
      *
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @param imageType a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
-     * @return a {@link org.apache.commons.configuration.SubnodeConfiguration} object.
+     * @return a {@link org.apache.commons.configuration2.SubnodeConfiguration} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BaseHierarchicalConfiguration getZoomImageViewConfig(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
@@ -5282,5 +5279,6 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplayAnnotationTextInImage() {
         return getLocalBoolean("webGuiDisplay.displayAnnotationTextInImage", true);
     }
+
 
 }

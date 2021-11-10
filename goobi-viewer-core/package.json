@@ -1,6 +1,6 @@
 {
   "name": "goobi-viewer",
-  "version": "21.02",
+  "version": "1.0.0",
   "description": "A highly flexible digital library framework - made by the Goobi developer team",
   "author": "intranda GmbH",
   "repository": {
@@ -8,18 +8,25 @@
     "url": "https://github.com/intranda/goobi-viewer-core"
   },
   "license": "GPL-2.0-or-later",
+  "scripts": {
+    "grunt-watch":"grunt watch",
+    "grunt-dev":"grunt dev",
+    "grunt-devsync":"grunt devsync",
+    "grunt-default":"grunt default",
+    "grunt-copyDeps":"grunt copyDeps"
+  },
   "devDependencies": {
-    "grunt": "^1.4.1",
-    "grunt-concurrent": "^3.0.0",
-    "grunt-contrib-concat": "*",
+    "grunt": "~1.4.1",
+    "grunt-concurrent": "~3.0.0",
+    "grunt-contrib-concat": "~1.0.1",
     "grunt-contrib-copy": "~1.0.0",
-    "grunt-contrib-less": "^3.0.0",
-    "grunt-contrib-watch": "*",
-    "grunt-riot": "*",
-    "grunt-sync": "^0.8.2",
-    "less-plugin-autoprefix": "^2.0.0",
-    "michelangelo": "^0.8.0",
-    "webpack": "5.51.1"
+    "grunt-contrib-less": "~3.0.0",
+    "grunt-contrib-watch": "~1.1.0",
+    "grunt-riot": "~0.1.8",
+    "grunt-sync": "~0.8.2",
+    "less-plugin-autoprefix": "~2.0.0",
+    "michelangelo": "~0.8.0",
+    "webpack": "~5.51.1"
   },
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "~4.7.4",
@@ -49,6 +56,6 @@
     "sweetalert2": "~11.1.7",
     "swiper": "~6.8.4",
     "three": "~0.132.2",
-    "tinymce": "~5.9.1"
+    "tinymce": "~5.10.0"
   }
 }
