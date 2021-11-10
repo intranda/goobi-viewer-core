@@ -112,6 +112,42 @@
 									</ui:fragment>
 								</div>	
 						</div>
+						
+					<div id="modalUserCommentEdit-#{comment.id}" styleClass="user-comments-modal" title="#{msg.userCommentEdit}">
+						<yield to="body">
+							<div class="col-3">#{msg.userCommentText}:</div>
+							<div class="col-9 user-comments__comment-content-options-text-edit">
+								<textarea id="modalUserCommentEdit-#{comment.id}-text">#{comment.text}</textarea>
+							</div>
+						</yield>
+						<yield to="footer">
+							<button id="modalUserCommentEdit-#{comment.id}-cancel" class="btn" data-dismiss="modal">#{msg.cancel}</button>
+							<button id="modalUserCommentEdit-#{comment.id}-ok" class="btn btn--success accept ml-3" data-dismiss="modal">#{msg.save}</button>
+						</yield>
+					</div>
+					<div class="d-none">
+						<h:inputText data-value="comment-#{comment.id}" value="#{comment.text}">
+							<f:ajax event="change"></f:ajax>
+						</h:inputText>
+					</div>
+					
+					<script>
+						let props = {
+							onClose: () => {
+							    console.log("closing user comment edit modal");
+							}
+						}
+						$("#modalUserCommentEdit-#{comment.id}-ok").on("click", () => {
+						    let text = $("#modalUserCommentEdit-#{comment.id}-text").text();
+						    console.log("save comment ", text);
+						    let $input = $('[data-value="comment-#{comment.id}"]');
+						    $input.val(text);
+						    $input.change();
+						})
+						riot.mount("#modalUserCommentEdit-#{comment.id}", props, "modal")
+					
+					</script>
+						
 				</ui:repeat>
 				
 				<!-- DELETE COMMENT JS FUNCTIONALITY/SWEET ALERT CONFIRM + NOTIFICATION -->
@@ -147,9 +183,7 @@
 				</ui:fragment>
 			</h:form>
 		</div>
-				<!-- EDIT COMMENT MODAL -->
-				<viewerComponent:modalUserCommentEdit id="modalUserCommentEdit" render="userCommentsForm" comment="#{activeDocumentBean.viewManager.currentPage.currentComment}"/>
-
+		
 		<script type="text/javascript">
             $( document ).ready( function() {
                 viewerJS.userComments.init();

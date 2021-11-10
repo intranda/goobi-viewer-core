@@ -86,7 +86,7 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void testConvertCommentToHit() {
-        Comment comment = new Comment(pi, pageNo, null, text, null);
+        Comment comment = new Comment(pi, pageNo, null, text, null, null);
         comment.setId(1l);
 
         String query = "in";

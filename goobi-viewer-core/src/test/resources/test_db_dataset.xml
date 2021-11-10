@@ -99,14 +99,11 @@
         pi="AC123456789" logid="LOG_1111" urn="urn:nbn:bookmark2"
         main_title="bookmark 2 main title"/>
 
-	<comments comment_id="1" pi="PI_1" page="1" owner_id="1"
-		date_created="2013-07-15 00:00:00.000000000" text="comment 1 text" />
-	<comments comment_id="2" pi="PI_1" page="1" owner_id="2"
-		date_created="2013-07-15 00:01:00.000000000" text="comment 2 text" />
-	<comments comment_id="3" pi="PI_1" page="1" owner_id="1"
-		date_created="2013-07-15 12:01:00.000000000" text="comment 3 text" />
-	<comments comment_id="4" pi="PI_1" page="2" owner_id="1"
-		date_created="2013-07-15 12:00:00.000000000" date_updated="2021-10-28 16:30:00.000000000" text="comment 4 text" />
+    <annotations_comments annotation_id="1" target_pi="PI_1" target_page="1" body="comment 1 text" date_created="2013-07-15 00:00:00.000000000" creator_id="1"/>
+    <annotations_comments annotation_id="2" target_pi="PI_1" target_page="1" body="comment 2 text" date_created="2013-07-15 00:02:00.000000000" creator_id="2"/>
+    <annotations_comments annotation_id="3" target_pi="PI_1" target_page="1" body="comment 3 text" date_created="2013-07-15 12:01:00.000000000" creator_id="1"/>
+    <annotations_comments annotation_id="4" target_pi="PI_1" target_page="2" body="comment 4 text" date_created="2013-07-15 12:00:00.000000000" creator_id="1" date_modified="2021-10-28 16:30:00.000000000" />
+
 
 	<searches search_id="1" owner_id="1" name="search 1" query="query 1"
 		page="1" date_updated="2013-07-15 00:00:00.000000000"
@@ -267,11 +264,11 @@
     
     <cs_campaign_log message_id="1" creator_id="1" campaign_id="1" pi="PI_1" date_created="2020-11-05 09:09:12" message="Eine Nachricht im Log"></cs_campaign_log>
     
-    <annotations annotation_id="1" body="&quot;a&quot;" date_created="2019-09-19 00:00:00.000000000" creator_id="1" generator_id="1" target="&quot;aa&quot;" target_pi="PI_1" target_page="1" />
-    <annotations annotation_id="2" body="&quot;b&quot;" date_created="2019-09-19 00:00:00.000000000" reviewer_id="1" generator_id="1" target="&quot;bb&quot;" target_pi="PI_2" target_page="6" />
-    <annotations annotation_id="3" body="&quot;c&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="2" target="&quot;cc&quot;" target_pi="PI_1" />
-    <annotations annotation_id="4" body="&quot;d&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;dd&quot;" target_pi="PI_1" />
-    <annotations annotation_id="5" body="&quot;e&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;ee&quot;" target_pi="PI_2" />
+    <annotations_crowdsourcing annotation_id="1" body="&quot;a&quot;" date_created="2019-09-19 00:00:00.000000000" creator_id="1" generator_id="1" target="&quot;aa&quot;" target_pi="PI_1" target_page="1" />
+    <annotations_crowdsourcing annotation_id="2" body="&quot;b&quot;" date_created="2019-09-19 00:00:00.000000000" reviewer_id="1" generator_id="1" target="&quot;bb&quot;" target_pi="PI_2" target_page="6" />
+    <annotations_crowdsourcing annotation_id="3" body="&quot;c&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="2" target="&quot;cc&quot;" target_pi="PI_1" />
+    <annotations_crowdsourcing annotation_id="4" body="&quot;d&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;dd&quot;" target_pi="PI_1" />
+    <annotations_crowdsourcing annotation_id="5" body="&quot;e&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;ee&quot;" target_pi="PI_2" />
     
 
 </dataset>

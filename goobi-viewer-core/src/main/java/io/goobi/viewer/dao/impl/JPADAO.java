@@ -1754,7 +1754,7 @@ public class JPADAO implements IDAO {
     public List<Comment> getCommentsForPage(String pi, int page) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
-        sbQuery.append("SELECT o FROM Comment o WHERE o.targetPi = :pi AND o.targetPageOrder = :page");
+        sbQuery.append("SELECT o FROM Comment o WHERE o.targetPI = :pi AND o.targetPageOrder = :page");
         Query q = getEntityManager().createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setParameter("page", page);
@@ -1769,7 +1769,7 @@ public class JPADAO implements IDAO {
     public List<Comment> getCommentsForWork(String pi) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
-        sbQuery.append("SELECT o FROM Comment o WHERE o.targetPi = :pi");
+        sbQuery.append("SELECT o FROM Comment o WHERE o.targetPI = :pi");
         Query q = getEntityManager().createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setFlushMode(FlushModeType.COMMIT);
@@ -1904,7 +1904,7 @@ public class JPADAO implements IDAO {
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append("DELETE FROM Comment o WHERE ");
         if (StringUtils.isNotEmpty(pi)) {
-            sbQuery.append("o.targetPi = :pi");
+            sbQuery.append("o.targetPI = :pi");
         }
         if (owner != null) {
             if (StringUtils.isNotEmpty(pi)) {
@@ -3895,12 +3895,12 @@ public class JPADAO implements IDAO {
         StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Comment a");
         Map<String, String> params = new HashMap<>();
         if (owner != null) {
-            sbQuery.append(" WHERE a.owner = :owner");
+            sbQuery.append(" WHERE a.creatorId = :owner");
         }
         Query q = getEntityManager().createQuery(sbQuery.append(createFilterQuery(null, filters, params)).toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
         if (owner != null) {
-            q.setParameter("owner", owner);
+            q.setParameter("owner", owner.getId());
         }
 
         return (long) q.getSingleResult();

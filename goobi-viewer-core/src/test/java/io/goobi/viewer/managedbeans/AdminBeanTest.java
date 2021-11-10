@@ -117,7 +117,7 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         // Comments
         Comment comment = DataManager.getInstance().getDao().getComment(2);
         Assert.assertNotNull(comment);
-        Assert.assertNotEquals(user, comment.getOwner());
+        Assert.assertNotEquals(user, comment.getCreator());
 
         // Campaign statistics
         List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", null);

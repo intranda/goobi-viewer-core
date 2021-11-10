@@ -30,12 +30,14 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.annotation.notification.CommentMailNotificator;
 import io.goobi.viewer.model.annotation.notification.JsfMessagesNotificator;
 import io.goobi.viewer.model.annotation.serialization.SolrAndSqlAnnotationDeleter;
 import io.goobi.viewer.model.annotation.serialization.SolrAndSqlAnnotationSaver;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationLister;
+import io.goobi.viewer.model.annotation.serialization.SqlCommentLister;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -64,7 +66,7 @@ public class CommentBean implements Serializable {
         commentManager = new CommentManager(
                 new SolrAndSqlAnnotationSaver(), 
                 new SolrAndSqlAnnotationDeleter(),
-                new SqlAnnotationLister(),
+                new SqlCommentLister(),
                 new CommentMailNotificator(DataManager.getInstance().getConfiguration().getCommentsNotificationEmailAddresses()),
                 new JsfMessagesNotificator());
     }
@@ -73,23 +75,23 @@ public class CommentBean implements Serializable {
         this.commentManager.createComment(text, userBean.getUser(), activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), getLicense(restricted), getInitialPublicationStatus());
     }
 
-    public void editComment(CrowdsourcingAnnotation original, String text, boolean restricted) throws IndexUnreachableException {
+    public void editComment(Comment original, String text, boolean restricted) throws IndexUnreachableException {
         this.commentManager.editComment(original, text, userBean.getUser(), getLicense(restricted), getInitialPublicationStatus());
     }
     
-    public void deleteComment(CrowdsourcingAnnotation annotation) throws IndexUnreachableException {
+    public void deleteComment(Comment annotation) throws IndexUnreachableException {
         this.commentManager.deleteComment(annotation);
     }
     
-    public List<CrowdsourcingAnnotation> getComments(int startIndex, int numItems, String filter, User user, String sortField, boolean descending) {
+    public List<Comment> getComments(int startIndex, int numItems, String filter, User user, String sortField, boolean descending) {
         return this.commentManager.getAnnotations(startIndex, numItems, filter, null, null, Collections.singletonList(user.getId()), null, null, sortField, descending);
     }
     
-    public List<CrowdsourcingAnnotation> getCommentsForCurrentPage() throws IndexUnreachableException {
+    public List<Comment> getCommentsForCurrentPage() throws IndexUnreachableException {
         return this.commentManager.getAnnotations(0, Integer.MAX_VALUE, null, null, null, null, activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), null, false)
                 .stream()
                 .filter(c -> PublicationStatus.PUBLISHED.equals(c.getPublicationStatus()) || Optional.ofNullable(c.getCreatorId()).map(id -> id.equals(getCurrentUserId())).orElse(false))
-                //TODO: Check prvilege for viewing comment
+                //TODO: Check privilege for viewing comment
                 //.filter(c -> Optional.ofNullable(userBean).map(UserBean::getUser).map(u -> u.isHasAnnotationPrivilege(REQUIRES_COMMENT_RIGHTS)).orElse(false))
                 .collect(Collectors.toList());
     }

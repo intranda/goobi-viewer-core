@@ -15,13 +15,23 @@
  */
 package io.goobi.viewer.model.annotation.comments;
 
+import java.net.URI;
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import de.intranda.api.annotation.wa.Motivation;
+import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
+import de.intranda.api.iiif.presentation.v3.Canvas3;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.PublicationStatus;
+import io.goobi.viewer.model.security.user.User;
 
 /**
  * @author florian
@@ -55,6 +65,28 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
         super(source, id, targetPI, targetPage);
     }
     
+    /**
+     * @param string
+     * @param i
+     * @param owner
+     * @param string2
+     */
+    public Comment(String pi, int page, User owner, String text, String accessCondition, PublicationStatus publicationStatus) {
+        super();
+        URI uri = DataManager.getInstance().getRestApiManager().getDataApiManager()
+                .map(urls -> urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_CANVAS).params(pi, page).buildURI())
+                .orElse(null);
+        setAccessCondition(accessCondition);
+        setText(text);
+        setCreator(owner);
+        setDateCreated(LocalDateTime.now());
+        setMotivation(Motivation.COMMENTING);
+        setTarget(uri.toString());
+        setTargetPI(pi);
+        setTargetPageOrder(page);
+        setPublicationStatus(publicationStatus);
+    }
+
     public String getDisplayText() {
         return StringTools.stripJS(getContentString());
     }
@@ -62,6 +94,12 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
     public String getText() {
         return getContentString();
     }
+    
+    public void setText(String text) {
+        TextualResource body = new TextualResource(text);
+        this.setBody(body.asJson());
+    }
+    
     
     /**
      * @param c2
@@ -84,5 +122,6 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
 
         return 1;
     }
+
 
 }

@@ -80,19 +80,6 @@ public class AnnotationConverterTest {
     }
     
     @Test
-    public void testConvertComment() throws JsonMappingException, JsonProcessingException {
-        WebAnnotation webAnno = mapper.readValue(commentAnnotation, WebAnnotation.class);
-        assertEquals("https://viewer.goobi.io/api/v1/annotations/comment_19/", webAnno.getId().toString());
-        CrowdsourcingAnnotation pAnno = converter.getAsPersistentAnnotation(webAnno);
-        Comment comment = converter.getAsComment(webAnno);
-        
-        WebAnnotation commentAnno = converter.getAsWebAnnotation(comment);
-        WebAnnotation annoAnno = converter.getAsWebAnnotation(pAnno);
-        
-        System.out.println(commentAnno.toString());
-    }
-    
-    @Test
     public void testConvertAnnotation() throws JsonMappingException, JsonProcessingException {
         WebAnnotation webAnno = mapper.readValue(campaignAnnotation, WebAnnotation.class);
         assertEquals("https://viewer.goobi.io/api/v1/annotations/annotation_2/", webAnno.getId().toString());

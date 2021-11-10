@@ -29,39 +29,40 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.comments.Comment;
 
 /**
  * @author florian
  *
  */
-public class SqlAnnotationLister implements AnnotationLister<CrowdsourcingAnnotation> {
+public class SqlCommentLister implements AnnotationLister<Comment> {
 
-    private static final Logger logger = LoggerFactory.getLogger(SqlAnnotationLister.class);
+    private static final Logger logger = LoggerFactory.getLogger(SqlCommentLister.class);
 
     private final IDAO dao;
 
-    public SqlAnnotationLister() throws DAOException {
+    public SqlCommentLister() throws DAOException {
         dao = DataManager.getInstance().getDao();
     }
 
     /**
      * @param dao2
      */
-    public SqlAnnotationLister(IDAO dao) {
+    public SqlCommentLister(IDAO dao) {
         this.dao = dao;
     }
-
+    
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAllAnnotations()
      */
     @Override
-    public List<CrowdsourcingAnnotation> getAllAnnotations() {
+    public List<Comment> getAllAnnotations() {
         try {
-            return dao.getAllAnnotations("id", false);
+            return dao.getAllComments();
         } catch (DAOException e) {
-            logger.error("Error retrieving annotations: {}", e.toString());
+            logger.error("Error listing comments", e);
             return Collections.emptyList();
+            
         }
     }
 
@@ -71,9 +72,9 @@ public class SqlAnnotationLister implements AnnotationLister<CrowdsourcingAnnota
     @Override
     public long getTotalAnnotationCount() {
         try {
-            return dao.getTotalAnnotationCount();
+            return dao.getCommentCount(null, null);
         } catch (DAOException e) {
-            logger.error("Error retrieving annotations: {}", e.toString());
+            logger.error("Error getting comment count", e);
             return 0;
         }
     }
@@ -82,11 +83,11 @@ public class SqlAnnotationLister implements AnnotationLister<CrowdsourcingAnnota
      * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotations(int, int, java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer, java.lang.String, boolean)
      */
     @Override
-    public List<CrowdsourcingAnnotation> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators,
+    public List<Comment> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators,
             List<Long> creators, String targetPi, Integer targetPage, String sortField, boolean sortDescending) {
         try {
-            List<CrowdsourcingAnnotation> allAnnos = dao.getAllAnnotations(sortField, sortDescending);
-            Stream<CrowdsourcingAnnotation> stream = allAnnos.stream();
+            List<Comment> allAnnos = dao.getComments(0, Integer.MAX_VALUE, sortField, sortDescending, null);
+            Stream<Comment> stream = allAnnos.stream();
             if (StringUtils.isNotBlank(textQuery)) {
                 stream = stream.filter(a -> a.getContentString().toLowerCase().contains(textQuery.toLowerCase()));
             }
@@ -111,16 +112,16 @@ public class SqlAnnotationLister implements AnnotationLister<CrowdsourcingAnnota
             logger.error("Error retrieving annotations: {}", e.toString());
             return Collections.emptyList();
         }
-
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotationCount(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer, java.lang.String, boolean)
+     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotationCount(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer)
      */
     @Override
     public long getAnnotationCount(String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi,
             Integer targetPage) {
         return getAnnotations(0, Integer.MAX_VALUE, textQuery, motivations, generators, creators, targetPi, targetPage, "id", false).size();
+
     }
 
 }
