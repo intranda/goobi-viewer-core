@@ -13,27 +13,29 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.annotation.serialization;
-
-import java.util.List;
-import java.util.Optional;
-
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.model.annotation.comments.Comment;
+package io.goobi.viewer.exceptions;
 
 /**
  * @author florian
  *
  */
-public interface AnnotationLister<T extends PersistentAnnotation> {
+public class AjaxResponseException extends PresentationException {
 
-    public List<T> getAllAnnotations();
-    
-    public long getTotalAnnotationCount();
+    /**
+     * @param string
+     */
+    public AjaxResponseException(String string) {
+        super(string);
+        // TODO Auto-generated constructor stub
+    }
 
-    public List<T> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi, Integer targetPage ,String sortField, boolean sortDescending);    
+    /**
+     * @param string
+     * @param e
+     */
+    public AjaxResponseException(String string, Throwable e) {
+        super(string, e);
+        // TODO Auto-generated constructor stub
+    }
 
-    public long getAnnotationCount(String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi, Integer targetPage);
-
-    Optional<T> getAnnotation(Long id);    
 }

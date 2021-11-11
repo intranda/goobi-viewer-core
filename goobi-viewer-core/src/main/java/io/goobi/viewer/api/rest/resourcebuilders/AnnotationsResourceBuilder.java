@@ -125,7 +125,7 @@ public class AnnotationsResourceBuilder {
      * @return
      */
     private boolean isAccessible(CrowdsourcingAnnotation anno, HttpServletRequest request) {
-        // TODO Auto-generated method stub
+        
         if(StringUtils.isBlank(anno.getAccessCondition()) ||  anno.getAccessCondition().equals(SolrConstants.OPEN_ACCESS_VALUE)) {
             return true;
         } else {

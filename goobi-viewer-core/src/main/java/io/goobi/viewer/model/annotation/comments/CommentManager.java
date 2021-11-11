@@ -69,8 +69,7 @@ public class CommentManager implements AnnotationLister<Comment> {
 
     public void createComment(String text, User creator, String pi, Integer pageOrder, String license, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, creator, pi, pageOrder);
-        Comment comment =
-                createAnnotation(createTextualBody(textCleaned), createTarget(pi, pageOrder), Motivation.COMMENTING, createAgent(creator), license);
+        Comment comment = new Comment(pi, pageOrder, creator, textCleaned, license, publicationStatus);
         comment.setPublicationStatus(publicationStatus);
         try {
             saver.save(comment);
@@ -83,7 +82,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     public void editComment(Comment comment, String text, User editor, String license, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, editor, comment.getTargetPI(), comment.getTargetPageOrder());
         Comment editedComment = new Comment(comment);
-        editedComment.setBody(createTextualBody(textCleaned).toString());
+        editedComment.setText(textCleaned);
         comment.setPublicationStatus(publicationStatus);
         try {
             saver.save(editedComment);
@@ -100,56 +99,6 @@ public class CommentManager implements AnnotationLister<Comment> {
         } catch (IOException e) {
             notificators.forEach(n -> n.notifyError(e, BeanUtils.getLocale()));
         }
-    }
-
-    /**
-     * @param createTextualBody
-     * @param createTarget
-     * @param commenting
-     * @param idAsURI
-     * @param license
-     * @return
-     */
-    private Comment createAnnotation(IResource body, IResource target, String motivation, Agent creator, String license) {
-        WebAnnotation annotation = new WebAnnotation();
-        annotation.setBody(body);
-        annotation.setTarget(target);
-        annotation.setMotivation(motivation);
-        annotation.setCreator(creator);
-        annotation.setCreated(LocalDateTime.now());
-        annotation.setRights(license);
-        return new Comment(converter.getAsPersistentAnnotation(annotation));
-    }
-
-    /**
-     * @param creator
-     * @return
-     */
-    private Agent createAgent(User creator) {
-        return new Agent(creator.getIdAsURI(), AgentType.PERSON, creator.getDisplayName());
-    }
-
-    /**
-     * @param pi
-     * @param pageOrder
-     * @return
-     */
-    private IResource createTarget(String pi, Integer pageOrder) {
-        return DataManager.getInstance()
-                .getRestApiManager()
-                .getDataApiManager()
-                .map(urls -> urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_CANVAS).params(pi, pageOrder).buildURI())
-                .map(uri -> new SimpleResource(uri))
-                .orElse(null);
-
-    }
-
-    /**
-     * @param text2
-     * @return
-     */
-    private IResource createTextualBody(String text) {
-        return new TextualResource(text);
     }
 
     /* (non-Javadoc)
@@ -182,6 +131,7 @@ public class CommentManager implements AnnotationLister<Comment> {
         return lister.getAnnotations(firstIndex, items, textQuery, allMotivations, generators, creators, targetPi, targetPage, sortField, sortDescending);
     }
 
+    
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotationCount(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer)
      */
@@ -207,5 +157,13 @@ public class CommentManager implements AnnotationLister<Comment> {
         } else {
             return text;
         }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotation(java.lang.Long)
+     */
+    @Override
+    public Optional<Comment> getAnnotation(Long id) {
+        return lister.getAnnotation(id);
     }
 }

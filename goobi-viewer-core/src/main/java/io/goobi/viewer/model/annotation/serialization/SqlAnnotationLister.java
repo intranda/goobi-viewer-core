@@ -17,6 +17,7 @@ package io.goobi.viewer.model.annotation.serialization;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -121,6 +122,18 @@ public class SqlAnnotationLister implements AnnotationLister<CrowdsourcingAnnota
     public long getAnnotationCount(String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi,
             Integer targetPage) {
         return getAnnotations(0, Integer.MAX_VALUE, textQuery, motivations, generators, creators, targetPi, targetPage, "id", false).size();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotation(java.lang.Long)
+     */
+    @Override
+    public Optional<CrowdsourcingAnnotation> getAnnotation(Long id) {
+        try {
+            return Optional.ofNullable(dao.getAnnotation(id));
+        } catch (DAOException e) {
+            return Optional.empty();
+        }
     }
 
 }

@@ -25,9 +25,13 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.omnifaces.util.Faces;
+
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.AjaxResponseException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.comments.Comment;
@@ -36,7 +40,9 @@ import io.goobi.viewer.model.annotation.notification.CommentMailNotificator;
 import io.goobi.viewer.model.annotation.notification.JsfMessagesNotificator;
 import io.goobi.viewer.model.annotation.serialization.SolrAndSqlAnnotationDeleter;
 import io.goobi.viewer.model.annotation.serialization.SolrAndSqlAnnotationSaver;
+import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationLister;
+import io.goobi.viewer.model.annotation.serialization.SqlAnnotationSaver;
 import io.goobi.viewer.model.annotation.serialization.SqlCommentLister;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
@@ -64,8 +70,8 @@ public class CommentBean implements Serializable {
     
     public CommentBean() throws IndexUnreachableException, DAOException {
         commentManager = new CommentManager(
-                new SolrAndSqlAnnotationSaver(), 
-                new SolrAndSqlAnnotationDeleter(),
+                new SqlAnnotationSaver(), 
+                new SqlAnnotationDeleter(),
                 new SqlCommentLister(),
                 new CommentMailNotificator(DataManager.getInstance().getConfiguration().getCommentsNotificationEmailAddresses()),
                 new JsfMessagesNotificator());
@@ -74,13 +80,49 @@ public class CommentBean implements Serializable {
     public void createComment(String text, boolean restricted) throws IndexUnreachableException {
         this.commentManager.createComment(text, userBean.getUser(), activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), getLicense(restricted), getInitialPublicationStatus());
     }
-
-    public void editComment(Comment original, String text, boolean restricted) throws IndexUnreachableException {
-        this.commentManager.editComment(original, text, userBean.getUser(), getLicense(restricted), getInitialPublicationStatus());
+    
+    public void editComment() throws AjaxResponseException {
+        String idString = Faces.getRequestParameter("id");
+        String text = Faces.getRequestParameter("text");
+        try {
+            Long id = Long.parseLong(idString);
+            Comment comment = this.commentManager.getAnnotation(id).orElseThrow(() -> new DAOException("No comment found with id " + id));
+            editComment(comment, text,  comment.getAccessCondition() == null || SolrConstants.OPEN_ACCESS_VALUE.equals(comment.getAccessCondition()));
+        } catch(NumberFormatException e) {
+            throw new AjaxResponseException("Cannot load comment with id " + idString);
+        } catch (DAOException | IndexUnreachableException e) {
+            throw new AjaxResponseException("Error updating comment: " + e.getMessage());
+        }
     }
     
+    public void editComment(Comment original, String text, boolean restricted) throws IndexUnreachableException {
+        User currentUser = userBean.getUser();
+        User commentOwner = original.getCreatorIfPresent().orElse(null);
+        if(currentUser.isSuperuser() || currentUser.equals(commentOwner)) {            
+            this.commentManager.editComment(original, text, userBean.getUser(), getLicense(restricted), getInitialPublicationStatus());
+        }
+    }
+    
+    public void deleteComment() throws AjaxResponseException {
+        String idString = Faces.getRequestParameter("id");
+        try {
+            Long id = Long.parseLong(idString);
+            Comment comment = this.commentManager.getAnnotation(id).orElseThrow(() -> new DAOException("No comment found with id " + id));
+            deleteComment(comment);
+        } catch(NumberFormatException e) {
+            throw new AjaxResponseException("Cannot load comment with id " + idString);
+        } catch (DAOException | IndexUnreachableException e) {
+            throw new AjaxResponseException("Error deleting comment: " + e.getMessage());
+        }
+    }
+
+    
     public void deleteComment(Comment annotation) throws IndexUnreachableException {
-        this.commentManager.deleteComment(annotation);
+        User currentUser = userBean.getUser();
+        User commentOwner = annotation.getCreatorIfPresent().orElse(null);
+        if(currentUser.isSuperuser() || currentUser.equals(commentOwner)) { 
+            this.commentManager.deleteComment(annotation);
+        }
     }
     
     public List<Comment> getComments(int startIndex, int numItems, String filter, User user, String sortField, boolean descending) {

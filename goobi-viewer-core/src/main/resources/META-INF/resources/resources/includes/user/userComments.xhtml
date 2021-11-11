@@ -5,6 +5,7 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:o="http://omnifaces.org/ui"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
@@ -44,12 +45,12 @@
 					<div class="user-comments__comment">
 						<!-- USER IMAGE -->
 						<div class="user-comments__comment-image">
-							<img src="#{comment.owner.avatarUrl}" alt="User avatar" />
+							<img src="#{comment.creator.avatarUrl}" alt="User avatar" />
 						</div>
 
 						<!-- COMMENT METADATA -->
 						<div class="user-comments__comment-metadata">
-							<span class="user-comments__comment-metadata-creator">#{comment.owner.displayName}</span>
+							<span class="user-comments__comment-metadata-creator">#{comment.creator.displayName}</span>
 							<span class="user-comments__comment-metadata-date">#{navigationHelper.getLocalDate(comment.dateCreated)}</span>
 						</div>
 
@@ -77,43 +78,27 @@
 
 									<!-- EDIT COMMENT -->
 									<ui:fragment
-										rendered="#{userBean.user == comment.owner or userBean.user.superuser}">
+										rendered="#{userBean.user == comment.creator or userBean.user.superuser}">
 
 										<div class="user-comments__action-wrapper">
 											<!-- TRIGGER EDIT COMMENT MODAL -->
-											<button jsf:action="#{activeDocumentBean.viewManager.currentPage.setCurrentComment(comment)}" class="btn--clean user-comments__edit-comment-button" data-backdrop="false" data-toggle="modal" data-target="#modalUserCommentEdit">
+											<button class="btn--clean user-comments__edit-comment-button" type="button" data-backdrop="false" data-toggle="modal" data-target="#modalUserCommentEdit-#{comment.id}-modal">
 											  #{msg.edit}
-											  <f:ajax render="modalUserCommentEdit:editForm"/> 
 											</button>
 											
 											<!-- DELETE COMMENT -->
 											<ui:fragment
-												rendered="#{userBean.loggedIn and (userBean.user == comment.owner or userBean.user.superuser)}">
-												
-												<div class="user-comments__delete-comment-wrapper">
-													<!-- INVISIBLE BUTTON FUNCTIONALITY-->
-													<h:commandButton styleClass="user-comments__delete-comment-button -hidden"
-														action="#{activeDocumentBean.viewManager.currentPage.deleteCommentAction(comment)}"
-														title="#{msg.userCommentDelete}"
-														data-trigger="delete-comment-final"
-														value="#{msg.delete}">
-														<f:passThroughAttribute name="data-trigger" value="delete-comment-final" />
-														<f:ajax render="@form" />
-													</h:commandButton>
-
-													<!-- VISIBLE BUTTON -->
-													<h:commandButton styleClass="user-comments__delete-comment-button" value="#{msg.delete}">
-														<f:ajax execute="@form" render="@none" />
-														<f:passThroughAttribute name="data-trigger" value="delete-comment" />
-													</h:commandButton>
-												</div>
+												rendered="#{userBean.loggedIn and (userBean.user == comment.creator or userBean.user.superuser)}">
+												<button class="user-comments__delete-comment-button" type="button" data-delete="comment-#{comment.id}">
+												  #{msg.delete}
+												</button>
 											</ui:fragment>
 										</div>
 									</ui:fragment>
 								</div>	
 						</div>
 						
-					<div id="modalUserCommentEdit-#{comment.id}" styleClass="user-comments-modal" title="#{msg.userCommentEdit}">
+					<div id="modalUserCommentEdit-#{comment.id}" modalid="modalUserCommentEdit-#{comment.id}-modal" styleclass="user-comments-modal" title="#{msg.userCommentEdit}">
 						<yield to="body">
 							<div class="col-3">#{msg.userCommentText}:</div>
 							<div class="col-9 user-comments__comment-content-options-text-edit">
@@ -125,42 +110,33 @@
 							<button id="modalUserCommentEdit-#{comment.id}-ok" class="btn btn--success accept ml-3" data-dismiss="modal">#{msg.save}</button>
 						</yield>
 					</div>
-					<div class="d-none">
-						<h:inputText data-value="comment-#{comment.id}" value="#{comment.text}">
-							<f:ajax event="change"></f:ajax>
-						</h:inputText>
-					</div>
+					<h:commandScript name="editComment" action="#{commentBean.editComment}" render="@form"/>
+					<h:commandScript name="deleteComment" action="#{commentBean.deleteComment}" render="@form"/>
 					
-					<script>
-						let props = {
-							onClose: () => {
-							    console.log("closing user comment edit modal");
-							}
-						}
+					<script> 
+						riot.mount("#modalUserCommentEdit-#{comment.id}", "modal", {});
 						$("#modalUserCommentEdit-#{comment.id}-ok").on("click", () => {
-						    let text = $("#modalUserCommentEdit-#{comment.id}-text").text();
-						    console.log("save comment ", text);
-						    let $input = $('[data-value="comment-#{comment.id}"]');
-						    $input.val(text);
-						    $input.change();
-						})
-						riot.mount("#modalUserCommentEdit-#{comment.id}", props, "modal")
-					
+						    let val = $("#modalUserCommentEdit-#{comment.id}-text").val();
+						    viewerJS.jsfAjax.handleResponse(
+						    	response => viewerJS.notifications.success("#{msg.commentEditSuccess}", ""),
+						    	response => viewerJS.notifications.error(response.responseText, "")
+						    )
+						    editComment({id:"#{comment.id}", text:val});
+						})					
+						$('[data-delete="comment-#{comment.id}"]').on('click', function() {
+							viewerJS.notifications.confirm('', '' ,'', '#{msg.userCommentDeleteText}')
+								.then((result) => {
+								      viewerJS.jsfAjax.handleResponse(
+									    	response => viewerJS.notifications.success("#{msg.commentDeleteSuccess}", ""),
+									    	response => viewerJS.notifications.error(response.responseText, "")
+									  );
+									  deleteComment({id:"#{comment.id}"});
+									})
+								.catch(() => {});
+						});
 					</script>
 						
 				</ui:repeat>
-				
-				<!-- DELETE COMMENT JS FUNCTIONALITY/SWEET ALERT CONFIRM + NOTIFICATION -->
-	            <script>
-					$('[data-trigger="delete-comment"]').on('click', function() {
-						viewerJS.notifications.confirm('', '' ,'', '#{msg.userCommentDeleteText}')
-							.then((result) => {
-								  $(this).prev('.user-comments__delete-comment-button').click();
-								  viewerJS.notifications.success("#{msg.commentDeleteSuccess}", "");
-						});
-					});
-	        	</script>
-
 
 				<!-- ADD COMMENT -->
 				<ui:fragment rendered="#{userBean.loggedIn}">
@@ -174,7 +150,7 @@
 						<h:selectBooleanCheckbox id="commentLicenseCheckbox" value="#{commentRestricted}">Restricted</h:selectBooleanCheckbox>
 						<div class="user-comments__add-comment-submit">
 							<h:commandButton
-								action="#{activeDocumentBean.viewManager.currentPage.createNewCommentAction(userBean.user)}"
+								action="#{commentBean.createComment(commentText, commentRestricted)}"
 								styleClass="btn btn--success" value="#{msg.addNoteText}">
 								<f:ajax execute="userCommentAdd commentLicenseCheckbox" render="@form messages" />
 							</h:commandButton>
@@ -183,8 +159,9 @@
 				</ui:fragment>
 			</h:form>
 		</div>
-		
+				
 		<script type="text/javascript">
+
             $( document ).ready( function() {
                 viewerJS.userComments.init();
 

@@ -2932,7 +2932,19 @@ riot.tag2('metadataeditor', '<div if="{this.metadataList}"><ul class="nav nav-ta
 
 
 
-riot.tag2('modal', '<div class="modal fade" id="{modalId}" tabindex="-1" role="dialog" aria-labelledby="{modalTitle}" aria-hidden="true"><div class="modal-dialog modal-dialog-centered widget-usage__citelinks-box" role="document"><div class="modal-content"><div class="modal-header"><h2 class="modal-title">#{msg.userCommentEdit}</h2><button onclick="{onClose}" class="fancy-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span><f:ajax render="#{cc.attrs.render}"/></button></div><div class="modal-body"><h:form id="editForm"><div class="user-comments__modal-inside-wrapper"><div class="row"><div class="col-3">#{msg.userCommentText}:</div><div class="col-9 user-comments__comment-content-options-text-edit"><h:inputTextarea id="userCommentEditableText" value="#{cc.attrs.comment.text}" /></div></div></div><div class="form-group form-row user-comments__modal-actions"><div class="col-sm-12 mt-3 d-flex justify-content-end"><button jsf:action="#{activeDocumentBean.viewManager.currentPage.resetCurrentComment()}" class="btn" data-dismiss="modal">#{msg.cancel} <f:ajax render="@none"/></button><h:commandButton styleClass="btn btn--success accept ml-3" value="#{msg.save}" action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(cc.attrs.comment)}"><f:ajax execute="@form" render="#{cc.attrs.render}"/><f:passThroughAttribute name="data-dismiss" value="modal"></f:passThroughAttribute></h:commandButton></div></div></h:form></div></div></div><div class="alt-backdrop"></div></div>', '', '', function(opts) {
+riot.tag2('modal', '<div class="modal fade {modalClass}" id="{modalId}" tabindex="-1" ref="modal" role="dialog" aria-labelledby="{modalTitle}" aria-hidden="true"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content"><div class="modal-header"><h2 class="modal-title">{modalTitle}</h2><button class="fancy-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button></div><div class="modal-body"><yield from="body"></yield></div><div class="modal-right"><yield from="right"></yield></div><div class="modal-footer"><yield from="footer"></yield></div></div></div><div class="alt-backdrop"></div></div>', '', '', function(opts) {
+
+    this.modalClass = this.opts.styleclass ? this.opts.styleclass : "";
+    this.modalId = this.opts.modalid;
+    this.modalTitle = this.opts.title;
+
+	this.on("mount", () => {
+
+	    if(this.opts.onClose) {
+	        $(this.refs.modal).on('hide.bs.modal', () => this.opts.onClose());
+	    }
+	});
+
 });
 riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index in pages}" page="{page}" pageno="{index+1}"></pdfPage></div>', '', '', function(opts) {
 

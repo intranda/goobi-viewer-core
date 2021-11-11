@@ -1802,14 +1802,9 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addComment(Comment comment) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(comment);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
+        em.getTransaction().begin();
+        em.persist(comment);
+        em.getTransaction().commit();
         return true;
     }
 
@@ -1820,15 +1815,10 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateComment(Comment comment) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(comment);
-            em.getTransaction().commit();
-            return true;
-        } finally {
-            em.close();
-        }
+        em.getTransaction().begin();
+        em.merge(comment);
+        em.getTransaction().commit();
+        return true;
     }
 
     /* (non-Javadoc)
@@ -1838,16 +1828,11 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteComment(Comment comment) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            Comment o = em.getReference(Comment.class, comment.getId());
-            em.remove(o);
-            em.getTransaction().commit();
-            return true;
-        } finally {
-            em.close();
-        }
+        em.getTransaction().begin();
+        Comment o = em.getReference(Comment.class, comment.getId());
+        em.remove(o);
+        em.getTransaction().commit();
+        return true;
     }
 
     /**

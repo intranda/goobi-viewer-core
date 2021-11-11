@@ -282,6 +282,14 @@ public abstract class PersistentAnnotation {
         }
         return this.creator;
     }
+    
+    public Optional<User> getCreatorIfPresent() {
+        try {
+            return Optional.ofNullable(getCreator());
+        } catch (DAOException e) {
+            return Optional.empty();
+        }
+    }
 
     /**
      * <p>
@@ -607,7 +615,7 @@ public abstract class PersistentAnnotation {
                 }
 
             } catch (JsonProcessingException e) {
-                logger.error("Error reading body as json value:'{}'. Error message is '{}'", body, e.toString());
+                logger.trace("Error reading body as json value:'{}'. Error message is '{}'", body, e.toString());
                 return body;
             } finally {
             }

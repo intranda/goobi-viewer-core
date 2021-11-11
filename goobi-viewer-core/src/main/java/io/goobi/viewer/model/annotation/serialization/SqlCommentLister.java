@@ -17,6 +17,7 @@ package io.goobi.viewer.model.annotation.serialization;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 
 /**
@@ -122,6 +122,16 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
             Integer targetPage) {
         return getAnnotations(0, Integer.MAX_VALUE, textQuery, motivations, generators, creators, targetPi, targetPage, "id", false).size();
 
+    }
+    
+    @Override
+    public Optional<Comment> getAnnotation(Long id) {
+        try {
+            return Optional.ofNullable(dao.getComment(id));
+        } catch (DAOException e) {
+           logger.error("Error loading comment with id " + id, e);
+           return Optional.empty();
+        }
     }
 
 }
