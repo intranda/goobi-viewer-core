@@ -4542,7 +4542,7 @@ public class JPADAO implements IDAO {
         preQuery();
         String query = "SELECT a FROM CrowdsourcingAnnotation a";
         if(StringUtils.isNotBlank(sortField)) {
-            query += " ORDER BY " + sortField + (descending ? "desc" : "asc");
+            query += " ORDER BY a." + sortField + (descending ? " desc" : " asc");
         }
         Query q = getEntityManager().createQuery(query);
 

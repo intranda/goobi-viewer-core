@@ -742,6 +742,11 @@
         <view-id value="/userBackendAnnotations.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <url-mapping id="userMenuComments">
+        <pattern value="/user/comments/" />
+        <view-id value="/userBackendComments.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 	
 	<!-- ADMIN -->
 	<url-mapping id="admin">
