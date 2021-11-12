@@ -19,11 +19,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.wa.Motivation;
 import de.intranda.api.annotation.wa.TextualResource;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
@@ -42,10 +42,8 @@ import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.serialization.AnnotationSaver;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationSaver;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -83,47 +81,42 @@ public class AnnotationUpdate implements IModelUpdate {
      */
     private void updateCrowdsourcingAnnotations(IDAO dao) throws DAOException {
         AnnotationSaver saver = new SqlAnnotationSaver(dao);
+        
+        List<Object[]> info = dao.createNativeQuery("desc annotations").getResultList();
+        
         List<Object[]> annotations = dao.createNativeQuery("SELECT * FROM annotations").getResultList();
+        
+        
+        List<String> columnNames = info.stream().map(o -> (String)o[0]).collect(Collectors.toList());
+        
         for (Object[] annotation : annotations) {
-
+            Map<String, Object> columns = IntStream.range(0, columnNames.size()).boxed().filter(i -> annotation[i] != null).collect(Collectors.toMap(i -> columnNames.get(i), i -> annotation[i]));
             try {
-                int index = 0;
-                Long annotationId = (Long)annotation[index];
-                index++;
-                String accessCondition = SolrConstants.OPEN_ACCESS_VALUE;
-                if(annotation.length > 11) {                    
-                    accessCondition = Optional.ofNullable(annotation[index]).map(o -> (String) o).orElse(SolrConstants.OPEN_ACCESS_VALUE);
-                    index++;
+                Long annotationId = (Long)columns.get("annotation_id");
+                String body = Optional.ofNullable(columns.get("body")).map(o -> (String) o).orElse(null);
+                User owner = Optional.ofNullable(columns.get("creator_id")).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
+                User reviewer = Optional.ofNullable(columns.get("reviewer_id")).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
+                Question generator = Optional.ofNullable(columns.get("generator_id")).map(o -> (Long) o).flatMap(id -> getCampaignQuestion(id, dao)).orElse(null);
+                LocalDateTime dateCreated = Optional.ofNullable(columns.get("date_created")).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
+                LocalDateTime dateUpdated = Optional.ofNullable(columns.get("date_modified")).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
+                String motivation = Optional.ofNullable(columns.get("motivation")).map(o -> (String)o).orElse(Motivation.DESCRIBING);
+                String target = Optional.ofNullable(columns.get("target")).map(o -> (String) o).orElse(null);
+                String pi = Optional.ofNullable(columns.get("target_pi")).map(o -> (String) o).orElse(null);
+                Integer page = Optional.ofNullable(columns.get("target_page")).map(o -> (Integer) o).orElse(null);
+                String accessCondition = Optional.ofNullable(columns.get("access_condition")).map(o -> (String) o).orElse(SolrConstants.OPEN_ACCESS_VALUE);
+                PublicationStatus status = Optional.ofNullable(columns.get("publication_status")).map(o -> (Integer)o).map(i -> PublicationStatus.values()[i]).orElse(null);
+                if(status == null) {
+                    //status is encoded in access_condition
+                    if("ANNOTATE".equals(accessCondition)) {
+                        accessCondition = getAccessConditionForAnnotation(generator);
+                        status = PublicationStatus.CREATING;
+                    } else if("REVIEW".equals(accessCondition)) {
+                        accessCondition = getAccessConditionForAnnotation(generator);
+                        status = PublicationStatus.REVIEW;
+                    } else {
+                        status = PublicationStatus.PUBLISHED;
+                    }
                 }
-                String body = Optional.ofNullable(annotation[index]).map(o -> (String) o).orElse(null);
-                index++;
-                User owner = Optional.ofNullable(annotation[index]).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
-                index++;
-                LocalDateTime dateCreated = Optional.ofNullable(annotation[index]).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
-                index++;
-                LocalDateTime dateUpdated = Optional.ofNullable(annotation[index]).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
-                index++;
-                Question generator = Optional.ofNullable(annotation[index]).map(o -> (Long) o).flatMap(id -> getCampaignQuestion(id, dao)).orElse(null);
-                index++;
-                String motivation = Optional.ofNullable(annotation[index]).map(o -> (String)o).orElse(Motivation.DESCRIBING);
-                index++;
-                User reviewer = Optional.ofNullable(annotation[index]).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
-                index++;
-                String target = Optional.ofNullable(annotation[index]).map(o -> (String) o).orElse(null);
-                index++;
-                String pi = Optional.ofNullable(annotation[index]).map(o -> (String) o).orElse(null);
-                index++;
-                Integer page = Optional.ofNullable(annotation[index]).map(o -> (Integer) o).orElse(null);
-                index++;
-                PublicationStatus status = Optional.of(index).filter(l -> annotation.length > l).map(l -> annotation[l]).map(o -> (Integer)o).map(i -> PublicationStatus.values()[i]).orElse(PublicationStatus.PUBLISHED);
-                if("ANNOTATE".equals(accessCondition)) {
-                    accessCondition = getAccessConditionForAnnotation(generator);
-                    status = PublicationStatus.CREATING;
-                } else if("REVIEW".equals(accessCondition)) {
-                    accessCondition = getAccessConditionForAnnotation(generator);
-                    status = PublicationStatus.REVIEW;
-                }
-                
                 
                 CrowdsourcingAnnotation anno = new CrowdsourcingAnnotation();
                 anno.setDateCreated(dateCreated);
@@ -157,15 +150,18 @@ public class AnnotationUpdate implements IModelUpdate {
     private void updateComments(IDAO dao) throws DAOException {
         AnnotationSaver saver = new SqlAnnotationSaver(dao);
         List<Object[]> comments = dao.createNativeQuery("SELECT * FROM comments").getResultList();
+        List<Object[]> info = dao.createNativeQuery("desc comments").getResultList();
+        List<String> columnNames = info.stream().map(o -> (String)o[0]).collect(Collectors.toList());
         for (Object[] comment : comments) {
+            Map<String, Object> columns = IntStream.range(0, columnNames.size()).boxed().filter(i -> comment[i] != null).collect(Collectors.toMap(i -> columnNames.get(i), i -> comment[i]));
 
             try {
-                LocalDateTime dateCreated = Optional.ofNullable(comment[1]).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
-                LocalDateTime dateUpdated = Optional.ofNullable(comment[2]).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
-                Integer page = Optional.ofNullable(comment[3]).map(o -> (Integer) o).orElse(null);
-                String pi = Optional.ofNullable(comment[4]).map(o -> (String) o).orElse(null);
-                String text = Optional.ofNullable(comment[5]).map(o -> (String) o).orElse(null);
-                User owner = Optional.ofNullable(comment[6]).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
+                LocalDateTime dateCreated = Optional.ofNullable(columns.get("date_created")).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
+                LocalDateTime dateUpdated = Optional.ofNullable(columns.get("date_updated")).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
+                Integer page = Optional.ofNullable(columns.get("page")).map(o -> (Integer) o).orElse(null);
+                String pi = Optional.ofNullable(columns.get("pi")).map(o -> (String) o).orElse(null);
+                String text = Optional.ofNullable(columns.get("text")).map(o -> (String) o).orElse(null);
+                User owner = Optional.ofNullable(columns.get("owner_id")).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
 
                 Comment anno = new Comment();
                 anno.setDateCreated(dateCreated);
