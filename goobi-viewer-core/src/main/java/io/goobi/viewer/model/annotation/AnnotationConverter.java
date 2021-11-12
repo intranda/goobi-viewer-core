@@ -177,7 +177,12 @@ public class AnnotationConverter {
      * @throws DAOException
      */
     public WebAnnotation getAsWebAnnotation(PersistentAnnotation anno) {
-        URI uri = getWebAnnotationURI(anno.getId());
+        URI uri;
+        if(anno instanceof Comment) {
+            uri = getWebAnnotationCommentURI(anno.getId());
+        } else {
+            uri = getWebAnnotationURI(anno.getId());
+        }
         WebAnnotation annotation = new WebAnnotation(uri);
         try {
             annotation.setCreated(anno.getDateCreated());

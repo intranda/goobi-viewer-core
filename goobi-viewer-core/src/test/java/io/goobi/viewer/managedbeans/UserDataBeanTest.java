@@ -41,7 +41,7 @@ public class UserDataBeanTest extends AbstractDatabaseEnabledTest {
         ub.setUser(user);
         udb.setBreadcrumbBean(ub);
 
-        Assert.assertEquals(2, udb.getAnnotationCount());
+        Assert.assertEquals(1, udb.getAnnotationCount());
     }
 
     /**

@@ -15,12 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v1.annotations;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.io.IOException;
 
@@ -141,6 +136,26 @@ public class AnnotationResource {
             throws DAOException, ContentLibException, PresentationException, IndexUnreachableException {
             AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
             return builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
+    }
+    
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws DAOException
+     * @throws ContentLibException
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    @GET
+    @javax.ws.rs.Path(ANNOTATIONS_COMMENT)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
+    @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
+    public IAnnotation getComment(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
+            throws DAOException, ContentLibException, PresentationException, IndexUnreachableException {
+            AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
+            return builder.getCommentWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
     }
 
     /**

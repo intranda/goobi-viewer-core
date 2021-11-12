@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
 import io.goobi.viewer.model.security.AccessConditionUtils;
@@ -313,6 +311,11 @@ public class AnnotationsResourceBuilder {
      */
     public Optional<WebAnnotation> getWebAnnotation(long id) throws PresentationException, IndexUnreachableException {
         return waBuilder.getAnnotationDocument(id, request).map(doc -> waBuilder.createUGCWebAnnotation(doc, false));
+    }
+    
+    public Optional<WebAnnotation> getCommentWebAnnotation(long id) throws DAOException {
+        Comment comment = DataManager.getInstance().getDao().getComment(id);
+        return Optional.ofNullable(comment).map(converter::getAsWebAnnotation);
     }
 
     /**
