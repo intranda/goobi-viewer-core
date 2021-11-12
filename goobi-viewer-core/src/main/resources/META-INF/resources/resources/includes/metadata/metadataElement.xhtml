@@ -10,10 +10,12 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
+	<ui:param name="renderTitle" value="#{renderTitle == null ? true : renderTitle}"></ui:param>
+
 	    <ui:fragment rendered="#{!metadataElement.skip}">
 	        <div class="metadata__element-wrapper">
 
-    	    	<ui:fragment rendered="#{!metadataElement.hasMetadataTypeLabels(metadataBean.activeMetadataView.index)}">
+    	    	<ui:fragment rendered="#{renderTitle and !metadataElement.hasMetadataTypeLabels(metadataBean.activeMetadataView.index)}">
     	            <h3 class="metadata__elements-h3">
     	                <h:outputText value="#{msg[metadataElement.docStructTypeLabel]}" />
     	            </h3>

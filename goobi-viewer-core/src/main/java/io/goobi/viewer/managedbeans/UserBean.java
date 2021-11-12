@@ -731,7 +731,7 @@ public class UserBean implements Serializable {
      * </p>
      */
     public void createFeedback() {
-        logger.trace("createFeedback");
+        // logger.trace("createFeedback");
         lastName = null;
         securityAnswer = null;
         securityQuestion = null;
@@ -1412,6 +1412,12 @@ public class UserBean implements Serializable {
         this.logout();
         Messages.info(messageKey);
 
+    }
+    
+    public void createBackupOfCurrentUser() {
+        if(getUser() != null) {
+            getUser().backupFields();
+        }
     }
 
 }

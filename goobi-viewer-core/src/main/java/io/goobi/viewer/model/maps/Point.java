@@ -61,6 +61,25 @@ public class Point implements IArea {
         return 0;
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return Double.hashCode(lat*lng);
+    }
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(this.getClass())) {
+            Point other = (Point)obj;
+            return this.lat == other.lat && this.lng == other.lng;
+        } else {
+            return false;
+        }
+    }
 
 }

@@ -2270,15 +2270,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isGroupDuplicateHits()
-     * @verifies return correct value
-     */
-    @Test
-    public void isGroupDuplicateHits_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isGroupDuplicateHits());
-    }
-
-    /**
      * @see Configuration#getRecordGroupIdentifierFields()
      * @verifies return all configured values
      */
@@ -2477,15 +2468,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isSearchExcelExportEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isSearchExcelExportEnabled());
-    }
-
-    /**
-     * @see Configuration#isAggregateHits()
-     * @verifies return correct value
-     */
-    @Test
-    public void isAggregateHits_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isAggregateHits());
     }
 
     /**

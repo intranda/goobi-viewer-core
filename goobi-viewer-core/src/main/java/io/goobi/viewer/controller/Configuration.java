@@ -1560,18 +1560,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isAggregateHits.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isAggregateHits() {
-        return getLocalBoolean("search.aggregateHits", true);
-    }
-
-    /**
-     * <p>
      * isDisplayAdditionalMetadataEnabled.
      * </p>
      *
@@ -2730,6 +2718,10 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getGeoFacetFields() {
         return getLocalString("search.facets.geoField");
+    }
+
+    public String getGeoFacetFieldPredicate() {
+        return getLocalString("search.facets.geoField[@predicate]", "ISWITHIN");
     }
 
     /**
@@ -4243,18 +4235,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isGroupDuplicateHits.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isGroupDuplicateHits() {
-        return getLocalBoolean("search.groupDuplicateHits", true);
-    }
-
-    /**
-     * <p>
      * getRecordGroupIdentifierFields.
      * </p>
      *
@@ -5306,7 +5286,5 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplayAnnotationTextInImage() {
         return getLocalBoolean("webGuiDisplay.displayAnnotationTextInImage", true);
     }
-
-
 
 }
