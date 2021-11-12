@@ -405,7 +405,7 @@ public class NetTools {
             session = Session.getInstance(props, new javax.mail.Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(smtpUser, smtpUser);
+                    return new PasswordAuthentication(smtpUser, smtpPassword);
                 }
             });
         } else {
