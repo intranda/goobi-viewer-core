@@ -526,8 +526,8 @@ var viewerJS = (function () {
 			var allCheckboxesChecked = false;
 			var allTextFieldsFilled = false;
 			
-			// CHECK ALL CHECKBOXES IF CHECKED
-			$checkboxes.on("change keyup", (e) => {
+			// CHECK ALL REQUIRED CHECKBOXES AND TEXT FIELDS
+			$checkboxes.add($texts).on("change paste keyup cut", (e) => {
 				$checkboxes.each((index, element) => {
 					if ( $(element).is(':checked') ) {
 						let isChecked = true;
@@ -539,7 +539,20 @@ var viewerJS = (function () {
 						// console.log("single checkbox unchecked");
 						return false;
 					}
-				});
+					});
+				
+					$texts.each((index, element) => {
+						let text = $(element).val();
+						if(!text) {
+							allTextFieldsFilled = false;
+							// console.log(allTextFieldsFilled);
+							return false;
+						} else {
+							allTextFieldsFilled = true;
+							// console.log(allTextFieldsFilled);
+						}
+					});
+				
 				
 				// ACTIVATE SUBMIT BUTTON IF ALL REQUIRED CHECKBOXES AND TEXTFIELDS ARE FILLED/CHECKED
 				if(allCheckboxesChecked && allTextFieldsFilled == true) {
@@ -554,28 +567,6 @@ var viewerJS = (function () {
 							
 			});
 
-			// CHECK ALL TEXT FIELDS IF TEXT ENTERED
-			$texts.on("change paste keyup cut", (e) => {
-				$texts.each((index, element) => {
-					let text = $(element).val();
-					if(!text) {
-						allTextFieldsFilled = false;
-						console.log(allTextFieldsFilled);
-						return false;
-					} else {
-						allTextFieldsFilled = true;
-						console.log(allTextFieldsFilled);
-					}
-				});
-
-				// ACTIVATE SUBMIT BUTTON IF ALL REQUIRED CHECKBOXES AND TEXTFIELDS ARE FILLED/CHECKED
-				if(allTextFieldsFilled && allCheckboxesChecked == true) {
-					$ele.removeAttr("disabled");
-				} else {
-					$ele.attr("disabled", "disabled");
-				}
-							
-			}); 
 		});
 	
 	}
