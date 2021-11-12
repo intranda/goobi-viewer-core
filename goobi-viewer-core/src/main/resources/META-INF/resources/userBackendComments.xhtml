@@ -87,6 +87,12 @@
 													rendered="#{annotation.targetPageOrder != null}"
 													value=", #{msg.page} #{annotation.targetPageOrder}" />
 											</div>
+											<div>
+												<a
+													href="#{navigationHelper.objectUrl}#{annotation.targetLink}"
+													class="admin__table-action-link" target="_blank"
+													aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}</a>
+											</div>	
 										</div>
 										<!-- TEXT -->
 										<div class="col-6 d-none d-lg-flex text-break">
@@ -96,12 +102,6 @@
 											<annotationBody annotationid="#{annotation.id}"
 												contentid="annotation_body_#{annotation.id}" />
 											<div>
-												<!-- TODO INLINE CSS -->
-												<a
-													href="#{navigationHelper.objectUrl}#{annotation.targetLink}"
-													class="admin__table-action-link"
-													style="padding-right: 1.4rem;" target="_blank"
-													aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}</a>
 											</div>
 										</div>
 										<!-- DATE -->
