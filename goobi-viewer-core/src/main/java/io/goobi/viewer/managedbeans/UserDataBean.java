@@ -160,21 +160,7 @@ public class UserDataBean implements Serializable {
         return DataManager.getInstance().getDao().getAnnotationsForUserId(userBean.getUser().getId(), null, null, false);
     }
 
-    /**
-     * 
-     * @return
-     * @throws DAOException
-     * @should return correct value
-     */
-    public long getAnnotationCount() throws DAOException {
-        if (userBean == null || userBean.getUser() == null) {
-            return 0;
-        }
 
-        return DataManager.getInstance()
-                .getDao()
-                .getAnnotationCount(Collections.singletonMap("creatorId_reviewerId", String.valueOf(userBean.getUser().getId())));
-    }
 
     /**
      * Deletes the given persistent user search.
@@ -227,13 +213,33 @@ public class UserDataBean implements Serializable {
     public long getNumComments(User user) throws DAOException {
         return DataManager.getInstance().getDao().getCommentCount(null, user);
     }
+    
+    public long getNumAnnotations(User user) throws DAOException {
+        return DataManager.getInstance()
+                .getDao()
+                .getAnnotationCount(Collections.singletonMap("creatorId", String.valueOf(userBean.getUser().getId())));
+    }
 
     public Long getNumRecordsWithComments(User user) throws DAOException {
         Query query = DataManager.getInstance()
                 .getDao()
-                .createNativeQuery("SELECT COUNT(DISTINCT pi) FROM comments WHERE comments.owner_id=" + user.getId());
+                .createNativeQuery("SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id=" + user.getId());
         return (Long) query.getSingleResult();
     }
+
+    public long getAnnotationCount() throws DAOException {
+        if (userBean == null || userBean.getUser() == null) {
+            return 0;
+        }
+        return getNumAnnotations(userBean.getUser());
+   }
+    
+    public long getCommentCount() throws DAOException {
+        if (userBean == null || userBean.getUser() == null) {
+            return 0;
+        }
+        return getNumComments(userBean.getUser());
+   }
 
     /**
      * 
@@ -245,7 +251,7 @@ public class UserDataBean implements Serializable {
      */
     public List<Comment> getLatestComments(User user, int numEntries) throws DAOException {
         List<Comment> lastCreatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateCreated", true);
-        List<Comment> lastUpdatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateUpdated", true);
+        List<Comment> lastUpdatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateModified", true);
 
         return CollectionUtils.union(lastCreatedComments, lastUpdatedComments)
                 .stream()
@@ -278,7 +284,7 @@ public class UserDataBean implements Serializable {
         List<Comment> lastCreatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateCreated", true);
         List<Comment> lastUpdatedComments = DataManager.getInstance()
                 .getDao()
-                .getCommentsOfUser(user, numEntries, "dateUpdated", true)
+                .getCommentsOfUser(user, numEntries, "dateModified", true)
                 .stream()
                 .filter(c -> c.getDateModified() != null)
                 .collect(Collectors.toList());

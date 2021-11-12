@@ -1710,11 +1710,17 @@ public class JPADAO implements IDAO {
         StringBuilder sbQuery = new StringBuilder("SELECT a FROM Comment a");
         Map<String, String> params = new HashMap<>();
         sbQuery.append(createFilterQuery(null, filters, params));
-        if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY a.").append(sortField);
-            if (descending) {
-                sbQuery.append(" DESC");
+        if (StringUtils.isNotBlank(sortField)) {
+            String[] sortFields = sortField.split("_");
+            sbQuery.append(" ORDER BY ");
+            for (String sf : sortFields) {
+                sbQuery.append("a.").append(sf);
+                if (descending) {
+                    sbQuery.append(" DESC");
+                }
+                sbQuery.append(",");
             }
+            sbQuery.deleteCharAt(sbQuery.length()-1);
         }
 
         Query q = getEntityManager().createQuery(sbQuery.toString());
@@ -2645,7 +2651,7 @@ public class JPADAO implements IDAO {
             String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
             if("NULL".equals(filterValue)) {
                 //don't add params
-            } else if ("creatorId_reviewerId".equals(key) || "campaignId".equals(key) || "generatorId".equals(key)) {
+            } else if ("creatorId_reviewerId".equals(key) || "campaignId".equals(key) || "generatorId".equals(key) || "creatorId".equals(key) || "reviewerId".equals(key)) {
                 params.put(keyValueParam, Long.valueOf(filterValue));
             } else {
                 params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");

@@ -10,10 +10,10 @@
 
 	<ui:define name="metadata">
 		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('userComments', false, true)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('comments', false, true)}" />
 			<f:event type="preRenderView"
 				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.admin__user_profile, request.contextPath.concat('/user/'), 1)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.comments, 2)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.userComments, 2)}" />
 		</f:metadata>
 	</ui:define>
 
@@ -41,7 +41,7 @@
 								<div class="admin__table-filter b-3 mb-sm-0">
 									<!-- TODO: ADD FILTER FOR targetPI, TOO -->
 									<viewerComponent:dataTableColumnFilter
-										key="admin__crowsourcing_annotations_search"
+										key="admin__comment_search"
 										filter="#{userDataBean.lazyModelComments.getFilter('targetPI_body_campaign_dateCreated')}" />
 								</div>
 							</div>
@@ -52,17 +52,17 @@
 
 								<!-- TITLE ROW -->
 								<div class="row no-gutters admin__table-title">
-									<!-- ANNOTATION COL -->
-									<div class="col-12 col-lg-6">
-										<viewerComponent:sortingArrow filterType="targetPI"
-											colHeading="#{msg.userComments}"
+									<!-- TARGET COL -->
+									<div class="col-4 d-none d-lg-flex">
+										<viewerComponent:sortingArrow filterType="targetPI_targetPageOrder"
+											colHeading="#{msg.record}"
 											list="#{userDataBean.lazyModelComments}" />
 									</div>
 
-									<!-- CAMPAIGN COL -->
-									<div class="col-3 d-none d-lg-flex">
-										<viewerComponent:sortingArrow filterType="generatorId"
-											colHeading="#{msg.admin__crowdsourcing_campaign}"
+									<!-- TEXT COL -->
+									<div class="col-6 d-none d-lg-flex">
+										<viewerComponent:sortingArrow filterType="body"
+											colHeading="#{msg.Comment}"
 											list="#{userDataBean.lazyModelComments}" />
 									</div>
 
@@ -73,26 +73,26 @@
 											list="#{userDataBean.lazyModelComments}" />
 									</div>
 
-									<!-- REVIEW STATE COL -->
-									<div class="col-1 d-none d-lg-flex" style="justify-content: center;">
-									        <span class="admin__sorting-table-heading">#{msg.label__crowdsourcing_review}</span>
-									</div>
 								</div>
 
 								<!-- INDIVIDUAL ANNOTATION ROWS -->
 								<ui:repeat var="annotation"
 									value="#{userDataBean.lazyModelComments.paginatorList}">
 									<div class="row no-gutters admin__table-entry">
-										<!-- ANNOTATION CONTENT -->
-										<div class="col-12 col-lg-6 d-flex text-break" style="flex-direction: column;">
+										<!-- TARGET -->
+										<div class="col-4 d-none d-lg-flex text-break" style="flex-direction: column;">
 											<div class="annotation__label">
 												#{annotation.targetPI}
 												<h:outputText
 													rendered="#{annotation.targetPageOrder != null}"
 													value=", #{msg.page} #{annotation.targetPageOrder}" />
 											</div>
-											<div id="annotation_body_#{annotation.id}"
-												class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(annotation.body.toString())}</div>
+										</div>
+										<!-- TEXT -->
+										<div class="col-6 d-none d-lg-flex text-break">
+											<div id="annotation_body_#{annotation.id}" class="annotation__body__content_wrapper">
+												#{contentBean.cleanUpValue(annotation.body.toString())}
+											</div>
 											<annotationBody annotationid="#{annotation.id}"
 												contentid="annotation_body_#{annotation.id}" />
 											<div>
@@ -104,9 +104,6 @@
 													aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}</a>
 											</div>
 										</div>
-										<!-- CAMPAIGN -->
-										<div class="col-3 d-none d-lg-flex text-break">
-											#{annotation.generator.owner.name}</div>
 										<!-- DATE -->
 										<div class="col-2 d-none d-lg-flex">
 											<h:outputText value="#{annotation.dateCreated}">
@@ -114,12 +111,6 @@
 												<f:attribute name="pattern"
 													value="#{navigationHelper.dateTimePattern}" />
 											</h:outputText>
-										</div>
-										<!-- REVIEW STATE -->
-										<div class="col-1 d-none d-lg-flex" style="justify-content: center;">
-									        <ui:fragment rendered="#{annotation.reviewStatus == 'FINISHED'}">
-										        <i class="fa fa-check" aria-hidden="true"></i>
-									        </ui:fragment>
 										</div>
 									</div>
 								</ui:repeat>
