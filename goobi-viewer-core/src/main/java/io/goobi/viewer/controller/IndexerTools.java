@@ -233,9 +233,12 @@ public class IndexerTools {
     private static Collection<? extends IndexAugmenter> getAllAugmenters(String pi, Integer page) throws DAOException {
         List<IndexAugmenter> augmenters = new ArrayList<>();
         augmenters.addAll(DataManager.getInstance().getModules());
-        List annos = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
-        IndexAugmenter augmenter = new AnnotationIndexAugmenter(annos);
-        augmenters.add(augmenter);
+        List annos =  DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
+        List comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page);
+        IndexAugmenter annoAugmenter = new AnnotationIndexAugmenter(annos);
+        IndexAugmenter commentAugmenter = new AnnotationIndexAugmenter(comments);
+        augmenters.add(annoAugmenter);
+        augmenters.add(commentAugmenter);
         return augmenters;
     }
 

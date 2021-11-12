@@ -70,7 +70,7 @@ public class CommentBean implements Serializable {
     
     public CommentBean() throws IndexUnreachableException, DAOException {
         commentManager = new CommentManager(
-                new SqlAnnotationSaver(), 
+                new SolrAndSqlAnnotationSaver(), 
                 new SqlAnnotationDeleter(),
                 new SqlCommentLister(),
                 new CommentMailNotificator(DataManager.getInstance().getConfiguration().getCommentsNotificationEmailAddresses()),
