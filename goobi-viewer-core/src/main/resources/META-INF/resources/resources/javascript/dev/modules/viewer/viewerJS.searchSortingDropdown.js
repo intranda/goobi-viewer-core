@@ -56,7 +56,7 @@ var viewerJS = ( function( viewer ) {
             
             if ( viewer.localStoragePossible ) {
                 _selectedSorting = sessionStorage.dataSortField;
-                _currUrl = location.href;
+                _currUrl = unescape(location.href);
                 
                 // get selected sorting type from local storage an set the menu option to
                 // selected
@@ -64,8 +64,10 @@ var viewerJS = ( function( viewer ) {
                     $( _defaults.select ).children( 'option' ).each( function() {
                         _dataSortFieldState = $( this ).attr( 'data-sortField' );
                         _checkValUrl = $( this ).val();
-                        
+                        console.log("_dataSortFieldState", _selectedSorting, $( this ).attr( 'data-sortField' ));
+                        console.log("_checkValUrl", _currUrl, $( this ).val());
                         if ( _dataSortFieldState === _selectedSorting && _checkValUrl === _currUrl ) {
+                       		console.log("set selected ", this);
                             $( this ).attr( 'selected', 'selected' );
                         }
                     } );
