@@ -366,11 +366,15 @@ public class NetTools {
                     smtpPort = 25;
                 }
                 props.setProperty("mail.transport.protocol", "smtp");
+                //                props.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+                //                props.setProperty("mail.smtp.socketFactory.fallback", "false");
+//                props.setProperty("mail.smtp.socketFactory.port", String.valueOf(smtpPort));
                 props.setProperty("mail.smtp.port", String.valueOf(smtpPort));
                 props.setProperty("mail.smtp.host", smtpServer);
-                props.setProperty("mail.smtp.ssl.trust", "*");
+//                props.setProperty("mail.smtp.ssl.trust", "*");
+//                props.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
                 props.setProperty("mail.smtp.starttls.enable", "true");
-                props.setProperty("mail.smtp.starttls.required", "true");
+//                props.setProperty("mail.smtp.starttls.required", "true");
                 break;
             case "SSL":
                 logger.debug("Using SSL");
@@ -392,8 +396,8 @@ public class NetTools {
                 props.setProperty("mail.smtp.port", String.valueOf(smtpPort));
                 props.setProperty("mail.smtp.host", smtpServer);
         }
-        props.setProperty("mail.smtp.connectiontimeout", "15000");
-        props.setProperty("mail.smtp.timeout", "15000");
+        props.setProperty("mail.smtp.connectiontimeout", "30000");
+        props.setProperty("mail.smtp.timeout", "30000");
         props.setProperty("mail.smtp.auth", String.valueOf(auth));
         logger.debug("Connecting to email server " + smtpServer + " on port " + String.valueOf(smtpPort) + " via SMTP security "
                 + smtpSecurity.toUpperCase());
@@ -401,6 +405,8 @@ public class NetTools {
 
         Session session;
         if (auth) {
+            //            props.setProperty("mail.smtp.user", smtpUser);
+            //            props.setProperty("mail.smtp.password", smtpPassword);
             // with authentication
             session = Session.getInstance(props, new javax.mail.Authenticator() {
                 @Override

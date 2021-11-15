@@ -3090,6 +3090,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(1, childMd.getIndentation());
         Assert.assertEquals(md, childMd.getParentMetadata());
         Assert.assertEquals("MD_ARTIST", childMd.getLabel());
+        Assert.assertEquals("SORT_NAME", childMd.getSortField());
         Assert.assertTrue(childMd.isGroup());
         Assert.assertFalse(childMd.isSingleString());
         Assert.assertEquals(7, childMd.getParams().size());

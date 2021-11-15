@@ -253,7 +253,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
             if (iddoc != null) {
                 SolrDocumentList shapeDocs =
-                        MetadataTools.getGroupedMetadata(iddoc, " +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name());
+                        MetadataTools.getGroupedMetadata(iddoc, " +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name(), null);
                 if (!shapeDocs.isEmpty()) {
                     this.shapeMetadata = new ArrayList<>(shapeDocs.size());
                     for (SolrDocument shapeDoc : shapeDocs) {
