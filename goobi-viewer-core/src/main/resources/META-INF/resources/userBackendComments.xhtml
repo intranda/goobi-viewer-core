@@ -26,10 +26,8 @@
 			<h:panelGroup rendered="#{userBean.loggedIn}">
 				<h2>#{msg.userComments}</h2>
 
-				<div id="userAnnotations">
-					<h:form id="userAnnotationsSongs" prependId="false">
-
-						<div>
+				<div id="userComments">
+					<h:form id="userCommentsForm" prependId="false">
 
 							<div class="admin__table-tools flex-wrap">
 								<!-- PAGINATOR -->
@@ -47,75 +45,71 @@
 							</div>
 
 
-							<!-- ALL ANNOTATIONS TABLE -->
-							<div id="userAnnotationsTable" class="admin__table-content">
+							<!-- ALL USER COMMENTS TABLE -->
+							<div id="userCommentsTable" class="user-comments__table">
 
 								<!-- TITLE ROW -->
-								<div class="row no-gutters admin__table-title">
+								<div class="user-comments__table-title">
+
 									<!-- TARGET COL -->
-									<div class="col-4 d-none d-lg-flex">
+									<div class="user-comments__table-title-target">
 										<viewerComponent:sortingArrow filterType="targetPI_targetPageOrder"
 											colHeading="#{msg.record}"
 											list="#{userDataBean.lazyModelComments}" />
 									</div>
 
 									<!-- TEXT COL -->
-									<div class="col-6 d-none d-lg-flex">
+									<div class="user-comments__table-title-comment">
 										<viewerComponent:sortingArrow filterType="body"
 											colHeading="#{msg.Comment}"
 											list="#{userDataBean.lazyModelComments}" />
 									</div>
 
 									<!-- DATE COL -->
-									<div class="col-2 d-none d-lg-flex">
+									<div class="user-comments__table-title-date">
 										<viewerComponent:sortingArrow filterType="dateCreated"
 											colHeading="#{msg.date}"
 											list="#{userDataBean.lazyModelComments}" />
 									</div>
-
+									
 								</div>
+								
+								<div class="user-comments__table-body">
 
-								<!-- INDIVIDUAL ANNOTATION ROWS -->
-								<ui:repeat var="annotation"
-									value="#{userDataBean.lazyModelComments.paginatorList}">
-									<div class="row no-gutters admin__table-entry">
-										<!-- TARGET -->
-										<div class="col-4 d-none d-lg-flex text-break" style="flex-direction: column;">
-											<div class="annotation__label">
-												#{annotation.targetPI}
-												<h:outputText
-													rendered="#{annotation.targetPageOrder != null}"
-													value=", #{msg.page} #{annotation.targetPageOrder}" />
+									<!-- INDIVIDUAL COMMENTS ROWS -->
+									<ui:repeat var="comment"
+										value="#{userDataBean.lazyModelComments.paginatorList}">
+										<div class="user-comments__table-entry">
+											<!-- TARGET -->
+												<div class="user-comments__table-entry-label">
+													<h:outputText styleClass="user-comments__table-entry-label-record" rendered="#{comment.targetPageOrder != null}" value="#{comment.targetPI}, #{msg.page} #{comment.targetPageOrder}" />
+													<a
+														href="#{navigationHelper.objectUrl}#{comment.targetLink}"
+														class="user-comments__table-entry-action-link" target="_blank"
+														aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{comment.targetPI})">#{msg.show}</a>	
+												</div>
+	
+											<!-- TEXT -->
+											<div class="user-comments__table-entry-text">
+												<!-- INFO: ID NAME CANT BE CHANGED WITHOUT LOSING FUNCTIONALITY -->
+												<div id="annotation_body_#{comment.id}" class="annotation__body__content_wrapper">
+													#{contentBean.cleanUpValue(comment.body.toString())}
+												</div>
+												<annotationBody annotationid="#{comment.id}"
+													contentid="annotation_body_#{comment.id}" />
 											</div>
-											<div>
-												<a
-													href="#{navigationHelper.objectUrl}#{annotation.targetLink}"
-													class="admin__table-action-link" target="_blank"
-													aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}</a>
-											</div>	
-										</div>
-										<!-- TEXT -->
-										<div class="col-6 d-none d-lg-flex text-break">
-											<div id="annotation_body_#{annotation.id}" class="annotation__body__content_wrapper">
-												#{contentBean.cleanUpValue(annotation.body.toString())}
-											</div>
-											<annotationBody annotationid="#{annotation.id}"
-												contentid="annotation_body_#{annotation.id}" />
-											<div>
+											<!-- DATE -->
+											<div class="user-comments__table-entry-date">
+												<h:outputText value="#{comment.dateCreated}">
+													<f:converter converterId="localDateTimeConverter" />
+													<f:attribute name="pattern"
+														value="#{navigationHelper.dateTimePattern}" />
+												</h:outputText>
 											</div>
 										</div>
-										<!-- DATE -->
-										<div class="col-2 d-none d-lg-flex">
-											<h:outputText value="#{annotation.dateCreated}">
-												<f:converter converterId="localDateTimeConverter" />
-												<f:attribute name="pattern"
-													value="#{navigationHelper.dateTimePattern}" />
-											</h:outputText>
-										</div>
-									</div>
-								</ui:repeat>
+									</ui:repeat>
+								</div>
 							</div>
-						</div>
 						<script>
 						$(document).ready(() => {
                             riot.mount( "annotationBody", {
