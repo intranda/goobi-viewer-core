@@ -11,7 +11,6 @@
 		margin-bottom: 2rem;
 	}
 	&__table-title {
-		// grid-column: 1 / -1;
 		display: grid;
 		grid-template-columns: 2fr 2fr 1fr;
 	  	gap: 10px;
@@ -69,7 +68,29 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.user-comments {
+		&__table-title {
+			display: none;
+		}
+		&__table-entry {
+			grid-template-columns: 1fr;
+			&:nth-child(odd) {
+				background: #f7f7f7;
+			}
+		}
+		&__table-entry-action-link {
+			opacity: 1;
+		}
+		.admin__search-input-wrapper {
+			margin-top: 0.5rem;
+		}
+		.admin__search-action {
+			min-height: 30px;
+			margin-top: 0.5rem;
+		}
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}
