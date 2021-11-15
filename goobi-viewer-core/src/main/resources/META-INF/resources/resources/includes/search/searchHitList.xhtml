@@ -62,12 +62,12 @@
                                     <option
                                         value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/#{sortField}/#{search.facets.currentFacetString}/"
                                         data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}">
-                                        <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_ascending}
+                                        <h:outputText value="#{msg[sortField]}" /> #{msg[configurationBean.getSearchSortingAscendingKey(sortField)]}
                                     </option>
                                     <option
                                         value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/!#{sortField}/#{search.facets.currentFacetString}/"
                                         data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_descending}">
-                                        <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_descending}
+                                        <h:outputText value="#{msg[sortField]}" /> #{msg[configurationBean.getSearchSortingDescendingKey(sortField)]}
                                     </option>
                                 </ui:repeat>
                             </select>

@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -2904,6 +2905,31 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * @return
+     */
+    public Optional<String> getSearchSortingKeyAscending(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> luceneFieldConfigs = getLocalConfigurationsAt("search.sorting.luceneField");
+        for (HierarchicalConfiguration<ImmutableNode> conf : luceneFieldConfigs) {
+            String configField = conf.getString(".");
+            if(StringUtils.equals(configField, field)) {
+                return Optional.ofNullable(conf.getString("[@dropDownAscMessageKey]", null));
+            }
+        }
+        return Optional.empty();
+    }
+    
+    public Optional<String> getSearchSortingKeyDescending(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> luceneFieldConfigs = getLocalConfigurationsAt("search.sorting.luceneField");
+        for (HierarchicalConfiguration<ImmutableNode> conf : luceneFieldConfigs) {
+            String configField = conf.getString(".");
+            if(StringUtils.equals(configField, field)) {
+                return Optional.ofNullable(conf.getString("[@dropDownDescMessageKey]", null));
+            }
+        }
+        return Optional.empty();
+    }
+   
+    /**
      * <p>
      * getUrnResolverUrl.
      * </p>
@@ -5279,6 +5305,8 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplayAnnotationTextInImage() {
         return getLocalBoolean("webGuiDisplay.displayAnnotationTextInImage", true);
     }
+
+
 
 
 }
