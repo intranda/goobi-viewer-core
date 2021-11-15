@@ -24,9 +24,11 @@ import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -95,6 +97,7 @@ import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -168,7 +171,7 @@ public class SearchBean implements SearchInterface, Serializable {
     private String searchInCurrentItemString;
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
     private Search currentSearch;
-
+    
     private volatile FutureTask<Boolean> downloadReady;
     private volatile FutureTask<Boolean> downloadComplete;
 
@@ -2782,4 +2785,15 @@ public class SearchBean implements SearchInterface, Serializable {
                 .collect(Collectors.toList());
     }
 
+    public Collection<SearchSortingOption> getSearchSortingOptions() {
+        Set<SearchSortingOption> options = new LinkedHashSet<>();
+        //default option
+        options.add(new SearchSortingOption(DataManager.getInstance().getConfiguration().getDefaultSortField(), true));
+        for (String field : DataManager.getInstance().getConfiguration().getSortFields()) {
+            options.add(new SearchSortingOption(field, true));
+            options.add(new SearchSortingOption(field, false));
+        }
+        return options;
+    }
+    
 }

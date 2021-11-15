@@ -47,30 +47,22 @@
                     </div>
                  </ui:fragment>
 
-                    <div class="search-list__sorting__item">
+                    <div class="search-list__sorting__item" >
                         <div class="search-list__sorting__label">
                             <label for="sortSelect">#{msg.sortBy}:</label>
                         </div>
                         <div class="custom-control custom-control--select">
-                            <select id="sortSelect">
-                                <option
-                                    value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/-/#{search.facets.currentFacetString}/"
-                                    data-sortField="#gDropdown_relevance}">
-                                    #{configurationBean.defaultSortFieldRandom ?  msg.searchSortingDropdown_random : msg.searchSortingDropdown_relevance}
-                                </option>
-                                <ui:repeat var="sortField" value="#{configurationBean.sortFields}">
-                                    <option
-                                        value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/#{sortField}/#{search.facets.currentFacetString}/"
-                                        data-sortField="#{msg[sortField]} #{msg[configurationBean.getSearchSortingAscendingKey(sortField)]}">
-                                        <h:outputText value="#{msg[sortField]}" /> #{msg[configurationBean.getSearchSortingAscendingKey(sortField)]}
-                                    </option>
-                                    <option
-                                        value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/!#{sortField}/#{search.facets.currentFacetString}/"
-                                        data-sortField="#{msg[sortField]} #{msg[configurationBean.getSearchSortingDescendingKey(sortField)]}">
-                                        <h:outputText value="#{msg[sortField]}" /> #{msg[configurationBean.getSearchSortingDescendingKey(sortField)]}
-                                    </option>
-                                </ui:repeat>
-                            </select>
+                        	<!-- The onkeypress prevents the command button from being triggered accidentally by pressing enter. It should only 
+                        	be executed when selecting a option within the dropdown menu -->
+                            <h:form prependId="false" onkeypress="if( event.keyCode == 13){event.keyCode=0;}">
+	                            <h:selectOneMenu value="#{searchBean.sortString}" id="sortSelect" pt:onchange="$('#executeSort').click()">
+	                            	<f:selectItems value="#{searchBean.searchSortingOptions}"
+	                            					var="option"
+	                            					itemValue="#{option.sortString}"
+	                            					itemLabel="#{option.label}"/>
+	                            </h:selectOneMenu>
+	                            <h:commandButton styleClass="d-none" id="executeSort" action="pretty:newSearch5"></h:commandButton>
+                            </h:form>
                         </div>
                     </div>
                </div>
@@ -167,7 +159,6 @@
                     }
             };
             
-            viewerJS.searchSortingDropdown.init( searchSortingDropdownConfig );
             viewerJS.searchList.init( searchListConfig );
         } );
                         
