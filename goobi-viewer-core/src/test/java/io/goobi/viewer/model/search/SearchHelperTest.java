@@ -266,14 +266,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#truncateFulltext(List,String)
-     * @verifies truncate string to 200 chars if no terms are given and add prefix and suffix
-     */
-    @Test
-    public void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermsAreGivenAndAddPrefixAndSuffix() throws Exception {
-    }
-
-    /**
-     * @see SearchHelper#truncateFulltext(List,String)
      * @verifies make terms bold if found in text
      */
     @Test

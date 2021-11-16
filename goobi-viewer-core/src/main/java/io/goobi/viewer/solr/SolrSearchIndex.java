@@ -208,7 +208,7 @@ public final class SolrSearchIndex {
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
      * @param rows {@link java.lang.Integer}
-     * @param sortFields a {@link java.util.List} object.
+     * @param sortFields Optional field/order pairs for sorting
      * @param facetFields a {@link java.util.List} object.
      * @param facetSort a {@link java.lang.String} object.
      * @param fieldList If not null, only the fields in the list will be returned.
@@ -314,7 +314,7 @@ public final class SolrSearchIndex {
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
      * @param rows {@link java.lang.Integer}
-     * @param sortFields a {@link java.util.List} object.
+     * @param sortFields Optional field/order pairs for sorting
      * @param facetFields a {@link java.util.List} object.
      * @param fieldList If not null, only the fields in the list will be returned.
      * @param filterQueries a {@link java.util.List} object.
@@ -337,7 +337,7 @@ public final class SolrSearchIndex {
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
      * @param rows {@link java.lang.Integer}
-     * @param sortFields a {@link java.util.List} object.
+     * @param sortFields Optional field/order pairs for sorting
      * @param facetFields a {@link java.util.List} object.
      * @param fieldList If not null, only the fields in the list will be returned.
      * @return {@link org.apache.solr.client.solrj.response.QueryResponse}
@@ -357,7 +357,7 @@ public final class SolrSearchIndex {
      *
      * @param query a {@link java.lang.String} object.
      * @param rows a int.
-     * @param sortFields a {@link java.util.List} object.
+     * @param sortFields Optional field/order pairs for sorting
      * @param fieldList If not null, only the fields in the list will be returned.
      * @return a {@link org.apache.solr.common.SolrDocumentList} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
