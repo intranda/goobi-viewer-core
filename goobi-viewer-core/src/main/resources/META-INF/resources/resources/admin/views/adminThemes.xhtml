@@ -54,10 +54,18 @@
                             actionListener="actionListener"
                             styleClass="row admin__license-unconfigured-entry">
                             <div class="col-10 -textlink">
-                              #{ mainThemeConfigured ?
-                                msg.admin__themes__main_text_configured :
-                                msg.admin__themes__main_text_notConfigured
-                              }
+
+                            <ui:fragment rendered="#{mainThemeConfigured}">
+                              <h:outputFormat value="#{msg.admin__themes__main_text_configured}" escape="false">
+                                <f:param value="#{mainThemeName}" />
+                              </h:outputFormat>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{!mainThemeConfigured}">
+                              <h:outputFormat value="#{msg.admin__themes__main_text_notConfigured}" escape="false">
+                                <f:param value="#{mainThemeName}" />
+                              </h:outputFormat>
+                            </ui:fragment>
+
                             </div>
                             <div class="col-2 d-flex justify-content-end">
                                 <span>
@@ -73,8 +81,6 @@
             </ui:fragment>
 
             <!-- SUB THEMES -->
-
-
             <ui:fragment rendered="#{subThemeExists}">
             <div class="admin__default-block mb-5 #{ subThemeConfigured ? '-success-box' : '-danger' }">
                     <div class="row">
@@ -85,6 +91,7 @@
                         }
                       </h3>
                     </div>
+
                     <!-- value: Theme Names -->
                     <ui:repeat var="themeName" value="#{['ThemeName1', 'ThemeName2', 'ThemeName3']}">
                         <h:commandLink
@@ -92,10 +99,19 @@
                             actionListener="actionListener"
                             styleClass="row admin__license-unconfigured-entry">
                             <div class="col-10 -textlink">
-                                #{ subThemeConfigured ?
-                                  msg.admin__themes__sub_text_configured :
-                                  msg.admin__themes__sub_text_notConfigured
-                                }: "#{themeName}"
+
+                            <ui:fragment rendered="#{subThemeConfigured}">
+                              <h:outputFormat value="#{msg.admin__themes__sub_text_configured}" escape="false">
+                                <f:param value="#{themeName}" />
+                              </h:outputFormat>
+                            </ui:fragment>
+
+                            <ui:fragment rendered="#{!subThemeConfigured}">
+                              <h:outputFormat value="#{msg.admin__themes__sub_text_notConfigured}" escape="false">
+                                <f:param value="#{themeName}" />
+                              </h:outputFormat>
+                            </ui:fragment>
+
                             </div>
                             <div class="col-2 d-flex justify-content-end">
                                 <span>
