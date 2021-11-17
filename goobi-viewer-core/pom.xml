@@ -187,6 +187,10 @@
 					<groupId>com.lowagie</groupId>
 					<artifactId>itext</artifactId>
 				</exclusion>
+                <exclusion>
+                    <groupId>org.apache.xmlbeans</groupId>
+                    <artifactId>xmlbeans</artifactId>
+                </exclusion>
 				<exclusion>
 					<groupId>org.glassfish.jersey.containers</groupId>
 					<artifactId>jersey-container-servlet-core</artifactId>
