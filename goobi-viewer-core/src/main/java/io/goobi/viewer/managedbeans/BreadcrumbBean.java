@@ -464,7 +464,7 @@ public class BreadcrumbBean implements Serializable {
                 } else {
                     flattenedLinks.add(labeledLink);
                 }
-                logger.trace("breadcrumb: {}", labeledLink);
+                // logger.trace("breadcrumb: {}", labeledLink);
             }
             // logger.trace("getBreadcrumbs: {}", flattenedLinks.toString());
             return flattenedLinks;
