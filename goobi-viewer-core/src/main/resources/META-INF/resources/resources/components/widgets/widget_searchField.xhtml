@@ -11,6 +11,7 @@
 
     <composite:interface>
         <composite:attribute name="widget" type="io.goobi.viewer.model.cms.CMSSidebarElement" required="true" />
+        <composite:attribute name="autocomplete" type="java.lang.Boolean" required="false" default="true"/>
     </composite:interface>
 
     <composite:implementation>
@@ -28,13 +29,23 @@
                         		</c:otherwise>
                         	</c:choose>
                             <div class="input-group">
-                                <h:inputText 
-                                	onfocus="this.value=''"
-                                    styleClass="form-control -no-outline"
-                                    value="#{searchBean.invisibleSearchString}"> 
-                                    <f:passThroughAttribute name="placeholder" value="#{cc.attrs.widget.hasWidgetTitle ? msg[cc.attrs.widget.widgetTitle] : msg.search}" />
-                                    <f:passThroughAttribute name="aria-label" value="#{msg.searchField}" />
-                                </h:inputText>
+                                <c:choose>
+                                	<c:when test="#{cc.attrs.autocomplete}">
+		                                <viewerComponent:autocomplete value="#{searchBean.searchString}" items="#{searchBean.autocomplete}"
+				                            placeholder="#{cc.attrs.widget.hasWidgetTitle ? msg[cc.attrs.widget.widgetTitle] : msg.search}"
+				                			arialabel="#{msg.searchField}" styleclass="form-control -no-outline">
+			                			</viewerComponent:autocomplete>
+                                	</c:when>
+                                	<c:otherwise>
+		                                <h:inputText 
+		                                	onfocus="this.value=''"
+		                                    styleClass="form-control -no-outline"
+		                                    value="#{searchBean.invisibleSearchString}"> 
+		                                    <f:passThroughAttribute name="placeholder" value="#{cc.attrs.widget.hasWidgetTitle ? msg[cc.attrs.widget.widgetTitle] : msg.search}" />
+		                                    <f:passThroughAttribute name="aria-label" value="#{msg.searchField}" />
+		                                </h:inputText>
+                                	</c:otherwise>
+                                </c:choose>
                                 <div class="input-group-addon">
                                 	<c:choose>
                                 		<c:when test="#{cc.attrs.widget.hasLinkedPages}">
