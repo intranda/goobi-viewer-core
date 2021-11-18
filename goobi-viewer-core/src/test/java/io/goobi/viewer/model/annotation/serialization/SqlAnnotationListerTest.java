@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
@@ -31,14 +32,14 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
  * @author florian
  *
  */
-public class SqlAnnotationListerTest {
+public class SqlAnnotationListerTest extends AbstractSolrEnabledTest {
 
     IDAO dao;
     SqlAnnotationLister lister;
     
     @Before
-    public void setup() throws DAOException {
-        
+    public void setup() throws Exception {
+        super.setUp();
         CrowdsourcingAnnotation a1 = createAnnotation(1l, "OPENACCESS", "Text 1", 10l, 100l, "describing", "PI01", 5);
         CrowdsourcingAnnotation a2 = createAnnotation(2l, "OPENACCESS", "Text 2", 10l, 101l, "describing", "PI02", 10);
         CrowdsourcingAnnotation a3 = createAnnotation(3l, "OPENACCESS", "Text 3", 11l, 101l, "commenting", "PI03", 5);

@@ -25,6 +25,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import de.intranda.api.annotation.wa.WebAnnotation;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.serialization.SolrAnnotationSaver.Target;
@@ -33,8 +34,9 @@ import io.goobi.viewer.model.annotation.serialization.SolrAnnotationSaver.Target
  * @author florian
  *
  */
-public class AnnotationSolrSaverTest {
+public class AnnotationSolrSaverTest extends AbstractSolrEnabledTest {
 
+    
     
     @Test
     public void callRedindexTargetWithCorrectArguments() throws IOException {
