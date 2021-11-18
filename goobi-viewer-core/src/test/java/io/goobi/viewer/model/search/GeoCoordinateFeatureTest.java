@@ -64,7 +64,6 @@ public class GeoCoordinateFeatureTest {
         facets.setCurrentFacetString(urlString);
         
         String filterQueryString = facets.generateFacetFilterQueries(0, true, true).get(0);
-        System.out.println(filterQueryString);
     }
 
 }
