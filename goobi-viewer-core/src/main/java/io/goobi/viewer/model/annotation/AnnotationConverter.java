@@ -15,7 +15,17 @@
  */
 package io.goobi.viewer.model.annotation;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_COMMENT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_USERID;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,11 +39,11 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import de.intranda.api.annotation.AgentType;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.ISelector;
-import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.annotation.wa.Agent;
@@ -41,15 +51,10 @@ import de.intranda.api.annotation.wa.FragmentSelector;
 import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
-import de.intranda.api.iiif.presentation.v2.Canvas2;
-import de.intranda.api.iiif.presentation.v2.Manifest2;
-import de.intranda.api.iiif.presentation.v3.Canvas3;
-import de.intranda.api.iiif.presentation.v3.Manifest3;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.comments.Comment;
-import io.goobi.viewer.model.security.user.User;
 
 /**
  * @author florian
@@ -141,12 +146,15 @@ public class AnnotationConverter {
      * @throws java.io.IOException if any.
      */
     public IResource getBodyAsResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
-        if (anno.getBody() != null) {
+        if (anno.getBody() != null && anno.getBody().startsWith("{")) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+            mapper.registerModule(new JavaTimeModule());
             IResource resource = mapper.readValue(anno.getBody(), TextualResource.class);
             return resource;
+        } else if(StringUtils.isNotBlank(anno.getBody())){
+            return new TextualResource(anno.getBody());
         }
         return null;
     }

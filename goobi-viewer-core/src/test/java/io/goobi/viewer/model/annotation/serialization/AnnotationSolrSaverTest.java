@@ -44,6 +44,7 @@ public class AnnotationSolrSaverTest extends AbstractDatabaseAndSolrEnabledTest 
         CrowdsourcingAnnotation anno1 = new CrowdsourcingAnnotation(new WebAnnotation(), 1l, pi1, page1);
         CrowdsourcingAnnotation anno2 = new CrowdsourcingAnnotation(new WebAnnotation(), 2l, pi1, page1);
         SolrAnnotationSaver saver = Mockito.spy(SolrAnnotationSaver.class);
+        Mockito.doNothing().when(saver).reindexTarget(Mockito.any());
         saver.save(anno1, anno2);
         ArgumentCaptor<Target> targetArgument = ArgumentCaptor.forClass(Target.class);
         Mockito.verify(saver, Mockito.times(1)).reindexTarget(targetArgument.capture());
@@ -66,6 +67,7 @@ public class AnnotationSolrSaverTest extends AbstractDatabaseAndSolrEnabledTest 
 
         
         SolrAnnotationSaver saver = Mockito.spy(SolrAnnotationSaver.class);
+        Mockito.doNothing().when(saver).reindexTarget(Mockito.any());
         saver.save(anno1, anno2, anno3, anno4, anno5);
         Mockito.verify(saver, Mockito.times(4)).reindexTarget(Mockito.any());
     }
