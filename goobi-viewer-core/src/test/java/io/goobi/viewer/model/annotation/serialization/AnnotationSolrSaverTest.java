@@ -20,12 +20,15 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.serialization.SolrAnnotationSaver.Target;
@@ -36,7 +39,16 @@ import io.goobi.viewer.model.annotation.serialization.SolrAnnotationSaver.Target
  */
 public class AnnotationSolrSaverTest extends AbstractSolrEnabledTest {
 
-    
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        AbstractSolrEnabledTest.setUpClass();
+
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+    }
     
     @Test
     public void callRedindexTargetWithCorrectArguments() throws IOException {

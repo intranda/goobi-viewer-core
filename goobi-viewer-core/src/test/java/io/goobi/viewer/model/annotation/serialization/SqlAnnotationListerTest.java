@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -36,6 +37,13 @@ public class SqlAnnotationListerTest extends AbstractSolrEnabledTest {
 
     IDAO dao;
     SqlAnnotationLister lister;
+    
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        AbstractSolrEnabledTest.setUpClass();
+
+    }
+
     
     @Before
     public void setup() throws Exception {
