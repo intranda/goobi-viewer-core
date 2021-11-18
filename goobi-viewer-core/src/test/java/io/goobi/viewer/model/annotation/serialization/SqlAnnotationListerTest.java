@@ -20,31 +20,22 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.dao.IDAO;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 
 /**
  * @author florian
  *
  */
-public class SqlAnnotationListerTest extends AbstractSolrEnabledTest {
+public class SqlAnnotationListerTest extends AbstractDatabaseEnabledTest {
 
     IDAO dao;
     SqlAnnotationLister lister;
-    
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        AbstractSolrEnabledTest.setUpClass();
 
-    }
-
-    
     @Before
     public void setup() throws Exception {
         super.setUp();
