@@ -135,7 +135,8 @@ public class AnnotationResource {
     public IAnnotation getAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException, PresentationException, IndexUnreachableException {
             AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
-            return builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
+            WebAnnotation annotation =  builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
+            return annotation;
     }
     
     /**

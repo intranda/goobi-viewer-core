@@ -309,8 +309,9 @@ public class AnnotationsResourceBuilder {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public Optional<WebAnnotation> getWebAnnotation(long id) throws PresentationException, IndexUnreachableException {
-        return waBuilder.getAnnotationDocument(id, request).map(doc -> waBuilder.createUGCWebAnnotation(doc, false));
+    public Optional<WebAnnotation> getWebAnnotation(long id) throws DAOException {
+        CrowdsourcingAnnotation annotation = DataManager.getInstance().getDao().getAnnotation(id);
+        return Optional.ofNullable(annotation).map(converter::getAsWebAnnotation);
     }
     
     public Optional<WebAnnotation> getCommentWebAnnotation(long id) throws DAOException {
@@ -324,8 +325,9 @@ public class AnnotationsResourceBuilder {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public Optional<OpenAnnotation> getOpenAnnotation(Long id) throws PresentationException, IndexUnreachableException {
-        return oaBuilder.getAnnotationDocument(id, request).map(doc -> oaBuilder.createUGCOpenAnnotation(doc, false));
+    public Optional<OpenAnnotation> getOpenAnnotation(Long id) throws DAOException {
+        CrowdsourcingAnnotation annotation = DataManager.getInstance().getDao().getAnnotation(id);
+        return Optional.ofNullable(annotation).map(converter::getAsOpenAnnotation);
     }
 
 }
