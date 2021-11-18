@@ -41,12 +41,7 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 public class SolrAnnotationSaver implements AnnotationSaver {
 
     private final static Logger logger = LoggerFactory.getLogger(SolrAnnotationSaver.class);
-        
-    public SolrAnnotationSaver() throws IndexUnreachableException {
-        if(!DataManager.getInstance().getSearchIndex().isSolrIndexOnline()) {
-            throw new IndexUnreachableException("Solr index at " + DataManager.getInstance().getSearchIndex().getSolrServerUrl() + " not reachable");
-        }
-    }
+
     
     @Override
     public void save(PersistentAnnotation... annotations) throws IOException {
