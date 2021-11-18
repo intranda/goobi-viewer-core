@@ -24,6 +24,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import de.intranda.api.annotation.wa.WebAnnotation;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.serialization.SolrAnnotationSaver.Target;
@@ -32,7 +33,7 @@ import io.goobi.viewer.model.annotation.serialization.SolrAnnotationSaver.Target
  * @author florian
  *
  */
-public class AnnotationSolrSaverTest extends AbstractDatabaseEnabledTest {
+public class AnnotationSolrSaverTest extends AbstractDatabaseAndSolrEnabledTest {
 
     
     @Test

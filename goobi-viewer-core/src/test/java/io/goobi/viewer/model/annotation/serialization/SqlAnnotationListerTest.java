@@ -31,14 +31,13 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
  * @author florian
  *
  */
-public class SqlAnnotationListerTest extends AbstractDatabaseEnabledTest {
+public class SqlAnnotationListerTest {
 
     IDAO dao;
     SqlAnnotationLister lister;
 
     @Before
     public void setup() throws Exception {
-        super.setUp();
         CrowdsourcingAnnotation a1 = createAnnotation(1l, "OPENACCESS", "Text 1", 10l, 100l, "describing", "PI01", 5);
         CrowdsourcingAnnotation a2 = createAnnotation(2l, "OPENACCESS", "Text 2", 10l, 101l, "describing", "PI02", 10);
         CrowdsourcingAnnotation a3 = createAnnotation(3l, "OPENACCESS", "Text 3", 11l, 101l, "commenting", "PI03", 5);
