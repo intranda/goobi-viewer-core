@@ -26,7 +26,7 @@
 
 var viewerJS = ( function( viewer ) {
     'use strict'; 
-    
+        
     // default variables
     var _debug = false;
     

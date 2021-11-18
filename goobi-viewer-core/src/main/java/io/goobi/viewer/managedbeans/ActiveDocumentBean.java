@@ -468,7 +468,7 @@ public class ActiveDocumentBean implements Serializable {
                 // logger.debug("topSe: {}", topSe.getId());
                 if (topSe != null) {
                     for (Metadata md : DataManager.getInstance().getConfiguration().getTitleBarMetadata()) {
-                        md.populate(topSe, String.valueOf(topSe.getLuceneId()), BeanUtils.getLocale());
+                        md.populate(topSe, String.valueOf(topSe.getLuceneId()), md.getSortFields(), BeanUtils.getLocale());
                         if (!md.isBlank()) {
                             titleBarMetadata.add(md);
                         }

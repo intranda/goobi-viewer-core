@@ -1490,4 +1490,12 @@ public class ConfigurationBean implements Serializable {
     public boolean isArchivesEnabled() {
         return DataManager.getInstance().getConfiguration().isArchivesEnabled();
     }
+    
+    public String getSearchSortingAscendingKey(String field) {
+        return DataManager.getInstance().getConfiguration().getSearchSortingKeyAscending(field).orElse("searchSortingDropdown_ascending");
+    }
+    
+    public String getSearchSortingDescendingKey(String field) {
+        return DataManager.getInstance().getConfiguration().getSearchSortingKeyDescending(field).orElse("searchSortingDropdown_descending");
+    }
 }

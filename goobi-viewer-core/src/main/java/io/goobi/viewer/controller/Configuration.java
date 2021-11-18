@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -613,13 +614,14 @@ public final class Configuration extends AbstractConfiguration {
 
         String label = sub.getString("[@label]");
         String masterValue = sub.getString("[@value]");
+        String citationTemplate = sub.getString("[@citationTemplate]");
         boolean group = sub.getBoolean("[@group]", false);
         boolean singleString = sub.getBoolean("[@singleString]", true);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
         boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
-        String citationTemplate = sub.getString("[@citationTemplate]");
         String labelField = sub.getString("[@labelField]");
+        String sortField = sub.getString("[@sortField]");
         List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -705,6 +707,8 @@ public final class Configuration extends AbstractConfiguration {
                 .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
                 .setCitationTemplate(citationTemplate)
                 .setLabelField(labelField)
+                .setSortField(
+                        sortField)
                 .setIndentation(indentation);
 
         // Recursively add nested metadata configurations
@@ -2903,6 +2907,31 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("search.sorting.static.field");
     }
 
+    /**
+     * @return
+     */
+    public Optional<String> getSearchSortingKeyAscending(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> luceneFieldConfigs = getLocalConfigurationsAt("search.sorting.luceneField");
+        for (HierarchicalConfiguration<ImmutableNode> conf : luceneFieldConfigs) {
+            String configField = conf.getString(".");
+            if(StringUtils.equals(configField, field)) {
+                return Optional.ofNullable(conf.getString("[@dropDownAscMessageKey]", null));
+            }
+        }
+        return Optional.empty();
+    }
+    
+    public Optional<String> getSearchSortingKeyDescending(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> luceneFieldConfigs = getLocalConfigurationsAt("search.sorting.luceneField");
+        for (HierarchicalConfiguration<ImmutableNode> conf : luceneFieldConfigs) {
+            String configField = conf.getString(".");
+            if(StringUtils.equals(configField, field)) {
+                return Optional.ofNullable(conf.getString("[@dropDownDescMessageKey]", null));
+            }
+        }
+        return Optional.empty();
+    }
+   
     /**
      * <p>
      * getUrnResolverUrl.

@@ -475,7 +475,7 @@ public final class SearchHelper {
             }
 
             // Iterate over record hits instead of using facets to determine the size of the parent collections
-            logger.trace("query: {}", sbQuery.toString());
+            logger.trace("collections query: {}", sbQuery.toString());
 
             FacetField facetResults = null;
             FacetField groupResults = null;
@@ -512,6 +512,8 @@ public final class SearchHelper {
      */
     private static Map<String, CollectionResult> createCollectionResults(FacetField facetResults, String splittingChar) {
         Map<String, CollectionResult> ret = new HashMap<>();
+        
+        Set<String> counted = new HashSet<>();
         for (Count count : facetResults.getValues()) {
             String dc = count.getName();
             // Skip inverted values
@@ -526,7 +528,7 @@ public final class SearchHelper {
             }
             result.incrementCount(count.getCount());
 
-            if (dc.contains(splittingChar)) {
+            if (dc.contains(splittingChar) && !counted.contains(dc)) {
                 String parent = dc;
                 while (parent.lastIndexOf(splittingChar) != -1) {
                     parent = parent.substring(0, parent.lastIndexOf(splittingChar));
@@ -538,7 +540,9 @@ public final class SearchHelper {
                     parentCollection.incrementCount(count.getCount());
                 }
             }
+//            counted.add(dc);
         }
+        
         return ret;
     }
 
@@ -1785,20 +1789,17 @@ public final class SearchHelper {
      * @return a {@link java.util.Map} object.
      * @should return empty map if search hit aggregation on
      */
-    public static Map<String, String> generateQueryParams() {
+    public static Map<String, String> generateQueryParams(String termQuery) {
         Map<String, String> params = new HashMap<>();
         if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs()) {
             // Add a boost query to promote anchors and works to the top of the list (Extended DisMax query parser is required for this)
             params.put("defType", "edismax");
             params.put("uf", "* _query_");
-            // params.put("bq", "(PI:* AND " + SolrConstants.TITLE + ":(" + searchTerms + "))^10.0");
+            String bq = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) : null;
+            if(bq != null) {
+             params.put("bq", bq);
+            }
         }
-        //        if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits()) {
-        //            // Add grouping by GROUPFIELD (to avoid duplicates among metadata search hits)
-        //            params.put(GroupParams.GROUP, "true");
-        //            params.put(GroupParams.GROUP_MAIN, "true");
-        //            params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
-        //        }
 
         return params;
     }
@@ -2358,8 +2359,9 @@ public final class SearchHelper {
 
         // Boosting
         if (boostTopLevelDocstructs) {
-            String prefix = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) + " "
-                    : "";
+//            String prefix = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) + " "
+//                    : "";
+            String prefix = "";
             String template =
                     "+(" + prefix + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString().replace("\"", "\\\"")) + ")";
             sbQuery = new StringBuilder(template);

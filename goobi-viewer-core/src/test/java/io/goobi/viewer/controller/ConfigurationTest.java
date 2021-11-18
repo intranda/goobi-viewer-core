@@ -50,6 +50,7 @@ import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
@@ -3090,6 +3091,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(1, childMd.getIndentation());
         Assert.assertEquals(md, childMd.getParentMetadata());
         Assert.assertEquals("MD_ARTIST", childMd.getLabel());
+        Assert.assertEquals("SORT_NAME", childMd.getSortField());
         Assert.assertTrue(childMd.isGroup());
         Assert.assertFalse(childMd.isSingleString());
         Assert.assertEquals(7, childMd.getParams().size());

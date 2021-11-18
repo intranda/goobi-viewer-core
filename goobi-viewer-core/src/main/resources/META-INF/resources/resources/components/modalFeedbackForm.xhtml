@@ -125,8 +125,8 @@
 												warnClass="cms-module__option-message-status warning"
 												errorClass="cms-module__option-message-status danger" />
 											<div class="cms-module__option-message-mark">
-												<i class="fa fa-check" aria-hidden="true"></i> <i
-													class="fa fa-exclamation" aria-hidden="true"></i>
+												<i class="fa fa-check" aria-hidden="true"></i> 
+												<i class="fa fa-exclamation" aria-hidden="true"></i>
 											</div>
 										</div>
 										<h:inputText id="feedbackEmail2" label="feedbackEmail2"
@@ -179,18 +179,22 @@
 												pt:data-require-input-text="feedbackInput"
 												value="#{userBean.securityAnswer}" required="true"
 												requiredMessage="#{msg.user__security_question_required_msg}">
-                        <f:passThroughAttribute name="aria-labelledby" value="feedback-modal__feedbackSecurityQuestion" />
-                      </h:inputSecret>
+						                        <f:passThroughAttribute name="aria-labelledby" value="feedback-modal__feedbackSecurityQuestion" />
+						                	</h:inputSecret>
 										</div>
 									</div>
 								</ui:fragment>
 							</div>
-							
 								<!-- REQUIRED CHECKBOX FOR USAGE OF PERSONAL DATA OR ANYTHING ELSE -->
 								<!-- TO DO: CONFIG SWITCH FOR THIS RENDERED CONDITION CHECKBOX, VALUE + ADDITIONAL TEXT WHICH IS SEND BY FORM(?) -->
 <!-- 								<ui:fragment rendered="#{userBean.userFeedbackAdditionalCheckbox()"> -->
 									<div class="feedback-modal__required-checkbox-wrapper">
-									  <input class="feedback-modal__required-checkbox" data-require-input-checkbox="feedbackInput" jsf:value="#{feedbackModalAcceptedTerms}" id="feedbackModalRequiredCheckbox" type="checkbox" name="feedbackModalRequiredCheckboxInput" />
+									  <input class="feedback-modal__required-checkbox" 
+										  data-require-input-checkbox="feedbackInput" autocomplete="off" 
+										  jsf:value="#{feedbackModalAcceptedTerms}" id="feedbackModalRequiredCheckbox" 
+										  type="checkbox" name="feedbackModalRequiredCheckboxInput">
+									  	  <f:validator validatorId="omnifaces.RequiredCheckboxValidator" />
+									  </input>
 									  <label id="feedbackModalRequiredCheckboxText" class="feedback-modal__required-checkbox-text" for="feedbackModalRequiredCheckbox">#{msg.feedbackAcceptingTerms}</label>
 									</div>
 

@@ -24,9 +24,11 @@ import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -95,6 +97,7 @@ import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -1588,15 +1591,20 @@ public class SearchBean implements SearchInterface, Serializable {
             return null;
         }
 
+        String termQuery = null;
+        if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs() && searchTerms != null) {
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+        }
+        
         if (currentHitIndex < currentSearch.getHitsCount() - 1) {
             //            return currentSearch.getHits().get(currentHitIndex + 1).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex + 1, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery), searchTerms,
                     BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
         }
         //        return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
         return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(),
-                facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
+                facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery), searchTerms,
                 BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
     }
 
@@ -1614,16 +1622,21 @@ public class SearchBean implements SearchInterface, Serializable {
         if (currentHitIndex <= -1 || currentSearch == null || currentSearch.getHits().isEmpty()) {
             return null;
         }
+        
+        String termQuery = null;
+        if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs() && searchTerms != null) {
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+        }
 
         if (currentHitIndex > 0) {
             //            return currentSearch.getHits().get(currentHitIndex - 1).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex - 1, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery), searchTerms,
                     BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
         } else if (currentSearch.getHitsCount() > 0) {
             //            return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery), searchTerms,
                     BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
         }
 
@@ -2136,7 +2149,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
         BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
             if (!facesContext.getResponseComplete()) {
-                try (SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, locale)) {
+                try (SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery,
+                        DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), locale)) {
                     if (wb == null) {
                         job.setError("Failed to create excel sheet");
                     } else if (Thread.interrupted()) {
@@ -2225,6 +2239,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param facesContext
      * @param finalQuery Complete query with suffixes.
      * @param exportQuery Query constructed from the user's input, without any secret suffixes.
+     * @param boostTopLevelDocstructs
      * @param locale
      * @return
      * @throws InterruptedException
@@ -2233,14 +2248,18 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws DAOException
      * @throws PresentationException
      */
-    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, String finalQuery, String exportQuery, Locale locale)
-            throws InterruptedException, ViewerConfigurationException {
+    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, String finalQuery, String exportQuery, boolean boostTopLevelDocstructs,
+            Locale locale) throws InterruptedException, ViewerConfigurationException {
         try {
             HttpServletRequest request = BeanUtils.getRequest(facesContext);
             if (request == null) {
                 request = BeanUtils.getRequest();
             }
-            Map<String, String> params = SearchHelper.generateQueryParams();
+            String termQuery = null;
+            if (boostTopLevelDocstructs && searchTerms != null) {
+                termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+            }
+            Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
             final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(finalQuery, exportQuery, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), params, searchTerms, locale,
                     true, request);
@@ -2780,6 +2799,17 @@ public class SearchBean implements SearchInterface, Serializable {
                 .sorted((f1, f2) -> Long.compare(f2.getCount(), f1.getCount()))
                 .limit(num)
                 .collect(Collectors.toList());
+    }
+
+    public Collection<SearchSortingOption> getSearchSortingOptions() {
+        Set<SearchSortingOption> options = new LinkedHashSet<>();
+        //default option
+        options.add(new SearchSortingOption(DataManager.getInstance().getConfiguration().getDefaultSortField(), true));
+        for (String field : DataManager.getInstance().getConfiguration().getSortFields()) {
+            options.add(new SearchSortingOption(field, true));
+            options.add(new SearchSortingOption(field, false));
+        }
+        return options;
     }
 
 }
