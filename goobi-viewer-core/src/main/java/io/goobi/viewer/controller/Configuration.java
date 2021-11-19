@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -370,7 +371,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return Connector URL
      */
     public String getConnectorVersionUrl() {
-        return getLocalString("urls.connectorVersion", "http://localhost:8080/M2M/oai/tools?action=getVersion");
+        return getLocalString("urls.connectorVersion", "http://localhost:8080/viewer/oai/tools?action=getVersion");
     }
 
     /**
@@ -613,13 +614,14 @@ public final class Configuration extends AbstractConfiguration {
 
         String label = sub.getString("[@label]");
         String masterValue = sub.getString("[@value]");
+        String citationTemplate = sub.getString("[@citationTemplate]");
         boolean group = sub.getBoolean("[@group]", false);
         boolean singleString = sub.getBoolean("[@singleString]", true);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
         boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
-        String citationTemplate = sub.getString("[@citationTemplate]");
         String labelField = sub.getString("[@labelField]");
+        String sortField = sub.getString("[@sortField]");
         List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -705,6 +707,8 @@ public final class Configuration extends AbstractConfiguration {
                 .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
                 .setCitationTemplate(citationTemplate)
                 .setLabelField(labelField)
+                .setSortField(
+                        sortField)
                 .setIndentation(indentation);
 
         // Recursively add nested metadata configurations
@@ -1114,24 +1118,24 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the collection config block for the given field.
+     * Returns the config block for the given field.
      *
      * @param field
      * @return
      */
     private HierarchicalConfiguration<ImmutableNode> getCollectionConfiguration(String field) {
-        List<HierarchicalConfiguration<ImmutableNode>> collectionList = getLocalConfigurationsAt("collections.collection");
-        if (collectionList == null) {
-            return null;
-        }
-
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = collectionList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
-            if (subElement.getString("[@field]").equals(field)) {
-                return subElement;
-
+            List<HierarchicalConfiguration<ImmutableNode>> collectionList = getLocalConfigurationsAt("collections.collection");
+            if (collectionList == null) {
+                return null;
             }
-        }
+
+            for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = collectionList.iterator(); it.hasNext();) {
+                HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+                if (subElement.getString("[@field]").equals(field)) {
+                    return subElement;
+
+                }
+            }
 
         return null;
     }
@@ -1155,6 +1159,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<DcSortingList> getCollectionSorting(String field) {
+
         List<DcSortingList> superlist = new ArrayList<>();
         HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
         if (collection == null) {
@@ -1184,7 +1189,7 @@ public final class Configuration extends AbstractConfiguration {
             return null;
         }
         return getLocalList(collection, null, "blacklist.collection", Collections.<String> emptyList());
-    }
+        }
 
     /**
      * Returns the index field by which records in the collection with the given name are to be sorted in a listing.
@@ -1196,37 +1201,24 @@ public final class Configuration extends AbstractConfiguration {
      * @should give priority to exact matches
      * @should return hyphen if collection not found
      */
-    public String getCollectionDefaultSortField(String field, String name) {
+    public Map<String, String> getCollectionDefaultSortFields(String field) {
+            Map<String, String> map = new HashMap<>();
         HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
         if (collection == null) {
-            return "-";
+            return map;
         }
 
         List<HierarchicalConfiguration<ImmutableNode>> fields = collection.configurationsAt("defaultSortFields.field");
         if (fields == null) {
-            return "-";
+            return map;
         }
 
-        String exactMatch = null;
-        String inheritedMatch = null;
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fields.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> sub : fields) {
             String key = sub.getString("[@collection]");
-            if (name.equals(key)) {
-                exactMatch = sub.getString("");
-            } else if (key.endsWith("*") && name.startsWith(key.substring(0, key.length() - 1))) {
-                inheritedMatch = sub.getString("");
-            }
+            String value = sub.getString("");
+            map.put(key, value);
         }
-        // Exact match is given priority so that it is possible to override the inherited sort field
-        if (StringUtils.isNotEmpty(exactMatch)) {
-            return exactMatch;
-        }
-        if (StringUtils.isNotEmpty(inheritedMatch)) {
-            return inheritedMatch;
-        }
-
-        return "-";
+        return map;
     }
 
     /**
@@ -1257,6 +1249,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getCollectionDisplayDepthForSearch(String field) {
+
         HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
         if (collection == null) {
             return -1;
@@ -1273,6 +1266,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getCollectionHierarchyField() {
+
         for (String field : getConfiguredCollections()) {
             if (isAddCollectionHierarchyToBreadcrumbs(field)) {
                 return field;
@@ -1566,18 +1560,6 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return ret;
-    }
-
-    /**
-     * <p>
-     * isAggregateHits.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isAggregateHits() {
-        return getLocalBoolean("search.aggregateHits", true);
     }
 
     /**
@@ -2742,6 +2724,10 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalString("search.facets.geoField");
     }
 
+    public String getGeoFacetFieldPredicate() {
+        return getLocalString("search.facets.geoField[@predicate]", "ISWITHIN");
+    }
+
     /**
      * @return
      */
@@ -2921,6 +2907,31 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("search.sorting.static.field");
     }
 
+    /**
+     * @return
+     */
+    public Optional<String> getSearchSortingKeyAscending(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> luceneFieldConfigs = getLocalConfigurationsAt("search.sorting.luceneField");
+        for (HierarchicalConfiguration<ImmutableNode> conf : luceneFieldConfigs) {
+            String configField = conf.getString(".");
+            if(StringUtils.equals(configField, field)) {
+                return Optional.ofNullable(conf.getString("[@dropDownAscMessageKey]", null));
+            }
+        }
+        return Optional.empty();
+    }
+    
+    public Optional<String> getSearchSortingKeyDescending(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> luceneFieldConfigs = getLocalConfigurationsAt("search.sorting.luceneField");
+        for (HierarchicalConfiguration<ImmutableNode> conf : luceneFieldConfigs) {
+            String configField = conf.getString(".");
+            if(StringUtils.equals(configField, field)) {
+                return Optional.ofNullable(conf.getString("[@dropDownDescMessageKey]", null));
+            }
+        }
+        return Optional.empty();
+    }
+   
     /**
      * <p>
      * getUrnResolverUrl.
@@ -3825,6 +3836,13 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isCommentsEnabled() {
         return getLocalBoolean(("comments[@enabled]"), false);
     }
+    
+    /**
+     * @return
+     */
+    public boolean reviewEnabledForComments() {
+        return getLocalBoolean("comments.review[@enabled]", false);
+    }
 
     /**
      * <p>
@@ -4242,18 +4260,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isBoostTopLevelDocstructs() {
         return getLocalBoolean("search.boostTopLevelDocstructs", true);
-    }
-
-    /**
-     * <p>
-     * isGroupDuplicateHits.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isGroupDuplicateHits() {
-        return getLocalBoolean("search.groupDuplicateHits", true);
     }
 
     /**

@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.metadata;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,10 +32,12 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -574,12 +577,14 @@ public class MetadataTools {
      * 
      * @param ownerIddoc owner IDDOC
      * @param subQuery Optional additional subQuery for filtering
+     * @param sortFields Optional field/order pairs for sorting
      * @return SolrDocumentList
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @should return grouped metadata docs correctly
      */
-    public static SolrDocumentList getGroupedMetadata(String ownerIddoc, String subQuery) throws PresentationException, IndexUnreachableException {
+    public static SolrDocumentList getGroupedMetadata(String ownerIddoc, String subQuery, List<StringPair> sortFields)
+            throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(ownerIddoc)) {
             throw new IllegalArgumentException("ownerIddoc may not be null or empty");
         }
@@ -596,7 +601,8 @@ public class MetadataTools {
         if (StringUtils.isNotEmpty(subQuery)) {
             sbQuery.append(' ').append(subQuery);
         }
+
         // logger.trace("getGroupedMetadata query: {}", sbQuery.toString());
-        return DataManager.getInstance().getSearchIndex().search(sbQuery.toString());
+        return DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, sortFields, null);
     }
 }

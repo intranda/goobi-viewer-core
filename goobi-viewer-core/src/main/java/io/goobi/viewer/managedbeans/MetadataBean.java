@@ -282,7 +282,8 @@ public class MetadataBean {
      * @return Message key for the label
      */
     public String getDefaultMetadataLabel() {
-        if (activeDocumentBean != null && activeDocumentBean.getViewManager().getTopStructElement().isLidoRecord()) {
+        if (activeDocumentBean != null && activeDocumentBean.isRecordLoaded() && activeDocumentBean.getViewManager().getTopStructElement() != null
+                && activeDocumentBean.getViewManager().getTopStructElement().isLidoRecord()) {
             return "metadata";
         }
 
@@ -295,7 +296,8 @@ public class MetadataBean {
      * @return Message key for the label
      */
     public String getDefaultSidebarMetadataLabel() {
-        if (activeDocumentBean != null && activeDocumentBean.getViewManager().getTopStructElement().isLidoRecord()) {
+        if (activeDocumentBean != null && activeDocumentBean.isRecordLoaded() && activeDocumentBean.getViewManager().getTopStructElement() != null
+                && activeDocumentBean.getViewManager().getTopStructElement().isLidoRecord()) {
             return "metadata";
         }
 

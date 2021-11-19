@@ -1416,8 +1416,9 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDisplaySocialMediaShareLinks();
     }
 
+    @Deprecated
     public boolean isAggregateSearchHits() {
-        return DataManager.getInstance().getConfiguration().isAggregateHits();
+        return true;
     }
 
     public String getMapBoxToken() {
@@ -1488,5 +1489,13 @@ public class ConfigurationBean implements Serializable {
     
     public boolean isArchivesEnabled() {
         return DataManager.getInstance().getConfiguration().isArchivesEnabled();
+    }
+    
+    public String getSearchSortingAscendingKey(String field) {
+        return DataManager.getInstance().getConfiguration().getSearchSortingKeyAscending(field).orElse("searchSortingDropdown_ascending");
+    }
+    
+    public String getSearchSortingDescendingKey(String field) {
+        return DataManager.getInstance().getConfiguration().getSearchSortingKeyDescending(field).orElse("searchSortingDropdown_descending");
     }
 }

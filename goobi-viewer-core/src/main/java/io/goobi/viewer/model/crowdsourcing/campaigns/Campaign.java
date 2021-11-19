@@ -1919,4 +1919,11 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         return getTitle();
     }
 
+    /**
+     * @return
+     */
+    public String getAccessConditionValue() {
+        return getTitle(IPolyglott.getDefaultLocale().getLanguage());
+    }
+
 }

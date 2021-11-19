@@ -90,12 +90,9 @@ public class SitelinkBean implements Serializable {
         String[] fields = { SolrConstants.PI, SolrConstants.PI_PARENT, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
                 SolrConstants.MIMETYPE, SolrConstants.CURRENTNO };
         String[] anchorFields = { SolrConstants.LABEL, SolrConstants.TITLE };
-        String query = SearchHelper.buildFinalQuery(field + ":" + value + (filterQuery != null ? " AND " + filterQuery : ""), false);
+        String query = SearchHelper.buildFinalQuery(field + ":" + value + (filterQuery != null ? " AND " + filterQuery : ""), null, false, false);
         logger.trace("q: {}", query);
-        //        hits = SearchHelper.searchWithAggregation(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null, null);
-        //        hits = SearchHelper.searchWithFulltext(query, 9, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null, null,
-        //                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
-
+        
         SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(query, Arrays.asList(fields));
         if (docList != null && !docList.isEmpty()) {
             hits = new ArrayList<>(docList.size());

@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.annotation;
+package io.goobi.viewer.model.annotation.comments;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
@@ -53,9 +53,9 @@ import io.goobi.viewer.model.viewer.PageType;
 @Entity
 @Index(name = "index_comments_pi_page", columnNames = { "pi", "page" })
 @Table(name = "comments")
-public class Comment implements Comparable<Comment> {
+public class CommentLegacy implements Comparable<CommentLegacy> {
 
-    private static final Logger logger = LoggerFactory.getLogger(Comment.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommentLegacy.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -98,7 +98,7 @@ public class Comment implements Comparable<Comment> {
      * Constructor for Comment.
      * </p>
      */
-    public Comment() {
+    public CommentLegacy() {
         // the emptiness inside
     }
 
@@ -111,10 +111,10 @@ public class Comment implements Comparable<Comment> {
      * @param page a int.
      * @param owner a {@link io.goobi.viewer.model.security.user.User} object.
      * @param text a {@link java.lang.String} object.
-     * @param parent a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @param parent a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @should construct object correctly
      */
-    public Comment(String pi, int page, User owner, String text, Comment parent) {
+    public CommentLegacy(String pi, int page, User owner, String text, CommentLegacy parent) {
         this.pi = pi;
         this.page = page;
         this.owner = owner;
@@ -124,7 +124,7 @@ public class Comment implements Comparable<Comment> {
 
     /** {@inheritDoc} */
     @Override
-    public int compareTo(Comment o) {
+    public int compareTo(CommentLegacy o) {
         if (dateUpdated != null) {
             if (o.getDateUpdated() != null) {
                 return dateUpdated.compareTo(o.getDateUpdated());
@@ -144,12 +144,12 @@ public class Comment implements Comparable<Comment> {
     /**
      * Sends an email notification about a new or altered comment to the configured recipient addresses.
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @param oldText a {@link java.lang.String} object.
      * @param locale Language locale for the email text.
      * @return a boolean.
      */
-    public static boolean sendEmailNotifications(Comment comment, String oldText, Locale locale) {
+    public static boolean sendEmailNotifications(CommentLegacy comment, String oldText, Locale locale) {
         List<String> addresses = DataManager.getInstance().getConfiguration().getCommentsNotificationEmailAddresses();
         if (addresses == null || addresses.isEmpty()) {
             return false;

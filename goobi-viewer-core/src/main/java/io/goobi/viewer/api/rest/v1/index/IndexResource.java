@@ -157,7 +157,13 @@ public class IndexResource {
         // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
         //        String query =
         //                new StringBuilder().append("+").append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
-        String query = SearchHelper.buildFinalQuery(params.query, params.includeChildHits);
+
+        String termQuery = null;
+        if (params.boostTopLevelDocstructs) {
+            Map<String, Set<String>> searchTerms = SearchHelper.extractSearchTermsFromQuery(params.query.replace("\\", ""), null);
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+        }
+        String query = SearchHelper.buildFinalQuery(params.query, termQuery, params.includeChildHits, params.boostTopLevelDocstructs);
 
         logger.trace("query: {}", query);
 

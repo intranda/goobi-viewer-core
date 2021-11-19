@@ -468,18 +468,11 @@ public class ActiveDocumentBean implements Serializable {
                 // logger.debug("topSe: {}", topSe.getId());
                 if (topSe != null) {
                     for (Metadata md : DataManager.getInstance().getConfiguration().getTitleBarMetadata()) {
-                        md.populate(topSe, String.valueOf(topSe.getLuceneId()), BeanUtils.getLocale());
+                        md.populate(topSe, String.valueOf(topSe.getLuceneId()), md.getSortFields(), BeanUtils.getLocale());
                         if (!md.isBlank()) {
                             titleBarMetadata.add(md);
                         }
                     }
-                }
-
-                // When not aggregating hits, a new page will also be a new search hit in the list
-                // TODO check whether this still works
-                if (imageToShow.equals(String.valueOf(viewManager.getCurrentImageOrder()))
-                        && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
-                    mayChangeHitIndex = true;
                 }
 
                 viewManager.setCurrentImageOrderString(imageToShow);
@@ -489,8 +482,7 @@ public class ActiveDocumentBean implements Serializable {
                 if (searchBean != null && searchBean.getCurrentSearch() != null) {
                     if (searchBean.getCurrentHitIndex() < 0) {
                         // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
-                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), viewManager.getCurrentImageOrder(),
-                                DataManager.getInstance().getConfiguration().isAggregateHits());
+                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), viewManager.getCurrentImageOrder(), true);
                     } else if (mayChangeHitIndex) {
                         // Modify the current hit index
                         searchBean.increaseCurrentHitIndex();
@@ -2077,9 +2069,8 @@ public class ActiveDocumentBean implements Serializable {
             return null;
         }
 
-        // List<String> relatedItemIdentifiers = viewManager.getTopStructElement().getMetadataValues(identifierField);
-        List<SearchHit> ret = SearchHelper.searchWithFulltext(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null,
-                navigationHelper.getLocale(), BeanUtils.getRequest());
+        List<SearchHit> ret = SearchHelper.searchWithAggregation(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null,
+                navigationHelper.getLocale());
 
         logger.trace("{} related items found", ret.size());
         return ret;

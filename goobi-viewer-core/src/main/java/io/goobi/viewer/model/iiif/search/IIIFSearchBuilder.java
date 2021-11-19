@@ -47,7 +47,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
 import io.goobi.viewer.model.iiif.search.model.SearchTermList;
@@ -401,7 +401,7 @@ public class IIIFSearchBuilder {
         try {
             List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi);
             comments = comments.stream()
-                    .filter(c -> c.getText().matches(AbstractSearchParser.getContainedWordRegex(queryRegex)))
+                    .filter(c -> c.getContentString().matches(AbstractSearchParser.getContainedWordRegex(queryRegex)))
                     .collect(Collectors.toList());
             if (firstHitIndex < comments.size()) {
                 comments = comments.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, comments.size()));
@@ -423,10 +423,10 @@ public class IIIFSearchBuilder {
         try {
             List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi);
             comments = comments.stream()
-                    .filter(c -> c.getText().matches(AbstractSearchParser.getContainedWordRegex(queryRegex)))
+                    .filter(c -> c.getContentString().matches(AbstractSearchParser.getContainedWordRegex(queryRegex)))
                     .collect(Collectors.toList());
             for (Comment comment : comments) {
-                terms.addAll(converter.getSearchTerms(queryRegex, comment.getText(), getMotivation()));
+                terms.addAll(converter.getSearchTerms(queryRegex, comment.getContentString(), getMotivation()));
             }
         } catch (DAOException e) {
             logger.error(e.toString(), e);

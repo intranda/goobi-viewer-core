@@ -129,18 +129,17 @@ public class SolrTools {
     public static String getAsString(Object fieldValue) {
         return getAsString(fieldValue, "\n");
     }
-    
+
     public static Boolean getAsBoolean(Object fieldValue) {
-        if(fieldValue != null && fieldValue instanceof Boolean) { 
+        if (fieldValue != null && fieldValue instanceof Boolean) {
             return (Boolean) fieldValue;
-        } else if(fieldValue != null) {            
+        } else if (fieldValue != null) {
             return Boolean.parseBoolean(getAsString(fieldValue));
         } else {
             return Boolean.FALSE;
         }
     }
-        
-        
+
     @SuppressWarnings("unchecked")
     public static String getAsString(Object fieldValue, String separator) {
         if (fieldValue == null) {
@@ -648,7 +647,7 @@ public class SolrTools {
             throw new IllegalArgumentException("filterQuery may not be null");
         }
 
-        filterQuery = SearchHelper.buildFinalQuery(filterQuery, false);
+        filterQuery = SearchHelper.buildFinalQuery(filterQuery, null, false, false);
         QueryResponse qr =
                 DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(field), 1, false);
         if (qr != null) {

@@ -6,8 +6,9 @@
 	<persistence-unit name="intranda_viewer_tomcat"
 		transaction-type="JTA">
 		<jta-data-source>java:comp/env/viewer</jta-data-source>
-		<class>io.goobi.viewer.model.annotation.Comment</class>
-        <class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+        <class>io.goobi.viewer.model.annotation.CrowdsourcingAnnotation</class>
+		<class>io.goobi.viewer.model.annotation.comments.Comment</class>
 		<class>io.goobi.viewer.model.bookmark.BookmarkList</class>
 		<class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
@@ -85,8 +86,9 @@
 		transaction-type="RESOURCE_LOCAL">
 
 		<!-- <class>io.goobi.viewer.model.annotation.AnnotationElement</class> -->
-		<class>io.goobi.viewer.model.annotation.Comment</class>
-        <class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+        <class>io.goobi.viewer.model.annotation.CrowdsourcingAnnotation</class>
+		<class>io.goobi.viewer.model.annotation.comments.Comment</class>
         <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
         <class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>

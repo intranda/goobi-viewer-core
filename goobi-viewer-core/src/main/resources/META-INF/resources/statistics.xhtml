@@ -108,7 +108,7 @@
             </div>
 
             <h:form prependId="false" id="dsSearchForm" style="display: none;">
-                <h:inputText id="searchInput" value="#{searchBean.exactSearchString}" />
+                <h:inputText id="searchInput" value="#{searchBean.facets.currentFacetString}" />
                 <h:commandButton id="searchBtn" styleClass="btn btn--full" action="#{searchBean.searchDirect}">
                 </h:commandButton>
             </h:form>

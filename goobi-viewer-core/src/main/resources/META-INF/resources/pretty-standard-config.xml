@@ -106,8 +106,8 @@
     <url-mapping id="archives2">
         <pattern value="/archives/#{archiveBean.currentDatabase}/#{archiveBean.currentResource}/" />
         <view-id value="/archivesContent.xhtml" />
-        <query-param onPostback="false" name="selected">#{archiveBean.selectedEntryId}</query-param>
-        <action onPostback="false">#{archiveBean.initializeArchiveTree()}</action>
+        <query-param onPostback="false" name="selected">#{selectedEntryId}</query-param>
+        <action onPostback="false">#{archiveBean.initializeArchiveTree(selectedEntryId)}</action>
     </url-mapping>
 
 	<!-- FEEDBACK -->
@@ -740,6 +740,11 @@
     <url-mapping id="userMenuAnnotations">
         <pattern value="/user/annotations/" />
         <view-id value="/userBackendAnnotations.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="userMenuComments">
+        <pattern value="/user/comments/" />
+        <view-id value="/userBackendComments.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 	

@@ -34,7 +34,7 @@ public class GeoCoordinateFeatureTest {
         String referencePointsString = "1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2, 1.1 1.2";
         String referenceQuery = "IsWithin(POLYGON(("+referencePointsString+")))";
         // System.out.println("query = " + referenceQuery);
-        GeoCoordinateFeature feature = new GeoCoordinateFeature(points);
+        GeoCoordinateFeature feature = new GeoCoordinateFeature(points, "IsWithin", "POLYGON");
         String query = feature.getSearchString();
         assertEquals(referenceQuery, query);
     }
@@ -48,4 +48,22 @@ public class GeoCoordinateFeatureTest {
         double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
         assertArrayEquals(referencePoints, points);
     }
+    
+    @Test
+    public void testFacetEscaping() throws UnsupportedEncodingException {
+        String origFacetString = "WKT_COORDS:\"IsWithin(POLYGON((11.83273903383027 51.94656677497078,11.83273903383027 53.48917317885388,13.855459790711027 53.48917317885388,13.855459790711027 51.94656677497078,11.83273903383027 51.94656677497078)))\"";
+        String geoJson = "{\"type\":\"rectangle\",\"vertices\":[[11.83273903383027,51.94656677497078],[11.83273903383027,53.48917317885388],[13.855459790711027,53.48917317885388],[13.855459790711027,51.94656677497078],[11.83273903383027,51.94656677497078]]}";
+        GeoFacetItem item = new GeoFacetItem("WKT_COORDS");
+        SearchFacets facets = new SearchFacets();
+        facets.getCurrentFacets().add(item);
+        facets.setGeoFacetFeature(geoJson);
+        
+        String urlFacetString = facets.getCurrentFacetString();
+        String urlString = URLEncoder.encode(urlFacetString, "utf-8");
+        
+        facets.setCurrentFacetString(urlString);
+        
+        String filterQueryString = facets.generateFacetFilterQueries(0, true, true).get(0);
+    }
+
 }

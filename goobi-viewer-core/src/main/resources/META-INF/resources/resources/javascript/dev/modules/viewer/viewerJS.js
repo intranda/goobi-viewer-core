@@ -510,7 +510,8 @@ var viewerJS = (function () {
 			}
 		}
 	}
-	
+
+	// REQUIRED FIELDS/CHECKBOXES CHECK
 	viewer.initRequiredInputs = function() {
 	
 		let $requireElements = $("[data-require-input]");
@@ -520,22 +521,52 @@ var viewerJS = (function () {
 			$ele.attr("disabled", "disabled");
 			let id = $(element).attr("data-require-input");
 			let $texts = $("[data-require-input-text='" + id + "']");
-			$texts.on("change paste keyup cut", (e) => {
-				let filled = true;
-				$texts.each((index, element) => {
-					let text = $(element).val();
-					if(!text) {
-						filled = false;
+			let $checkboxes = $("[data-require-input-checkbox='" + id + "']");
+			
+			var allCheckboxesChecked = false;
+			var allTextFieldsFilled = false;
+			
+			// CHECK ALL REQUIRED CHECKBOXES AND TEXT FIELDS
+			$checkboxes.add($texts).on("change paste keyup cut", (e) => {
+				$checkboxes.each((index, element) => {
+					if ( $(element).is(':checked') ) {
+						let isChecked = true;
+						 // console.log("single checkbox checked");
+						 allCheckboxesChecked = true;
+					} else {
+						let isChecked = false;
+						allCheckboxesChecked = false;
+						// console.log("single checkbox unchecked");
 						return false;
 					}
-				});
-				if(filled) {
+					});
+				
+					$texts.each((index, element) => {
+						let text = $(element).val();
+						if(!text) {
+							allTextFieldsFilled = false;
+							// console.log(allTextFieldsFilled);
+							return false;
+						} else {
+							allTextFieldsFilled = true;
+							// console.log(allTextFieldsFilled);
+						}
+					});
+				
+				
+				// ACTIVATE SUBMIT BUTTON IF ALL REQUIRED CHECKBOXES AND TEXTFIELDS ARE FILLED/CHECKED
+				if(allCheckboxesChecked && allTextFieldsFilled == true) {
 					$ele.removeAttr("disabled");
+					// console.log('button activated, removed attribute');
 				} else {
 					$ele.attr("disabled", "disabled");
+					// console.log('button DEactivated, attribute added');
 				}
+				
+				// console.log(allCheckboxesChecked);
 							
-			}); 
+			});
+
 		});
 	
 	}

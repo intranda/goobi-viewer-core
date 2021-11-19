@@ -30,7 +30,7 @@
 		**/
 		//<![CDATA[
 		(() => {
-        	this.geoMap = new viewerJS.GeoMap({
+        	var geoMap = new viewerJS.GeoMap({
         	    mapId: "#{cc.attrs.mapId}",
            		language: "#{navigationHelper.localeString}",
            		iconPath: "#{request.contextPath}/resources/images/map",
@@ -41,9 +41,9 @@
 	           		clusterMarkers: #{cc.attrs.clusterMarkers}
            		}
            	});
-        	this.initMap = function(view, features) {
-        	    this.geoMap.init(view);
-            	let layer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
+        	var initMap = function(view, features) {
+        	    geoMap.init(view);
+            	let layer = new viewerJS.GeoMap.featureGroup(geoMap, {
             	    markerIcon: #{cc.attrs.geoMap.markerAsJSON}
             	})
             	layer.onFeatureClick.subscribe(feature => {
@@ -64,19 +64,15 @@
 	        	if(highlightDocumentId) {
 	        	    features.filter(f => f.properties.documentId == highlightDocumentId).forEach(f => f.properties.highlighted = true);
 	        	}
-	        	//console.log("init features", features, features.filter(f => f.properties.documentId == highlightDocumentId));
             	layer.init(features, true);
-
-                //geoMap.setView(geoMap.getViewAroundFeatures(layer.getFeatures()));
         	}
         	
            	$(document).ready(() => {   
             	let view = #{cc.attrs.geoMap.initialView};
             	let features = #{cc.attrs.geoMap.featuresAsString};
             	if(features.length > 0 ) {
-            	    this.initMap(view, features);
+            	    initMap(view, features);
             	} else {
-            	    console.log("hide map because of missing features");
             	    $("##{cc.attrs.mapId}").parent().hide();
             	}
             })
