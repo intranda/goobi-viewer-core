@@ -629,6 +629,11 @@ public class AdminBean implements Serializable {
             for (User user : dirtyUsers.keySet()) {
                 String dirty = dirtyUsers.get(user);
                 UserRole userRole = dirtyUserRoles.keySet().stream().filter(r -> r.getUser().equals(user)).findFirst().orElse(null);
+                if (userRole == null) {
+                    logger.warn("userRole not found");
+                    return;
+                }
+                
                 switch (dirty) {
                     case "save":
                         logger.trace("Saving UserRole: {}", userRole);
