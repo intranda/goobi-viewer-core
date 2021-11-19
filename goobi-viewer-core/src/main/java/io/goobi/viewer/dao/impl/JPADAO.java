@@ -5340,8 +5340,6 @@ public class JPADAO implements IDAO {
             return true;
         } catch (IllegalArgumentException e) {
             return false;
-        } finally {
-            getEntityManager().close();
         }
     }
 
