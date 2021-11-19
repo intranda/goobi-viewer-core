@@ -104,7 +104,6 @@ public final class SearchHelper {
      */
     private static final List<String> CONFIGURED_FACET_FIELDS = DataManager.getInstance().getConfiguration().getFacetFields();
 
-    
     /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code> */
     public static final String PARAM_NAME_FILTER_QUERY_SUFFIX = "filterQuerySuffix";
     /** Constant <code>SEARCH_TERM_SPLIT_REGEX="[ ]|[,]|[-]"</code> */
@@ -143,7 +142,6 @@ public final class SearchHelper {
 
     /** Filter subquery for collection listing (no volumes). */
     static volatile String collectionBlacklistFilterSuffix = null;
-    
 
     /**
      * Main search method for aggregated search.
@@ -512,7 +510,7 @@ public final class SearchHelper {
      */
     private static Map<String, CollectionResult> createCollectionResults(FacetField facetResults, String splittingChar) {
         Map<String, CollectionResult> ret = new HashMap<>();
-        
+
         Set<String> counted = new HashSet<>();
         for (Count count : facetResults.getValues()) {
             String dc = count.getName();
@@ -540,9 +538,9 @@ public final class SearchHelper {
                     parentCollection.incrementCount(count.getCount());
                 }
             }
-//            counted.add(dc);
+            //            counted.add(dc);
         }
-        
+
         return ret;
     }
 
@@ -1743,7 +1741,16 @@ public final class SearchHelper {
                             ret.put(currentField, new HashSet<String>());
                         }
                         ret.get(currentField).add(value);
-                        ret.get(_TITLE_TERMS).add("(" + value + ")");
+                        switch (currentField) {
+                            // Do not add values to title terms for certain fields (expand as necessary)
+                            case SolrConstants.DOCSTRCT:
+                            case SolrConstants.DOCTYPE:
+                            case SolrConstants.IDDOC:
+                                break;
+                            default:
+                                ret.get(_TITLE_TERMS).add("(" + value + ")");
+                                break;
+                        }
                     }
                 }
             } else if (s.length() > 0 && !stopwords.contains(s)) {
@@ -1796,8 +1803,8 @@ public final class SearchHelper {
             params.put("defType", "edismax");
             params.put("uf", "* _query_");
             String bq = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) : null;
-            if(bq != null) {
-             params.put("bq", bq);
+            if (bq != null) {
+                params.put("bq", bq);
             }
         }
 
@@ -1949,17 +1956,16 @@ public final class SearchHelper {
         if (fieldName == null) {
             return null;
         }
-        
+
         /**
          * If the given fieldname is a facetified version of a configured facet field, return the configured field
          */
         for (String field : CONFIGURED_FACET_FIELDS) {
             String facetField = facetifyField(field);
-            if(facetField.equals(fieldName)) {
+            if (facetField.equals(fieldName)) {
                 return field;
             }
         }
-        
 
         switch (fieldName) {
             case SolrConstants.FACET_DC:
@@ -2359,8 +2365,8 @@ public final class SearchHelper {
 
         // Boosting
         if (boostTopLevelDocstructs) {
-//            String prefix = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) + " "
-//                    : "";
+            //            String prefix = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) + " "
+            //                    : "";
             String prefix = "";
             String template =
                     "+(" + prefix + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString().replace("\"", "\\\"")) + ")";

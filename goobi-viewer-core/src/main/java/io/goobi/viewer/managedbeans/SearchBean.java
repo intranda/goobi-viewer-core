@@ -359,7 +359,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public String searchDirect() {
         logger.trace("searchDirect");
         resetSearchResults();
-        facets.resetCurrentFacetString();
+        //facets.resetCurrentFacetString();
         return "pretty:newSearch5";
     }
 
