@@ -59,6 +59,7 @@ import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.themes.Theme;
 
 /**
  * <p>
@@ -2295,7 +2296,16 @@ public interface IDAO {
     
     public boolean deleteSlider(CMSSlider slider) throws DAOException;
 
-    List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException
-    ;
+    List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException;
 
+    public List<Theme> getConfiguredThemes() throws DAOException;
+    
+    public Theme getTheme(String name) throws DAOException;
+    
+    public boolean addTheme(Theme theme) throws DAOException;
+    
+    public boolean updateTheme(Theme theme) throws DAOException;
+    
+    public boolean deleteTheme(Theme theme) throws DAOException;
+    
 }

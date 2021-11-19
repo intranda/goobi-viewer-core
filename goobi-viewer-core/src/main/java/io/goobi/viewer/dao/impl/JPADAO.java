@@ -89,6 +89,7 @@ import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.themes.Theme;
 
 /**
  * <p>
@@ -5286,8 +5287,6 @@ public class JPADAO implements IDAO {
             return true;
         } catch (IllegalArgumentException e) {
             return false;
-        } finally {
-            getEntityManager().close();
         }
     }
 
@@ -5311,5 +5310,88 @@ public class JPADAO implements IDAO {
                 .collect(Collectors.toList());
 
         return pageList;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getConfiguredThemes()
+     */
+    @Override
+    public List<Theme> getConfiguredThemes() throws DAOException {
+        preQuery();
+        Query q = getEntityManager().createQuery("SELECT t FROM Theme t");
+        return q.getResultList();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getTheme(java.lang.String)
+     */
+    @Override
+    public Theme getTheme(String name) throws DAOException {
+        preQuery();
+        Query q = getEntityManager().createQuery("SELECT t FROM Theme t WHERE UPPER(u.name) = :name");
+        if (name != null) {
+            q.setParameter("name", name.toUpperCase());
+        }
+        try {
+            Theme t = (Theme) q.getSingleResult();
+            if (t != null) {
+                getEntityManager().refresh(t);
+            }
+            return t;
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            logger.warn(e.getMessage());
+            return (Theme) q.getResultList().get(0);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addTheme(io.goobi.viewer.model.viewer.themes.Theme)
+     */
+    @Override
+    public boolean addTheme(Theme theme) throws DAOException {
+        preQuery();
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().persist(theme);
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateTheme(io.goobi.viewer.model.viewer.themes.Theme)
+     */
+    @Override
+    public boolean updateTheme(Theme theme) throws DAOException {
+        preQuery();
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().merge(theme);
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteTheme(io.goobi.viewer.model.viewer.themes.Theme)
+     */
+    @Override
+    public boolean deleteTheme(Theme theme) throws DAOException {
+        preQuery();
+        try {
+            getEntityManager().getTransaction().begin();
+            Theme o = getEntityManager().getReference(Theme.class, theme.getId());
+            getEntityManager().remove(o);
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }
