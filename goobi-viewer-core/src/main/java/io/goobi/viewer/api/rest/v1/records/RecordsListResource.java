@@ -124,7 +124,7 @@ public class RecordsListResource {
             String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
             finalQuery += " +" + discriminatorField + ":" + subtheme;
         }
-        finalQuery += " " + SearchHelper.getAllSuffixes(servletRequest, true, true);
+        finalQuery += SearchHelper.getAllSuffixes(servletRequest, true, true);
         ;
 
         return finalQuery;
