@@ -20,6 +20,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -366,15 +367,12 @@ public class NetTools {
                     smtpPort = 25;
                 }
                 props.setProperty("mail.transport.protocol", "smtp");
-                //                props.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-                //                props.setProperty("mail.smtp.socketFactory.fallback", "false");
-//                props.setProperty("mail.smtp.socketFactory.port", String.valueOf(smtpPort));
                 props.setProperty("mail.smtp.port", String.valueOf(smtpPort));
                 props.setProperty("mail.smtp.host", smtpServer);
-//                props.setProperty("mail.smtp.ssl.trust", "*");
-//                props.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
+                //                props.setProperty("mail.smtp.ssl.trust", "*");
+                //                props.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
                 props.setProperty("mail.smtp.starttls.enable", "true");
-//                props.setProperty("mail.smtp.starttls.required", "true");
+                props.setProperty("mail.smtp.starttls.required", "true");
                 break;
             case "SSL":
                 logger.debug("Using SSL");
@@ -430,8 +428,7 @@ public class NetTools {
             i++;
         }
         msg.setRecipients(Message.RecipientType.TO, addressTo);
-        // Optional : You can also set your custom headers in the Email if you
-        // Want
+        // Optional : You can also set your custom headers in the Email if you want
         // msg.addHeader("MyHeaderName", "myHeaderValue");
         msg.setSubject(subject);
         {
