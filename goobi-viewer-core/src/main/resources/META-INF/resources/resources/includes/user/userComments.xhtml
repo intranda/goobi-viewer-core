@@ -158,7 +158,9 @@
 							<h:commandButton
 								action="#{commentBean.createComment(commentText, commentRestricted)}"
 								styleClass="btn btn--success" value="#{msg.addNoteText}">
-								<f:ajax execute="userCommentAdd commentLicenseCheckbox" render="@form messages" />
+								<f:ajax execute="userCommentAdd commentLicenseCheckbox" render="@form" 
+								onevent="e => viewerJS.jsfAjax.showSuccessToast(e, &quot;#{msg.commentSaveSuccess}&quot;)"
+								onerror="e => viewerJS.jsfAjax.showErrorToast(e.responseText)"/>
 							</h:commandButton>
 						</div>
 					</div>

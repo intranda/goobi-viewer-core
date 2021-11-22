@@ -77,8 +77,12 @@ public class CommentBean implements Serializable {
                 new JsfMessagesNotificator());
     }
     
-    public void createComment(String text, boolean restricted) throws IndexUnreachableException {
-        this.commentManager.createComment(text, userBean.getUser(), activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), getLicense(restricted), getInitialPublicationStatus());
+    public void createComment(String text, boolean restricted) throws AjaxResponseException {
+        try {
+            this.commentManager.createComment(text, userBean.getUser(), activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), getLicense(restricted), getInitialPublicationStatus());
+        } catch (IndexUnreachableException e) {
+            throw new AjaxResponseException(e.toString());
+        }
     }
     
     public void editComment() throws AjaxResponseException {
