@@ -84,6 +84,7 @@ public class CommentManager implements AnnotationLister<Comment> {
         Comment editedComment = new Comment(comment);
         editedComment.setText(textCleaned);
         comment.setPublicationStatus(publicationStatus);
+        comment.setDateModified(LocalDateTime.now());
         try {
             saver.save(editedComment);
             notificators.forEach(n -> n.notifyEdit(comment, editedComment, BeanUtils.getLocale()));
