@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * @author florian
@@ -71,7 +72,7 @@ public class SearchSortingOption {
     }
 
     public String getLabel() {
-        if("RANDOM".equalsIgnoreCase(field)) {
+        if(SolrConstants.SORT_RANDOM.equalsIgnoreCase(field)) {
             return ViewerResourceBundle.getTranslation(field, null);
         } else if(StringUtils.isNotBlank(field)) {            
             return ViewerResourceBundle.getTranslation(field, null) + " " + ViewerResourceBundle.getTranslation(getSearchSortingKey(), null);

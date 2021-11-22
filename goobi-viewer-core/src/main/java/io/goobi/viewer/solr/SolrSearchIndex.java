@@ -231,8 +231,11 @@ public final class SolrSearchIndex {
             for (int i = 0; i < sortFields.size(); ++i) {
                 StringPair sortField = sortFields.get(i);
                 if (StringUtils.isNotEmpty(sortField.getOne())) {
-                    // If RANDOM is used, generate a randomized sort field
-                    if ("RANDOM".equals(sortField.getOne())) {
+                    if (SolrConstants.SORT_RELEVANCE.equals(sortField.getOne())) {
+                        // If RELEVANCE is used, just add nothing
+                        continue;
+                    } else if (SolrConstants.SORT_RANDOM.equals(sortField.getOne())) {
+                        // If RANDOM is used, generate a randomized sort field
                         sortField.setOne(SolrTools.generateRandomSortField());
                     }
                     solrQuery.addSort(sortField.getOne(), "desc".equals(sortField.getTwo()) ? ORDER.desc : ORDER.asc);
@@ -263,13 +266,13 @@ public final class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(fq);
-                 // logger.trace("adding filter query: {}", fq)
+                // logger.trace("adding filter query: {}", fq)
             }
         }
         if (params != null && !params.isEmpty()) {
             for (String key : params.keySet()) {
                 solrQuery.set(key, params.get(key));
-                 // logger.trace("&{}={}", key, params.get(key));
+                // logger.trace("&{}={}", key, params.get(key));
             }
         }
 

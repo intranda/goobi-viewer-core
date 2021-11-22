@@ -1271,7 +1271,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public void setSortString(String sortString) {
         if ("-".equals(sortString)) {
             this.sortString = "";
-        } else if (sortString != null && "RANDOM".equals(sortString.toUpperCase())) {
+        } else if (sortString != null && SolrConstants.SORT_RANDOM.equals(sortString.toUpperCase())) {
             this.sortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
         } else {
             this.sortString = sortString;
@@ -1284,7 +1284,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public String getSortString() {
         if (StringUtils.isEmpty(sortString)) {
             String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
-            if ("RANDOM".equalsIgnoreCase(defaultSortField)) {
+            if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(defaultSortField)) {
                 setSortString(defaultSortField);
             } else {
                 return "-";
