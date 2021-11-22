@@ -43,6 +43,10 @@
 				<ui:repeat var="comment"  varStatus="status"
 					value="#{commentBean.commentsForCurrentPage}">
 					<div class="user-comments__comment">
+					
+					<!-- START BLOCK - AUTHOR IMAGE/COMMENT INFO -->
+					<div class="user-comments__comment-info">	
+					
 						<!-- USER IMAGE -->
 						<div class="user-comments__comment-image">
 							<img src="#{comment.creator.avatarUrl}" alt="User avatar" />
@@ -53,6 +57,8 @@
 							<span class="user-comments__comment-metadata-creator">#{comment.creator.displayName}</span>
 							<span class="user-comments__comment-metadata-date">#{navigationHelper.getLocalDate(comment.dateCreated)}</span>
 						</div>
+						
+					</div>
 
 						<!-- COMMENT CONTENT -->
 						<div class="user-comments__comment-content">
@@ -73,7 +79,7 @@
 							</ui:fragment>
 
 								<!-- COMMENT TEXT -->
-								<div class="user-comments__comment-content-options-text in">
+								<div class="user-comments__comment-content-text in">
 									#{comment.displayText}</div>
 
 									<!-- EDIT COMMENT -->
@@ -118,8 +124,8 @@
 						$("#modalUserCommentEdit-#{comment.id}-ok").on("click", () => {
 						    let val = $("#modalUserCommentEdit-#{comment.id}-text").val();
 						    viewerJS.jsfAjax.handleResponse(
-						    	response => viewerJS.notifications.success("#{msg.commentEditSuccess}", ""),
-						    	response => viewerJS.notifications.error(response.responseText, "")
+						    	response => viewerJS.swaltoasts.success("#{msg.commentEditSuccess}", ""),
+						    	response => viewerJS.swaltoasts.error(response.responseText, "")
 						    )
 						    editComment({id:"#{comment.id}", text:val});
 						})					
@@ -127,8 +133,8 @@
 							viewerJS.notifications.confirm('', '' ,'', '#{msg.userCommentDeleteText}')
 								.then((result) => {
 								      viewerJS.jsfAjax.handleResponse(
-									    	response => viewerJS.notifications.success("#{msg.commentDeleteSuccess}", ""),
-									    	response => viewerJS.notifications.error(response.responseText, "")
+									    	response => viewerJS.swaltoasts.success("#{msg.commentDeleteSuccess}", ""),
+									    	response => viewerJS.swaltoasts.error(response.responseText, "")
 									  );
 									  deleteComment({id:"#{comment.id}"});
 									})

@@ -20,19 +20,17 @@
 	}
 	&__comment {
 		display: grid;
-		grid-template-columns: 1fr 3fr;
-		grid-template-areas:
-			"image content"
-			"metadata content";
+		grid-template-columns: minmax(10px, 1fr) minmax(10px, 3fr);
 		margin-bottom: 21px;
 		border: 1px solid @middlegray;
 	}
+	&__comment-info {
+		background-color: @lightgray;
+	}
 	&__comment-image {
-		grid-area: image;
 		padding: 10px;
 		padding-bottom: 0;
 		text-align: center;
-		background-color: @lightgray;
 		img {
 			border-radius: 50%;
 			border: 5px solid @white;
@@ -49,7 +47,6 @@
 		padding: 1rem;
 		padding-top: 1.5rem;
 		text-align: center;
-		background-color: @lightgray;
 		span {
 			display: block;
 		}
@@ -63,7 +60,6 @@
 	}
 	&__comment-content {
 		position: relative;
-		grid-area: content;
 		padding-bottom: 3rem;
 		&-options {
 			display: flex;
@@ -128,6 +124,10 @@
 				opacity: 1;
 			}
 		}
+	}
+	&__comment-content-text {
+		padding: 1rem 1.5rem;
+		word-wrap: anywhere;
 	}
 	&__comment-content-loader {
 		display: none;

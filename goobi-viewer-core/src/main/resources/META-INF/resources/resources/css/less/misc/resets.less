@@ -7,8 +7,6 @@
     overflow-y: hidden;
 } */
 
-
-
 .modal-dialog {
 	z-index: 2031;
 }
@@ -371,13 +369,14 @@ button {
 
 // SWEET ALERT 2 OVERRIDES
 
+.swal2-container {
+	z-index: 2401;
+}
+
 .swal2-header {
 	h2 {
 		font-size: 1.5rem;
 	}
-}
-.swal2-container {
-	z-index: 2220;
 }
 .swal2-actions {
 	.btn--default {
@@ -386,6 +385,10 @@ button {
 }
 .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
     background: rgba(0,0,0,.8);
+}
+
+.swal2-popup.swal2-toast .swal2-title {
+	font-size: 1.3rem;
 }
 
 .-sweetAlertShowAnimation {
@@ -404,6 +407,28 @@ button {
 @keyframes swalAnimHide {
   0% {opacity: 1;}
   100% { opacity: 0; }
+}
+
+@keyframes swal2-toast-show {
+ 0% {
+  transform:translateY(-.625em) rotateZ(0deg)
+ }
+ 33% {
+  transform:translateY(0) rotateZ(0deg)
+ }
+ 66% {
+  transform:translateY(.3125em) rotateZ(0deg)
+ }
+ 100% {
+  transform:translateY(0) rotateZ(0)
+ }
+}
+
+@keyframes swal2-toast-hide {
+ 100% {
+  transform:rotateZ(0deg);
+  opacity:0
+ }
 }
 
 
