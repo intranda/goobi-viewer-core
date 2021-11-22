@@ -5,6 +5,7 @@
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
 
@@ -189,13 +190,51 @@
 								<!-- TO DO: CONFIG SWITCH FOR THIS RENDERED CONDITION CHECKBOX, VALUE + ADDITIONAL TEXT WHICH IS SEND BY FORM(?) -->
 <!-- 								<ui:fragment rendered="#{userBean.userFeedbackAdditionalCheckbox()"> -->
 									<div class="feedback-modal__required-checkbox-wrapper">
-									  <input class="feedback-modal__required-checkbox" 
-										  data-require-input-checkbox="feedbackInput" autocomplete="off" 
-										  jsf:value="#{feedbackModalAcceptedTerms}" id="feedbackModalRequiredCheckbox" 
-										  type="checkbox" name="feedbackModalRequiredCheckboxInput">
-									  	  <f:validator validatorId="omnifaces.RequiredCheckboxValidator" />
-									  </input>
-									  <label id="feedbackModalRequiredCheckboxText" class="feedback-modal__required-checkbox-text" for="feedbackModalRequiredCheckbox">#{msg.feedbackAcceptingTerms}</label>
+									  
+									  
+<!-- 									  <input class="feedback-modal__required-checkbox"  -->
+<!-- 										  data-require-input-checkbox="feedbackInput" autocomplete="off"  -->
+<!-- 										  jsf:value="#{feedbackModalAcceptedTerms}" id="feedbackModalRequiredCheckbox"  -->
+<!-- 										  type="checkbox" name="feedbackModalRequiredCheckboxInput"> -->
+<!-- 									  	  <f:validator validatorId="omnifaces.RequiredCheckboxValidator" /> -->
+<!-- 									  </input> -->
+<!-- 									  <label id="feedbackModalRequiredCheckboxText" class="feedback-modal__required-checkbox-text" for="feedbackModalRequiredCheckbox">#{msg.feedbackAcceptingTerms}</label> -->
+									  
+									  
+									  	<div class="form-row">
+										  	<p class="col-12 feedback-modal__accept-terms-text">#{msg.feedbackAcceptingTerms}</p>
+										  
+										  
+						  					<div id="sendContactFormAcceptTerms" class="col-12 col-sm-3 feedback-modal__accept-terms-label">
+												<label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
+											</div>	
+	                                       
+	                                       
+	                                        <div class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch">
+	                                            <h:selectOneRadio group="requiredTermsCheckbox" value="true"
+	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}"
+	                                                pt:data-require-input-checkbox="uncheckedChecker">
+	                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+	                                            </h:selectOneRadio>
+	                                            <h:selectOneRadio id="test123" group="requiredTermsCheckbox" value="true"
+	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}"
+	                                                pt:data-require-input-checkbox="feedbackInput">
+	                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+	                                            </h:selectOneRadio>
+	                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+	                                        </div>
+                                        </div>
+                                        
+                                        
+	
+									  
+									  
+									  
+									  
+									  
+									  
+									  
+									  
 									</div>
 
 <!-- 								</ui:fragment> -->
