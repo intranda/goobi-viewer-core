@@ -98,7 +98,7 @@
 			&-text,
 			&-text-edit {
 				position: relative;
-				padding: 10px 15px;
+				padding: 1rem 1.5rem;
 			}
 			&-text {
 				// display: none;
@@ -110,6 +110,7 @@
 				textarea {
 					padding: 1rem;
 					border: 1px solid @middlegray;
+					height: 200px;
 					&:focus {
 						padding: 1rem;
 						border: 1px solid @middlegray;
@@ -250,7 +251,17 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.user-comments {
+		&__comment {
+			grid-template-columns: minmax(10px, 3fr);
+		}
+		.user-comments__edit-comment-button,
+		.user-comments__delete-comment-button {
+					opacity: 1;
+		}
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}
