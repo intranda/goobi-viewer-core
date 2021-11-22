@@ -19,26 +19,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
-import org.apache.tomcat.util.net.SocketEvent;
 import org.json.JSONObject;
 
-import io.goobi.viewer.model.viewer.themes.SocialMediaLink;
+import io.goobi.viewer.model.viewer.themes.ThemeLink;
+import io.goobi.viewer.model.viewer.themes.ThemeLink.InternalService;
+import io.goobi.viewer.model.viewer.themes.ThemeLink.Service;
+import io.goobi.viewer.model.viewer.themes.ThemeLink.SocialMediaService;
 
 /**
  * @author florian
  *
  */
-public class SocialMediaLinkConverter implements AttributeConverter<List<SocialMediaLink>, String> {
+@Converter
+public class ThemeLinkConverter implements AttributeConverter<List<ThemeLink>, String> {
 
     /* (non-Javadoc)
      * @see javax.persistence.AttributeConverter#convertToDatabaseColumn(java.lang.Object)
      */
     @Override
-    public String convertToDatabaseColumn(List<SocialMediaLink> attribute) {
+    public String convertToDatabaseColumn(List<ThemeLink> attribute) {
         JSONObject json = new JSONObject();
-        for (SocialMediaLink link : attribute) {
-            json.put(link.getService().name(), link.getLinkUrl());
+        for (ThemeLink link : attribute) {
+            json.put(link.getService().getInternalName(), link.getLinkUrl());
         }
         return json.toString();
     }
@@ -47,14 +51,19 @@ public class SocialMediaLinkConverter implements AttributeConverter<List<SocialM
      * @see javax.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
      */
     @Override
-    public List<SocialMediaLink> convertToEntityAttribute(String dbData) {
+    public List<ThemeLink> convertToEntityAttribute(String dbData) {
         JSONObject json = new JSONObject(dbData);
-        List<SocialMediaLink> links = new ArrayList<>();
+        List<ThemeLink> links = new ArrayList<>();
         for (String key : json.keySet()) {
-            SocialMediaLink.Service service = SocialMediaLink.Service.valueOf(key);
-            if(service != null) {
+            Service service = null;
+            try {
+                service = SocialMediaService.valueOf(key);
+            } catch (IllegalArgumentException e) {
+                service = InternalService.valueOf(key);
+            }
+            if (service != null) {
                 String url = json.getString(key);
-                SocialMediaLink link = new SocialMediaLink(service);
+                ThemeLink link = new ThemeLink(service);
                 link.setLinkUrl(url);
                 links.add(link);
             }

@@ -55,8 +55,9 @@
 		<class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSlider</class>
-	
-
+		<class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
+		<class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
+		
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
 			<property name="eclipselink.ddl-generation"
@@ -134,6 +135,8 @@
 		<class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSlider</class>
+		<class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
+		<class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver"

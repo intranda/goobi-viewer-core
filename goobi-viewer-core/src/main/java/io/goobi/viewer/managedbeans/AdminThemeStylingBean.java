@@ -15,14 +15,18 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -31,14 +35,53 @@ import io.goobi.viewer.solr.SolrTools;
  */
 @Named
 @ViewScoped
-public class AdminThemeStylingBean {
+public class AdminThemeStylingBean implements Serializable {
 
+    private static final long serialVersionUID = 837772138767500963L;
+    
     private final String mainThemeName;
     private final List<String> subThemeNames;
+    private List<ThemeConfiguration> configuredThemes;
     
-    public AdminThemeStylingBean() throws PresentationException, IndexUnreachableException {
+    public AdminThemeStylingBean() throws PresentationException, IndexUnreachableException, DAOException {
         mainThemeName = DataManager.getInstance().getConfiguration().getTheme();
         subThemeNames = SolrTools.getExistingSubthemes();
+        configuredThemes = DataManager.getInstance().getDao().getConfiguredThemes();
+    }
+    
+    public String getMainThemeName() {
+        return mainThemeName;
+    }
+    
+    public boolean isMainThemeConfigured() {
+        return configuredThemes.stream().anyMatch(t -> t.getName().equals(mainThemeName));
+    }
+    
+    public boolean isSubThemeConfigured(String name) {
+        return configuredThemes.stream().anyMatch(t -> t.getName().equals(name));
+    }
+    
+    public ThemeConfiguration getMainThemeConfiguration() {
+        return configuredThemes.stream().filter(t -> t.getName().equals(mainThemeName)).findAny().orElse(null);
+    }
+    
+    public ThemeConfiguration getSubThemeConfiguration(String name) {
+        return configuredThemes.stream().filter(t -> t.getName().equals(name)).findAny().orElse(null);
+    }
+    
+    public List<String> getNotConfiguredSubThemes() {
+        return subThemeNames.stream().filter(name -> isSubThemeConfigured(name)).collect(Collectors.toList());
+    }
+
+    public List<ThemeConfiguration> getConfiguredSubThemes() {
+        return configuredThemes.stream().filter(theme -> theme.getName().equals(mainThemeName)).collect(Collectors.toList());
+    }
+    
+    /**
+     * @return the subThemeNames
+     */
+    public List<String> getSubThemeNames() {
+        return subThemeNames;
     }
     
 }

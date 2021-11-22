@@ -16,29 +16,36 @@
 package io.goobi.viewer.model.viewer.themes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
-import io.goobi.viewer.dao.converter.FooterLinkConverter;
-import io.goobi.viewer.dao.converter.SocialMediaLinkConverter;
+import io.goobi.viewer.dao.converter.ThemeLinkConverter;
+import io.goobi.viewer.model.viewer.themes.ThemeLink.InternalService;
+import io.goobi.viewer.model.viewer.themes.ThemeLink.SocialMediaService;
 
 /**
  * @author florian
  *
  */
-public class Theme {
+@Entity
+@Table(name = "theme_configuration")
+public class ThemeConfiguration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "theme_id")
     private Long id;
     @Column(name = "name", nullable = true, columnDefinition = "TINYTEXT")
-    private final String name;
+    private String name;
     @Column(name = "label", nullable = true, columnDefinition = "TINYTEXT")
     private String label;
     @Column(name = "logo", nullable = true, columnDefinition = "TINYTEXT")
@@ -48,17 +55,37 @@ public class Theme {
     @Column(name = "stylesheet", nullable = true, columnDefinition = "LONGTEXT")
     private String styleSheet;
     @Column(name = "social_media_link", nullable = true, columnDefinition = "TINYTEXT")
-    @Convert(converter = SocialMediaLinkConverter.class)
-    List<SocialMediaLink> socialMediaUrls = new ArrayList<>();
+    @Convert(converter = ThemeLinkConverter.class)
+    List<ThemeLink> socialMediaUrls = new ArrayList<>();
     @Column(name = "footer_link", nullable = true, columnDefinition = "TINYTEXT")
-    @Convert(converter = FooterLinkConverter.class)
-    List<FooterLink> footerLinks = new ArrayList<>();
+    @Convert(converter = ThemeLinkConverter.class)
+    List<ThemeLink> footerLinks = new ArrayList<>();
     
     /**
-     * 
+     * Creates the internal lists for theme links
      */
-    public Theme(String themeName) {
+    public ThemeConfiguration() {
+        this.socialMediaUrls = Arrays.stream(ThemeLink.SocialMediaService.values()).map(s -> new ThemeLink(s)).collect(Collectors.toList());
+        this.footerLinks = Arrays.stream(ThemeLink.InternalService.values()).map(s -> new ThemeLink(s)).collect(Collectors.toList());
+    }
+    
+    /**
+     * sets the name and calls default constructor
+     */
+    public ThemeConfiguration(String themeName) {
+        this();
         this.name = themeName;
+    }
+    
+    public ThemeConfiguration(ThemeConfiguration orig) {
+        this.id = orig.id;
+        this.name = orig.name;
+        this.label = orig.label;
+        this.logoFilename = orig.logoFilename;
+        this.iconFilename = orig.iconFilename;
+        this.styleSheet = orig.styleSheet;
+        this.socialMediaUrls = orig.socialMediaUrls.stream().map(l -> new ThemeLink(l.getService(), l.getLinkUrl())).collect(Collectors.toList());
+        this.footerLinks = orig.footerLinks.stream().map(l -> new ThemeLink(l.getService(), l.getLinkUrl())).collect(Collectors.toList());
     }
 
     /**
@@ -106,42 +133,42 @@ public class Theme {
     /**
      * @return the styleSheetFilename
      */
-    public String getStyleSheetFilename() {
+    public String getStyleSheet() {
         return styleSheet;
     }
 
     /**
      * @param styleSheetFilename the styleSheetFilename to set
      */
-    public void setStyleSheetFilename(String styleSheetFilename) {
-        this.styleSheet = styleSheetFilename;
+    public void setStyleSheet(String styleSheet) {
+        this.styleSheet = styleSheet;
     }
 
     /**
      * @return the socialMediaUrls
      */
-    public List<SocialMediaLink> getSocialMediaUrls() {
+    public List<ThemeLink> getSocialMediaUrls() {
         return socialMediaUrls;
     }
 
     /**
      * @param socialMediaUrls the socialMediaUrls to set
      */
-    public void setSocialMediaUrls(List<SocialMediaLink> socialMediaUrls) {
+    public void setSocialMediaUrls(List<ThemeLink> socialMediaUrls) {
         this.socialMediaUrls = socialMediaUrls;
     }
 
     /**
      * @return the footerLinks
      */
-    public List<FooterLink> getFooterLinks() {
+    public List<ThemeLink> getFooterLinks() {
         return footerLinks;
     }
 
     /**
      * @param footerLinks the footerLinks to set
      */
-    public void setFooterLinks(List<FooterLink> footerLinks) {
+    public void setFooterLinks(List<ThemeLink> footerLinks) {
         this.footerLinks = footerLinks;
     }
 
@@ -158,5 +185,28 @@ public class Theme {
     public Long getId() {
         return id;
     }
+    
+    public ThemeLink getSocialMediaLink(ThemeLink.SocialMediaService service) {
+       return this.socialMediaUrls.stream().filter(l -> l.getService().equals(service)).findAny().orElseGet(() -> createLink(service));
+    }
+    
+
+    public ThemeLink getFooterLink(ThemeLink.InternalService service) {
+        return this.footerLinks.stream().filter(l -> l.getService().equals(service)).findAny().orElseGet(() -> createLink(service));
+     }
+
+    private ThemeLink createLink(SocialMediaService service) {
+        ThemeLink link = new ThemeLink(service);
+        this.socialMediaUrls.add(link);
+        return link;
+    }
+    
+    private ThemeLink createLink(InternalService service) {
+        ThemeLink link = new ThemeLink(service);
+        this.footerLinks.add(link);
+        return link;
+    }
+
+
 
 }

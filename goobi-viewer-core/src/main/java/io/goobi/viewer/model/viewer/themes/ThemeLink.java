@@ -19,41 +19,90 @@ package io.goobi.viewer.model.viewer.themes;
  * @author florian
  *
  */
-public class FooterLink {
+public class ThemeLink {
 
-    public static enum Service {
+    public static interface Service {
+        public String getLabelKey();
+        public String getHelpKey();
+        public String getInternalName();
+    }
+    
+    public static enum InternalService implements Service {
         contact("admin__themes__footer_contact__label", "admin__themes__footer_contact__help"),
         legal("admin__themes__footer_legal__label", "admin__themes__footer_legal__help"),
         privacy("admin__themes__footer_privacy__label", " admin__themes__footer_privacy__help");
-        
+
         private String labelKey, helpKey;
-        
-        private Service(String labelKey, String helpKey) {
+
+        private InternalService(String labelKey, String helpKey) {
             this.labelKey = labelKey;
             this.helpKey = helpKey;
         }
+
         public String getLabelKey() {
             return labelKey;
         }
+
         public String getHelpKey() {
             return helpKey;
         }
+        
+        public String getInternalName() {
+            return name();
+        }
     }
-    
+
+    public static enum SocialMediaService implements Service {
+        github("admin__themes__service_github__label", "admin__themes__service_github__help"),
+        twitter("admin__themes__service_twitter__label", "admin__themes__service_twitter__help"),
+        youtube("admin__themes__service_youtube__label", "admin__themes__service_youtube__help"),
+        slideshare("admin__themes__service_slideshare__label", "admin__themes__service_slideshare__help"),
+        facebook("admin__themes__service_facebook__label", "admin__themes__service_facebook__help"),
+        instagram("admin__themes__service_instagram__label", "admin__themes__service_instagram__help");
+
+        private String labelKey, helpKey;
+
+        private SocialMediaService(String labelKey, String helpKey) {
+                this.labelKey = labelKey;
+                this.helpKey = helpKey;
+            }
+
+        public String getLabelKey() {
+            return labelKey;
+        }
+
+        public String getHelpKey() {
+            return helpKey;
+        }
+
+        @Override
+        public String getInternalName() {
+            return name();
+        }
+    }
+
     private final Service service;
     private String linkUrl;
-    
-    public FooterLink(Service service) {
+
+    public ThemeLink(Service service) {
         this.service = service;
     }
+    
+    public ThemeLink(Service service, String linkUrl) {
+        this(service);
+        this.linkUrl = linkUrl;
+    }
+
     public Service getService() {
         return service;
     }
+
     public String getLinkUrl() {
         return linkUrl;
     }
+
     public void setLinkUrl(String url) {
         this.linkUrl = url;
     }
-    
+
 }
