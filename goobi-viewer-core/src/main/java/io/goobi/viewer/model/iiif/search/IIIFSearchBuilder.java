@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -507,13 +508,14 @@ public class IIIFSearchBuilder {
                     .getSearchIndex()
                     .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getDocStructSortFields(),
                             converter.getPresentationBuilder().getSolrFieldList());
+            String escapedQuery = Pattern.quote(query);
             for (SolrDocument doc : docList) {
                 Map<String, List<String>> fieldNames = SolrTools.getFieldValueMap(doc);
                 for (String fieldName : fieldNames.keySet()) {
                     if (fieldNameMatches(fieldName, displayFields)) {
                         String fieldValue = fieldNames.get(fieldName).stream().collect(Collectors.joining(" "));
-                        if (fieldValue.matches(AbstractSearchParser.getContainedWordRegex(AbstractSearchParser.getAutoSuggestRegex(query)))) {
-                            terms.addAll(converter.getSearchTerms(AbstractSearchParser.getAutoSuggestRegex(query), fieldValue, getMotivation()));
+                        if (fieldValue.matches(AbstractSearchParser.getContainedWordRegex(AbstractSearchParser.getAutoSuggestRegex(escapedQuery)))) {
+                            terms.addAll(converter.getSearchTerms(AbstractSearchParser.getAutoSuggestRegex(escapedQuery), fieldValue, getMotivation()));
                         }
                     }
                 }

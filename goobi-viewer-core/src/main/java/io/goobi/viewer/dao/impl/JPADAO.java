@@ -719,7 +719,6 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public long getBookmarkListCount(User user) throws DAOException {
         preQuery();
@@ -1720,7 +1719,7 @@ public class JPADAO implements IDAO {
                 }
                 sbQuery.append(",");
             }
-            sbQuery.deleteCharAt(sbQuery.length()-1);
+            sbQuery.deleteCharAt(sbQuery.length() - 1);
         }
 
         Query q = getEntityManager().createQuery(sbQuery.toString());
@@ -1731,6 +1730,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
+     * 
      * @should sort correctly
      */
     @SuppressWarnings("unchecked")
@@ -2649,9 +2649,10 @@ public class JPADAO implements IDAO {
                 continue;
             }
             String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
-            if("NULL".equals(filterValue)) {
+            if ("NULL".equals(filterValue)) {
                 //don't add params
-            } else if ("creatorId_reviewerId".equals(key) || "campaignId".equals(key) || "generatorId".equals(key) || "creatorId".equals(key) || "reviewerId".equals(key)) {
+            } else if ("creatorId_reviewerId".equals(key) || "campaignId".equals(key) || "generatorId".equals(key) || "creatorId".equals(key)
+                    || "reviewerId".equals(key)) {
                 params.put(keyValueParam, Long.valueOf(filterValue));
             } else {
                 params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
@@ -2669,7 +2670,7 @@ public class JPADAO implements IDAO {
                     case "a.creatorId":
                     case "a.reviewerId":
                     case "a.motivation":
-                        if("NULL".equalsIgnoreCase(filterValue)) {
+                        if ("NULL".equalsIgnoreCase(filterValue)) {
                             where = subKey + " IS NULL";
                         } else {
                             where = subKey + "=:" + keyValueParam;
@@ -4542,19 +4543,27 @@ public class JPADAO implements IDAO {
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
-    
+
+    @SuppressWarnings("unchecked")
     @Override
     public List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean descending) throws DAOException {
         preQuery();
         String query = "SELECT a FROM CrowdsourcingAnnotation a";
-        if(StringUtils.isNotBlank(sortField)) {
-            query += " ORDER BY a." + sortField + (descending ? " desc" : " asc");
+
+        if (StringUtils.isNotEmpty(sortField)) {
+            StringBuilder sbOrder = new StringBuilder();
+            sbOrder.append(" ORDER BY a.").append(sortField);
+            if (descending) {
+                sbOrder.append(" DESC");
+            }
+            query += sbOrder.toString();
         }
+
         Query q = getEntityManager().createQuery(query);
 
         return q.getResultList();
     }
-    
+
     @Override
     public long getTotalAnnotationCount() throws DAOException {
         preQuery();
@@ -4570,10 +4579,10 @@ public class JPADAO implements IDAO {
         return (long) q.getResultList().get(0);
     }
 
-
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getAllAnnotationsByMotivation(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String motivation) throws DAOException {
         preQuery();
@@ -4602,16 +4611,15 @@ public class JPADAO implements IDAO {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
     public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException {
         return getAnnotationsForTarget(pi, page, null);
     }
-    
-    
+
+    @SuppressWarnings("unchecked")
     @Override
     public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page, String motivation) throws DAOException {
-        
+
         preQuery();
         String query = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
         if (page != null) {
@@ -4619,7 +4627,7 @@ public class JPADAO implements IDAO {
         } else {
             query += " AND a.targetPageOrder IS NULL";
         }
-        if(StringUtils.isNotBlank(motivation)) {
+        if (StringUtils.isNotBlank(motivation)) {
             query += " AND a.motivation =  + :motivation";
         }
         Query q = getEntityManager().createQuery(query);
@@ -4627,7 +4635,7 @@ public class JPADAO implements IDAO {
         if (page != null) {
             q.setParameter("page", page);
         }
-        if(StringUtils.isNotBlank(motivation)) {
+        if (StringUtils.isNotBlank(motivation)) {
             q.setParameter("motivation", motivation);
         }
 
@@ -4756,12 +4764,13 @@ public class JPADAO implements IDAO {
 
         preQuery();
         String queryString = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
-
         if (StringUtils.isNotEmpty(sortField)) {
-            queryString += " ORDER BY a." + sortField;
+            StringBuilder sbOrder = new StringBuilder();
+            sbOrder.append(" ORDER BY a.").append(sortField);
             if (descending) {
-                queryString += " DESC";
+                sbOrder.append(" DESC");
             }
+            queryString += sbOrder.toString();
         }
 
         Query query = getEntityManager().createQuery(queryString).setParameter("userId", userId);
@@ -4777,7 +4786,6 @@ public class JPADAO implements IDAO {
      * @should return correct rows
      * @should filter by campaign name correctly
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters) throws DAOException {
@@ -4785,11 +4793,11 @@ public class JPADAO implements IDAO {
         String filterString = createAnnotationsFilterQuery(null, filters, params);
         return getAnnotations(first, pageSize, sortField, descending, filterString, params);
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
-            String filterString, Map<String,Object> params) throws DAOException {
+            String filterString, Map<String, Object> params) throws DAOException {
         params = params == null ? new HashMap<>() : params;
         synchronized (crowdsourcingRequestLock) {
             preQuery();
@@ -5364,7 +5372,5 @@ public class JPADAO implements IDAO {
 
         return pageList;
     }
-
-
 
 }

@@ -801,7 +801,10 @@ public class ViewerResourceBundle extends ResourceBundle {
         File file = getLocalTranslationFile(language);
         if (!file.exists()) {
             try {
-                file.createNewFile();
+                if (!file.createNewFile()) {
+                    logger.error("File could not be createad: {}", file.getAbsolutePath());
+                    return false;
+                }
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
                 return false;

@@ -140,17 +140,10 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
         String labelTemplate = buildPageLabelTemplate(DataManager.getInstance().getConfiguration().getPageSelectionFormat(), locale);
         for (int key : keys) {
             PhysicalElement page = pages.get(key);
-            PhysicalElement nextPage = null;
-            //            if (page.isDoubleImage() && pages.get(key + 1) != null) {
-            //                nextPage = pages.get(key++); // Skip next page since it's displayed together with the current page
-            //            }
-            SelectItem si = buildPageSelectItem(labelTemplate, page.getOrder(), page.getOrderLabel(), nextPage != null ? nextPage.getOrder() : null,
-                    nextPage != null ? nextPage.getOrderLabel() : null);
+            SelectItem si = buildPageSelectItem(labelTemplate, page.getOrder(), page.getOrderLabel(), null, null);
             dropdownPages.add(si);
             if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !page.isFulltextAvailable())) {
-                SelectItem full =
-                        buildPageSelectItem(labelTemplate, page.getOrder(), page.getOrderLabel(), nextPage != null ? nextPage.getOrder() : null,
-                                nextPage != null ? nextPage.getOrderLabel() : null);
+                SelectItem full = buildPageSelectItem(labelTemplate, page.getOrder(), page.getOrderLabel(), null, null);
                 dropdownFulltext.add(full);
             }
         }

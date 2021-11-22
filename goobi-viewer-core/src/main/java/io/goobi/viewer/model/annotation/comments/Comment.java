@@ -39,7 +39,7 @@ import io.goobi.viewer.model.security.user.User;
  */
 @Entity
 @Table(name = "annotations_comments")
-public class Comment extends PersistentAnnotation implements Comparable<Comment>{
+public class Comment extends PersistentAnnotation implements Comparable<Comment> {
 
     /**
      * 
@@ -64,7 +64,7 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
     public Comment(WebAnnotation source, Long id, String targetPI, Integer targetPage) {
         super(source, id, targetPI, targetPage);
     }
-    
+
     /**
      * @param string
      * @param i
@@ -73,7 +73,9 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
      */
     public Comment(String pi, int page, User owner, String text, String accessCondition, PublicationStatus publicationStatus) {
         super();
-        URI uri = DataManager.getInstance().getRestApiManager().getDataApiManager()
+        URI uri = DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
                 .map(urls -> urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_CANVAS).params(pi, page).buildURI())
                 .orElse(null);
         setAccessCondition(accessCondition);
@@ -81,7 +83,7 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
         setCreator(owner);
         setDateCreated(LocalDateTime.now());
         setMotivation(Motivation.COMMENTING);
-        setTarget(uri.toString());
+        setTarget(uri != null ? uri.toString() : "");
         setTargetPI(pi);
         setTargetPageOrder(page);
         setPublicationStatus(publicationStatus);
@@ -94,13 +96,12 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
     public String getText() {
         return getContentString();
     }
-    
+
     public void setText(String text) {
         TextualResource body = new TextualResource(text);
         this.setBody(body.asJson());
     }
-    
-    
+
     /**
      * @param c2
      * @return
@@ -122,6 +123,5 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
 
         return 1;
     }
-
 
 }

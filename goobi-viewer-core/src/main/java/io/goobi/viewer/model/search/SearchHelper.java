@@ -1962,7 +1962,7 @@ public final class SearchHelper {
          */
         for (String field : CONFIGURED_FACET_FIELDS) {
             String facetField = facetifyField(field);
-            if (facetField.equals(fieldName)) {
+            if (fieldName.equals(facetField)) {
                 return field;
             }
         }

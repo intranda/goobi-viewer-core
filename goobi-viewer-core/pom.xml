@@ -72,7 +72,9 @@
 		<!-- Sonar -->
 		<sonar.projectKey>intranda_goobi-viewer-core</sonar.projectKey>
 		<sonar.organization>intranda</sonar.organization>
-		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.java.source>11</sonar.java.source>
+        <sonar.java.target>11</sonar.java.target>
 
 		<!-- Manifest information -->
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>

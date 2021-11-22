@@ -373,7 +373,8 @@ public class SearchResultConverter {
      */
     public SearchTermList getSearchTerms(String regex, String value, List<String> searchMotivation) {
         SearchTermList terms = new SearchTermList();
-        String wordRegex = AbstractSearchParser.getSingleWordRegex(regex);
+        String escapedRegex = Pattern.quote(regex);
+        String wordRegex = AbstractSearchParser.getSingleWordRegex(escapedRegex);
         if (StringUtils.isNotBlank(value)) {
             Matcher matcher = Pattern.compile(wordRegex).matcher(value);
             while (matcher.find()) {
