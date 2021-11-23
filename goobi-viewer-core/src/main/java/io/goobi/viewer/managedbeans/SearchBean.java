@@ -158,7 +158,7 @@ public class SearchBean implements SearchInterface, Serializable {
     private int hitIndexOperand = 0;
     private SearchFacets facets = new SearchFacets();
     /** User-selected Solr field name by which the search results shall be sorted. A leading exclamation mark means descending sorting. */
-    private String sortString = "";
+    private SearchSortingOption searchSortingOption;
     /** Keep lists of select values, once generated, for performance reasons. */
     private final Map<String, List<StringPair>> advancedSearchSelectItems = new HashMap<>();
     /** Groups of query item clusters for the advanced search. */
@@ -794,9 +794,9 @@ public class SearchBean implements SearchInterface, Serializable {
 
         //        String currentQuery = SearchHelper.prepareQuery(searchString);
 
-        if (StringUtils.isEmpty(sortString)) {
+        if (searchSortingOption != null && StringUtils.isEmpty(searchSortingOption.getSortString())) {
             setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField());
-            logger.trace("Using default sorting: {}", sortString);
+            logger.trace("Using default sorting: {}", searchSortingOption.getSortString());
         }
 
         // Init search object
@@ -804,7 +804,7 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setUserInput(searchString);
         currentSearch.setQuery(searchStringInternal);
         currentSearch.setPage(currentPage);
-        currentSearch.setSortString(sortString);
+        currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
         currentSearch.setFacetString(facets.getCurrentFacetString());
         currentSearch.setCustomFilterQuery(customFilterQuery);
 
@@ -1270,28 +1270,48 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public void setSortString(String sortString) {
         if ("-".equals(sortString)) {
-            this.sortString = "";
-        } else if (sortString != null && SolrConstants.SORT_RANDOM.equals(sortString.toUpperCase())) {
-            this.sortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
-        } else {
-            this.sortString = sortString;
+            String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
+            if (StringUtils.isNotEmpty(defaultSortField)) {
+                sortString = defaultSortField;
+            }
+            
+        } 
+        
+        if (!"-".equals(sortString)) {
+            if(SolrConstants.SORT_RANDOM.equals(sortString.toUpperCase())) {
+                sortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
+            }
+            setSearchSortingOption(new SearchSortingOption(sortString, true));
         }
-        //        sortFields = SearchHelper.parseSortString(this.sortString, navigationHelper);
     }
 
     /** {@inheritDoc} */
     @Override
     public String getSortString() {
-        if (StringUtils.isEmpty(sortString)) {
-            String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
-            if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(defaultSortField)) {
-                setSortString(defaultSortField);
-            } else {
-                return "-";
-            }
+        if (searchSortingOption == null) {
+            setSearchString("-");
+
         }
 
-        return sortString;
+        if (searchSortingOption != null) {
+            return searchSortingOption.getSortString();
+        }
+
+        return "-";
+    }
+
+    /**
+     * @return the searchSortingOption
+     */
+    public SearchSortingOption getSearchSortingOption() {
+        return searchSortingOption;
+    }
+
+    /**
+     * @param searchSortingOption the searchSortingOption to set
+     */
+    public void setSearchSortingOption(SearchSortingOption searchSortingOption) {
+        this.searchSortingOption = searchSortingOption;
     }
 
     /**
@@ -1595,11 +1615,12 @@ public class SearchBean implements SearchInterface, Serializable {
         if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs() && searchTerms != null) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
         }
-        
+
         if (currentHitIndex < currentSearch.getHitsCount() - 1) {
             //            return currentSearch.getHits().get(currentHitIndex + 1).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex + 1, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery), searchTerms,
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery),
+                    searchTerms,
                     BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
         }
         //        return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
@@ -1622,7 +1643,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (currentHitIndex <= -1 || currentSearch == null || currentSearch.getHits().isEmpty()) {
             return null;
         }
-        
+
         String termQuery = null;
         if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs() && searchTerms != null) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
@@ -1631,12 +1652,14 @@ public class SearchBean implements SearchInterface, Serializable {
         if (currentHitIndex > 0) {
             //            return currentSearch.getHits().get(currentHitIndex - 1).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex - 1, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery), searchTerms,
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery),
+                    searchTerms,
                     BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
         } else if (currentSearch.getHitsCount() > 0) {
             //            return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery), searchTerms,
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery),
+                    searchTerms,
                     BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
         }
 
@@ -2804,10 +2827,15 @@ public class SearchBean implements SearchInterface, Serializable {
     public Collection<SearchSortingOption> getSearchSortingOptions() {
         Set<SearchSortingOption> options = new LinkedHashSet<>();
         //default option
-        options.add(new SearchSortingOption(DataManager.getInstance().getConfiguration().getDefaultSortField(), true));
+        SearchSortingOption defaultOption = new SearchSortingOption(DataManager.getInstance().getConfiguration().getDefaultSortField(), true);
+        options.add(defaultOption);
         for (String field : DataManager.getInstance().getConfiguration().getSortFields()) {
-            options.add(new SearchSortingOption(field, true));
-            options.add(new SearchSortingOption(field, false));
+            if (!field.equals(defaultOption.getField())) {
+                options.add(new SearchSortingOption(field, true));
+                if (!SolrConstants.SORT_RANDOM.equals(field)) {
+                    options.add(new SearchSortingOption(field, false));
+                }
+            }
         }
         return options;
     }

@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.model.search;
 
-
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.DataManager;
@@ -30,7 +29,7 @@ import io.goobi.viewer.solr.SolrConstants;
 public class SearchSortingOption {
 
     private static final String DEFAULT_SORT_FIELD_LABEL = "searchSortingDropdown_relevance";
-    
+
     private final String field;
     private final boolean ascending;
 
@@ -38,7 +37,7 @@ public class SearchSortingOption {
      * Constructor for default sorting
      */
     public SearchSortingOption() {
-        this.field = "";    
+        this.field = "";
         this.ascending = true;
     }
 
@@ -72,29 +71,27 @@ public class SearchSortingOption {
     }
 
     public String getLabel() {
-        if(SolrConstants.SORT_RANDOM.equalsIgnoreCase(field)) {
+        if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(field)) {
             return ViewerResourceBundle.getTranslation(field, null);
-        } else if(StringUtils.isNotBlank(field)) {            
+        } else if (StringUtils.isNotBlank(field)) {
             return ViewerResourceBundle.getTranslation(field, null) + " " + ViewerResourceBundle.getTranslation(getSearchSortingKey(), null);
         } else {
             return ViewerResourceBundle.getTranslation(DEFAULT_SORT_FIELD_LABEL, null);
         }
     }
-    
+
     public String getSortString() {
-        if(StringUtils.isNotBlank(field)) {            
+        if (StringUtils.isNotBlank(field)) {
             return (isDescending() ? "!" : "") + field;
-        } else {
-            return "";
         }
+        return "";
     }
 
     private String getSearchSortingKey() {
         if (isAscending()) {
             return getSearchSortingAscendingKey(field);
-        } else {
-            return getSearchSortingDescendingKey(field);
         }
+        return getSearchSortingDescendingKey(field);
     }
 
     private static String getSearchSortingAscendingKey(String field) {
@@ -104,7 +101,7 @@ public class SearchSortingOption {
     private static String getSearchSortingDescendingKey(String field) {
         return DataManager.getInstance().getConfiguration().getSearchSortingKeyDescending(field).orElse("searchSortingDropdown_descending");
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -112,27 +109,32 @@ public class SearchSortingOption {
     public int hashCode() {
         return this.field.hashCode();
     }
-    
+
     /**
-     * Two SearchSortingOptions are equal if they either both have an empty {@link #getField()} or if both {@link #getField()} and {@link #isAscending()} are equal
+     * Two SearchSortingOptions are equal if they either both have an empty {@link #getField()} or if both {@link #getField()} and
+     * {@link #isAscending()} are equal
+     * @should return true if both options are random
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            SearchSortingOption other = (SearchSortingOption)obj;
-            if(StringUtils.isBlank(this.field)) {
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            SearchSortingOption other = (SearchSortingOption) obj;
+            if (StringUtils.isBlank(this.field)) {
                 return StringUtils.isBlank(other.field);
-            } else {                
-                return StringUtils.equals(this.getField(), other.getField()) && this.isAscending() == other.isAscending();
             }
-        } else {
-            return false;
+//            if (this.getField().equals(SolrConstants.SORT_RANDOM)) {
+//                return other.getSortString().startsWith("random_");
+//            }
+//            if (other.getField().equals(SolrConstants.SORT_RANDOM)) {
+//                return this.getSortString().startsWith("random_");
+//            }
+            return StringUtils.equals(this.getField(), other.getField()) && this.isAscending() == other.isAscending();
         }
+        return false;
     }
 
     @Override
     public String toString() {
         return getSortString();
     }
-
 }
