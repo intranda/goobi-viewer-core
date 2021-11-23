@@ -116,28 +116,22 @@
 							<button id="modalUserCommentEdit-#{comment.id}-ok" class="btn btn--success accept ml-3" data-dismiss="modal">#{msg.save}</button>
 						</yield>
 					</div>
-					<h:commandScript name="editComment" action="#{commentBean.editComment}" render="@form"/>
-					<h:commandScript name="deleteComment" action="#{commentBean.deleteComment}" render="@form"/>
+					<h:commandScript name="editComment" action="#{commentBean.editComment}" render="@form"
+						onevent="e => viewerJS.swaltoasts.onSuccess(e).success(&quot;#{msg.commentEditSuccess}&quot;)"
+						onerror="e => viewerJS.swaltoasts.error(e.responseText)"/>
+					<h:commandScript name="deleteComment" action="#{commentBean.deleteComment}" render="@form" 
+						onevent="e => viewerJS.swaltoasts.onSuccess(e).success(&quot;#{msg.commentDeleteSuccess}&quot;)"
+						onerror="e => viewerJS.swaltoasts.error(e.responseText)"/>
 					
 					<script> 
 						riot.mount("#modalUserCommentEdit-#{comment.id}", "modal", {});
 						$("#modalUserCommentEdit-#{comment.id}-ok").on("click", () => {
 						    let val = $("#modalUserCommentEdit-#{comment.id}-text").val();
-						    viewerJS.jsfAjax.handleResponse(
-						    	response => viewerJS.swaltoasts.success("#{msg.commentEditSuccess}", ""),
-						    	response => viewerJS.swaltoasts.error(response.responseText, "")
-						    )
 						    editComment({id:"#{comment.id}", text:val});
 						})					
 						$('[data-delete="comment-#{comment.id}"]').on('click', function() {
 							viewerJS.notifications.confirm('', '' ,'', '#{msg.userCommentDeleteText}')
-								.then((result) => {
-								      viewerJS.jsfAjax.handleResponse(
-									    	response => viewerJS.swaltoasts.success("#{msg.commentDeleteSuccess}", ""),
-									    	response => viewerJS.swaltoasts.error(response.responseText, "")
-									  );
-									  deleteComment({id:"#{comment.id}"});
-									})
+								.then((result) => deleteComment({id:"#{comment.id}"}))
 								.catch(() => {});
 						});
 					</script>
@@ -159,8 +153,8 @@
 								action="#{commentBean.createComment(commentText, commentRestricted)}"
 								styleClass="btn btn--success" value="#{msg.addNoteText}">
 								<f:ajax execute="userCommentAdd commentLicenseCheckbox" render="@form" 
-								onevent="e => viewerJS.jsfAjax.showSuccessToast(e, &quot;#{msg.commentSaveSuccess}&quot;)"
-								onerror="e => viewerJS.jsfAjax.showErrorToast(e.responseText)"/>
+								onevent="e => viewerJS.swaltoasts.onSuccess(e).success(&quot;#{msg.commentSaveSuccess}&quot;)"
+								onerror="e => viewerJS.swaltoasts.error(e.responseText)"/>
 							</h:commandButton>
 						</div>
 					</div>

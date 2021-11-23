@@ -78,7 +78,7 @@ public class CommentBean implements Serializable {
     }
     
     public void createComment(String text, boolean restricted) throws AjaxResponseException {
-        try {
+        try { 
             this.commentManager.createComment(text, userBean.getUser(), activeDocumentBean.getViewManager().getPi(), activeDocumentBean.getViewManager().getCurrentImageOrder(), getLicense(restricted), getInitialPublicationStatus());
         } catch (IndexUnreachableException e) {
             throw new AjaxResponseException(e.toString());

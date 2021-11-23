@@ -36,14 +36,6 @@ var viewerJS = ( function ( viewer ) {
         complete: new rxjs.Subject(),
         success: new rxjs.Subject(),
         error: new rxjs.Subject(),
-        showSuccessToast: function(event, message) {
-            if(event.status == "success") {
-				viewerJS.swaltoasts.success(message, "");        
-			}            
-		},
-        showErrorToast: function(message) {
-        	viewerJS.swaltoasts.error(message, "");
-        },
         handleResponse: function(success, error) {
         	this.complete
 		    .pipe(rxjs.operators.first())
