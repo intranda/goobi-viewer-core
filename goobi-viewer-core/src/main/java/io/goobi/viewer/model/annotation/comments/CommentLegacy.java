@@ -50,9 +50,9 @@ import io.goobi.viewer.model.viewer.PageType;
  * Comment class.
  * </p>
  */
-@Entity
-@Index(name = "index_comments_pi_page", columnNames = { "pi", "page" })
-@Table(name = "comments")
+//@Entity
+//@Index(name = "index_comments_pi_page", columnNames = { "pi", "page" })
+//@Table(name = "comments")
 public class CommentLegacy implements Comparable<CommentLegacy> {
 
     private static final Logger logger = LoggerFactory.getLogger(CommentLegacy.class);

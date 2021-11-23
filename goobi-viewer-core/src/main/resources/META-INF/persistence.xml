@@ -33,7 +33,6 @@
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
         <class>io.goobi.viewer.model.crowdsourcing.questions.Question</class>
-        <class>io.goobi.viewer.model.crowdsourcing.questions.QuestionTranslation</class>
 		<class>io.goobi.viewer.model.download.DownloadJob</class>
 		<class>io.goobi.viewer.model.download.EPUBDownloadJob</class>
 		<class>io.goobi.viewer.model.download.PDFDownloadJob</class>
@@ -56,6 +55,7 @@
 		<class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSlider</class>
+		<class>io.goobi.viewer.model.translations.Translation</class>
 	
 
 		<properties>
@@ -136,6 +136,8 @@
 		<class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSlider</class>
+		<class>io.goobi.viewer.model.translations.PersistentTranslation</class>
+		<class>io.goobi.viewer.model.translations.Translation</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver"

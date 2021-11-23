@@ -3648,7 +3648,6 @@ public class JPADAO implements IDAO {
         synchronized (crowdsourcingRequestLock) {
             preQuery();
             try {
-                campaign.onPrePersist();
                 getEntityManager().getTransaction().begin();
                 getEntityManager().persist(campaign);
                 getEntityManager().getTransaction().commit();
@@ -3667,7 +3666,6 @@ public class JPADAO implements IDAO {
     public boolean updateCampaign(Campaign campaign) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
-            campaign.onPreUpdate();
             try {
                 getEntityManager().getTransaction().begin();
                 getEntityManager().setFlushMode(FlushModeType.COMMIT);
