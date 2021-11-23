@@ -627,7 +627,7 @@ public class ViewerResourceBundle extends ResourceBundle {
         try {
             FacesContext.getCurrentInstance().getApplication().getSupportedLocales().forEachRemaining(locales::add);
         } catch (NullPointerException e) {
-            logger.warn("No faces context instance available");
+            // logger.warn("No faces context instance available");
             return Arrays.asList(Locale.GERMAN, Locale.ENGLISH);
         }
         return locales;
@@ -801,7 +801,10 @@ public class ViewerResourceBundle extends ResourceBundle {
         File file = getLocalTranslationFile(language);
         if (!file.exists()) {
             try {
-                file.createNewFile();
+                if (!file.createNewFile()) {
+                    logger.error("File could not be createad: {}", file.getAbsolutePath());
+                    return false;
+                }
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
                 return false;

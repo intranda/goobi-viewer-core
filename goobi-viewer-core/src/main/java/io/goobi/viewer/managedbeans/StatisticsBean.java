@@ -156,6 +156,7 @@ public class StatisticsBean implements Serializable {
      * Returns a list of size two arrays which each contain the name and total number of imported works of a type of work (DocStructType).
      *
      * @return a {@link java.util.List} object.
+     * @should return list of docstruct types
      */
     public List<String> getTopStructTypesByNumber() {
         logger.debug("getTopStructTypesByNumber start");
@@ -199,6 +200,7 @@ public class StatisticsBean implements Serializable {
      * Returns the total number of imported pages.
      *
      * @return a {@link java.lang.Long} object.
+     * @should return a non zero number
      */
     public Long getImportedPages() {
         logger.debug("getImportedPages start");
@@ -234,6 +236,7 @@ public class StatisticsBean implements Serializable {
      * Returns the total number of pages with OCR data.
      *
      * @return a {@link java.lang.Long} object.
+     * @should return a non zero number
      */
     public Long getImportedFullTexts() {
         logger.debug("getImportedFullTexts start");
@@ -262,6 +265,7 @@ public class StatisticsBean implements Serializable {
      * Checks whether there are no records in the index.
      *
      * @return true if record count is 0; false otherwise.
+     * @should return false if index online
      */
     public boolean isIndexEmpty() {
         try {
@@ -317,18 +321,5 @@ public class StatisticsBean implements Serializable {
      */
     public String getIndexerVersion() {
         return JsonTools.shortFormatVersionString(DataManager.getInstance().getIndexerVersion());
-    }
-
-    /**
-     * <p>
-     * main.
-     * </p>
-     *
-     * @param args an array of {@link java.lang.String} objects.
-     */
-    public static void main(String[] args) {
-        //        for (String[] pair : new StatisticsBean().getMostEditedRecords(10)) {
-        //            System.out.println(pair[0] + ": " + pair[1]);
-        //        }
     }
 }

@@ -34,7 +34,16 @@ public class DatabaseUpdater {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseUpdater.class);
 
-    private static final IModelUpdate[] updates = {new UserUpdate(), new CMSRecordNoteUpdate(), new CMSMediaUpdate(), new SidebarWidgetTypeUpdate(), new CMSCategoryUpdate(), new LicenseTypeUpdate(), new CMSContentItemUpdate() };
+    private static final IModelUpdate[] updates = { 
+            new UserUpdate(),
+            new CMSRecordNoteUpdate(), 
+            new CMSMediaUpdate(), 
+            new SidebarWidgetTypeUpdate(), 
+            new CMSCategoryUpdate(), 
+            new LicenseTypeUpdate(), 
+            new CMSContentItemUpdate(), 
+            new AnnotationUpdate()
+         };
 
     private final IDAO dao;
 

@@ -731,7 +731,7 @@ public class UserBean implements Serializable {
      * </p>
      */
     public void createFeedback() {
-        logger.trace("createFeedback");
+        // logger.trace("createFeedback");
         lastName = null;
         securityAnswer = null;
         securityQuestion = null;

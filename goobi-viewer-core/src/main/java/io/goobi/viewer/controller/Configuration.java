@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -613,13 +614,14 @@ public final class Configuration extends AbstractConfiguration {
 
         String label = sub.getString("[@label]");
         String masterValue = sub.getString("[@value]");
+        String citationTemplate = sub.getString("[@citationTemplate]");
         boolean group = sub.getBoolean("[@group]", false);
         boolean singleString = sub.getBoolean("[@singleString]", true);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
         boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
-        String citationTemplate = sub.getString("[@citationTemplate]");
         String labelField = sub.getString("[@labelField]");
+        String sortField = sub.getString("[@sortField]");
         List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -705,6 +707,8 @@ public final class Configuration extends AbstractConfiguration {
                 .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
                 .setCitationTemplate(citationTemplate)
                 .setLabelField(labelField)
+                .setSortField(
+                        sortField)
                 .setIndentation(indentation);
 
         // Recursively add nested metadata configurations
@@ -1556,18 +1560,6 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return ret;
-    }
-
-    /**
-     * <p>
-     * isAggregateHits.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isAggregateHits() {
-        return getLocalBoolean("search.aggregateHits", true);
     }
 
     /**
@@ -2916,6 +2908,31 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * @return
+     */
+    public Optional<String> getSearchSortingKeyAscending(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> luceneFieldConfigs = getLocalConfigurationsAt("search.sorting.luceneField");
+        for (HierarchicalConfiguration<ImmutableNode> conf : luceneFieldConfigs) {
+            String configField = conf.getString(".");
+            if(StringUtils.equals(configField, field)) {
+                return Optional.ofNullable(conf.getString("[@dropDownAscMessageKey]", null));
+            }
+        }
+        return Optional.empty();
+    }
+    
+    public Optional<String> getSearchSortingKeyDescending(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> luceneFieldConfigs = getLocalConfigurationsAt("search.sorting.luceneField");
+        for (HierarchicalConfiguration<ImmutableNode> conf : luceneFieldConfigs) {
+            String configField = conf.getString(".");
+            if(StringUtils.equals(configField, field)) {
+                return Optional.ofNullable(conf.getString("[@dropDownDescMessageKey]", null));
+            }
+        }
+        return Optional.empty();
+    }
+   
+    /**
      * <p>
      * getUrnResolverUrl.
      * </p>
@@ -3819,6 +3836,13 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isCommentsEnabled() {
         return getLocalBoolean(("comments[@enabled]"), false);
     }
+    
+    /**
+     * @return
+     */
+    public boolean reviewEnabledForComments() {
+        return getLocalBoolean("comments.review[@enabled]", false);
+    }
 
     /**
      * <p>
@@ -4236,18 +4260,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isBoostTopLevelDocstructs() {
         return getLocalBoolean("search.boostTopLevelDocstructs", true);
-    }
-
-    /**
-     * <p>
-     * isGroupDuplicateHits.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isGroupDuplicateHits() {
-        return getLocalBoolean("search.groupDuplicateHits", true);
     }
 
     /**
@@ -5303,6 +5315,5 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplayAnnotationTextInImage() {
         return getLocalBoolean("webGuiDisplay.displayAnnotationTextInImage", true);
     }
-
 
 }

@@ -31,7 +31,7 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.User;
@@ -117,7 +117,7 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         // Comments
         Comment comment = DataManager.getInstance().getDao().getComment(2);
         Assert.assertNotNull(comment);
-        Assert.assertNotEquals(user, comment.getOwner());
+        Assert.assertNotEquals(user, comment.getCreator());
 
         // Campaign statistics
         List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", null);

@@ -48,8 +48,9 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.export.AnnotationSheetWriter;
+import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.SelectionManager;
@@ -63,34 +64,33 @@ import io.goobi.viewer.model.toc.export.pdf.WriteTocException;
 @Named
 @ViewScoped
 public class AnnotationBean implements Serializable {
-    
+
     private static final long serialVersionUID = 8377250065305331020L;
 
     private static final Logger logger = LoggerFactory.getLogger(AnnotationBean.class);
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
-    
+
     @Inject
     protected CrowdsourcingBean crowdsourcingBean;
-    
-    private TableDataProvider<PersistentAnnotation> lazyModelAnnotations;
-    
-    private SelectionManager<Long> exportSelection = new SelectionManager<>();
-    
-    private String ownerCampaignId = "";
-    
-    private String targetRecordPI = "";
 
+    private TableDataProvider<CrowdsourcingAnnotation> lazyModelAnnotations;
+
+    private SelectionManager<Long> exportSelection = new SelectionManager<>();
+
+    private String ownerCampaignId = "";
+
+    private String targetRecordPI = "";
 
     @PostConstruct
     public void init() {
         if (lazyModelAnnotations == null) {
-            lazyModelAnnotations = new TableDataProvider<PersistentAnnotation>(new TableDataSource<PersistentAnnotation>() {
+            lazyModelAnnotations = new TableDataProvider<CrowdsourcingAnnotation>(new TableDataSource<CrowdsourcingAnnotation>() {
 
                 private Optional<Long> numCreatedPages = Optional.empty();
 
                 @Override
-                public List<PersistentAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
+                public List<CrowdsourcingAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
                         Map<String, String> filters) {
                     try {
                         if (StringUtils.isBlank(sortField)) {
@@ -98,9 +98,9 @@ public class AnnotationBean implements Serializable {
                             sortOrder = SortOrder.DESCENDING;
                         }
                         filters.putAll(getFilters());
-                        List<PersistentAnnotation> ret =
+                        List<CrowdsourcingAnnotation> ret =
                                 DataManager.getInstance().getDao().getAnnotations(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                        exportSelection = new SelectionManager<Long>(ret.stream().map(PersistentAnnotation::getId).collect(Collectors.toList()));
+                        exportSelection = new SelectionManager<Long>(ret.stream().map(CrowdsourcingAnnotation::getId).collect(Collectors.toList()));
                         return ret;
                     } catch (DAOException e) {
                         logger.error("Could not initialize lazy model: {}", e.getMessage());
@@ -120,7 +120,7 @@ public class AnnotationBean implements Serializable {
                     if (StringUtils.isNotEmpty(getTargetRecordPI())) {
                         filters.put("targetPI", getTargetRecordPI());
                     }
-                    
+
                     return filters;
                 }
 
@@ -141,8 +141,7 @@ public class AnnotationBean implements Serializable {
                 public void resetTotalNumberOfRecords() {
                     numCreatedPages = Optional.empty();
                 }
-                
-                
+
             });
             lazyModelAnnotations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
             lazyModelAnnotations.setFilters("targetPI_body");
@@ -156,64 +155,62 @@ public class AnnotationBean implements Serializable {
      *
      * @return the lazyModelAnnotations
      */
-    public TableDataProvider<PersistentAnnotation> getLazyModelAnnotations() {
+    public TableDataProvider<CrowdsourcingAnnotation> getLazyModelAnnotations() {
         return lazyModelAnnotations;
     }
-    
+
     /**
      * @return the ownerCampaignId
      */
     public String getOwnerCampaignId() {
         return ownerCampaignId;
     }
-    
+
     /**
      * @param ownerCampaignId the ownerCampaignId to set
      */
     public void setOwnerCampaignId(String ownerCampaignId) {
         this.ownerCampaignId = ownerCampaignId;
     }
-    
+
     /**
      * @return the ownerRecordPI
      */
     public String getTargetRecordPI() {
         return targetRecordPI;
     }
-    
+
     /**
      * @param ownerRecordPI the ownerRecordPI to set
      */
     public void setTargetRecordPI(String targetRecordPI) {
         this.targetRecordPI = targetRecordPI;
     }
-    
+
     /**
      * @return the exportSelection
      */
     public SelectionManager<Long> getExportSelection() {
         return exportSelection;
     }
-    
 
     /**
      * Deletes given annotation.
      *
-     * @param annotation a {@link io.goobi.viewer.model.annotation.PersistentAnnotation} object.
+     * @param annotation a {@link io.goobi.viewer.model.annotation.CrowdsourcingAnnotation} object.
      * @return empty string
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String deleteAnnotationAction(PersistentAnnotation annotation) throws DAOException {
+    public String deleteAnnotationAction(CrowdsourcingAnnotation annotation) throws DAOException {
         if (annotation == null) {
             return "";
         }
 
         try {
-            if (annotation.delete()) {
-                Messages.info("admin__crowdsoucing_annotation_deleteSuccess");
-                crowdsourcingBean.getLazyModelCampaigns().update();
-            }
-        } catch (ViewerConfigurationException e) {
+            new SqlAnnotationDeleter().delete(annotation);
+            Messages.info("admin__crowdsoucing_annotation_deleteSuccess");
+            crowdsourcingBean.getLazyModelCampaigns().update();
+        } catch (DAOException | IOException e) {
             logger.error(e.getMessage());
             Messages.error(e.getMessage());
         }
@@ -221,47 +218,50 @@ public class AnnotationBean implements Serializable {
         return "";
     }
 
-    
-    public Optional<Campaign> getOwningCampaign(PersistentAnnotation anno) {
-        try {            
+    public Optional<Campaign> getOwningCampaign(CrowdsourcingAnnotation anno) {
+        try {
             IDAO dao = DataManager.getInstance().getDao();
-            if(anno.getGeneratorId() != null) {
+            if (anno.getGeneratorId() != null) {
                 Question question = dao.getQuestion(anno.getGeneratorId());
-                if(question != null) {
+                if (question != null) {
                     return Optional.ofNullable(question.getOwner());
                 }
             }
-        } catch(DAOException e) {
+        } catch (DAOException e) {
             logger.error(e.toString(), e);
         }
         return Optional.empty();
     }
-    
+
     /**
-     * Setter for {@link SelectionManager#setSelectAll(boolean) exportSelection#setSelectAll(boolean)} 
-     * is placed here to avoid jsf confusing it with setting a value of the map
+     * Setter for {@link SelectionManager#setSelectAll(boolean) exportSelection#setSelectAll(boolean)} is placed here to avoid jsf confusing it with
+     * setting a value of the map
+     * 
      * @param select
      */
     public void setSelectAll(boolean select) {
         this.exportSelection.setSelectAll(select);
     }
-    
+
     /**
-     * Getter for {@link SelectionManager#isSelectAll() exportSelection#isSelectAll()} 
-     * is placed here to avoid jsf confusing it with getting a value of the map
+     * Getter for {@link SelectionManager#isSelectAll() exportSelection#isSelectAll()} is placed here to avoid jsf confusing it with getting a value
+     * of the map
+     * 
      * @param select
      * @return always false to deselect the select all button when loading the page
      */
     public boolean isSelectAll() {
         return false;//this.exportSelection.isSelectAll();
     }
-    
+
     /**
      * Create an excel sheet and write it to download stream
-     * @throws IOException 
+     * 
+     * @throws IOException
      */
     public void downloadSelectedAnnotations() throws IOException {
-        List<PersistentAnnotation> selectedAnnos = this.exportSelection.getAllSelected().stream()
+        List<CrowdsourcingAnnotation> selectedAnnos = this.exportSelection.getAllSelected()
+                .stream()
                 .map(this::getAnnotationById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -269,27 +269,27 @@ public class AnnotationBean implements Serializable {
         logger.debug("Selected " + selectedAnnos.size() + " annotations for excel download");
         downloadAnnotations(selectedAnnos);
     }
-    
-    public void downloadAnnotations(List<PersistentAnnotation> annotations) throws IOException {
-            try {
-                String fileName = "annotations.xlsx";
 
-                FacesContext fc = FacesContext.getCurrentInstance();
-                ExternalContext ec = fc.getExternalContext();
-                ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
-                ec.setResponseContentType("application/msexcel");
-                ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-                OutputStream os = ec.getResponseOutputStream();
-                AnnotationSheetWriter writer = new AnnotationSheetWriter();
-                writer.createExcelSheet(os, annotations);
-                fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
-            } finally {
-                
-            }
+    public void downloadAnnotations(List<CrowdsourcingAnnotation> annotations) throws IOException {
+        try {
+            String fileName = "annotations.xlsx";
+
+            FacesContext fc = FacesContext.getCurrentInstance();
+            ExternalContext ec = fc.getExternalContext();
+            ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
+            ec.setResponseContentType("application/msexcel");
+            ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            OutputStream os = ec.getResponseOutputStream();
+            AnnotationSheetWriter writer = new AnnotationSheetWriter();
+            writer.createExcelSheet(os, annotations);
+            fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
+        } finally {
+
+        }
     }
-    
-    public Optional<PersistentAnnotation> getAnnotationById(Long id) {
+
+    public Optional<CrowdsourcingAnnotation> getAnnotationById(Long id) {
         return this.lazyModelAnnotations.getPaginatorList().stream().filter(anno -> id.equals(anno.getId())).findFirst();
     }
-    
+
 }

@@ -71,7 +71,7 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
-import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
@@ -243,7 +243,7 @@ public class SequenceBuilder extends AbstractBuilder {
                         OpenAnnotation anno = new OpenAnnotation(getCommentAnnotationURI(comment.getId()));
                         anno.setMotivation(Motivation.COMMENTING);
                         anno.setTarget(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
-                        TextualResource body = new TextualResource(comment.getText());
+                        TextualResource body = new TextualResource(comment.getContentString());
                         anno.setBody(body);
                         annoList.addResource(anno);
                     }

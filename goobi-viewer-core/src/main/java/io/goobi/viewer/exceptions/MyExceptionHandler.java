@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.exceptions;
 
+import java.io.IOException;
 import java.net.SocketException;
 import java.time.LocalDateTime;
 import java.util.Iterator;
@@ -26,6 +27,7 @@ import javax.faces.application.NavigationHandler;
 import javax.faces.application.ViewExpiredException;
 import javax.faces.context.ExceptionHandler;
 import javax.faces.context.ExceptionHandlerWrapper;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
 import javax.faces.event.ExceptionQueuedEvent;
@@ -34,6 +36,7 @@ import javax.faces.event.PhaseId;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.omnifaces.util.Faces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +86,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             ExceptionQueuedEvent event = i.next();
             ExceptionQueuedEventContext context = (ExceptionQueuedEventContext) event.getSource();
             Throwable t = context.getException();
+            Throwable cause = getCause(t);
             // Handle ViewExpiredExceptions here ... or even others :)
             if (!t.getClass().equals(ViewExpiredException.class) && !t.getClass().equals(PrettyException.class)) {
                 logger.error("CLASS: {}", t.getClass().getName());
@@ -95,7 +99,20 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             }
 
             try {
-                if (t instanceof ViewExpiredException) {
+                if( cause instanceof AjaxResponseException) {
+                    FacesContext facesContext = FacesContext.getCurrentInstance();
+                    ExternalContext externalContext = facesContext.getExternalContext();
+                    externalContext.setResponseStatus(500);
+                    externalContext.setResponseContentType("text/plain");
+                    externalContext.setResponseCharacterEncoding("UTF-8");
+                    try {
+                        externalContext.getResponseOutputWriter().write(cause.getMessage());
+                    } catch (IOException e) {
+                        logger.error("Error writing response ", e);
+                    } finally {                        
+                        facesContext.responseComplete();
+                    }
+                } else if (t instanceof ViewExpiredException) {
                     // handleError(getSessionDetails(fc), "viewExpired");
                     // Messages.error(ViewerResourceBundle.getTranslation("sessionExpired", null));
                     // TODO visualize expiration error
@@ -306,6 +323,14 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         }
 
         return false;
+    }
+    
+    private static Throwable getCause(Throwable t) {
+        Throwable cause = t;
+        while (cause.getCause() != null) {
+            cause = cause.getCause();
+        }
+        return cause;
     }
 
 }

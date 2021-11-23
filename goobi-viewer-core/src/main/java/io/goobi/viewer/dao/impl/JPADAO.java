@@ -52,8 +52,8 @@ import io.goobi.viewer.controller.AlphabetIterator;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
@@ -720,7 +720,6 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public long getBookmarkListCount(User user) throws DAOException {
         preQuery();
@@ -1711,11 +1710,17 @@ public class JPADAO implements IDAO {
         StringBuilder sbQuery = new StringBuilder("SELECT a FROM Comment a");
         Map<String, String> params = new HashMap<>();
         sbQuery.append(createFilterQuery(null, filters, params));
-        if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY a.").append(sortField);
-            if (descending) {
-                sbQuery.append(" DESC");
+        if (StringUtils.isNotBlank(sortField)) {
+            String[] sortFields = sortField.split("_");
+            sbQuery.append(" ORDER BY ");
+            for (String sf : sortFields) {
+                sbQuery.append("a.").append(sf);
+                if (descending) {
+                    sbQuery.append(" DESC");
+                }
+                sbQuery.append(",");
             }
+            sbQuery.deleteCharAt(sbQuery.length() - 1);
         }
 
         Query q = getEntityManager().createQuery(sbQuery.toString());
@@ -1726,6 +1731,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
+     * 
      * @should sort correctly
      */
     @SuppressWarnings("unchecked")
@@ -1733,7 +1739,7 @@ public class JPADAO implements IDAO {
     public List<Comment> getCommentsOfUser(User user, int maxResults, String sortField, boolean descending) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
-        sbQuery.append("SELECT o FROM Comment o WHERE o.owner = :owner");
+        sbQuery.append("SELECT o FROM Comment o WHERE o.creatorId = :owner");
         if (StringUtils.isNotEmpty(sortField)) {
             sbQuery.append(" ORDER BY o.").append(sortField);
             if (descending) {
@@ -1741,7 +1747,7 @@ public class JPADAO implements IDAO {
             }
         }
         Query q = getEntityManager().createQuery(sbQuery.toString());
-        q.setParameter("owner", user);
+        q.setParameter("owner", user.getId());
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.setMaxResults(maxResults).setFlushMode(FlushModeType.COMMIT).getResultList();
     }
@@ -1755,7 +1761,7 @@ public class JPADAO implements IDAO {
     public List<Comment> getCommentsForPage(String pi, int page) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
-        sbQuery.append("SELECT o FROM Comment o WHERE o.pi = :pi AND o.page = :page");
+        sbQuery.append("SELECT o FROM Comment o WHERE o.targetPI = :pi AND o.targetPageOrder = :page");
         Query q = getEntityManager().createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setParameter("page", page);
@@ -1770,7 +1776,7 @@ public class JPADAO implements IDAO {
     public List<Comment> getCommentsForWork(String pi) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
-        sbQuery.append("SELECT o FROM Comment o WHERE o.pi = :pi");
+        sbQuery.append("SELECT o FROM Comment o WHERE o.targetPI = :pi");
         Query q = getEntityManager().createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setFlushMode(FlushModeType.COMMIT);
@@ -1803,14 +1809,9 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addComment(Comment comment) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(comment);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
+        em.getTransaction().begin();
+        em.persist(comment);
+        em.getTransaction().commit();
         return true;
     }
 
@@ -1821,15 +1822,10 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateComment(Comment comment) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(comment);
-            em.getTransaction().commit();
-            return true;
-        } finally {
-            em.close();
-        }
+        em.getTransaction().begin();
+        em.merge(comment);
+        em.getTransaction().commit();
+        return true;
     }
 
     /* (non-Javadoc)
@@ -1839,16 +1835,11 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteComment(Comment comment) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            Comment o = em.getReference(Comment.class, comment.getId());
-            em.remove(o);
-            em.getTransaction().commit();
-            return true;
-        } finally {
-            em.close();
-        }
+        em.getTransaction().begin();
+        Comment o = em.getReference(Comment.class, comment.getId());
+        em.remove(o);
+        em.getTransaction().commit();
+        return true;
     }
 
     /**
@@ -1868,15 +1859,15 @@ public class JPADAO implements IDAO {
         EntityManager emLocal = factory.createEntityManager();
         try {
             emLocal.getTransaction().begin();
-            int rows = emLocal.createQuery("UPDATE Comment o set o.owner = :newOwner WHERE o.owner = :oldOwner")
-                    .setParameter("oldOwner", fromUser)
-                    .setParameter("newOwner", toUser)
+            int rows = emLocal.createQuery("UPDATE Comment o set o.creatorId = :newOwner WHERE o.creatorId = :oldOwner")
+                    .setParameter("oldOwner", fromUser.getId())
+                    .setParameter("newOwner", toUser.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
 
             // Refresh objects in context
-            getEntityManager().createQuery("SELECT o FROM Comment o WHERE o.owner = :owner")
-                    .setParameter("owner", toUser)
+            getEntityManager().createQuery("SELECT o FROM Comment o WHERE o.creatorId = :owner")
+                    .setParameter("owner", toUser.getId())
                     .setHint("javax.persistence.cache.storeMode", "REFRESH")
                     .getResultList();
 
@@ -1905,13 +1896,13 @@ public class JPADAO implements IDAO {
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append("DELETE FROM Comment o WHERE ");
         if (StringUtils.isNotEmpty(pi)) {
-            sbQuery.append("o.pi = :pi");
+            sbQuery.append("o.targetPI = :pi");
         }
         if (owner != null) {
             if (StringUtils.isNotEmpty(pi)) {
                 sbQuery.append(" AND ");
             }
-            sbQuery.append("o.owner = :owner");
+            sbQuery.append("o.creatorId = :creatorId");
         }
 
         EntityManager emLocal = factory.createEntityManager();
@@ -1921,7 +1912,7 @@ public class JPADAO implements IDAO {
                 q.setParameter("pi", pi);
             }
             if (owner != null) {
-                q.setParameter("owner", owner);
+                q.setParameter("creatorId", owner.getId());
             }
             emLocal.getTransaction().begin();
             int rows = q.executeUpdate();
@@ -1942,7 +1933,7 @@ public class JPADAO implements IDAO {
     public List<Integer> getPagesWithComments(String pi) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
-        sbQuery.append("SELECT o.page FROM Comment o WHERE o.pi = :pi");
+        sbQuery.append("SELECT o.targetPageOrder FROM Comment o WHERE o.targetPI = :pi");
         Query q = getEntityManager().createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setFlushMode(FlushModeType.COMMIT);
@@ -2659,7 +2650,10 @@ public class JPADAO implements IDAO {
                 continue;
             }
             String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
-            if ("creatorId_reviewerId".equals(key) || "campaignId".equals(key) || "generatorId".equals(key)) {
+            if ("NULL".equals(filterValue)) {
+                //don't add params
+            } else if ("creatorId_reviewerId".equals(key) || "campaignId".equals(key) || "generatorId".equals(key) || "creatorId".equals(key)
+                    || "reviewerId".equals(key)) {
                 params.put(keyValueParam, Long.valueOf(filterValue));
             } else {
                 params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
@@ -2676,7 +2670,12 @@ public class JPADAO implements IDAO {
                 switch (subKey) {
                     case "a.creatorId":
                     case "a.reviewerId":
-                        where = subKey + "=:" + keyValueParam;
+                    case "a.motivation":
+                        if ("NULL".equalsIgnoreCase(filterValue)) {
+                            where = subKey + " IS NULL";
+                        } else {
+                            where = subKey + "=:" + keyValueParam;
+                        }
                         break;
                     case "a.generatorId":
                         where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN " +
@@ -3650,7 +3649,6 @@ public class JPADAO implements IDAO {
         synchronized (crowdsourcingRequestLock) {
             preQuery();
             try {
-                campaign.onPrePersist();
                 getEntityManager().getTransaction().begin();
                 getEntityManager().persist(campaign);
                 getEntityManager().getTransaction().commit();
@@ -3669,7 +3667,6 @@ public class JPADAO implements IDAO {
     public boolean updateCampaign(Campaign campaign) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
-            campaign.onPreUpdate();
             try {
                 getEntityManager().getTransaction().begin();
                 getEntityManager().setFlushMode(FlushModeType.COMMIT);
@@ -3889,12 +3886,12 @@ public class JPADAO implements IDAO {
         StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Comment a");
         Map<String, String> params = new HashMap<>();
         if (owner != null) {
-            sbQuery.append(" WHERE a.owner = :owner");
+            sbQuery.append(" WHERE a.creatorId = :owner");
         }
         Query q = getEntityManager().createQuery(sbQuery.append(createFilterQuery(null, filters, params)).toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
         if (owner != null) {
-            q.setParameter("owner", owner);
+            q.setParameter("owner", owner.getId());
         }
 
         return (long) q.getSingleResult();
@@ -4485,13 +4482,13 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public PersistentAnnotation getAnnotation(Long id) throws DAOException {
+    public CrowdsourcingAnnotation getAnnotation(Long id) throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT a FROM PersistentAnnotation a WHERE a.id = :id");
+        Query q = getEntityManager().createQuery("SELECT a FROM CrowdsourcingAnnotation a WHERE a.id = :id");
         q.setParameter("id", id);
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        PersistentAnnotation annotation = (PersistentAnnotation) getSingleResult(q).orElse(null);
+        CrowdsourcingAnnotation annotation = (CrowdsourcingAnnotation) getSingleResult(q).orElse(null);
         return annotation;
     }
 
@@ -4502,9 +4499,9 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT a FROM PersistentAnnotation a");
+        StringBuilder sbQuery = new StringBuilder("SELECT a FROM CrowdsourcingAnnotation a");
         if (!campaign.getQuestions().isEmpty()) {
             sbQuery.append(" WHERE (");
             int count = 1;
@@ -4536,9 +4533,9 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForWork(String pi) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotationsForWork(String pi) throws DAOException {
         preQuery();
-        String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
+        String query = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
         Query q = getEntityManager().createQuery(query);
         q.setParameter("pi", pi);
 
@@ -4546,11 +4543,60 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean descending) throws DAOException {
+        preQuery();
+        String query = "SELECT a FROM CrowdsourcingAnnotation a";
+
+        if (StringUtils.isNotEmpty(sortField)) {
+            StringBuilder sbOrder = new StringBuilder();
+            sbOrder.append(" ORDER BY a.").append(sortField);
+            if (descending) {
+                sbOrder.append(" DESC");
+            }
+            query += sbOrder.toString();
+        }
+
+        Query q = getEntityManager().createQuery(query);
+
+        return q.getResultList();
+    }
+
+    @Override
+    public long getTotalAnnotationCount() throws DAOException {
+        preQuery();
+        String query = "SELECT COUNT(a) FROM CrowdsourcingAnnotation a";
+        Query q = getEntityManager().createQuery(query);
+
+        Object o = q.getResultList().get(0);
+        // MySQL
+        if (o instanceof BigInteger) {
+            return ((BigInteger) q.getResultList().get(0)).longValue();
+        }
+        // H2
+        return (long) q.getResultList().get(0);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllAnnotationsByMotivation(java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String motivation) throws DAOException {
+        preQuery();
+        String query = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.motivation = :motivation";
+        Query q = getEntityManager().createQuery(query);
+        q.setParameter("motivation", motivation);
+
+        return q.getResultList();
+    }
+
     /** {@inheritDoc} */
     @Override
     public long getAnnotationCountForWork(String pi) throws DAOException {
         preQuery();
-        String query = "SELECT COUNT(a) FROM PersistentAnnotation a WHERE a.targetPI = :pi";
+        String query = "SELECT COUNT(a) FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
         Query q = getEntityManager().createQuery(query);
         q.setParameter("pi", pi);
 
@@ -4564,20 +4610,32 @@ public class JPADAO implements IDAO {
     }
 
     /** {@inheritDoc} */
+    @Override
+    public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException {
+        return getAnnotationsForTarget(pi, page, null);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page, String motivation) throws DAOException {
+
         preQuery();
-        String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
+        String query = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
         if (page != null) {
             query += " AND a.targetPageOrder = :page";
         } else {
             query += " AND a.targetPageOrder IS NULL";
         }
+        if (StringUtils.isNotBlank(motivation)) {
+            query += " AND a.motivation =  + :motivation";
+        }
         Query q = getEntityManager().createQuery(query);
         q.setParameter("pi", pi);
         if (page != null) {
             q.setParameter("page", page);
+        }
+        if (StringUtils.isNotBlank(motivation)) {
+            q.setParameter("motivation", motivation);
         }
 
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -4588,7 +4646,7 @@ public class JPADAO implements IDAO {
     @Override
     public long getAnnotationCountForTarget(String pi, Integer page) throws DAOException {
         preQuery();
-        String query = "SELECT COUNT(a) FROM PersistentAnnotation a WHERE a.targetPI = :pi";
+        String query = "SELECT COUNT(a) FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
         if (page != null) {
             query += " AND a.targetPageOrder = :page";
         } else {
@@ -4616,9 +4674,9 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi");
+        StringBuilder sbQuery = new StringBuilder("SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi");
         if (!campaign.getQuestions().isEmpty()) {
             sbQuery.append(" AND (");
             int count = 1;
@@ -4656,9 +4714,9 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi");
+        StringBuilder sbQuery = new StringBuilder("SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi");
         if (page != null) {
             sbQuery.append(" AND a.targetPageOrder = :page");
         } else {
@@ -4697,20 +4755,21 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending)
+    public List<CrowdsourcingAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending)
             throws DAOException {
         if (userId == null) {
             return Collections.emptyList();
         }
 
         preQuery();
-        String queryString = "SELECT a FROM PersistentAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
-
+        String queryString = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
         if (StringUtils.isNotEmpty(sortField)) {
-            queryString += " ORDER BY a." + sortField;
+            StringBuilder sbOrder = new StringBuilder();
+            sbOrder.append(" ORDER BY a.").append(sortField);
             if (descending) {
-                queryString += " DESC";
+                sbOrder.append(" DESC");
             }
+            queryString += sbOrder.toString();
         }
 
         Query query = getEntityManager().createQuery(queryString).setParameter("userId", userId);
@@ -4726,17 +4785,24 @@ public class JPADAO implements IDAO {
      * @should return correct rows
      * @should filter by campaign name correctly
      */
+    @Override
+    public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
+            Map<String, String> filters) throws DAOException {
+        Map<String, Object> params = new HashMap<>();
+        String filterString = createAnnotationsFilterQuery(null, filters, params);
+        return getAnnotations(first, pageSize, sortField, descending, filterString, params);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
-            Map<String, String> filters) throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
+            String filterString, Map<String, Object> params) throws DAOException {
+        params = params == null ? new HashMap<>() : params;
         synchronized (crowdsourcingRequestLock) {
             preQuery();
-            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM PersistentAnnotation a");
+            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CrowdsourcingAnnotation a");
             StringBuilder order = new StringBuilder();
             try {
-                Map<String, Object> params = new HashMap<>();
-                String filterString = createAnnotationsFilterQuery(null, filters, params);
                 if (StringUtils.isNotEmpty(sortField)) {
                     order.append(" ORDER BY a.").append(sortField);
                     if (descending) {
@@ -4765,7 +4831,7 @@ public class JPADAO implements IDAO {
     @Override
     public long getAnnotationCount(Map<String, String> filters) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM PersistentAnnotation a");
+        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM CrowdsourcingAnnotation a");
         Map<String, Object> params = new HashMap<>();
         Query q = getEntityManager().createQuery(sbQuery.append(createAnnotationsFilterQuery(null, filters, params)).toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
@@ -4775,7 +4841,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addAnnotation(PersistentAnnotation annotation) throws DAOException {
+    public boolean addAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
         if (getAnnotation(annotation.getId()) != null) {
             return false;
         }
@@ -4792,13 +4858,12 @@ public class JPADAO implements IDAO {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateAnnotation(io.goobi.viewer.model.annotation.PersistentAnnotation)
+     * @see io.goobi.viewer.dao.IDAO#updateAnnotation(io.goobi.viewer.model.annotation.CrowdsourcingAnnotation)
      */
     /** {@inheritDoc} */
     @Override
-    public boolean updateAnnotation(PersistentAnnotation annotation) throws DAOException {
+    public boolean updateAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
             em.merge(annotation);
@@ -4806,29 +4871,24 @@ public class JPADAO implements IDAO {
             return true;
         } catch (IllegalArgumentException e) {
             return false;
-        } finally {
-            em.close();
         }
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteAnnotation(io.goobi.viewer.model.annotation.PersistentAnnotation)
+     * @see io.goobi.viewer.dao.IDAO#deleteAnnotation(io.goobi.viewer.model.annotation.CrowdsourcingAnnotation)
      */
     /** {@inheritDoc} */
     @Override
-    public boolean deleteAnnotation(PersistentAnnotation annotation) throws DAOException {
+    public boolean deleteAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
-            PersistentAnnotation o = em.getReference(PersistentAnnotation.class, annotation.getId());
+            CrowdsourcingAnnotation o = em.getReference(CrowdsourcingAnnotation.class, annotation.getId());
             em.remove(o);
             em.getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
             return false;
-        } finally {
-            em.close();
         }
     }
 

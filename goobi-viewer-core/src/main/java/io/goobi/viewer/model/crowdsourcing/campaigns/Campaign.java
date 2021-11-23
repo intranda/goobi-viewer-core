@@ -340,25 +340,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         this.statisticMode = orig.statisticMode;
     }
 
-    /**
-     * No @PrePersist annotation because it is called explicitly in {@link IDAO#addCampaign(Campaign)}
-     */
-    public void onPrePersist() {
-        this.questions.forEach(Question::onPrePersist);
-    }
-
-    /**
-     * No @PreUpdate annotation because it is called explicitly in {@link IDAO#updateCampaign(Campaign)}
-     */
-    public void onPreUpdate() {
-        this.questions.forEach(Question::onPreUpdate);
-    }
-
-    @PostLoad
-    public void onPostLoad() {
-        this.questions.forEach(Question::onPostLoad);
-    }
-
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -1917,6 +1898,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @Override
     public String toString() {
         return getTitle();
+    }
+
+    /**
+     * @return
+     */
+    public String getAccessConditionValue() {
+        return getTitle(IPolyglott.getDefaultLocale().getLanguage());
     }
 
 }

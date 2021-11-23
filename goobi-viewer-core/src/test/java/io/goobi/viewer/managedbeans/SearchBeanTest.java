@@ -15,8 +15,12 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.Search;
@@ -34,6 +39,7 @@ import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -276,7 +282,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("((SUPERDEFAULT:(foo OR bar) OR SUPERFULLTEXT:(foo OR bar) OR SUPERUGCTERMS:(foo OR bar) OR DEFAULT:(foo OR bar)"
                 + " OR FULLTEXT:(foo OR bar) OR NORMDATATERMS:(foo OR bar) OR UGCTERMS:(foo OR bar) OR CMS_TEXT_ALL:(foo OR bar))"
                 + " OR (MD_TITLE:(bla AND \\\"blup\\\" -nein))) OR (((SUPERFULLTEXT:\"lorem ipsum dolor sit amet\" OR FULLTEXT:\"lorem ipsum dolor sit amet\")))",
-                sb.generateAdvancedSearchString(true));
+                sb.generateAdvancedSearchString());
     }
 
     /**
@@ -319,7 +325,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
                 item.setValue("lorem ipsum dolor sit amet");
             }
         }
-        sb.generateAdvancedSearchString(true);
+        sb.generateAdvancedSearchString();
         Assert.assertEquals("(All fields: foo bar OR Title: bla \"blup\" -nein) OR\n<br />(Full text: \"lorem ipsum dolor sit amet\")",
                 sb.getAdvancedSearchQueryInfo());
     }
@@ -349,7 +355,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("bar");
             Assert.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString(true);
+        bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
                 bean.getFacets().getCurrentFacetString());
@@ -381,7 +387,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("bar");
             Assert.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString(true);
+        bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
                 bean.getFacets().getCurrentFacetString());
@@ -412,7 +418,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString(true);
+        bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
                 bean.getFacets().getCurrentFacetString());
@@ -445,7 +451,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString(true);
+        bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
                 bean.getFacets().getCurrentFacetString());
@@ -480,7 +486,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString(true);
+        bean.generateAdvancedSearchString();
 
         // Only one DC:foo should be in the facets
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
@@ -508,7 +514,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setField(SolrConstants.DC);
             item.setValue("foo");
         }
-        bean.generateAdvancedSearchString(true);
+        bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
                 bean.getFacets().getCurrentFacetString());
@@ -715,7 +721,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.getCurrentSearch().setPage(1);
         sb.getCurrentSearch().setQuery("+DC:dcimage* +ISWORK:true -IDDOC_PARENT:*");
         sb.getCurrentSearch().setSortString("SORT_TITLE");
-        sb.getCurrentSearch().execute(new SearchFacets(), null, 10, 0, null, true);
+        sb.getCurrentSearch().execute(new SearchFacets(), null, 10, 0, null, true, false);
         Assert.assertEquals(18, sb.getCurrentSearch().getHitsCount());
 
         sb.findCurrentHitIndex("PPN9462", 1, true);
@@ -820,4 +826,19 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.setExactSearchString("SUPERDEFAULT%25253A%2525281234xyz%252529");
         Assert.assertEquals("SUPERDEFAULT%3A%281234xyz%29", sb.getExactSearchString()); // getter should return single encoding
     }
+    
+    @Test
+    public void testSearchSortingOptions() {
+        SearchBean sb = new SearchBean();
+        Collection<SearchSortingOption> options = sb.getSearchSortingOptions();
+        String defaultSorting = DataManager.getInstance().getConfiguration().getDefaultSortField();
+        List<String> sortStrings = DataManager.getInstance().getConfiguration().getSortFields();
+        assertEquals(sortStrings.size()*2+1, options.size());
+        Iterator<SearchSortingOption> iterator = options.iterator();
+        assertEquals(defaultSorting, iterator.next().getSortString());     
+        assertEquals("Creator ascending", iterator.next().getLabel()); 
+        assertEquals("Creator descending", iterator.next().getLabel()); 
+    }
+    
+    
 }

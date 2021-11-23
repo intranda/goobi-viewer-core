@@ -13,51 +13,20 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.translations;
+package io.goobi.viewer.model.annotation.notification;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import java.util.Locale;
 
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
  * @author florian
  *
  */
-@MappedSuperclass
-public class PersistentTranslation<O> extends Translation {
+public interface ChangeNotificator {
 
-    /** Reference to the owning {@link PersistentEntity}. */
-    @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    private O owner;
-    
-    public PersistentTranslation() {
-        super();
-    }
-    
-    public PersistentTranslation(O owner) {
-        this.owner = owner;
-    }
-
-    public PersistentTranslation(Translation t, O owner) {
-        super(t);
-        this.owner = owner;
-    }
-    
-    /**
-     * @return the owner
-     */
-    public O getOwner() {
-        return owner;
-    }
-    
-    /**
-     * @param owner the owner to set
-     */
-    public void setOwner(O owner) {
-        this.owner = owner;
-    }
-    
-
+    public void notifyCreation(PersistentAnnotation annotation, Locale locale);
+    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation, Locale locale);
+    public void notifyDeletion(PersistentAnnotation annotation, Locale locale);
+    public void notifyError(Exception exception, Locale locale);
 }

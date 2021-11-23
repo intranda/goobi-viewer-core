@@ -130,12 +130,12 @@ public class BreadcrumbBean implements Serializable {
             if (breadcrumbs.isEmpty()) {
                 resetBreadcrumbs();
             }
-            logger.trace("Adding breadcrumb: {} ({})", newLink.getUrl(), newLink.getWeight());
+            // logger.trace("Adding breadcrumb: {} ({})", newLink.getUrl(), newLink.getWeight());
             // Determine the position at which to add the new link
             int position = breadcrumbs.size();
             for (int i = 0; i < breadcrumbs.size(); ++i) {
                 LabeledLink link = breadcrumbs.get(i);
-                logger.trace("existing breadcrumb: {}", link.toString());
+                // logger.trace("existing breadcrumb: {}", link.toString());
                 if (link.getWeight() >= newLink.getWeight()) {
                     position = i;
                     break;
@@ -344,7 +344,7 @@ public class BreadcrumbBean implements Serializable {
      * @param url a {@link java.lang.String} object.
      */
     public void addStaticLinkToBreadcrumb(String linkName, String url, int linkWeight) {
-        logger.trace("addStaticLinkToBreadcrumb: {} - {} ({})", linkName, url, linkWeight);
+        // logger.trace("addStaticLinkToBreadcrumb: {} - {} ({})", linkName, url, linkWeight);
         if (linkWeight < 0) {
             return;
         }
@@ -464,7 +464,7 @@ public class BreadcrumbBean implements Serializable {
                 } else {
                     flattenedLinks.add(labeledLink);
                 }
-                logger.trace("breadcrumb: {}", labeledLink);
+                // logger.trace("breadcrumb: {}", labeledLink);
             }
             // logger.trace("getBreadcrumbs: {}", flattenedLinks.toString());
             return flattenedLinks;

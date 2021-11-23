@@ -24,13 +24,14 @@ import org.apache.solr.common.SolrDocument;
 import io.goobi.viewer.controller.AbstractConfiguration;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
+import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 
 /**
  * <p>
  * IModule interface.
  * </p>
  */
-public interface IModule {
+public interface IModule extends IndexAugmenter {
 
     /**
      * <p>
@@ -111,28 +112,6 @@ public interface IModule {
      */
     public List<String> getWidgets(String type);
 
-    /**
-     * Any additional tasks this module needs to perform when re-indexing a record (e.g. putting additional files into the hotfolder).
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param dataRepository a {@link java.lang.String} object.
-     * @param namingScheme a {@link java.lang.String} object.
-     * @throws java.lang.Exception if any.
-     */
-    public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws Exception;
-
-    /**
-     * Any additional tasks this module needs to perform when re-indexing a page (e.g. putting additional files into the hotfolder).
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param page a int.
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param dataRepository a {@link java.lang.String} object.
-     * @param namingScheme a {@link java.lang.String} object.
-     * @return true if successful; false otherwise
-     * @throws java.lang.Exception if any.
-     */
-    public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme) throws Exception;
 
     /**
      * Any clean-up the module might want to do when resetting the currently loaded record.

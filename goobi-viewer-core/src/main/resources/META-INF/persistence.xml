@@ -6,8 +6,9 @@
 	<persistence-unit name="intranda_viewer_tomcat"
 		transaction-type="JTA">
 		<jta-data-source>java:comp/env/viewer</jta-data-source>
-		<class>io.goobi.viewer.model.annotation.Comment</class>
-        <class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+        <class>io.goobi.viewer.model.annotation.CrowdsourcingAnnotation</class>
+		<class>io.goobi.viewer.model.annotation.comments.Comment</class>
 		<class>io.goobi.viewer.model.bookmark.BookmarkList</class>
 		<class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
@@ -32,7 +33,6 @@
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
         <class>io.goobi.viewer.model.crowdsourcing.questions.Question</class>
-        <class>io.goobi.viewer.model.crowdsourcing.questions.QuestionTranslation</class>
 		<class>io.goobi.viewer.model.download.DownloadJob</class>
 		<class>io.goobi.viewer.model.download.EPUBDownloadJob</class>
 		<class>io.goobi.viewer.model.download.PDFDownloadJob</class>
@@ -57,7 +57,8 @@
 		<class>io.goobi.viewer.model.cms.CMSSlider</class>
 		<class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
 		<class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
-		
+		<class>io.goobi.viewer.model.translations.Translation</class>
+
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
 			<property name="eclipselink.ddl-generation"
@@ -86,8 +87,9 @@
 		transaction-type="RESOURCE_LOCAL">
 
 		<!-- <class>io.goobi.viewer.model.annotation.AnnotationElement</class> -->
-		<class>io.goobi.viewer.model.annotation.Comment</class>
-        <class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+        <class>io.goobi.viewer.model.annotation.CrowdsourcingAnnotation</class>
+		<class>io.goobi.viewer.model.annotation.comments.Comment</class>
         <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
         <class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
@@ -137,6 +139,8 @@
 		<class>io.goobi.viewer.model.cms.CMSSlider</class>
 		<class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
 		<class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
+		<class>io.goobi.viewer.model.translations.Translation</class>
+
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
