@@ -35,6 +35,7 @@ import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.AjaxResponseException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PublicationStatus;
@@ -83,8 +84,8 @@ public class CommentManager implements AnnotationLister<Comment> {
         String textCleaned = checkAndCleanScripts(text, editor, comment.getTargetPI(), comment.getTargetPageOrder());
         Comment editedComment = new Comment(comment);
         editedComment.setText(textCleaned);
-        comment.setPublicationStatus(publicationStatus);
-        comment.setDateModified(LocalDateTime.now());
+        editedComment.setPublicationStatus(publicationStatus);
+        editedComment.setDateModified(LocalDateTime.now());
         try {
             saver.save(editedComment);
             notificators.forEach(n -> n.notifyEdit(comment, editedComment, BeanUtils.getLocale()));

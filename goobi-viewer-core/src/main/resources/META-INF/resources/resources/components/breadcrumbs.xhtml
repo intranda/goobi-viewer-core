@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <composite:interface>
+        <composite:attribute name="showIcon" required="false" default="false" />
+        <composite:attribute name="showStartText" required="false" default="true" />
+    </composite:interface>
+
+    <composite:implementation>
+		<h:panelGroup rendered="#{configurationBean.displayBreadcrumbs}">
+			<div id="breadcrumbs" class="breadcrumbs-wrapper">
+				<nav class="breadcrumbs" aria-label="Breadcrumbs">
+					<ul>
+					
+						<!-- SHOW PREPENDED TEXT "YOU ARE HERE:" -->
+						<ui:fragment rendered="#{cc.attrs.showStartText == true}">
+							<li class="breadcrumbs__starttext"><span>#{msg.breadcrumbStartText}:</span></li>
+						</ui:fragment>
+						
+						<ui:repeat value="#{breadcrumbBean.breadcrumbs}" var="breadcrumb" varStatus="status">
+							
+							<!-- FIRST BREADCRUMB: ICON WITH LINK - ACTUAL PAGE IS NOT HOMEPAGE -->
+							<h:panelGroup rendered="#{(status.first and !status.last and breadcrumb.link) and (cc.attrs.showIcon == true)}">
+								<li class="breadcrumbs__crumb">
+									<a href="#{breadcrumb.url}" title="#{msg.home}" aria-label="#{msg.home}">
+										<i class="fa fa-home breadcrumbs__first-crumb-icon" aria-hidden="true"></i>
+									</a>
+								</li>
+							</h:panelGroup>
+							
+							<!-- FIRST BREADCRUMB: ICON NO LINK - USER IS ON FIRST PAGE (HOMEPAGE) -->
+							<h:panelGroup rendered="#{(status.first and status.last) and (cc.attrs.showIcon == true)}">
+								<li class="breadcrumbs__crumb" aria-current="page">
+									<span aria-label="#{msg.home}">
+										<i class="fa fa-home breadcrumbs__first-crumb-icon" aria-hidden="true"></i>
+									</span>
+								</li>
+							</h:panelGroup>
+
+							<!-- FIRST BREADCRUMB: TEXT NO LINK - USER IS ON FIRST PAGE (HOMEPAGE) -->
+							<h:panelGroup rendered="#{(status.first and status.last) and (cc.attrs.showIcon == false)}">
+								<li class="breadcrumbs__crumb" aria-current="page">
+									<span>
+										<h:outputText escape="false" value="#{msg[breadcrumb.name]}" />
+									</span>
+								</li>
+							</h:panelGroup>
+							
+							<!-- FIRST BREADCRUMB: TEXT WITH LINK - ACTUAL PAGE IS NOT HOMEPAGE -->
+							<h:panelGroup rendered="#{(status.first and !status.last and breadcrumb.link) and (cc.attrs.showIcon == false)}">
+								<li class="breadcrumbs__crumb">
+									<a href="#{breadcrumb.url}">
+										<h:outputText escape="false" value="#{msg[breadcrumb.name]}" />
+									</a>
+								</li>
+							</h:panelGroup>
+
+							<!-- BREADCRUMB TEXT LINKS - PAGES IN BETWEEN  -->
+							<h:panelGroup rendered="#{!status.last and !status.first and breadcrumb.link}">
+								<li class="breadcrumbs__crumb">
+									<a href="#{breadcrumb.url}">
+										<h:outputText escape="false" value="#{msg[breadcrumb.name]}" />
+									</a>
+								</li>
+							</h:panelGroup>
+							
+							<!-- BREADCRUMB TEXT - ACTUAL PAGE USER IS ON -->
+							<h:panelGroup rendered="#{(!status.first and status.last)}">
+								<li class="breadcrumbs__crumb -actualPage" aria-current="page">
+									<span>
+										<h:outputText escape="false" value="#{msg[breadcrumb.name]}" />
+									</span>
+								</li>
+							</h:panelGroup>
+							
+						</ui:repeat>
+					</ul>
+				</nav>
+			</div>
+		</h:panelGroup>
+	</composite:implementation>
+</ui:composition>

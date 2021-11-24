@@ -38,6 +38,7 @@ var viewerJS = ( function( viewer ) {
 				denyText = denyText ? denyText : viewerJS.translator.translate("cancel");
 				if(typeof(Swal) !== 'undefined') {
 					return Swal.fire({
+						scrollbarPadding: false,
 						title: titleAlert,
 						text: message,
 						icon: 'warning',
@@ -68,6 +69,7 @@ var viewerJS = ( function( viewer ) {
 		notify : (titleAlert, message, type) => {
 			if(typeof Swal !== 'undefined') {
 				Swal.fire({
+					scrollbarPadding: false,
 					title: titleAlert,
 					text: message,
 					icon: type,
@@ -118,7 +120,8 @@ var viewerJS = ( function( viewer ) {
 		toast : (titleAlert, message, type) => {
 			if(typeof Swal !== 'undefined') {
 				swalToast.fire({
-				  icon: 'success',
+				  scrollbarPadding: false,
+				  icon: type,
 				  title: titleAlert,
 				});
 			} else if(typeof sweetAlert !== 'undefined') {
@@ -132,6 +135,22 @@ var viewerJS = ( function( viewer ) {
 			} else {
 				alert(message);
 			}			
+		},
+		/**
+		return viewer.swaltoasts if the status of event is "success". Otherwise return a psuedo viewer.swaltoasts which does nothing
+		Use to filter messages from ajax requests so that only the success state produces a message:
+		<code> event => viewer.swaltoasts.onSuccess(event).success("message")</code>
+		**/
+		onSuccess: function(event) {
+            if(event.status == "success") {
+				return this;       
+			} else {
+				return {
+					success : (titleAlert, message) => {},
+					error : (titleAlert, message) => {},
+					warn : (titleAlert, message) => {},
+				}
+			}
 		}
 		
     }
