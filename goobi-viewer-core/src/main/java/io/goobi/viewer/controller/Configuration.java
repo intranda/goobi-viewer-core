@@ -23,10 +23,12 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -69,6 +71,7 @@ import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.BibliothecaProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
@@ -2905,6 +2908,22 @@ public final class Configuration extends AbstractConfiguration {
      */
     public List<String> getSortFields() {
         return getLocalList("search.sorting.field");
+    }
+
+    public Collection<SearchSortingOption> getSearchSortingOptions() {
+        Set<SearchSortingOption> options = new LinkedHashSet<>();
+        //default option
+        SearchSortingOption defaultOption = new SearchSortingOption(getDefaultSortField(), true);
+        options.add(defaultOption);
+        for (String field : getSortFields()) {
+            if (!field.equals(defaultOption.getField())) {
+                options.add(new SearchSortingOption(field, true));
+                if (!SolrConstants.SORT_RANDOM.equals(field)) {
+                    options.add(new SearchSortingOption(field, false));
+                }
+            }
+        }
+        return options;
     }
 
     /**

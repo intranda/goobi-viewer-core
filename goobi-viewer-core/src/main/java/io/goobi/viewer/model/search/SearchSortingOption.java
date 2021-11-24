@@ -18,7 +18,6 @@ package io.goobi.viewer.model.search;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -39,6 +38,20 @@ public class SearchSortingOption {
     public SearchSortingOption() {
         this.field = "";
         this.ascending = true;
+    }
+
+    /**
+     * 
+     * @param field
+     */
+    public SearchSortingOption(String field) {
+        if (field != null && field.startsWith("!")) {
+            this.field = field;
+            this.ascending = false;
+        } else {
+            this.field = field;
+            this.ascending = true;
+        }
     }
 
     /**
@@ -73,6 +86,8 @@ public class SearchSortingOption {
     public String getLabel() {
         if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(field)) {
             return ViewerResourceBundle.getTranslation(field, null);
+        } else if (SolrConstants.SORT_RELEVANCE.equalsIgnoreCase(field)) {
+            return ViewerResourceBundle.getTranslation(DEFAULT_SORT_FIELD_LABEL, null);
         } else if (StringUtils.isNotBlank(field)) {
             return ViewerResourceBundle.getTranslation(field, null) + " " + ViewerResourceBundle.getTranslation(getSearchSortingKey(), null);
         } else {
@@ -82,6 +97,9 @@ public class SearchSortingOption {
 
     public String getSortString() {
         if (StringUtils.isNotBlank(field)) {
+            if (field.startsWith("random_")) {
+                return field;
+            }
             return (isDescending() ? "!" : "") + field;
         }
         return "";
@@ -113,6 +131,7 @@ public class SearchSortingOption {
     /**
      * Two SearchSortingOptions are equal if they either both have an empty {@link #getField()} or if both {@link #getField()} and
      * {@link #isAscending()} are equal
+     * 
      * @should return true if both options are random
      */
     @Override
@@ -122,12 +141,12 @@ public class SearchSortingOption {
             if (StringUtils.isBlank(this.field)) {
                 return StringUtils.isBlank(other.field);
             }
-//            if (this.getField().equals(SolrConstants.SORT_RANDOM)) {
-//                return other.getSortString().startsWith("random_");
-//            }
-//            if (other.getField().equals(SolrConstants.SORT_RANDOM)) {
-//                return this.getSortString().startsWith("random_");
-//            }
+            //            if (this.getField().equals(SolrConstants.SORT_RANDOM)) {
+            //                return other.getSortString().startsWith("random_");
+            //            }
+            //            if (other.getField().equals(SolrConstants.SORT_RANDOM)) {
+            //                return this.getSortString().startsWith("random_");
+            //            }
             return StringUtils.equals(this.getField(), other.getField()) && this.isAscending() == other.isAscending();
         }
         return false;

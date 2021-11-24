@@ -28,7 +28,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1269,19 +1268,20 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public void setSortString(String sortString) {
+        logger.trace("setSortString: {}", sortString);
         if ("-".equals(sortString)) {
             String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
             if (StringUtils.isNotEmpty(defaultSortField)) {
                 sortString = defaultSortField;
             }
-            
-        } 
-        
+
+        }
+
         if (!"-".equals(sortString)) {
-            if(SolrConstants.SORT_RANDOM.equals(sortString.toUpperCase())) {
+            if (SolrConstants.SORT_RANDOM.equals(sortString.toUpperCase())) {
                 sortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
             }
-            setSearchSortingOption(new SearchSortingOption(sortString, true));
+            setSearchSortingOption(new SearchSortingOption(sortString));
         }
     }
 
@@ -1289,8 +1289,7 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public String getSortString() {
         if (searchSortingOption == null) {
-            setSearchString("-");
-
+            setSortString("-");
         }
 
         if (searchSortingOption != null) {
@@ -1311,6 +1310,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param searchSortingOption the searchSortingOption to set
      */
     public void setSearchSortingOption(SearchSortingOption searchSortingOption) {
+        logger.trace("setSearchSortingOption: {}", searchSortingOption);
         this.searchSortingOption = searchSortingOption;
     }
 
@@ -2825,19 +2825,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public Collection<SearchSortingOption> getSearchSortingOptions() {
-        Set<SearchSortingOption> options = new LinkedHashSet<>();
-        //default option
-        SearchSortingOption defaultOption = new SearchSortingOption(DataManager.getInstance().getConfiguration().getDefaultSortField(), true);
-        options.add(defaultOption);
-        for (String field : DataManager.getInstance().getConfiguration().getSortFields()) {
-            if (!field.equals(defaultOption.getField())) {
-                options.add(new SearchSortingOption(field, true));
-                if (!SolrConstants.SORT_RANDOM.equals(field)) {
-                    options.add(new SearchSortingOption(field, false));
-                }
-            }
-        }
-        return options;
+        return DataManager.getInstance().getConfiguration().getSearchSortingOptions();
     }
 
 }
