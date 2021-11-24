@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.viewer.themes;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author florian
  *
@@ -103,6 +105,10 @@ public class ThemeLink {
 
     public void setLinkUrl(String url) {
         this.linkUrl = url;
+    }
+    
+    public boolean hasLink() {
+        return StringUtils.isNotBlank(linkUrl);
     }
 
 }

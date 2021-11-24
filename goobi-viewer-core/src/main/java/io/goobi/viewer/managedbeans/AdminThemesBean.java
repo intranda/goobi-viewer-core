@@ -18,6 +18,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
@@ -88,5 +89,25 @@ public class AdminThemesBean implements Serializable {
         String themeName = BeanUtils.getNavigationHelper().getThemeOrSubtheme();
         ThemeConfiguration theme = DataManager.getInstance().getDao().getTheme(themeName);
         return theme;
+    }
+    
+    public boolean isCurrentThemeConfigured() throws DAOException {
+        return getCurrentTheme() != null;
+    }
+    
+    public String getSocialMediaUrl(ThemeLink.SocialMediaService service, String defaultUrl) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getSocialMediaLinkUrlOrDefault(service, defaultUrl)).orElse(defaultUrl);
+    }
+    
+    public String getFooterUrl(ThemeLink.InternalService service, String defaultUrl) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getFooterLinkUrlOrDefault(service, defaultUrl)).orElse(defaultUrl);
+    }
+    
+    public String getLogo(String defaultUrl) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getLogo()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI().toString()).orElse(defaultUrl);
+    }
+    
+    public String getIcon(String defaultUrl) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getIcon()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI().toString()).orElse(defaultUrl);
     }
 }

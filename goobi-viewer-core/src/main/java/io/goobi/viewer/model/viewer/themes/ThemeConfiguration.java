@@ -18,6 +18,7 @@ package io.goobi.viewer.model.viewer.themes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.Column;
@@ -64,7 +65,7 @@ public class ThemeConfiguration {
     @Column(name = "footer_link", nullable = true, columnDefinition = "TINYTEXT")
     @Convert(converter = ThemeLinkConverter.class)
     List<ThemeLink> footerLinks = new ArrayList<>();
-    
+
     /**
      * Creates the internal lists for theme links
      */
@@ -74,7 +75,7 @@ public class ThemeConfiguration {
         this.logo = new SimpleMediaHolder();
         this.icon = new SimpleMediaHolder();
     }
-    
+
     /**
      * sets the name and calls default constructor
      */
@@ -82,7 +83,7 @@ public class ThemeConfiguration {
         this();
         this.name = themeName;
     }
-    
+
     public ThemeConfiguration(ThemeConfiguration orig) {
         this.id = orig.id;
         this.name = orig.name;
@@ -156,29 +157,36 @@ public class ThemeConfiguration {
     public String getName() {
         return name;
     }
-    
+
     /**
      * @return the id
      */
     public Long getId() {
         return id;
     }
-    
+
     public ThemeLink getSocialMediaLink(ThemeLink.SocialMediaService service) {
-       return this.socialMediaUrls.stream().filter(l -> l.getService().equals(service)).findAny().orElseGet(() -> createLink(service));
+        return this.socialMediaUrls.stream().filter(l -> l.getService().equals(service)).findAny().orElseGet(() -> createLink(service));
     }
-    
+
+    public String getSocialMediaLinkUrlOrDefault(ThemeLink.SocialMediaService service, String defaultValue) {
+        return Optional.ofNullable(getSocialMediaLink(service)).filter(ThemeLink::hasLink).map(ThemeLink::getLinkUrl).orElse(defaultValue);
+    }
 
     public ThemeLink getFooterLink(ThemeLink.InternalService service) {
         return this.footerLinks.stream().filter(l -> l.getService().equals(service)).findAny().orElseGet(() -> createLink(service));
-     }
+    }
+
+    public String getFooterLinkUrlOrDefault(ThemeLink.InternalService service, String defaultValue) {
+        return Optional.ofNullable(getFooterLink(service)).filter(ThemeLink::hasLink).map(ThemeLink::getLinkUrl).orElse(defaultValue);
+    }
 
     private ThemeLink createLink(SocialMediaService service) {
         ThemeLink link = new ThemeLink(service);
         this.socialMediaUrls.add(link);
         return link;
     }
-    
+
     private ThemeLink createLink(InternalService service) {
         ThemeLink link = new ThemeLink(service);
         this.footerLinks.add(link);
@@ -188,9 +196,9 @@ public class ThemeConfiguration {
     public SimpleMediaHolder getLogo() {
         return logo;
     }
-    
+
     public SimpleMediaHolder getIcon() {
         return icon;
     }
-    
+
 }
