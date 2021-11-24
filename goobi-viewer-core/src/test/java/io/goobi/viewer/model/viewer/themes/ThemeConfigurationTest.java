@@ -19,11 +19,14 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.SimpleMediaHolder;
 import io.goobi.viewer.model.viewer.themes.ThemeLink.InternalService;
 import io.goobi.viewer.model.viewer.themes.ThemeLink.SocialMediaService;
 
@@ -33,9 +36,9 @@ import io.goobi.viewer.model.viewer.themes.ThemeLink.SocialMediaService;
  */
 public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
 
-    private static final String LOGO_URL = "http://logo.jpg";
+    private static final Long LOGO_ID = 1l;
     private static final String STYLESHEET = "div {color:green;}\n a {color:blue};";
-    private static final String ICON_URL = "http://icon.png";
+    private static final Long ICON_ID = 2l;
     private static final String INTRANDA_LINK = "http://intranda.com";
     private static final String INSTAGRAM_LINK = "http://instagram.com";
     private static final String TWTTER_LINK = "http://twitter.com";
@@ -46,14 +49,22 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     private static final String THEME_NAME = "subtheme1";
     private static final String THEME_NAME_ALT = "subtheme2";
 
+    private CMSMediaItem logoItem;
+    private CMSMediaItem iconItem;
     
+    @Before
+    public void setup() throws Exception {
+        super.setUp();
+        logoItem = DataManager.getInstance().getDao().getCMSMediaItem(LOGO_ID);
+        iconItem = DataManager.getInstance().getDao().getCMSMediaItem(ICON_ID);
+    }
 
     @Test
     public void testSaveTheme() throws DAOException {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
-        theme.setIconFilename(ICON_URL);
-        theme.setLogoFilename(LOGO_URL);
+        theme.getLogo().setMediaItem(logoItem);
+        theme.getIcon().setMediaItem(iconItem);
         theme.setStyleSheet(STYLESHEET);
         theme.getSocialMediaLink(SocialMediaService.facebook).setLinkUrl(FACEBOOK_LINK);
         theme.getSocialMediaLink(SocialMediaService.instagram).setLinkUrl(INSTAGRAM_LINK);
@@ -65,8 +76,8 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         
         assertEquals(THEME_NAME, loadedTheme.getName());
         assertEquals(THEME_LABEL, loadedTheme.getLabel());
-        assertEquals(ICON_URL, loadedTheme.getIconFilename());
-        assertEquals(LOGO_URL, loadedTheme.getLogoFilename());
+        assertEquals(logoItem, loadedTheme.getLogo().getMediaItem());
+        assertEquals(iconItem, loadedTheme.getIcon().getMediaItem());
         assertEquals(STYLESHEET, loadedTheme.getStyleSheet());
         assertEquals(FACEBOOK_LINK, loadedTheme.getSocialMediaLink(SocialMediaService.facebook).getLinkUrl());
         assertEquals(INSTAGRAM_LINK, loadedTheme.getSocialMediaLink(SocialMediaService.instagram).getLinkUrl());
@@ -77,8 +88,8 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     public void testUpdateTheme() throws DAOException {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
-        theme.setIconFilename(ICON_URL);
-        theme.setLogoFilename(LOGO_URL);
+        theme.getLogo().setMediaItem(logoItem);
+        theme.getIcon().setMediaItem(iconItem);
         theme.setStyleSheet(STYLESHEET);
         theme.getSocialMediaLink(SocialMediaService.facebook).setLinkUrl(FACEBOOK_LINK);
         theme.getSocialMediaLink(SocialMediaService.instagram).setLinkUrl(INSTAGRAM_LINK);
@@ -86,28 +97,34 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         
         assertTrue(DataManager.getInstance().getDao().addTheme(theme));
         ThemeConfiguration loadedTheme = DataManager.getInstance().getDao().getTheme(THEME_NAME);
+        assertEquals(logoItem, loadedTheme.getLogo().getMediaItem());
+        assertEquals(iconItem, loadedTheme.getIcon().getMediaItem());
+        assertEquals(THEME_LABEL, loadedTheme.getLabel());
+        assertEquals(FACEBOOK_LINK, loadedTheme.getSocialMediaLink(SocialMediaService.facebook).getLinkUrl());
+        assertEquals(null, loadedTheme.getSocialMediaLink(SocialMediaService.twitter).getLinkUrl());
+        
         ThemeConfiguration editableTheme = new ThemeConfiguration(loadedTheme);
         editableTheme.setLabel(THEME_LABEL_ALT);
         editableTheme.getSocialMediaLink(SocialMediaService.facebook).setLinkUrl(FACEBOOK_LINK_ALT);
         editableTheme.getSocialMediaLink(SocialMediaService.twitter).setLinkUrl(TWTTER_LINK);
-        
-        assertEquals(THEME_LABEL, loadedTheme.getLabel());
-        assertEquals(FACEBOOK_LINK, loadedTheme.getSocialMediaLink(SocialMediaService.facebook).getLinkUrl());
-        assertEquals(null, loadedTheme.getSocialMediaLink(SocialMediaService.twitter).getLinkUrl());
+        assertEquals(logoItem, editableTheme.getLogo().getMediaItem());
+        assertEquals(iconItem, editableTheme.getIcon().getMediaItem());
         
         assertTrue(DataManager.getInstance().getDao().updateTheme(editableTheme));
         ThemeConfiguration loadedTheme2 = DataManager.getInstance().getDao().getTheme(THEME_NAME);
         assertEquals(THEME_LABEL_ALT, loadedTheme2.getLabel());
         assertEquals(FACEBOOK_LINK_ALT, loadedTheme2.getSocialMediaLink(SocialMediaService.facebook).getLinkUrl());
         assertEquals(TWTTER_LINK, loadedTheme2.getSocialMediaLink(SocialMediaService.twitter).getLinkUrl());
+        assertEquals(logoItem, loadedTheme2.getLogo().getMediaItem());
+        assertEquals(iconItem, loadedTheme2.getIcon().getMediaItem());
     }
     
     @Test
     public void testDeleteTheme() throws DAOException {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
-        theme.setIconFilename(ICON_URL);
-        theme.setLogoFilename(LOGO_URL);
+        theme.getLogo().setMediaItem(logoItem);
+        theme.getIcon().setMediaItem(iconItem);
         theme.setStyleSheet(STYLESHEET);
         theme.getSocialMediaLink(SocialMediaService.facebook).setLinkUrl(FACEBOOK_LINK);
         theme.getSocialMediaLink(SocialMediaService.instagram).setLinkUrl(INSTAGRAM_LINK);

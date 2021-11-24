@@ -859,8 +859,9 @@
 		<view-id value="/resources/admin/views/adminThemes.xhtml" />
     </url-mapping>
     <url-mapping id="adminThemesEdit">
-        <pattern value="/admin/themes/edit/" />
+        <pattern value="/admin/themes/edit/#{themeName}/" />
         <view-id value="/resources/admin/views/adminThemesEdit.xhtml" />
+        <action onPostback="false">#{adminThemeEditBean.setCurrentThemeName(themeName)}</action>
     </url-mapping>
 
     <!-- ADMIN STYLES FOR DEVS -->

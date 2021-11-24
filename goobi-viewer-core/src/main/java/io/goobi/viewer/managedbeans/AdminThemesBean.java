@@ -16,6 +16,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,9 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
+import io.goobi.viewer.model.viewer.themes.ThemeLink;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -35,7 +38,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 @Named
 @ViewScoped
-public class AdminThemeStylingBean implements Serializable {
+public class AdminThemesBean implements Serializable {
 
     private static final long serialVersionUID = 837772138767500963L;
     
@@ -43,7 +46,7 @@ public class AdminThemeStylingBean implements Serializable {
     private final List<String> subThemeNames;
     private List<ThemeConfiguration> configuredThemes;
     
-    public AdminThemeStylingBean() throws PresentationException, IndexUnreachableException, DAOException {
+    public AdminThemesBean() throws PresentationException, IndexUnreachableException, DAOException {
         mainThemeName = DataManager.getInstance().getConfiguration().getTheme();
         subThemeNames = SolrTools.getExistingSubthemes();
         configuredThemes = DataManager.getInstance().getDao().getConfiguredThemes();
@@ -70,18 +73,20 @@ public class AdminThemeStylingBean implements Serializable {
     }
     
     public List<String> getNotConfiguredSubThemes() {
-        return subThemeNames.stream().filter(name -> isSubThemeConfigured(name)).collect(Collectors.toList());
+        return subThemeNames.stream().filter(name -> !isSubThemeConfigured(name)).collect(Collectors.toList());
     }
 
     public List<ThemeConfiguration> getConfiguredSubThemes() {
-        return configuredThemes.stream().filter(theme -> theme.getName().equals(mainThemeName)).collect(Collectors.toList());
+        return configuredThemes.stream().filter(theme -> !theme.getName().equals(mainThemeName)).collect(Collectors.toList());
     }
-    
-    /**
-     * @return the subThemeNames
-     */
+  
     public List<String> getSubThemeNames() {
         return subThemeNames;
     }
-    
+
+    public ThemeConfiguration getCurrentTheme() throws DAOException {
+        String themeName = BeanUtils.getNavigationHelper().getThemeOrSubtheme();
+        ThemeConfiguration theme = DataManager.getInstance().getDao().getTheme(themeName);
+        return theme;
+    }
 }

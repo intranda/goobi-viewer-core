@@ -39,48 +39,48 @@
 
             <!-- MAIN THEME CONFIGS -->
             <ui:fragment>
-                <div class="admin__default-block mb-5 #{adminThemeStylingBean.mainThemeConfigured ? '-success-box' : '-danger' }">
+                <div class="admin__default-block mb-5 #{adminThemesBean.mainThemeConfigured ? '-success-box' : '-danger' }">
                     <div class="row">
                       <h3 class="col-12">
-                        #{adminThemeStylingBean.mainThemeConfigured ?
+                        #{adminThemesBean.mainThemeConfigured ?
                           msg.admin__themes__main_heading_configured :
                           msg.admin__themes__main_heading_notConfigured
                         }
                       </h3>
                     </div>
-                    <a href="#{request.contextPath}/admin/themes/#{adminThemeStylingBean.mainThemeConfigured ? 'edit' : 'new'}/#{adminThemeStylingBean.mainThemeName}/"
+                    <a href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}/"
                         class="row admin__license-unconfigured-entry">
                             <div class="col-10 -textlink">
 
-	                            <ui:fragment rendered="#{adminThemeStylingBean.mainThemeConfigured}">
+	                            <ui:fragment rendered="#{adminThemesBean.mainThemeConfigured}">
 	                              <h:outputFormat value="#{msg.admin__themes__main_text_configured}" escape="false">
-	                                <f:param value="#{adminThemeStylingBean.mainThemeName}" />
+	                                <f:param value="#{adminThemesBean.mainThemeName}" />
 	                              </h:outputFormat>
 	                            </ui:fragment>
-	                            <ui:fragment rendered="#{!adminThemeStylingBean.mainThemeConfigured}">
+	                            <ui:fragment rendered="#{!adminThemesBean.mainThemeConfigured}">
 	                              <h:outputFormat value="#{msg.admin__themes__main_text_notConfigured}" escape="false">
-	                                <f:param value="#{adminThemeStylingBean.mainThemeName}" />
+	                                <f:param value="#{adminThemesBean.mainThemeName}" />
 	                              </h:outputFormat>
 	                            </ui:fragment>
 
                             </div>
                             <div class="col-2 d-flex justify-content-end">
-                            	<span>#{adminThemeStylingBean.mainThemeConfigured ? msg.admin__themes__action_configured : msg.admin__themes__action_notConfigured}</span>
+                            	<span>#{adminThemesBean.mainThemeConfigured ? msg.admin__themes__action_configured : msg.admin__themes__action_notConfigured}</span>
                             </div>
                  	</a>
                 </div>
             </ui:fragment>
 
             <!-- SUB THEMES -->
-			<ui:fragment rendered="#{not empty adminThemeStylingBean.notConfiguredSubThemes}">
-            	<div class="admin__default-block mb-5 -danger}">
+			<ui:fragment rendered="#{not empty adminThemesBean.notConfiguredSubThemes}">
+            	<div class="admin__default-block mb-5 -danger">
                     <div class="row">
                       <h3 class="col-12">
                           #{msg.admin__themes__sub_heading_notConfigured}
                       </h3>
                     </div>
-                    <ui:repeat var="themeName" value="#{adminThemeStylingBean.notConfiguredSubThemes}">
-                    	<a href="#{request.contextPath}/admin/themes/new/#{themeName}/"
+                    <ui:repeat var="themeName" value="#{adminThemesBean.notConfiguredSubThemes}">
+                    	<a href="#{request.contextPath}/admin/themes/edit/#{themeName}/"
                         	class="row admin__license-unconfigured-entry">
                             <div class="col-10 -textlink">
                               <h:outputFormat value="#{msg.admin__themes__sub_text_notConfigured}" escape="false">
@@ -95,7 +95,7 @@
                 </div>   
 			</ui:fragment>
 			
-            <ui:repeat var="theme" value="#{adminThemeStylingBean.configuredSubThemes}">
+            <ui:repeat var="theme" value="#{adminThemesBean.configuredSubThemes}">
 				<div class="admin__default-block mb-5 -success-box}">
                     <div class="row">
                       <h3 class="col-12">
@@ -103,7 +103,7 @@
                       </h3>
                     </div>
                     <!-- value: Theme Names -->
-                    <a href="#{request.contextPath}/admin/themes/new/#{themeName}/"
+                    <a href="#{request.contextPath}/admin/themes/edit/#{theme.name}/"
                         	class="row admin__license-unconfigured-entry">
                         <div class="col-10 -textlink">
                           <h:outputFormat value="#{msg.admin__themes__sub_text_configured}" escape="false">

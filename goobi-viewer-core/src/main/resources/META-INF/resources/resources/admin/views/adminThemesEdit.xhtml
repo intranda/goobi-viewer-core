@@ -12,11 +12,13 @@
 
     <ui:define name="metadata">
       <f:metadata>
-        <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCategories')}" />
+        <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminThemes')}" />
       </f:metadata>
     </ui:define>
 
     <ui:define name="content">
+    
+    <c:set value="#{adminThemeEditBean.currentTheme}" var="theme"/>
 
       <!-- TITLE -->
       <div class="admin__title-bar">
@@ -48,7 +50,7 @@
                       <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                     </div>
                     <div class="col-9 admin__form-input">
-                      <h:inputText value="#{adminBean.currentIpRange.name}" id="mainThemeName" required="true" styleClass="form-control" />
+                      <h:inputText value="#{theme.label}" id="mainThemeName" required="true" styleClass="form-control" />
                       <span class="admin__form-help-text">#{msg.admin__themesEdit__general_name_help}</span>
                     </div>
                     <div class="col-1 admin__form-help-icon">
@@ -59,7 +61,7 @@
                   </div> <!-- End form-group -->
 
                 <!-- LOGO UPLOAD -->
-                <h:panelGroup styleClass="form-group form-row position-relative" layout="block">
+                <h:panelGroup id="logoPanel" styleClass="form-group form-row position-relative" layout="block">
 
                   <ui:fragment rendered="#{false}">
                     <div class="admin__non-clickable-area-overlay"></div>
@@ -74,18 +76,22 @@
                       <!-- ACTIONS -->
                       <div class="cms-module__actions">
                         <h:commandLink
-                          action="#{cmsBean.setSelectedMediaHolder(null)}"
-                          value="#{null == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
-                          class="btn #{null == null ? 'btn--default' : 'btn--clean edit'}"
+                          action="#{cmsBean.setSelectedMediaHolder(theme.logo)}"
+                          value="#{theme.logo.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}"
+                          class="btn #{theme.logo.hasMediaItem() ? 'btn--default' : 'btn--clean edit'}"
                           role="button">
                           <f:ajax execute="@this" render="mediaSelectPanel" />
                         </h:commandLink>
                         <h:commandLink
-                          rendered="#{null != null}"
+                          rendered="#{theme.logo.hasMediaItem()}"
+                          action="#{theme.logo.setMediaItem(null)}"
                           value="#{msg.cms_selectMediaItem_deselect}"
                           class="btn btn--clean delete" role="button">
-                          <f:ajax render="contentMediaGroup" />
+                          <f:ajax render="logoPanel" />
                         </h:commandLink>
+                        <ui:fragment rendered="#{theme.logo.hasMediaItem()}">
+                        	<img src="#{theme.logo.mediaItem.iconURI}"></img>
+                        </ui:fragment>
                       </div>
                       <!-- HELP -->
                       <span class="admin__form-help-text">#{msg.admin__themesEdit__general_logo_help}</span>
@@ -104,7 +110,7 @@
 
 
                 <!-- ICON UPLOAD -->
-                <h:panelGroup styleClass="form-group form-row position-relative" layout="block">
+                <h:panelGroup id="iconPanel" styleClass="form-group form-row position-relative" layout="block">
 
                   <ui:fragment rendered="#{false}">
                     <div class="admin__non-clickable-area-overlay"></div>
@@ -119,16 +125,22 @@
                       <!-- ACTIONS -->
                       <div class="cms-module__actions">
                         <h:commandLink
-                          value="#{null == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
-                          class="btn #{null == null ? 'btn--default' : 'btn--clean edit'}"
+                          action="#{cmsBean.setSelectedMediaHolder(theme.icon)}"
+                          value="#{theme.icon.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}"
+                          class="btn #{theme.icon.hasMediaItem() ? 'btn--default' : 'btn--clean edit'}"
                           role="button">
                         </h:commandLink>
                         <h:commandLink
-                          rendered="#{null != null}"
+                          rendered="#{theme.icon.hasMediaItem()}"
+                          action="#{theme.icon.setMediaItem(null)}"
                           value="#{msg.cms_selectMediaItem_deselect}"
                           class="btn btn--clean delete" role="button">
+                          <f:ajax render="iconPanel" />
                         </h:commandLink>
                       </div>
+                      <ui:fragment rendered="#{theme.icon.hasMediaItem()}">
+                        	<img src="#{theme.icon.mediaItem.iconURI}"></img>
+                        </ui:fragment>
                       <!-- HELP -->
                       <span class="admin__form-help-text">#{msg.admin__themesEdit__general_icon_help}</span>
 
@@ -163,7 +175,7 @@
                     <label for="ipRangeDescription">#{msg.admin__themesEdit__css_label}:</label>
                   </div>
                   <div class="col-9 admin__form-input">
-                    <h:inputTextarea rows="10" value="#{adminBean.currentIpRange.description}" id="ipRangeDescription" styleClass="form-control" />
+                    <h:inputTextarea rows="10" value="#{theme.styleSheet}" id="ipRangeDescription" styleClass="form-control" />
                     <span class="admin__form-help-text">#{msg.admin__themesEdit__css_help}</span>
                   </div>
                   <div class="col-1 admin__form-help-icon">
@@ -186,29 +198,16 @@
 				        <div class="admin__info-text">#{msg.admin__themesEdit__soMe_info}</div>
 
                 <!-- ACCOUNTS -->
-                <ui:repeat
-                  var="soMeAccount"
-                  value="#{[
-                    'Github',
-                    'Twitter',
-                    'YouTube',
-                    'Slideshare',
-                    'Facebook',
-                    'Instagram'
-                    ]}">
-
-                <!-- DUMMY VARIABLE, bitte löschen -->
-                <c:set var="adminThemeBean_accountExists" value="true" />
-
-                <ui:fragment rendered="#{adminThemeBean_accountExists}">
+                <ui:repeat var="soMeAccount"
+                  value="#{adminThemeEditBean.socialMediaServices}">
 
                   <div class="form-group form-row">
                     <div class="col-2 control-label admin__form-label">
-                      <label for="handle#{soMeAccount}">#{soMeAccount}:</label>
+                      <label for="handle#{soMeAccount}">#{msg[soMeAccount.labelKey]}:</label>
                     </div>
                     <div class="col-9 admin__form-input">
-                      <h:inputText value="#{adminThemeBean.soMe[soMeAccount]}" id="handle#{soMeAccount}" styleClass="form-control" />
-                      <span class="admin__form-help-text">#{msg.admin__themesEdit__soMe_help_}#{soMeAccount}</span>
+                      <h:inputText value="#{theme.getSocialMediaLink(soMeAccount).linkUrl}" id="handle#{soMeAccount}" styleClass="form-control" />
+                      <span class="admin__form-help-text">#{msg[soMeAccount.helpKey]}</span>
                     </div>
                     <div class="col-1 admin__form-help-icon">
                       <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
@@ -217,7 +216,6 @@
                     </div>
                   </div>
 
-                </ui:fragment>
                 </ui:repeat>
 
               </div> <!-- End admin__default-block => SOCIAL MEDIA -->
@@ -235,24 +233,16 @@
 
                 <!-- ACCOUNTS -->
                 <ui:repeat
-                  var="serviceLink"
-                  value="#{[
-                    'Contact',
-                    'Legal',
-                    'Privacy'
-                    ]}">
-
-                <c:set var="adminThemeBean_LinkExists" value="true" />
-
-                <ui:fragment rendered="#{adminThemeBean_LinkExists}">
+                  var="service"
+                  value="#{adminThemeEditBean.footerServices}">
 
                   <div class="form-group form-row">
                     <div class="col-2 control-label admin__form-label">
-                      <label for="service#{serviceLink}">#{msg.admin__themesEdit__service_}#{serviceLink}:</label>
+                      <label for="service#{service}">#{msg[service.labelKey]}:</label>
                     </div>
                     <div class="col-9 admin__form-input">
-                      <h:inputText value="#{adminThemeBean.service[serviceLink]}" id="service#{serviceLink}" styleClass="form-control" />
-                      <span class="admin__form-help-text">#{msg.admin__themesEdit__service_help_}#{serviceLink}</span>
+                      <h:inputText value="#{theme.getFooterLink(service).linkUrl}" id="service#{service}" styleClass="form-control" />
+                      <span class="admin__form-help-text">#{msg[service.helpKey]}</span>
                     </div>
                     <div class="col-1 admin__form-help-icon">
                       <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
@@ -260,8 +250,6 @@
                       </button>
                     </div>
                   </div>
-
-                </ui:fragment>
 
                 </ui:repeat>
 
@@ -271,7 +259,7 @@
               <!-- FORM ACTIONS -->
               <div class="row no-gutters justify-content-end admin__final-actions">
                 <h:link styleClass="btn admin__cancel-button" value="#{msg.cancel}"></h:link>
-                <h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{createRecordBean.saveRecord}" />
+                <h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{adminThemeEditBean.saveTheme}" />
               </div>
 
             </h:form>
@@ -295,7 +283,7 @@
               <!-- DESCRIPTION -->
               <div class="row">
                 <ui:fragment rendered="#{userGroup.description ne ''}">
-                <p class="col-12 admin__boxed-entry-description">#{msg.admin__themesEdit__themeInfo_text}:  #{mainThemeName}</p>
+                <p class="col-12 admin__boxed-entry-description">#{msg.admin__themesEdit__themeInfo_text}: #{theme.name}</p>
                 </ui:fragment>
                 <ui:fragment rendered="#{userGroup.description eq ''}">
                   <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
@@ -305,6 +293,23 @@
           </div>
 
         </div> <!-- End admin__content-inner-content -->
+
+			<h:panelGroup id="mediaSelectPanel">
+				<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+	                   <div class="admin-cms-media-select-overlay">
+	                    
+	                    <!-- SELECT MEDIA ITEM OVERLAY -->
+                            <div class="admin-cms-media__select-overlay"></div>
+                            
+                            <!-- SELECT MEDIA ITEM -->
+                            <div class="admin-cms-media__select">                            
+                                 <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+                                 	<ui:param name="mediaDisplayPanel" value="logoPanel iconPanel" />
+                                </ui:include>
+                            </div>
+	                   </div>
+				</ui:fragment>
+	        </h:panelGroup>
 
       </div> <!-- End WRAPPER -->
 

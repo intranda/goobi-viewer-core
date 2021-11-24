@@ -28,7 +28,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.goobi.viewer.dao.converter.SimpleMediaHolderConverter;
 import io.goobi.viewer.dao.converter.ThemeLinkConverter;
+import io.goobi.viewer.model.cms.SimpleMediaHolder;
 import io.goobi.viewer.model.viewer.themes.ThemeLink.InternalService;
 import io.goobi.viewer.model.viewer.themes.ThemeLink.SocialMediaService;
 
@@ -48,10 +50,12 @@ public class ThemeConfiguration {
     private String name;
     @Column(name = "label", nullable = true, columnDefinition = "TINYTEXT")
     private String label;
-    @Column(name = "logo", nullable = true, columnDefinition = "TINYTEXT")
-    private String logoFilename;
-    @Column(name = "icon", nullable = true, columnDefinition = "TINYTEXT")
-    private String iconFilename;
+    @Column(name = "logo", nullable = true, columnDefinition = "BIGINT")
+    @Convert(converter = SimpleMediaHolderConverter.class)
+    private SimpleMediaHolder logo;
+    @Column(name = "icon", nullable = true, columnDefinition = "BIGINT")
+    @Convert(converter = SimpleMediaHolderConverter.class)
+    private SimpleMediaHolder icon;
     @Column(name = "stylesheet", nullable = true, columnDefinition = "LONGTEXT")
     private String styleSheet;
     @Column(name = "social_media_link", nullable = true, columnDefinition = "TINYTEXT")
@@ -67,6 +71,8 @@ public class ThemeConfiguration {
     public ThemeConfiguration() {
         this.socialMediaUrls = Arrays.stream(ThemeLink.SocialMediaService.values()).map(s -> new ThemeLink(s)).collect(Collectors.toList());
         this.footerLinks = Arrays.stream(ThemeLink.InternalService.values()).map(s -> new ThemeLink(s)).collect(Collectors.toList());
+        this.logo = new SimpleMediaHolder();
+        this.icon = new SimpleMediaHolder();
     }
     
     /**
@@ -81,8 +87,8 @@ public class ThemeConfiguration {
         this.id = orig.id;
         this.name = orig.name;
         this.label = orig.label;
-        this.logoFilename = orig.logoFilename;
-        this.iconFilename = orig.iconFilename;
+        this.logo = new SimpleMediaHolder(orig.logo.getMediaItem(), orig.logo.getMediaFilter());
+        this.icon = new SimpleMediaHolder(orig.icon.getMediaItem(), orig.icon.getMediaFilter());
         this.styleSheet = orig.styleSheet;
         this.socialMediaUrls = orig.socialMediaUrls.stream().map(l -> new ThemeLink(l.getService(), l.getLinkUrl())).collect(Collectors.toList());
         this.footerLinks = orig.footerLinks.stream().map(l -> new ThemeLink(l.getService(), l.getLinkUrl())).collect(Collectors.toList());
@@ -100,34 +106,6 @@ public class ThemeConfiguration {
      */
     public void setLabel(String label) {
         this.label = label;
-    }
-
-    /**
-     * @return the logoFilename
-     */
-    public String getLogoFilename() {
-        return logoFilename;
-    }
-
-    /**
-     * @param logoFilename the logoFilename to set
-     */
-    public void setLogoFilename(String logoFilename) {
-        this.logoFilename = logoFilename;
-    }
-
-    /**
-     * @return the iconFilename
-     */
-    public String getIconFilename() {
-        return iconFilename;
-    }
-
-    /**
-     * @param iconFilename the iconFilename to set
-     */
-    public void setIconFilename(String iconFilename) {
-        this.iconFilename = iconFilename;
     }
 
     /**
@@ -207,6 +185,12 @@ public class ThemeConfiguration {
         return link;
     }
 
-
-
+    public SimpleMediaHolder getLogo() {
+        return logo;
+    }
+    
+    public SimpleMediaHolder getIcon() {
+        return icon;
+    }
+    
 }
