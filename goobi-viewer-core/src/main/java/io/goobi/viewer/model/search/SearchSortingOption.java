@@ -103,7 +103,6 @@ public class SearchSortingOption {
     }
 
     /**
-     * Sorting string as it appears in the URL (field name with or without exclamation mark or a random seed).
      * @return
      */
     public String getSortString() {
@@ -116,17 +115,6 @@ public class SearchSortingOption {
         return "";
     }
     
-    /**
-     * Pure field name without seed
-     * @return
-     */
-    public String getSortField() {
-        if (field.startsWith("random_")) {
-            return SolrConstants.SORT_RANDOM;
-        }
-        
-        return (isDescending() ? "!" : "") + field;
-    }
 
     private String getSearchSortingKey() {
         if (isAscending()) {
@@ -161,6 +149,9 @@ public class SearchSortingOption {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             SearchSortingOption other = (SearchSortingOption) obj;
+            if(this == other) {
+                return true;
+            }
             if (StringUtils.isBlank(this.field)) {
                 return StringUtils.isBlank(other.field);
             }
