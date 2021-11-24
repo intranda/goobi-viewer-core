@@ -33,7 +33,7 @@
         <h2 class="admin__title">#{msg.admin__themes__title}</h2>
       </div>
 
-      <div class="admin__content-inner-content">
+      <div id="adminThemes" class="admin__content-inner-content">
 
         <div class="admin__info-text">#{msg.admin__themes__info}</div>
 
@@ -92,9 +92,9 @@
                             </div>
 						</a>
                     </ui:repeat>
-                </div>   
+                </div>
 			</ui:fragment>
-			
+
             <ui:repeat var="theme" value="#{adminThemesBean.configuredSubThemes}">
 				<div class="admin__default-block mb-5 -success-box}">
                     <div class="row">

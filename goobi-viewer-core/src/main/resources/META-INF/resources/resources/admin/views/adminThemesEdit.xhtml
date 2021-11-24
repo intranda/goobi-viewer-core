@@ -17,7 +17,7 @@
     </ui:define>
 
     <ui:define name="content">
-    
+
     <c:set value="#{adminThemeEditBean.currentTheme}" var="theme"/>
 
       <!-- TITLE -->
@@ -25,7 +25,7 @@
         <h2 class="admin__title">#{msg.admin__themesEdit__title}</h2>
       </div>
 
-				<div class="admin__content-inner-content">
+				<div id="adminThemesEdit" class="admin__content-inner-content">
 
           <!-- WRAPPER -->
           <div class="admin__content-wrapper">
@@ -78,7 +78,7 @@
                         <h:commandLink
                           action="#{cmsBean.setSelectedMediaHolder(theme.logo)}"
                           value="#{theme.logo.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}"
-                          class="btn #{theme.logo.hasMediaItem() ? 'btn--default' : 'btn--clean edit'}"
+                          class="btn #{theme.logo.hasMediaItem() ? 'btn--default' : 'btn--default edit'}"
                           role="button">
                           <f:ajax execute="@this" render="mediaSelectPanel" />
                         </h:commandLink>
@@ -127,7 +127,7 @@
                         <h:commandLink
                           action="#{cmsBean.setSelectedMediaHolder(theme.icon)}"
                           value="#{theme.icon.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}"
-                          class="btn #{theme.icon.hasMediaItem() ? 'btn--default' : 'btn--clean edit'}"
+                          class="btn #{theme.icon.hasMediaItem() ? 'btn--default' : 'btn--default edit'}"
                           role="button">
                         </h:commandLink>
                         <h:commandLink
@@ -297,12 +297,12 @@
 			<h:panelGroup id="mediaSelectPanel">
 				<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
 	                   <div class="admin-cms-media-select-overlay">
-	                    
+
 	                    <!-- SELECT MEDIA ITEM OVERLAY -->
                             <div class="admin-cms-media__select-overlay"></div>
-                            
+
                             <!-- SELECT MEDIA ITEM -->
-                            <div class="admin-cms-media__select">                            
+                            <div class="admin-cms-media__select">
                                  <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
                                  	<ui:param name="mediaDisplayPanel" value="logoPanel iconPanel" />
                                 </ui:include>

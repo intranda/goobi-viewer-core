@@ -1,0 +1,40 @@
+/* ==============================================================
+   Admin Themes  (adminThemes + adminThemesEdit)
+   style declarations for adminThemes.xhtml + adminThemesEdit.xhtml
+   ==============================================================*/
+
+#adminThemes {
+
+	a.row  {
+
+		&:focus,
+		&:hover,
+		&:active {
+			text-decoration: none;
+			background-color: #f7f7f7;
+
+		}
+	}
+
+}
+
+#adminThemesEdit {
+	.btn--default,
+	.btn--clean {
+		opacity: 1;
+		&::after {
+			content: '';
+		}
+		&:focus,
+		&:hover,
+		&:active {
+			text-decoration: none;
+		}
+	}
+	img {
+		max-width: 20%;
+		display: block;
+		margin-top: 8px;
+	}
+}
+
