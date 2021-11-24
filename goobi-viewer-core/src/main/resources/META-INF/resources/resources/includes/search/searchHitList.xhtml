@@ -55,12 +55,12 @@
                         	<!-- The onkeypress prevents the command button from being triggered accidentally by pressing enter. It should only 
                         	be executed when selecting a option within the dropdown menu -->
                             <h:form prependId="false" onkeypress="if( event.keyCode == 13){event.keyCode=0;}">
-	                            <h:selectOneMenu value="#{searchBean.searchSortingOption}" id="sortSelect"
-	                                converter="searchSortingOptionConverter" pt:onchange="$('#executeSort').click()">
+	                            <h:selectOneMenu value="#{searchBean.sortString}" id="sortSelect"
+	                                pt:onchange="$('#executeSort').click()">
 	                            	<f:selectItems value="#{searchBean.searchSortingOptions}"
 	                            					var="option"
 	                            					itemLabel="#{option.label}"
-	                            					itemValue="#{option.sortString}"/>
+	                            					itemValue="#{option.sortField}"/>
 	                            </h:selectOneMenu>
 	                            <h:commandButton styleClass="d-none" id="executeSort" action="pretty:newSearch5"></h:commandButton>
                             </h:form>

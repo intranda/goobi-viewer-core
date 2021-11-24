@@ -83,9 +83,16 @@ public class SearchSortingOption {
         return !ascending;
     }
 
+    /**
+     * 
+     * @return
+     * @should return translation of RANDOM if field RANDOM
+     * @should return translation of RANDOM if field random seed
+     * @should return translation of DEFAULT_SORT_FIELD_LABEL if field RELEVANCE
+     */
     public String getLabel() {
-        if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(field)) {
-            return ViewerResourceBundle.getTranslation(field, null);
+        if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(field) || field.startsWith("random_")) {
+            return ViewerResourceBundle.getTranslation(SolrConstants.SORT_RANDOM, null);
         } else if (SolrConstants.SORT_RELEVANCE.equalsIgnoreCase(field)) {
             return ViewerResourceBundle.getTranslation(DEFAULT_SORT_FIELD_LABEL, null);
         } else if (StringUtils.isNotBlank(field)) {
@@ -95,6 +102,10 @@ public class SearchSortingOption {
         }
     }
 
+    /**
+     * Sorting string as it appears in the URL (field name with or without exclamation mark or a random seed).
+     * @return
+     */
     public String getSortString() {
         if (StringUtils.isNotBlank(field)) {
             if (field.startsWith("random_")) {
@@ -103,6 +114,18 @@ public class SearchSortingOption {
             return (isDescending() ? "!" : "") + field;
         }
         return "";
+    }
+    
+    /**
+     * Pure field name without seed
+     * @return
+     */
+    public String getSortField() {
+        if (field.startsWith("random_")) {
+            return SolrConstants.SORT_RANDOM;
+        }
+        
+        return (isDescending() ? "!" : "") + field;
     }
 
     private String getSearchSortingKey() {

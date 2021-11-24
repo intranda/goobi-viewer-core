@@ -2825,7 +2825,19 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public Collection<SearchSortingOption> getSearchSortingOptions() {
-        return DataManager.getInstance().getConfiguration().getSearchSortingOptions();
+        Collection<SearchSortingOption> options = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
+        Collection<SearchSortingOption> ret = new ArrayList<>(options.size());
+        for (SearchSortingOption option : options) {
+            // If random sorting is currently in use, use that particular seed
+            if (option.getField().equals(SolrConstants.SORT_RANDOM) && searchSortingOption != null
+                    && searchSortingOption.getField().startsWith("random")) {
+                ret.add(searchSortingOption);
+            } else {
+                ret.add(option);
+            }
+        }
+        
+        return ret;
     }
 
 }
