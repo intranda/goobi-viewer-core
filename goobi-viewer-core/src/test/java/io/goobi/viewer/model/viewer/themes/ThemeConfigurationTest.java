@@ -57,6 +57,7 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         super.setUp();
         logoItem = DataManager.getInstance().getDao().getCMSMediaItem(LOGO_ID);
         iconItem = DataManager.getInstance().getDao().getCMSMediaItem(ICON_ID);
+
     }
 
     @Test
@@ -82,6 +83,8 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         assertEquals(FACEBOOK_LINK, loadedTheme.getSocialMediaLink(SocialMediaService.facebook).getLinkUrl());
         assertEquals(INSTAGRAM_LINK, loadedTheme.getSocialMediaLink(SocialMediaService.instagram).getLinkUrl());
         assertEquals(INTRANDA_LINK, loadedTheme.getFooterLink(InternalService.contact).getLinkUrl());
+        
+        DataManager.getInstance().getDao().deleteTheme(theme);
     }
     
     @Test
@@ -112,11 +115,15 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         
         assertTrue(DataManager.getInstance().getDao().updateTheme(editableTheme));
         ThemeConfiguration loadedTheme2 = DataManager.getInstance().getDao().getTheme(THEME_NAME);
+        assertEquals(theme.getId(), loadedTheme2.getId());
         assertEquals(THEME_LABEL_ALT, loadedTheme2.getLabel());
         assertEquals(FACEBOOK_LINK_ALT, loadedTheme2.getSocialMediaLink(SocialMediaService.facebook).getLinkUrl());
         assertEquals(TWTTER_LINK, loadedTheme2.getSocialMediaLink(SocialMediaService.twitter).getLinkUrl());
         assertEquals(logoItem, loadedTheme2.getLogo().getMediaItem());
         assertEquals(iconItem, loadedTheme2.getIcon().getMediaItem());
+        
+        DataManager.getInstance().getDao().deleteTheme(theme);
+
     }
     
     @Test
@@ -134,6 +141,7 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         assertNotNull(DataManager.getInstance().getDao().getTheme(THEME_NAME));
         assertTrue(DataManager.getInstance().getDao().deleteTheme(theme));
         assertNull(DataManager.getInstance().getDao().getTheme(THEME_NAME));
+        
     }
     
     @Test
@@ -147,6 +155,11 @@ public class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         assertTrue(DataManager.getInstance().getDao().addTheme(theme2));
 
         List<ThemeConfiguration> themes = DataManager.getInstance().getDao().getConfiguredThemes();
-        assertEquals(2, themes.size());        
+        assertEquals(2, themes.size());   
+        
+        DataManager.getInstance().getDao().deleteTheme(theme);
+        DataManager.getInstance().getDao().deleteTheme(theme2);
+
+
     }
 }

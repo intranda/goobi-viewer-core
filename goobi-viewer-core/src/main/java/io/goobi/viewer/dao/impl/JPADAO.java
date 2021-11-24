@@ -5415,10 +5415,11 @@ public class JPADAO implements IDAO {
         try {
             getEntityManager().getTransaction().begin();
             getEntityManager().persist(theme);
-            getEntityManager().getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
             return false;
+        } finally {
+            getEntityManager().getTransaction().commit();            
         }
     }
 
@@ -5431,10 +5432,11 @@ public class JPADAO implements IDAO {
         try {
             getEntityManager().getTransaction().begin();
             getEntityManager().merge(theme);
-            getEntityManager().getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
             return false;
+        } finally {
+            getEntityManager().getTransaction().commit();            
         }
     }
 
@@ -5448,10 +5450,11 @@ public class JPADAO implements IDAO {
             getEntityManager().getTransaction().begin();
             ThemeConfiguration o = getEntityManager().getReference(ThemeConfiguration.class, theme.getId());
             getEntityManager().remove(o);
-            getEntityManager().getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
             return false;
+        } finally {
+            getEntityManager().getTransaction().commit();            
         }
     }
 }
