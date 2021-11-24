@@ -111,4 +111,8 @@ public class ThemeLink {
         return StringUtils.isNotBlank(linkUrl);
     }
 
+    @Override
+    public String toString() {
+        return service.getInternalName() + ": " + getLinkUrl();
+    }
 }

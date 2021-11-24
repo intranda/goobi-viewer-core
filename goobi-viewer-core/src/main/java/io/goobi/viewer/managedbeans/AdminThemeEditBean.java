@@ -25,7 +25,7 @@ public class AdminThemeEditBean implements Serializable {
     
     public void setCurrentThemeName(String themeName) throws DAOException {
         if(StringUtils.isNotBlank(themeName)) {
-            this.currentTheme = DataManager.getInstance().getDao().getTheme(themeName);
+            this.currentTheme = new ThemeConfiguration(DataManager.getInstance().getDao().getTheme(themeName));
             if(this.currentTheme == null) {
                 this.currentTheme = new ThemeConfiguration(themeName);
             }
@@ -53,11 +53,12 @@ public class AdminThemeEditBean implements Serializable {
         return Arrays.asList(ThemeLink.InternalService.values());
     }
     
-    public void saveTheme() throws DAOException {
+    public String saveTheme() throws DAOException {
         if(this.currentTheme != null && this.currentTheme.getId() != null) {            
             DataManager.getInstance().getDao().updateTheme(currentTheme);
         } else if(this.currentTheme != null) {
             DataManager.getInstance().getDao().addTheme(currentTheme);
         }
-    }
+        return "pretty:adminThemes";
+   }
 }
