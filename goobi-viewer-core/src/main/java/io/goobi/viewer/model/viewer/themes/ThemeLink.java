@@ -55,12 +55,12 @@ public class ThemeLink {
     }
 
     public static enum SocialMediaService implements Service {
-        github("admin__themes__service_github__label", "admin__themes__service_github__help"),
-        twitter("admin__themes__service_twitter__label", "admin__themes__service_twitter__help"),
-        youtube("admin__themes__service_youtube__label", "admin__themes__service_youtube__help"),
-        slideshare("admin__themes__service_slideshare__label", "admin__themes__service_slideshare__help"),
-        facebook("admin__themes__service_facebook__label", "admin__themes__service_facebook__help"),
-        instagram("admin__themes__service_instagram__label", "admin__themes__service_instagram__help");
+        github("admin__themes__social_media_github__label", "admin__themes__social_media_github__help"),
+        twitter("admin__themes__social_media_twitter__label", "admin__themes__social_media_twitter__help"),
+        youtube("admin__themes__social_media_youtube__label", "admin__themes__social_media_youtube__help"),
+        slideshare("admin__themes__social_media_slideshare__label", "admin__themes__social_media_slideshare__help"),
+        facebook("admin__themes__social_media_facebook__label", "admin__themes__social_media_facebook__help"),
+        instagram("admin__themes__social_media_instagram__label", "admin__themes__social_media_instagram__help");
 
         private String labelKey, helpKey;
 
