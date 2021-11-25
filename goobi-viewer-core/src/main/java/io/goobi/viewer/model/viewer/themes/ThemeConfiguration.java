@@ -54,6 +54,9 @@ public class ThemeConfiguration {
     @Column(name = "logo", nullable = true, columnDefinition = "BIGINT")
     @Convert(converter = SimpleMediaHolderConverter.class)
     private SimpleMediaHolder logo;
+    @Column(name = "fullscreen_logo", nullable = true, columnDefinition = "BIGINT")
+    @Convert(converter = SimpleMediaHolderConverter.class)
+    private SimpleMediaHolder fullscreenLogo;
     @Column(name = "icon", nullable = true, columnDefinition = "BIGINT")
     @Convert(converter = SimpleMediaHolderConverter.class)
     private SimpleMediaHolder icon;
@@ -73,6 +76,7 @@ public class ThemeConfiguration {
         this.socialMediaUrls = Arrays.stream(ThemeLink.SocialMediaService.values()).map(s -> new ThemeLink(s)).collect(Collectors.toList());
         this.footerLinks = Arrays.stream(ThemeLink.InternalService.values()).map(s -> new ThemeLink(s)).collect(Collectors.toList());
         this.logo = new SimpleMediaHolder();
+        this.fullscreenLogo = new SimpleMediaHolder();
         this.icon = new SimpleMediaHolder();
     }
 
@@ -89,6 +93,7 @@ public class ThemeConfiguration {
         this.name = orig.name;
         this.label = orig.label;
         this.logo = new SimpleMediaHolder(orig.logo.getMediaItem(), orig.logo.getMediaFilter());
+        this.fullscreenLogo = new SimpleMediaHolder(orig.fullscreenLogo.getMediaItem(), orig.fullscreenLogo.getMediaFilter());
         this.icon = new SimpleMediaHolder(orig.icon.getMediaItem(), orig.icon.getMediaFilter());
         this.styleSheet = orig.styleSheet;
         this.socialMediaUrls = orig.socialMediaUrls.stream().map(l -> new ThemeLink(l.getService(), l.getLinkUrl())).collect(Collectors.toList());
@@ -195,6 +200,10 @@ public class ThemeConfiguration {
 
     public SimpleMediaHolder getLogo() {
         return logo;
+    }
+    
+    public SimpleMediaHolder getFullscreenLogo() {
+        return fullscreenLogo;
     }
 
     public SimpleMediaHolder getIcon() {

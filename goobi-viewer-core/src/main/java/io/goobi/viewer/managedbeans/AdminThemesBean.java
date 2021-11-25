@@ -126,4 +126,8 @@ public class AdminThemesBean implements Serializable {
     public String getIcon(String defaultUrl) throws DAOException {
         return Optional.ofNullable(getCurrentTheme()).map(t -> t.getIcon()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI().toString()).orElse(defaultUrl);
     }
+    
+    public String getFullscreenLogo(String defaultUrl) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getFullscreenLogo()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI().toString()).orElse(defaultUrl);
+    }
 }
