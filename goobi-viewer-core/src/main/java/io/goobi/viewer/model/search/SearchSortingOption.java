@@ -27,7 +27,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class SearchSortingOption {
 
-    private static final String DEFAULT_SORT_FIELD_LABEL = "searchSortingDropdown_relevance";
+    static final String DEFAULT_SORT_FIELD_LABEL = "searchSortingDropdown_relevance";
 
     private final String field;
     private final boolean ascending;
@@ -43,10 +43,12 @@ public class SearchSortingOption {
     /**
      * 
      * @param field
+     * @should set ascending field correctly
+     * @should set descending field correctly
      */
     public SearchSortingOption(String field) {
         if (field != null && field.startsWith("!")) {
-            this.field = field;
+            this.field = field.substring(1);
             this.ascending = false;
         } else {
             this.field = field;
@@ -104,6 +106,8 @@ public class SearchSortingOption {
 
     /**
      * @return
+     * @should add exclamation mark prefix if descending
+     * @should not add exclamation mark prefix is ascending
      */
     public String getSortString() {
         if (StringUtils.isNotBlank(field)) {
@@ -114,7 +118,6 @@ public class SearchSortingOption {
         }
         return "";
     }
-    
 
     private String getSearchSortingKey() {
         if (isAscending()) {
@@ -149,7 +152,7 @@ public class SearchSortingOption {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             SearchSortingOption other = (SearchSortingOption) obj;
-            if(this == other) {
+            if (this == other) {
                 return true;
             }
             if (StringUtils.isBlank(this.field)) {
