@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -50,7 +52,10 @@ public class AdminThemesBean implements Serializable {
     public AdminThemesBean() throws PresentationException, IndexUnreachableException, DAOException {
         mainThemeName = DataManager.getInstance().getConfiguration().getTheme();
         subThemeNames = SolrTools.getExistingSubthemes();
-        configuredThemes = DataManager.getInstance().getDao().getConfiguredThemes();
+        configuredThemes = DataManager.getInstance().getDao().getConfiguredThemes().stream()
+                .filter(t -> subThemeNames.contains(t.getName()) || t.getName().equals(mainThemeName))
+                .collect(Collectors.toList());
+                
     }
     
     public String getMainThemeName() {
@@ -129,5 +134,14 @@ public class AdminThemesBean implements Serializable {
     
     public String getFullscreenLogo(String defaultUrl) throws DAOException {
         return Optional.ofNullable(getCurrentTheme()).map(t -> t.getFullscreenLogo()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI().toString()).orElse(defaultUrl);
+    }
+    
+    public String getStyleSheet() throws DAOException {
+        String styleSheet = Optional.ofNullable(getCurrentTheme()).map(t -> t.getStyleSheet()).orElse("");
+        if(StringUtils.isNotBlank(styleSheet)) {
+            return "<style>" + styleSheet + "</style>";
+        } else {
+            return "";
+        }
     }
 }
