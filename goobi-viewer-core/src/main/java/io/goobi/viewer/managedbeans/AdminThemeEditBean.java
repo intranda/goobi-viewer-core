@@ -25,9 +25,11 @@ public class AdminThemeEditBean implements Serializable {
     
     public void setCurrentThemeName(String themeName) throws DAOException {
         if(StringUtils.isNotBlank(themeName)) {
-            this.currentTheme = new ThemeConfiguration(DataManager.getInstance().getDao().getTheme(themeName));
+            ThemeConfiguration loadedTheme = DataManager.getInstance().getDao().getTheme(themeName);
             if(this.currentTheme == null) {
                 this.currentTheme = new ThemeConfiguration(themeName);
+            } else {
+                this.currentTheme = new ThemeConfiguration(loadedTheme);
             }
         }
     }
