@@ -17,7 +17,7 @@
 	<composite:implementation>
 		<!-- USER GENERATED CONTENT -->
 		<h:panelGroup
-			rendered="#{!configurationBean.displayUserGeneratedContentBelowImage and !contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).isEmpty()}">
+			rendered="#{!configurationBean.displayUserGeneratedContentBelowImage and not empty contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).stream().filter(content -> !content.isEmpty() and content.type != 'GEOLOCATION').toList()}">
 			<div id="widgetAnnotations" class="widget widget-annotations">
 
 				<!-- TODO: IF MORE THAN 3 annotations > ELEMENT COLLAPSED -->
