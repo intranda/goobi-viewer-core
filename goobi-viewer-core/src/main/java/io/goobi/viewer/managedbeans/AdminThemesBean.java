@@ -50,7 +50,10 @@ public class AdminThemesBean implements Serializable {
     public AdminThemesBean() throws PresentationException, IndexUnreachableException, DAOException {
         mainThemeName = DataManager.getInstance().getConfiguration().getTheme();
         subThemeNames = SolrTools.getExistingSubthemes();
-        configuredThemes = DataManager.getInstance().getDao().getConfiguredThemes();
+        configuredThemes = DataManager.getInstance().getDao().getConfiguredThemes().stream()
+                .filter(t -> subThemeNames.contains(t.getName()) || t.getName().equals(mainThemeName))
+                .collect(Collectors.toList());
+                
     }
     
     public String getMainThemeName() {
