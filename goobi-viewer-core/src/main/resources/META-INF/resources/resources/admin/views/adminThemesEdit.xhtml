@@ -90,7 +90,7 @@
                           <f:ajax render="logoPanel" />
                         </h:commandLink>
                         <ui:fragment rendered="#{theme.logo.hasMediaItem()}">
-                        	<img src="#{theme.logo.mediaItem.iconURI}"></img>
+                        	<img src="#{theme.logo.mediaItem.iconURI}" alt=""></img>
                         </ui:fragment>
                       </div>
                       <!-- HELP -->
@@ -138,7 +138,7 @@
                           <f:ajax render="fullscreenLogoPanel" />
                         </h:commandLink>
                         <ui:fragment rendered="#{theme.fullscreenLogo.hasMediaItem()}">
-                        	<img src="#{theme.fullscreenLogo.mediaItem.iconURI}"></img>
+                        	<img src="#{theme.fullscreenLogo.mediaItem.iconURI}" alt=""></img>
                         </ui:fragment>
                       </div>
                       <!-- HELP -->
@@ -253,7 +253,9 @@
                       <label for="handle#{socialMediaAccount}">#{msg[socialMediaAccount.labelKey]}:</label>
                     </div>
                     <div class="col-9 admin__form-input">
-                      <h:inputText value="#{theme.getSocialMediaLink(socialMediaAccount).linkUrl}" id="handle#{socialMediaAccount}" styleClass="form-control" />
+                      <h:inputText value="#{theme.getSocialMediaLink(socialMediaAccount).linkUrl}" id="handle#{socialMediaAccount}" styleClass="form-control">
+                        <f:passThroughAttribute name="aria-label" value="#{msg[socialMediaAccount.helpKey]}"/>
+                      </h:inputText>
                       <span class="admin__form-help-text">
                         <h:outputText escape="false" value="#{msg[socialMediaAccount.helpKey]}" />
                       </span>
@@ -290,7 +292,9 @@
                       <label for="service#{service}">#{msg[service.labelKey]}:</label>
                     </div>
                     <div class="col-9 admin__form-input">
-                      <h:inputText value="#{theme.getFooterLink(service).linkUrl}" id="service#{service}" styleClass="form-control" />
+                      <h:inputText value="#{theme.getFooterLink(service).linkUrl}" id="service#{service}" styleClass="form-control">
+                        <f:passThroughAttribute name="aria-label" value="#{msg[service.helpKey]}"/>
+                      </h:inputText>
                       <span class="admin__form-help-text">
                         <h:outputText escape="false" value="#{msg[service.helpKey]}" />
                       </span>
