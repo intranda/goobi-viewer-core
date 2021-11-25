@@ -20,29 +20,41 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
-import io.goobi.viewer.model.download.DownloadOption;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.search.SearchSortingOption;
+import io.goobi.viewer.solr.SolrConstants;
 
-@FacesConverter("downloadOptionConverter")
+/**
+ * <p>
+ * BookshelfConverter class.
+ * </p>
+ */
 @Deprecated
-public class DownloadOptionConverter implements Converter<DownloadOption> {
+@FacesConverter("searchSortingOptionConverter")
+public class SearchSortingOptionConverter implements Converter<SearchSortingOption> {
 
+    /** {@inheritDoc} */
     @Override
-    public DownloadOption getAsObject(FacesContext context, UIComponent component, String submittedValue) {
-        System.out.println("submittedValue: " + submittedValue);
-        if (submittedValue == null || submittedValue.isEmpty()) {
+    public final SearchSortingOption getAsObject(final FacesContext context, final UIComponent component, final String value) {
+        // System.out.println("getAsObject: " + value);
+        if (value == null) {
             return null;
         }
 
-        DownloadOption ret = DownloadOption.getByLabel(submittedValue);
-        return ret;
+        return new SearchSortingOption(value);
     }
 
+    /** {@inheritDoc} */
     @Override
-    public String getAsString(FacesContext context, UIComponent component, DownloadOption option) {
-        if (option == null) {
-            return "";
+    public final String getAsString(final FacesContext context, final UIComponent component, final SearchSortingOption object) {
+        if (object == null) {
+            return null;
         }
 
-        return option.getLabel();
+        try {
+            return String.valueOf(object.getSortString());
+        } catch (NumberFormatException nfe) {
+            return null;
+        }
     }
 }
