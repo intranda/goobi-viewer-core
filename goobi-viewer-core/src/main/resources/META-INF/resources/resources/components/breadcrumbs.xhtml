@@ -21,7 +21,6 @@
 						</ui:fragment>
 						
 						<ui:repeat value="#{breadcrumbBean.breadcrumbs}" var="breadcrumb" varStatus="status">
-							
 							<!-- FIRST BREADCRUMB: ICON WITH LINK - ACTUAL PAGE IS NOT HOMEPAGE -->
 							<h:panelGroup rendered="#{(status.first and !status.last and breadcrumb.link) and (cc.attrs.showIcon == true)}">
 								<li class="breadcrumbs__crumb">
