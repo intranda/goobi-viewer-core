@@ -4,18 +4,14 @@
    ==============================================================*/
 
 #adminThemes {
-
 	a.row  {
-
 		&:focus,
 		&:hover,
 		&:active {
 			text-decoration: none;
 			background-color: #f7f7f7;
-
 		}
 	}
-
 }
 
 #adminThemesEdit {
@@ -36,5 +32,24 @@
 		display: block;
 		margin-top: 8px;
 	}
+	.admin__boxed-entry-description {
+		margin-bottom: .5rem;
+
+	}
+
+
 }
 
+
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

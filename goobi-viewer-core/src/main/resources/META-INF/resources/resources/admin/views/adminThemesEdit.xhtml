@@ -22,7 +22,7 @@
 
       <!-- TITLE -->
       <div class="admin__title-bar">
-        <h2 class="admin__title">#{msg.admin__themesEdit__title}</h2>
+        <h2 class="admin__title">#{msg.admin__themes__title}</h2>
       </div>
 
 				<div id="adminThemesEdit" class="admin__content-inner-content">
@@ -39,7 +39,7 @@
                 <!-- GENERAL SETTINGS -->
                 <!-- TITLE -->
                 <div class="row">
-                  <h3 class="col-12">#{msg.admin__themesEdit__general_title}</h3>
+                  <h3 class="col-12">#{msg.admin__themes__general__title}</h3>
                 </div>
 
                 <div class="admin__default-block">
@@ -51,7 +51,7 @@
                     </div>
                     <div class="col-9 admin__form-input">
                       <h:inputText value="#{theme.label}" id="mainThemeName" required="true" styleClass="form-control" />
-                      <span class="admin__form-help-text">#{msg.admin__themesEdit__general_name_help}</span>
+                      <span class="admin__form-help-text">#{msg.admin__themes__general_name__help}</span>
                     </div>
                     <div class="col-1 admin__form-help-icon">
                       <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
@@ -67,7 +67,7 @@
                     <div class="admin__non-clickable-area-overlay"></div>
                   </ui:fragment>
                   <div class="col-2 control-label admin__form-label">
-                    <label for="">#{msg.admin__themesEdit__general_logo_label}:</label>
+                    <label for="">#{msg.admin__themes__general_logo__label}:</label>
                   </div>
 
                   <div class="col-9 admin__form-input">
@@ -78,7 +78,7 @@
                         <h:commandLink
                           action="#{cmsBean.setSelectedMediaHolder(theme.logo)}"
                           value="#{theme.logo.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}"
-                          class="btn #{theme.logo.hasMediaItem() ? 'btn--default' : 'btn--default edit'}"
+                          class="btn #{theme.logo.hasMediaItem() ? 'btn--clean' : 'btn--default edit'}"
                           role="button">
                           <f:ajax execute="@this" render="mediaSelectPanel" />
                         </h:commandLink>
@@ -94,7 +94,7 @@
                         </ui:fragment>
                       </div>
                       <!-- HELP -->
-                      <span class="admin__form-help-text">#{msg.admin__themesEdit__general_logo_help}</span>
+                      <span class="admin__form-help-text">#{msg.admin__themes__general_logo__help}</span>
 
                     </div> <!-- End admin__campaign-media-file-box -->
                   </div> <!-- End col-9 admin__form-input -->
@@ -115,7 +115,7 @@
                     <div class="admin__non-clickable-area-overlay"></div>
                   </ui:fragment>
                   <div class="col-2 control-label admin__form-label">
-                    <label for="">#{msg.admin__themesEdit__fullscreen_logo_label}:</label>
+                    <label for="">#{msg.admin__themes__fullscreen_logo__label}:</label>
                   </div>
 
                   <div class="col-9 admin__form-input">
@@ -126,7 +126,7 @@
                         <h:commandLink
                           action="#{cmsBean.setSelectedMediaHolder(theme.fullscreenLogo)}"
                           value="#{theme.fullscreenLogo.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}"
-                          class="btn #{theme.fullscreenLogo.hasMediaItem() ? 'btn--default' : 'btn--default edit'}"
+                          class="btn #{theme.fullscreenLogo.hasMediaItem() ? 'btn--clean' : 'btn--default edit'}"
                           role="button">
                           <f:ajax execute="@this" render="mediaSelectPanel" />
                         </h:commandLink>
@@ -142,7 +142,7 @@
                         </ui:fragment>
                       </div>
                       <!-- HELP -->
-                      <span class="admin__form-help-text">#{msg.admin__themesEdit__fullscreen_logo_help}</span>
+                      <span class="admin__form-help-text">#{msg.admin__themes__fullscreen_logo_help}</span>
 
                     </div> <!-- End admin__campaign-media-file-box -->
                   </div> <!-- End col-9 admin__form-input -->
@@ -163,7 +163,7 @@
                     <div class="admin__non-clickable-area-overlay"></div>
                   </ui:fragment>
                   <div class="col-2 control-label admin__form-label">
-                    <label for="">#{msg.admin__themesEdit__general_icon_label}:</label>
+                    <label for="">#{msg.admin__themes__general_icon__label}:</label>
                   </div>
 
                   <div class="col-9 admin__form-input">
@@ -174,7 +174,7 @@
                         <h:commandLink
                           action="#{cmsBean.setSelectedMediaHolder(theme.icon)}"
                           value="#{theme.icon.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}"
-                          class="btn #{theme.icon.hasMediaItem() ? 'btn--default' : 'btn--default edit'}"
+                          class="btn #{theme.icon.hasMediaItem() ? 'btn--clean' : 'btn--default edit'}"
                           role="button">
                         </h:commandLink>
                         <h:commandLink
@@ -189,7 +189,7 @@
                         	<img src="#{theme.icon.mediaItem.iconURI}"></img>
                         </ui:fragment>
                       <!-- HELP -->
-                      <span class="admin__form-help-text">#{msg.admin__themesEdit__general_icon_help}</span>
+                      <span class="admin__form-help-text">#{msg.admin__themes__general_icon__help}</span>
 
                     </div> <!-- End admin__campaign-media-file-box -->
                   </div> <!-- End col-9 admin__form-input -->
@@ -209,21 +209,21 @@
               <!-- CSS -->
               <!-- TITLE -->
               <div class="row">
-                <h3 class="col-12">#{msg.admin__themesEdit__css_title}</h3>
+                <h3 class="col-12">#{msg.admin__themes__css__title}</h3>
               </div>
 
               <div class="admin__default-block">
 
                 <!-- INFO -->
-				        <div class="admin__info-text">#{msg.admin__themesEdit__css_info}</div>
+				        <div class="admin__info-text">#{msg.admin__themes__css__info}</div>
 
                 <div class="form-group form-row">
                   <div class="col-2 control-label">
-                    <label for="ipRangeDescription">#{msg.admin__themesEdit__css_label}:</label>
+                    <label for="ipRangeDescription">#{msg.admin__themes__css__label}:</label>
                   </div>
                   <div class="col-9 admin__form-input">
                     <h:inputTextarea rows="10" value="#{theme.styleSheet}" id="ipRangeDescription" styleClass="form-control" />
-                    <span class="admin__form-help-text">#{msg.admin__themesEdit__css_help}</span>
+                    <span class="admin__form-help-text">#{msg.admin__themes__css__help}</span>
                   </div>
                   <div class="col-1 admin__form-help-icon">
                     <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
@@ -236,25 +236,27 @@
               <!-- SOCIAL MEDIA -->
               <!-- TITLE -->
               <div class="row">
-                <h3 class="col-12">#{msg.admin__themesEdit__soMe_title}</h3>
+                <h3 class="col-12">#{msg.admin__themes__social_media__title}</h3>
               </div>
 
               <div class="admin__default-block">
 
                 <!-- INFO -->
-				        <div class="admin__info-text">#{msg.admin__themesEdit__soMe_info}</div>
+				        <div class="admin__info-text">#{msg.admin__themes__social_media__info}</div>
 
                 <!-- ACCOUNTS -->
-                <ui:repeat var="soMeAccount"
+                <ui:repeat var="socialMediaAccount"
                   value="#{adminThemeEditBean.socialMediaServices}">
 
                   <div class="form-group form-row">
                     <div class="col-2 control-label admin__form-label">
-                      <label for="handle#{soMeAccount}">#{msg[soMeAccount.labelKey]}:</label>
+                      <label for="handle#{socialMediaAccount}">#{msg[socialMediaAccount.labelKey]}:</label>
                     </div>
                     <div class="col-9 admin__form-input">
-                      <h:inputText value="#{theme.getSocialMediaLink(soMeAccount).linkUrl}" id="handle#{soMeAccount}" styleClass="form-control" />
-                      <span class="admin__form-help-text">#{msg[soMeAccount.helpKey]}</span>
+                      <h:inputText value="#{theme.getSocialMediaLink(socialMediaAccount).linkUrl}" id="handle#{socialMediaAccount}" styleClass="form-control" />
+                      <span class="admin__form-help-text">
+                        <h:outputText escape="false" value="#{msg[socialMediaAccount.helpKey]}" />
+                      </span>
                     </div>
                     <div class="col-1 admin__form-help-icon">
                       <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
@@ -267,16 +269,16 @@
 
               </div> <!-- End admin__default-block => SOCIAL MEDIA -->
 
-              <!-- SERVICE LINKS -->
+              <!-- FOOTER LINKS -->
               <!-- TITLE -->
               <div class="row">
-                <h3 class="col-12">#{msg.admin__themesEdit__service_title}</h3>
+                <h3 class="col-12">#{msg.admin__themes__footer_links__title}</h3>
               </div>
 
               <div class="admin__default-block">
 
                 <!-- INFO -->
-				        <div class="admin__info-text">#{msg.admin__themesEdit__service_info}</div>
+				        <div class="admin__info-text">#{msg.admin__themes__footer_links__info}</div>
 
                 <!-- ACCOUNTS -->
                 <ui:repeat
@@ -289,7 +291,9 @@
                     </div>
                     <div class="col-9 admin__form-input">
                       <h:inputText value="#{theme.getFooterLink(service).linkUrl}" id="service#{service}" styleClass="form-control" />
-                      <span class="admin__form-help-text">#{msg[service.helpKey]}</span>
+                      <span class="admin__form-help-text">
+                        <h:outputText escape="false" value="#{msg[service.helpKey]}" />
+                      </span>
                     </div>
                     <div class="col-1 admin__form-help-icon">
                       <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
@@ -324,13 +328,13 @@
             <div class="admin__boxed-entry">
               <!-- THEME NAME -->
               <div class="row">
-                <h3 class="col-12">#{msg.admin__themesEdit__themeInfo_heading}</h3>
+                <h3 class="col-12">#{msg.admin__themes__theme_info__heading}</h3>
               </div>
 
               <!-- DESCRIPTION -->
               <div class="row">
                 <ui:fragment rendered="#{userGroup.description ne ''}">
-                <p class="col-12 admin__boxed-entry-description">#{msg.admin__themesEdit__themeInfo_text}: #{theme.name}</p>
+                <p class="col-12 admin__boxed-entry-description">#{msg.admin__themes__theme_info__text}: #{theme.name}</p>
                 </ui:fragment>
                 <ui:fragment rendered="#{userGroup.description eq ''}">
                   <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
