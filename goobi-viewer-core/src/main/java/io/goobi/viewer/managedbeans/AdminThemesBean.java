@@ -99,8 +99,24 @@ public class AdminThemesBean implements Serializable {
         return Optional.ofNullable(getCurrentTheme()).map(t -> t.getSocialMediaLinkUrlOrDefault(service, defaultUrl)).orElse(defaultUrl);
     }
     
+    public String getSocialMediaUrl(ThemeLink.SocialMediaService service) throws DAOException {
+        return getSocialMediaUrl(service, "");
+    }
+    
+    public boolean hasSocialMediaUrl(ThemeLink.SocialMediaService service) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getSocialMediaLink(service)).map(l -> l.hasLink()).orElse(false);
+    }
+    
     public String getFooterUrl(ThemeLink.InternalService service, String defaultUrl) throws DAOException {
         return Optional.ofNullable(getCurrentTheme()).map(t -> t.getFooterLinkUrlOrDefault(service, defaultUrl)).orElse(defaultUrl);
+    }
+    
+    public String getFooterUrl(ThemeLink.InternalService service) throws DAOException {
+        return getFooterUrl(service, "");
+    }
+    
+    public boolean hasFooterUrl(ThemeLink.InternalService service) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getFooterLink(service)).map(l -> l.hasLink()).orElse(false);
     }
     
     public String getLogo(String defaultUrl) throws DAOException {
