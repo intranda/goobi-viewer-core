@@ -55,7 +55,7 @@ public class SearchSortingOptionTest extends AbstractTest {
     @Test
     public void getLabel_shouldReturnTranslationOfRANDOMIfFieldRANDOM() throws Exception {
         SearchSortingOption option = new SearchSortingOption(SolrConstants.SORT_RANDOM);
-        Assert.assertEquals(ViewerResourceBundle.getTranslation("RANDOM", null), option.getLabel());
+        Assert.assertEquals(ViewerResourceBundle.getTranslation(SearchSortingOption.RANDOM_SORT_FIELD_LABEL, null), option.getLabel());
     }
 
     /**
@@ -65,7 +65,7 @@ public class SearchSortingOptionTest extends AbstractTest {
     @Test
     public void getLabel_shouldReturnTranslationOfRANDOMIfFieldRandomSeed() throws Exception {
         SearchSortingOption option = new SearchSortingOption("random_12345");
-        Assert.assertEquals(ViewerResourceBundle.getTranslation("RANDOM", null), option.getLabel());
+        Assert.assertEquals(ViewerResourceBundle.getTranslation(SearchSortingOption.RANDOM_SORT_FIELD_LABEL, null), option.getLabel());
     }
 
     /**
@@ -75,7 +75,7 @@ public class SearchSortingOptionTest extends AbstractTest {
     @Test
     public void getLabel_shouldReturnTranslationOfDEFAULT_SORT_FIELD_LABELIfFieldRELEVANCE() throws Exception {
         SearchSortingOption option = new SearchSortingOption(SolrConstants.SORT_RELEVANCE);
-        Assert.assertEquals(ViewerResourceBundle.getTranslation(SearchSortingOption.DEFAULT_SORT_FIELD_LABEL, null), option.getLabel());
+        Assert.assertEquals(ViewerResourceBundle.getTranslation(SearchSortingOption.RELEVANCE_SORT_FIELD_LABEL, null), option.getLabel());
     }
 
     /**

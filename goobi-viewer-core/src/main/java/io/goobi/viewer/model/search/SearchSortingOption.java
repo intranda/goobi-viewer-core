@@ -27,7 +27,8 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class SearchSortingOption {
 
-    static final String DEFAULT_SORT_FIELD_LABEL = "searchSortingDropdown_relevance";
+    static final String RANDOM_SORT_FIELD_LABEL= "searchSortingDropdown_random";
+    static final String RELEVANCE_SORT_FIELD_LABEL = "searchSortingDropdown_relevance";
 
     private final String field;
     private final boolean ascending;
@@ -94,13 +95,13 @@ public class SearchSortingOption {
      */
     public String getLabel() {
         if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(field) || field.startsWith("random_")) {
-            return ViewerResourceBundle.getTranslation(SolrConstants.SORT_RANDOM, null);
+            return ViewerResourceBundle.getTranslation(RANDOM_SORT_FIELD_LABEL, null);
         } else if (SolrConstants.SORT_RELEVANCE.equalsIgnoreCase(field)) {
-            return ViewerResourceBundle.getTranslation(DEFAULT_SORT_FIELD_LABEL, null);
+            return ViewerResourceBundle.getTranslation(RELEVANCE_SORT_FIELD_LABEL, null);
         } else if (StringUtils.isNotBlank(field)) {
             return ViewerResourceBundle.getTranslation(field, null) + " " + ViewerResourceBundle.getTranslation(getSearchSortingKey(), null);
         } else {
-            return ViewerResourceBundle.getTranslation(DEFAULT_SORT_FIELD_LABEL, null);
+            return ViewerResourceBundle.getTranslation(RELEVANCE_SORT_FIELD_LABEL, null);
         }
     }
 
