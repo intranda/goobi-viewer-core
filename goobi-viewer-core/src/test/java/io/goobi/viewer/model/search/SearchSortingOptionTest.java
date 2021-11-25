@@ -103,4 +103,14 @@ public class SearchSortingOptionTest extends AbstractTest {
             Assert.assertEquals("random_12345", option.getSortString());
         }
     }
+
+    /**
+     * @see SearchSortingOption#getSortString()
+     * @verifies return empty string if field blank
+     */
+    @Test
+    public void getSortString_shouldReturnEmptyStringIfFieldBlank() throws Exception {
+        SearchSortingOption option = new SearchSortingOption("");
+        Assert.assertEquals("", option.getSortString());
+    }
 }

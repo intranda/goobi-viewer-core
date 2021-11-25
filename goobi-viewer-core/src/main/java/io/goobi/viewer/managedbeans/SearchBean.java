@@ -1292,7 +1292,7 @@ public class SearchBean implements SearchInterface, Serializable {
             setSortString("-");
         }
 
-        if (searchSortingOption != null) {
+        if (searchSortingOption != null && StringUtils.isNotEmpty(searchSortingOption.getSortString())) {
             return searchSortingOption.getSortString();
         }
 
@@ -2836,7 +2836,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 ret.add(option);
             }
         }
-        
+
         return ret;
     }
 

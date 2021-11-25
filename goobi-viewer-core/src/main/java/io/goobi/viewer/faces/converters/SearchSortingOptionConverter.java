@@ -29,6 +29,7 @@ import io.goobi.viewer.solr.SolrConstants;
  * BookshelfConverter class.
  * </p>
  */
+@Deprecated
 @FacesConverter("searchSortingOptionConverter")
 public class SearchSortingOptionConverter implements Converter<SearchSortingOption> {
 

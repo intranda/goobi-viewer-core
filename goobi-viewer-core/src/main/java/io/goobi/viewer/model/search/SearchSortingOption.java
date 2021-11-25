@@ -108,6 +108,7 @@ public class SearchSortingOption {
      * @return
      * @should add exclamation mark prefix if descending
      * @should not add exclamation mark prefix is ascending
+     * @should return empty string if field blank
      */
     public String getSortString() {
         if (StringUtils.isNotBlank(field)) {
