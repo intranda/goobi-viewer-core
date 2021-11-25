@@ -50,7 +50,6 @@ import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
-import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
@@ -121,7 +120,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(2, ret.size());
     }
 
-    
     @Test
     public void getCollectionDefaultSortFields_shouldReturnAllFields() {
         Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
@@ -1436,7 +1434,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getDefaultSortField_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("SORT_DEFAULT1;SORT_DEFAULT2;SORT_DEFAULT3", DataManager.getInstance().getConfiguration().getDefaultSortField());
+        Assert.assertEquals(SolrConstants.SORT_RANDOM, DataManager.getInstance().getConfiguration().getDefaultSortField());
     }
 
     /**
@@ -1508,7 +1506,9 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSortFields_shouldReturnReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getSortFields().size());
+        List<String> fields = DataManager.getInstance().getConfiguration().getSortFields();
+        Assert.assertEquals(6, fields.size());
+        Assert.assertEquals("SORT_YEARPUBLISH;SORT_TITLE", fields.get(5));
     }
 
     /**
