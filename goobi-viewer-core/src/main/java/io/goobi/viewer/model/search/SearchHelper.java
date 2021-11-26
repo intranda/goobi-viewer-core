@@ -1749,6 +1749,7 @@ public final class SearchHelper {
                         ret.get(currentField).add(value);
                         switch (currentField) {
                             // Do not add values to title terms for certain fields (expand as necessary)
+                            case SolrConstants.DC:
                             case SolrConstants.DOCSTRCT:
                             case SolrConstants.DOCTYPE:
                             case SolrConstants.IDDOC:

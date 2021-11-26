@@ -826,19 +826,38 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.setExactSearchString("SUPERDEFAULT%25253A%2525281234xyz%252529");
         Assert.assertEquals("SUPERDEFAULT%3A%281234xyz%29", sb.getExactSearchString()); // getter should return single encoding
     }
-    
+
+    /**
+     * @see SearchBean#getSearchSortingOptions()
+     * @verifies return options correctly
+     */
     @Test
-    public void testSearchSortingOptions() {
+    public void getSearchSortingOptions_shouldReturnOptionsCorrectly() throws Exception {
         SearchBean sb = new SearchBean();
         Collection<SearchSortingOption> options = sb.getSearchSortingOptions();
         String defaultSorting = DataManager.getInstance().getConfiguration().getDefaultSortField();
+        Assert.assertEquals(SolrConstants.SORT_RANDOM, defaultSorting);
         List<String> sortStrings = DataManager.getInstance().getConfiguration().getSortFields();
-        assertEquals(sortStrings.size()*2+1, options.size());
+        assertEquals(sortStrings.size() * 2 - 2, options.size());
         Iterator<SearchSortingOption> iterator = options.iterator();
-        assertEquals(defaultSorting, iterator.next().getSortString());     
-        assertEquals("Creator ascending", iterator.next().getLabel()); 
-        assertEquals("Creator descending", iterator.next().getLabel()); 
+        assertEquals(defaultSorting, iterator.next().getSortString());
+        assertEquals("Relevance", iterator.next().getLabel());
+        assertEquals("Creator ascending", iterator.next().getLabel());
+        assertEquals("Creator descending", iterator.next().getLabel());
     }
-    
-    
+
+    /**
+     * @see SearchBean#getSearchSortingOptions()
+     * @verifies use current random seed option instead of default
+     */
+    @Test
+    public void getSearchSortingOptions_shouldUseCurrentRandomSeedOptionInsteadOfDefault() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setSearchSortingOption(new SearchSortingOption("random_12345"));
+        Collection<SearchSortingOption> options = sb.getSearchSortingOptions();
+        Assert.assertEquals(10, options.size());
+        Iterator<SearchSortingOption> iterator = options.iterator();
+        assertEquals("random_12345", iterator.next().getField()); 
+    }
+
 }

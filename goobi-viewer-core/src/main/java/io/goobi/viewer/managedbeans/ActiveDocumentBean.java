@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
+import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
@@ -69,8 +70,12 @@ import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
+import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
+import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
@@ -2235,7 +2240,7 @@ public class ActiveDocumentBean implements Serializable {
         return widget;
     }
 
-    public CMSSidebarElement generateMapWidget(String pi) throws PresentationException {
+    public CMSSidebarElement generateMapWidget(String pi) throws PresentationException, DAOException {
         CMSSidebarElement widget = new CMSSidebarElement();
         widget.setType("widgetGeoMap");
         try {
@@ -2275,13 +2280,17 @@ public class ActiveDocumentBean implements Serializable {
 
             Collection<GeoMapFeature> features = new ArrayList<>();
 
-            String annotationQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:UGC +MD_COORDS:*", pi);
-            SolrDocumentList annoDocs = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getDocs(annotationQuery, Arrays.asList("MD_COORDS", "MD_BODY", "MD_ANNOTATION_ID", "MD_VALUE"));
-            if (annoDocs != null) {
-                for (SolrDocument solrDocument : annoDocs) {
-                    GeoMapFeature feature = new GeoMapFeature(SolrTools.getAsString(solrDocument.getFieldValue("MD_BODY")));
+            List<DisplayUserGeneratedContent> annos = DataManager.getInstance().getDao().getAnnotationsForWork(pi)
+                    .stream()
+                    .filter(a -> PublicationStatus.PUBLISHED.equals(a.getPublicationStatus()))
+                    .filter(a -> StringUtils.isNotBlank(a.getBody()))
+                    .map(a -> new DisplayUserGeneratedContent(a))
+                    .filter(a -> ContentType.GEOLOCATION.equals(a.getType()))
+                    .filter(a -> ContentBean.isAccessible(a, BeanUtils.getRequest()))
+                    .collect(Collectors.toList());
+            for (DisplayUserGeneratedContent anno : annos) {
+                if(anno.getAnnotationBody() instanceof TypedResource) {
+                    GeoMapFeature feature = new GeoMapFeature(((TypedResource)anno.getAnnotationBody()).asJson());
                     features.add(feature);
                 }
             }

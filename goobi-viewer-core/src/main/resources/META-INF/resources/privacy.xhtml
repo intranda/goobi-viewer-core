@@ -55,7 +55,7 @@
                 <p>Wenn Sie sich dagegen entscheiden möchten, klicken Sie den folgenden Link, um den Piwik-Deaktivierungs-Cookie in Ihrem Browser
                     abzulegen.</p>
 
-                <iframe src="//#{configurationBean.piwikBaseURL}index.php?module=CoreAdminHome&amp;action=optOut&amp;language=de"></iframe>
+                <iframe src="//#{configurationBean.piwikBaseURL}index.php?module=CoreAdminHome&amp;action=optOut&amp;language=#{navigationHelper.localeString}"></iframe>
             </div>
         </f:view>
     </ui:define>

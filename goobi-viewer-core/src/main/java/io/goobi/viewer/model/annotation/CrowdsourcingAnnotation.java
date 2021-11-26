@@ -95,5 +95,4 @@ public class CrowdsourcingAnnotation extends PersistentAnnotation{
         // TODO Auto-generated constructor stub
     }
 
-
 }
