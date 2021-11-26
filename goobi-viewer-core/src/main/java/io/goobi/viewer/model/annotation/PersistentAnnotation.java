@@ -655,16 +655,7 @@ public abstract class PersistentAnnotation {
     public void setAccessCondition(String accessCondition) {
         this.accessCondition = accessCondition;
     }
-    
-    /**
-     * Find the record status of the generator campaign and pi. If the annotation does not belong to a campaign, return {@link CrowdsourcingStatus.FINISHED}
-     * 
-     * @return  The review status for this annotation
-     * @throws DAOException
-     */
-    public CrowdsourcingStatus getReviewStatus() throws DAOException {
-        return Optional.ofNullable(getGenerator()).map(Question::getOwner).map(c -> getStatus(c, getTargetPI(), getTargetPageOrder())).orElse(CrowdsourcingStatus.FINISHED);
-    }
+
     
     /**
      * @param c
