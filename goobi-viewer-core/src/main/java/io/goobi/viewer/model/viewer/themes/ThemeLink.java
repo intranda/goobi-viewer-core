@@ -32,7 +32,7 @@ public class ThemeLink {
     public static enum InternalService implements Service {
         contact("admin__themes__footer_contact__label", "admin__themes__footer_contact__help"),
         legal("admin__themes__footer_legal__label", "admin__themes__footer_legal__help"),
-        privacy("admin__themes__footer_privacy__label", " admin__themes__footer_privacy__help");
+        privacy("admin__themes__footer_privacy__label", "admin__themes__footer_privacy__help");
 
         private String labelKey, helpKey;
 
