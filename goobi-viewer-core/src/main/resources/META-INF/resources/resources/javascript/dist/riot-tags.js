@@ -272,12 +272,19 @@ riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{
 
 this.on("mount", () => {
     if(this.opts.contentid) {
-        this.annotationBody = JSON.parse(document.getElementById(this.opts.contentid).innerText);
-        this.type = this.annotationBody.type;
-        if(!this.type) {
-            this.type = this.anotationBody["@type"];
-        }
-        this.format = this.annotationBody.format;
+        let content = document.getElementById(this.opts.contentid).innerText;
+        try {
+	        this.annotationBody = JSON.parse(content);
+	        this.type = this.annotationBody.type;
+	        if(!this.type) {
+	            this.type = this.anotationBody["@type"];
+	        }
+	        this.format = this.annotationBody.format;
+    	} catch(e) {
+    	    this.annotationBody = {value: content};
+    	    this.type = "TextualResource";
+    	    this.format = "text/plain";
+   		}
         this.update();
     }
 })
@@ -398,6 +405,7 @@ this.on("mount", () => {
 	        fixed: true,
 	        clusterMarkers: false,
 	    };
+	console.log("mounted geomap annotation ", this);
     this.geoMap = new viewerJS.GeoMap(this.config);
     let view = this.feature.view;
     let features = [this.feature];
