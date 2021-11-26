@@ -106,9 +106,11 @@
 						
 					<div id="modalUserCommentEdit-#{comment.id}" modalid="modalUserCommentEdit-#{comment.id}-modal" styleclass="user-comments-modal" title="#{msg.userCommentEdit}">
 						<yield to="body">
-							<div class="col-3">#{msg.userCommentText}:</div>
-							<div class="col-9 user-comments__comment-content-options-text-edit">
-								<textarea id="modalUserCommentEdit-#{comment.id}-text">#{comment.text}</textarea>
+						<div class="row">
+<!-- 								<div class="col-12 col-md-3">#{msg.userCommentText}:</div> -->
+								<div class="col-12 user-comments__comment-content-options-text-edit">
+									<textarea id="modalUserCommentEdit-#{comment.id}-text">#{comment.text}</textarea>
+								</div>
 							</div>
 						</yield>
 						<yield to="footer">
@@ -147,7 +149,8 @@
 							<h:inputTextarea id="userCommentAdd"
 								value="#{commentText}" />
 						</div>
-						<h:selectBooleanCheckbox id="commentLicenseCheckbox" value="#{commentRestricted}">Restricted</h:selectBooleanCheckbox>
+						<!-- LICENSE CHECKBOX/PUBLIC COMMENT -->
+						<!-- <h:selectBooleanCheckbox id="commentLicenseCheckbox" value="#{commentRestricted}">Restricted</h:selectBooleanCheckbox>-->
 						<div class="user-comments__add-comment-submit">
 							<h:commandButton
 								action="#{commentBean.createComment(commentText, commentRestricted)}"

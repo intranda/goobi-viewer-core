@@ -39,6 +39,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
 import io.goobi.viewer.model.security.AccessConditionUtils;
@@ -150,8 +151,12 @@ public class ContentBean implements Serializable {
         }
         this.pi = pi;
         userGeneratedContentsForDisplay = new ArrayList<>();
-        List<DisplayUserGeneratedContent> allContent =
-                DataManager.getInstance().getSearchIndex().getDisplayUserGeneratedContentsForRecord(pi);
+        
+        List<DisplayUserGeneratedContent> allContent = DataManager.getInstance().getDao().getAnnotationsForWork(pi).stream()
+                .filter(a -> a.getPublicationStatus().equals(PublicationStatus.PUBLISHED))
+                .map(a -> new DisplayUserGeneratedContent(a))
+                .collect(Collectors.toList());
+        
         for (DisplayUserGeneratedContent ugcContent : allContent) {
             // Do not add empty comments
             if (ugcContent.isEmpty()) {

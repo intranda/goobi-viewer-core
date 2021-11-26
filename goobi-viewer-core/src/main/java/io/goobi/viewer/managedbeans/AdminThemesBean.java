@@ -127,13 +127,33 @@ public class AdminThemesBean implements Serializable {
     public String getLogo(String defaultUrl) throws DAOException {
         return Optional.ofNullable(getCurrentTheme()).map(t -> t.getLogo()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI().toString()).orElse(defaultUrl);
     }
+        
+   public String getLogo(String defaultUrl, int width, int height) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getLogo()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI(width, height).toString()).orElse(defaultUrl);
+    }
     
     public String getIcon(String defaultUrl) throws DAOException {
         return Optional.ofNullable(getCurrentTheme()).map(t -> t.getIcon()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI().toString()).orElse(defaultUrl);
     }
     
+    public String getIcon(String defaultUrl, int width, int height) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getIcon()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI(width, height).toString()).orElse(defaultUrl);
+    }
+    
     public String getFullscreenLogo(String defaultUrl) throws DAOException {
         return Optional.ofNullable(getCurrentTheme()).map(t -> t.getFullscreenLogo()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI().toString()).orElse(defaultUrl);
+    }
+    
+    public String getFullscreenLogo(String defaultUrl, int width, int height) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getFullscreenLogo()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI(width, height).toString()).orElse(defaultUrl);
+    }
+    
+    public String getThemeLabel() throws DAOException {
+        return getThemeLabel("");
+    }
+    
+    public String getThemeLabel(String defaultLabel) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme()).map(ThemeConfiguration::getLabel).orElse(defaultLabel);
     }
     
     public String getStyleSheet() throws DAOException {

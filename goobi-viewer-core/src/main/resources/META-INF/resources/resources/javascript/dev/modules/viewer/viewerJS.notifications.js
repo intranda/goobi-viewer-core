@@ -38,6 +38,7 @@ var viewerJS = ( function( viewer ) {
 				denyText = denyText ? denyText : viewerJS.translator.translate("cancel");
 				if(typeof(Swal) !== 'undefined') {
 					return Swal.fire({
+						scrollbarPadding: false,
 						title: titleAlert,
 						text: message,
 						icon: 'warning',
@@ -68,6 +69,7 @@ var viewerJS = ( function( viewer ) {
 		notify : (titleAlert, message, type) => {
 			if(typeof Swal !== 'undefined') {
 				Swal.fire({
+					scrollbarPadding: false,
 					title: titleAlert,
 					text: message,
 					icon: type,
@@ -118,6 +120,7 @@ var viewerJS = ( function( viewer ) {
 		toast : (titleAlert, message, type) => {
 			if(typeof Swal !== 'undefined') {
 				swalToast.fire({
+				  scrollbarPadding: false,
 				  icon: type,
 				  title: titleAlert,
 				});

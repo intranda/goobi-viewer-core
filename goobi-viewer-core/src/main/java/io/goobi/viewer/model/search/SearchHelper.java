@@ -135,8 +135,10 @@ public final class SearchHelper {
 
     private static final Random random = new SecureRandom();
 
-    /** Constant <code>patternNotBrackets</code> */
+    /** Regex pattern for negations in brackets */
     public static Pattern patternNotBrackets = Pattern.compile("NOT\\([^()]*\\)");
+    /** Regex pattern for negations not followed by brackets */
+    public static Pattern patternNot = Pattern.compile("NOT[ ][a-zA-Z_]+[:][a-zA-Z0-9\\*]+");
     /** Constant <code>patternPhrase</code> */
     public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
 
@@ -1665,6 +1667,10 @@ public final class SearchHelper {
         }
         // Remove all NOT(*) parts
         Matcher mNot = patternNotBrackets.matcher(query);
+        while (mNot.find()) {
+            query = query.replace(query.substring(mNot.start(), mNot.end()), "");
+        }
+        mNot = patternNot.matcher(query);
         while (mNot.find()) {
             query = query.replace(query.substring(mNot.start(), mNot.end()), "");
         }
