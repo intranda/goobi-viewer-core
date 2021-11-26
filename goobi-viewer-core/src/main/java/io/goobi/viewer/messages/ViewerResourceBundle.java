@@ -138,8 +138,11 @@ public class ViewerResourceBundle extends ResourceBundle {
                         }
                         // Thread.sleep(100);
                     }
-                } catch (IOException | InterruptedException e) {
+                } catch (IOException e) {
                     logger.error(e.getMessage(), e);
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage(), e);
+                    Thread.currentThread().interrupt();
                 }
             }
         });
