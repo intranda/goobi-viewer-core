@@ -2824,6 +2824,12 @@ public class SearchBean implements SearchInterface, Serializable {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 
+     * @return
+     * @should return options correctly
+     * @should use current random seed option instead of default
+     */
     public Collection<SearchSortingOption> getSearchSortingOptions() {
         Collection<SearchSortingOption> options = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
         Collection<SearchSortingOption> ret = new ArrayList<>(options.size());
