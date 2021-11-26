@@ -59,6 +59,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
@@ -220,36 +221,56 @@ public class CampaignItemResource {
         switch (campaign.getStatisticMode()) {
             case RECORD:
                 campaign.setRecordStatus(pi, status, Optional.ofNullable(user));
+                updateAnnotationStatusForRecord(campaign, pi, status, Optional.ofNullable(user));
                 break;
             case PAGE:
                 CrowdsourcingStatus pageStatus = CrowdsourcingStatus.forName(status.getName());
                 campaign.setRecordPageStatus(pi, page, pageStatus, Optional.ofNullable(user));
+                updateAnnotationStatusForPage(campaign, pi, page, pageStatus, Optional.ofNullable(user));
                 break;
             default:
                 logger.warn("Wrong campaign statistic mode: {}", campaign.getStatisticMode().name());
                 break;
-
         }
-        
-        Integer annotationPage = StatisticMode.PAGE.equals(campaign.getStatisticMode()) ? page : null;
-        List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, pi, annotationPage);
-
         DataManager.getInstance().getDao().updateCampaign(campaign);
-        // Re-index finished record to have its annotations indexed
-        if (status.equals(CrowdsourcingStatus.FINISHED)) {
-                annotations.forEach(anno -> {
-                    if (campaign.isRestrictAnnotationAccess()) {
-                        anno.setAccessCondition(campaign.getAccessConditionValue());
-                    } else {
-                        anno.setAccessCondition(SolrConstants.OPEN_ACCESS_VALUE);
-                    }
-                });
-            IndexerTools.triggerReIndexRecord(pi);
-        } else {
-            annotations.forEach(anno -> {
-                anno.setAccessCondition(status.name());
-            });
+    }
+
+    private void updateAnnotationStatusForPage(Campaign campaign, String pi, int page, CrowdsourcingStatus crowdsourcingStatus,
+            Optional<User> user) throws DAOException {
+        List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, pi, page);
+        for (CrowdsourcingAnnotation anno : annotations) {
+            anno.setPublicationStatus(getPublicationStatus(crowdsourcingStatus));
+            if(CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus) && user.isPresent()) {
+                anno.setReviewer(user.get());
+            }
+            DataManager.getInstance().getDao().updateAnnotation(anno);
         }
+    }
+    
+    private void updateAnnotationStatusForRecord(Campaign campaign, String pi, CrowdsourcingStatus crowdsourcingStatus,
+            Optional<User> user) throws DAOException {
+        List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
+        for (CrowdsourcingAnnotation anno : annotations) {
+            anno.setPublicationStatus(getPublicationStatus(crowdsourcingStatus));
+            if(CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus) && user.isPresent()) {
+                anno.setReviewer(user.get());
+            }
+            DataManager.getInstance().getDao().updateAnnotation(anno);
+        }
+    }
+
+    private PublicationStatus getPublicationStatus(CrowdsourcingStatus crowdsourcingStatus) {
+        switch (crowdsourcingStatus) {
+            case ANNOTATE:
+                return PublicationStatus.CREATING;
+            case REVIEW:
+                return PublicationStatus.REVIEW;
+            case FINISHED:
+                return PublicationStatus.PUBLISHED;
+            default:
+                return PublicationStatus.CREATING;
+        }
+
     }
 
     /**
@@ -273,8 +294,10 @@ public class CampaignItemResource {
 
         List<WebAnnotation> webAnnotations = new ArrayList<>();
         for (CrowdsourcingAnnotation anno : annotations) {
-            WebAnnotation webAnno = new AnnotationConverter(urls).getAsWebAnnotation(anno);
-            webAnnotations.add(webAnno);
+            if(StringUtils.isNotBlank(anno.getBody())) {                
+                WebAnnotation webAnno = new AnnotationConverter(urls).getAsWebAnnotation(anno);
+                webAnnotations.add(webAnno);
+            }
         }
 
         return webAnnotations;
@@ -325,7 +348,7 @@ public class CampaignItemResource {
 
             //add new annotation and update existing ones
             for (CrowdsourcingAnnotation anno : newAnnotations) {
-                    anno.setAccessCondition(CrowdsourcingStatus.ANNOTATE.name());
+                anno.setAccessCondition(CrowdsourcingStatus.ANNOTATE.name());
                 try {
                     if (anno.getId() == null) {
                         dao.addAnnotation(anno);

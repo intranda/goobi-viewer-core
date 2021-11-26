@@ -121,9 +121,9 @@ public class DisplayUserGeneratedContent {
 
     public DisplayUserGeneratedContent(PersistentAnnotation a) {
         this.id = a.getId();
-        this.type = ContentType.ADDRESS;
+        this.annotationBody = getAsResource(a.getBody());
+        this.type = getTypeFromBody(this.annotationBody);
         this.accessCondition = a.getAccessCondition();
-        this.annotationBody = new TextualResource(a.getContentString());
         this.areaString = getCoordinates(a.getTarget());
         this.dateUpdated = a.getDateModified() != null ? a.getDateModified() : a.getDateCreated();
         this.displayCoordinates = getCoordinates(a.getTarget());

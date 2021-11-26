@@ -29,6 +29,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,6 +155,7 @@ public class ContentBean implements Serializable {
         
         List<DisplayUserGeneratedContent> allContent = DataManager.getInstance().getDao().getAnnotationsForWork(pi).stream()
                 .filter(a -> a.getPublicationStatus().equals(PublicationStatus.PUBLISHED))
+                .filter(a -> StringUtils.isNotBlank(a.getBody()))
                 .map(a -> new DisplayUserGeneratedContent(a))
                 .collect(Collectors.toList());
         
@@ -162,18 +164,32 @@ public class ContentBean implements Serializable {
             if (ugcContent.isEmpty()) {
                 continue;
             }
-            if (ugcContent.getAccessCondition() != null) {
-                logger.trace("UGC access condition: {}", ugcContent.getAccessCondition());
-                String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.DOCTYPE + ":" + DocType.UGC.name();
-                if (!AccessConditionUtils.checkAccessPermission(Collections.singleton(ugcContent.getAccessCondition()),
-                        IPrivilegeHolder.PRIV_VIEW_UGC, query, request)) {
-                    logger.trace("User may not view UGC {}", ugcContent.getId());
-                    continue;
-                }
+            boolean accessible = true;
+            accessible = isAccessible(ugcContent, request);
+            if(!accessible) {
+                continue;
             }
             userGeneratedContentsForDisplay.add(ugcContent);
         }
         logger.trace("Loaded {} user generated contents for pi {}", userGeneratedContentsForDisplay.size(), this.pi);
+    }
+
+    public static boolean isAccessible(DisplayUserGeneratedContent content, HttpServletRequest request){
+        if (content.getAccessCondition() != null) {
+            logger.trace("UGC access condition: {}", content.getAccessCondition());
+            String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + content.getPi() + " +" + SolrConstants.DOCTYPE + ":" + DocType.UGC.name();
+            try {
+                if (!AccessConditionUtils.checkAccessPermission(Collections.singleton(content.getAccessCondition()),
+                        IPrivilegeHolder.PRIV_VIEW_UGC, query, request)) {
+                    logger.trace("User may not view UGC {}", content.getId());
+                    return false;
+                }
+            } catch (IndexUnreachableException | PresentationException | DAOException e) {
+                logger.error("Error checking permissins for {}. Deny permission. Reason: {}", content, e.toString());
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
