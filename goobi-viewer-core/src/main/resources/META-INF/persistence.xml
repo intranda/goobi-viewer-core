@@ -55,8 +55,10 @@
 		<class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSlider</class>
+		<class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
+		<class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
 		<class>io.goobi.viewer.model.translations.Translation</class>
-	
+		<class>io.goobi.viewer.dao.converter.SimpleMediaHolderConverter</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -136,9 +138,11 @@
 		<class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSlider</class>
-		<class>io.goobi.viewer.model.translations.PersistentTranslation</class>
+		<class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
+		<class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
 		<class>io.goobi.viewer.model.translations.Translation</class>
-		
+		<class>io.goobi.viewer.dao.converter.SimpleMediaHolderConverter</class>
+	
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
 				value="org.h2.Driver" />

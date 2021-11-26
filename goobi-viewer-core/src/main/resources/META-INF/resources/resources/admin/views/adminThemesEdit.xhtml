@@ -1,0 +1,374 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+      <f:metadata>
+        <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminThemes')}" />
+      </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+
+    <c:set value="#{adminThemeEditBean.currentTheme}" var="theme"/>
+
+      <!-- TITLE -->
+      <div class="admin__title-bar">
+        <h2 class="admin__title">#{msg.admin__themes__title}</h2>
+      </div>
+
+				<div id="adminThemesEdit" class="admin__content-inner-content">
+
+          <!-- WRAPPER -->
+          <div class="admin__content-wrapper">
+
+            <!-- Sticky main content -->
+            <div class="admin__content-main -sticky -refreshHCsticky">
+
+              <!-- JSF FORM WRAPER -->
+              <h:form prependId="false">
+
+                <!-- GENERAL SETTINGS -->
+                <!-- TITLE -->
+                <div class="row">
+                  <h3 class="col-12">#{msg.admin__themes__general__title}</h3>
+                </div>
+
+                <div class="admin__default-block">
+
+                  <div class="form-group form-row">
+                    <div class="col-2 control-label admin__form-label">
+                      <label for="mainThemeName">#{msg.name}:</label>
+                      <span class="admin__label-required-field">(#{msg.form__required_field})</span>
+                    </div>
+                    <div class="col-9 admin__form-input">
+                      <h:inputText value="#{theme.label}" id="mainThemeName" required="true" styleClass="form-control" />
+                      <span class="admin__form-help-text">#{msg.admin__themes__general_name__help}</span>
+                    </div>
+                    <div class="col-1 admin__form-help-icon">
+                      <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div> <!-- End form-group -->
+
+                <!-- LOGO UPLOAD -->
+                <h:panelGroup id="logoPanel" styleClass="form-group form-row position-relative" layout="block">
+
+                  <ui:fragment rendered="#{false}">
+                    <div class="admin__non-clickable-area-overlay"></div>
+                  </ui:fragment>
+                  <div class="col-2 control-label admin__form-label">
+                    <label for="">#{msg.admin__themes__general_logo__label}:</label>
+                  </div>
+
+                  <div class="col-9 admin__form-input">
+                    <div class="admin__campaign-media-file-box">
+
+                      <!-- ACTIONS -->
+                      <div class="cms-module__actions">
+                        <h:commandLink
+                          action="#{cmsBean.setSelectedMediaHolder(theme.logo)}"
+                          value="#{theme.logo.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}"
+                          class="btn #{theme.logo.hasMediaItem() ? 'btn--clean' : 'btn--default edit'}"
+                          role="button">
+                          <f:ajax execute="@this" render="mediaSelectPanel" />
+                        </h:commandLink>
+                        <h:commandLink
+                          rendered="#{theme.logo.hasMediaItem()}"
+                          action="#{theme.logo.setMediaItem(null)}"
+                          value="#{msg.cms_selectMediaItem_deselect}"
+                          class="btn btn--clean delete" role="button">
+                          <f:ajax render="logoPanel" />
+                        </h:commandLink>
+                        <ui:fragment rendered="#{theme.logo.hasMediaItem()}">
+                        	<img src="#{theme.logo.mediaItem.iconURI}" alt=""></img>
+                        </ui:fragment>
+                      </div>
+                      <!-- HELP -->
+                      <span class="admin__form-help-text">#{msg.admin__themes__general_logo__help}</span>
+
+                    </div> <!-- End admin__campaign-media-file-box -->
+                  </div> <!-- End col-9 admin__form-input -->
+
+                  <div class="col-1 admin__form-help-icon">
+                    <button type="button" class="btn btn--clean"
+                      data-toggle="helptext" aria-label="inline help icon">
+                      <i class="fa fa-question-circle" aria-hidden="true"></i>
+                    </button>
+                  </div>
+
+                </h:panelGroup> <!-- End LOGO UPLOAD -->
+
+                <!-- FULLSCREEN LOGO UPLOAD -->
+                <h:panelGroup id="fullscreenLogoPanel" styleClass="form-group form-row position-relative" layout="block">
+
+                  <ui:fragment rendered="#{false}">
+                    <div class="admin__non-clickable-area-overlay"></div>
+                  </ui:fragment>
+                  <div class="col-2 control-label admin__form-label">
+                    <label for="">#{msg.admin__themes__fullscreen_logo__label}:</label>
+                  </div>
+
+                  <div class="col-9 admin__form-input">
+                    <div class="admin__campaign-media-file-box">
+
+                      <!-- ACTIONS -->
+                      <div class="cms-module__actions">
+                        <h:commandLink
+                          action="#{cmsBean.setSelectedMediaHolder(theme.fullscreenLogo)}"
+                          value="#{theme.fullscreenLogo.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}"
+                          class="btn #{theme.fullscreenLogo.hasMediaItem() ? 'btn--clean' : 'btn--default edit'}"
+                          role="button">
+                          <f:ajax execute="@this" render="mediaSelectPanel" />
+                        </h:commandLink>
+                        <h:commandLink
+                          rendered="#{theme.fullscreenLogo.hasMediaItem()}"
+                          action="#{theme.fullscreenLogo.setMediaItem(null)}"
+                          value="#{msg.cms_selectMediaItem_deselect}"
+                          class="btn btn--clean delete" role="button">
+                          <f:ajax render="fullscreenLogoPanel" />
+                        </h:commandLink>
+                        <ui:fragment rendered="#{theme.fullscreenLogo.hasMediaItem()}">
+                        	<img src="#{theme.fullscreenLogo.mediaItem.iconURI}" alt=""></img>
+                        </ui:fragment>
+                      </div>
+                      <!-- HELP -->
+                      <span class="admin__form-help-text">#{msg.admin__themes__fullscreen_logo_help}</span>
+
+                    </div> <!-- End admin__campaign-media-file-box -->
+                  </div> <!-- End col-9 admin__form-input -->
+
+                  <div class="col-1 admin__form-help-icon">
+                    <button type="button" class="btn btn--clean"
+                      data-toggle="helptext" aria-label="inline help icon">
+                      <i class="fa fa-question-circle" aria-hidden="true"></i>
+                    </button>
+                  </div>
+
+                </h:panelGroup> <!-- End FULLSCREEN LOGO UPLOAD -->
+
+                <!-- ICON UPLOAD -->
+                <h:panelGroup id="iconPanel" styleClass="form-group form-row position-relative" layout="block">
+
+                  <ui:fragment rendered="#{false}">
+                    <div class="admin__non-clickable-area-overlay"></div>
+                  </ui:fragment>
+                  <div class="col-2 control-label admin__form-label">
+                    <label for="">#{msg.admin__themes__general_icon__label}:</label>
+                  </div>
+
+                  <div class="col-9 admin__form-input">
+                    <div class="admin__campaign-media-file-box">
+
+                      <!-- ACTIONS -->
+                      <div class="cms-module__actions">
+                        <h:commandLink
+                          action="#{cmsBean.setSelectedMediaHolder(theme.icon)}"
+                          value="#{theme.icon.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}"
+                          class="btn #{theme.icon.hasMediaItem() ? 'btn--clean' : 'btn--default edit'}"
+                          role="button">
+                        </h:commandLink>
+                        <h:commandLink
+                          rendered="#{theme.icon.hasMediaItem()}"
+                          action="#{theme.icon.setMediaItem(null)}"
+                          value="#{msg.cms_selectMediaItem_deselect}"
+                          class="btn btn--clean delete" role="button">
+                          <f:ajax render="iconPanel" />
+                        </h:commandLink>
+                      </div>
+                      <ui:fragment rendered="#{theme.icon.hasMediaItem()}">
+                        	<img src="#{theme.icon.mediaItem.iconURI}"></img>
+                        </ui:fragment>
+                      <!-- HELP -->
+                      <span class="admin__form-help-text">#{msg.admin__themes__general_icon__help}</span>
+
+                    </div> <!-- End admin__campaign-media-file-box -->
+                  </div> <!-- End col-9 admin__form-input -->
+
+                  <div class="col-1 admin__form-help-icon">
+                    <button type="button" class="btn btn--clean"
+                      data-toggle="helptext" aria-label="inline help icon">
+                      <i class="fa fa-question-circle" aria-hidden="true"></i>
+                    </button>
+                  </div>
+
+                </h:panelGroup> <!-- End ICON UPLOAD -->
+
+              </div> <!-- End admin__default-block => GENERAL -->
+
+
+              <!-- CSS -->
+              <!-- TITLE -->
+              <div class="row">
+                <h3 class="col-12">#{msg.admin__themes__css__title}</h3>
+              </div>
+
+              <div class="admin__default-block">
+
+                <!-- INFO -->
+				        <div class="admin__info-text">#{msg.admin__themes__css__info}</div>
+
+                <div class="form-group form-row">
+                  <div class="col-2 control-label">
+                    <label for="ipRangeDescription">#{msg.admin__themes__css__label}:</label>
+                  </div>
+                  <div class="col-9 admin__form-input">
+                    <h:inputTextarea rows="10" value="#{theme.styleSheet}" id="ipRangeDescription" styleClass="form-control" />
+                    <span class="admin__form-help-text">#{msg.admin__themes__css__help}</span>
+                  </div>
+                  <div class="col-1 admin__form-help-icon">
+                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                      <i class="fa fa-question-circle" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </div>
+              </div> <!-- End admin__default-block => CSS -->
+
+              <!-- SOCIAL MEDIA -->
+              <!-- TITLE -->
+              <div class="row">
+                <h3 class="col-12">#{msg.admin__themes__social_media__title}</h3>
+              </div>
+
+              <div class="admin__default-block">
+
+                <!-- INFO -->
+				        <div class="admin__info-text">#{msg.admin__themes__social_media__info}</div>
+
+                <!-- ACCOUNTS -->
+                <ui:repeat var="socialMediaAccount"
+                  value="#{adminThemeEditBean.socialMediaServices}">
+
+                  <div class="form-group form-row">
+                    <div class="col-2 control-label admin__form-label">
+                      <label for="handle#{socialMediaAccount}">#{msg[socialMediaAccount.labelKey]}:</label>
+                    </div>
+                    <div class="col-9 admin__form-input">
+                      <h:inputText value="#{theme.getSocialMediaLink(socialMediaAccount).linkUrl}" id="handle#{socialMediaAccount}" styleClass="form-control">
+                        <f:passThroughAttribute name="aria-label" value="#{msg[socialMediaAccount.helpKey]}"/>
+                      </h:inputText>
+                      <span class="admin__form-help-text">
+                        <h:outputText escape="false" value="#{msg[socialMediaAccount.helpKey]}" />
+                      </span>
+                    </div>
+                    <div class="col-1 admin__form-help-icon">
+                      <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                </ui:repeat>
+
+              </div> <!-- End admin__default-block => SOCIAL MEDIA -->
+
+              <!-- FOOTER LINKS -->
+              <!-- TITLE -->
+              <div class="row">
+                <h3 class="col-12">#{msg.admin__themes__footer_links__title}</h3>
+              </div>
+
+              <div class="admin__default-block">
+
+                <!-- INFO -->
+				        <div class="admin__info-text">#{msg.admin__themes__footer_links__info}</div>
+
+                <!-- ACCOUNTS -->
+                <ui:repeat
+                  var="service"
+                  value="#{adminThemeEditBean.footerServices}">
+
+                  <div class="form-group form-row">
+                    <div class="col-2 control-label admin__form-label">
+                      <label for="service#{service}">#{msg[service.labelKey]}:</label>
+                    </div>
+                    <div class="col-9 admin__form-input">
+                      <h:inputText value="#{theme.getFooterLink(service).linkUrl}" id="service#{service}" styleClass="form-control">
+                        <f:passThroughAttribute name="aria-label" value="#{msg[service.helpKey]}"/>
+                      </h:inputText>
+                      <span class="admin__form-help-text">
+                        <h:outputText escape="false" value="#{msg[service.helpKey]}" />
+                      </span>
+                    </div>
+                    <div class="col-1 admin__form-help-icon">
+                      <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                </ui:repeat>
+
+              </div> <!-- End admin__default-block => SERVICE -->
+
+
+              <!-- FORM ACTIONS -->
+              <div class="row no-gutters justify-content-end admin__final-actions">
+                <h:link styleClass="btn admin__cancel-button" value="#{msg.cancel}"></h:link>
+                <h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{adminThemeEditBean.saveTheme}" />
+              </div>
+
+            </h:form>
+
+          </div> <!-- End sticky main content -->
+
+          <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+          <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+          <!-- %%%%%% SIDEBAR %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+          <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+          <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+          <!-- SIDEBAR -->
+          <div class="admin__content-side -sticky -refreshHCsticky">
+            <div class="admin__boxed-entry">
+              <!-- THEME NAME -->
+              <div class="row">
+                <h3 class="col-12">#{msg.admin__themes__theme_info__heading}</h3>
+              </div>
+
+              <!-- DESCRIPTION -->
+              <div class="row">
+                <ui:fragment rendered="#{userGroup.description ne ''}">
+                <p class="col-12 admin__boxed-entry-description">#{msg.admin__themes__theme_info__text}: #{theme.name}</p>
+                </ui:fragment>
+                <ui:fragment rendered="#{userGroup.description eq ''}">
+                  <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
+                </ui:fragment>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- End admin__content-inner-content -->
+
+			<h:panelGroup id="mediaSelectPanel">
+				<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+	                   <div class="admin-cms-media-select-overlay">
+
+	                    <!-- SELECT MEDIA ITEM OVERLAY -->
+                            <div class="admin-cms-media__select-overlay"></div>
+
+                            <!-- SELECT MEDIA ITEM -->
+                            <div class="admin-cms-media__select">
+                                 <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+                                 	<ui:param name="mediaDisplayPanel" value="logoPanel iconPanel fullscreenLogoPanel" />
+                                </ui:include>
+                            </div>
+	                   </div>
+				</ui:fragment>
+	        </h:panelGroup>
+
+      </div> <!-- End WRAPPER -->
+
+    </ui:define>
+
+</ui:composition>
+
