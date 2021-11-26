@@ -891,7 +891,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
         if (StringUtils.isNotEmpty(altoText)) {
             wordCoordsFormat = CoordsFormat.ALTO;
-            String text = ALTOTools.getFullText(altoText, false, null);
+            String text = ALTOTools.getFulltext(altoText, false, null);
             if (StringUtils.isNotEmpty(text)) {
                 String cleanText = StringTools.stripJS(text);
                 if (cleanText.length() < text.length()) {

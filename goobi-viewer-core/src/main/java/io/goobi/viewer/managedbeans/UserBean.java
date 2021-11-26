@@ -1130,11 +1130,11 @@ public class UserBean implements Serializable {
     public boolean resetSecurityQuestion() {
         List<SecurityQuestion> questions = DataManager.getInstance().getConfiguration().getSecurityQuestions();
         if (questions.isEmpty()) {
-            return true;
+            return false;
         }
         if (securityQuestion != null && !securityQuestion.isAnswered()) {
             // Do not reset if not set set or not yet answered
-            return true;
+            return false;
         }
         securityQuestion = questions.get(random.nextInt(questions.size()));
 
