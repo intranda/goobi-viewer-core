@@ -40,7 +40,7 @@
 
 			<!-- GO TO FRONTEND VIEW -->
             <a class="admin__topbar-backend-view-frontend-link" href="#{request.contextPath}/" title="#{msg.admin__view_frontend}" aria-label="#{msg.admin__view_frontend}">
-                <i class="fa fa-home" aria-hidden="true"></i> #{configurationBean.name}
+                <i class="fa fa-home" aria-hidden="true"></i> #{adminThemesBean.getThemeLabel(configurationBean.name)}
     		</a>
 
     		<!-- ADD SOMETHING NEW -->
