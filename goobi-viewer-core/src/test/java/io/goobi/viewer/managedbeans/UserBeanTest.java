@@ -175,7 +175,7 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
     @Test
     public void resetSecurityQuestion_shouldNotResetSecurityQuestIfNotYetAnswered() throws Exception {
         UserBean ub = new UserBean();
-        ub.resetSecurityQuestion();
+        Assert.assertFalse(ub.resetSecurityQuestion());
         SecurityQuestion sq = ub.getSecurityQuestion();
         Assert.assertNotNull(sq);
         Assert.assertFalse(sq.isAnswered());

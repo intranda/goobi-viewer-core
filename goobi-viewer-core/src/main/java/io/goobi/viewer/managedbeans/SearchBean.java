@@ -2196,8 +2196,11 @@ public class SearchBean implements SearchInterface, Serializable {
                         executor.submit(downloadComplete);
                         downloadComplete.get(timeout, TimeUnit.SECONDS);
                     }
-                } catch (TimeoutException | InterruptedException e) {
+                } catch (TimeoutException e) {
                     job.setError("Timeout for excel download");
+                } catch (InterruptedException e) {
+                    job.setError("Timeout for excel download");
+                    Thread.currentThread().interrupt();
                 } catch (ExecutionException | ViewerConfigurationException e) {
                     logger.error(e.getMessage(), e);
                     job.setError("Failed to create excel sheet");
@@ -2218,6 +2221,7 @@ public class SearchBean implements SearchInterface, Serializable {
             ready.get(timeout, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             logger.debug("Download interrupted");
+            Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
             logger.debug("Download execution error", e);
             Messages.error("download_internal_error");

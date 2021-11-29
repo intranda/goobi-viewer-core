@@ -418,7 +418,7 @@ public class DataFileTools {
             try {
                 String alto = loadAlto(altoFilePath);
                 if (alto != null) {
-                    return ALTOTools.getFullText(alto, mergeLineBreakWords, request);
+                    return ALTOTools.getFulltext(alto, mergeLineBreakWords, request);
                 }
             } catch (ContentNotFoundException e) {
                 throw new FileNotFoundException(e.getMessage());

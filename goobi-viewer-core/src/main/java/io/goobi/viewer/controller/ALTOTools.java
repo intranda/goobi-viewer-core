@@ -85,7 +85,7 @@ public class ALTOTools {
      */
     public static String getFulltext(Path path, String encoding) throws IOException {
         String altoString = FileTools.getStringFromFile(path.toFile(), encoding);
-        return getFullText(altoString, false, null);
+        return getFulltext(altoString, false, null);
     }
 
     /**
@@ -99,7 +99,7 @@ public class ALTOTools {
      * @should extract fulltext correctly
      * @return a {@link java.lang.String} object.
      */
-    public static String getFullText(String alto, boolean mergeLineBreakWords, HttpServletRequest request) {
+    public static String getFulltext(String alto, boolean mergeLineBreakWords, HttpServletRequest request) {
         try {
             return alto2Txt(alto, mergeLineBreakWords, request);
         } catch (IOException | XMLStreamException | JDOMException e) {
