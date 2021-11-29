@@ -4032,6 +4032,10 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException, NonUniqueResultException {
+        if (page == null || page.getId() == null) {
+            return Collections.emptyList();
+        }
+
         preQuery();
         Query q = getEntityManager().createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.cmsPageId = :id");
         q.setParameter("id", page.getId());
