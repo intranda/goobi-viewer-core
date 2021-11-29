@@ -106,7 +106,7 @@ public class JPADAO implements IDAO {
 
     private final EntityManagerFactory factory;
     // private ThreadLocal<EntityManager> threadLocalEm = new ThreadLocal<>();
-    private EntityManager em;
+    private EntityManager emGlobal;
     private Object cmsRequestLock = new Object();
     private Object crowdsourcingRequestLock = new Object();
 
@@ -146,11 +146,11 @@ public class JPADAO implements IDAO {
         //
         //        return threadLocalEm.get();
 
-        if (em == null) {
-            em = factory.createEntityManager();
+        if (emGlobal == null) {
+            emGlobal = factory.createEntityManager();
         }
 
-        return em;
+        return emGlobal;
     }
 
     /**
@@ -180,7 +180,7 @@ public class JPADAO implements IDAO {
             currentThread.setContextClassLoader(saveClassLoader);
 
             // threadLocalEm.set(factory.createEntityManager());
-            em = factory.createEntityManager();
+            emGlobal = factory.createEntityManager();
             preQuery();
         } catch (DatabaseException | PersistenceException e) {
             logger.error(e.getMessage(), e);
@@ -456,9 +456,9 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateUser(User user) throws DAOException {
         preQuery();
-        em.getTransaction().begin();
-        em.merge(user);
-        em.getTransaction().commit();
+        emGlobal.getTransaction().begin();
+        emGlobal.merge(user);
+        emGlobal.getTransaction().commit();
         // Refresh the object from the DB so that any new licenses etc. have IDs
         if (this.getEntityManager().contains(user)) {
             this.getEntityManager().refresh(user);
@@ -1809,9 +1809,9 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addComment(Comment comment) throws DAOException {
         preQuery();
-        em.getTransaction().begin();
-        em.persist(comment);
-        em.getTransaction().commit();
+        emGlobal.getTransaction().begin();
+        emGlobal.persist(comment);
+        emGlobal.getTransaction().commit();
         return true;
     }
 
@@ -1822,9 +1822,9 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateComment(Comment comment) throws DAOException {
         preQuery();
-        em.getTransaction().begin();
-        em.merge(comment);
-        em.getTransaction().commit();
+        emGlobal.getTransaction().begin();
+        emGlobal.merge(comment);
+        emGlobal.getTransaction().commit();
         return true;
     }
 
@@ -1835,10 +1835,10 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteComment(Comment comment) throws DAOException {
         preQuery();
-        em.getTransaction().begin();
-        Comment o = em.getReference(Comment.class, comment.getId());
-        em.remove(o);
-        em.getTransaction().commit();
+        emGlobal.getTransaction().begin();
+        Comment o = emGlobal.getReference(Comment.class, comment.getId());
+        emGlobal.remove(o);
+        emGlobal.getTransaction().commit();
         return true;
     }
 
@@ -3845,7 +3845,7 @@ public class JPADAO implements IDAO {
         }
         if (!getEntityManager().isOpen()) {
             // threadLocalEm.set(factory.createEntityManager());
-            em = factory.createEntityManager();
+            emGlobal = factory.createEntityManager();
         }
     }
 
@@ -4132,16 +4132,16 @@ public class JPADAO implements IDAO {
     public boolean updateCMSCollection(CMSCollection collection) throws DAOException {
         preQuery();
         try {
-            em.getTransaction().begin();
-            em.merge(collection);
-            em.getTransaction().commit();
+            emGlobal.getTransaction().begin();
+            emGlobal.merge(collection);
+            emGlobal.getTransaction().commit();
             // Refresh the object from the DB so that any new licenses etc. have IDs
             //            if (this.getEntityManager().contains(collection)) {
             //                this.getEntityManager().refresh(collection);
             //            }
             return true;
         } finally {
-            em.close();
+            //            emGlobal.close();
         }
     }
 
@@ -4865,9 +4865,9 @@ public class JPADAO implements IDAO {
     public boolean updateAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
         preQuery();
         try {
-            em.getTransaction().begin();
-            em.merge(annotation);
-            em.getTransaction().commit();
+            emGlobal.getTransaction().begin();
+            emGlobal.merge(annotation);
+            emGlobal.getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
             return false;
@@ -4882,10 +4882,10 @@ public class JPADAO implements IDAO {
     public boolean deleteAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
         preQuery();
         try {
-            em.getTransaction().begin();
-            CrowdsourcingAnnotation o = em.getReference(CrowdsourcingAnnotation.class, annotation.getId());
-            em.remove(o);
-            em.getTransaction().commit();
+            emGlobal.getTransaction().begin();
+            CrowdsourcingAnnotation o = emGlobal.getReference(CrowdsourcingAnnotation.class, annotation.getId());
+            emGlobal.remove(o);
+            emGlobal.getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
             return false;
@@ -5415,7 +5415,7 @@ public class JPADAO implements IDAO {
         try {
             getEntityManager().getTransaction().begin();
             getEntityManager().persist(theme);
-            getEntityManager().getTransaction().commit();            
+            getEntityManager().getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
             return false;
@@ -5431,7 +5431,7 @@ public class JPADAO implements IDAO {
         try {
             getEntityManager().getTransaction().begin();
             getEntityManager().merge(theme);
-            getEntityManager().getTransaction().commit();            
+            getEntityManager().getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
             return false;
@@ -5448,7 +5448,7 @@ public class JPADAO implements IDAO {
             getEntityManager().getTransaction().begin();
             ThemeConfiguration o = getEntityManager().getReference(ThemeConfiguration.class, theme.getId());
             getEntityManager().remove(o);
-            getEntityManager().getTransaction().commit();            
+            getEntityManager().getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
             return false;
