@@ -38,7 +38,17 @@
 
 				<h2>#{cmsPage.title}</h2>				
 				
+				<!-- DATE -->
+                <h:panelGroup rendered="#{cmsPage.hasContent('A0')}">
+                    <div class="tpl-news-detail__date">
+    					<h:outputText value="#{cmsPage.getContent('A0')}" />
+                    </div>
+                </h:panelGroup>
+				
 				<div class="tpl-news__content">
+				<h:panelGroup rendered="#{cmsPage.hasContent('A1')}">
+					<h3>#{cmsPage.getContent('A1')}</h3>
+				</h:panelGroup>
 					<h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>
 				</div>
 			</div>
