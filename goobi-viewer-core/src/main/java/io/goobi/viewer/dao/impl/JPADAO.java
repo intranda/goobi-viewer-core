@@ -456,9 +456,9 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateUser(User user) throws DAOException {
         preQuery();
-        emGlobal.getTransaction().begin();
-        emGlobal.merge(user);
-        emGlobal.getTransaction().commit();
+        getEntityManager().getTransaction().begin();
+        getEntityManager().merge(user);
+        getEntityManager().getTransaction().commit();
         // Refresh the object from the DB so that any new licenses etc. have IDs
         if (this.getEntityManager().contains(user)) {
             this.getEntityManager().refresh(user);
@@ -1809,9 +1809,9 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addComment(Comment comment) throws DAOException {
         preQuery();
-        emGlobal.getTransaction().begin();
-        emGlobal.persist(comment);
-        emGlobal.getTransaction().commit();
+        getEntityManager().getTransaction().begin();
+        getEntityManager().persist(comment);
+        getEntityManager().getTransaction().commit();
         return true;
     }
 
@@ -1822,9 +1822,9 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateComment(Comment comment) throws DAOException {
         preQuery();
-        emGlobal.getTransaction().begin();
-        emGlobal.merge(comment);
-        emGlobal.getTransaction().commit();
+        getEntityManager().getTransaction().begin();
+        getEntityManager().merge(comment);
+        getEntityManager().getTransaction().commit();
         return true;
     }
 
@@ -1835,10 +1835,10 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteComment(Comment comment) throws DAOException {
         preQuery();
-        emGlobal.getTransaction().begin();
-        Comment o = emGlobal.getReference(Comment.class, comment.getId());
-        emGlobal.remove(o);
-        emGlobal.getTransaction().commit();
+        getEntityManager().getTransaction().begin();
+        Comment o = getEntityManager().getReference(Comment.class, comment.getId());
+        getEntityManager().remove(o);
+        getEntityManager().getTransaction().commit();
         return true;
     }
 
@@ -4143,9 +4143,9 @@ public class JPADAO implements IDAO {
     public boolean updateCMSCollection(CMSCollection collection) throws DAOException {
         preQuery();
         try {
-            emGlobal.getTransaction().begin();
-            emGlobal.merge(collection);
-            emGlobal.getTransaction().commit();
+            getEntityManager().getTransaction().begin();
+            getEntityManager().merge(collection);
+            getEntityManager().getTransaction().commit();
             // Refresh the object from the DB so that any new licenses etc. have IDs
             //            if (this.getEntityManager().contains(collection)) {
             //                this.getEntityManager().refresh(collection);
@@ -4876,9 +4876,9 @@ public class JPADAO implements IDAO {
     public boolean updateAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
         preQuery();
         try {
-            emGlobal.getTransaction().begin();
-            emGlobal.merge(annotation);
-            emGlobal.getTransaction().commit();
+            getEntityManager().getTransaction().begin();
+            getEntityManager().merge(annotation);
+            getEntityManager().getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
             return false;
@@ -4893,10 +4893,10 @@ public class JPADAO implements IDAO {
     public boolean deleteAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
         preQuery();
         try {
-            emGlobal.getTransaction().begin();
-            CrowdsourcingAnnotation o = emGlobal.getReference(CrowdsourcingAnnotation.class, annotation.getId());
-            emGlobal.remove(o);
-            emGlobal.getTransaction().commit();
+            getEntityManager().getTransaction().begin();
+            CrowdsourcingAnnotation o = getEntityManager().getReference(CrowdsourcingAnnotation.class, annotation.getId());
+            getEntityManager().remove(o);
+            getEntityManager().getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
             return false;
