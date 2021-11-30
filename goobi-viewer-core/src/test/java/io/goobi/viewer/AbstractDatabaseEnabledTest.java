@@ -60,7 +60,7 @@ public abstract class AbstractDatabaseEnabledTest extends AbstractTest {
     @After
     public void tearDown() throws Exception {
         databaseTester.onTearDown();
-        ((JPADAO) DataManager.getInstance().getDao()).getEntityManager().clear();
+        ((JPADAO) DataManager.getInstance().getDao()).clear();
 
         // FlatXmlDataSet
         // .write(databaseTester.getConnection().createDataSet(), new FileOutputStream("resources/" + System.currentTimeMillis() + ".xml"));
