@@ -139,7 +139,7 @@ public class JPADAO implements IDAO {
      *
      * @return {@link javax.persistence.EntityManager} for the current thread
      */
-    public EntityManager getEntityManager() {
+    EntityManager getEntityManager() {
         //        if (threadLocalEm.get() == null) {
         //            threadLocalEm.set(factory.createEntityManager());
         //        }
@@ -3805,6 +3805,12 @@ public class JPADAO implements IDAO {
 
         return false;
     }
+    
+    public void clear() {
+        if (getEntityManager() != null) { 
+            getEntityManager().clear();
+        }
+    }
 
     /*
      * (non-Javadoc)
@@ -3814,6 +3820,7 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public void shutdown() {
+        logger.error("shutdown()");
         if (getEntityManager() != null && getEntityManager().isOpen()) {
             getEntityManager().close();
         }

@@ -119,7 +119,7 @@ public class AuthorityResource {
         }
 
         List<NormData> normDataList = record.getNormDataList();
-        if (normDataList == null || normDataList.isEmpty()) {
+        if (normDataList == null) {
             logger.trace("Normdata map is empty");
             throw new ContentNotFoundException("Resource not found");
         }
