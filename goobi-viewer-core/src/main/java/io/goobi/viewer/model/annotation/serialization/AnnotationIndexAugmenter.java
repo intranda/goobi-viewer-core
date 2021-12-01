@@ -57,7 +57,7 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
     private final Logger logger = LoggerFactory.getLogger(AnnotationIndexAugmenter.class);
 
     /** Constant <code>SUFFIX_ANNOTATIONS="_annotations"</code> */
-    public static final String SUFFIX_ANNOTATIONS = "_annotations";
+    public static final String SUFFIX_ANNOTATIONS = "_ugc";
 
     private final List<PersistentAnnotation> annotations;
     private final AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
