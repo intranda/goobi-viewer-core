@@ -45,10 +45,10 @@ import de.intranda.api.annotation.AgentType;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.ISelector;
 import de.intranda.api.annotation.oa.OpenAnnotation;
-import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.annotation.wa.Agent;
 import de.intranda.api.annotation.wa.FragmentSelector;
 import de.intranda.api.annotation.wa.SpecificResource;
+import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -104,10 +104,14 @@ public class AnnotationConverter {
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
             IResource resource;
-            if (anno.getTarget().contains("SpecificResource")) {
-                resource = mapper.readValue(anno.getTarget(), SpecificResource.class);
-            } else {
-                resource = mapper.readValue(anno.getTarget(), TypedResource.class);
+            try {                
+                if (anno.getTarget().contains("SpecificResource")) {
+                    resource = mapper.readValue(anno.getTarget(), SpecificResource.class);
+                } else {
+                    resource = mapper.readValue(anno.getTarget(), TypedResource.class);
+                }
+            } catch(JsonParseException e) {
+                resource = new TextualResource(anno.getTarget());
             }
             return resource;
         }

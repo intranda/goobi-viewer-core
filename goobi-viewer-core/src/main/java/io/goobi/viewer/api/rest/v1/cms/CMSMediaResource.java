@@ -15,16 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_AUDIO;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_HTML;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_PDF;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_SVG;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_VIDEO;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_ITEM_BY_FILE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_ITEM_BY_ID;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -207,6 +198,31 @@ public class CMSMediaResource {
     @Produces("image/svg+xml")
     @CORSBinding
     public static StreamingOutput getSvgContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
+            throws ContentNotFoundException, DAOException {
+        String decFilename = StringTools.decodeUrl(filename);
+        Path path = Paths.get(
+                DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
+                decFilename);
+        if (Files.exists(path)) {
+            return new StreamingOutput() {
+
+                @Override
+                public void write(OutputStream out) throws IOException, WebApplicationException {
+                    try (InputStream in = Files.newInputStream(path)) {
+                        IOUtils.copy(in, out);
+                    }
+                }
+            };
+        }
+        throw new ContentNotFoundException("File " + path + " not found in file system");
+    }
+    
+    @GET
+    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_ICO)
+    @Produces("image/x-icon")
+    @CORSBinding
+    public static StreamingOutput getIcoContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException, DAOException {
         String decFilename = StringTools.decodeUrl(filename);
         Path path = Paths.get(

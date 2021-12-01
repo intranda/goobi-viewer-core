@@ -3,7 +3,17 @@
    style declarations for widget_custom.xhtml
    ==============================================================*/
    
-.widget-custom {}
+.widget-custom {
+	h3 {
+		button {
+				color: @white;
+				font-weight: 700;
+			&:hover {
+				color: @white;
+			}
+		}
+	}
+}
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
