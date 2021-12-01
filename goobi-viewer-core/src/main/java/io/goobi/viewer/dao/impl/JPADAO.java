@@ -5405,9 +5405,6 @@ public class JPADAO implements IDAO {
         }
         try {
             ThemeConfiguration t = (ThemeConfiguration) q.getSingleResult();
-            if (t != null) {
-                getEntityManager().refresh(t);
-            }
             return t;
         } catch (NoResultException e) {
             return null;

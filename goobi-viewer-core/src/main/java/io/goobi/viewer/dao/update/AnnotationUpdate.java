@@ -86,7 +86,6 @@ public class AnnotationUpdate implements IModelUpdate {
         
         List<Object[]> annotations = dao.createNativeQuery("SELECT * FROM annotations").getResultList();
         
-        
         List<String> columnNames = info.stream().map(o -> (String)o[0]).collect(Collectors.toList());
         
         for (Object[] annotation : annotations) {
