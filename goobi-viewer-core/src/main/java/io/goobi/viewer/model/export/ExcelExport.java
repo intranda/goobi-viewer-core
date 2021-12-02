@@ -20,7 +20,6 @@ public class ExcelExport {
     /**
      * @param facesContext
      * @param wb
-     * @throws IOException
      */
     public boolean writeToResponse(OutputStream os) {
         if (os == null) {
