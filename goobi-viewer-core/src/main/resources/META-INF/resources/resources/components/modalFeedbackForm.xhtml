@@ -211,30 +211,20 @@
 	                                       
 	                                       
 	                                        <div class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch">
-	                                            <h:selectOneRadio group="requiredTermsCheckbox" value="true"
-	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}"
+	                                            <h:selectOneRadio group="requiredTermsCheckbox" value="false"
+	                                                immediate="true" checked="false"
 	                                                pt:data-require-input-checkbox="uncheckedChecker">
 	                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
 	                                            </h:selectOneRadio>
 	                                            <h:selectOneRadio id="test123" group="requiredTermsCheckbox" value="true"
-	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}"
+	                                                immediate="true" checked="true"
 	                                                pt:data-require-input-checkbox="feedbackInput">
-	                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+	                                                <f:selectItem itemValue="#{feedbackModalAcceptedTerms}" itemLabel="#{msg.yes}" />
 	                                            </h:selectOneRadio>
 	                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
 	                                        </div>
                                         </div>
-                                        
-                                        
-	
-									  
-									  
-									  
-									  
-									  
-									  
-									  
-									  
+
 									</div>
 
 <!-- 								</ui:fragment> -->
