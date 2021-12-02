@@ -810,6 +810,11 @@ public class ConfigurationBean implements Serializable {
         }
     }
 
+    @Deprecated
+    public boolean isPiwikTracking() {
+        return isPiwikTrackingEnabled();
+    }
+
     /**
      * <p>
      * isPiwikTracking.
@@ -817,7 +822,7 @@ public class ConfigurationBean implements Serializable {
      *
      * @return a boolean.
      */
-    public boolean isPiwikTracking() {
+    public boolean isPiwikTrackingEnabled() {
         return DataManager.getInstance().getConfiguration().isPiwikTrackingEnabled();
     }
 

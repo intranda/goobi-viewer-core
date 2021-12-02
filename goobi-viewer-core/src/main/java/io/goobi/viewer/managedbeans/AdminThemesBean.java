@@ -44,40 +44,43 @@ import io.goobi.viewer.solr.SolrTools;
 public class AdminThemesBean implements Serializable {
 
     private static final long serialVersionUID = 837772138767500963L;
-    
+
     private final String mainThemeName;
     private final List<String> subThemeNames;
     private List<ThemeConfiguration> configuredThemes;
-    
+
     public AdminThemesBean() throws PresentationException, IndexUnreachableException, DAOException {
         mainThemeName = DataManager.getInstance().getConfiguration().getTheme();
         subThemeNames = SolrTools.getExistingSubthemes();
-        configuredThemes = DataManager.getInstance().getDao().getConfiguredThemes().stream()
+        configuredThemes = DataManager.getInstance()
+                .getDao()
+                .getConfiguredThemes()
+                .stream()
                 .filter(t -> subThemeNames.contains(t.getName()) || t.getName().equals(mainThemeName))
                 .collect(Collectors.toList());
-                
+
     }
-    
+
     public String getMainThemeName() {
         return mainThemeName;
     }
-    
+
     public boolean isMainThemeConfigured() {
         return configuredThemes.stream().anyMatch(t -> t.getName().equals(mainThemeName));
     }
-    
+
     public boolean isSubThemeConfigured(String name) {
         return configuredThemes.stream().anyMatch(t -> t.getName().equals(name));
     }
-    
+
     public ThemeConfiguration getMainThemeConfiguration() {
         return configuredThemes.stream().filter(t -> t.getName().equals(mainThemeName)).findAny().orElse(null);
     }
-    
+
     public ThemeConfiguration getSubThemeConfiguration(String name) {
         return configuredThemes.stream().filter(t -> t.getName().equals(name)).findAny().orElse(null);
     }
-    
+
     public List<String> getNotConfiguredSubThemes() {
         return subThemeNames.stream().filter(name -> !isSubThemeConfigured(name)).collect(Collectors.toList());
     }
@@ -85,7 +88,7 @@ public class AdminThemesBean implements Serializable {
     public List<ThemeConfiguration> getConfiguredSubThemes() {
         return configuredThemes.stream().filter(theme -> !theme.getName().equals(mainThemeName)).collect(Collectors.toList());
     }
-  
+
     public List<String> getSubThemeNames() {
         return subThemeNames;
     }
@@ -95,70 +98,100 @@ public class AdminThemesBean implements Serializable {
         ThemeConfiguration theme = DataManager.getInstance().getDao().getTheme(themeName);
         return theme;
     }
-    
+
     public boolean isCurrentThemeConfigured() throws DAOException {
         return getCurrentTheme() != null;
     }
-    
+
     public String getSocialMediaUrl(ThemeLink.SocialMediaService service, String defaultUrl) throws DAOException {
         return Optional.ofNullable(getCurrentTheme()).map(t -> t.getSocialMediaLinkUrlOrDefault(service, defaultUrl)).orElse(defaultUrl);
     }
-    
+
     public String getSocialMediaUrl(ThemeLink.SocialMediaService service) throws DAOException {
         return getSocialMediaUrl(service, "");
     }
-    
+
     public boolean hasSocialMediaUrl(ThemeLink.SocialMediaService service) throws DAOException {
         return Optional.ofNullable(getCurrentTheme()).map(t -> t.getSocialMediaLink(service)).map(l -> l.hasLink()).orElse(false);
     }
-    
+
     public String getFooterUrl(ThemeLink.InternalService service, String defaultUrl) throws DAOException {
         return Optional.ofNullable(getCurrentTheme()).map(t -> t.getFooterLinkUrlOrDefault(service, defaultUrl)).orElse(defaultUrl);
     }
-    
+
     public String getFooterUrl(ThemeLink.InternalService service) throws DAOException {
         return getFooterUrl(service, "");
     }
-    
+
     public boolean hasFooterUrl(ThemeLink.InternalService service) throws DAOException {
         return Optional.ofNullable(getCurrentTheme()).map(t -> t.getFooterLink(service)).map(l -> l.hasLink()).orElse(false);
     }
-    
+
     public String getLogo(String defaultUrl) throws DAOException {
-        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getLogo()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI().toString()).orElse(defaultUrl);
+        return Optional.ofNullable(getCurrentTheme())
+                .map(t -> t.getLogo())
+                .filter(l -> l.hasMediaItem())
+                .map(l -> l.getMediaItem().getIconURI().toString())
+                .orElse(getFullUrl(defaultUrl));
     }
-        
-   public String getLogo(String defaultUrl, int width, int height) throws DAOException {
-        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getLogo()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI(width, height).toString()).orElse(defaultUrl);
+
+    public String getLogo(String defaultUrl, int width, int height) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme())
+                .map(t -> t.getLogo())
+                .filter(l -> l.hasMediaItem())
+                .map(l -> l.getMediaItem().getIconURI(width, height).toString())
+                .orElse(getFullUrl(defaultUrl));
     }
-    
+
+    private String getFullUrl(String defaultUrl) {
+        String basePath = BeanUtils.getRequest().getContextPath();
+        String imagePath = BeanUtils.getNavigationHelper().getResource(defaultUrl.replaceAll("^\\/", ""));
+        return basePath + imagePath;
+    }
+
     public String getIcon(String defaultUrl) throws DAOException {
-        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getIcon()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI().toString()).orElse(defaultUrl);
+        return Optional.ofNullable(getCurrentTheme())
+                .map(t -> t.getIcon())
+                .filter(l -> l.hasMediaItem())
+                .map(l -> l.getMediaItem().getIconURI().toString())
+                .orElse(getFullUrl(defaultUrl));
     }
-    
+
     public String getIcon(String defaultUrl, int width, int height) throws DAOException {
-        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getIcon()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI(width, height).toString()).orElse(defaultUrl);
+        return Optional.ofNullable(getCurrentTheme())
+                .map(t -> t.getIcon())
+                .filter(l -> l.hasMediaItem())
+                .map(l -> l.getMediaItem().getIconURI(width, height).toString())
+                .orElse(getFullUrl(defaultUrl));
     }
-    
+
     public String getFullscreenLogo(String defaultUrl) throws DAOException {
-        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getFullscreenLogo()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI().toString()).orElse(defaultUrl);
+        return Optional.ofNullable(getCurrentTheme())
+                .map(t -> t.getFullscreenLogo())
+                .filter(l -> l.hasMediaItem())
+                .map(l -> l.getMediaItem().getIconURI().toString())
+                .orElse(getFullUrl(defaultUrl));
     }
-    
+
     public String getFullscreenLogo(String defaultUrl, int width, int height) throws DAOException {
-        return Optional.ofNullable(getCurrentTheme()).map(t -> t.getFullscreenLogo()).filter(l -> l.hasMediaItem()).map(l -> l.getMediaItem().getIconURI(width, height).toString()).orElse(defaultUrl);
+        return Optional.ofNullable(getCurrentTheme())
+                .map(t -> t.getFullscreenLogo())
+                .filter(l -> l.hasMediaItem())
+                .map(l -> l.getMediaItem().getIconURI(width, height).toString())
+                .orElse(getFullUrl(defaultUrl));
     }
-    
+
     public String getThemeLabel() throws DAOException {
         return getThemeLabel("");
     }
-    
+
     public String getThemeLabel(String defaultLabel) throws DAOException {
         return Optional.ofNullable(getCurrentTheme()).map(ThemeConfiguration::getLabel).orElse(defaultLabel);
     }
-    
+
     public String getStyleSheet() throws DAOException {
         String styleSheet = Optional.ofNullable(getCurrentTheme()).map(t -> t.getStyleSheet()).orElse("");
-        if(StringUtils.isNotBlank(styleSheet)) {
+        if (StringUtils.isNotBlank(styleSheet)) {
             return "<style>" + styleSheet + "</style>";
         } else {
             return "";
