@@ -15,41 +15,18 @@
  */
 package io.goobi.viewer.model.export;
 
-public class ExportFieldConfiguration {
+import org.junit.Assert;
+import org.junit.Test;
 
-    private final String field;
-    private String label;
-
-    public ExportFieldConfiguration(String field) {
-        this.field = field;
-    }
-
+public class ExportFieldConfigurationTest {
+    
     /**
-     * @return the field
+     * @see ExportFieldConfiguration#getLabel()
+     * @verifies return field if label null
      */
-    public String getField() {
-        return field;
+    @Test
+    public void getLabel_shouldReturnFieldIfLabelNull() throws Exception {
+        ExportFieldConfiguration efc  = new ExportFieldConfiguration("MD_FOO");
+        Assert.assertEquals("MD_FOO", efc.getLabel());
     }
-
-    /**
-     * @return the label
-     * @should return field if label null
-     */
-    public String getLabel() {
-        if (label != null) {
-            return label;
-        }
-
-        return field;
-    }
-
-    /**
-     * @param label the label to set
-     * @return this
-     */
-    public ExportFieldConfiguration setLabel(String label) {
-        this.label = label;
-        return this;
-    }
-
 }

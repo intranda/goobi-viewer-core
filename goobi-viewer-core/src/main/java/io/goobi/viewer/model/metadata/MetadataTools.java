@@ -17,33 +17,18 @@ package io.goobi.viewer.model.metadata;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.xssf.streaming.SXSSFCell;
-import org.apache.poi.xssf.streaming.SXSSFRow;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.export.ExportFieldConfiguration;
-import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -618,55 +603,5 @@ public class MetadataTools {
 
         // logger.trace("getGroupedMetadata query: {}", sbQuery.toString());
         return DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, sortFields, null);
-    }
-
-    public static SXSSFWorkbook exportNamedEntitiesAsExcel(StructElement se, Locale locale, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
-        SXSSFWorkbook wb = new SXSSFWorkbook(25);
-        SXSSFSheet currentSheet = wb.createSheet("Goobi_viewer_NE");
-
-        CellStyle styleBold = wb.createCellStyle();
-        Font font2 = wb.createFont();
-        font2.setFontHeightInPoints((short) 10);
-        font2.setBold(true);
-        styleBold.setFont(font2);
-
-        int currentRowIndex = 0;
-        int currentCellIndex = 0;
-
-        // Title row
-        SXSSFRow row = currentSheet.createRow(currentRowIndex++);
-        for (ExportFieldConfiguration field : DataManager.getInstance().getConfiguration().getRecordExcelExportFields()) {
-            SXSSFCell cell = row.createCell(currentCellIndex++);
-            cell.setCellStyle(styleBold);
-            cell.setCellValue(new XSSFRichTextString(ViewerResourceBundle.getTranslation(field.getLabel(), locale)));
-        }
-
-        List<ExportFieldConfiguration> exportFields = DataManager.getInstance().getConfiguration().getRecordExcelExportFields();
-//        for (int i = 0; i < totalBatches; ++i) {
-//            int first = i * batchSize;
-//            int max = first + batchSize - 1;
-//            if (max > totalHits) {
-//                max = (int) (totalHits - 1);
-//                batchSize = (int) (totalHits - first);
-//            }
-//            logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
-//            List<SearchHit> batch =
-//                    searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields,
-//                            locale);
-//
-//            for (SearchHit hit : batch) {
-//                // Create row
-//                currentCellIndex = 0;
-//                row = currentSheet.createRow(currentRowIndex++);
-//                for (ExportFieldConfiguration field : exportFields) {
-//                    SXSSFCell cell = row.createCell(currentCellIndex++);
-//                    String value = hit.getExportMetadata().get(field);
-//                    cell.setCellValue(new XSSFRichTextString(value != null ? value : ""));
-//                }
-//            }
-//        }
-
-        return wb;
     }
 }

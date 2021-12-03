@@ -4683,19 +4683,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<ExportFieldConfiguration> getSearchExcelExportFields() {
         return getExportConfigurations("search.export.excel.field");
     }
-
-    /**
-     * <p>
-     * getSearchExcelExportFields.
-     * </p>
-     *
-     * @should return all values
-     * @return a {@link java.util.List} object.
-     */
-    public List<ExportFieldConfiguration> getRecordExcelExportFields() {
-        return getExportConfigurations("viewer.export.excel.field");
-    }
-
+    
     /**
      * 
      * @param path
