@@ -2916,7 +2916,7 @@ public final class Configuration extends AbstractConfiguration {
         String defaultField = getDefaultSortField();
         List<String> fields = getSortFields();
         fields.remove(defaultField);
-        fields.set(0, defaultField);
+        fields.add(0, defaultField);
         for (String field : fields) {
                 options.add(new SearchSortingOption(field, true));
                 if (!SolrConstants.SORT_RANDOM.equals(field) && !SolrConstants.SORT_RELEVANCE.equals(field)) {
