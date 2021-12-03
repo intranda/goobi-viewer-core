@@ -16,6 +16,9 @@
 package io.goobi.viewer.api.rest.v1.search;
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -24,6 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +37,8 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
+import io.goobi.viewer.managedbeans.NavigationHelper;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -46,6 +52,8 @@ import io.swagger.v3.oas.annotations.Operation;
 @Path(ApiUrls.OPENSEARCH)
 @ViewerRestServiceBinding
 public class OpenSearchResource {
+
+    private static final String RESOURCE_URL_REGEX = "\\{resourceUrl:(.+?)\\}";
 
     private static final Logger logger = LoggerFactory.getLogger(OpenSearchResource.class);
 
@@ -72,6 +80,13 @@ public class OpenSearchResource {
             xml = xml.replace("{name}", DataManager.getInstance().getConfiguration().getName())
                     .replace("{description}", DataManager.getInstance().getConfiguration().getDescription())
                     .replace("{applicationUrl}", rootUrl);
+            Matcher resourceUrlMatcher = Pattern.compile(RESOURCE_URL_REGEX).matcher(xml);
+            Optional<NavigationHelper> onh = BeanUtils.getBeanFromRequest(servletRequest, "navigationHelper", NavigationHelper.class);
+            while(resourceUrlMatcher.find()) {
+                String path = resourceUrlMatcher.group(1);
+                String resourcePath = onh.map(nh -> nh.getResource(path)).orElse(rootUrl + "/resources/themes/"+DataManager.getInstance().getConfiguration().getTheme()+path);
+                xml = xml.replaceFirst(RESOURCE_URL_REGEX, resourcePath);
+            }
         } catch (ClientProtocolException e) {
             logger.error(e.getMessage(), e);
         } catch (IOException e) {
