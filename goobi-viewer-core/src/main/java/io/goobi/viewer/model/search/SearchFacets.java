@@ -51,6 +51,8 @@ public class SearchFacets implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchFacets.class);
 
+    private final Object lock = new Object();
+
     /** Available regular facets for the current search result. */
     private final Map<String, List<IFacetItem>> availableFacets = new LinkedHashMap<>();
     /** Currently applied facets. */
@@ -436,7 +438,8 @@ public class SearchFacets implements Serializable {
             ret = "-";
         }
         try {
-            return URLEncoder.encode(ret, SearchBean.URL_ENCODING);
+            String eRet = URLEncoder.encode(ret, SearchBean.URL_ENCODING);
+            return eRet;
         } catch (UnsupportedEncodingException e) {
             return ret;
         }
@@ -496,6 +499,7 @@ public class SearchFacets implements Serializable {
      */
     @Deprecated
     public void setCurrentHierarchicalFacetString(String currentHierarchicalFacetString) {
+        //
     }
 
     /**
@@ -530,6 +534,7 @@ public class SearchFacets implements Serializable {
             facetString = StringTools.unescapeCriticalUrlChracters(facetString);
             facetString = URLDecoder.decode(facetString, "utf-8");
         } catch (UnsupportedEncodingException e) {
+            //
         }
         String[] facetStringSplit = facetString.split(";;");
         for (String facetLink : facetStringSplit) {
@@ -595,6 +600,7 @@ public class SearchFacets implements Serializable {
                 updateValue = URLDecoder.decode(updateValue, "utf-8");
                 updateValue = StringTools.unescapeCriticalUrlChracters(updateValue);
             } catch (UnsupportedEncodingException e) {
+                //
             }
 
             IFacetItem fieldItem = null;
@@ -680,10 +686,12 @@ public class SearchFacets implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getCurrentMinRangeValue(String field) throws PresentationException, IndexUnreachableException {
-        for (IFacetItem item : currentFacets) {
-            if (item.getField().equals(field)) {
-                logger.trace("currentMinRangeValue: {}", item.getValue());
-                return item.getValue();
+        synchronized (lock) {
+            for (IFacetItem item : currentFacets) {
+                if (item.getField().equals(field)) {
+                    logger.trace("currentMinRangeValue: {}", item.getValue());
+                    return item.getValue();
+                }
             }
         }
 
@@ -701,16 +709,18 @@ public class SearchFacets implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getCurrentMaxRangeValue(String field) throws PresentationException, IndexUnreachableException {
-        for (IFacetItem item : currentFacets) {
-            if (item.getField().equals(field)) {
-                if (item.getValue2() != null) {
-                    logger.trace("currentMaxRangeValue: {}", item.getValue());
-                    return item.getValue2();
+        synchronized (lock) {
+            for (IFacetItem item : currentFacets) {
+                if (item.getField().equals(field)) {
+                    if (item.getValue2() != null) {
+                        logger.trace("currentMaxRangeValue: {}", item.getValue());
+                        return item.getValue2();
+                    }
                 }
             }
-        }
 
-        return getAbsoluteMaxRangeValue(field);
+            return getAbsoluteMaxRangeValue(field);
+        }
     }
 
     /**
@@ -932,17 +942,20 @@ public class SearchFacets implements Serializable {
             }
         }
 
-        //add current facets which have no hits. This may happen due to geomap facetting
-        for (IFacetItem currentItem : currentFacets) {
-            // Make a copy of the list to avoid concurrent modification
-            List<IFacetItem> availableFacetItems = new ArrayList<>(ret.getOrDefault(currentItem.getField(), new ArrayList<>()));
-            if (!availableFacetItems.contains(currentItem)) {
-                availableFacetItems.add(currentItem);
-                ret.put(currentItem.getField(), availableFacetItems);
+        synchronized (lock) {
+            //add current facets which have no hits. This may happen due to geomap facetting
+            for (IFacetItem currentItem : currentFacets) {
+                // Make a copy of the list to avoid concurrent modification
+                List<IFacetItem> availableFacetItems = new ArrayList<>(ret.getOrDefault(currentItem.getField(), new ArrayList<>()));
+                if (!availableFacetItems.contains(currentItem)) {
+                    availableFacetItems.add(currentItem);
+                    ret.put(currentItem.getField(), availableFacetItems);
+                }
             }
+
+            return ret;
         }
 
-        return ret;
     }
 
     /**
@@ -982,7 +995,7 @@ public class SearchFacets implements Serializable {
      *
      * @return the currentFacets
      */
-    public List<IFacetItem> getCurrentFacets() {
+    public synchronized List<IFacetItem> getCurrentFacets() {
         return currentFacets;
     }
 
@@ -1123,12 +1136,14 @@ public class SearchFacets implements Serializable {
      * @return the geoFacetting
      */
     public GeoFacetItem getGeoFacetting() {
-        return this.currentFacets
-                .stream()
-                .filter(f -> f instanceof GeoFacetItem)
-                .map(f -> (GeoFacetItem) f)
-                .findAny()
-                .orElse(new GeoFacetItem(DataManager.getInstance().getConfiguration().getGeoFacetFields()));
+        synchronized (lock) {
+            return this.currentFacets
+                    .stream()
+                    .filter(f -> f instanceof GeoFacetItem)
+                    .map(f -> (GeoFacetItem) f)
+                    .findAny()
+                    .orElse(new GeoFacetItem(DataManager.getInstance().getConfiguration().getGeoFacetFields()));
+        }
     }
 
     /**
@@ -1139,12 +1154,14 @@ public class SearchFacets implements Serializable {
     public void setGeoFacetFeature(String feature) {
         GeoFacetItem item = getGeoFacetting();
         item.setField(DataManager.getInstance().getConfiguration().getGeoFacetFields());
-        if (StringUtils.isBlank(feature)) {
-            this.currentFacets.remove(item);
-        } else {
-            item.setFeature(feature);
-            if (!this.currentFacets.contains(item)) {
-                this.currentFacets.add(item);
+        synchronized (lock) {
+            if (StringUtils.isBlank(feature)) {
+                this.currentFacets.remove(item);
+            } else {
+                item.setFeature(feature);
+                if (!this.currentFacets.contains(item)) {
+                    this.currentFacets.add(item);
+                }
             }
         }
     }
@@ -1152,9 +1169,7 @@ public class SearchFacets implements Serializable {
     public String getGeoFacetFeature() {
         if (this.getGeoFacetting().isActive()) {
             return this.getGeoFacetting().getFeature();
-        } else {
-            return "";
         }
+        return "";
     }
-
 }

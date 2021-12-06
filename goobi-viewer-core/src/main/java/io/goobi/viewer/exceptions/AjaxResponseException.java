@@ -13,37 +13,29 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.crowdsourcing.questions;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import io.goobi.viewer.model.translations.PersistentTranslation;
-import io.goobi.viewer.model.translations.TranslatedText;
-import io.goobi.viewer.model.translations.Translation;
+package io.goobi.viewer.exceptions;
 
 /**
- * A persistence object holding a translated String value
- * @deprecated {@link TranslatedText} is used instead
- * @author Florian Alpers
+ * @author florian
+ *
  */
-@Entity
-@Table(name = "cs_question_translations")
-@Deprecated
-public class QuestionTranslation extends PersistentTranslation<Question> {
+public class AjaxResponseException extends PresentationException {
 
-    public QuestionTranslation() {
-        super();
+    /**
+     * @param string
+     */
+    public AjaxResponseException(String string) {
+        super(string);
+        // TODO Auto-generated constructor stub
     }
-    
-    public QuestionTranslation(Translation t, Question q) {
-        super(t, q);
-    }
-    
-    public QuestionTranslation(Question q, String language, String value) {
-        super(q);
-        this.language = language;
-        this.value = value;
+
+    /**
+     * @param string
+     * @param e
+     */
+    public AjaxResponseException(String string, Throwable e) {
+        super(string, e);
+        // TODO Auto-generated constructor stub
     }
 
 }

@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -67,7 +68,8 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
@@ -152,10 +154,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     private Map<String, String> fileNames = new HashMap<>();
     private Set<String> accessConditions = new HashSet<>();
-    /** Comment currently being created/edited. */
-    private Comment currentComment;
-    /** Textual content of the previously created page comment. Workaround for duplicate posts via browser refresh. */
-    private String previousCommentText;
     /** List of <code>StructElement</code>s contained on this page. */
     private List<StructElement> containedStructElements;
     /** Content type of loaded fulltext **/
@@ -185,7 +183,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         this.urn = urn;
         this.purlPart = purlPart;
         this.pi = pi;
-        this.currentComment = new Comment(this.pi, this.order, null, "", null);
 
         if (StringUtils.isNotEmpty(mimeType)) {
             this.mimeType = mimeType;
@@ -894,7 +891,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
         if (StringUtils.isNotEmpty(altoText)) {
             wordCoordsFormat = CoordsFormat.ALTO;
-            String text = ALTOTools.getFullText(altoText, false, null);
+            String text = ALTOTools.getFulltext(altoText, false, null);
             if (StringUtils.isNotEmpty(text)) {
                 String cleanText = StringTools.stripJS(text);
                 if (cleanText.length() < text.length()) {
@@ -1532,117 +1529,17 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * <p>
-     * Getter for the field <code>currentComment</code>.
-     * </p>
-     *
-     * @return the currentComment
-     */
-    public Comment getCurrentComment() {
-        return currentComment;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>currentComment</code>.
-     * </p>
-     *
-     * @param currentComment the currentComment to set
-     */
-    public void setCurrentComment(Comment currentComment) {
-        this.currentComment = currentComment;
-        logger.debug("currentComment: " + currentComment.getText());
-    }
-
-    /**
-     * <p>
-     * resetCurrentComment.
-     * </p>
-     */
-    public void resetCurrentComment() {
-        currentComment = new Comment(this.pi, this.order, null, "", null);
-    }
-
-    /**
-     * <p>
      * getComments.
      * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<Comment> getComments() throws DAOException {
-        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order);
-        Collections.sort(comments);
+    public List<CrowdsourcingAnnotation> getComments() throws DAOException {
+        List<CrowdsourcingAnnotation> comments = DataManager.getInstance().getDao().getAnnotationsForTarget(this.pi, this.order, Motivation.COMMENTING);
+        Collections.sort(comments, (c1, c2) -> c1.getDateCreated().compareTo(c2.getDateCreated()));
         //        Collections.reverse(comments);
         return comments;
-    }
-
-    /**
-     * <p>
-     * createNewCommentAction.
-     * </p>
-     *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public void createNewCommentAction(User user) throws DAOException {
-        if (user != null) {
-            if (previousCommentText == null || !previousCommentText.equals(currentComment.getText())) {
-                currentComment.setOwner(user);
-                saveCommentAction(currentComment);
-                previousCommentText = currentComment.getText();
-                resetCurrentComment();
-            } else {
-                logger.trace("Comment not saved because the textual content is the same as the previous commennt: '{}'", previousCommentText);
-            }
-        }
-    }
-
-    /**
-     * <p>
-     * updateCommentAction.
-     * </p>
-     *
-     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public void updateCommentAction(Comment comment) throws DAOException {
-        // Set updated timestamp
-        comment.setDateUpdated(LocalDateTime.now());
-        saveCommentAction(comment);
-        resetCurrentComment();
-    }
-
-    /**
-     * Saves the given <code>Comment</code> and sends out notification emails. The language of the email is the default JSF locale for the current
-     * theme.
-     *
-     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public void saveCommentAction(Comment comment) throws DAOException {
-        logger.trace("saveCommentAction");
-        Locale defaultLocale = null;
-        if (FacesContext.getCurrentInstance() != null) {
-            defaultLocale = FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
-        }
-        // Check for any JS added to the comment text and remove it
-        comment.checkAndCleanScripts();
-        if (comment.getId() == null) {
-            if (DataManager.getInstance().getDao().addComment(comment)) {
-                Comment.sendEmailNotifications(comment, null, defaultLocale);
-                Messages.info("commentSaveSuccess");
-            } else {
-                Messages.error("commentSaveFailure");
-            }
-        } else {
-            if (DataManager.getInstance().getDao().updateComment(comment)) {
-                Comment.sendEmailNotifications(comment, comment.getOldText(), defaultLocale);
-                Messages.info("commentSaveSuccess");
-            } else {
-                Messages.error("commentSaveFailure");
-            }
-        }
     }
 
     /**
@@ -1650,7 +1547,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * deleteCommentAction.
      * </p>
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteCommentAction(Comment comment) throws DAOException {

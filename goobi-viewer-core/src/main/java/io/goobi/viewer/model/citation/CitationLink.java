@@ -23,11 +23,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
@@ -216,12 +218,12 @@ public class CitationLink {
             }
 
             if (doc.get(field) != null) {
-                this.value = String.valueOf(doc.get(field));
+                this.value = SolrTools.getAsString(doc.get(field));
             } else if (topstructValueFallback && !CitationLinkLevel.RECORD.equals(level)) {
                 query = SolrConstants.PI + ":" + viewManager.getPi();
                 doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(field));
                 if (doc != null && doc.get(field) != null) {
-                    this.value = String.valueOf(doc.get(field));
+                    this.value = SolrTools.getAsString(doc.get(field));
                 }
             }
             if(StringUtils.isNotBlank(this.value) && !CitationLinkLevel.RECORD.equals(level) && StringUtils.isNotBlank(this.suffix)) {

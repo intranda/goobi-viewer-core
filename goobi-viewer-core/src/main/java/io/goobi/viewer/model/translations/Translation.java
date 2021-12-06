@@ -28,9 +28,6 @@ import javax.persistence.MappedSuperclass;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.crowdsourcing.questions.Question;
-import io.goobi.viewer.model.crowdsourcing.questions.QuestionTranslation;
-import io.goobi.viewer.model.maps.MapTranslation;
 
 /**
  * <p>

@@ -615,7 +615,7 @@ public class CmsCollectionsBean implements Serializable {
     public void validatePI(FacesContext context, UIComponent comp, Object value) throws ValidatorException {
         if (getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {
             try {
-                if (!validatePi((String) value)) {
+                if (!validatePI((String) value)) {
                     FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("pi_errNotFound", null), "");
                     msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                     piValid = false;
@@ -639,7 +639,7 @@ public class CmsCollectionsBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public static boolean validatePi(String pi) throws IndexUnreachableException, PresentationException {
+    public static boolean validatePI(String pi) throws IndexUnreachableException, PresentationException {
         if (StringUtils.isNotBlank(pi)) {
             SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
             return doc != null;

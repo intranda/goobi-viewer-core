@@ -29,11 +29,15 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.IAnnotation;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.annotation.AnnotationConverter;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -153,5 +157,18 @@ public class AbstractAnnotationBuilder {
     
     protected AbstractBuilder getRestBuilder() {
         return restBuilder;
+    }
+    
+    public Optional<IAnnotation> getAnnotation(String idString){
+        int underscoreIndex = idString.lastIndexOf("_");
+        Long id = Long.parseLong(idString.substring(underscoreIndex > -1 ? underscoreIndex+1 : 0));
+       
+        try {
+            CrowdsourcingAnnotation pa = DataManager.getInstance().getDao().getAnnotation(id);
+            return Optional.ofNullable(pa).map(a -> new AnnotationConverter().getAsWebAnnotation(a));
+        } catch (DAOException e) {
+            logger.error("Error getting annotation " + idString + " from DAO: " + e.toString());
+            return Optional.empty();
+        }
     }
 }

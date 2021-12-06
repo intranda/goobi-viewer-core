@@ -208,7 +208,7 @@ public final class SolrSearchIndex {
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
      * @param rows {@link java.lang.Integer}
-     * @param sortFields a {@link java.util.List} object.
+     * @param sortFields Optional field/order pairs for sorting
      * @param facetFields a {@link java.util.List} object.
      * @param facetSort a {@link java.lang.String} object.
      * @param fieldList If not null, only the fields in the list will be returned.
@@ -231,11 +231,15 @@ public final class SolrSearchIndex {
             for (int i = 0; i < sortFields.size(); ++i) {
                 StringPair sortField = sortFields.get(i);
                 if (StringUtils.isNotEmpty(sortField.getOne())) {
-                    // If RANDOM is used, generate a randomized sort field
-                    if ("RANDOM".equals(sortField.getOne())) {
+                    if (SolrConstants.SORT_RELEVANCE.equals(sortField.getOne())) {
+                        // If RELEVANCE is used, just add nothing
+                        continue;
+                    } else if (SolrConstants.SORT_RANDOM.equals(sortField.getOne())) {
+                        // If RANDOM is used, generate a randomized sort field
                         sortField.setOne(SolrTools.generateRandomSortField());
                     }
                     solrQuery.addSort(sortField.getOne(), "desc".equals(sortField.getTwo()) ? ORDER.desc : ORDER.asc);
+                    // logger.trace("sort field: {} {}", sortField.getOne(), sortField.getTwo());
                 }
             }
         }
@@ -262,7 +266,7 @@ public final class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(fq);
-                // logger.trace("adding filter query: {}", fq);
+                // logger.trace("adding filter query: {}", fq)
             }
         }
         if (params != null && !params.isEmpty()) {
@@ -313,7 +317,7 @@ public final class SolrSearchIndex {
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
      * @param rows {@link java.lang.Integer}
-     * @param sortFields a {@link java.util.List} object.
+     * @param sortFields Optional field/order pairs for sorting
      * @param facetFields a {@link java.util.List} object.
      * @param fieldList If not null, only the fields in the list will be returned.
      * @param filterQueries a {@link java.util.List} object.
@@ -336,7 +340,7 @@ public final class SolrSearchIndex {
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
      * @param rows {@link java.lang.Integer}
-     * @param sortFields a {@link java.util.List} object.
+     * @param sortFields Optional field/order pairs for sorting
      * @param facetFields a {@link java.util.List} object.
      * @param fieldList If not null, only the fields in the list will be returned.
      * @return {@link org.apache.solr.client.solrj.response.QueryResponse}
@@ -356,7 +360,7 @@ public final class SolrSearchIndex {
      *
      * @param query a {@link java.lang.String} object.
      * @param rows a int.
-     * @param sortFields a {@link java.util.List} object.
+     * @param sortFields Optional field/order pairs for sorting
      * @param fieldList If not null, only the fields in the list will be returned.
      * @return a {@link org.apache.solr.common.SolrDocumentList} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

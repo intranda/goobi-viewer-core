@@ -589,10 +589,14 @@ public class ArchiveBean implements Serializable {
         URI archiveUri = URI.create(DataManager.getInstance().getConfiguration().getBaseXUrl());
         URI requestUri = UriBuilder.fromUri(archiveUri).path("dbname").path(identifier).build();
 
-        try (Time time = DataManager.getInstance().getTiming().takeTime("getArchiveUrl")) {
+        try {
             String response = NetTools.getWebContentGET(requestUri.toString());
             Document doc = new SAXBuilder().build(new StringReader(response));
-            String database = doc.getRootElement().getChild("record", null).getAttributeValue("database");
+            String database = Optional.ofNullable(doc).map(Document::getRootElement).map(d -> d.getChild("record", null)).map(d -> d.getAttributeValue("database")).orElse("");
+            if(StringUtils.isBlank(database)) {
+                logger.warn("Error retrieving data base for " + identifier + ": empty or unexcepted response");
+                return "archives/"; 
+            }
             String filename = doc.getRootElement().getChild("record", null).getAttributeValue("filename");
             this.loadDatabaseResource(BasexEADParser.getIdForName(database), BasexEADParser.getIdForName(filename));
             return "archives/{database}/{filename}/?selected={identifier}#selected"

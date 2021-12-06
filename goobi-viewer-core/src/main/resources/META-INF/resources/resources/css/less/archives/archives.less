@@ -2,6 +2,11 @@
    Archives Layout
    ==============================================================*/
 
+#archivesWrapper {
+	min-height: 100vh;
+	background-color: #f2f3f4;
+}
+
 .archives {
 	width: 100vw;
 	&__top-wrapper {
@@ -237,14 +242,14 @@
 		text-align: center;
 	}
 	// THUMBNAILS
-	&__object-thumbnail-wrapper {
+	&__object-thumbnails-wrapper {
 		flex: 0 0 100%;
 	}
 	&__object-thumbnails {
 		background: @white;
 		display: grid;
 		grid-gap: 20px;
-		grid-template-columns: auto auto auto auto auto auto auto;
+		grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 		max-width: 100%;
 		padding: 2rem 0;
 	}

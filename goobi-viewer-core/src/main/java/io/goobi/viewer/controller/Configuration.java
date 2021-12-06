@@ -23,14 +23,17 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,6 +71,7 @@ import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.BibliothecaProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
@@ -613,13 +617,14 @@ public final class Configuration extends AbstractConfiguration {
 
         String label = sub.getString("[@label]");
         String masterValue = sub.getString("[@value]");
+        String citationTemplate = sub.getString("[@citationTemplate]");
         boolean group = sub.getBoolean("[@group]", false);
         boolean singleString = sub.getBoolean("[@singleString]", true);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
         boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
-        String citationTemplate = sub.getString("[@citationTemplate]");
         String labelField = sub.getString("[@labelField]");
+        String sortField = sub.getString("[@sortField]");
         List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -705,6 +710,8 @@ public final class Configuration extends AbstractConfiguration {
                 .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
                 .setCitationTemplate(citationTemplate)
                 .setLabelField(labelField)
+                .setSortField(
+                        sortField)
                 .setIndentation(indentation);
 
         // Recursively add nested metadata configurations
@@ -1198,7 +1205,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return hyphen if collection not found
      */
     public Map<String, String> getCollectionDefaultSortFields(String field) {
-            Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
         if (collection == null) {
             return map;
@@ -1556,18 +1563,6 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return ret;
-    }
-
-    /**
-     * <p>
-     * isAggregateHits.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isAggregateHits() {
-        return getLocalBoolean("search.aggregateHits", true);
     }
 
     /**
@@ -2732,6 +2727,10 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalString("search.facets.geoField");
     }
 
+    public String getGeoFacetFieldPredicate() {
+        return getLocalString("search.facets.geoField[@predicate]", "ISWITHIN");
+    }
+
     /**
      * @return
      */
@@ -2884,7 +2883,19 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getDefaultSortField() {
-        return getLocalString("search.sorting.defaultSortField", null);
+        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("search.sorting.field");
+        if (fields == null || fields.isEmpty()) {
+            return SolrConstants.SORT_RELEVANCE;
+        }
+
+        for (HierarchicalConfiguration<ImmutableNode> fieldConfig : fields) {
+            if (fieldConfig.getBoolean("[@default]", false)) {
+                return fieldConfig.getString(".");
+            }
+
+        }
+
+        return SolrConstants.SORT_RELEVANCE;
     }
 
     /**
@@ -2896,7 +2907,23 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<String> getSortFields() {
-        return getLocalList("search.sorting.luceneField");
+        return getLocalList("search.sorting.field");
+    }
+
+    public Collection<SearchSortingOption> getSearchSortingOptions() {
+        Set<SearchSortingOption> options = new LinkedHashSet<>();
+        //default option
+        String defaultField = getDefaultSortField();
+        List<String> fields = getSortFields();
+        fields.remove(defaultField);
+        fields.add(0, defaultField);
+        for (String field : fields) {
+                options.add(new SearchSortingOption(field, true));
+                if (!SolrConstants.SORT_RANDOM.equals(field) && !SolrConstants.SORT_RELEVANCE.equals(field)) {
+                    options.add(new SearchSortingOption(field, false));
+                }
+        }
+        return options;
     }
 
     /**
@@ -2909,6 +2936,31 @@ public final class Configuration extends AbstractConfiguration {
      */
     public List<String> getStaticSortFields() {
         return getLocalList("search.sorting.static.field");
+    }
+
+    /**
+     * @return
+     */
+    public Optional<String> getSearchSortingKeyAscending(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt("search.sorting.field");
+        for (HierarchicalConfiguration<ImmutableNode> conf : fieldConfigs) {
+            String configField = conf.getString(".");
+            if (StringUtils.equals(configField, field)) {
+                return Optional.ofNullable(conf.getString("[@dropDownAscMessageKey]", null));
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<String> getSearchSortingKeyDescending(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt("search.sorting.field");
+        for (HierarchicalConfiguration<ImmutableNode> conf : fieldConfigs) {
+            String configField = conf.getString(".");
+            if (StringUtils.equals(configField, field)) {
+                return Optional.ofNullable(conf.getString("[@dropDownDescMessageKey]", null));
+            }
+        }
+        return Optional.empty();
     }
 
     /**
@@ -3817,6 +3869,13 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * @return
+     */
+    public boolean reviewEnabledForComments() {
+        return getLocalBoolean("comments.review[@enabled]", false);
+    }
+
+    /**
      * <p>
      * getCommentsCondition.
      * </p>
@@ -4232,18 +4291,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isBoostTopLevelDocstructs() {
         return getLocalBoolean("search.boostTopLevelDocstructs", true);
-    }
-
-    /**
-     * <p>
-     * isGroupDuplicateHits.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isGroupDuplicateHits() {
-        return getLocalBoolean("search.groupDuplicateHits", true);
     }
 
     /**

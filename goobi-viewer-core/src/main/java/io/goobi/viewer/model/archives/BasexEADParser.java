@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -278,10 +279,12 @@ public class BasexEADParser {
 
         entry.setId(element.getAttributeValue("id"));
 
-        if (eadheader != null) {
-            entry.setLabel(
-                    eadheader.getChild("filedesc", NAMESPACE_EAD).getChild("titlestmt", NAMESPACE_EAD).getChildText("titleproper", NAMESPACE_EAD));
-        }
+        Optional.ofNullable(eadheader)
+        .map(e -> e.getChild("filedesc", NAMESPACE_EAD))
+        .map(e -> e.getChild("titlestmt", NAMESPACE_EAD))
+        .map(e -> e.getChildText("titleproper", NAMESPACE_EAD))
+        .ifPresent(s -> entry.setLabel(s));
+
 
         // nodeType
         // get child elements

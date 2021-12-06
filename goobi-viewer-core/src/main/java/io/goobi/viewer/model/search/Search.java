@@ -65,7 +65,6 @@ import io.goobi.viewer.model.maps.Polygon;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
-import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -263,15 +262,15 @@ public class Search implements Serializable {
      * @param hitsPerPage a int.
      * @param advancedSearchGroupOperator a int.
      * @param locale Selected locale
-     * @param aggregateHits
+     * @param boostTopLevelDocstructs
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
-            boolean aggregateHits) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, aggregateHits, false);
+            boolean boostTopLevelDocstructs) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, boostTopLevelDocstructs, false);
     }
 
     /**
@@ -284,14 +283,15 @@ public class Search implements Serializable {
      * @param hitsPerPage a int.
      * @param advancedSearchGroupOperator a int.
      * @param locale Selected locale
-     * @param aggregateHits
+     * @param boostTopLevelDocstructs
+     * @param keepSolrDoc
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
-            boolean aggregateHits, boolean keepSolrDoc)
+            boolean boostTopLevelDocstructs, boolean keepSolrDoc)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("execute");
         if (facets == null) {
@@ -302,10 +302,16 @@ public class Search implements Serializable {
         // Collect regular and hierarchical facet field names and combine them into one list
         List<String> hierarchicalFacetFields = DataManager.getInstance().getConfiguration().getHierarchicalFacetFields();
         List<String> allFacetFields = SearchHelper.getAllFacetFields(hierarchicalFacetFields);
+        
+        String termQuery = null;
+        if (boostTopLevelDocstructs && searchTerms != null) {
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+        }
 
-        Map<String, String> params = SearchHelper.generateQueryParams();
+        Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
         QueryResponse resp = null;
-        String query = SearchHelper.buildFinalQuery(currentQuery, aggregateHits);
+
+        String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, true, boostTopLevelDocstructs);
 
         // Apply current facets
         List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true);
@@ -357,9 +363,11 @@ public class Search implements Serializable {
             }
 
             // Extra search for child element facet values
-            if (DataManager.getInstance().getConfiguration().isAggregateHits() && !facets.getConfiguredSubelementFacetFields().isEmpty()) {
+            if (!facets.getConfiguredSubelementFacetFields().isEmpty()) {
                 String extraQuery =
-                        new StringBuilder().append(SearchHelper.buildFinalQuery(currentQuery, false)).append(subElementQueryFilterSuffix).toString();
+                        new StringBuilder().append(SearchHelper.buildFinalQuery(currentQuery, null, false, false))
+                                .append(subElementQueryFilterSuffix)
+                                .toString();
                 logger.trace("extra query: {}", extraQuery);
                 resp = DataManager.getInstance()
                         .getSearchIndex()
@@ -402,7 +410,7 @@ public class Search implements Serializable {
                     .getSearchIndex()
                     .search(finalQuery, 0, maxResults, null, allFacetFields, fieldList, activeFacetFilterQueries, params);
             if (resp.getResults() != null) {
-                Map expanded = resp.getExpandedResults();
+                //                Map<String, SolrDocumentList> expanded = resp.getExpandedResults();
                 hitsCount = resp.getResults().getNumFound();
                 logger.trace("Pre-grouping search hits: {}", hitsCount);
                 // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
@@ -485,17 +493,13 @@ public class Search implements Serializable {
         }
 
         List<StringPair> useSortFields = getAllSortFields();
-        List<SearchHit> hits = aggregateHits
-                ? SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
-                        searchTerms, null, BeanUtils.getLocale(), keepSolrDoc)
-                : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
-                        searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc);
+        List<SearchHit> hits =
+                SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
+                        searchTerms, null, BeanUtils.getLocale(), keepSolrDoc);
         this.hits.addAll(hits);
     }
-    
 
-
-    private List<Location> getLocations(String solrField, SolrDocumentList results) {
+    private static List<Location> getLocations(String solrField, SolrDocumentList results) {
         List<Location> locations = new ArrayList<>();
         for (SolrDocument doc : results) {
             try {
@@ -1035,7 +1039,7 @@ public class Search implements Serializable {
     public List<Location> getHitsLocationList() {
         return hitLocationList;
     }
-    
+
     /**
      * @return the hasGeoLocationHits
      */

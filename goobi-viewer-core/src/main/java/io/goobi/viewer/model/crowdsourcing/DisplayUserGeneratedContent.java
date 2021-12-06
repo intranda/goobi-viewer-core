@@ -33,15 +33,19 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.ITypedResource;
+import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.HtmlParser;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -113,6 +117,44 @@ public class DisplayUserGeneratedContent {
      * Default constructor (needed for persistence).
      */
     public DisplayUserGeneratedContent() {
+    }
+
+    public DisplayUserGeneratedContent(PersistentAnnotation a) {
+        this.id = a.getId();
+        this.annotationBody = getAsResource(a.getBody());
+        this.type = getTypeFromBody(this.annotationBody);
+        this.accessCondition = a.getAccessCondition();
+        this.areaString = getCoordinates(a.getTarget());
+        this.dateUpdated = a.getDateModified() != null ? a.getDateModified() : a.getDateCreated();
+        this.displayCoordinates = getCoordinates(a.getTarget());
+        this.label = createLabelFromBody(this.type, this.annotationBody);
+        this.extendendLabel = createExtendedLabelFromBody(this.type, this.annotationBody);
+        this.page = a.getTargetPageOrder();
+        this.pi = a.getTargetPI();
+        try {
+            this.updatedBy = a.getCreator();
+        } catch (DAOException e) {
+            //ignore
+        }
+        
+    }
+
+    private String getCoordinates(String target) {
+        if(StringUtils.isNotBlank(target)) {            
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                IResource resource = mapper.readValue(target, SpecificResource.class);
+                if(resource instanceof SpecificResource) {                    
+                    return ((SpecificResource) resource).getSelector().getValue();
+                } else {
+                    return "";
+                }
+            } catch (JsonProcessingException e) {
+                return "";
+            }
+        } else {
+            return "";
+        }
     }
 
     /**

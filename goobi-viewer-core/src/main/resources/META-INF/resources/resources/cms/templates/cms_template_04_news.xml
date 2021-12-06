@@ -5,7 +5,9 @@
     <icon>cms_template_04_news.png</icon>
     <html>cms_template_04_news.xhtml</html>
     <content>
-        <item id="preview01" preview="true" type="HTML" label="cms__template_04__preview__label" inlinehelp="cms__template_04__preview__help" />
-        <item id="text01" type="HTML" label="cms__template_04__text__label" mandatory="true" inlinehelp="cms__template_04__text__help" />
+    	<item order="1" id="A0" label="cms__template_03__date__label" type="TEXT"/>
+        <item order="2" id="A1" label="cms__template_03__header__label" type="TEXT"/>
+        <item id="preview01" order="3" preview="true" type="HTML" label="cms__template_04__preview__label" inlinehelp="cms__template_04__preview__help" />
+        <item id="text01" order="4" type="HTML" label="cms__template_04__text__label" mandatory="true" inlinehelp="cms__template_04__text__help" />
     </content>
 </cms_page_template>

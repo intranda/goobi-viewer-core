@@ -23,7 +23,7 @@
 
 				<!-- LOGO OF INSTITUTION -->
 				<div class="archives__header-brand">
-					<a href="#{request.contextPath}/"> <img
+					<a href="#{request.contextPath}/" title="{msg.home}"> <img
 						src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/fullscreen_logo.png"
 						alt="Logo" />
 					</a>
@@ -31,7 +31,7 @@
 
 				<!-- ARCHIVE TITLE -->
 				<div class="archives__top-title">
-					<a href="#{request.contextPath}/archives" target="_self" rel="noopener">#{msg.archives__archiveViewHeading}</a> › <h1><span>#{archiveBean.trueRoot.label}</span></h1>
+					<a href="#{request.contextPath}/" title="{msg.home}" target="_self" rel="noopener">#{msg.home}</a> › <a href="#{request.contextPath}/archives" target="_self" rel="noopener">#{msg.archives__archiveViewHeading}</a> › <h1><span>#{archiveBean.trueRoot.label}</span></h1>
 				</div>
 
 				<!-- EXIT -->

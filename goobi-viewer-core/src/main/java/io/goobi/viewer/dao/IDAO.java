@@ -24,8 +24,8 @@ import java.util.Optional;
 import javax.persistence.Query;
 
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
@@ -59,6 +59,7 @@ import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
 
 /**
  * <p>
@@ -970,7 +971,7 @@ public interface IDAO {
      * </p>
      *
      * @param id a long.
-     * @return a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @return a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public Comment getComment(long id) throws DAOException;
@@ -980,7 +981,7 @@ public interface IDAO {
      * addComment.
      * </p>
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -991,7 +992,7 @@ public interface IDAO {
      * updateComment.
      * </p>
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1002,7 +1003,7 @@ public interface IDAO {
      * deleteComment.
      * </p>
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1985,10 +1986,10 @@ public interface IDAO {
      * Annotations *
      *
      * @param id a {@link java.lang.Long} object.
-     * @return a {@link io.goobi.viewer.model.annotation.PersistentAnnotation} object.
+     * @return a {@link io.goobi.viewer.model.annotation.CrowdsourcingAnnotation} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public PersistentAnnotation getAnnotation(Long id) throws DAOException;
+    public CrowdsourcingAnnotation getAnnotation(Long id) throws DAOException;
 
     /**
      * <p>
@@ -1999,7 +2000,7 @@ public interface IDAO {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<PersistentAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException;
+    public List<CrowdsourcingAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException;
 
     /**
      * <p>
@@ -2010,7 +2011,7 @@ public interface IDAO {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<PersistentAnnotation> getAnnotationsForWork(String pi) throws DAOException;
+    public List<CrowdsourcingAnnotation> getAnnotationsForWork(String pi) throws DAOException;
 
     /**
      * @param pi
@@ -2029,7 +2030,7 @@ public interface IDAO {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<PersistentAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException;
+    public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException;
 
     /**
      * <p>
@@ -2038,10 +2039,12 @@ public interface IDAO {
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a {@link java.lang.Integer} object.
+     * @param commenting 
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException;
+    public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException;
+    public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page, String motivation) throws DAOException;
 
     /**
      * 
@@ -2049,7 +2052,7 @@ public interface IDAO {
      * @return
      * @throws DAOException
      */
-    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending) throws DAOException;
+    public List<CrowdsourcingAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending) throws DAOException;
 
     /**
      * <p>
@@ -2064,7 +2067,7 @@ public interface IDAO {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+    public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException;
 
     /**
@@ -2101,40 +2104,40 @@ public interface IDAO {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException;
+    public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException;
 
     /**
      * <p>
      * addAnnotation.
      * </p>
      *
-     * @param annotation a {@link io.goobi.viewer.model.annotation.PersistentAnnotation} object.
+     * @param annotation a {@link io.goobi.viewer.model.annotation.CrowdsourcingAnnotation} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addAnnotation(PersistentAnnotation annotation) throws DAOException;
+    public boolean addAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
 
     /**
      * <p>
      * updateAnnotation.
      * </p>
      *
-     * @param annotation a {@link io.goobi.viewer.model.annotation.PersistentAnnotation} object.
+     * @param annotation a {@link io.goobi.viewer.model.annotation.CrowdsourcingAnnotation} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateAnnotation(PersistentAnnotation annotation) throws DAOException;
+    public boolean updateAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
 
     /**
      * <p>
      * deleteAnnotation.
      * </p>
      *
-     * @param annotation a {@link io.goobi.viewer.model.annotation.PersistentAnnotation} object.
+     * @param annotation a {@link io.goobi.viewer.model.annotation.CrowdsourcingAnnotation} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean deleteAnnotation(PersistentAnnotation annotation) throws DAOException;
+    public boolean deleteAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
 
     /**
      * Update the given collection from the database
@@ -2295,7 +2298,48 @@ public interface IDAO {
     
     public boolean deleteSlider(CMSSlider slider) throws DAOException;
 
-    List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException
-    ;
+    List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException;
+
+    public List<ThemeConfiguration> getConfiguredThemes() throws DAOException;
+    
+    public ThemeConfiguration getTheme(String name) throws DAOException;
+    
+    public boolean addTheme(ThemeConfiguration theme) throws DAOException;
+    
+    public boolean updateTheme(ThemeConfiguration theme) throws DAOException;
+    
+    public boolean deleteTheme(ThemeConfiguration theme) throws DAOException;
+    
+    /**
+     * @param first
+     * @param pageSize
+     * @param sortField
+     * @param descending
+     * @param filterString
+     * @param filterParams
+     * @return
+     * @throws DAOException
+     */
+    List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, String filterString,
+            Map<String, Object> filterParams) throws DAOException;
+
+    /**
+     * @param commenting
+     * @return
+     * @throws DAOException 
+     */
+    List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String commenting) throws DAOException;
+
+    /**
+     * @return
+     * @throws DAOException
+     */
+    List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean sortDescending) throws DAOException;
+
+    /**
+     * @return
+     * @throws DAOException
+     */
+    long getTotalAnnotationCount() throws DAOException;
 
 }

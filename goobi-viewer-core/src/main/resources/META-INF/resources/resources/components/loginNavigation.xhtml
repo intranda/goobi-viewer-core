@@ -93,7 +93,21 @@
                                         </li>
                                     </ui:fragment>
                                     
-                                    <!-- ANNOTIATIONS -->
+                                    <!-- COMMENTS -->
+                                    <ui:fragment rendered="#{userDataBean.commentCount != 0}">
+									    <li>
+										    <div class="login-navigation__user-dropdown-item">
+											    <div class="login-navigation__user-dropdown-item-icon">
+												    <i class="fa fa-comment " aria-hidden="true"></i>
+											    </div>
+											    <div class="login-navigation__user-dropdown-item-string">
+												    <a href="#{navigationHelper.applicationUrl}user/comments/">#{msg.userComments}</a>
+											    </div>
+										    </div>
+									    </li>
+									</ui:fragment>
+                                    
+                                    <!-- ANNOTATIONS -->
                                     <ui:fragment rendered="#{userDataBean.annotationCount != 0}">
 									    <li>
 										    <div class="login-navigation__user-dropdown-item">

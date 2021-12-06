@@ -412,8 +412,7 @@ public class BrowseBean implements Serializable {
 
             // Populate the list of available starting characters with ones that actually exist in the complete terms list
             if (availableStringFilters.get(browsingMenuField) == null) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, "", useFilterQuery, 0, 0, new BrowseTermComparator(locale),
-                        DataManager.getInstance().getConfiguration().isAggregateHits());
+                terms = SearchHelper.getFilteredTerms(currentBmfc, "", useFilterQuery, 0, 0, new BrowseTermComparator(locale));
                 if (availableStringFilters.get(browsingMenuField) == null || filterQuery != null) {
                     logger.trace("Populating search term filters for field '{}'...", browsingMenuField);
                     availableStringFilters.put(browsingMenuField, new ArrayList<String>());
@@ -475,7 +474,7 @@ public class BrowseBean implements Serializable {
             // Get terms for the current page 
             logger.trace("Fetching terms for page {} ({} - {})", currentPage, start, end - 1);
             terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, useFilterQuery, 0, SolrSearchIndex.MAX_HITS,
-                    new BrowseTermComparator(locale), DataManager.getInstance().getConfiguration().isAggregateHits());
+                    new BrowseTermComparator(locale));
 
             for (int i = start; i < end; ++i) {
                 if (i >= terms.size()) {
@@ -950,7 +949,7 @@ public class BrowseBean implements Serializable {
     public void initializeDCCollection() {
         initializeCollection(SolrConstants.DC, null);
     }
-    
+
     public void initializeCollection(final String collectionField) {
         initializeCollection(collectionField, null);
     }

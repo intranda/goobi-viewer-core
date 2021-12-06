@@ -65,7 +65,7 @@ import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -89,20 +89,23 @@ public class UserAvatarResource extends ImageResource {
     protected HttpServletResponse servletResponse;
 
     private static final String FILENAME_TEMPLATE = "user_{id}";
-    
+
     public UserAvatarResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Parameter(description = "User id") @PathParam("userId") Long userId) throws WebApplicationException {
+            @Parameter(description = "User id") @PathParam("userId") Long userId) throws WebApplicationException, ViewerConfigurationException {
         super(context, request, response, "", getMediaFileUrl(userId).toString());
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
+        if (urls == null) {
+            throw new ViewerConfigurationException("Could not initioalize API manager, check configuration.");
+        }
         request.setAttribute("filename", this.imageURI.toString());
         String requestUrl = request.getRequestURI();
         String baseImageUrl = urls.path(ApiUrls.USERS_USER_AVATAR_IMAGE).params(userId).build();
         String imageRequestPath = requestUrl.replace(baseImageUrl, "");
         this.resourceURI = URI.create(baseImageUrl);
-        
+
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        if(parts.size() == 4) {
+        if (parts.size() == 4) {
             //image request
             request.setAttribute("iiif-info", false);
             request.setAttribute("iiif-region", parts.get(0));
@@ -116,70 +119,70 @@ public class UserAvatarResource extends ImageResource {
     }
 
     /**
-     * @throws IOException 
+     * @throws IOException
      * @param filename
      * @return
-     * @throws IOException 
-     * @throws  
+     * @throws IOException
+     * @throws
      */
     public static URI getMediaFileUrl(Long userId) throws WebApplicationException {
-        try {            
-            return getUserAvatarFile(userId).map(PathConverter::toURI).orElseThrow(() -> new ContentNotFoundException("No avatar file found for user " + userId));
-        } catch(ContentLibException | IOException e) {
+        try {
+            return getUserAvatarFile(userId).map(PathConverter::toURI)
+                    .orElseThrow(() -> new ContentNotFoundException("No avatar file found for user " + userId));
+        } catch (ContentLibException | IOException e) {
             throw new WebApplicationException(e);
         }
     }
 
     public static Path getUserAvatarFolder() {
-        Path folder = 
+        Path folder =
                 Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                DataManager.getInstance().getConfiguration().getUserAvatarFolder());
+                        DataManager.getInstance().getConfiguration().getUserAvatarFolder());
         return folder;
     }
-       
+
     /**
      * @param folder
      * @param userId
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     public static Optional<Path> getUserAvatarFile(Long userId) throws IOException {
         Path folder = getUserAvatarFolder();
-        if(!Files.isDirectory(folder)) {
+        if (!Files.isDirectory(folder)) {
             Files.createDirectories(folder);
         }
         String baseFilename = FILENAME_TEMPLATE.replace("{id}", userId.toString());
-        try(Stream<Path> files = Files.list(folder)) {
+        try (Stream<Path> files = Files.list(folder)) {
             return files.filter(file -> FilenameUtils.getBaseName(file.getFileName().toString()).equals(baseFilename)).findAny();
         }
     }
-    
+
     public static String getAvatarFileSuffix(Long userId) throws IOException {
         return getUserAvatarFile(userId).map(Path::getFileName).map(Path::toString).map(FilenameUtils::getExtension).orElse("jpg");
     }
- 
+
     @Override
     public void createResourceURI(HttpServletRequest request, String directory, String filename) throws IllegalRequestException {
         //don't do anyhting. The resource url has already been set in constructor
     }
-    
+
     @Override
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
-    @Operation(tags = {"users" }, summary = "IIIF image identifier for an uploaded user avatar image. Returns a IIIF 2.1.1 image information object")
+    @Operation(tags = { "users" }, summary = "IIIF image identifier for an uploaded user avatar image. Returns a IIIF 2.1.1 image information object")
     @ApiResponse(responseCode = "404", description = "No image for the given user was uploaded")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
-       return super.redirectToCanonicalImageInfo();
+        return super.redirectToCanonicalImageInfo();
     }
-    
-    
+
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadAvatarFile(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String uploadFilename,
-            @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
-            throws DAOException {
+    public Response uploadAvatarFile(@DefaultValue("true") @FormDataParam("enabled") boolean enabled,
+            @FormDataParam("filename") String uploadFilename,
+            @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail) {
 
         if (uploadedInputStream == null) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
@@ -187,49 +190,49 @@ public class UserAvatarResource extends ImageResource {
         Optional<User> user = getUser();
         if (!user.isPresent()) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("No user session found").build();
-        } else {
-            Path mediaFolder = getUserAvatarFolder();
-            Path mediaFile = getAvatarFilePath(uploadFilename, user.get().getId());
-            try {
+        }
 
-                if (!Files.exists(mediaFolder)) {
-                    Files.createDirectories(mediaFolder);
-                }
+        Path mediaFolder = getUserAvatarFolder();
+        Path mediaFile = getAvatarFilePath(uploadFilename, user.get().getId());
+        try {
 
-                Files.copy(uploadedInputStream, mediaFile, StandardCopyOption.REPLACE_EXISTING);
-
-                if (Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
-                    logger.debug("Successfully downloaded file {}", mediaFile);
-                    //upload successful. TODO: check file integrity?
-                    removeFromImageCache(mediaFile);
-                    return Response.status(Status.OK).build();
-                }
-                String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
-                if (Files.exists(mediaFile)) {
-                    Files.delete(mediaFile);
-                }
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
-            } catch (FileAlreadyExistsException e) {
-                String message =
-                        Messages.translate("admin__media_upload_error_exists", servletRequest.getLocale(), mediaFile.getFileName().toString());
-                return Response.status(Status.CONFLICT).entity(message).build();
-            } catch (IOException  e) {
-                logger.error("Error uploading media file", e);
-                String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString(),
-                        e.getMessage());
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
+            if (!Files.exists(mediaFolder)) {
+                Files.createDirectories(mediaFolder);
             }
+
+            Files.copy(uploadedInputStream, mediaFile, StandardCopyOption.REPLACE_EXISTING);
+
+            if (Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
+                logger.debug("Successfully downloaded file {}", mediaFile);
+                //upload successful. TODO: check file integrity?
+                removeFromImageCache(mediaFile);
+                return Response.status(Status.OK).build();
+            }
+            String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
+            if (Files.exists(mediaFile)) {
+                Files.delete(mediaFile);
+            }
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
+        } catch (FileAlreadyExistsException e) {
+            String message =
+                    Messages.translate("admin__media_upload_error_exists", servletRequest.getLocale(), mediaFile.getFileName().toString());
+            return Response.status(Status.CONFLICT).entity(message).build();
+        } catch (IOException e) {
+            logger.error("Error uploading media file", e);
+            String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString(),
+                    e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
         }
     }
 
     public static Path getAvatarFilePath(String uploadFilename, Long userId) {
         ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(uploadFilename);
         String filename = FILENAME_TEMPLATE.replace("{id}", userId.toString()) + "." + fileFormat.getFileExtension();
-        
+
         Path mediaFile = getUserAvatarFolder().resolve(filename);
         return mediaFile;
     }
-    
+
     /**
      * Determines the current User using the UserBean instance stored in the session store. If no session is available, no UserBean could be found or
      * no user is logged in, NULL is returned
@@ -251,10 +254,10 @@ public class UserAvatarResource extends ImageResource {
         // logger.trace("Found user {}", user);
         return Optional.of(user);
     }
-    
+
     public static void removeFromImageCache(Path file) {
         String identifier = file.getParent().getFileName().toString() + "_" + file.getFileName().toString().replace(".", "-");
         CacheUtils.deleteFromCache(identifier, true, true);
     }
-    
+
 }

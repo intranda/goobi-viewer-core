@@ -36,24 +36,36 @@ public class GeoCoordinateFeature {
 
     private static final Logger logger = LoggerFactory.getLogger(GeoCoordinateFeature.class);
 
-    private static final String REGEX_GEOCOORDS_SEARCH_STRING = "(IsWithin|Intersects|IsDisjointTo)\\((\\w+)\\(\\(((?:[\\d.-]+ [\\d.-]+,?\\s?)+)\\)\\)\\)";
+    private static final String REGEX_GEOCOORDS_SEARCH_STRING = "(IsWithin|Intersects|Contains|IsDisjointTo)\\((\\w+)\\(\\(((?:[\\d.-]+ [\\d.-]+,?\\s?)+)\\)\\)\\)";
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_RELATION = 1;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE = 2;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_POINTS = 3;
     
-    private final JSONObject feature;
+    public static final String RELATION_PREDICATE_ISWITHIN = "ISWITHIN";
+    public static final String RELATION_PREDICATE_INTERSECTS = "INTERSECTS";
+    public static final String RELATION_PREDICATE_CONTAINS = "CONTAINS";
+    public static final String RELATION_PREDICATE_ISDISJOINTTO = "ISDISJOINTTO";
     
-    public GeoCoordinateFeature(String featureString) throws JSONException {
+    public static final String SHAPE_POLYGON = "POLYGON";
+
+    
+    private final JSONObject feature;
+    private final String predicate;
+    private final String shape;
+    
+    public GeoCoordinateFeature(String featureString, String predicate, String shape) throws JSONException {
         this.feature = new JSONObject(featureString);
+        this.predicate = predicate;
+        this.shape = shape;
     }
     
     /**
      * Initialize as a polygon feature with the given points as vertices
      * @param vertices
      */
-    public GeoCoordinateFeature(double[][] points) {
+    public GeoCoordinateFeature(double[][] points, String predicate, String shape) {
         JSONObject json = new JSONObject();
-        json.put("type", "polygon");
+        json.put("type", shape);
         JSONArray vertices = new JSONArray();
         for (int i = 0; i < points.length; i++) {
             List<Double> pointList = Arrays.asList(points[i][1], points[i][0]);
@@ -62,6 +74,9 @@ public class GeoCoordinateFeature {
         }
         json.put("vertices", vertices);
         this.feature = json;
+        this.predicate = predicate;
+        this.shape = shape;
+        
     }
 
     public String getFeatureAsString() {
@@ -84,20 +99,41 @@ public class GeoCoordinateFeature {
     
     public String getSearchString() {
         
-        StringBuilder sb = new StringBuilder();
-        
-        sb.append("IsWithin(POLYGON((");
         double[][] points = getVertices();
         String pointString = Arrays.stream(points).map(p -> Double.toString(p[1]) + " " + Double.toString(p[0])).collect(Collectors.joining(", "));
-        sb.append(pointString);
-        sb.append(")))");
-        return sb.toString();
+
+        String template = "$P($S(($V)))";
+        String searchString = template
+                .replace("$P", this.predicate)
+                .replace("$S", this.shape)
+                .replace("$V", pointString);
+        return searchString;
         
+    }
+    
+    public static String getPredicate(String searchString) {
+        Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
+        
+        if(matcher.find()) {
+            String relation = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_RELATION);
+            return relation;
+        }
+        return RELATION_PREDICATE_ISWITHIN;
+    }
+    
+    public static String getShape(String searchString) {
+        Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
+        
+        if(matcher.find()) {
+            String shape = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE);
+            return shape;
+        }
+        return SHAPE_POLYGON;
     }
     
     public static double[][] getGeoSearchPoints(String searchString) {
         
-        Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING).matcher(searchString);
+        Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
         
         if(matcher.find()) {
             String relation = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_RELATION);
@@ -125,5 +161,31 @@ public class GeoCoordinateFeature {
      */
     public boolean hasVertices() {
         return getVertices().length > 0;
+    }
+    
+    /**
+     * 
+     */
+    public String getShape() {
+       return this.shape;
+    }
+    
+    public String getPredicate() {
+        return this.predicate;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(this.getClass())) {
+            GeoCoordinateFeature other = (GeoCoordinateFeature)obj;
+            return  other.predicate.equals(this.predicate) &&
+                    other.shape.equals(this.shape) &&
+                    Arrays.deepEquals(other.getVertices(), this.getVertices());
+        } else {
+            return false;
+        }
     }
 }

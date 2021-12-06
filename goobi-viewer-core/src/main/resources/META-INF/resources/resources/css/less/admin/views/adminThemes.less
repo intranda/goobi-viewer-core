@@ -1,0 +1,55 @@
+/* ==============================================================
+   Admin Themes  (adminThemes + adminThemesEdit)
+   style declarations for adminThemes.xhtml + adminThemesEdit.xhtml
+   ==============================================================*/
+
+#adminThemes {
+	a.row  {
+		&:focus,
+		&:hover,
+		&:active {
+			text-decoration: none;
+			background-color: #f7f7f7;
+		}
+	}
+}
+
+#adminThemesEdit {
+	.btn--default,
+	.btn--clean {
+		opacity: 1;
+		&::after {
+			content: '';
+		}
+		&:focus,
+		&:hover,
+		&:active {
+			text-decoration: none;
+		}
+	}
+	img {
+		max-width: 20%;
+		display: block;
+		margin-top: 8px;
+	}
+	.admin__boxed-entry-description {
+		margin-bottom: .5rem;
+
+	}
+
+
+}
+
+
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

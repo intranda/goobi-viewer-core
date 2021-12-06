@@ -21,54 +21,54 @@
  * @requires jQuery
  * @description Module which sets the behavior of the admin sidebar.
  */
-var adminJS = ( function( admin ) {
-    'use strict';
-    
-    var _debug = false;
+var adminJS = (function(admin) {
+	'use strict';
 
-    admin.stickyElements = {
+	var _debug = false;
+
+	admin.stickyElements = {
         /**
          * @description Method which initializes the admin sidebar module.
          * @method init
          */
-        init: function() {
-            if ( _debug ) {
-                console.log( '##############################' );
-                console.log( 'adminJS.sidebar.init' );
-                console.log( '##############################' );
-            }
+		init: function() {
+			if (_debug) {
+				console.log('##############################');
+				console.log('adminJS.sidebar.init');
+				console.log('##############################');
+			}
 
-         // STICKY ELEMENTS TARGETS AND OPTIONS
-         	// sticky admin main menu sidebar left side
-            if ( $( ".admin__sidebar" ).length ) {
-	         	$(".admin__sidebar-inner").hcSticky({
-	         		stickTo: $('.admin')[0],
-	         		innerTop: 0
-	         	});
-            }
-         	
-         	// general sticky element for admin backend - sticks to selector .admin__content-wrapper
-            if ( $( ".admin__sidebar" ).length ) {
-	         	$('.-sticky').hcSticky({
-	         		stickTo: $('.admin__content-wrapper')[0],
-	         		innerTop: -50,
-	         		bottom: 0
-	         	});
-            }
-            
-         	// sticky content main area for create campaign
-            if ( $( "#crowdAddCampaignView" ).length ) {
-	         	$('#crowdAddCampaignView .admin__content-main').hcSticky({
-	         		stickTo: $('.admin__content-wrapper')[0],
-	         		innerTop: -50
-	         	});
-            }
-        }
-    }
-    
+			// STICKY ELEMENTS TARGETS AND OPTIONS
+			// sticky admin main menu sidebar left side
+			if ($(".admin__sidebar").length) {
+				$(".admin__sidebar-inner").hcSticky({
+					stickTo: $('.admin')[0],
+					innerTop: 0
+				});
+			}
 
-	
+			// general sticky element for admin backend - sticks to selector .admin__content-wrapper
+			if ($(".admin__sidebar").length) {
+				$('.-sticky').hcSticky({
+					stickTo: $('.admin__content-wrapper')[0],
+					innerTop: -50,
+					bottom: 0
+				});
+			}
+
+			// sticky content main area for create campaign
+			if ($("#crowdAddCampaignView").length) {
+				$('#crowdAddCampaignView .admin__content-main').hcSticky({
+					stickTo: $('.admin__content-wrapper')[0],
+					innerTop: -50
+				});
+			}
+		}
+	}
+
+
+
 	return admin;
-    
-} )( adminJS || {}, jQuery );
+
+})(adminJS || {}, jQuery);
 

@@ -12,6 +12,7 @@ this.on("mount", () => {
 	        fixed: true,
 	        clusterMarkers: false,
 	    };
+	console.log("mounted geomap annotation ", this);
     this.geoMap = new viewerJS.GeoMap(this.config);
     let view = this.feature.view;
     let features = [this.feature];

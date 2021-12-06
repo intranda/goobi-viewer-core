@@ -21,7 +21,7 @@
     </ui:define>
 
     <ui:define name="breadcrumbs">
-        <ui:include src="resources/includes/breadcrumbs.xhtml" />
+        <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
     </ui:define>
 
     <ui:define name="content">
@@ -166,7 +166,7 @@
 										<ui:repeat value="#{userDataBean.getLatestComments(userBean.user, 3)}" var="comment">
 											<div class="user-dashboard__comments-item">
 												<div class="user-dashboard__comments-text">#{comment.text}</div>
-												<a href="#{request.contextPath}#{comment.linkToRecord}" class="user-dashboard__comments-open-record">#{msg.action__open_record}</a>
+												<a href="#{request.contextPath}#{comment.targetLink}" class="user-dashboard__comments-open-record">#{msg.action__open_record}</a>
 											</div>
 										</ui:repeat>
 									</div>
@@ -177,9 +177,9 @@
 										</h:outputFormat>
 									</div>
 									<!-- TO DO: THERE IS NO OVERVIEW PAGE FOR COMMENTS YET? -->
-		<!-- 							<h:commandLink styleClass="user-dashboard__show-all-link" action="#{searchBean.executeSavedSearchAction(search)}"> -->
-		<!-- 								#{msg.comments_overview_all} -->
-		<!-- 							</h:commandLink> -->
+									<a styleClass="user-dashboard__show-all-link" href="#{request.contextPath}/user/comments/">
+										#{msg.comments_overview_all}
+									</a>
 								</c:when>
 								<c:otherwise>
 									<div class="user-dashboard__comments-wrapper -noEntry">

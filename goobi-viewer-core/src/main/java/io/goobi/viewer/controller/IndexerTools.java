@@ -17,12 +17,13 @@ package io.goobi.viewer.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -31,25 +32,14 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
-import de.intranda.api.annotation.wa.WebAnnotation;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.serialization.AnnotationIndexAugmenter;
 import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
-import io.goobi.viewer.modules.IModule;
+import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
@@ -66,8 +56,6 @@ public class IndexerTools {
     public static final String SUFFIX_ALTO_CROWDSOURCING = "_altocrowd";
     /** Constant <code>SUFFIX_USER_GENERATED_CONTENT="_ugc"</code> */
     public static final String SUFFIX_USER_GENERATED_CONTENT = "_ugc";
-    /** Constant <code>SUFFIX_ANNOTATIONS="_annotations"</code> */
-    public static final String SUFFIX_ANNOTATIONS = "_annotations";
     /** Constant <code>SUFFIX_CMS="_cms"</code> */
     public static final String SUFFIX_CMS = "_cms";
 
@@ -77,12 +65,17 @@ public class IndexerTools {
      * @param pi a {@link java.lang.String} object.
      */
     public static void triggerReIndexRecord(String pi) {
+        triggerReIndexRecord(pi, DataManager.getInstance().getModules());
+    }
+
+    public static void triggerReIndexRecord(String pi, List<? extends IndexAugmenter> augmenters) {
+          
         Thread backgroundThread = new Thread(new Runnable() {
 
             @Override
             public void run() {
                 try {
-                    if (!reIndexRecord(pi)) {
+                    if (!reIndexRecord(pi, augmenters)) {
                         logger.error("Failed to re-index  record {}", pi);
                         Messages.error("reIndexRecordFailure");
                     } else {
@@ -110,6 +103,20 @@ public class IndexerTools {
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
      */
     public static synchronized boolean reIndexRecord(String pi) throws DAOException, RecordNotFoundException {
+        return reIndexRecord(pi, getAllAugmenters(pi, null));
+    }
+    
+    /**
+     * Writes the record into the hotfolder for re-indexing. Modules can contribute data for re-indexing. Execution of method can take a while, so if
+     * performance is of importance, use <code>triggerReIndexRecord</code> instead.
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @should write overview page data
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
+     */
+    public static synchronized boolean reIndexRecord(String pi, Collection<? extends IndexAugmenter> augmenters) throws DAOException, RecordNotFoundException {
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
         }
@@ -150,7 +157,7 @@ public class IndexerTools {
             File altoDir =
                     new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ALTO_CROWDSOURCING);
             File annotationsDir =
-                    new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATIONS);
+                    new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + AnnotationIndexAugmenter.SUFFIX_ANNOTATIONS);
             File cmsDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_CMS);
 
             File recordXmlFileInHotfolder = new File(DataManager.getInstance().getConfiguration().getHotfolder(), recordXmlFile.getName());
@@ -180,80 +187,9 @@ public class IndexerTools {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
-
-        // Export annotations (only those that belong to a campaign for which the statistic for this record is marked as finished)
-        List<CampaignRecordStatistic> statistics =
-                DataManager.getInstance().getDao().getCampaignStatisticsForRecord(pi, CrowdsourcingStatus.FINISHED);
-        if (!statistics.isEmpty()) {
-            AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
-            AnnotationsResourceBuilder annoBuilder = new AnnotationsResourceBuilder(urls, null);
-            for (CampaignRecordStatistic statistic : statistics) {
-                Campaign campaign = statistic.getOwner();
-                List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
-                if (!annotations.isEmpty()) {
-                    logger.debug("Found {} annotations for this record (campaign '{}').", annotations.size(), campaign.getTitle());
-                    File annotationDir =
-                            new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATIONS);
-                    for (PersistentAnnotation annotation : annotations) {
-                        try {
-                            WebAnnotation webAnno = annoBuilder.getAsWebAnnotation(annotation);
-                            //Write access condition info into annotation for indexing. Normally that field is not written
-                            if(StringUtils.isNotBlank(annotation.getAccessCondition())) {
-                                webAnno.setRights(annotation.getAccessCondition());
-                            }
-                            String json = webAnno.toString();
-                            String jsonFileName = annotation.getTargetPI() + "_" + annotation.getId() + ".json";
-                            FileUtils.writeStringToFile(new File(annotationDir, jsonFileName), json, Charset.forName(StringTools.DEFAULT_ENCODING));
-                        } catch (JsonParseException e) {
-                            logger.error(e.getMessage(), e);
-                        } catch (JsonMappingException e) {
-                            logger.error(e.getMessage(), e);
-                        } catch (IOException e) {
-                            logger.error(e.getMessage(), e);
-                        }
-                    }
-                }
-            }
-        }
         
-        // Export annotations for pages
-        List<CampaignRecordPageStatistic> pageStatistics =
-                DataManager.getInstance().getDao().getCampaignPageStatisticsForRecord(pi, CrowdsourcingStatus.FINISHED);
-        if (!pageStatistics.isEmpty()) {
-            AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
-            AnnotationsResourceBuilder annoBuilder = new AnnotationsResourceBuilder(urls, null);
-            for (CampaignRecordPageStatistic statistic : pageStatistics) {
-                Campaign campaign = statistic.getOwner().getOwner();
-                Integer page = statistic.getPage();
-                List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, pi, page);
-                if (!annotations.isEmpty()) {
-                    logger.debug("Found {} annotations for this record (campaign '{}').", annotations.size(), campaign.getTitle());
-                    File annotationDir =
-                            new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATIONS);
-                    for (PersistentAnnotation annotation : annotations) {
-                        try {
-                            WebAnnotation webAnno = annoBuilder.getAsWebAnnotation(annotation);
-                            //Write access condition info into annotation for indexing. Normally that field is not written
-                            if(StringUtils.isNotBlank(annotation.getAccessCondition())) {
-                                webAnno.setRights(annotation.getAccessCondition());
-                            }
-                            String json = webAnno.toString();
-                            String jsonFileName = annotation.getTargetPI() + "_" + annotation.getId() + ".json";
-                            FileUtils.writeStringToFile(new File(annotationDir, jsonFileName), json, Charset.forName(StringTools.DEFAULT_ENCODING));
-                        } catch (JsonParseException e) {
-                            logger.error(e.getMessage(), e);
-                        } catch (JsonMappingException e) {
-                            logger.error(e.getMessage(), e);
-                        } catch (IOException e) {
-                            logger.error(e.getMessage(), e);
-                        }
-                    }
-                }
-            }
-        }
-
         // Module augmentations
-        for (IModule module : DataManager.getInstance().getModules()) {
+        for (IndexAugmenter module : augmenters) {
             try {
                 module.augmentReIndexRecord(pi, dataRepository, sbNamingScheme.toString());
             } catch (Exception e) {
@@ -288,6 +224,39 @@ public class IndexerTools {
      */
     public static synchronized boolean reIndexPage(String pi, int page)
             throws DAOException, PresentationException, IndexUnreachableException, IOException {
+        return reIndexPage(pi, page, getAllAugmenters(pi, page));
+    }
+        /**
+     * @return
+         * @throws DAOException 
+     */
+    private static Collection<? extends IndexAugmenter> getAllAugmenters(String pi, Integer page) throws DAOException {
+        List<IndexAugmenter> augmenters = new ArrayList<>();
+        augmenters.addAll(DataManager.getInstance().getModules());
+        List annos =  DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
+        List comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page);
+        IndexAugmenter annoAugmenter = new AnnotationIndexAugmenter(annos);
+        IndexAugmenter commentAugmenter = new AnnotationIndexAugmenter(comments);
+        augmenters.add(annoAugmenter);
+        augmenters.add(commentAugmenter);
+        return augmenters;
+    }
+
+        /**
+         * <p>
+         * reIndexPage.
+         * </p>
+         *
+         * @param pi a {@link java.lang.String} object.
+         * @param page a int.
+         * @return a boolean.
+         * @throws io.goobi.viewer.exceptions.DAOException if any.
+         * @throws io.goobi.viewer.exceptions.PresentationException if any.
+         * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+         * @throws java.io.IOException if any.
+         */
+        public static synchronized boolean reIndexPage(String pi, int page, Collection<? extends IndexAugmenter> augmenters)
+                throws DAOException, PresentationException, IndexUnreachableException, IOException {
         logger.trace("reIndexPage: {}/{}", pi, page);
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
@@ -324,7 +293,7 @@ public class IndexerTools {
 
         // Module augmentations
         boolean writeTriggerFile = true;
-        for (IModule module : DataManager.getInstance().getModules()) {
+        for (IndexAugmenter module : augmenters) {
             try {
                 if (!module.augmentReIndexPage(pi, page, doc, dataRepository, sbNamingScheme.toString())) {
                     writeTriggerFile = false;
@@ -373,4 +342,5 @@ public class IndexerTools {
         }
         return (Files.isRegularFile(file));
     }
+
 }

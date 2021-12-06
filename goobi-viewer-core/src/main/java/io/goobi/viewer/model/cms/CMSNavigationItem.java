@@ -318,11 +318,6 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     public synchronized List<CMSNavigationItem> getChildItems() {
         return new ArrayList<>(childItems);
     }
-    
-    public List<CMSNavigationItem> getActiveChildItems() {
-        return getChildItems().stream().filter(CMSNavigationItem::isEnabled).collect(Collectors.toList());
-
-    }
 
     /**
      * <p>
@@ -331,8 +326,13 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      *
      * @param childItems a {@link java.util.List} object.
      */
-    public void setChildItems(List<CMSNavigationItem> childItems) {
+    public synchronized void setChildItems(List<CMSNavigationItem> childItems) {
         this.childItems = childItems;
+    }
+
+    public List<CMSNavigationItem> getActiveChildItems() {
+        return getChildItems().stream().filter(CMSNavigationItem::isEnabled).collect(Collectors.toList());
+
     }
 
     /**
