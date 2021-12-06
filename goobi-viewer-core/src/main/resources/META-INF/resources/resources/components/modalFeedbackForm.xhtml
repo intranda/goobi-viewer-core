@@ -191,16 +191,6 @@
 <!-- 								<ui:fragment rendered="#{userBean.userFeedbackAdditionalCheckbox()"> -->
 									<div class="feedback-modal__required-checkbox-wrapper">
 									  
-									  
-<!-- 									  <input class="feedback-modal__required-checkbox"  -->
-<!-- 										  data-require-input-checkbox="feedbackInput" autocomplete="off"  -->
-<!-- 										  jsf:value="#{feedbackModalAcceptedTerms}" id="feedbackModalRequiredCheckbox"  -->
-<!-- 										  type="checkbox" name="feedbackModalRequiredCheckboxInput"> -->
-<!-- 									  	  <f:validator validatorId="omnifaces.RequiredCheckboxValidator" /> -->
-<!-- 									  </input> -->
-<!-- 									  <label id="feedbackModalRequiredCheckboxText" class="feedback-modal__required-checkbox-text" for="feedbackModalRequiredCheckbox">#{msg.feedbackAcceptingTerms}</label> -->
-									  
-									  
 									  	<div class="form-row">
 										  	<p class="col-12 feedback-modal__accept-terms-text">#{msg.feedbackAcceptingTerms}</p>
 										  
@@ -211,12 +201,12 @@
 	                                       
 	                                       
 	                                        <div class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch">
-	                                            <h:selectOneRadio group="requiredTermsCheckbox" value="false"
+	                                            <h:selectOneRadio group="requiredFeedbackTerms" value="false"
 	                                                immediate="true" checked="false"
 	                                                pt:data-require-input-checkbox="uncheckedChecker">
 	                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
 	                                            </h:selectOneRadio>
-	                                            <h:selectOneRadio id="test123" group="requiredTermsCheckbox" value="true"
+	                                            <h:selectOneRadio id="requiredTermsCheckbox2" group="requiredFeedbackTerms" value="true"
 	                                                immediate="true" checked="true"
 	                                                pt:data-require-input-checkbox="feedbackInput">
 	                                                <f:selectItem itemValue="#{feedbackModalAcceptedTerms}" itemLabel="#{msg.yes}" />
