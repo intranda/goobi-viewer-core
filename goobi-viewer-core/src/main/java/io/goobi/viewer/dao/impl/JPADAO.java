@@ -3820,7 +3820,7 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public void shutdown() {
-        logger.error("shutdown()");
+        // logger.error("shutdown()");
         if (getEntityManager() != null && getEntityManager().isOpen()) {
             getEntityManager().close();
         }

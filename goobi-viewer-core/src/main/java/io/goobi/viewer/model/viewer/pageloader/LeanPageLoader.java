@@ -140,7 +140,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
      */
     /** {@inheritDoc} */
     @Override
-    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
+    public void generateSelectItems(List<SelectPageItem> dropdownPages, List<SelectPageItem> dropdownFulltext, String urlRoot,
             boolean recordBelowFulltextThreshold, Locale locale) throws IndexUnreachableException {
         logger.trace("Generating drop-down page selector...");
         try {
@@ -166,10 +166,10 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
                 StringBuilder sbPurlPart = new StringBuilder();
                 sbPurlPart.append('/').append(pi).append('/').append(order).append('/');
 
-                SelectItem siPage = buildPageSelectItem(labelTemplate, order, orderLabel, null, null);
+                SelectPageItem siPage = buildPageSelectItem(labelTemplate, order, orderLabel, null, null);
                 dropdownPages.add(siPage);
                 if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !fulltextAvailable)) {
-                    SelectItem siFull = buildPageSelectItem(labelTemplate, order, orderLabel, null, null);
+                    SelectPageItem siFull = buildPageSelectItem(labelTemplate, order, orderLabel, null, null);
                     dropdownFulltext.add(siFull);
                 }
             }
