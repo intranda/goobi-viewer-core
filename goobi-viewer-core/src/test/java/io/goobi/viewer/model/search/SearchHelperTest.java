@@ -266,14 +266,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#truncateFulltext(List,String)
-     * @verifies truncate string to 200 chars if no terms are given and add prefix and suffix
-     */
-    @Test
-    public void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermsAreGivenAndAddPrefixAndSuffix() throws Exception {
-    }
-
-    /**
-     * @see SearchHelper#truncateFulltext(List,String)
      * @verifies make terms bold if found in text
      */
     @Test
@@ -395,38 +387,48 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void extractSearchTermsFromQuery_shouldExtractAllValuesFromQueryExceptFromNOTBlocks() throws Exception {
-        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
-                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
-                null);
-        Assert.assertEquals(5, result.size());
         {
-            Set<String> terms = result.get("MD_X");
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(2, terms.size());
-            Assert.assertTrue(terms.contains("value1"));
-            Assert.assertTrue(terms.contains("value2"));
+            // NOT with brackets
+            Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
+                    "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
+                    null);
+            Assert.assertEquals(5, result.size());
+            {
+                Set<String> terms = result.get("MD_X");
+                Assert.assertNotNull(terms);
+                Assert.assertEquals(2, terms.size());
+                Assert.assertTrue(terms.contains("value1"));
+                Assert.assertTrue(terms.contains("value2"));
+            }
+            {
+                Set<String> terms = result.get(SolrConstants.DEFAULT);
+                Assert.assertNotNull(terms);
+                Assert.assertEquals(2, terms.size());
+                Assert.assertTrue(terms.contains("value3"));
+                Assert.assertTrue(terms.contains(":value4:"));
+            }
+            {
+                Set<String> terms = result.get(SolrConstants.FULLTEXT);
+                Assert.assertNotNull(terms);
+                Assert.assertEquals(1, terms.size());
+                Assert.assertTrue(terms.contains("hello-world"));
+            }
+            {
+                Set<String> terms = result.get(SolrConstants.UGCTERMS);
+                Assert.assertNotNull(terms);
+                Assert.assertEquals(1, terms.size());
+                Assert.assertTrue(terms.contains("comment"));
+            }
+            Assert.assertNull(result.get("MD_Y"));
         }
         {
-            Set<String> terms = result.get(SolrConstants.DEFAULT);
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(2, terms.size());
-            Assert.assertTrue(terms.contains("value3"));
-            Assert.assertTrue(terms.contains(":value4:"));
+            // NOT without brackets
+            Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
+                    "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND SUPERUGCTERMS:\"comment\" AND NOT MD_Y:value_not ",
+                    null);
+            Assert.assertEquals(5, result.size());
+            Assert.assertNull(result.get("MD_Y"));
         }
-        {
-            Set<String> terms = result.get(SolrConstants.FULLTEXT);
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(1, terms.size());
-            Assert.assertTrue(terms.contains("hello-world"));
-        }
-        {
-            Set<String> terms = result.get(SolrConstants.UGCTERMS);
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(1, terms.size());
-            Assert.assertTrue(terms.contains("comment"));
-        }
-        Assert.assertNull(result.get("MD_Y"));
-
     }
 
     /**
@@ -1295,7 +1297,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateQueryParams_shouldReturnEmptyMapIfSearchHitAggregationOn() throws Exception {
-        Map<String, String> params = SearchHelper.generateQueryParams();
+        Map<String, String> params = SearchHelper.generateQueryParams(null);
         Assert.assertNotNull(params);
         Assert.assertEquals(0, params.size());
     }
@@ -1378,20 +1380,20 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 finalQuery);
     }
 
-    /**
-     * @see SearchHelper#buildFinalQuery(String,String,boolean,boolean,HttpServletRequest)
-     * @verifies add query prefix if boostTopLevelDocstructs true and termQuery not empty
-     */
-    @Test
-    public void buildFinalQuery_shouldAddQueryPrefixIfBoostTopLevelDocstructsTrueAndTermQueryNotEmpty() throws Exception {
-        String finalQuery =
-                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", "(foo AND bar)", true, true, null);
-        Assert.assertEquals("+(" +
-                SearchHelper.BOOSTING_QUERY_TEMPLATE.replace("{0}", "(foo AND bar)") + " "
-                + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(foo bar))")
-                + ") -BOOL_HIDE:true -DC:collection1 -DC:collection2",
-                finalQuery);
-    }
+    //    /**
+    //     * @see SearchHelper#buildFinalQuery(String,String,boolean,boolean,HttpServletRequest)
+    //     * @verifies add query prefix if boostTopLevelDocstructs true and termQuery not empty
+    //     */
+    //    @Test
+    //    public void buildFinalQuery_shouldAddQueryPrefixIfBoostTopLevelDocstructsTrueAndTermQueryNotEmpty() throws Exception {
+    //        String finalQuery =
+    //                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", "(foo AND bar)", true, true, null);
+    //        Assert.assertEquals("+(" +
+    //                SearchHelper.BOOSTING_QUERY_TEMPLATE.replace("{0}", "(foo AND bar)") + " "
+    //                + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(foo bar))")
+    //                + ") -BOOL_HIDE:true -DC:collection1 -DC:collection2",
+    //                finalQuery);
+    //    }
 
     /**
      * @see SearchHelper#buildFinalQuery(String,String,boolean,boolean,HttpServletRequest)

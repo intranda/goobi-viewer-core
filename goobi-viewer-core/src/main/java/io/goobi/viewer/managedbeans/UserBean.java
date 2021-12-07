@@ -1125,16 +1125,17 @@ public class UserBean implements Serializable {
     /**
      * Selects a random security question from configured list and sets <code>currentSecurityQuestion</code> to it.
      * 
+     * @return false if no security questions exist or if the current question has not yet been answered
      * @should not reset securityQuest if not yet answered
      */
     public boolean resetSecurityQuestion() {
         List<SecurityQuestion> questions = DataManager.getInstance().getConfiguration().getSecurityQuestions();
         if (questions.isEmpty()) {
-            return true;
+            return false;
         }
         if (securityQuestion != null && !securityQuestion.isAnswered()) {
             // Do not reset if not set set or not yet answered
-            return true;
+            return false;
         }
         securityQuestion = questions.get(random.nextInt(questions.size()));
 
@@ -1412,6 +1413,12 @@ public class UserBean implements Serializable {
         this.logout();
         Messages.info(messageKey);
 
+    }
+    
+    public void createBackupOfCurrentUser() {
+        if(getUser() != null) {
+            getUser().backupFields();
+        }
     }
 
 }

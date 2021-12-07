@@ -134,13 +134,14 @@ var Statistics = ( function() {
     Statistics.PublicationTypes.prototype.initSearchQuery = function( plotId, inputId, buttonId ) {
         $( '#' + plotId ).bind( 'jqplotDataClick', function( ev, seriesIndex, pointIndex, data ) {
             var publicationName = data[ 2 ];
-            var searchString = '(DOCSTRCT:"' + publicationName + '") AND (DOCTYPE:"DOCSTRCT")';
+            // var searchString = '(DOCSTRCT:"' + publicationName + '") AND (DOCTYPE:"DOCSTRCT")';
+            var facetString = 'DOCSTRCT:"' + publicationName + '";;DOCTYPE:DOCSTRCT;;';
             
             if ( _debug ) {
-                console.log( "search for " + encodeURI( searchString ) );
+                console.log( "search for " + encodeURI( facetString ) );
             }
             
-            $( '#' + inputId ).val( searchString );
+            $( '#' + inputId ).val( facetString );
             $( '#' + buttonId ).click();
         } );
     }

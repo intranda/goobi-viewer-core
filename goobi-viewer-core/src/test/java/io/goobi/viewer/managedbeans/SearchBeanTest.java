@@ -15,8 +15,12 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.Search;
@@ -34,6 +39,7 @@ import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -820,4 +826,38 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.setExactSearchString("SUPERDEFAULT%25253A%2525281234xyz%252529");
         Assert.assertEquals("SUPERDEFAULT%3A%281234xyz%29", sb.getExactSearchString()); // getter should return single encoding
     }
+
+    /**
+     * @see SearchBean#getSearchSortingOptions()
+     * @verifies return options correctly
+     */
+    @Test
+    public void getSearchSortingOptions_shouldReturnOptionsCorrectly() throws Exception {
+        SearchBean sb = new SearchBean();
+        Collection<SearchSortingOption> options = sb.getSearchSortingOptions();
+        String defaultSorting = DataManager.getInstance().getConfiguration().getDefaultSortField();
+        Assert.assertEquals(SolrConstants.SORT_RANDOM, defaultSorting);
+        List<String> sortStrings = DataManager.getInstance().getConfiguration().getSortFields();
+        assertEquals(sortStrings.size() * 2 - 2, options.size());
+        Iterator<SearchSortingOption> iterator = options.iterator();
+        assertEquals(defaultSorting, iterator.next().getSortString());
+        assertEquals("Relevance", iterator.next().getLabel());
+        assertEquals("Creator ascending", iterator.next().getLabel());
+        assertEquals("Creator descending", iterator.next().getLabel());
+    }
+
+    /**
+     * @see SearchBean#getSearchSortingOptions()
+     * @verifies use current random seed option instead of default
+     */
+    @Test
+    public void getSearchSortingOptions_shouldUseCurrentRandomSeedOptionInsteadOfDefault() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setSearchSortingOption(new SearchSortingOption("random_12345"));
+        Collection<SearchSortingOption> options = sb.getSearchSortingOptions();
+        Assert.assertEquals(10, options.size());
+        Iterator<SearchSortingOption> iterator = options.iterator();
+        assertEquals("random_12345", iterator.next().getField()); 
+    }
+
 }

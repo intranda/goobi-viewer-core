@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -95,6 +96,7 @@ import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -155,7 +157,7 @@ public class SearchBean implements SearchInterface, Serializable {
     private int hitIndexOperand = 0;
     private SearchFacets facets = new SearchFacets();
     /** User-selected Solr field name by which the search results shall be sorted. A leading exclamation mark means descending sorting. */
-    private String sortString = "";
+    private SearchSortingOption searchSortingOption;
     /** Keep lists of select values, once generated, for performance reasons. */
     private final Map<String, List<StringPair>> advancedSearchSelectItems = new HashMap<>();
     /** Groups of query item clusters for the advanced search. */
@@ -356,7 +358,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public String searchDirect() {
         logger.trace("searchDirect");
         resetSearchResults();
-        facets.resetCurrentFacetString();
+        //facets.resetCurrentFacetString();
         return "pretty:newSearch5";
     }
 
@@ -791,9 +793,9 @@ public class SearchBean implements SearchInterface, Serializable {
 
         //        String currentQuery = SearchHelper.prepareQuery(searchString);
 
-        if (StringUtils.isEmpty(sortString)) {
+        if (searchSortingOption != null && StringUtils.isEmpty(searchSortingOption.getSortString())) {
             setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField());
-            logger.trace("Using default sorting: {}", sortString);
+            logger.trace("Using default sorting: {}", searchSortingOption.getSortString());
         }
 
         // Init search object
@@ -801,7 +803,7 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setUserInput(searchString);
         currentSearch.setQuery(searchStringInternal);
         currentSearch.setPage(currentPage);
-        currentSearch.setSortString(sortString);
+        currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
         currentSearch.setFacetString(facets.getCurrentFacetString());
         currentSearch.setCustomFilterQuery(customFilterQuery);
 
@@ -1267,29 +1269,50 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public void setSortString(String sortString) {
+        logger.trace("setSortString: {}", sortString);
         if ("-".equals(sortString)) {
-            this.sortString = "";
-        } else if (sortString != null && "RANDOM".equals(sortString.toUpperCase())) {
-            this.sortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
-        } else {
-            this.sortString = sortString;
+            String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
+            if (StringUtils.isNotEmpty(defaultSortField)) {
+                sortString = defaultSortField;
+            }
+
         }
-        //        sortFields = SearchHelper.parseSortString(this.sortString, navigationHelper);
+
+        if (!"-".equals(sortString)) {
+            if (SolrConstants.SORT_RANDOM.equals(sortString.toUpperCase())) {
+                sortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
+            }
+            setSearchSortingOption(new SearchSortingOption(sortString));
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public String getSortString() {
-        if (StringUtils.isEmpty(sortString)) {
-            String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
-            if ("RANDOM".equalsIgnoreCase(defaultSortField)) {
-                setSortString(defaultSortField);
-            } else {
-                return "-";
-            }
+        if (searchSortingOption == null) {
+            setSortString("-");
         }
 
-        return sortString;
+        if (searchSortingOption != null && StringUtils.isNotEmpty(searchSortingOption.getSortString())) {
+            return searchSortingOption.getSortString();
+        }
+
+        return "-";
+    }
+
+    /**
+     * @return the searchSortingOption
+     */
+    public SearchSortingOption getSearchSortingOption() {
+        return searchSortingOption;
+    }
+
+    /**
+     * @param searchSortingOption the searchSortingOption to set
+     */
+    public void setSearchSortingOption(SearchSortingOption searchSortingOption) {
+        logger.trace("setSearchSortingOption: {}", searchSortingOption);
+        this.searchSortingOption = searchSortingOption;
     }
 
     /**
@@ -1589,15 +1612,21 @@ public class SearchBean implements SearchInterface, Serializable {
             return null;
         }
 
+        String termQuery = null;
+        if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs() && searchTerms != null) {
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+        }
+
         if (currentHitIndex < currentSearch.getHitsCount() - 1) {
             //            return currentSearch.getHits().get(currentHitIndex + 1).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex + 1, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery),
+                    searchTerms,
                     BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
         }
         //        return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
         return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(),
-                facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
+                facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery), searchTerms,
                 BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
     }
 
@@ -1616,15 +1645,22 @@ public class SearchBean implements SearchInterface, Serializable {
             return null;
         }
 
+        String termQuery = null;
+        if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs() && searchTerms != null) {
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+        }
+
         if (currentHitIndex > 0) {
             //            return currentSearch.getHits().get(currentHitIndex - 1).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex - 1, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery),
+                    searchTerms,
                     BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
         } else if (currentSearch.getHitsCount() > 0) {
             //            return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(), searchTerms,
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery),
+                    searchTerms,
                     BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
         }
 
@@ -2137,7 +2173,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
         BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
             if (!facesContext.getResponseComplete()) {
-                try (SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, locale)) {
+                try (SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery,
+                        DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), locale)) {
                     if (wb == null) {
                         job.setError("Failed to create excel sheet");
                     } else if (Thread.interrupted()) {
@@ -2160,8 +2197,11 @@ public class SearchBean implements SearchInterface, Serializable {
                         executor.submit(downloadComplete);
                         downloadComplete.get(timeout, TimeUnit.SECONDS);
                     }
-                } catch (TimeoutException | InterruptedException e) {
+                } catch (TimeoutException e) {
                     job.setError("Timeout for excel download");
+                } catch (InterruptedException e) {
+                    job.setError("Timeout for excel download");
+                    Thread.currentThread().interrupt();
                 } catch (ExecutionException | ViewerConfigurationException e) {
                     logger.error(e.getMessage(), e);
                     job.setError("Failed to create excel sheet");
@@ -2182,6 +2222,7 @@ public class SearchBean implements SearchInterface, Serializable {
             ready.get(timeout, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             logger.debug("Download interrupted");
+            Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
             logger.debug("Download execution error", e);
             Messages.error("download_internal_error");
@@ -2226,6 +2267,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param facesContext
      * @param finalQuery Complete query with suffixes.
      * @param exportQuery Query constructed from the user's input, without any secret suffixes.
+     * @param boostTopLevelDocstructs
      * @param locale
      * @return
      * @throws InterruptedException
@@ -2234,14 +2276,18 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws DAOException
      * @throws PresentationException
      */
-    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, String finalQuery, String exportQuery, Locale locale)
-            throws InterruptedException, ViewerConfigurationException {
+    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, String finalQuery, String exportQuery, boolean boostTopLevelDocstructs,
+            Locale locale) throws InterruptedException, ViewerConfigurationException {
         try {
             HttpServletRequest request = BeanUtils.getRequest(facesContext);
             if (request == null) {
                 request = BeanUtils.getRequest();
             }
-            Map<String, String> params = SearchHelper.generateQueryParams();
+            String termQuery = null;
+            if (boostTopLevelDocstructs && searchTerms != null) {
+                termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+            }
+            Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
             final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(finalQuery, exportQuery, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), params, searchTerms, locale,
                     true, request);
@@ -2704,7 +2750,12 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public List<String> getHitsLocations() {
         if (this.currentSearch != null) {
-            return this.currentSearch.getHitsLocationList().stream().map(l -> l.getGeoJson()).collect(Collectors.toList());
+            List<String> locations = this.currentSearch.getHitsLocationList()
+                    .stream()
+                    //                    .distinct()
+                    .map(l -> l.getGeoJson())
+                    .collect(Collectors.toList());
+            return locations;
         }
 
         return Collections.emptyList();
@@ -2732,12 +2783,15 @@ public class SearchBean implements SearchInterface, Serializable {
                 "\"zoom\": 5," +
                 "\"center\": [11.073397, -49.451993]" +
                 "}");
-        List<String> features = new ArrayList<>();
+
         if (this.currentSearch != null) {
 
-            for (Location location : this.currentSearch.getHitsLocationList()) {
-                features.add(location.getGeoJson());
-            }
+            List<String> features = this.currentSearch.getHitsLocationList()
+                    .stream()
+                    .map(Location::getGeoJson)
+                    //            .distinct()
+                    .collect(Collectors.toList());
+
             map.setFeatures(features);
         }
         return map;
@@ -2773,6 +2827,28 @@ public class SearchBean implements SearchInterface, Serializable {
                 .sorted((f1, f2) -> Long.compare(f2.getCount(), f1.getCount()))
                 .limit(num)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 
+     * @return
+     * @should return options correctly
+     * @should use current random seed option instead of default
+     */
+    public Collection<SearchSortingOption> getSearchSortingOptions() {
+        Collection<SearchSortingOption> options = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
+        Collection<SearchSortingOption> ret = new ArrayList<>(options.size());
+        for (SearchSortingOption option : options) {
+            // If random sorting is currently in use, use that particular seed
+            if (option.getField().equals(SolrConstants.SORT_RANDOM) && searchSortingOption != null
+                    && searchSortingOption.getField().startsWith("random")) {
+                ret.add(searchSortingOption);
+            } else {
+                ret.add(option);
+            }
+        }
+
+        return ret;
     }
 
 }

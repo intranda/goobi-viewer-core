@@ -99,6 +99,11 @@ public final class SearchHelper {
     // public static final String[] FULLTEXT_SEARCH_FIELDS = { LuceneConstants.FULLTEXT, LuceneConstants.IDDOC_OWNER,
     // LuceneConstants.IDDOC_IMAGEOWNER };
 
+    /**
+     * All configured facet fields. Used for {@link #defacetifyField(String)} and stored here for quick access
+     */
+    private static final List<String> CONFIGURED_FACET_FIELDS = DataManager.getInstance().getConfiguration().getFacetFields();
+
     /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code> */
     public static final String PARAM_NAME_FILTER_QUERY_SUFFIX = "filterQuerySuffix";
     /** Constant <code>SEARCH_TERM_SPLIT_REGEX="[ ]|[,]|[-]"</code> */
@@ -132,8 +137,10 @@ public final class SearchHelper {
 
     private static final Random random = new SecureRandom();
 
-    /** Constant <code>patternNotBrackets</code> */
+    /** Regex pattern for negations in brackets */
     public static Pattern patternNotBrackets = Pattern.compile("NOT\\([^()]*\\)");
+    /** Regex pattern for negations not followed by brackets */
+    public static Pattern patternNot = Pattern.compile("NOT[ ][a-zA-Z_]+[:][a-zA-Z0-9\\*]+");
     /** Constant <code>patternPhrase</code> */
     public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
 
@@ -470,7 +477,7 @@ public final class SearchHelper {
             }
 
             // Iterate over record hits instead of using facets to determine the size of the parent collections
-            logger.trace("query: {}", sbQuery.toString());
+            logger.trace("collections query: {}", sbQuery.toString());
 
             FacetField facetResults = null;
             FacetField groupResults = null;
@@ -507,6 +514,8 @@ public final class SearchHelper {
      */
     private static Map<String, CollectionResult> createCollectionResults(FacetField facetResults, String splittingChar) {
         Map<String, CollectionResult> ret = new HashMap<>();
+
+        Set<String> counted = new HashSet<>();
         for (Count count : facetResults.getValues()) {
             String dc = count.getName();
             // Skip inverted values
@@ -521,7 +530,7 @@ public final class SearchHelper {
             }
             result.incrementCount(count.getCount());
 
-            if (dc.contains(splittingChar)) {
+            if (dc.contains(splittingChar) && !counted.contains(dc)) {
                 String parent = dc;
                 while (parent.lastIndexOf(splittingChar) != -1) {
                     parent = parent.substring(0, parent.lastIndexOf(splittingChar));
@@ -533,7 +542,9 @@ public final class SearchHelper {
                     parentCollection.incrementCount(count.getCount());
                 }
             }
+            //            counted.add(dc);
         }
+
         return ret;
     }
 
@@ -1661,6 +1672,10 @@ public final class SearchHelper {
         while (mNot.find()) {
             query = query.replace(query.substring(mNot.start(), mNot.end()), "");
         }
+        mNot = patternNot.matcher(query);
+        while (mNot.find()) {
+            query = query.replace(query.substring(mNot.start(), mNot.end()), "");
+        }
 
         // Remove parentheses, ANDs and ORs
         query = query.replace("(", "").replace(")", "").replace(" AND ", " ").replace(" OR ", " ");
@@ -1734,7 +1749,17 @@ public final class SearchHelper {
                             ret.put(currentField, new HashSet<String>());
                         }
                         ret.get(currentField).add(value);
-                        ret.get(_TITLE_TERMS).add("(" + value + ")");
+                        switch (currentField) {
+                            // Do not add values to title terms for certain fields (expand as necessary)
+                            case SolrConstants.DC:
+                            case SolrConstants.DOCSTRCT:
+                            case SolrConstants.DOCTYPE:
+                            case SolrConstants.IDDOC:
+                                break;
+                            default:
+                                ret.get(_TITLE_TERMS).add("(" + value + ")");
+                                break;
+                        }
                     }
                 }
             } else if (s.length() > 0 && !stopwords.contains(s)) {
@@ -1780,20 +1805,17 @@ public final class SearchHelper {
      * @return a {@link java.util.Map} object.
      * @should return empty map if search hit aggregation on
      */
-    public static Map<String, String> generateQueryParams() {
+    public static Map<String, String> generateQueryParams(String termQuery) {
         Map<String, String> params = new HashMap<>();
         if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs()) {
             // Add a boost query to promote anchors and works to the top of the list (Extended DisMax query parser is required for this)
             params.put("defType", "edismax");
             params.put("uf", "* _query_");
-            // params.put("bq", "(PI:* AND " + SolrConstants.TITLE + ":(" + searchTerms + "))^10.0");
+            String bq = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) : null;
+            if (bq != null) {
+                params.put("bq", bq);
+            }
         }
-        //        if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits()) {
-        //            // Add grouping by GROUPFIELD (to avoid duplicates among metadata search hits)
-        //            params.put(GroupParams.GROUP, "true");
-        //            params.put(GroupParams.GROUP_MAIN, "true");
-        //            params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
-        //        }
 
         return params;
     }
@@ -1942,6 +1964,16 @@ public final class SearchHelper {
     public static String defacetifyField(String fieldName) {
         if (fieldName == null) {
             return null;
+        }
+
+        /**
+         * If the given fieldname is a facetified version of a configured facet field, return the configured field
+         */
+        for (String field : CONFIGURED_FACET_FIELDS) {
+            String facetField = facetifyField(field);
+            if (fieldName.equals(facetField)) {
+                return field;
+            }
         }
 
         switch (fieldName) {
@@ -2342,8 +2374,9 @@ public final class SearchHelper {
 
         // Boosting
         if (boostTopLevelDocstructs) {
-            String prefix = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) + " "
-                    : "";
+            //            String prefix = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) + " "
+            //                    : "";
+            String prefix = "";
             String template =
                     "+(" + prefix + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString().replace("\"", "\\\"")) + ")";
             sbQuery = new StringBuilder(template);

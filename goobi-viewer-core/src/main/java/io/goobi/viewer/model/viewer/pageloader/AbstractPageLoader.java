@@ -306,12 +306,12 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * @should construct single page item correctly
      * @should construct double page item correctly
      */
-    protected static SelectItem buildPageSelectItem(String labelTemplate, int pageNo, String orderLabel, Integer nextPageNo, String nextOderLabel) {
+    protected static SelectPageItem buildPageSelectItem(String labelTemplate, int pageNo, String orderLabel, Integer nextPageNo, String nextOderLabel) {
         if (labelTemplate == null) {
             throw new IllegalArgumentException("labelTemplate may not be null");
         }
 
-        SelectItem si = new SelectItem();
+        SelectPageItem si = new SelectPageItem();
         if (nextPageNo != null && nextOderLabel != null) {
             si.setLabel(labelTemplate.replace("{order}", pageNo + "-" + nextPageNo)
                     .replace("{orderlabel}", orderLabel + " - " + nextOderLabel));

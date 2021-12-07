@@ -140,7 +140,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
      */
     /** {@inheritDoc} */
     @Override
-    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
+    public void generateSelectItems(List<SelectPageItem> dropdownPages, List<SelectPageItem> dropdownFulltext, String urlRoot,
             boolean recordBelowFulltextThreshold, Locale locale) throws IndexUnreachableException {
         logger.trace("Generating drop-down page selector...");
         try {
@@ -158,43 +158,20 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
                     .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")),
                             Arrays.asList(SELECT_ITEM_FIELDS));
             String labelTemplate = buildPageLabelTemplate(DataManager.getInstance().getConfiguration().getPageSelectionFormat(), locale);
-            Integer previousOrder = null;
-            String previousOrderLabel = null;
             for (SolrDocument doc : result) {
                 int order = (Integer) doc.getFieldValue(SolrConstants.ORDER);
                 String orderLabel = (String) doc.getFieldValue(SolrConstants.ORDERLABEL);
                 boolean fulltextAvailable =
                         doc.containsKey(SolrConstants.FULLTEXTAVAILABLE) ? (boolean) doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE) : false;
-                //                boolean doubleImage =
-                //                        doc.containsKey(SolrConstants.BOOL_DOUBLE_IMAGE) ? (boolean) doc.getFieldValue(SolrConstants.BOOL_DOUBLE_IMAGE) : false;
                 StringBuilder sbPurlPart = new StringBuilder();
                 sbPurlPart.append('/').append(pi).append('/').append(order).append('/');
 
-                SelectItem siPage;
-                //                if (doubleImage) {
-                //                    // Save page number for now and generate the item during the next iteration
-                //                    previousOrder = order;
-                //                    previousOrderLabel = orderLabel;
-                //                    continue;
-                //                } else if (previousOrder != null) {
-                //                    // Double page item
-                //                    siPage = buildPageSelectItem(labelTemplate, previousOrder, previousOrderLabel, order, orderLabel);
-                //                } else {
-                siPage = buildPageSelectItem(labelTemplate, order, orderLabel, null, null);
-                //                }
+                SelectPageItem siPage = buildPageSelectItem(labelTemplate, order, orderLabel, null, null);
                 dropdownPages.add(siPage);
                 if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !fulltextAvailable)) {
-                    SelectItem siFull;
-                    if (previousOrder != null) {
-                        // Double page item
-                        siFull = buildPageSelectItem(labelTemplate, previousOrder, previousOrderLabel, order, orderLabel);
-                    } else {
-                        siFull = buildPageSelectItem(labelTemplate, order, orderLabel, null, null);
-                    }
+                    SelectPageItem siFull = buildPageSelectItem(labelTemplate, order, orderLabel, null, null);
                     dropdownFulltext.add(siFull);
                 }
-                previousOrder = null;
-                previousOrderLabel = null;
             }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());

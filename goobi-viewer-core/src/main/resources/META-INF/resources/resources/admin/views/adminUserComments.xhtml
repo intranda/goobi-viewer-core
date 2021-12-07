@@ -31,7 +31,7 @@
                             <!-- FILTER -->
                             <div class="admin__table-filter">
                                 <viewerComponent:dataTableColumnFilter key="admin__comment_search"
-                                    filter="#{adminBean.lazyModelComments.getFilter('text_owner-nickName_owner-email')}" />
+                                    filter="#{adminBean.lazyModelComments.getFilter('body_targetPI')}" />
                             </div>
                         </div>
 
@@ -67,7 +67,7 @@
                                         <!-- ACTIONS -->
                                         <div>
                                             <!-- SHOW -->
-                                            <a href="#{navigationHelper.imageUrl}/#{comment.pi}/#{comment.page}/" class="admin__table-action-link" target="_blank" aria-label="#{msg.Comment} #{msg.show} (#{comment.pi}/#{comment.page})">#{msg.show}</a>
+                                            <a href="#{navigationHelper.imageUrl}/#{comment.targetPI}/#{comment.targetPageOrder}/" class="admin__table-action-link" target="_blank" aria-label="#{msg.Comment} #{msg.show} (#{comment.targetPI}/#{comment.targetPageOrder})">#{msg.show}</a>
 
                                             <!-- DELETE -->
                                             <h:commandLink styleClass="admin__table-action-link -redlink"
@@ -76,7 +76,7 @@
                                             </h:commandLink>
                                         </div>
                                     </div>
-                                    <div class="col-2 d-flex">#{comment.owner}</div>
+                                    <div class="col-2 d-flex">#{comment.creator}</div>
                                     <div class="col-2 d-flex">
                                         <h:outputText value="#{comment.dateCreated}">
                                             <f:converter converterId="localDateTimeConverter" />

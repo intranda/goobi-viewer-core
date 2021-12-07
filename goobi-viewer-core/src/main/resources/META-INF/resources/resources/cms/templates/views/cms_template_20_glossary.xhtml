@@ -18,12 +18,7 @@
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
 			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
 		</f:metadata>
-	</ui:define>
-
-    <!-- BREADCRUMBS -->
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>    
+	</ui:define>  
 
     <!-- CONTENT -->
     <ui:define name="content">

@@ -302,13 +302,15 @@ public class Search implements Serializable {
         // Collect regular and hierarchical facet field names and combine them into one list
         List<String> hierarchicalFacetFields = DataManager.getInstance().getConfiguration().getHierarchicalFacetFields();
         List<String> allFacetFields = SearchHelper.getAllFacetFields(hierarchicalFacetFields);
-
-        Map<String, String> params = SearchHelper.generateQueryParams();
-        QueryResponse resp = null;
+        
         String termQuery = null;
         if (boostTopLevelDocstructs && searchTerms != null) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
         }
+
+        Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
+        QueryResponse resp = null;
+
         String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, true, boostTopLevelDocstructs);
 
         // Apply current facets

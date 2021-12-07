@@ -129,6 +129,7 @@ public class RSSFeed {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should produce feed correctly
      */
     public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language, int maxItems)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
@@ -424,6 +425,7 @@ public class RSSFeed {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should produce feed correctly
      */
     public static Channel createRssFeed(String rootPath, String query, List<String> filterQueries, int rssFeedItems, String language)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {

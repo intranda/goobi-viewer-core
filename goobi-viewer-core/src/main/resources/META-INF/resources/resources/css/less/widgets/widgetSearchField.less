@@ -9,10 +9,21 @@
     .form-group {
         width: 100%;
         margin: 0;
-    }
-    .input-group {
-    	width: 100%;
-    	input {}
+	    .input-group {
+	    	width: 100%;
+		.ui-autocomplete {
+			position: relative;
+			display: block;
+			flex: 1 1 auto;
+			input {
+				width: 100%;
+				&.focused {
+					opacity: 1; 					
+				}
+			}
+		}
+	    input {}
+	    }
     }
     .input-group-addon {
     	padding: 0;

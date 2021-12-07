@@ -20,12 +20,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.Query;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +42,20 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.comments.Comment;
+import io.goobi.viewer.model.annotation.serialization.AnnotationLister;
+import io.goobi.viewer.model.annotation.serialization.SqlAnnotationLister;
+import io.goobi.viewer.model.annotation.serialization.SqlCommentLister;
+import io.goobi.viewer.model.bookmark.Bookmark;
+import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserActivity;
 
 @Named
-@SessionScoped
+@ViewScoped
 public class UserDataBean implements Serializable {
 
     private static final long serialVersionUID = -766868003675598285L;
@@ -55,6 +69,7 @@ public class UserDataBean implements Serializable {
     private UserBean userBean;
 
     private TableDataProvider<PersistentAnnotation> lazyModelAnnotations;
+    private TableDataProvider<PersistentAnnotation> lazyModelComments;
 
     /**
      * Required setter for ManagedProperty injection
@@ -67,54 +82,51 @@ public class UserDataBean implements Serializable {
 
     /**
      * Initialize all campaigns as lazily loaded list
+     * @throws DAOException 
      */
     @PostConstruct
-    public void init() {
+    public void init() throws DAOException {
         if (lazyModelAnnotations == null) {
-            lazyModelAnnotations = new TableDataProvider<>(new TableDataSource<PersistentAnnotation>() {
-
-                private Optional<Long> numCreatedPages = Optional.empty();
-
-                @Override
-                public List<PersistentAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
-                        Map<String, String> filters) {
-                    try {
-                        if (StringUtils.isBlank(sortField)) {
-                            sortField = "id";
-                            sortOrder = SortOrder.DESCENDING;
-                        }
-                        filters.put("creatorId_reviewerId", String.valueOf(userBean.getUser().getId()));
-                        List<PersistentAnnotation> ret =
-                                DataManager.getInstance().getDao().getAnnotations(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                        return ret;
-                    } catch (DAOException e) {
-                        logger.error("Could not initialize lazy model: {}", e.getMessage());
-                    }
-
-                    return Collections.emptyList();
-                }
-
-                @Override
-                public long getTotalNumberOfRecords(Map<String, String> filters) {
-                    if (!numCreatedPages.isPresent()) {
-                        filters.put("creatorId_reviewerId", String.valueOf(userBean.getUser().getId()));
-                        try {
-                            numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getAnnotationCount(filters));
-                        } catch (DAOException e) {
-                            logger.error("Unable to retrieve total number of campaigns", e);
-                        }
-                    }
-                    return numCreatedPages.orElse(0l);
-                }
-
-                @Override
-                public void resetTotalNumberOfRecords() {
-                    numCreatedPages = Optional.empty();
-                }
-            });
-            lazyModelAnnotations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            lazyModelAnnotations.setFilters("targetPI_body_campaign_dateCreated");
+            lazyModelAnnotations = initLazyModel(new SqlAnnotationLister());
         }
+        if (lazyModelComments == null) {
+            lazyModelComments = initLazyModel(new SqlCommentLister());
+        }
+    }
+
+
+    private TableDataProvider<PersistentAnnotation> initLazyModel(AnnotationLister lister) {
+        TableDataProvider<PersistentAnnotation> model = new TableDataProvider<>(new TableDataSource<PersistentAnnotation>() {
+
+            private Optional<Long> numCreatedPages = Optional.empty();
+
+            @Override
+            public List<PersistentAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
+                    Map<String, String> filters) {
+                    if (StringUtils.isBlank(sortField)) {
+                        sortField = "id";
+                        sortOrder = SortOrder.DESCENDING;
+                    }
+                    List<PersistentAnnotation> ret = lister.getAnnotations(first, pageSize, filters.get("targetPI_body_campaign_dateCreated"), null, null, Collections.singletonList(userBean.getUser().getId()), null, null, sortField, sortOrder.asBoolean());
+                    return ret;
+            }
+
+            @Override
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
+                if (!numCreatedPages.isPresent()) {
+                    numCreatedPages = Optional.ofNullable(lister.getAnnotationCount(filters.get("targetPI_body_campaign_dateCreated"), null, null, Collections.singletonList(userBean.getUser().getId()), null, null));
+                }
+                return numCreatedPages.orElse(0l);
+            }
+
+            @Override
+            public void resetTotalNumberOfRecords() {
+                numCreatedPages = Optional.empty();
+            }
+        });
+        model.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+        model.setFilters("targetPI_body_campaign_dateCreated");
+        return model;
     }
 
     /**
@@ -125,26 +137,14 @@ public class UserDataBean implements Serializable {
      * @should return searches for correct user
      * @should return null if no user logged in
      */
-    public List<Search> getSearches() throws DAOException {
-        if (userBean == null || userBean.getUser() == null) {
-            return null;
-        }
-
-        return DataManager.getInstance().getDao().getSearches(userBean.getUser());
-    }
-    
-    /**
-     * Returns number of searches for the logged in user
-     * 
-     * @return the number of searchs
-     * @throws DAOException
-     */
-    public long getNumSearches() throws DAOException {
-        if (userBean == null || userBean.getUser() == null) {
-            return 0;
-        }
-
-        return DataManager.getInstance().getDao().getSearchCount(userBean.getUser(),null);
+    public List<Search> getSearches(User user, Integer numEntries) throws DAOException {
+        return DataManager.getInstance()
+                .getDao()
+                .getSearches(user)
+                .stream()
+                .sorted((s1, s2) -> s2.getDateUpdated().compareTo(s1.getDateUpdated()))
+                .limit(numEntries == null ? Integer.MAX_VALUE : numEntries)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -152,29 +152,15 @@ public class UserDataBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public List<PersistentAnnotation> getAnnotations() throws DAOException {
+    public List<CrowdsourcingAnnotation> getAnnotations() throws DAOException {
         if (userBean == null || userBean.getUser() == null) {
             return Collections.emptyList();
         }
 
-        return DataManager.getInstance().getDao().getAnnotationsForUserId(userBean.getUser().getId());
+        return DataManager.getInstance().getDao().getAnnotationsForUserId(userBean.getUser().getId(), null, null, false);
     }
 
-    /**
-     * 
-     * @return
-     * @throws DAOException
-     * @should return correct value
-     */
-    public long getAnnotationCount() throws DAOException {
-        if (userBean == null || userBean.getUser() == null) {
-            return 0;
-        }
 
-        return DataManager.getInstance()
-                .getDao()
-                .getAnnotationCount(Collections.singletonMap("creatorId_reviewerId", String.valueOf(userBean.getUser().getId())));
-    }
 
     /**
      * Deletes the given persistent user search.
@@ -209,5 +195,118 @@ public class UserDataBean implements Serializable {
      */
     public TableDataProvider<PersistentAnnotation> getLazyModelAnnotations() {
         return lazyModelAnnotations;
+    }
+    
+    public TableDataProvider<PersistentAnnotation> getLazyModelComments() {
+        return lazyModelComments;
+    }
+
+
+    public long getNumBookmarkLists(User user) throws DAOException {
+        return DataManager.getInstance().getDao().getBookmarkListCount(user);
+    }
+
+    public long getNumSearches(User user) throws DAOException {
+        return DataManager.getInstance().getDao().getSearchCount(user, null);
+    }
+
+    public long getNumComments(User user) throws DAOException {
+        return DataManager.getInstance().getDao().getCommentCount(null, user);
+    }
+    
+    public long getNumAnnotations(User user) throws DAOException {
+        return DataManager.getInstance()
+                .getDao()
+                .getAnnotationCount(Collections.singletonMap("creatorId", String.valueOf(userBean.getUser().getId())));
+    }
+
+    public Long getNumRecordsWithComments(User user) throws DAOException {
+        Query query = DataManager.getInstance()
+                .getDao()
+                .createNativeQuery("SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id=" + user.getId());
+        return (Long) query.getSingleResult();
+    }
+
+    public long getAnnotationCount() throws DAOException {
+        if (userBean == null || userBean.getUser() == null) {
+            return 0;
+        }
+        return getNumAnnotations(userBean.getUser());
+   }
+    
+    public long getCommentCount() throws DAOException {
+        if (userBean == null || userBean.getUser() == null) {
+            return 0;
+        }
+        return getNumComments(userBean.getUser());
+   }
+
+    /**
+     * 
+     * @param user
+     * @param numEntries
+     * @return
+     * @throws DAOException
+     * @should return the latest comments
+     */
+    public List<Comment> getLatestComments(User user, int numEntries) throws DAOException {
+        List<Comment> lastCreatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateCreated", true);
+        List<Comment> lastUpdatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateModified", true);
+
+        return CollectionUtils.union(lastCreatedComments, lastUpdatedComments)
+                .stream()
+                .distinct()
+                .sorted((c1, c2) -> c1.compareTo(c2) * -1)
+                .limit(numEntries)
+                .collect(Collectors.toList());
+    }
+
+    public List<BookmarkList> getBookmarkListsForUser(User user, int numEntries) throws DAOException {
+        return DataManager.getInstance()
+                .getDao()
+                .getBookmarkLists(user)
+                .stream()
+                .sorted()
+                .limit(numEntries)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserActivity> getLatestActivity(User user, int numEntries) throws DAOException {
+        List<Search> searches = DataManager.getInstance().getDao().getSearches(user, 0, numEntries, "dateUpdated", true, null);
+        List<Bookmark> bookmarks = DataManager.getInstance()
+                .getDao()
+                .getBookmarkLists(user)
+                .stream()
+                .flatMap(list -> list.getItems().stream())
+                .sorted((bm1, bm2) -> bm1.getDateAdded().compareTo(bm2.getDateAdded()))
+                .limit(numEntries)
+                .collect(Collectors.toList());
+        List<Comment> lastCreatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateCreated", true);
+        List<Comment> lastUpdatedComments = DataManager.getInstance()
+                .getDao()
+                .getCommentsOfUser(user, numEntries, "dateModified", true)
+                .stream()
+                .filter(c -> c.getDateModified() != null)
+                .collect(Collectors.toList());
+        List<CrowdsourcingAnnotation> lastCreatedCrowdsourcingAnnotations =
+                DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId(), numEntries, "dateCreated", true);
+        List<CrowdsourcingAnnotation> lastUpdatedCrowdsourcingAnnotations = DataManager.getInstance()
+                .getDao()
+                .getAnnotationsForUserId(user.getId(), numEntries, "dateModified", true)
+                .stream()
+                .filter(c -> c.getDateModified() != null)
+                .collect(Collectors.toList());
+
+        Stream<UserActivity> activities = Stream.of(
+                searches.stream().map(UserActivity::getFromSearch),
+                bookmarks.stream().map(UserActivity::getFromBookmark),
+                lastCreatedComments.stream().map(UserActivity::getFromComment),
+                lastUpdatedComments.stream().map(UserActivity::getFromCommentUpdate),
+                lastCreatedCrowdsourcingAnnotations.stream().map(UserActivity::getFromCampaignAnnotation),
+                lastUpdatedCrowdsourcingAnnotations.stream().map(UserActivity::getFromCampaignAnnotationUpdate))
+                .flatMap(Function.identity())
+                .distinct()
+                .sorted((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
+        return activities.limit(numEntries).collect(Collectors.toList());
     }
 }

@@ -34,6 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.iiif.IIIFUrlResolver;
@@ -80,6 +82,8 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class IIIFPresentation2ResourceBuilder {
 
+    private static final Logger logger = LoggerFactory.getLogger(IIIFPresentation2ResourceBuilder.class);
+
     private ManifestBuilder manifestBuilder;
     private StructureBuilder structureBuilder;
     private SequenceBuilder sequenceBuilder;
@@ -97,9 +101,8 @@ public class IIIFPresentation2ResourceBuilder {
             ContentNotFoundException, URISyntaxException, ViewerConfigurationException, DAOException {
         getManifestBuilder().setBuildMode(mode);
         getSequenceBuilder().setBuildMode(mode);
-        List<StructElement> docs = BuildMode.IIIF.equals(mode) || BuildMode.THUMBS.equals(mode) ? 
-                getManifestBuilder().getDocumentWithChildren(pi) :
-                Arrays.asList(getManifestBuilder().getDocument(pi));
+        List<StructElement> docs = BuildMode.IIIF.equals(mode) || BuildMode.THUMBS.equals(mode) ? getManifestBuilder().getDocumentWithChildren(pi)
+                : Arrays.asList(getManifestBuilder().getDocument(pi));
         if (docs.isEmpty()) {
             throw new ContentNotFoundException("No document found for pi " + pi);
         }
@@ -115,7 +118,7 @@ public class IIIFPresentation2ResourceBuilder {
 
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId)) {
-                if(BuildMode.IIIF.equals(mode)) {                    
+                if (BuildMode.IIIF.equals(mode)) {
                     List<Range2> ranges = getStructureBuilder().generateStructure(docs, pi, false);
                     ranges.forEach(range -> {
                         ((Manifest2) manifest).addStructure(range);
@@ -348,7 +351,8 @@ public class IIIFPresentation2ResourceBuilder {
     public List<IPresentationModelElement> getManifestsForQuery(String query, String sortFields, int first, int rows)
             throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
 
-        String finalQuery = query + " " + SearchHelper.ALL_RECORDS_QUERY;
+        String finalQuery = SearchHelper.buildFinalQuery(query, null, true, false, request);
+        logger.trace("getManifestForQuery: {}", finalQuery);
 
         List<StringPair> sortFieldList = SolrTools.getSolrSortFieldsAsList(sortFields == null ? "" : sortFields, ",", " ");
         SolrDocumentList queryResults = DataManager.getInstance()

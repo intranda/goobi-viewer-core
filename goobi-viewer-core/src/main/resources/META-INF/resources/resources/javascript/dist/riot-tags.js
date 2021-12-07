@@ -5,7 +5,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         if(this.opts.fileTypes) {
             this.fileTypes = this.opts.fileTypes;
         } else {
-        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg';
+        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg, ico';
         }
         this.isDragover = false;
 
@@ -272,12 +272,19 @@ riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{
 
 this.on("mount", () => {
     if(this.opts.contentid) {
-        this.annotationBody = JSON.parse(document.getElementById(this.opts.contentid).innerText);
-        this.type = this.annotationBody.type;
-        if(!this.type) {
-            this.type = this.anotationBody["@type"];
-        }
-        this.format = this.annotationBody.format;
+        let content = document.getElementById(this.opts.contentid).innerText;
+        try {
+	        this.annotationBody = JSON.parse(content);
+	        this.type = this.annotationBody.type;
+	        if(!this.type) {
+	            this.type = this.anotationBody["@type"];
+	        }
+	        this.format = this.annotationBody.format;
+    	} catch(e) {
+    	    this.annotationBody = {value: content};
+    	    this.type = "TextualResource";
+    	    this.format = "text/plain";
+   		}
         this.update();
     }
 })
@@ -398,6 +405,7 @@ this.on("mount", () => {
 	        fixed: true,
 	        clusterMarkers: false,
 	    };
+	console.log("mounted geomap annotation ", this);
     this.geoMap = new viewerJS.GeoMap(this.config);
     let view = this.feature.view;
     let features = [this.feature];
@@ -2932,6 +2940,20 @@ riot.tag2('metadataeditor', '<div if="{this.metadataList}"><ul class="nav nav-ta
 
 
 
+riot.tag2('modal', '<div class="modal fade {modalClass}" id="{modalId}" tabindex="-1" ref="modal" role="dialog" aria-labelledby="{modalTitle}" aria-hidden="true"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content"><div class="modal-header"><h2 class="modal-title">{modalTitle}</h2><button class="fancy-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button></div><div class="modal-body"><yield from="body"></yield></div><div class="modal-right"><yield from="right"></yield></div><div class="modal-footer"><yield from="footer"></yield></div></div></div><div class="alt-backdrop"></div></div>', '', '', function(opts) {
+
+    this.modalClass = this.opts.styleclass ? this.opts.styleclass : "";
+    this.modalId = this.opts.modalid;
+    this.modalTitle = this.opts.title;
+
+	this.on("mount", () => {
+
+	    if(this.opts.onClose) {
+	        $(this.refs.modal).on('hide.bs.modal', () => this.opts.onClose());
+	    }
+	});
+
+});
 riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index in pages}" page="{page}" pageno="{index+1}"></pdfPage></div>', '', '', function(opts) {
 
 		this.pages = [];

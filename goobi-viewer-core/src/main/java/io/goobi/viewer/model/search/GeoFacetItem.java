@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
@@ -36,7 +37,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 public class GeoFacetItem implements IFacetItem {
     
     private static final Logger logger = LoggerFactory.getLogger(GeoFacetItem.class);
-    public static final GeoCoordinateFeature NO_AREA = new GeoCoordinateFeature(new double[0][2]);
+    public static final GeoCoordinateFeature NO_AREA = new GeoCoordinateFeature(new double[0][2], "", "");
     
     
     private GeoCoordinateFeature feature = null;
@@ -53,7 +54,7 @@ public class GeoFacetItem implements IFacetItem {
         } else if(!orig.feature.hasVertices()) {
             this.feature = NO_AREA;
         } else {            
-            this.feature = new GeoCoordinateFeature(orig.getFeature());
+            this.feature = new GeoCoordinateFeature(orig.getFeature(), orig.getSearchPredicate(), orig.getSearchAreaShape());
         }
     }
     
@@ -69,6 +70,22 @@ public class GeoFacetItem implements IFacetItem {
         return feature != null && feature.hasVertices();
     }
     
+    public String getSearchPredicate() {
+        if(this.feature != null) {
+            return this.feature.getPredicate();
+        } else {
+            return "";
+        }
+    }
+    
+    public String getSearchAreaShape() {
+        if(this.feature != null) {
+            return this.feature.getShape();
+        } else {
+            return "";
+        }
+    }
+    
     
     /**
      * Sets {@link #currentGeoFacettingFeature} and sets the matching search string to the WKT_COORDS facet if available
@@ -78,7 +95,7 @@ public class GeoFacetItem implements IFacetItem {
     public void setFeature(String feature) {
             try {
                 if(StringUtils.isNotBlank(feature)) {            
-                    this.feature = new GeoCoordinateFeature(feature);
+                    this.feature = new GeoCoordinateFeature(feature, getDefaultSearchPredicate(), GeoCoordinateFeature.SHAPE_POLYGON);
                 } else {
                     this.feature = NO_AREA;
                 }
@@ -86,7 +103,8 @@ public class GeoFacetItem implements IFacetItem {
                 logger.error("Faild to parse JSON object {}", feature);
             }
     }
-    
+
+
     public void setFeatureFromContext() {
         Map<String, String> params = FacesContext.getCurrentInstance().
                 getExternalContext().getRequestParameterMap();
@@ -142,7 +160,7 @@ public class GeoFacetItem implements IFacetItem {
         if(vertices == null || vertices.length == 0) {
             this.feature = NO_AREA;
         } else {            
-            this.feature = new GeoCoordinateFeature(vertices);
+            this.feature = new GeoCoordinateFeature(vertices, getDefaultSearchPredicate(), GeoCoordinateFeature.SHAPE_POLYGON);
         }
     }
 
@@ -204,7 +222,13 @@ public class GeoFacetItem implements IFacetItem {
      */
     @Override
     public void setValue(String value) {
-        this.feature = new GeoCoordinateFeature(GeoCoordinateFeature.getGeoSearchPoints(value));
+        String searchPredicate = GeoCoordinateFeature.getPredicate(value);
+        String searchShape = GeoCoordinateFeature.getShape(value);
+        this.feature = new GeoCoordinateFeature(GeoCoordinateFeature.getGeoSearchPoints(value), searchPredicate, searchShape);
+    }
+
+    private String getDefaultSearchPredicate() {
+        return DataManager.getInstance().getConfiguration().getGeoFacetFieldPredicate();
     }
 
     /* (non-Javadoc)
@@ -300,4 +324,5 @@ public class GeoFacetItem implements IFacetItem {
     public boolean isHierarchial() {
         return false;
     }
+
 }

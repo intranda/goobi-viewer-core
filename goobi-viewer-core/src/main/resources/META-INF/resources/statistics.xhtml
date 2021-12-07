@@ -16,7 +16,7 @@
     </ui:define>
 
 	<ui:define name="breadcrumbs">
-		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
+		<viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
 	</ui:define>
 
     <ui:define name="content">
@@ -108,7 +108,7 @@
             </div>
 
             <h:form prependId="false" id="dsSearchForm" style="display: none;">
-                <h:inputText id="searchInput" value="#{searchBean.exactSearchString}" />
+                <h:inputText id="searchInput" value="#{searchBean.facets.currentFacetString}" />
                 <h:commandButton id="searchBtn" styleClass="btn btn--full" action="#{searchBean.searchDirect}">
                 </h:commandButton>
             </h:form>

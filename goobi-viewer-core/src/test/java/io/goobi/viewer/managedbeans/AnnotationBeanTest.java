@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 
 /**
  * @author florian
@@ -64,7 +64,7 @@ public class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
     
     @Test
     public void testGetAllConfiguredAnnotations() {
-        List<PersistentAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();   
+        List<CrowdsourcingAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();   
         
 //        firstPageAnnotations.stream().map(anno -> anno.getGeneratorId()).forEach(System.out::println);
 //        firstPageAnnotations.stream().map(anno -> bean.getOwningCampaign(anno).orElse(null)).filter(c -> c != null).map(c -> c.getId()).forEach(System.out::println);
@@ -75,14 +75,14 @@ public class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testGetAllAnnotationsOfCampaign() {
         bean.setOwnerCampaignId("1");
-        List<PersistentAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();   
+        List<CrowdsourcingAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();   
         Assert.assertEquals(3, firstPageAnnotations.size());
     }
     
     @Test
     public void testGetAllAnnotationsOfRecord() {
         bean.setTargetRecordPI("PI_2");
-        List<PersistentAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();   
+        List<CrowdsourcingAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();   
         Assert.assertEquals(2, firstPageAnnotations.size());
     }
     

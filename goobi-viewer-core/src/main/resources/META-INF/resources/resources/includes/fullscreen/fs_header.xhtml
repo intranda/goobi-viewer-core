@@ -15,7 +15,7 @@
         <!-- LOGO -->
         <div class="fullscreen__header-brand">
             <a href="#{request.contextPath}/">
-                <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/fullscreen_logo.png" alt="Goobi Logo" />
+                <img src="#{adminThemesBean.getFullscreenLogo(&quot;images/template/fullscreen_logo.png&quot;, 300, 40)}" alt="#{adminThemesBean.getThemeLabel(configurationBean.name)} Logo" />
                 <span>#{msg.fullscreen_brandName}</span>
             </a>
         </div>

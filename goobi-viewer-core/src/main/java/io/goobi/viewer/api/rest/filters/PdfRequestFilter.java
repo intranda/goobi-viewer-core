@@ -76,6 +76,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(PdfRequestFilter.class);
 
     private static final String ATTRIBUTE_PDF_QUOTA = "pdf_quota";
+    private static final String INSUFFICIENT_QUOTA_PREFIX = "Insufficient download quota for record '";
 
     @Context
     private HttpServletRequest servletRequest;
@@ -201,7 +202,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
 
             // Full record PDF
             if (StringUtils.isEmpty(divId) && StringUtils.isEmpty(contentFileName)) {
-                throw new ServiceNotAllowedException("Insufficient download quota for record '" + pi + "': " + percentage + "%");
+                throw new ServiceNotAllowedException(INSUFFICIENT_QUOTA_PREFIX + pi + "': " + percentage + "%");
             }
 
             int numTotalRecordPages = (int) DataManager.getInstance()
@@ -228,14 +229,14 @@ public class PdfRequestFilter implements ContainerRequestFilter {
                     }
                     if (!checkPageAllowed(pi, fileName, percentage, numTotalRecordPages, request)) {
                         logger.trace("Insufficient download quota");
-                        throw new ServiceNotAllowedException("Insufficient download quota for record '" + pi + "': " + percentage + "%");
+                        throw new ServiceNotAllowedException(INSUFFICIENT_QUOTA_PREFIX + pi + "': " + percentage + "%");
                     }
                 }
             } else if (StringUtils.isEmpty(divId) && StringUtils.isNotEmpty(contentFileName)) {
                 // Page PDF
                 if (!checkPageAllowed(pi, contentFileName, percentage, numTotalRecordPages, request)) {
                     logger.trace("Insufficient download quota");
-                    throw new ServiceNotAllowedException("Insufficient download quota for record '" + pi + "': " + percentage + "%");
+                    throw new ServiceNotAllowedException(INSUFFICIENT_QUOTA_PREFIX + pi + "': " + percentage + "%");
                 }
             }
         } catch (PresentationException | IndexUnreachableException | DAOException | RecordNotFoundException e) {

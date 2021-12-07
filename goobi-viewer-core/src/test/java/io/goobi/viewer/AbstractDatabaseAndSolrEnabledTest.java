@@ -64,7 +64,7 @@ public abstract class AbstractDatabaseAndSolrEnabledTest extends AbstractSolrEna
     public void tearDown() throws Exception {
         super.tearDown();
         databaseTester.onTearDown();
-        ((JPADAO) DataManager.getInstance().getDao()).getEntityManager().clear();
+        ((JPADAO) DataManager.getInstance().getDao()).clear();
 
         // FlatXmlDataSet
         // .write(databaseTester.getConnection().createDataSet(), new FileOutputStream("resources/" + System.currentTimeMillis() + ".xml"));

@@ -363,7 +363,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                 }
                 jsonObj.put("du", timestamp);
             } else {
-                jsonObj.put("du", 0);
+                jsonObj.put("du", 0L);
                 logger.debug("{} has no dateUpdated", o.getPi());
             }
             jsonArray.put(jsonObj);

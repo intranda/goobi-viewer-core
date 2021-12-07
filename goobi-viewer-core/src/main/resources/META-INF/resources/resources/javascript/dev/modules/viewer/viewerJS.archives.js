@@ -134,6 +134,7 @@ var viewerJS = ( function( viewer ) {
 	        					$img.on("load", () => {
 	        						this.hideLoader("load_record_image");
 		        					$(".archives__object-image").show();
+									$(".archives__object-metadata").addClass("-singleImage");
 	        					});
 	        					$img.on("error", () => {
 	        						this.hideLoader("load_record_image");

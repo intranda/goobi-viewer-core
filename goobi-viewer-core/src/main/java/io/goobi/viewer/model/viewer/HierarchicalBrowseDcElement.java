@@ -52,8 +52,8 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
      * @param field a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public HierarchicalBrowseDcElement(String name, long number, String field, String sortField) throws PresentationException {
-        super(name, number, field, sortField);
+    public HierarchicalBrowseDcElement(String name, long number, String field, String sortField, String splittingChar, int displayNumberOfVolumesLevel) throws PresentationException {
+        super(name, number, field, sortField, splittingChar, displayNumberOfVolumesLevel);
     }
 
     /**

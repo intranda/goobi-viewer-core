@@ -19,6 +19,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
@@ -47,8 +48,13 @@ import java.util.stream.Collectors;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.ConfigurationBuilder;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.convert.DisabledListDelimiterHandler;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.io.FileHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -132,8 +138,11 @@ public class ViewerResourceBundle extends ResourceBundle {
                         }
                         // Thread.sleep(100);
                     }
-                } catch (IOException | InterruptedException e) {
+                } catch (IOException e) {
                     logger.error(e.getMessage(), e);
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage(), e);
+                    Thread.currentThread().interrupt();
                 }
             }
         });
@@ -669,7 +678,7 @@ public class ViewerResourceBundle extends ResourceBundle {
         if (servletContext == null) {
             return getFacesLocales();
         }
-        
+
         try {
             String webContentRoot = servletContext.getRealPath("resources/themes");
             Path facesConfigPath = Paths.get(webContentRoot).resolve("faces-config.xml");
@@ -781,6 +790,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param value Message value
      * @param language ISO 639-1 language code
      * @return
+     * @should preserve spaces
      */
     public static boolean updateLocalMessageKey(String key, String value, String language) {
         if (StringUtils.isEmpty(key)) {
@@ -794,37 +804,41 @@ public class ViewerResourceBundle extends ResourceBundle {
         File file = getLocalTranslationFile(language);
         if (!file.exists()) {
             try {
-                file.createNewFile();
+                if (!file.createNewFile()) {
+                    logger.error("File could not be createad: {}", file.getAbsolutePath());
+                    return false;
+                }
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
                 return false;
             }
         }
 
-        PropertiesConfiguration config = new PropertiesConfiguration();
         try {
-            config.load(file);
-        } catch (ConfigurationException e) {
-            logger.error(e.getMessage(), e);
-            return false;
-        }
+            ConfigurationBuilder<PropertiesConfiguration> builder =
+                    new FileBasedConfigurationBuilder<PropertiesConfiguration>(PropertiesConfiguration.class)
+                            .configure(new Parameters().properties()
+                                    .setFile(file)
+                                    .setListDelimiterHandler(new DisabledListDelimiterHandler())
+                                    .setThrowExceptionOnMissing(false));
 
-        if (StringUtils.isNotEmpty(value)) {
-            // Update value in file
-            String oldValue = config.getProperty(key) != null ? config.getProperty(key).toString() : null;
-            config.setProperty(key, value);
-            logger.trace("value set ({}): {}:{}->{}", config.getFile().getName(), key, oldValue,
-                    config.getProperty(key));
-        } else {
-            // Delete value in file if cleared in entry
-            config.clearProperty(key);
-            logger.trace("value removed ({}): {}", config.getFile().getName(), key);
-        }
+            PropertiesConfiguration config = builder.getConfiguration();
 
-        try {
-            config.setFile(getLocalTranslationFile(language));
-            config.save();
-            logger.trace("File written: {}", config.getFile().getAbsolutePath());
+            if (StringUtils.isNotEmpty(value)) {
+                // Update value in file
+                String oldValue = config.getProperty(key) != null ? config.getProperty(key).toString() : null;
+                config.setProperty(key, value);
+                logger.trace("value set ({}): {}:{}->{}", file.getName(), key, oldValue,
+                        config.getProperty(key));
+            } else {
+                // Delete value in file if cleared in entry
+                config.clearProperty(key);
+                logger.trace("value removed ({}): {}", file.getName(), key);
+            }
+
+            FileHandler fh = new FileHandler(config);
+            fh.save(file);
+            logger.trace("File written: {}", file.getAbsolutePath());
             return true;
         } catch (ConfigurationException e) {
             logger.error(e.getMessage());

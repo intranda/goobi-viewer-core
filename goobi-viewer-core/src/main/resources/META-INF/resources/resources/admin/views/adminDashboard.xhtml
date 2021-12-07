@@ -276,7 +276,7 @@
 
 
                             <!-- MATOMO -->
-                            <ui:fragment rendered="#{userBean.admin and configurationBean.piwikTracking}">
+                            <ui:fragment rendered="#{userBean.admin and configurationBean.piwikTrackingEnabled}">
                                 <div class="admin__boxed-entry -no-actions -w33">
                                     <div class="row">
                                         <h3 class="col-12">#{msg.admin__dashboard_matomo_title}</h3>

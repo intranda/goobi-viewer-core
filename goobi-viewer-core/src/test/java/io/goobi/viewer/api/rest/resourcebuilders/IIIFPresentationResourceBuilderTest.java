@@ -15,10 +15,7 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
-import static org.junit.Assert.*;
-
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -26,8 +23,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.intranda.api.iiif.discovery.OrderedCollection;
-import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;

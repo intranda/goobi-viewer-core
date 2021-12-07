@@ -38,6 +38,7 @@ var viewerJS = ( function( viewer ) {
 				denyText = denyText ? denyText : viewerJS.translator.translate("cancel");
 				if(typeof(Swal) !== 'undefined') {
 					return Swal.fire({
+						scrollbarPadding: false,
 						title: titleAlert,
 						text: message,
 						icon: 'warning',
@@ -68,6 +69,7 @@ var viewerJS = ( function( viewer ) {
 		notify : (titleAlert, message, type) => {
 			if(typeof Swal !== 'undefined') {
 				Swal.fire({
+					scrollbarPadding: false,
 					title: titleAlert,
 					text: message,
 					icon: type,
@@ -96,6 +98,63 @@ var viewerJS = ( function( viewer ) {
 			}			
 		}
     }
+
+	// DEFINE SWEETALERT TOAST (SMALL BOX NOTIFICATION) BEHAVIOUR
+	const swalToast = Swal.mixin({
+	  toast: true,
+	  position: 'top-end',
+	  showConfirmButton: false,
+	  timer: 4000,
+	  timerProgressBar: false,
+	  didOpen: (toast) => {
+	    toast.addEventListener('mouseenter', Swal.stopTimer)
+	    toast.addEventListener('mouseleave', Swal.resumeTimer)
+	  }
+	})
+
+    viewer.swaltoasts = {
+		success : (titleAlert, message) => viewer.swaltoasts.toast(titleAlert, message, "success"),
+		error : (titleAlert, message) => viewer.swaltoasts.toast(titleAlert, message, "error"),
+		warn : (titleAlert, message) => viewer.swaltoasts.toast(titleAlert, message, "warn"),
+		
+		toast : (titleAlert, message, type) => {
+			if(typeof Swal !== 'undefined') {
+				swalToast.fire({
+				  scrollbarPadding: false,
+				  icon: type,
+				  title: titleAlert,
+				});
+			} else if(typeof sweetAlert !== 'undefined') {
+				swal(message, "", type);
+			} else if(jQuery().overhang) {
+				$("body").overhang({
+				  type: type,
+				  message: message
+				});
+
+			} else {
+				alert(message);
+			}			
+		},
+		/**
+		return viewer.swaltoasts if the status of event is "success". Otherwise return a psuedo viewer.swaltoasts which does nothing
+		Use to filter messages from ajax requests so that only the success state produces a message:
+		<code> event => viewer.swaltoasts.onSuccess(event).success("message")</code>
+		**/
+		onSuccess: function(event) {
+            if(event.status == "success") {
+				return this;       
+			} else {
+				return {
+					success : (titleAlert, message) => {},
+					error : (titleAlert, message) => {},
+					warn : (titleAlert, message) => {},
+				}
+			}
+		}
+		
+    }
+
     
     return viewer;
     

@@ -156,17 +156,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
      */
     @Test
     public void testGetCommentsForRecord() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(PI_ANNOTATIONS).build())
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
-            String entity = response.readEntity(String.class);
-            AnnotationCollection collection = mapper.readValue(entity, AnnotationCollection.class);
-            assertNotNull(collection);
-            assertEquals(4l, collection.getTotalItems());
-        }
+         
     }
 
     /**

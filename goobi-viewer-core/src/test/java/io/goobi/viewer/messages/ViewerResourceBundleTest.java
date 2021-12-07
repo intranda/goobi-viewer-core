@@ -18,6 +18,7 @@ package io.goobi.viewer.messages;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,6 +37,8 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.StringTools;
 
 public class ViewerResourceBundleTest extends AbstractTest {
 
@@ -163,5 +166,26 @@ public class ViewerResourceBundleTest extends AbstractTest {
     public void getFallbackLocale_shouldReturnEnglishIfNoFallbackLanguageConfigured() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("viewer.fallbackDefaultLanguage", null);
         Assert.assertEquals(Locale.ENGLISH, ViewerResourceBundle.getFallbackLocale());
+    }
+
+    /**
+     * @see ViewerResourceBundle#updateLocalMessageKey(String,String,String)
+     * @verifies preserve spaces
+     */
+    @Test
+    public void updateLocalMessageKey_shouldPreserveSpaces() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("configFolder", "target/temp");
+
+        File tempDir = new File("target/temp");
+        Assert.assertTrue(tempDir.isDirectory() || tempDir.mkdirs());
+
+        Assert.assertTrue(ViewerResourceBundle.updateLocalMessageKey("foo", "foo, bar", "en"));
+        
+        File file = new File(tempDir, "messages_en.properties");
+        Assert.assertTrue(file.isFile());
+        String fileContents = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
+        Assert.assertEquals("foo = foo, bar", fileContents);
+        
+
     }
 }

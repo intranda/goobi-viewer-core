@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -65,7 +66,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.Selectable;
@@ -101,7 +102,7 @@ public class AdminBean implements Serializable {
     private static final Object TRANSLATION_LOCK = new Object();
 
     private static String translationGroupsEditorSession = null;
-    
+
     @Inject
     @Push
     PushContext hotfolderFileCount;
@@ -130,6 +131,7 @@ public class AdminBean implements Serializable {
     private Role memberRole;
 
     private Part uploadedAvatarFile;
+
     /**
      * <p>
      * Constructor for AdminBean.
@@ -144,7 +146,7 @@ public class AdminBean implements Serializable {
      * init.
      * </p>
      *
-     * @should sort lazyModelComments by dateUpdated desc by default
+     * @should sort lazyModelComments by dateCreated desc by default
      */
     @PostConstruct
     public void init() {
@@ -207,7 +209,7 @@ public class AdminBean implements Serializable {
                 @Override
                 public long getTotalNumberOfRecords(Map<String, String> filters) {
                     try {
-                        return DataManager.getInstance().getDao().getCommentCount(filters);
+                        return DataManager.getInstance().getDao().getCommentCount(filters, null);
                     } catch (DAOException e) {
                         logger.error(e.getMessage(), e);
                         return 0;
@@ -220,7 +222,7 @@ public class AdminBean implements Serializable {
 
             });
             lazyModelComments.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            lazyModelComments.setFilters("text_owner-nickName_owner-email");
+            lazyModelComments.setFilters("body_targetPI");
         }
     }
 
@@ -256,23 +258,23 @@ public class AdminBean implements Serializable {
     }
 
     public String saveCurrentUserAction() throws DAOException {
-        if(this.saveUserAction(getCurrentUser()))  {
+        if (this.saveUserAction(getCurrentUser())) {
             return "pretty:adminUsers";
-        } else {
-            return "";
         }
+
+        return "";
     }
-    
+
     public String saveUserAction(User user, String returnPage) throws DAOException {
         this.saveUserAction(user);
         return returnPage;
     }
 
-    public String resetUserAction(User user, String returnPage) throws DAOException {
+    public String resetUserAction(User user, String returnPage) {
         user.backupFields();
         return returnPage;
     }
-    
+
     /**
      * <p>
      * saveUserAction.
@@ -282,10 +284,10 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean saveUserAction(User user) throws DAOException {
-        
+
         //first check if current user has the right to edit the given user
         User activeUser = BeanUtils.getUserBean().getUser();
-        if(user == null || (!activeUser.isSuperuser() && !activeUser.getId().equals(user.getId()))) {
+        if (user == null || (!activeUser.isSuperuser() && !activeUser.getId().equals(user.getId()))) {
             Messages.error("errSave");
             return false;
         }
@@ -345,7 +347,6 @@ public class AdminBean implements Serializable {
 
         return true;
     }
-
 
     /**
      * <p>
@@ -622,8 +623,18 @@ public class AdminBean implements Serializable {
         }
 
         try {
-            for (UserRole userRole : dirtyUserRoles.keySet()) {
-                switch (dirtyUserRoles.get(userRole)) {
+            //the userRoles don't match the keys of dirtyUserRoles after saving (dirtyUserRoles.get(userRole) returns null for the second entry), 
+            //so dirty status for each user role is matched by the user behind the userGroup
+            Map<User, String> dirtyUsers = dirtyUserRoles.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getUser(), e -> e.getValue()));
+            for (User user : dirtyUsers.keySet()) {
+                String dirty = dirtyUsers.get(user);
+                UserRole userRole = dirtyUserRoles.keySet().stream().filter(r -> r.getUser().equals(user)).findFirst().orElse(null);
+                if (userRole == null) {
+                    logger.warn("userRole not found");
+                    return;
+                }
+                
+                switch (dirty) {
                     case "save":
                         logger.trace("Saving UserRole: {}", userRole);
                         // If this the user group is not yet persisted, add it to DB first
@@ -1159,15 +1170,15 @@ public class AdminBean implements Serializable {
      * saveCommentAction.
      * </p>
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveCommentAction(Comment comment) throws DAOException {
         logger.trace("saveCommentAction");
         if (comment.getId() != null) {
             // Set updated timestamp
-            comment.setDateUpdated(LocalDateTime.now());
-            logger.trace(comment.getText());
+            comment.setDateModified(LocalDateTime.now());
+            logger.trace(comment.getContentString());
             if (DataManager.getInstance().getDao().updateComment(comment)) {
                 Messages.info("updatedSuccessfully");
             } else {
@@ -1188,7 +1199,7 @@ public class AdminBean implements Serializable {
      * deleteCommentAction.
      * </p>
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -2070,7 +2081,7 @@ public class AdminBean implements Serializable {
         logger.trace("setTranslationGroupsEditorSession: {}", translationGroupsEditorSession);
         AdminBean.translationGroupsEditorSession = translationGroupsEditorSession;
     }
-    
+
     /**
      * 
      */
@@ -2093,14 +2104,14 @@ public class AdminBean implements Serializable {
     public boolean hasAccessPermissingForTranslationFiles() {
         return TranslationGroup.isHasFileAccess();
     }
-    
+
     /**
      * @param uploadedAvatarFile the uploadedAvatarFile to set
      */
     public void setUploadedAvatarFile(Part uploadedAvatarFile) {
         this.uploadedAvatarFile = uploadedAvatarFile;
     }
-    
+
     /**
      * @return the uploadedAvatarFile
      */

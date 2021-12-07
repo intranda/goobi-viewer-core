@@ -31,14 +31,24 @@
 		position: relative;
 	}
 	&__last-activities-wrapper {
-		padding-left: 1rem;
+	}
+	&__last-activities-placeholder-wrappper {
+		display: flex;
+		align-items: center;
+		p {
+			margin-bottom: 0;
+		}
+		.fa-rocket {
+			font-size: 60px;
+			margin-right: 5rem;
+		}
 	}
 	&__last-activities-timeline-wrapper {
 		position: relative;
 	}
 	&__last-activities-timeline-item {
 		display: grid; 
-		grid-template-columns: 1fr 1fr 1fr; 
+		grid-template-columns: 2fr 1fr 4fr; 
 		grid-template-rows: 1fr; 
 		gap: 0px 20px; 
 		grid-template-areas: ". . ."; 
@@ -64,12 +74,13 @@
 			width: 3px;
 			background: #f0f0f0;
 			left: -4px;
-			top: 0;
+			top: 6px;
 			height: 100%;
 		}
 		&:first-child {
 			&:before {
 				margin-top: 7px;
+				// display: none;
 			}	
 			&:after {
 				position: absolute;
@@ -93,6 +104,7 @@
 		&:last-child {
 			&:before {
 				top: -20px;
+				display: none;
 			}
 		}
 	}
@@ -114,6 +126,10 @@
 		justify-content: space-between;
 		flex-grow: 1;
 		padding-left: 2.5rem;
+		&.-noEntry {
+			padding-left: 0;
+		}
+		
 	}
 	&__comments-wrapper {
 		padding-left: 2rem;
@@ -147,11 +163,18 @@
 	&__comments-text {
 		flex: 0 0 100%;
 		max-width: 100%;
+		word-wrap: anywhere;
 	}
 
 	&__comments-open-record {
 		flex: 0 0 100%;
 		max-width: 100%;
+	}
+	&__sidebar-settings-button-wrapper {
+		margin-top: 2rem;
+	}
+	&__sidebar-settings-button {
+		width: 100%;
 	}
 }
 
@@ -162,7 +185,19 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.user-dashboard {
+		&__form-wrapper-container {
+			flex-wrap: wrap;
+		}
+		&__form-wrapper{
+			&.-w50 {
+				flex: 0 0 100%;
+				max-width: 100%;
+			}
+		}
+	}	
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}

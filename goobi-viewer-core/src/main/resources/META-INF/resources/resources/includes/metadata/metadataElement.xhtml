@@ -10,10 +10,12 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
+	<ui:param name="renderTitle" value="#{renderTitle == null ? true : renderTitle}"></ui:param>
+
 	    <ui:fragment rendered="#{!metadataElement.skip}">
 	        <div class="metadata__element-wrapper">
 
-    	    	<ui:fragment rendered="#{!metadataElement.hasMetadataTypeLabels(metadataBean.activeMetadataView.index)}">
+    	    	<ui:fragment rendered="#{renderTitle and !metadataElement.hasMetadataTypeLabels(metadataBean.activeMetadataView.index)}">
     	            <h3 class="metadata__elements-h3">
     	                <h:outputText value="#{msg[metadataElement.docStructTypeLabel]}" />
     	            </h3>
@@ -54,7 +56,7 @@
                                     <!-- grouped="false" -->
                                     <h:panelGroup styleClass="metadata__ungrouped-wrapper" layout="block" rendered="#{!metadata.group}">
                                         <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
-                                            <dt title="#metadata.label}">
+                                            <dt title="#{metadata.label}">
                                                 <h:outputText value="#{msg[metadata.label]}:" escape="false" />
                                             </dt>
                                             <dd>
