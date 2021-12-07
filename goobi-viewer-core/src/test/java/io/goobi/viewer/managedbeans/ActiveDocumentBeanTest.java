@@ -280,27 +280,30 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingOnePage() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
+        
         adb.setImageToShow("1");
         adb.update();
         Assert.assertTrue(adb.isRecordLoaded());
-
-        adb.getViewManager().setDoublePageMode(true);
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2/", adb.getPageUrl(1));
 
         // Next page (1 -> 2-3)
+        adb.setImageToShow("1-1");
+        adb.update();
         Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrl(1));
+        
         // Previous page (16 -> 14-15)
         adb.setImageToShow("16");
         adb.update();
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/", adb.getPageUrl(-1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/15/", adb.getPageUrl(-1));
         
         // Same in right-to-left
         adb.getViewManager().getTopStructElement().setRtl(true);
         // Next page (1 -> 2-3)
-        adb.setImageToShow("1");
+        adb.setImageToShow("1-1");
         adb.update();
         Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrl(1));
         // Previous page (16 -> 14-15)
-        adb.setImageToShow("16");
+        adb.setImageToShow("16-17");
         adb.update();
         Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/", adb.getPageUrl(-1));
         
