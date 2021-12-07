@@ -117,6 +117,11 @@ public class ActiveDocumentBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(ActiveDocumentBean.class);
 
+    /**
+     * Regex pattern 'imageToShow' matches if doublePageMode should be active
+     */
+    private static final String DOUBLE_PAGE_PATTERN = "\\d+-\\d+";
+    
     private static int imageContainerWidth = 600;
 
     private final Object lock = new Object();
@@ -337,12 +342,8 @@ public class ActiveDocumentBean implements Serializable {
             logger.debug("update(): (IDDOC {} ; page {} ; thread {})", topDocumentIddoc, imageToShow, Thread.currentThread().getId());
             prevHit = null;
             nextHit = null;
-            boolean doublePageMode = false;
+            boolean doublePageMode = isDoublePageUrl();
             titleBarMetadata.clear();
-
-            if (viewManager != null && viewManager.getCurrentStructElement() != null) {
-                doublePageMode = viewManager.isDoublePageMode();
-            }
 
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
@@ -521,6 +522,19 @@ public class ActiveDocumentBean implements Serializable {
 
     }
 
+    /**
+     * 
+     * @return true if the 'imageToShow' part of the url matches {@link #DOUBLE_PAGE_PATTERN}, 
+     * i.e. if the url suggests that double page mode is expected 
+     */
+    private boolean isDoublePageUrl() {
+        if(StringUtils.isNotBlank(imageToShow) && imageToShow.matches(DOUBLE_PAGE_PATTERN)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     /**
      * @throws PresentationException
      * @throws IndexUnreachableException

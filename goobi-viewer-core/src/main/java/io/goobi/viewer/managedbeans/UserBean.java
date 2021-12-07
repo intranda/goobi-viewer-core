@@ -1125,6 +1125,7 @@ public class UserBean implements Serializable {
     /**
      * Selects a random security question from configured list and sets <code>currentSecurityQuestion</code> to it.
      * 
+     * @return false if no security questions exist or if the current question has not yet been answered
      * @should not reset securityQuest if not yet answered
      */
     public boolean resetSecurityQuestion() {
