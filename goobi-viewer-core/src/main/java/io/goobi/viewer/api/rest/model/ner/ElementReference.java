@@ -17,10 +17,6 @@ package io.goobi.viewer.api.rest.model.ner;
 
 import java.awt.Rectangle;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -33,6 +29,7 @@ public class ElementReference {
     private final String id;
     private Rectangle coordinates;
     private String content;
+    private String uri;
     private int page;
 
     /**
@@ -128,6 +125,20 @@ public class ElementReference {
      */
     public void setContent(String content) {
         this.content = content;
+    }
+
+    /**
+     * @return the uri
+     */
+    public String getUri() {
+        return uri;
+    }
+
+    /**
+     * @param uri the uri to set
+     */
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     /**

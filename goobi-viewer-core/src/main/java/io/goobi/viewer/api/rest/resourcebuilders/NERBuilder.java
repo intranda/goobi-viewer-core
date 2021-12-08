@@ -143,10 +143,11 @@ public class NERBuilder {
                                     reference.setPage(pageOrder);
                                 }
                             }
+                            // TODO add URI to reference
                             range.addTags(tags);
                         }
                     } catch (ContentNotFoundException e) {
-                        logger.trace("No alto file " + altoFileName);
+                        logger.trace("No ALTO file: {}", altoFileName);
                     } catch (DAOException e) {
                         logger.error(e.toString());
                     }
