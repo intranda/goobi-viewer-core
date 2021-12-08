@@ -117,6 +117,11 @@ public class ActiveDocumentBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(ActiveDocumentBean.class);
 
+    /**
+     * Regex pattern 'imageToShow' matches if doublePageMode should be active
+     */
+    private static final String DOUBLE_PAGE_PATTERN = "\\d+-\\d+";
+    
     private static int imageContainerWidth = 600;
 
     private final Object lock = new Object();
@@ -337,12 +342,8 @@ public class ActiveDocumentBean implements Serializable {
             logger.debug("update(): (IDDOC {} ; page {} ; thread {})", topDocumentIddoc, imageToShow, Thread.currentThread().getId());
             prevHit = null;
             nextHit = null;
-            boolean doublePageMode = false;
+            boolean doublePageMode = isDoublePageUrl();
             titleBarMetadata.clear();
-
-            if (viewManager != null && viewManager.getCurrentStructElement() != null) {
-                doublePageMode = viewManager.isDoublePageMode();
-            }
 
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
@@ -521,6 +522,19 @@ public class ActiveDocumentBean implements Serializable {
 
     }
 
+    /**
+     * 
+     * @return true if the 'imageToShow' part of the url matches {@link #DOUBLE_PAGE_PATTERN}, 
+     * i.e. if the url suggests that double page mode is expected 
+     */
+    private boolean isDoublePageUrl() {
+        if(StringUtils.isNotBlank(imageToShow) && imageToShow.matches(DOUBLE_PAGE_PATTERN)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     /**
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -1014,9 +1028,9 @@ public class ActiveDocumentBean implements Serializable {
                 page2 = Math.min(page2, viewManager.getPageLoader().getLastPageOrder());
             }
         }
-        if (page == page2) {
-            page2 = Integer.MAX_VALUE;
-        }
+//        if (page == page2) {
+//            page2 = Integer.MAX_VALUE;
+//        }
         String range = page + (page2 != Integer.MAX_VALUE ? "-" + page2 : "");
         // logger.trace("final range: {}", range);
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
@@ -1094,7 +1108,12 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getFirstPageUrl() throws IndexUnreachableException {
         if (viewManager != null) {
-            return getPageUrl(String.valueOf(viewManager.getPageLoader().getFirstPageOrder()));
+            int image = viewManager.getPageLoader().getFirstPageOrder();
+            if(viewManager.isDoublePageMode()) {
+                return getPageUrl(image + "-" + image);
+            } else {                
+                return getPageUrl(Integer.toString(image));
+            }
         }
 
         return null;
@@ -1110,7 +1129,12 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getLastPageUrl() throws IndexUnreachableException {
         if (viewManager != null) {
-            return getPageUrl(String.valueOf(viewManager.getPageLoader().getLastPageOrder()));
+            int image = viewManager.getPageLoader().getLastPageOrder();
+            if(viewManager.isDoublePageMode()) {
+                return getPageUrl(image + "-" + image);
+            } else {                
+                return getPageUrl(Integer.toString(image));
+            }
         }
 
         return null;
@@ -1175,11 +1199,16 @@ public class ActiveDocumentBean implements Serializable {
         // Target image candidate contains two pages
         Optional<PhysicalElement> nextPage = viewManager.getPage(number);
         if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
-            return getPageUrl(String.valueOf(number));
+            return getPageUrl(String.valueOf(number) + "-" + String.valueOf(number));
         }
         // If the immediate neighbor is not a double image, add another step
         number += step;
 
+        nextPage = viewManager.getPage(number);
+        if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
+            return getPageUrl(String.valueOf(number) + "-" + String.valueOf(number));
+        }
+        
         // logger.trace("step: {}", step);
         // logger.trace("Number: {}", number);
 
@@ -2407,7 +2436,13 @@ public class ActiveDocumentBean implements Serializable {
                     Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
                     if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
                         imageToShow = currentLeftPage.get().getOrder() + "-" + currentRightPage.get().getOrder();
+                    } else if(currentLeftPage.isPresent()) {
+                        imageToShow = currentLeftPage.get().getOrder() + "-" + currentLeftPage.get().getOrder();
+                    } else if(currentRightPage.isPresent()) {
+                        imageToShow = currentRightPage.get().getOrder() + "-" + currentRightPage.get().getOrder();
                     }
+                } else if(doublePageMode) {
+                    imageToShow = String.valueOf(viewManager.getCurrentPage().getOrder() + "-" + viewManager.getCurrentPage().getOrder());
                 } else {
                     imageToShow = String.valueOf(viewManager.getCurrentPage().getOrder());
                 }

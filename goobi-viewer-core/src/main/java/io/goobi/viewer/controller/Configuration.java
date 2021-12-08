@@ -2914,15 +2914,15 @@ public final class Configuration extends AbstractConfiguration {
     public Collection<SearchSortingOption> getSearchSortingOptions() {
         Set<SearchSortingOption> options = new LinkedHashSet<>();
         //default option
-        SearchSortingOption defaultOption = new SearchSortingOption(getDefaultSortField(), true);
-        options.add(defaultOption);
-        for (String field : getSortFields()) {
-            if (!field.equals(defaultOption.getField())) {
+        String defaultField = getDefaultSortField();
+        List<String> fields = getSortFields();
+        fields.remove(defaultField);
+        fields.add(0, defaultField);
+        for (String field : fields) {
                 options.add(new SearchSortingOption(field, true));
                 if (!SolrConstants.SORT_RANDOM.equals(field) && !SolrConstants.SORT_RELEVANCE.equals(field)) {
                     options.add(new SearchSortingOption(field, false));
                 }
-            }
         }
         return options;
     }

@@ -133,17 +133,17 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
 
     /** {@inheritDoc} */
     @Override
-    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
+    public void generateSelectItems(List<SelectPageItem> dropdownPages, List<SelectPageItem> dropdownFulltext, String urlRoot,
             boolean recordBelowFulltextThreshold, Locale locale) throws IndexUnreachableException {
         List<Integer> keys = new ArrayList<>(pages.keySet());
         Collections.sort(keys);
         String labelTemplate = buildPageLabelTemplate(DataManager.getInstance().getConfiguration().getPageSelectionFormat(), locale);
         for (int key : keys) {
             PhysicalElement page = pages.get(key);
-            SelectItem si = buildPageSelectItem(labelTemplate, page.getOrder(), page.getOrderLabel(), null, null);
+            SelectPageItem si = buildPageSelectItem(labelTemplate, page.getOrder(), page.getOrderLabel(), null, null);
             dropdownPages.add(si);
             if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !page.isFulltextAvailable())) {
-                SelectItem full = buildPageSelectItem(labelTemplate, page.getOrder(), page.getOrderLabel(), null, null);
+                SelectPageItem full = buildPageSelectItem(labelTemplate, page.getOrder(), page.getOrderLabel(), null, null);
                 dropdownFulltext.add(full);
             }
         }

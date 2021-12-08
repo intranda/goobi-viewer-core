@@ -147,8 +147,7 @@
 	                            <li class="image-controls__action select">
 	                                <div class="custom-control custom-control--select">
 	                                        <!-- Image view select -->
-	                                        <h:selectOneMenu rendered="#{navigationHelper.currentPage != 'fulltext'}"
-	                                            onchange="location.href='#{activeDocumentBean.getPageUrlByType(navigationHelper.currentView)}' + $(this).val(); + '/';"
+	                                        <h:selectOneMenu id="pageDropdown" rendered="#{navigationHelper.currentPage != 'fulltext'}"
 	                                            value="#{activeDocumentBean.viewManager.dropdownSelected}">
                                                 <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
                                                 <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__select_page}"/>
@@ -163,6 +162,17 @@
 	                                </div>
 	                            </li>
                             </ui:fragment>
+                            
+                            <script>
+                            
+                            $("#j_idt372\\:pageDropdown").on("change", e => {
+                                let urlBase = "#{activeDocumentBean.getPageUrlByType(navigationHelper.currentView)}"
+                                let pageNo = $(e.target).val();
+                                console.log("change ", urlBase, pageNo);
+                                location.href = urlBase + pageNo + "/";
+                            })
+                            
+                            </script>
 
                             <!-- NEXT PAGE -->
                             <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">

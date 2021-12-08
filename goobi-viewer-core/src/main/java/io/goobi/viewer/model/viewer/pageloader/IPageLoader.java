@@ -118,6 +118,6 @@ public interface IPageLoader {
      * @param recordBelowFulltextThreshold a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
+    public void generateSelectItems(List<SelectPageItem> dropdownPages, List<SelectPageItem> dropdownFulltext, String urlRoot,
             boolean recordBelowFulltextThreshold, Locale locale) throws IndexUnreachableException;
 }
