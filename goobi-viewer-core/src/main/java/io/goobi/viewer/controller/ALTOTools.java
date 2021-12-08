@@ -119,20 +119,22 @@ public class ALTOTools {
      * @return a {@link java.util.List} object.
      */
     public static List<TagCount> getNERTags(String alto, NERTag.Type type) {
-        List<TagCount> tags = new ArrayList<>();
+        List<TagCount> ret = new ArrayList<>();
         try {
             AltoDocument doc = AltoDocument.getDocumentFromString(alto);
             for (Tag tag : doc.getTags().getTagsAsList()) {
                 if (type == null) {
-                    addTags(createNERTag(tag), tags);
+                    addTags(createNERTag(tag), ret);
                 } else if (type.matches(tag.getType())) {
-                    addTags(createNERTag(tag), tags);
+                    addTags(createNERTag(tag), ret);
                 }
             }
         } catch (Throwable e) {
-            logger.trace("Error loading alto from \n\"" + alto + "\"");
+            logger.error(e.getMessage());
+            logger.trace("Error loading ALTO from XML:\n{}", alto);
         }
-        return tags;
+
+        return ret;
     }
 
     /**
@@ -156,23 +158,24 @@ public class ALTOTools {
      * @param solrDoc
      * @return
      */
+    @SuppressWarnings("rawtypes")
     private static List<TagCount> createNERTag(Tag tag) {
         String value = tag.getLabel();
         value = value.replaceAll(TAG_LABEL_IGNORE_REGEX, "");
         Type type = Type.getType(tag.getType());
         ElementReference element = null;
 
-        List<TagCount> nerTags = new ArrayList<>();
+        List<TagCount> ret = new ArrayList<>(tag.getReferences().size());
         for (GeometricData reference : tag.getReferences()) {
-
             String elementId = reference.getId();
             Rectangle elementCoordinates = reference.getRect().getBounds();
             String elementContent = reference.getContent();
-            element = new ElementReference(elementId, elementCoordinates, elementContent);
+            element = new ElementReference(elementId, elementCoordinates, elementContent, tag.getUri());
             TagCount nerTag = new TagCount(value, type, element);
-            nerTags.add(nerTag);
+            ret.add(nerTag);
         }
-        return nerTags;
+
+        return ret;
     }
 
     /**

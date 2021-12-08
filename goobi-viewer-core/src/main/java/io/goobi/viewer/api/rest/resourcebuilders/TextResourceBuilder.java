@@ -131,6 +131,15 @@ public class TextResourceBuilder {
 
     }
 
+    /**
+     * 
+     * @param pi
+     * @param fileName
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentNotFoundException
+     */
     public String getAltoDocument(String pi, String fileName) throws PresentationException,
             IndexUnreachableException, ContentNotFoundException {
         // logger.trace("getAltoDocument: {}/{}", pi, fileName);
@@ -142,9 +151,9 @@ public class TextResourceBuilder {
         }
 
         try {
-            return FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
-            //                Document doc = XmlTools.readXmlFile(file);
-            //                return new XMLOutputter().outputString(doc);
+            String charset = FileTools.getCharset(file);
+            logger.trace(file.toAbsolutePath().toString());
+            return FileTools.getStringFromFile(file.toFile(), charset != null ? charset : StringTools.DEFAULT_ENCODING);
         } catch (FileNotFoundException e) {
             logger.debug(e.getMessage());
             throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
