@@ -73,7 +73,7 @@ public class DamerauLevenshtein
         }
  
         calculated = true;
-        displayMatrix();
+        //displayMatrix();
     }
      
     private void displayMatrix()

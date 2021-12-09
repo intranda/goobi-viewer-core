@@ -60,6 +60,7 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
@@ -997,8 +998,26 @@ public final class SearchHelper {
                     break;
                 }
                 if (searchTerm.matches("[\\w-]+~\\d")) {
-                    String word = searchTerm.replaceAll("([\\w-]+)~\\d", "$1");
-                    int distance = 
+                    String searchWord = searchTerm.replaceAll("([\\w-]+)~\\d", "$1").toLowerCase();
+                    int maxDistance = Integer.parseInt(searchTerm.replaceAll("[\\w-]+~(\\d)", "$1"));
+                    Matcher m = Pattern.compile("[\\w-]+").matcher(fulltext.toLowerCase());
+                    int lastIndex = -1;
+                    while(m.find()) {
+                        String word = m.group();
+                        if(Math.abs(word.length() - searchWord.length()) > maxDistance) {
+                            continue;
+                        }
+                        int distance = new DamerauLevenshtein(word, searchWord).getSimilarity();
+                        if(distance <= maxDistance) {
+                            if (lastIndex != -1 && m.start() <= lastIndex + searchTerm.length()) {
+                                continue;
+                            }
+                            lastIndex = createFulltextFragment(m, fulltext, word, targetFragmentLength, ret);
+                            if (firstMatchOnly) {
+                                break;
+                            }
+                        }
+                    }
                 } else {
                     Matcher m = Pattern.compile(searchTerm.toLowerCase()).matcher(fulltext.toLowerCase());
                     int lastIndex = -1;
@@ -1007,42 +1026,7 @@ public final class SearchHelper {
                         if (lastIndex != -1 && m.start() <= lastIndex + searchTerm.length()) {
                             continue;
                         }
-                        int indexOfTerm = m.start();
-                        lastIndex = m.start();
-
-                        // fulltextFragment = getTextFragmentFromLine(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
-                        fulltextFragment = getTextFragmentRandomized(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
-                        // fulltextFragment = getTextFragmentStatic(fulltext, targetFragmentLength, fulltextFragment, searchTerm,
-                        // indexOfTerm);
-
-                        indexOfTerm = fulltextFragment.toLowerCase().indexOf(searchTerm.toLowerCase());
-                        int indexOfSpace = fulltextFragment.indexOf(' ');
-                        if (indexOfTerm > indexOfSpace && indexOfSpace >= 0) {
-                            fulltextFragment = fulltextFragment.substring(indexOfSpace, fulltextFragment.length());
-                        }
-
-                        indexOfTerm = fulltextFragment.toLowerCase().indexOf(searchTerm.toLowerCase());
-
-                        if (indexOfTerm < fulltextFragment.lastIndexOf(' ')) {
-                            fulltextFragment = fulltextFragment.substring(0, fulltextFragment.lastIndexOf(' '));
-                        }
-
-                        indexOfTerm = fulltextFragment.toLowerCase().indexOf(searchTerm.toLowerCase());
-                        if (indexOfTerm >= 0) {
-                            fulltextFragment = applyHighlightingToPhrase(fulltextFragment, searchTerm);
-                            fulltextFragment = replaceHighlightingPlaceholders(fulltextFragment);
-                        }
-                        if (StringUtils.isNotBlank(fulltextFragment)) {
-                            // Check for unclosed HTML tags
-                            int lastIndexOfLT = fulltextFragment.lastIndexOf('<');
-                            int lastIndexOfGT = fulltextFragment.lastIndexOf('>');
-                            if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
-                                fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
-                            }
-                            // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
-                            // fulltextFragment = fulltextFragment.replace("<br>", " ");
-                            ret.add(fulltextFragment);
-                        }
+                        lastIndex = createFulltextFragment(m, fulltext, searchTerm, targetFragmentLength, ret);
                         if (firstMatchOnly) {
                             break;
                         }
@@ -1081,6 +1065,46 @@ public final class SearchHelper {
         }
 
         return ret;
+    }
+    
+    private static int createFulltextFragment( Matcher m, String fulltext, String searchTerm, int targetFragmentLength, List<String> ret) {
+        int indexOfTerm = m.start();
+        int lastIndex = m.start();
+
+        // fulltextFragment = getTextFragmentFromLine(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
+        String fragment = getTextFragmentRandomized(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
+        // fulltextFragment = getTextFragmentStatic(fulltext, targetFragmentLength, fulltextFragment, searchTerm,
+        // indexOfTerm);
+
+        indexOfTerm = fragment.toLowerCase().indexOf(searchTerm.toLowerCase());
+        int indexOfSpace = fragment.indexOf(' ');
+        if (indexOfTerm > indexOfSpace && indexOfSpace >= 0) {
+            fragment = fragment.substring(indexOfSpace, fragment.length());
+        }
+
+        indexOfTerm = fragment.toLowerCase().indexOf(searchTerm.toLowerCase());
+
+        if (indexOfTerm < fragment.lastIndexOf(' ')) {
+            fragment = fragment.substring(0, fragment.lastIndexOf(' '));
+        }
+
+        indexOfTerm = fragment.toLowerCase().indexOf(searchTerm.toLowerCase());
+        if (indexOfTerm >= 0) {
+            fragment = applyHighlightingToPhrase(fragment, searchTerm);
+            fragment = replaceHighlightingPlaceholders(fragment);
+        }
+        if (StringUtils.isNotBlank(fragment)) {
+            // Check for unclosed HTML tags
+            int lastIndexOfLT = fragment.lastIndexOf('<');
+            int lastIndexOfGT = fragment.lastIndexOf('>');
+            if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
+                fragment = fragment.substring(0, lastIndexOfLT).trim();
+            }
+            // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+            // fulltextFragment = fulltextFragment.replace("<br>", " ");
+            ret.add(fragment);
+        }
+        return lastIndex;
     }
 
     /**
