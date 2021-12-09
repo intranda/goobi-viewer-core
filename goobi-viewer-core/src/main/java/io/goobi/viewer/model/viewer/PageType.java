@@ -180,7 +180,7 @@ public enum PageType {
      * @return a boolean.
      */
     public boolean isCmsPage() {
-        try {            
+        try {
             switch (this) {
                 case editContent:
                 case editHistory:
@@ -196,7 +196,7 @@ public enum PageType {
                 default:
                     return false;
             }
-        } catch(NoClassDefFoundError e) {
+        } catch (NoClassDefFoundError e) {
             //Gets thrown under some conditions for some reason. For now just ignore
             return false;
         }
@@ -210,21 +210,26 @@ public enum PageType {
      * @return a boolean.
      */
     public boolean isDocumentPage() {
-        switch (this) {
-            case editContent:
-            case editHistory:
-            case editOcr:
-            case viewCalendar:
-            case viewFullscreen:
-            case viewFulltext:
-            case viewImage:
-            case viewMetadata:
-            case viewThumbs:
-            case viewToc:
-            case viewObject:
-                return true;
-            default:
-                return false;
+        try {
+            switch (this) {
+                case editContent:
+                case editHistory:
+                case editOcr:
+                case viewCalendar:
+                case viewFullscreen:
+                case viewFulltext:
+                case viewImage:
+                case viewMetadata:
+                case viewThumbs:
+                case viewToc:
+                case viewObject:
+                    return true;
+                default:
+                    return false;
+            }
+        } catch (NoClassDefFoundError e) {
+            //Gets thrown under some conditions for some reason. For now just ignore
+            return false;
         }
     }
 

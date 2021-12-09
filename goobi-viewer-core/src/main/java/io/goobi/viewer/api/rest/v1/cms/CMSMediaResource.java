@@ -438,8 +438,8 @@ public class CMSMediaResource {
     /**
      * @param item
      */
-    private void removeFromImageCache(CMSMediaItem item) {
-        String identifier = DataManager.getInstance().getConfiguration().getCmsMediaFolder() + "_" + item.getFileName().replace(".", "-");
+    public static void removeFromImageCache(CMSMediaItem item) {
+        String identifier = DataManager.getInstance().getConfiguration().getCmsMediaFolder() + "_" + item.getFileName().replace(".", "-").replaceAll("\\s", "");
         CacheUtils.deleteFromCache(identifier, true, true);
     }
 

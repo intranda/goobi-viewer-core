@@ -44,6 +44,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.api.rest.v1.cms.CMSMediaResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -271,6 +272,8 @@ public class CmsMediaBean implements Serializable {
                 }
                 if(!deleted) {
                     Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
+                } else {
+                    CMSMediaResource.removeFromImageCache(item);
                 }
                 reloadMediaList(false);
             } catch (RollbackException e) {
