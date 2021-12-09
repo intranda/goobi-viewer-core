@@ -324,7 +324,7 @@ public class SearchQueryItem implements Serializable {
     public void setValue(String value) {
         this.value = StringTools.stripJS(value);
         if(StringUtils.isNotBlank(this.value) && !this.value.contains(" ")) {            
-            this.value = SearchHelper.addFuzzySearchToken(this.value, 1);
+            this.value = SearchHelper.addFuzzySearchToken(this.value);
         }
     }
 
