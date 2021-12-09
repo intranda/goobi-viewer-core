@@ -124,12 +124,13 @@
                             errorClass="cms-module__option-message-status danger" />
                         <h:inputSecret 
                                 id="feedbackSecurityQuestion" 
-                                styleClass="form-control" 
+                                styleClass="form-control"
                                 autocomplete="off"
                                 value="#{userBean.securityAnswer}" 
                                 required="true"
                                 requiredMessage="#{msg.user__security_question_required_msg}">
                             <f:passThroughAttribute name="aria-labelledby" value="feedbackSecurityQuestion" />
+                            <f:passThroughAttribute name="autocomplete" value="new-password" />
                         </h:inputSecret>
                         </div>
                     </div>
