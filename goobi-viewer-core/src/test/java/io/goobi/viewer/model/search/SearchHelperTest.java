@@ -380,6 +380,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertTrue(fragment.contains("<span class=\"search-list--highlight\">beats</span>"));
         }
     }
+    
+    @Test
+    public void truncateFulltext_shouldFindFuzzySearchTermsCorrectly() throws Exception {
+        String original = LOREM_IPSUM;
+        String[] terms = { "dolor~1" };
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true);
+        Assert.assertEquals(4, truncated.size());
+        Assert.assertEquals(2, truncated.stream().filter(t -> t.contains("<span class=\"search-list--highlight\">dolor</span>")).count());
+        Assert.assertEquals(2, truncated.stream().filter(t -> t.contains("<span class=\"search-list--highlight\">dolore</span>")).count());
+    }
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)

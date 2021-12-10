@@ -997,18 +997,13 @@ public final class SearchHelper {
                     fulltextFragment += " ";
                     break;
                 }
-                if (searchTerm.matches("[\\w-]+~\\d")) {
-                    String searchWord = searchTerm.replaceAll("([\\w-]+)~\\d", "$1").toLowerCase();
-                    int maxDistance = Integer.parseInt(searchTerm.replaceAll("[\\w-]+~(\\d)", "$1"));
+                if (FuzzySearchTerm.isFuzzyTerm(searchTerm)) {
+                    FuzzySearchTerm fuzzySearchTerm = new FuzzySearchTerm(searchTerm);
                     Matcher m = Pattern.compile("[\\w-]+").matcher(fulltext.toLowerCase());
                     int lastIndex = -1;
                     while(m.find()) {
                         String word = m.group();
-                        if(Math.abs(word.length() - searchWord.length()) > maxDistance) {
-                            continue;
-                        }
-                        int distance = new DamerauLevenshtein(word, searchWord).getSimilarity();
-                        if(distance <= maxDistance) {
+                        if(fuzzySearchTerm.matches(word)) {
                             if (lastIndex != -1 && m.start() <= lastIndex + searchTerm.length()) {
                                 continue;
                             }
@@ -1035,7 +1030,7 @@ public final class SearchHelper {
             }
 
             // If no search term has been found (i.e. when searching for a phrase), make sure no empty string gets delivered
-            if (addFragmentIfNoMatches && StringUtils.isEmpty(fulltextFragment)) {
+            if (addFragmentIfNoMatches && ret.isEmpty()) {
                 if (fulltext.length() > 200) {
                     fulltextFragment = fulltext.substring(0, 200);
                 } else {
@@ -1126,6 +1121,9 @@ public final class SearchHelper {
 
         String highlightedValue = phrase;
         for (String term : terms) {
+            //remove fuzzy search suffix
+            FuzzySearchTerm fuzzyTerm = new FuzzySearchTerm(term);
+            term = fuzzyTerm.getTerm();
             // Highlighting single-character terms can take a long time, so skip them
             if (term.length() < 2) {
                 continue;
@@ -1133,13 +1131,40 @@ public final class SearchHelper {
             term = SearchHelper.removeTruncation(term);
             String normalizedPhrase = normalizeString(phrase);
             String normalizedTerm = normalizeString(term);
-            if (StringUtils.contains(normalizedPhrase, normalizedTerm)) {
+            if (contains(normalizedPhrase, normalizedTerm, fuzzyTerm.getMaxDistance())) {
                 highlightedValue = SearchHelper.applyHighlightingToPhrase(highlightedValue, term);
                 // logger.trace("highlighted value: {}", highlightedValue);
             }
         }
 
         return highlightedValue;
+    }
+
+    /**
+     * if maxDistance <= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. 
+     * Otherwise check if the phrase contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
+     * 
+     * @param normalizedPhrase
+     * @param normalizedTerm
+     * @param maxDistance
+     * @return
+     */
+    public static boolean contains(String phrase, String term, int maxDistance) {
+        if(maxDistance > 0 && StringUtils.isNoneBlank(phrase, term)) {
+            Matcher matcher = Pattern.compile("[\\w-]+").matcher(phrase);
+            while(matcher.find()) {
+                String word = matcher.group();
+                if(Math.abs(word.length() - term.length()) <= maxDistance) {                    
+                    int distance = new DamerauLevenshtein(word, term).getSimilarity();
+                    if(distance <= maxDistance) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else {
+            return StringUtils.contains(phrase, term);
+        }
     }
 
     /**
@@ -1809,6 +1834,12 @@ public final class SearchHelper {
         return ret;
     }
 
+    /**
+     * Remove '*' at the start or end of the given value
+     * 
+     * @param value
+     * @return
+     */
     public static String removeTruncation(String value) {
         if (StringUtils.isEmpty(value)) {
             return value;

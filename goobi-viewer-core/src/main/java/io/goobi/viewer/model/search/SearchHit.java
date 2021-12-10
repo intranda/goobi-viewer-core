@@ -27,7 +27,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -237,6 +239,8 @@ public class SearchHit implements Comparable<SearchHit> {
         if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
             docstructType = DocType.METADATA.name();
         }
+        
+        searchTerms = getActualSearchTerms(searchTerms, se.getMetadataFields());
 
         List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(docstructType);
         BrowseElement browseElement = new BrowseElement(se, metadataList, locale,
@@ -287,6 +291,39 @@ public class SearchHit implements Comparable<SearchHit> {
             }
         }
         return hit;
+    }
+
+    /**
+     * replaces any terms with a fuzzy search token with the matching strings found in the valus of fields
+     * 
+     * @param origTerms
+     * @param fields 
+     * @return
+     */
+    private static Map<String, Set<String>> getActualSearchTerms(Map<String, Set<String>> origTerms, Map<String, List<String>> resultFields) {
+        String foundValues = resultFields.values().stream().flatMap(l -> l.stream()).collect(Collectors.joining(" "));
+        Map<String, Set<String>> newFieldTerms = new HashMap<>();
+        for (String  solrField : origTerms.keySet()) {
+            Set<String> newTerms = new HashSet<String>();
+            Set<String> terms = origTerms.get(solrField);
+            for(String term : terms) {
+                term = term.replaceAll("^\\(|\\)$", "");
+                if(FuzzySearchTerm.isFuzzyTerm(term)) {
+                    FuzzySearchTerm fuzzy = new FuzzySearchTerm(term);
+                    Matcher m = Pattern.compile("[\\w-]+").matcher(foundValues);
+                    while(m.find()) {
+                        String word = m.group();
+                        if(fuzzy.matches(word)) {
+                            newTerms.add(word);
+                        }
+                    }
+                } else {
+                    newTerms.add(term);
+                }
+            }
+            newFieldTerms.put(solrField, newTerms);
+        }
+        return newFieldTerms;
     }
 
     /**
