@@ -105,7 +105,7 @@
         <eclipselink.version>2.7.9</eclipselink.version>
         <h2.version>1.4.200</h2.version>
         <httpclient.version>4.5.13</httpclient.version>
-        <httpcore.version>4.4.14</httpcore.version>
+        <httpcore.version>4.4.15</httpcore.version>
         <httpunit.version>1.7.3</httpunit.version>
         <icu.version>70.1</icu.version>
         <inject.version>1</inject.version>
