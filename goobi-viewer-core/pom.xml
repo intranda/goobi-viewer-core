@@ -140,6 +140,7 @@
         <prettyfaces.version>3.5.1.Final</prettyfaces.version>
         <rome.version>1.16.0</rome.version>
         <slf4j.version>1.7.32</slf4j.version>
+        <log4j.version>2.15.0</log4j.version>
         <solr.version>8.11.0</solr.version>
         <saml-client.version>4.0.0</saml-client.version>
         <swagger.version>2.1.11</swagger.version>
@@ -611,7 +612,22 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
-		</dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-solrj</artifactId>
@@ -744,6 +760,11 @@
                                 <!-- rewrite-servlet is used by prettyfaces -->
 								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-integration-faces</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-servlet</ignoredUnusedDeclaredDependency>
+
+                                <!-- log4j is used, not directly but via slf4j -->
+                                <ignoredUnusedDeclaredDependency>org.apache.logging.log4j:log4j-core</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.apache.logging.log4j:log4j-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.apache.logging.log4j:log4j-slf4j-impl</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 						</configuration>
 					</execution>
