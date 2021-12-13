@@ -104,7 +104,22 @@ public class TextResourceBuilder {
         String foldername = DataManager.getInstance().getConfiguration().getFulltextFolder();
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder();
         List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null);
-        return writeZipFile(files, filename);
+        if(files.isEmpty()) {
+            File tempFolder = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_fulltext_" + System.currentTimeMillis());
+            tempFolder.mkdir();
+            Map<Path, String> map = this.getFulltextMap(pi);
+            List<Path> tempFiles = new ArrayList<>();
+            for (Path pagePath : map.keySet()) {
+                String text = map.get(pagePath);
+                File tempFile = new File(tempFolder, FilenameUtils.getBaseName(pagePath.getFileName().toString()) + ".txt");
+                FileUtils.write(tempFile, text, "utf-8");
+                tempFiles.add(tempFile.toPath());
+            }
+            tempFiles.sort((f1,f2) -> f1.getFileName().toString().compareTo(f2.getFileName().toString()));
+            return writeZipFile(tempFiles, filename);
+        } else {            
+            return writeZipFile(files, filename);
+        }
 
     }
 

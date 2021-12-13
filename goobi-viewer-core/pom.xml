@@ -82,11 +82,11 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.8</alto.version>
-		<ics.version>3.1.0</ics.version>
-		<tei-conversion.version>1.2.0</tei-conversion.version>
+		<ics.version>3.1.1</ics.version>
+		<tei-conversion.version>1.2.1</tei-conversion.version>
 
 		<iiif-api-model.version>2.1.0</iiif-api-model.version>
-		<normdataimporter.version>1.8.0</normdataimporter.version>
+		<normdataimporter.version>1.9.0</normdataimporter.version>
 
         <!-- other libraries -->
         <cdi.version>2.0.SP1</cdi.version>
@@ -105,7 +105,7 @@
         <eclipselink.version>2.7.9</eclipselink.version>
         <h2.version>1.4.200</h2.version>
         <httpclient.version>4.5.13</httpclient.version>
-        <httpcore.version>4.4.14</httpcore.version>
+        <httpcore.version>4.4.15</httpcore.version>
         <httpunit.version>1.7.3</httpunit.version>
         <icu.version>70.1</icu.version>
         <inject.version>1</inject.version>
@@ -122,12 +122,12 @@
         <!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
         <javax.jstl.version>1.2</javax.jstl.version>
         <jaxb-runtime.version>2.3.5</jaxb-runtime.version>
-        <jdom2.version>2.0.6</jdom2.version>
+        <jdom2.version>2.0.6.1</jdom2.version>
         <jersey.version>2.35</jersey.version>
         <jersey-guava.version>2.26-b03</jersey-guava.version>
         <jgravatar.version>1.2</jgravatar.version>
         <!-- https://github.com/stleary/JSON-java -->
-        <json.version>20210307</json.version>
+        <json.version>20211205</json.version>
         <jsoup.version>1.14.3</jsoup.version>
         <junit.version>4.13.2</junit.version>
         <mariadb-java-client.version>2.3.0</mariadb-java-client.version>
@@ -140,10 +140,11 @@
         <prettyfaces.version>3.5.1.Final</prettyfaces.version>
         <rome.version>1.16.0</rome.version>
         <slf4j.version>1.7.32</slf4j.version>
+        <log4j.version>2.15.0</log4j.version>
         <solr.version>8.11.0</solr.version>
         <saml-client.version>4.0.0</saml-client.version>
         <swagger.version>2.1.11</swagger.version>
-        <tomcat.version>9.0.55</tomcat.version>
+        <tomcat.version>9.0.56</tomcat.version>
         <weld-servlet-shaded.version>3.1.8.Final</weld-servlet-shaded.version>
         <xerces.version>2.12.1</xerces.version>
         <xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
@@ -611,7 +612,22 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
-		</dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-solrj</artifactId>
@@ -744,6 +760,11 @@
                                 <!-- rewrite-servlet is used by prettyfaces -->
 								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-integration-faces</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-servlet</ignoredUnusedDeclaredDependency>
+
+                                <!-- log4j is used, not directly but via slf4j -->
+                                <ignoredUnusedDeclaredDependency>org.apache.logging.log4j:log4j-core</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.apache.logging.log4j:log4j-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.apache.logging.log4j:log4j-slf4j-impl</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 						</configuration>
 					</execution>
