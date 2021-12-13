@@ -468,7 +468,7 @@ public class DataFileTools {
                     })
                     .filter(array -> Integer.parseInt(array[0]) < 400)
                     .map(array -> array[1])
-                    .orElseThrow(() -> new ContentNotFoundException("Resource not found")), null);
+                    .orElseThrow(() -> new ContentNotFoundException("Resource not found")), "");
         }
     }
 

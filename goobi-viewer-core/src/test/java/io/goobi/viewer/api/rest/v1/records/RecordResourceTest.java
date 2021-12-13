@@ -54,12 +54,12 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
  * @author florian
  *
  */
-public class RecordResourceTest extends AbstractRestApiTest{
+public class RecordResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "74241";
     private static final String PI_ANNOTATIONS = "PI_1";
     private static final String PI_NER = "PPN743674162";
-    
+
     /**
      * @throws java.lang.Exception
      */
@@ -81,7 +81,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
      */
     @Test
     public void testGetRISAsFile() {
-        try(Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_FILE).params(PI).build())
+        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_FILE).params(PI).build())
                 .request()
                 .get()) {
             assertEquals("Should return status 200", 200, response.getStatus());
@@ -90,7 +90,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
             assertTrue(entity.contains("TY  - BOOK"));
             assertTrue(entity.contains("CN  - 74241"));
             String fileName = PI + "_LOG_0000.ris";
-            assertEquals( "attachment; filename=\"" + fileName + "\"", response.getHeaderString("Content-Disposition"));
+            assertEquals("attachment; filename=\"" + fileName + "\"", response.getHeaderString("Content-Disposition"));
         }
     }
 
@@ -99,7 +99,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
      */
     @Test
     public void testGetRISAsText() {
-        try(Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_TEXT).params(PI).build())
+        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_TEXT).params(PI).build())
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
                 .get()) {
@@ -116,7 +116,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
      */
     @Test
     public void testGetTOCAsText() {
-        try(Response response = target(urls.path(RECORDS_RECORD, RECORDS_TOC).params(PI).build())
+        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_TOC).params(PI).build())
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
                 .get()) {
@@ -130,12 +130,13 @@ public class RecordResourceTest extends AbstractRestApiTest{
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getAnnotationsForRecord(java.lang.String)}.
-     * @throws JsonProcessingException 
-     * @throws JsonMappingException 
+     * 
+     * @throws JsonProcessingException
+     * @throws JsonMappingException
      */
     @Test
     public void testGetAnnotationsForRecord() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(PI_ANNOTATIONS).build())
+        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(PI_ANNOTATIONS).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -148,25 +149,26 @@ public class RecordResourceTest extends AbstractRestApiTest{
         }
     }
 
-
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getCommentsForRecord(java.lang.String)}.
-     * @throws JsonProcessingException 
-     * @throws JsonMappingException 
+     * 
+     * @throws JsonProcessingException
+     * @throws JsonMappingException
      */
     @Test
     public void testGetCommentsForRecord() throws JsonMappingException, JsonProcessingException {
-         
+
     }
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getCommentPageForRecord()}.
-     * @throws JsonProcessingException 
-     * @throws JsonMappingException 
+     * 
+     * @throws JsonProcessingException
+     * @throws JsonMappingException
      */
     @Test
     public void testGetCommentPageForRecord() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(PI_ANNOTATIONS).build() + "1/")
+        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(PI_ANNOTATIONS).build() + "1/")
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -185,7 +187,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
     //TODO: read some actual mets file from test index
     @Test
     public void testGetSource() {
-        try(Response response = target(urls.path(RECORDS_RECORD, RECORDS_METADATA_SOURCE).params(PI).build())
+        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_METADATA_SOURCE).params(PI).build())
                 .request()
                 .accept(MediaType.TEXT_XML)
                 .get()) {
@@ -197,11 +199,11 @@ public class RecordResourceTest extends AbstractRestApiTest{
             assertEquals("No source file found for 74241", error.getString("message"));
         }
     }
-    
-    @Test 
-    public void testGetManifest() throws JsonMappingException, JsonProcessingException {
+
+    @Test
+    public void testGetManifest() {
         String url = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(PI).build();
-        try(Response response = target(url)
+        try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -213,15 +215,15 @@ public class RecordResourceTest extends AbstractRestApiTest{
             String id = manifest.getString("@id");
             assertEquals(url, id);
 
-//            Manifest manifest = mapper.readValue(entity, Manifest.class);
-//            assertEquals(URI.create(url), manifest.getId());
+            //            Manifest manifest = mapper.readValue(entity, Manifest.class);
+            //            assertEquals(URI.create(url), manifest.getId());
         }
     }
-    
-    @Test 
+
+    @Test
     public void testGetLayer() throws JsonMappingException, JsonProcessingException {
         String url = urls.path(RECORDS_RECORD, RECORDS_LAYER).params(PI, "ALTO").build();
-        try(Response response = target(url)
+        try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -233,15 +235,15 @@ public class RecordResourceTest extends AbstractRestApiTest{
             assertEquals(URI.create(url), layer.getId());
         }
     }
-    
-    @Test 
-    public void testGetNERTags() throws JsonMappingException, JsonProcessingException {
+
+    @Test
+    public void testGetNERTags() {
         String url = urls.path(RECORDS_RECORD, RECORDS_NER_TAGS).params(PI_NER).build();
-        try(Response response = target(url)
+        try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
+            assertEquals("Should return status 200: " + response.getStatusInfo().getReasonPhrase(), 200, response.getStatus());
             assertNotNull("Should return user object as json", response.getEntity());
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
@@ -250,17 +252,17 @@ public class RecordResourceTest extends AbstractRestApiTest{
             assertEquals(322, doc.getJSONArray("pages").length());
         }
     }
-    
-//    @Test
+
+    //    @Test
     public void testGetRequiredPrivilege() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURI()).thenReturn("/viewer/api/v1/records/PPN615391702/manifest/");
-        Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8082/viewer/api/v1/records/PPN615391702/manifest/"));;
-    
+        Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8082/viewer/api/v1/records/PPN615391702/manifest/"));
+
         ApiUrls urls = new ApiUrls("http://localhost:8082/viewer/api/v1");
-        
+
         new RecordResource(request, "");
-    
+
     }
 
 }
