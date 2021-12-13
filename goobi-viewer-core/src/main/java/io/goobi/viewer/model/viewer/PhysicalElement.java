@@ -147,6 +147,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private String fullText;
     /** XML document containing the ALTO document for this page. Saved into a variable so it doesn't have to be expensively loaded multiple times. */
     private String altoText;
+    /** ALTO file charset (determined when loading). */
+    private String altoCharset;
     /** Format of the loaded word coordinates XML document. */
     private CoordsFormat wordCoordsFormat = CoordsFormat.UNCHECKED;
     /** Data repository name for the record to which this page belongs. */
@@ -880,7 +882,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
             // Load XML document
             try {
-                altoText = loadAlto();
+                StringPair alto = loadAlto();
+                altoText = alto.getOne();
+                altoCharset = alto.getTwo();
                 fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
                 fulltextAccessPermission = false;
@@ -891,7 +895,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
         if (StringUtils.isNotEmpty(altoText)) {
             wordCoordsFormat = CoordsFormat.ALTO;
-            String text = ALTOTools.getFulltext(altoText, false, null);
+            String text = ALTOTools.getFulltext(altoText, altoCharset, false, null);
             if (StringUtils.isNotEmpty(text)) {
                 String cleanText = StringTools.stripJS(text);
                 if (cleanText.length() < text.length()) {
@@ -1022,7 +1026,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         if (altoText != null) {
-            return ALTOTools.getWordCoords(altoText, searchTerms, rotation);
+            return ALTOTools.getWordCoords(altoText, altoCharset, searchTerms, rotation);
         }
         wordCoordsFormat = CoordsFormat.NONE;
 
@@ -1032,7 +1036,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * Loads ALTO data for this page via the REST service, if not yet loaded.
      *
-     * @return true if ALTO successfully loaded; false otherwise
+     * @return StringPair(ALTO,charset)
      * @should load and set alto correctly
      * @should set wordCoordsFormat correctly
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
@@ -1042,7 +1046,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public String loadAlto()
+    public StringPair loadAlto()
             throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("loadAlto: {}", altoFileName);
         if (altoFileName == null) {
@@ -1052,20 +1056,22 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         try {
-            altoText = DataFileTools.loadAlto(altoFileName);
+            StringPair alto = DataFileTools.loadAlto(altoFileName);
             //Text from alto is always plain text
             textContentType = "text/plain";
-            if (altoText != null) {
+            if (alto != null) {
+                altoText = alto.getOne();
+                altoCharset = alto.getTwo();
                 wordCoordsFormat = CoordsFormat.ALTO;
             }
-            return altoText;
+            return alto;
         } catch (ContentNotFoundException e) {
             logger.error(e.getMessage());
         } catch (PresentationException e) {
             logger.error(e.getMessage());
         }
 
-        return "";
+        return new StringPair("", null);
     }
 
     /**
@@ -1536,7 +1542,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CrowdsourcingAnnotation> getComments() throws DAOException {
-        List<CrowdsourcingAnnotation> comments = DataManager.getInstance().getDao().getAnnotationsForTarget(this.pi, this.order, Motivation.COMMENTING);
+        List<CrowdsourcingAnnotation> comments =
+                DataManager.getInstance().getDao().getAnnotationsForTarget(this.pi, this.order, Motivation.COMMENTING);
         Collections.sort(comments, (c1, c2) -> c1.getDateCreated().compareTo(c2.getDateCreated()));
         //        Collections.reverse(comments);
         return comments;

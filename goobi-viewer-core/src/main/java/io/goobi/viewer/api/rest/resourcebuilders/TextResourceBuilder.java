@@ -71,6 +71,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.UncheckedPresentationException;
 import io.goobi.viewer.model.translations.language.Language;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -135,12 +136,12 @@ public class TextResourceBuilder {
      * 
      * @param pi
      * @param fileName
-     * @return
+     * @return StringPair(ALTO,charset)
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws ContentNotFoundException
      */
-    public String getAltoDocument(String pi, String fileName) throws PresentationException,
+    public StringPair getAltoDocument(String pi, String fileName) throws PresentationException,
             IndexUnreachableException, ContentNotFoundException {
         // logger.trace("getAltoDocument: {}/{}", pi, fileName);
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder(),
@@ -152,8 +153,9 @@ public class TextResourceBuilder {
 
         try {
             String charset = FileTools.getCharset(file);
-            logger.trace(file.toAbsolutePath().toString());
-            return FileTools.getStringFromFile(file.toFile(), charset != null ? charset : StringTools.DEFAULT_ENCODING);
+            // logger.trace(file.toAbsolutePath().toString());
+            String alto= FileTools.getStringFromFile(file.toFile(), charset != null ? charset : StringTools.DEFAULT_ENCODING);
+            return new StringPair(alto, charset);
         } catch (FileNotFoundException e) {
             logger.debug(e.getMessage());
             throw new ContentNotFoundException(RESOURCE_NOT_FOUND);

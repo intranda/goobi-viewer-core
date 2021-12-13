@@ -38,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.AbstractAnnotation;
-import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
 import de.intranda.api.annotation.oa.Motivation;
@@ -76,11 +75,10 @@ import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.Linkin
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
-import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
-import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 
 /**
  * <p>
@@ -439,8 +437,8 @@ public class SequenceBuilder extends AbstractBuilder {
                 if (StringUtils.isNotBlank(page.getAltoFileName())) {
                     try {
                         String altoFilename = Paths.get(page.getAltoFileName()).getFileName().toString();
-                        String altoText = builder.getAltoDocument(doc.getPi(), altoFilename);
-                        AltoDocument alto = AltoDocument.getDocumentFromString(altoText);
+                        StringPair altoPair = builder.getAltoDocument(doc.getPi(), altoFilename);
+                        AltoDocument alto = AltoDocument.getDocumentFromString(altoPair.getOne(), altoPair.getTwo());
                         if (alto.getFirstPage() != null && StringUtils.isNotBlank(alto.getFirstPage().getContent())) {
                             List<AbstractAnnotation> annos =
                                     new AltoAnnotationBuilder(urls, "oa").createAnnotations(alto.getFirstPage(), doc.getPi(), page.getOrder(), canvas,

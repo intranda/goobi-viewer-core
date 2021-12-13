@@ -18,8 +18,8 @@ public class ExcelExport {
     private String fileName;
 
     /**
-     * @param facesContext
-     * @param wb
+     * @param os
+     * @return True if successful; false otherwise
      */
     public boolean writeToResponse(OutputStream os) {
         if (os == null) {

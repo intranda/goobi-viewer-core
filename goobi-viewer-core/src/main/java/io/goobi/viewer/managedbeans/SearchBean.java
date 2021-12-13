@@ -200,7 +200,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Required setter for ManagedProperty injection
+     * Required setter for ManagedProperty injection TODO Is it, though?
      *
      * @param navigationHelper the navigationHelper to set
      */

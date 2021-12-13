@@ -20,7 +20,6 @@ import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,7 +84,7 @@ public class ALTOTools {
      */
     public static String getFulltext(Path path, String encoding) throws IOException {
         String altoString = FileTools.getStringFromFile(path.toFile(), encoding);
-        return getFulltext(altoString, false, null);
+        return getFulltext(altoString, encoding, false, null);
     }
 
     /**
@@ -94,14 +93,15 @@ public class ALTOTools {
      * </p>
      *
      * @param alto a {@link java.lang.String} object.
+     * @param charset
      * @param mergeLineBreakWords a boolean.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @should extract fulltext correctly
      * @return a {@link java.lang.String} object.
      */
-    public static String getFulltext(String alto, boolean mergeLineBreakWords, HttpServletRequest request) {
+    public static String getFulltext(String alto, String charset, boolean mergeLineBreakWords, HttpServletRequest request) {
         try {
-            return alto2Txt(alto, mergeLineBreakWords, request);
+            return alto2Txt(alto, charset, mergeLineBreakWords, request);
         } catch (IOException | XMLStreamException | JDOMException e) {
             logger.error(e.getMessage(), e);
         }
@@ -115,13 +115,14 @@ public class ALTOTools {
      * </p>
      *
      * @param alto a {@link java.lang.String} object.
+     * @param charset
      * @param type a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
      * @return a {@link java.util.List} object.
      */
-    public static List<TagCount> getNERTags(String alto, NERTag.Type type) {
+    public static List<TagCount> getNERTags(String alto, String charset, NERTag.Type type) {
         List<TagCount> ret = new ArrayList<>();
         try {
-            AltoDocument doc = AltoDocument.getDocumentFromString(alto);
+            AltoDocument doc = AltoDocument.getDocumentFromString(alto, charset);
             for (Tag tag : doc.getTags().getTagsAsList()) {
                 if (type == null) {
                     addTags(createNERTag(tag), ret);
@@ -130,8 +131,8 @@ public class ALTOTools {
                 }
             }
         } catch (Throwable e) {
-            logger.error(e.getMessage());
-            logger.trace("Error loading ALTO from XML:\n{}", alto);
+            logger.error(e.getMessage(), e);
+            // logger.trace("Error loading ALTO from XML:\n{}", alto);
         }
 
         return ret;
@@ -184,6 +185,7 @@ public class ALTOTools {
      * </p>
      *
      * @param alto a {@link java.lang.String} object.
+     * @param charset ALTO charset
      * @param mergeLineBreakWords a boolean.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return a {@link java.lang.String} object.
@@ -193,17 +195,18 @@ public class ALTOTools {
      * @should use extract fulltext correctly
      * @should concatenate word at line break correctly
      */
-    protected static String alto2Txt(String alto, boolean mergeLineBreakWords, HttpServletRequest request)
+    protected static String alto2Txt(String alto, String charset, boolean mergeLineBreakWords, HttpServletRequest request)
             throws IOException, XMLStreamException, JDOMException {
         if (alto == null) {
             throw new IllegalArgumentException("alto may not be null");
         }
 
         String useAlto = alto;
+        String useCharset = charset != null ? charset : StringTools.DEFAULT_ENCODING;
 
         // Link hyphenated words before parsing the document
         if (mergeLineBreakWords) {
-            AltoDocument altoDoc = AltoDocument.getDocumentFromString(alto);
+            AltoDocument altoDoc = AltoDocument.getDocumentFromString(alto, charset);
             new HyphenationLinker().linkWords(altoDoc);
             Document doc = new Document(altoDoc.writeToDom());
             useAlto = new XMLOutputter().outputString(doc);
@@ -215,7 +218,7 @@ public class ALTOTools {
         Set<String> usedTags = new HashSet<>();
         StringBuilder strings = new StringBuilder(500);
         XMLStreamReader parser = null;
-        try (InputStream is = new ByteArrayInputStream(useAlto.getBytes(StandardCharsets.UTF_8))) {
+        try (InputStream is = new ByteArrayInputStream(useAlto.getBytes(useCharset))) {
             XMLInputFactory factory = XMLInputFactory.newInstance();
             // Disable access to external entities
             factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
@@ -380,11 +383,12 @@ public class ALTOTools {
      * </p>
      *
      * @param altoString a {@link java.lang.String} object.
+     * @param charset
      * @param searchTerms a {@link java.util.Set} object.
      * @return a {@link java.util.List} object.
      */
-    public static List<String> getWordCoords(String altoString, Set<String> searchTerms) {
-        return getWordCoords(altoString, searchTerms, 0);
+    public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms) {
+        return getWordCoords(altoString, charset, searchTerms, 0);
     }
 
     /**
@@ -416,6 +420,7 @@ public class ALTOTools {
      * TODO Re-implement using stream
      *
      * @param altoString String containing the ALTO XML document
+     * @param charset
      * @param searchTerms Set of search terms
      * @param rotation Image rotation in degrees
      * @return a {@link java.util.List} object.
@@ -423,14 +428,14 @@ public class ALTOTools {
      * @should match phrases
      * @should match diacritics via base letter
      */
-    public static List<String> getWordCoords(String altoString, Set<String> searchTerms, int rotation) {
+    public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms, int rotation) {
         if (altoString == null) {
             throw new IllegalArgumentException("altoDoc may not be null");
         }
         List<Word> words = new ArrayList<>();
         Dimension pageSize = new Dimension(0, 0);
         try {
-            AltoDocument document = AltoDocument.getDocumentFromString(altoString);
+            AltoDocument document = AltoDocument.getDocumentFromString(altoString, charset);
             HyphenationLinker linker = new HyphenationLinker();
             linker.linkWords(document);
 
