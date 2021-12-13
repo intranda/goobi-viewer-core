@@ -1,0 +1,432 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+	<f:event listener="cmswidgetEditBean.startConversation()"
+		type="preRenderView"></f:event>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminCmswidgets')}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+		<div id="cmsWidgetsAdd" class="cms-widgets-add">
+			<h:panelGroup rendered="#{userBean.user.cmsAdmin}">
+
+				<div class="admin__title-bar">
+					<!-- TITLE -->
+<!-- 					<c:if test="#{cmswidgetEditBean.newwidget}"> -->
+						<h2 class="admin__title">#{msg.cms__add_widget__title}</h2>
+<!-- 					</c:if> -->
+<!-- 					<c:if test="#{!cmswidgetEditBean.newwidget}"> -->
+<!-- 						<h2 class="admin__title">#{msg.cms__edit_widget__title}</h2> -->
+<!-- 					</c:if> -->
+				</div>
+
+				<h:form prependId="false">
+
+					<ui:param name="widget" value="#{cmswidgetEditBean.selectedwidget}"></ui:param>
+	
+						<div class="admin__content-inner-content">
+							<div class="admin__info-text">#{msg.cms__add_widget__select_type}:</div>
+	
+							<div class="admin__entry-list -w25">
+<!-- 								<ui:repeat var="type" value="#{cmswidgetEditBean.sourceTypes}"> -->
+									<div class="admin__boxed-entry -w25">
+										<div class="d-flex flex-column h-100">
+											<div>
+												<h3>#{msg.cms__add_widget__select_title_facets}</h3>
+											</div>
+											<div class="mb-2">
+												<p>#{msg.cms__add_widget__select_title_facets_desc}</p>
+											</div>
+											<div class="mt-auto">
+												<div class="d-flex">
+													<button class="btn btn--default ml-auto">#{msg.action__select}</button>
+<!-- 														jsf:action="#{cmswidgetEditBean.createwidget(type)}" -->
+														
+												</div>
+											</div>
+										</div>
+									</div>
+									
+									<div class="admin__boxed-entry -w25">
+										<div class="d-flex flex-column h-100">
+											<div>
+												<h3>#{msg.cms__add_widget__select_title_pages}</h3>
+											</div>
+											<div class="mb-2">
+												<p>#{msg.cms__add_widget__select_title_pages_desc}</p>
+											</div>
+											<div class="mt-auto">
+												<div class="d-flex">
+													<button class="btn btn--default ml-auto">#{msg.action__select}</button>
+<!-- 														jsf:action="#{cmswidgetEditBean.createwidget(type)}" -->
+														
+												</div>
+											</div>
+										</div>
+									</div>
+									
+									<div class="admin__boxed-entry -w25">
+										<div class="d-flex flex-column h-100">
+											<div>
+												<h3>#{msg.cms__add_widget__select_title_html}</h3>
+											</div>
+											<div class="mb-2">
+												<p>#{msg.cms__add_widget__select_title_html_desc}</p>
+											</div>
+											<div class="mt-auto">
+												<div class="d-flex">
+													<button class="btn btn--default ml-auto">#{msg.action__select}</button>
+<!-- 														jsf:action="#{cmswidgetEditBean.createwidget(type)}" -->
+														
+												</div>
+											</div>
+										</div>
+									</div>
+<!-- 								</ui:repeat> -->
+							</div>
+						</div>
+						
+						<div class="admin__content-inner-content">
+	
+							<div class="form-horizontal form-group admin__content-wrapper">
+								<div class="w-100">
+									<h3 class="admin__content-inner-content__form_title mt-0">
+										#{msg.general} <span class="ajax_loader"> <img
+											src="#{request.contextPath}/resources/images/infinity_loader.gif"
+											class="img-responsive" alt="Waiting..." />
+										</span>
+									</h3>
+									<div class="admin__default-block">
+	
+										<!-- TITLE -->
+										<div class="form-group form-row">
+											<div class="col-2 control-label admin__form-label">
+												<label for="widgetName"> #{msg.name}: <span
+													class="admin__label-required-field">(#{msg.form__required_field})</span>
+												</label>
+											</div>
+	
+											<div class="col-9 admin__form-input cms-module__option-control">
+											
+			                                  <h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect" value="#{cmswidgetEditBean.collectionField}" styleClass="form-control">
+			                                      <f:selectItems value="#{cmswidgetEditBean.allCollectionFields}" />
+			                                  </h:selectOneMenu>
+			                                  <span class="admin__form-help-text">#{msg.cms__edit_widget__collections_field__help}</span>
+												
+
+											</div>
+											<div class="col-1 admin__form-help-icon">
+												<button type="button" class="btn btn--clean"
+													data-toggle="helptext" aria-label="inline help icon">
+													<i class="fa fa-question-circle" aria-hidden="true"></i>
+												</button>
+											</div>
+										</div>
+	
+										<!-- Beschreibung -->
+										<div class="form-group form-row">
+											<div class="col-2 control-label admin__form-label">
+												<label for="widgetName"> #{msg.description}:
+												</label>
+											</div>
+	
+											<div
+												class="col-9 admin__form-input cms-module__option-control">
+	
+												<h:inputTextarea id="widgetDesc" styleClass="form-control"
+													value="#{widget.description}">
+												</h:inputTextarea>
+												<span class="admin__form-help-text">#{msg.cms__edit_widget__description__help}</span>
+											</div>
+											<div class="col-1 admin__form-help-icon">
+												<button type="button" class="btn btn--clean"
+													data-toggle="helptext" aria-label="inline help icon">
+													<i class="fa fa-question-circle" aria-hidden="true"></i>
+												</button>
+											</div>
+										</div>
+	
+										<c:choose>
+	
+											<c:when test="#{widget.sourceType == 'COLLECTIONS'}">
+												
+												<div class="#{fn:length(cmswidgetEditBean.allCollectionFields) > 1 ? '' : 'd-none'} form-group form-row">
+						                              <!-- COLLECTION FIELD -->
+						                              <div class="col-2 control-label admin__form-label xx">
+						                                  <label for="SolrFieldSelect">#{msg.cms_collections_solrField}:</label>
+						                              </div>
+						
+						                              <!-- CONTROL -->
+						                              <div class="col-9 admin__form-input">
+						                                  <h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect" value="#{cmswidgetEditBean.collectionField}" styleClass="form-control">
+						                                      <f:selectItems value="#{cmswidgetEditBean.allCollectionFields}" />
+
+						                                  </h:selectOneMenu>
+						                                  <span class="admin__form-help-text">#{msg.cms__edit_widget__collections_field__help}</span>
+						                              </div>
+						                              <div class="col-1 admin__form-help-icon">
+						                                  <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+						                                      <i class="fa fa-question-circle" aria-hidden="true"></i>
+						                                  </button>
+						                              </div>
+						                          </div>
+												
+												<div class="form-group form-row">
+													<div class="col-2 control-label admin__form-label">
+														<label for="collectionsSelect">
+															#{msg.admin__cms_collections}: <span
+															class="admin__label-required-field">(#{msg.form__required_field})</span>
+														</label>
+													</div>
+	
+													<div
+														class="col-9 admin__form-input cms-module__option-control">
+	
+														<h:message for="collectionsSelect"
+															errorClass="-validation-message -danger"></h:message>
+														<div class="-validation-mark">
+															<i class="fa fa-check" aria-hidden="true"></i> <i
+																class="fa fa-exclamation" aria-hidden="true"></i>
+														</div>
+														<h:selectManyListbox id="collectionsSelect"
+															styleClass="form-control -validation-input"
+															required="true"
+															requiredMessage="#{msg.info__input_required}"
+															value="#{widget.collections}">
+															<f:selectItems 
+																value="#{cmswidgetEditBean.availableCollections}"
+																var="collection"
+																itemLabel="#{msg[collection.solrFieldValue]}"
+																itemValue="#{collection.toString()}"
+															></f:selectItems>
+															
+														</h:selectManyListbox>
+														<span class="admin__form-help-text">#{msg.cms__edit_widget__collections__help}</span>
+													</div>
+													<div class="col-1 admin__form-help-icon">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
+													</div>
+												</div>
+											</c:when>
+	
+											<c:when test="#{widget.sourceType == 'RECORDS'}">
+												<!-- SOLR QUERY -->
+												<div class="form-group form-row">
+													<div class="col-2 control-label admin__form-label">
+														<label for="recordsQuery">
+															#{msg.cms_itemSolrQuery}: <span
+															class="admin__label-required-field">(#{msg.form__required_field})</span>
+														</label>
+													</div>
+	
+													<h:panelGroup id="recordsQueryValidation" layout="block" 
+														class="col-9 admin__form-input cms-module__option-control">
+	
+														<div class="cms-module__option-message">
+										                    <h:messages for="recordsQuery" 
+										                        infoClass="cms-module__option-message-status success" 
+										                        warnClass="cms-module__option-message-status warning"
+										                        errorClass="cms-module__option-message-status danger" />
+										
+										                    <div class="cms-module__option-message-mark">
+										                        <i class="fa fa-check" aria-hidden="true"></i>
+										                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+										                    </div>
+										                </div>
+														<h:inputText id="recordsQuery"
+															styleClass="form-control -validation-input"
+															required="true"
+															requiredMessage="#{msg.info__input_required}"
+															value="#{widget.solrQuery}">
+															                    
+															
+														</h:inputText>
+														<span class="admin__form-help-text">#{msg.cms__edit_widget__solr_query__help}</span>
+													</h:panelGroup>
+													<div class="col-1 admin__form-help-icon">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
+													</div>
+												</div>
+												
+												<!-- SORT FIELD -->
+												<div class="form-group form-row">
+													<div class="col-2 control-label admin__form-label">
+														<label for="recordsQuery">
+															#{msg.cms_itemSolrSortFields}:
+														</label>
+													</div>
+	
+													<h:panelGroup layout="block" 
+														class="col-9 admin__form-input cms-module__option-control">
+
+														<h:selectOneMenu id="solrSortFields" styleClass="form-control" value="#{widget.sortField}">
+											                  <f:selectItem itemValue="" itemLabel="#{msg.action__select}" />
+											                  <c:forEach var="field" items="#{configurationBean.sortFields}">
+											                      <f:selectItem itemValue="#{field}" itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_ascending})" />
+											                      <f:selectItem itemValue="!#{field}" itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_descending})" />
+											                  </c:forEach>
+														      											                  
+															  <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemSolrSortFields}" />
+										                </h:selectOneMenu>
+														<span class="admin__form-help-text">#{msg.cms__edit_widget__solr_sortfield__help}</span>
+													</h:panelGroup>
+													<div class="col-1 admin__form-help-icon">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
+													</div>
+												</div>
+												
+												<!-- ITEM COUNT -->
+												<div class="form-group form-row">
+													<div class="col-2 control-label admin__form-label">
+														<label for="recordsQuery">
+															#{msg.cms_itemCount}: <span
+															class="admin__label-required-field">(#{msg.form__required_field})</span>
+														</label>
+													</div>
+	
+													<h:panelGroup layout="block" 
+														class="col-9 admin__form-input cms-module__option-control">
+
+														<h:selectOneMenu id="maxItems" styleClass="form-control" value="#{widget.maxEntries}">
+											                  <f:selectItems value="#{widget.maxEntriesOptions}" />
+														      										                  
+															  <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemSolrSortFields}" />
+										                </h:selectOneMenu>
+														<span class="admin__form-help-text">#{msg.cms__edit_widget__max_entries__help}</span>
+													</h:panelGroup>
+													<div class="col-1 admin__form-help-icon">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
+													</div>
+												</div>
+											</c:when>
+	
+											<c:when test="#{widget.sourceType == 'PAGES' or widget.sourceType == 'MEDIA'}">
+												<div class="form-group form-row">
+													<div class="col-2 control-label admin__form-label">
+														<label for="categoriesSelect"> #{msg.categories}: <span
+															class="admin__label-required-field">(#{msg.form__required_field})</span>
+														</label>
+													</div>
+	
+													<div
+														class="col-9 admin__form-input cms-module__option-control">
+														<div>
+															<h:panelGroup layout="block" class="overflow-hidden"
+																id="selectedCategories">
+																<ui:repeat var="category" value="#{cmswidgetEditBean.selectableCategories.stream().filter(sel -> sel.selected).map(sel -> sel.value.name).toList()}">
+																	<div class="badge badge-violet">#{msg[category]}</div>
+																</ui:repeat>
+															</h:panelGroup>
+														</div>
+														<h:message for="categoriesSelect"
+															errorClass="-validation-message -danger"></h:message>
+														<div class="-validation-mark">
+															<i class="fa fa-check" aria-hidden="true"></i> <i
+																class="fa fa-exclamation" aria-hidden="true"></i>
+														</div>
+														<div class="cms-module__option-dropdown">
+															<div class="cms-module__option-dropdown-trigger"
+																data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+															<ul>
+																<ui:repeat var="selectable"
+																	value="#{cmswidgetEditBean.selectableCategories}">
+																	<li><label> <h:selectBooleanCheckbox
+																				type="checkbox" value="#{selectable.selected}">
+
+																			</h:selectBooleanCheckbox>
+																			#{selectable.value.name}</label></li>
+																</ui:repeat>
+															</ul>
+														</div>
+														<span class="admin__form-help-text">#{msg.cms__edit_widget__categories__help}</span>
+													</div>
+													<div class="col-1 admin__form-help-icon">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
+													</div>
+												</div>
+											</c:when>
+										</c:choose>
+										
+										<!-- STYLE -->
+										<div class="form-group form-row">
+											<div class="col-2 control-label admin__form-label">
+												<label for="styleSelect">
+													#{msg.cms__edit_widget__style__label}: </label>
+											</div>
+
+											<div class="col-9 admin__form-input cms-module__option-control">
+												<select onchange="setStyle({widgetStyle : this.value});" id="styleSelect" class="form-control" data-value="#{widget.style}" data-options="widget-styles">
+													<option value="" disabled="disabled">#{msg.action__select}</option>
+												</select>
+												<span class="admin__form-help-text">#{msg.cms__edit_widget__style__help}</span>
+											</div>
+											<div class="col-1 admin__form-help-icon">
+												<button type="button" class="btn btn--clean"
+													data-toggle="helptext" aria-label="inline help icon">
+													<i class="fa fa-question-circle" aria-hidden="true"></i>
+												</button>
+											</div>
+										</div>
+										<h:commandScript render="previewwidget" name="setStyle" action="#{cmswidgetEditBean.setStyleFromRequestParameter()}"></h:commandScript>
+										
+
+									</div>
+								</div>
+								
+								
+							</div>
+	
+							<div
+								class="row no-gutters justify-content-end admin__final-actions">
+	
+								<a class="btn btn--cancel"
+									href="#{cmswidgetEditBean.returnUrl}">#{msg.button__abort}
+								</a>
+								<button class="btn btn--success">
+<!-- 									jsf:action="#{cmswidgetEditBean.save()}" -->
+									#{msg.button__save}
+									
+								</button>
+							</div>
+	
+						</div>
+						
+						
+
+				</h:form>
+			</h:panelGroup>
+		</div>	
+		
+	</ui:define>
+
+</ui:composition>
+
+
