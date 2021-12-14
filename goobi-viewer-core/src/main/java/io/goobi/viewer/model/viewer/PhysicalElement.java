@@ -19,13 +19,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,6 +31,7 @@ import java.util.stream.Collectors;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
@@ -72,7 +71,6 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
 import io.goobi.viewer.solr.SolrConstants;
@@ -662,6 +660,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         try {
             filename = FileTools.getFilenameFromPathString(getFileName());
         } catch (FileNotFoundException e) {
+            //
         }
         if (StringUtils.isBlank(filename)) {
             return false;
@@ -731,11 +730,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         try {
             filename = FileTools.getFilenameFromPathString(getFulltextFileName());
         } catch (FileNotFoundException e) {
+            //
         }
         if (StringUtils.isBlank(filename)) {
             try {
                 filename = FileTools.getFilenameFromPathString(getAltoFileName());
             } catch (FileNotFoundException e) {
+                //
             }
         }
         if (StringUtils.isBlank(filename)) {
@@ -1584,6 +1585,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public String getAltoText() {
         return altoText;
+    }
+
+    /**
+     * @return the altoCharset
+     */
+    public String getAltoCharset() {
+        return altoCharset;
     }
 
     /**
