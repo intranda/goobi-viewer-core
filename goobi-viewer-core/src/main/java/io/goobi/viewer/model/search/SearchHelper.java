@@ -2706,7 +2706,7 @@ public final class SearchHelper {
      */
     public static String addFuzzySearchToken(String term) {
         if (DataManager.getInstance().getConfiguration().isFuzzySearchEnabled()) {
-            int distance = DataManager.getInstance().getConfiguration().getFuzzySearchDistance();
+            int distance = FuzzySearchTerm.calculateOptimalDistance(term);// DataManager.getInstance().getConfiguration().getFuzzySearchDistance();
             return addFuzzySearchToken(term, distance);
         } else {
             return term;

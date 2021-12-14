@@ -1,8 +1,24 @@
 package io.goobi.viewer.model.search;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.controller.DamerauLevenshtein;
 
 public class FuzzySearchTerm {
+    
+    /**
+     * Don't use fuzzy search on search terms matching this pattern
+     */
+    private static final String IGNORE_FUZZY_PATTERN = "\\d+";
+    /**
+     * For search terms below this length, don't use fuzzy search
+     */
+    private static final int FUZZY_THRESHOLD_DISTANCE_1 = 4;
+    /**
+     * For search terms of at least this length, use fuzzy distance 2
+     */
+    private static final int FUZZY_THRESHOLD_DISTANCE_2 = 9;
+
     
     private final String fullTerm;
     private final String term;
@@ -65,6 +81,20 @@ public class FuzzySearchTerm {
             return distance <= maxDistance;
         } else {            
             return false;
+        }
+    }
+
+    public static int calculateOptimalDistance(String term) {
+        if(StringUtils.isBlank(term)) {
+            return 0;
+        } else if(term.matches(IGNORE_FUZZY_PATTERN)) {
+            return 0;
+        } else if(term.length() < FUZZY_THRESHOLD_DISTANCE_1) {
+            return 0;
+        } else if(term.length() < FUZZY_THRESHOLD_DISTANCE_2) {
+            return 1;
+        } else {
+            return 2;
         }
     }
 }
