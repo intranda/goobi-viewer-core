@@ -8,14 +8,19 @@
 	<composite:interface>
 	</composite:interface>
 
-
-
 	<composite:implementation>
+		<!-- COLOR SWITCHER FUNCTION -->
+		<script>
+			function switchTheme(colors) {
+					$('html').removeClass('color-theme-light color-theme-dark');
+					$('html').addClass(colors);
+				};
+		</script>
 		<h:form>
         <h:commandLink id="darkModeSwitch"
-				class="color-theme-switch #{((not sessionBean.containsKey('colorTheme')) or (sessionBean.get('colorTheme') eq 'colors.light')) ? 'active' : ''}"
-				action="#{sessionBean.put('colorTheme', 'colors.dark')}"
-				onclick="switchTheme(colors.dark); $(this).removeClass('active'); $(this).next().addClass('active');">
+				class="color-theme-switch #{((not sessionBean.containsKey('colorTheme')) or (sessionBean.get('colorTheme') eq 'color-theme-light')) ? 'active' : ''}"
+				action="#{sessionBean.put('colorTheme', 'color-theme-dark')}"
+				onclick="switchTheme('color-theme-dark'); $(this).removeClass('active'); $(this).next().addClass('active');">
 				<f:ajax render="@none"></f:ajax>
 				<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
 					viewBox="0 0 50 50">
@@ -25,9 +30,9 @@
 				</svg>
 			</h:commandLink>
 			<h:commandLink id="lightModeSwitch"
-				class="color-theme-switch #{((sessionBean.containsKey('colorTheme')) and (sessionBean.get('colorTheme') eq 'colors.dark')) ? 'active' : ''}"
-				action="#{sessionBean.put('colorTheme', 'colors.light')}"
-				onclick="switchTheme(colors.light); $(this).removeClass('active'); $(this).prev().addClass('active');">
+				class="color-theme-switch #{((sessionBean.containsKey('colorTheme')) and (sessionBean.get('colorTheme') eq 'color-theme-dark')) ? 'active' : ''}"
+				action="#{sessionBean.put('colorTheme', 'color-theme-light')}"
+				onclick="switchTheme('color-theme-light'); $(this).removeClass('active'); $(this).prev().addClass('active');">
 				<f:ajax render="@none"></f:ajax>
 
 				<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none"
