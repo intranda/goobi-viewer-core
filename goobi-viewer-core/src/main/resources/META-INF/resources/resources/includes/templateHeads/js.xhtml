@@ -1,0 +1,139 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+    <!-- ===============================
+        BASE LIBRARIES + CORE MODULES
+    ================================ -->
+    <c:set var="jsPaths" value="#{[
+
+      ['jquery',
+        [],
+        '/resources/javascript/libs/jquery/jquery.min.js'
+      ],
+      ['jqueryUI',
+        ['templateMirador'],
+        '/resources/javascript/libs/jqueryUi/1.12.1/jquery-ui.min.js'
+      ],
+      ['jqueryUI.touchPunch',
+        ['templateAdmin', 'templateCrowdsourcing', 'templateMirador', 'templateArchives', 'templateFullscreen'],
+        'resources/javascript/libs/jqueryUi/plugins/jquery.ui.touch-punch.min.js'
+      ],
+      ['jqueryUI.slider',
+        ['templateAdmin', 'templateBlank', 'templateCrowdsourcing', 'templateMirador', 'templateArchives', 'templateFullscreen'],
+        '/resources/javascript/libs/jqueryUi/plugins/jquery.ui.slider-1.12.1-rtl.js'
+      ],
+      ['bootstrap',
+        [],
+        '/resources/javascript/libs/bs/bootstrap.bundle.min.js'
+      ],
+      ['tinymce',
+        ['templateMirador', 'templateFullscreen'],
+        '/resources/javascript/libs/tinymce/tinymce.min.js'
+      ],
+      ['datatables',
+        ['templateAdmin', 'templateCrowdsourcing', 'templateMirador', 'templateArchives', 'templateFullscreen'],
+        '/resources/javascript/libs/datatables.min.js'
+      ],
+      ['reactiveX',
+        [],
+        '/resources/javascript/libs/reactiveX/rxjs.umd.min.js'
+      ],
+      ['q',
+        [],
+        '/resources/javascript/libs/q-promises/q.min.js'
+      ],
+      ['clipboard',
+        ['templateMirador'],
+        '/resources/javascript/libs/clipboard/clipboard.min.js'
+      ],
+      ['pdfJS',
+        ['templateAdmin', 'templateCrowdsourcing', 'templateMirador', 'templateArchives', 'templateFullscreen'],
+        '/resources/javascript/libs/pdfjs/pdf.js'
+      ],
+      ['intersectionObsPolyfill',
+        ['template', 'templateAdmin', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateMirador'],
+        '/resources/javascript/libs/intersection-observer_polyfill.js'
+      ],
+      ['riot',
+        ['templateMirador'],
+        '/resources/javascript/libs/riot/riot.min.js'
+      ],
+      ['swiper',
+        ['templateBlank', 'templateCrowdsourcing', 'templateMirador', 'templateArchives', 'templateFullscreen'],
+        '/resources/javascript/libs/swiper/swiper-bundle.min.js'
+      ],
+      ['sweetalert',
+        [],
+        '/resources/javascript/libs/sweetalert/sweetalert2.min.js'
+      ],
+      ['hcSticky',
+        ['template', 'templateBlank', 'templateCrowdsourcing', 'templateMirador', 'templateFullscreen'],
+        '/resources/javascript/libs/hcsticky/hc-sticky.js'
+      ],
+      ['leaflet',
+        ['templateMirador'],
+        '/resources/javascript/libs/leaflet/leaflet.js'
+      ],
+      ['leflet.extra-markers',
+        ['templateMirador'],
+        '/resources/javascript/libs/leaflet/extra-markers/leaflet.extra-markers.min.js'
+      ],
+      ['leaflet.markercluster',
+        ['templateMirador'],
+        '/resources/javascript/libs/leaflet/markercluster/leaflet.markercluster.js'
+      ],
+      ['leaflet.draw',
+        ['templateAdmin', 'templateBlank', 'templateCrowdsourcing', 'templateMirador', 'templateArchives'],
+        '/resources/javascript/libs/leaflet/draw/leaflet.draw.js'
+      ],
+      ['mapbox.gl-geocoder',
+        ['templateAdmin', 'templateBlank', 'templateMirador', 'templateArchives'],
+        '/resources/javascript/libs/mapbox/geocoder/mapbox-gl-geocoder.min.js'
+      ],
+      ['mapbox.gl',
+        ['templateAdmin', 'templateBlank', 'templateMirador', 'templateArchives'],
+        '/resources/javascript/libs/mapbox/mapbox-gl.js'
+      ],
+      ['mirador',
+        ['template', 'templateAdmin', 'templateBlank', 'templateCrowdsourcing', 'templateArchives', 'templateFullscreen'],
+        '/resources/javascript/libs/mirador/mirador.min.js'
+      ],
+      ['openSeadragon',
+        ['template', 'templateAdmin', 'templateBlank', 'templateMirador', 'templateFullscreen'],
+        '/resources/javascript/libs/openseadragon/openseadragon.min.js'
+      ],
+      ['openSeadragonHook',
+        ['template', 'templateAdmin', 'templateBlank', 'templateMirador', 'templateFullscreen'],
+        '/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js'
+      ],
+      ['browsersupport',
+        ['templateAdmin', 'templateArchives', 'templateCrowdsourcing', 'templateFullscreen'],
+        '/resources/javascript/dist/browsersupport.min.js'
+      ],
+      ['viewerJS',
+        [],
+        '/resources/javascript/dist/viewer.min.js'
+      ],
+      ['imageView',
+        ['template', 'templateAdmin', 'templateBlank', 'templateFullscreen'],
+        '/resources/javascript/dist/imageView.min.js'
+      ],
+      ['riotTags',
+        ['templateMirador'],
+        '/resources/javascript/dist/riot-tags.js'
+      ]
+    ]}" />
+
+    <c:forEach var="path" items="#{jsPaths}">
+      <c:if test="#{!path[1].contains(templateName) and !excludeJS.contains(path[0]) and !excludeJS.contains('all')}">
+        <script type="text/javascript" src="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}"></script>
+      </c:if>
+    </c:forEach>
+
+</ui:composition>
+
