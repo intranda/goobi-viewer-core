@@ -5351,8 +5351,4 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalBoolean("search.fuzzy[@enabled]", false);
     }
 
-    public int getFuzzySearchDistance() {
-        return getLocalInt("search.fuzzy[@distance]", 1);
-    }
-
 }

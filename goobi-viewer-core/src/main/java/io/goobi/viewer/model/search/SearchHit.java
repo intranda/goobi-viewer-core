@@ -48,6 +48,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
@@ -310,10 +311,10 @@ public class SearchHit implements Comparable<SearchHit> {
                 term = term.replaceAll("^\\(|\\)$", "");
                 if(FuzzySearchTerm.isFuzzyTerm(term)) {
                     FuzzySearchTerm fuzzy = new FuzzySearchTerm(term);
-                    Matcher m = Pattern.compile("[\\w-]+").matcher(foundValues);
+                    Matcher m = Pattern.compile("[\\p{L}=-_\\d]+").matcher(foundValues);
                     while(m.find()) {
                         String word = m.group();
-                        if(fuzzy.matches(word)) {
+                        if(fuzzy.matches(StringTools.removeDiacriticalMarks(word))) {
                             newTerms.add(word);
                         }
                     }
