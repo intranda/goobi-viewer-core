@@ -309,6 +309,7 @@ public class SearchHit implements Comparable<SearchHit> {
             Set<String> terms = origTerms.get(solrField);
             for(String term : terms) {
                 term = term.replaceAll("^\\(|\\)$", "");
+                term = StringTools.removeDiacriticalMarks(term);
                 if(FuzzySearchTerm.isFuzzyTerm(term)) {
                     FuzzySearchTerm fuzzy = new FuzzySearchTerm(term);
                     Matcher m = Pattern.compile("[\\p{L}=-_\\d]+").matcher(foundValues);
