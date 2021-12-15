@@ -268,7 +268,18 @@ public class SearchHitTest extends AbstractSolrEnabledTest {
     }
     
     @Test
-    public void createSearchHit_findNormalizedWords() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public void createSearchHit_findWithUmlaut() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.IDDOC, Long.toString(1l));
+        doc.setField("MD_CREATOR", "Norden");
+        doc.setField("MD_PUBLISHER", "Nørre");
+        Map<String, Set<String>> searchTerms = Collections.singletonMap(SolrConstants.DEFAULT, Collections.singleton("Nörde~1"));
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", searchTerms, Arrays.asList("MD_CREATOR", "MD_PUBLISHER"), Collections.emptyList(), Collections.emptySet(), Collections.emptySet(), null, null);
+        assertEquals(1, hit.getFoundMetadata().size());
+    }
+    
+    @Test
+    public void createSearchHit_findUmlaute() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.IDDOC, Long.toString(1l));
         doc.setField("MD_CREATOR", "Nörden");

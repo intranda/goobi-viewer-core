@@ -44,6 +44,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
@@ -216,7 +217,7 @@ public class StringTools {
         if (s == null) {
             throw new IllegalArgumentException("s may not be null");
         }
-
+        
         return Normalizer.normalize(s, Normalizer.Form.NFD)
                 .replaceAll("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+", "");
     }

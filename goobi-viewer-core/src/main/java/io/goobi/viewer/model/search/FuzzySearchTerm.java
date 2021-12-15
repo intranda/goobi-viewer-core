@@ -18,6 +18,10 @@ public class FuzzySearchTerm {
      * For search terms of at least this length, use fuzzy distance 2
      */
     private static final int FUZZY_THRESHOLD_DISTANCE_2 = 9;
+    /**
+     * Regex matching all characters within words, including umlauts etc.
+     */
+    public static final String WORD_PATTERN = "[\\p{L}=-_\\d]+";
 
     
     private final String fullTerm;
@@ -29,8 +33,8 @@ public class FuzzySearchTerm {
     public FuzzySearchTerm(String term) {
         this.fullTerm = term;
         if(isFuzzyTerm(term)) {            
-            this.term = this.fullTerm.replaceAll("\\*?([\\w-]+)\\*?~\\d", "$1").toLowerCase();
-            this.maxDistance = Integer.parseInt(this.fullTerm.replaceAll("\\*?[\\w-]+\\*?~(\\d)", "$1"));
+            this.term = this.fullTerm.replaceAll("\\*?("+WORD_PATTERN+")\\*?~\\d", "$1").toLowerCase();
+            this.maxDistance = Integer.parseInt(this.fullTerm.replaceAll("\\*?"+WORD_PATTERN+"\\*?~(\\d)", "$1"));
             wildcardBack = this.fullTerm.endsWith("*~"+this.maxDistance);
         } else {
             this.term = term;
@@ -61,7 +65,7 @@ public class FuzzySearchTerm {
     }
     
     public static boolean isFuzzyTerm(String term) {
-        return term.matches("\\*?[\\w-]+\\*?~\\d");
+        return term.matches("\\*?"+WORD_PATTERN+"+\\*?~\\d");
     }
 
     public boolean matches(String text) {
