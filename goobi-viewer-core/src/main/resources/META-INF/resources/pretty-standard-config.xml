@@ -971,7 +971,7 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsRecordNoteEditBean.setNoteId(selectedNoteId)}</action>
     </url-mapping>
-        <!-- CMS Sliders -->
+    <!-- CMS Sliders -->
     <url-mapping id="adminCmsSliders">
         <pattern value="/admin/cms/slider/" />
         <view-id value="/resources/cms/adminCmsSliders.xhtml" />

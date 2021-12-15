@@ -82,11 +82,11 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.8</alto.version>
-		<ics.version>3.1.1</ics.version>
-		<tei-conversion.version>1.2.1</tei-conversion.version>
+		<ics.version>3.1.2</ics.version>
+		<tei-conversion.version>1.2.2</tei-conversion.version>
 
 		<iiif-api-model.version>2.1.0</iiif-api-model.version>
-		<normdataimporter.version>1.9.0</normdataimporter.version>
+		<normdataimporter.version>1.9.1</normdataimporter.version>
 
         <!-- other libraries -->
         <cdi.version>2.0.SP1</cdi.version>
@@ -140,7 +140,7 @@
         <prettyfaces.version>3.5.1.Final</prettyfaces.version>
         <rome.version>1.16.0</rome.version>
         <slf4j.version>1.7.32</slf4j.version>
-        <log4j.version>2.15.0</log4j.version>
+        <log4j.version>2.16.0</log4j.version>
         <solr.version>8.11.0</solr.version>
         <saml-client.version>4.0.0</saml-client.version>
         <swagger.version>2.1.11</swagger.version>
