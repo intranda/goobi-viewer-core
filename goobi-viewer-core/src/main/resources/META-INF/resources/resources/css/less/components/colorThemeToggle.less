@@ -13,11 +13,19 @@
 	}
 }
 
+.color-theme-switch-light {
+	display: block;
+}
+
 @media (prefers-color-scheme: dark) { 
 	.color-theme-switch-dark {
+		display: none;
+	}
+	.color-theme-switch-light {
 		display: block;
 	}
 	.color-theme-switch-dark.hide {
-		display: none;
+		display: hide;
 	}
+	
 }
