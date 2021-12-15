@@ -4,7 +4,6 @@
    ==============================================================*/
 
 .color-theme-switch {
-	display: none;
 	&.active {
 		display: block;
 	}
@@ -14,8 +13,12 @@
 }
 
 .color-theme-switch-light {
+	display: none;
+}
+.color-theme-switch-dark {
 	display: block;
 }
+
 
 @media (prefers-color-scheme: dark) { 
 	.color-theme-switch-dark {
