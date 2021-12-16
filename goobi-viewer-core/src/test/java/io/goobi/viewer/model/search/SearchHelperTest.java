@@ -390,6 +390,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(2, truncated.stream().filter(t -> t.contains("<span class=\"search-list--highlight\">dolor</span>")).count());
         Assert.assertEquals(2, truncated.stream().filter(t -> t.contains("<span class=\"search-list--highlight\">dolore</span>")).count());
     }
+    
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)

@@ -3,6 +3,7 @@ package io.goobi.viewer.model.search;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.DamerauLevenshtein;
+import io.goobi.viewer.controller.StringTools;
 
 public class FuzzySearchTerm {
     
@@ -21,7 +22,7 @@ public class FuzzySearchTerm {
     /**
      * Regex matching all characters within words, including umlauts etc.
      */
-    public static final String WORD_PATTERN = "[\\p{L}=-_\\d]+";
+    public static final String WORD_PATTERN = "[\\p{L}=-_\\d⸗¬]+";
 
     
     private final String fullTerm;
@@ -69,23 +70,40 @@ public class FuzzySearchTerm {
     }
 
     public boolean matches(String text) {
-        if((wildcardFront || wildcardBack) && text.length() >= this.term.length()-this.maxDistance) {
-            for(int pos = 0; pos < text.length()-(this.term.length()-this.maxDistance); pos++) {
-                for(int length=this.term.length()-this.maxDistance; length <= Math.min(text.length()-pos, this.term.length()+maxDistance); length++) {
+        text = cleanup(text);
+        String termToMatch = cleanup(this.term);
+        if((wildcardFront || wildcardBack) && text.length() >= termToMatch.length()-this.maxDistance) {
+            for(int pos = 0; pos < text.length()-(termToMatch.length()-this.maxDistance); pos++) {
+                for(int length=termToMatch.length()-this.maxDistance; length <= Math.min(text.length()-pos, termToMatch.length()+maxDistance); length++) {
                     String subString = text.substring(pos, pos+length);
-                    int distance = new DamerauLevenshtein(subString.toLowerCase(), this.term.toLowerCase()).getSimilarity();
+                    int distance = new DamerauLevenshtein(subString, termToMatch).getSimilarity();
                     if(distance <= maxDistance) {
                         return true;
                     }
                 }
             }
             return false;
-        } else if( Math.abs(text.length() - this.term.length()) <= this.maxDistance) {
-            int distance = new DamerauLevenshtein(text.toLowerCase(), this.term.toLowerCase()).getSimilarity();
+        } else if( Math.abs(text.length() - termToMatch.length()) <= this.maxDistance) {
+            int distance = new DamerauLevenshtein(text, termToMatch).getSimilarity();
             return distance <= maxDistance;
         } else {            
             return false;
         }
+    }
+
+    private String cleanup(String text) {
+        if(StringUtils.isNotBlank(text)) {            
+            text = cleanHyphenations(text);
+            text = StringTools.removeDiacriticalMarks(text);
+            text = StringTools.replaceCharacterVariants(text);
+            text = text.toLowerCase();
+            text = text.replaceAll(".*?("+WORD_PATTERN+").*", "$1");
+        }
+        return text;
+    }
+
+    private String cleanHyphenations(String text) {
+        return text.replaceAll("[⸗¬-]", "");
     }
 
     public static int calculateOptimalDistance(String term) {

@@ -999,7 +999,7 @@ public final class SearchHelper {
                 }
                 if (FuzzySearchTerm.isFuzzyTerm(searchTerm)) {
                     FuzzySearchTerm fuzzySearchTerm = new FuzzySearchTerm(searchTerm);
-                    Matcher m = Pattern.compile("[\\w-]+").matcher(fulltext.toLowerCase());
+                    Matcher m = Pattern.compile(FuzzySearchTerm.WORD_PATTERN).matcher(fulltext.toLowerCase());
                     int lastIndex = -1;
                     while(m.find()) {
                         String word = m.group();

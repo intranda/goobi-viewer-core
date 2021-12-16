@@ -241,14 +241,16 @@ public class SearchHit implements Comparable<SearchHit> {
             docstructType = DocType.METADATA.name();
         }
         
-        searchTerms = getActualSearchTerms(searchTerms, se.getMetadataFields());
+        Map<String, List<String>> searchedFields = new HashMap<>(se.getMetadataFields());
+        searchedFields.put(SolrConstants.FULLTEXT, Collections.singletonList(fulltext));
+        Map<String, Set<String>> foundSearchTerms = getActualSearchTerms(searchTerms, searchedFields);
 
         List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(docstructType);
         BrowseElement browseElement = new BrowseElement(se, metadataList, locale,
-                (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, searchTerms,
+                (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, foundSearchTerms,
                 thumbnailHandler);
         // Add additional metadata fields that aren't configured for search hits but contain search term values
-        browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms, ignoreAdditionalFields, translateAdditionalFields);
+        browseElement.addAdditionalMetadataContainingSearchTerms(se, foundSearchTerms, ignoreAdditionalFields, translateAdditionalFields);
         // Add sorting fields (should be added after all other metadata to avoid duplicates)
         browseElement.addSortFieldsToMetadata(se, sortFields, ignoreAdditionalFields);
 
@@ -312,10 +314,10 @@ public class SearchHit implements Comparable<SearchHit> {
                 term = StringTools.removeDiacriticalMarks(term);
                 if(FuzzySearchTerm.isFuzzyTerm(term)) {
                     FuzzySearchTerm fuzzy = new FuzzySearchTerm(term);
-                    Matcher m = Pattern.compile("[\\p{L}=-_\\d]+").matcher(foundValues);
+                    Matcher m = Pattern.compile(FuzzySearchTerm.WORD_PATTERN).matcher(foundValues);
                     while(m.find()) {
                         String word = m.group();
-                        if(fuzzy.matches(StringTools.removeDiacriticalMarks(word))) {
+                        if(fuzzy.matches(word)) {
                             newTerms.add(word);
                         }
                     }

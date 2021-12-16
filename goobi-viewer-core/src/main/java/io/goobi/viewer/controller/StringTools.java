@@ -218,6 +218,18 @@ public class StringTools {
         
         return Normalizer.normalize(s, Normalizer.Form.NFD)
                 .replaceAll("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+", "");
+                
+    }
+    
+    public static String replaceCharacterVariants(String text) {
+        return text.replace("ſ", "s")
+                .replace("ø", "o")
+                .replace("Ø", "O")
+                .replace("Ł", "L")
+                .replace("ł", "l")
+                .replace("Ð", "D")
+                .replace("ð", "d");
+                
     }
 
     /**
