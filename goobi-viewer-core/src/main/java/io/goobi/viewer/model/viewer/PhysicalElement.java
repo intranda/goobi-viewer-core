@@ -1588,6 +1588,26 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * 
+     * @param load If true, ALTO will be loaded if altoText is null
+     * @return
+     * @throws ViewerConfigurationException
+     */
+    public String getAltoText(boolean load) throws ViewerConfigurationException {
+        if (altoText == null && fulltextAccessPermission == null && load) {
+            try {
+                loadAlto();
+            } catch (AccessDeniedException e) {
+                    fulltextAccessPermission = false;
+                } catch (JDOMException | IOException | IndexUnreachableException | DAOException e) {
+                    logger.error(e.getMessage(), e);
+                }
+        }
+
+        return altoText;
+    }
+
+    /**
      * @return the altoCharset
      */
     public String getAltoCharset() {
