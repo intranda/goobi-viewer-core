@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -32,6 +33,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,6 +46,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
@@ -3098,6 +3106,57 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             assertEquals(2, comments.size());
             assertEquals(Long.valueOf(4), comments.get(0).getId());
         }
+    }
+    
+    @Test
+    public void testSynchronization() throws DAOException, InterruptedException {
+        
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        IDAO dao = DataManager.getInstance().getDao();
+        
+        Comment comment = new Comment();
+        comment.setBody("Init");
+        dao.addComment(comment);
+        assertNotNull(comment.getId());
+        assertEquals("Init", dao.getComment(comment.getId()).getBody());
+        
+        FutureTask<Boolean> updateResult = new FutureTask<Boolean>(() -> {
+            try {
+                updateComment(dao, comment.getId(), "Changed", 200);
+            } catch (InterruptedException e) {
+                fail("Updating interrupted");
+            }
+        }, true);
+        
+        FutureTask<Boolean> updateResultFast = new FutureTask<Boolean>(() -> {
+            try {
+                updateComment(dao, comment.getId(), "ChangedAgain", 0);
+            } catch (InterruptedException e) {
+                fail("Updating interrupted");
+            }
+        }, true);
+        
+        
+        try {
+            executor.execute(updateResult);
+            assertEquals("Init", dao.getComment(comment.getId()).getBody());
+//            executor.execute(updateResultFast);
+//            updateResultFast.get(100, TimeUnit.MILLISECONDS);
+//            assertEquals("ChangedAgain", dao.getComment(comment.getId()).getBody());
+            updateResult.get(300, TimeUnit.MILLISECONDS);
+            assertEquals("Changed", dao.getComment(comment.getId()).getBody());
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            e.printStackTrace();
+            fail("Updating or retrieving interrupted");
+        }
+
+    }
+    
+    private void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException {
+        dao.startTransaction();
+        Thread.sleep(duration);
+        dao.createNativeQuery("UPDATE annotations_comments SET body='"+content+"' WHERE annotation_id=" + id).executeUpdate();
+        dao.commitTransaction();
     }
 
 }
