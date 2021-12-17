@@ -552,8 +552,16 @@ public class SearchQueryItem implements Serializable {
                         }
 
                         if (value.contains("-")) {
-                            // Hack to enable fuzzy searching for terms that contain hyphens
-                            sbItem.append('"').append(ClientUtils.escapeQueryChars(value)).append('"');
+                            if(allowFuzzySearch) {
+                                //remove wildcards; they don't work with search containing hyphen
+                                String tempValue = SearchHelper.getWildcardsTokens(value)[1];
+                                tempValue = ClientUtils.escapeQueryChars(value);
+                                tempValue =  SearchHelper.addFuzzySearchToken(tempValue, "", "");
+                                sbItem.append("(").append(tempValue).append(")");
+                            } else {                                
+                                // Hack to enable fuzzy searching for terms that contain hyphens
+                                sbItem.append('"').append(ClientUtils.escapeQueryChars(value)).append('"');
+                            }
                         } else {
                             // Preserve truncation before escaping
                             String prefix = "";

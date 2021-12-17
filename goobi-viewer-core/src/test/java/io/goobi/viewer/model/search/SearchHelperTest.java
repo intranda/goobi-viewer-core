@@ -951,6 +951,35 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
         Assert.assertEquals(" +((MD_FIELD:val1 AND MD_TITLE:(foo AND bar)) AND (MD_FIELD:val2 OR MD_SHELFMARK:(bla OR blup)))", result);
     }
+    
+    @Test
+    public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly_fuzzySearch() throws Exception {
+        List<SearchQueryGroup> groups = new ArrayList<>(2);
+        {
+            SearchQueryGroup group = new SearchQueryGroup(null, 2);
+            group.setOperator(SearchQueryGroupOperator.AND);
+            group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+            group.getQueryItems().get(0).setField("MD_FIELD");
+            group.getQueryItems().get(0).setValue("val1");
+            group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+            group.getQueryItems().get(1).setField(SolrConstants.TITLE);
+            group.getQueryItems().get(1).setValue("foo bar");
+            groups.add(group);
+        }
+        {
+            SearchQueryGroup group = new SearchQueryGroup(null, 2);
+            group.setOperator(SearchQueryGroupOperator.OR);
+            group.getQueryItems().get(0).setField("MD_FIELD");
+            group.getQueryItems().get(0).setValue("val2");
+            group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
+            group.getQueryItems().get(1).setField("MD_SHELFMARK");
+            group.getQueryItems().get(1).setValue("bla blup");
+            groups.add(group);
+        }
+
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, true);
+        Assert.assertEquals(" +((MD_FIELD:(val1 val1~1) AND MD_TITLE:((foo) AND (bar))) AND (MD_FIELD:(val2 val2~1) OR MD_SHELFMARK:((bla) OR (blup blup~1))))", result);
+    }
 
     /**
      * @see SearchHelper#generateAdvancedExpandQuery(List,int)

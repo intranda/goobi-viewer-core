@@ -2700,19 +2700,15 @@ public final class SearchHelper {
     }
 
     /**
-     * Adds a fuzzy search token to the given term if fuzzy search is enabled. Otherwise just returns the term The maximal Damerau-Levenshtein
-     * distance to match is also read from configuration
+     * Adds a fuzzy search token to the given term.
+     * The maximal Damerau-Levenshtein is calculated from term length
      * 
      * @param term the search term
      * @return the given term with a fuzzy search token appended
      */
     public static String addFuzzySearchToken(String term, String prefix, String suffix) {
-        if (DataManager.getInstance().getConfiguration().isFuzzySearchEnabled()) {
-            int distance = FuzzySearchTerm.calculateOptimalDistance(term);// DataManager.getInstance().getConfiguration().getFuzzySearchDistance();
-            return addFuzzySearchToken(term, distance, prefix, suffix);
-        } else {
-            return term;
-        }
+        int distance = FuzzySearchTerm.calculateOptimalDistance(term);// DataManager.getInstance().getConfiguration().getFuzzySearchDistance();
+        return addFuzzySearchToken(term, distance, prefix, suffix);
     }
 
     /**
@@ -2723,6 +2719,8 @@ public final class SearchHelper {
     public static String addFuzzySearchToken(String term, int distance, String prefix, String suffix) {
         if (distance < 0 || distance > 2) {
             throw new IllegalArgumentException("Edit distance in fuzzy search must be in the range from 0 to 2. The given distance is " + distance);
+        } else if(distance == 0) {
+            return prefix + term + suffix;
         } else if (StringUtils.isBlank(term) || term.contains(" ")) {
             throw new IllegalArgumentException(
                     "For fuzzy search, term must not be empty and must consist only of a single word. The given term is " + term);

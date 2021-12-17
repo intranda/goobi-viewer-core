@@ -109,7 +109,7 @@ public class JPADAO implements IDAO {
     private EntityManager emGlobal;
     private Object cmsRequestLock = new Object();
     private Object crowdsourcingRequestLock = new Object();
-
+        
     /**
      * <p>
      * Constructor for JPADAO.

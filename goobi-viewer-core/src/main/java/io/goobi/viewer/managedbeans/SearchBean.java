@@ -1105,8 +1105,10 @@ public class SearchBean implements SearchInterface, Serializable {
                 term = ClientUtils.escapeQueryChars(unescapedTerm);
                 term = term.replace("\\*", "*"); // unescape falsely escaped truncation
                 if (term.length() > 0 && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
-                    String[] wildcards = SearchHelper.getWildcardsTokens(term);
-                    term = SearchHelper.addFuzzySearchToken(wildcards[1], wildcards[0], wildcards[2]);
+                    if(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled()) {                        
+                        String[] wildcards = SearchHelper.getWildcardsTokens(term);
+                        term = SearchHelper.addFuzzySearchToken(wildcards[1], wildcards[0], wildcards[2]);
+                    }
                     logger.trace("term: {}", term);
                     if (!"\\|\\|".equals(term)) {
                         preparedTerms.add(term);

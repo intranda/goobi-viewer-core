@@ -166,6 +166,41 @@ public class SearchQueryItemTest extends AbstractTest{
                 "SUPERDEFAULT:*foo* OR SUPERFULLTEXT:*foo* OR SUPERUGCTERMS:*foo* OR DEFAULT:*foo* OR FULLTEXT:*foo* OR NORMDATATERMS:*foo* OR UGCTERMS:*foo* OR CMS_TEXT_ALL:*foo*",
                 item.generateQuery(searchTerms, true, false));
     }
+    
+    @Test
+    public void generateQuery_shouldAddFuzzySearchOperator() throws Exception {
+        SearchQueryItem item = new SearchQueryItem(null);
+        item.setOperator(SearchItemOperator.AND);
+        item.setField("MD_TITLE");
+        item.setValue("fooo bar");
+        Set<String> searchTerms = new HashSet<>(2);
+        Assert.assertEquals("MD_TITLE:((fooo fooo~1) AND (bar))",item.generateQuery(searchTerms, true, true));
+    }
+    
+    @Test
+    public void generateQuery_shouldAddFuzzySearchOperatorWithWildcards() throws Exception {
+        SearchQueryItem item = new SearchQueryItem(null);
+        item.setOperator(SearchItemOperator.AND);
+        item.setField("MD_TITLE");
+        item.setValue("*fooo* *bar*");
+        Set<String> searchTerms = new HashSet<>(2);
+        Assert.assertEquals("MD_TITLE:((*fooo* fooo~1) AND (*bar*))",item.generateQuery(searchTerms, true, true));
+    }
+
+    
+    /**
+     * @see SearchQueryItem#generateQuery(Set,boolean)
+     * @verifies preserve truncation
+     */
+    @Test
+    public void generateQuery_shouldAddFuzzySearchOperatorWithHyphen() throws Exception {
+        SearchQueryItem item = new SearchQueryItem(null);
+        item.setOperator(SearchItemOperator.AND);
+        item.setField("MD_TITLE");
+        item.setValue("foo-bar");
+        Set<String> searchTerms = new HashSet<>(2);
+        Assert.assertEquals("MD_TITLE:(foo\\-bar foo\\-bar~1)",item.generateQuery(searchTerms, true, true));
+    }
 
     /**
      * @see SearchQueryItem#generateQuery(Set,boolean)
