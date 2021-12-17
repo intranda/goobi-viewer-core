@@ -131,8 +131,10 @@ public final class SearchHelper {
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
     /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */
     public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -IDDOC_PARENT:*";
-    /** Constant <code>FUZZY_SEARCH_TERM_TEMPLATE="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit distance to search. {p} and {s} are prefix and suffix to be applied to the search term */
-    public static final String FUZZY_SEARCH_TERM_TEMPLATE = "{p}{t}{s} {t}~{d}";
+    /** Constant <code>FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit distance to search. {p} and {s} are prefix and suffix to be applied to the search term */
+    public static final String FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST = "{p}{t}{s} {t}~{d}";
+    /** Constant <code>FUZZY_SEARCH_TERM_TEMPLATE="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit distance to search.*/
+    public static final String FUZZY_SEARCH_TERM_TEMPLATE = "{t}~{d}";
 
     private static final Object lock = new Object();
 
@@ -2725,7 +2727,7 @@ public final class SearchHelper {
             throw new IllegalArgumentException(
                     "For fuzzy search, term must not be empty and must consist only of a single word. The given term is " + term);
         } else {
-            return FUZZY_SEARCH_TERM_TEMPLATE
+            return FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST
                     .replace("{t}", term)
                     .replace("{d}", Integer.toString(distance))
                     .replace("{p}", StringUtils.isBlank(prefix) ? "" : prefix)

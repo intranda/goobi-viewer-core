@@ -5,6 +5,14 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.StringTools;
 
+
+/**
+ * Class for extracting the actual search term from a fuzzy search.
+ * For creating a fuzzy search term see {@link SearchHelper#addFuzzySearchToken(String, String, String)}
+ * 
+ * @author florian
+ *
+ */
 public class FuzzySearchTerm {
     
     /**
