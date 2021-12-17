@@ -323,9 +323,9 @@ public class SearchQueryItem implements Serializable {
      */
     public void setValue(String value) {
         this.value = StringTools.stripJS(value);
-        if(StringUtils.isNotBlank(this.value) && !this.value.contains(" ")) {            
-            this.value = SearchHelper.addFuzzySearchToken(this.value);
-        }
+//        if(StringUtils.isNotBlank(this.value) && !this.value.contains(" ")) {            
+//            this.value = SearchHelper.addFuzzySearchToken(this.value);
+//        }
     }
 
     /**
@@ -398,7 +398,7 @@ public class SearchQueryItem implements Serializable {
      * @should preserve truncation
      * @should generate range query correctly
      */
-    public String generateQuery(Set<String> searchTerms, boolean aggregateHits) {
+    public String generateQuery(Set<String> searchTerms, boolean aggregateHits, boolean allowFuzzySearch) {
         checkAutoOperator();
         StringBuilder sbItem = new StringBuilder();
 
@@ -576,7 +576,13 @@ public class SearchQueryItem implements Serializable {
                                         .append("]");
                             } else {
                                 // Regular search
-                                sbItem.append(prefix).append(ClientUtils.escapeQueryChars(useValue)).append(suffix);
+                                String escValue =  ClientUtils.escapeQueryChars(useValue);
+                                if(allowFuzzySearch) {
+                                    escValue =  SearchHelper.addFuzzySearchToken(escValue, prefix, suffix);
+                                    sbItem.append("(").append(escValue).append(")");
+                                } else {                                    
+                                    sbItem.append(prefix).append(ClientUtils.escapeQueryChars(useValue)).append(suffix);
+                                }
                             }
                         }
                         if (SolrConstants.FULLTEXT.equals(field) || SolrConstants.SUPERFULLTEXT.equals(field)) {
@@ -601,7 +607,10 @@ public class SearchQueryItem implements Serializable {
                 break;
         }
 
-        return sbItem.toString();
+        String item = sbItem.toString();
+        item = item.replace("\\~", "~");
+        
+        return item;
     }
 
     /** {@inheritDoc} */

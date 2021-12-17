@@ -131,8 +131,8 @@ public final class SearchHelper {
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
     /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */
     public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -IDDOC_PARENT:*";
-    /** Constant <code>FUZZY_SEARCH_TERM_TEMPLATE="{0}~{1}". {0} is the actual search term, {1} the maximal edit distance to search</code> */
-    public static final String FUZZY_SEARCH_TERM_TEMPLATE = "{0}~{1}";
+    /** Constant <code>FUZZY_SEARCH_TERM_TEMPLATE="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit distance to search. {p} and {s} are prefix and suffix to be applied to the search term */
+    public static final String FUZZY_SEARCH_TERM_TEMPLATE = "{p}{t}{s} {t}~{d}";
 
     private static final Object lock = new Object();
 
@@ -2144,7 +2144,7 @@ public final class SearchHelper {
      * @should skip reserved fields
      * @return a {@link java.lang.String} object.
      */
-    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator) {
+    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator, boolean allowFuzzySearch) {
         logger.trace("generateAdvancedExpandQuery");
         if (groups == null || groups.isEmpty()) {
             return "";
@@ -2188,7 +2188,7 @@ public final class SearchHelper {
                             continue;
                         }
                 }
-                String itemQuery = item.generateQuery(new HashSet<String>(), false);
+                String itemQuery = item.generateQuery(new HashSet<String>(), false, allowFuzzySearch);
                 if (StringUtils.isNotEmpty(itemQuery)) {
                     if (sbGroup.length() > 0) {
                         if (orMode) {
@@ -2704,10 +2704,10 @@ public final class SearchHelper {
      * @param term the search term
      * @return the given term with a fuzzy search token appended
      */
-    public static String addFuzzySearchToken(String term) {
+    public static String addFuzzySearchToken(String term, String prefix, String suffix) {
         if (DataManager.getInstance().getConfiguration().isFuzzySearchEnabled()) {
             int distance = FuzzySearchTerm.calculateOptimalDistance(term);// DataManager.getInstance().getConfiguration().getFuzzySearchDistance();
-            return addFuzzySearchToken(term, distance);
+            return addFuzzySearchToken(term, distance, prefix, suffix);
         } else {
             return term;
         }
@@ -2718,16 +2718,35 @@ public final class SearchHelper {
      * @param distance the maximum Damerau-Levenshtein distance to a matching word. Must be from 0 to 2, where 0 means no fuzzy search
      * @return
      */
-    public static String addFuzzySearchToken(String term, int distance) {
+    public static String addFuzzySearchToken(String term, int distance, String prefix, String suffix) {
         if (distance < 0 || distance > 2) {
             throw new IllegalArgumentException("Edit distance in fuzzy search must be in the range from 0 to 2. The given distance is " + distance);
         } else if (StringUtils.isBlank(term) || term.contains(" ")) {
             throw new IllegalArgumentException(
                     "For fuzzy search, term must not be empty and must consist only of a single word. The given term is " + term);
         } else {
-            return FUZZY_SEARCH_TERM_TEMPLATE.replace("{0}", term).replace("{1}", Integer.toString(distance));
+            return FUZZY_SEARCH_TERM_TEMPLATE
+                    .replace("{t}", term)
+                    .replace("{d}", Integer.toString(distance))
+                    .replace("{p}", StringUtils.isBlank(prefix) ? "" : prefix)
+                    .replace("{s}", StringUtils.isBlank(suffix) ? "" : suffix);
         }
+    }
+    
 
+    /**
+     * Separate leading and trailing whildcard token ('*') from the actual term and return an array of length 3 
+     * with the values [leadingWildCard, tokenWithoutWildcards, trailingWildcard]
+     * If leading/trailing wildcards are missing, the corresponding array entries are empty strings
+     * 
+     * @param term
+     * @return array of prefix, token, suffix
+     */
+    public static String[] getWildcardsTokens(String term) {
+        String prefix = term.startsWith("*") ? "*" : "";
+        String suffix = term.endsWith("*") ? "*" : "";
+        String cleanedTerm = term.substring(prefix.length(), term.length()-suffix.length());
+        return new String[]{prefix, cleanedTerm, suffix};
     }
 
 }

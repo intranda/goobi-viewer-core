@@ -306,6 +306,9 @@ public class SearchHit implements Comparable<SearchHit> {
     private static Map<String, Set<String>> getActualSearchTerms(Map<String, Set<String>> origTerms, Map<String, List<String>> resultFields) {
         String foundValues = resultFields.values().stream().flatMap(l -> l.stream()).collect(Collectors.joining(" "));
         Map<String, Set<String>> newFieldTerms = new HashMap<>();
+        if(origTerms == null) {
+            return newFieldTerms;
+        }
         for (String  solrField : origTerms.keySet()) {
             Set<String> newTerms = new HashSet<String>();
             Set<String> terms = origTerms.get(solrField);

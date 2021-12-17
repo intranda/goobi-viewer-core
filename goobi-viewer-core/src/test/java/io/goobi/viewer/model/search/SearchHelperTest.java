@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.search;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -947,7 +948,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             groups.add(group);
         }
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
         Assert.assertEquals(" +((MD_FIELD:val1 AND MD_TITLE:(foo AND bar)) AND (MD_FIELD:val2 OR MD_SHELFMARK:(bla OR blup)))", result);
     }
 
@@ -981,7 +982,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(5).setValue("PPN000");
         groups.add(group);
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
         Assert.assertEquals(" +((MD_FIELD:val))", result);
     }
 
@@ -1418,5 +1419,37 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(\\\"foo bar\\\"))")
                 + ") -BOOL_HIDE:true -DC:collection1 -DC:collection2",
                 finalQuery);
+    }
+    
+    @Test
+    public void testGetWildcards() {
+        String prefix = "*term";
+        String suffix = "term*";
+        String both = "*term*";
+        String neither = "term";
+        {
+            String[] wildcards = SearchHelper.getWildcardsTokens(prefix);
+            assertEquals("*", wildcards[0]);
+            assertEquals("term", wildcards[1]);
+            assertEquals("", wildcards[2]);            
+        }
+        {
+            String[] wildcards = SearchHelper.getWildcardsTokens(suffix);
+            assertEquals("", wildcards[0]);
+            assertEquals("term", wildcards[1]);
+            assertEquals("*", wildcards[2]);            
+        }
+        {
+            String[] wildcards = SearchHelper.getWildcardsTokens(both);
+            assertEquals("*", wildcards[0]);
+            assertEquals("term", wildcards[1]);
+            assertEquals("*", wildcards[2]);            
+        }
+        {
+            String[] wildcards = SearchHelper.getWildcardsTokens(neither);
+            assertEquals("", wildcards[0]);
+            assertEquals("term", wildcards[1]);
+            assertEquals("", wildcards[2]);            
+        }
     }
 }
