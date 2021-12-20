@@ -45,22 +45,20 @@ public class SidebarWidgetTypeUpdate implements IModelUpdate {
      * 
      */
     private boolean createDiscriminatorRow(IDAO dao) throws DAOException {
-        dao.startTransaction();
-        try {
+            dao.startTransaction();
             Query q1 = dao.createQuery("SELECT element.type FROM CMSSidebarElement element WHERE element.widgetType IS NOT NULL");
             List results = q1.getResultList();
+            dao.commitTransaction();
             if (results == null || results.isEmpty()) {
+                dao.startTransaction();
                 Query q = dao.createQuery("UPDATE CMSSidebarElement element SET element.widgetType = '" + CMSSidebarElement.class.getSimpleName()
                         + "' WHERE element.widgetType IS NULL");
                 q.executeUpdate();
+                dao.commitTransaction();
                 return true;
             } else {
                 return false;
             }
-        } finally {
-            dao.commitTransaction();
-        }
-
     }
 
 }
