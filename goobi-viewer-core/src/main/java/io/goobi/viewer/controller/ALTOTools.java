@@ -53,6 +53,7 @@ import de.intranda.digiverso.ocr.alto.utils.HyphenationLinker;
 import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
+import io.goobi.viewer.model.search.FuzzySearchTerm;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
 
 /**
@@ -654,38 +655,52 @@ public class ALTOTools {
             }
         }
 
-        if (content.trim().contains(" ")) {
-            // not a word, but a line
-            content = content.trim().replaceAll("\\s+", " ").toLowerCase();
-            int hitCount = words.length;
-            StringBuilder sbMatchString = new StringBuilder();
-            for (String string : words) {
-                if (sbMatchString.length() > 0) {
-                    sbMatchString.append(' ');
-                }
-                sbMatchString.append(string.toLowerCase());
-            }
-            String matchString = sbMatchString.toString();
-            for (; hitCount > 0; hitCount--) {
-                if (content.contains(matchString)) {
-                    break;
-                } else if (!matchString.contains(" ")) {
-                    // last word didn't match, so no match
-                    return 0;
-                } else {
-                    matchString = matchString.substring(0, matchString.lastIndexOf(' '));
+        String[] contents = content.trim().split("\\s+");
+        int hits = 0;
+        for (String altoWord : contents) {
+            for (String searchWord : words) {
+                FuzzySearchTerm fuzzy = new FuzzySearchTerm(searchWord);
+                if(fuzzy.matches(altoWord)) {
+                    hits++;
                 }
             }
-            return hitCount;
         }
+        return hits;
+        
+//        if (content.trim().contains(" ")) {
+//            // not a word, but a line
+//            content = content.trim().replaceAll("\\s+", " ").toLowerCase();
+//            int hitCount = words.length;
+//            StringBuilder sbMatchString = new StringBuilder();
+//            for (String string : words) {
+//                if (sbMatchString.length() > 0) {
+//                    sbMatchString.append(' ');
+//                }
+//                sbMatchString.append(string.toLowerCase());
+//            }
+//            String matchString = sbMatchString.toString();
+//            for (; hitCount > 0; hitCount--) {
+//                if (content.contains(matchString)) {
+//                    break;
+//                } else if (!matchString.contains(" ")) {
+//                    // last word didn't match, so no match
+//                    return 0;
+//                } else {
+//                    matchString = matchString.substring(0, matchString.lastIndexOf(' '));
+//                }
+//            }
+//            return hitCount;
+//        }
         //for both the search term and the alto string, make lower case, normalize characters, remove diacriticals and remove all non-word characters
-        String word = StringTools.removeDiacriticalMarks(words[0].toLowerCase()).replaceAll("[^\\w-]", "");
-        String contentString = StringTools.removeDiacriticalMarks(content.trim().toLowerCase()).replaceAll("[^\\w-]", "");
-        if (StringUtils.isNoneBlank(word, contentString) && word.equals(contentString)) {
-            return 1;
-        }
-
-        return 0;
+//        FuzzySearchTerm fuzzy = new FuzzySearchTerm(words[0]);
+//        return fuzzy.matches(content) ? 1 : 0;
+//        String word = StringTools.removeDiacriticalMarks(words[0].toLowerCase()).replaceAll("[^\\w-]", "");
+//        String contentString = StringTools.removeDiacriticalMarks(content.trim().toLowerCase()).replaceAll("[^\\w-]", "");
+//        if (StringUtils.isNoneBlank(word, contentString) && word.equals(contentString)) {
+//            return 1;
+//        }
+//
+//        return 0;
     }
 
     /**

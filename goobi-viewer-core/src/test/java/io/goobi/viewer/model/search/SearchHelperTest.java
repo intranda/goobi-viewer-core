@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.search;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -380,6 +381,17 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertTrue(fragment.contains("<span class=\"search-list--highlight\">beats</span>"));
         }
     }
+    
+    @Test
+    public void truncateFulltext_shouldFindFuzzySearchTermsCorrectly() throws Exception {
+        String original = LOREM_IPSUM;
+        String[] terms = { "dolor~1" };
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true);
+        Assert.assertEquals(4, truncated.size());
+        Assert.assertEquals(2, truncated.stream().filter(t -> t.contains("<span class=\"search-list--highlight\">dolor</span>")).count());
+        Assert.assertEquals(2, truncated.stream().filter(t -> t.contains("<span class=\"search-list--highlight\">dolore</span>")).count());
+    }
+    
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)
@@ -936,8 +948,37 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             groups.add(group);
         }
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
         Assert.assertEquals(" +((MD_FIELD:val1 AND MD_TITLE:(foo AND bar)) AND (MD_FIELD:val2 OR MD_SHELFMARK:(bla OR blup)))", result);
+    }
+    
+    @Test
+    public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly_fuzzySearch() throws Exception {
+        List<SearchQueryGroup> groups = new ArrayList<>(2);
+        {
+            SearchQueryGroup group = new SearchQueryGroup(null, 2);
+            group.setOperator(SearchQueryGroupOperator.AND);
+            group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+            group.getQueryItems().get(0).setField("MD_FIELD");
+            group.getQueryItems().get(0).setValue("val1");
+            group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+            group.getQueryItems().get(1).setField(SolrConstants.TITLE);
+            group.getQueryItems().get(1).setValue("foo bar");
+            groups.add(group);
+        }
+        {
+            SearchQueryGroup group = new SearchQueryGroup(null, 2);
+            group.setOperator(SearchQueryGroupOperator.OR);
+            group.getQueryItems().get(0).setField("MD_FIELD");
+            group.getQueryItems().get(0).setValue("val2");
+            group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
+            group.getQueryItems().get(1).setField("MD_SHELFMARK");
+            group.getQueryItems().get(1).setValue("bla blup");
+            groups.add(group);
+        }
+
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, true);
+        Assert.assertEquals(" +((MD_FIELD:(val1 val1~1) AND MD_TITLE:((foo) AND (bar))) AND (MD_FIELD:(val2 val2~1) OR MD_SHELFMARK:((bla) OR (blup blup~1))))", result);
     }
 
     /**
@@ -970,7 +1011,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(5).setValue("PPN000");
         groups.add(group);
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
         Assert.assertEquals(" +((MD_FIELD:val))", result);
     }
 
@@ -1407,5 +1448,37 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(\\\"foo bar\\\"))")
                 + ") -BOOL_HIDE:true -DC:collection1 -DC:collection2",
                 finalQuery);
+    }
+    
+    @Test
+    public void testGetWildcards() {
+        String prefix = "*term";
+        String suffix = "term*";
+        String both = "*term*";
+        String neither = "term";
+        {
+            String[] wildcards = SearchHelper.getWildcardsTokens(prefix);
+            assertEquals("*", wildcards[0]);
+            assertEquals("term", wildcards[1]);
+            assertEquals("", wildcards[2]);            
+        }
+        {
+            String[] wildcards = SearchHelper.getWildcardsTokens(suffix);
+            assertEquals("", wildcards[0]);
+            assertEquals("term", wildcards[1]);
+            assertEquals("*", wildcards[2]);            
+        }
+        {
+            String[] wildcards = SearchHelper.getWildcardsTokens(both);
+            assertEquals("*", wildcards[0]);
+            assertEquals("term", wildcards[1]);
+            assertEquals("*", wildcards[2]);            
+        }
+        {
+            String[] wildcards = SearchHelper.getWildcardsTokens(neither);
+            assertEquals("", wildcards[0]);
+            assertEquals("term", wildcards[1]);
+            assertEquals("", wildcards[2]);            
+        }
     }
 }

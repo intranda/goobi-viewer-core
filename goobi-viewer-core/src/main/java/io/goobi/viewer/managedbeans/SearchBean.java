@@ -532,11 +532,25 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("generateAdvancedSearchString");
         StringBuilder sb = new StringBuilder();
         StringBuilder sbInfo = new StringBuilder();
-
+        boolean allowFuzzySearch = DataManager.getInstance().getConfiguration().isFuzzySearchEnabled();
         searchTerms.clear();
         StringBuilder sbCurrentCollection = new StringBuilder();
         //        String currentFacetString = facets.getCurrentFacetStringPrefix(false);
 
+        //Add fuzzy search terms
+        List<SearchQueryGroup> tempQueryGroups = new ArrayList<>();
+        for (SearchQueryGroup group : advancedQueryGroups) {
+            SearchQueryGroup tGroup = new SearchQueryGroup(group.getLocale(), group.getQueryItems().size());
+            tGroup.setOperator(group.getOperator());
+            tempQueryGroups.add(tGroup);
+            for (SearchQueryItem item : group.getQueryItems()) {
+                if(StringUtils.isNotBlank(item.getValue())) {
+                } else {
+                    tGroup.getQueryItems().add(item);
+                }
+            }
+        }
+        
         for (SearchQueryGroup queryGroup : advancedQueryGroups) {
             StringBuilder sbGroup = new StringBuilder();
             if (sb.length() > 0) {
@@ -680,7 +694,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                 } else {
                     // Generate item query
-                    itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true);
+                    itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true, allowFuzzySearch);
                 }
 
                 logger.trace("Item query: {}", itemQuery);
@@ -809,7 +823,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         // Add search hit aggregation parameters, if enabled
         if (!searchTerms.isEmpty()) {
-            String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator)
+            String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator, DataManager.getInstance().getConfiguration().isFuzzySearchEnabled())
                     : SearchHelper.generateExpandQuery(
                             SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups), searchTerms,
                             phraseSearch);
@@ -1091,6 +1105,10 @@ public class SearchBean implements SearchInterface, Serializable {
                 term = ClientUtils.escapeQueryChars(unescapedTerm);
                 term = term.replace("\\*", "*"); // unescape falsely escaped truncation
                 if (term.length() > 0 && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
+                    if(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled()) {                        
+                        String[] wildcards = SearchHelper.getWildcardsTokens(term);
+                        term = SearchHelper.addFuzzySearchToken(wildcards[1], wildcards[0], wildcards[2]);
+                    }
                     logger.trace("term: {}", term);
                     if (!"\\|\\|".equals(term)) {
                         preparedTerms.add(term);
@@ -1161,6 +1179,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("search string: {}", searchStringInternal);
         //        logger.trace("search terms: {}", searchTerms.toString());
     }
+
 
     /**
      * {@inheritDoc}
