@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>21.11.6</version>
+	<version>21.12</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
