@@ -52,7 +52,9 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
@@ -67,27 +69,33 @@ public class Metadata implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(Metadata.class);
 
+    // Configuration
+
     /** Label from messages.properties. */
     private final String label;
     /** Value from messages.properties (with placeholders) */
     private final String masterValue;
-    private final List<MetadataValue> values = new ArrayList<>();
-    private final List<MetadataParameter> params = new ArrayList<>();
-    private boolean group = false;
-    private int type = 0;
-    private int number = -1;
-    private boolean singleString = true;
-    private boolean hideIfOnlyMetadataField = false;
+    private String citationTemplate;
+    private String sortField;
     /** Optional metadata field that will provide the label value (if singleString=true) */
     private String labelField;
+    private int type = 0;
+    private int number = -1;
+    private boolean group = false;
+    private boolean singleString = true;
+    private boolean hideIfOnlyMetadataField = false;
+
+    // Data
+
     private String ownerDocstrctType;
     /** ID of the owning StructElement. Used for constructing unique value IDs, where required. */
     private String ownerStructElementIddoc;
-    private String citationTemplate;
     private CitationProcessorWrapper citationProcessorWrapper;
-    private Metadata parentMetadata;
-    private final List<Metadata> childMetadata = new ArrayList<>();
     private int indentation = 0;
+    private final List<MetadataValue> values = new ArrayList<>();
+    private final List<MetadataParameter> params = new ArrayList<>();
+    private final List<Metadata> childMetadata = new ArrayList<>();
+    private Metadata parentMetadata;
 
     /**
      * <p>
@@ -264,6 +272,34 @@ public class Metadata implements Serializable {
      */
     public Metadata setType(int type) {
         this.type = type;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public List<StringPair> getSortFields() {
+        if (StringUtils.isEmpty(sortField)) {
+            return null;
+        }
+
+        return Collections.singletonList(new StringPair(sortField, "asc"));
+    }
+
+    /**
+     * @return the sortField
+     */
+    public String getSortField() {
+        return sortField;
+    }
+
+    /**
+     * @param sortField the sortField to set
+     * @return this
+     */
+    public Metadata setSortField(String sortField) {
+        this.sortField = sortField;
         return this;
     }
 
@@ -535,6 +571,7 @@ public class Metadata implements Serializable {
         String[] valueSplit = value.split("[.]");
         StringBuilder sbFullValue = new StringBuilder();
         StringBuilder sbHierarchy = new StringBuilder();
+        Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(field);
         for (String s : valueSplit) {
             if (sbFullValue.length() > 0) {
                 sbFullValue.append(" > ");
@@ -551,7 +588,7 @@ public class Metadata implements Serializable {
                 String sortField = "-";
                 // Use configured collection sorting field, if available
                 if (StringUtils.isNotEmpty(field)) {
-                    String defaultSortField = DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(field, value);
+                    String defaultSortField = CollectionView.getCollectionDefaultSortField(value, sortFields);
                     if (StringUtils.isNotEmpty(defaultSortField)) {
                         sortField = defaultSortField;
                     }
@@ -643,15 +680,17 @@ public class Metadata implements Serializable {
     /**
      * Populates the parameters of the given metadata with values from the given StructElement.
      *
-     * @param locale a {@link java.util.Locale} object.
      * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param ownerIddoc IDDOC of the owner document (either docstruct or parent metadata)
+     * @param sortFields
+     * @param locale a {@link java.util.Locale} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should use default value of no value found
      */
-    public boolean populate(StructElement se, String ownerIddoc, Locale locale) throws IndexUnreachableException, PresentationException {
+    public boolean populate(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale)
+            throws IndexUnreachableException, PresentationException {
         if (se == null) {
             return false;
         }
@@ -679,7 +718,7 @@ public class Metadata implements Serializable {
                 // In this case save time by skipping this field.
                 return false;
             }
-            return populateGroup(se, ownerIddoc, locale);
+            return populateGroup(se, ownerIddoc, sortFields, locale);
         }
 
         // Regular, atomic metadata
@@ -774,11 +813,12 @@ public class Metadata implements Serializable {
      * 
      * @param se {@link StructElement}
      * @param ownerIddoc Owner IDDOC (either docstruct or parent metadata)
+     * @param sortFields Optional field/order pairs for sorting
      * @param locale
      * @return
      * @throws IndexUnreachableException
      */
-    boolean populateGroup(StructElement se, String ownerIddoc, Locale locale) throws IndexUnreachableException {
+    boolean populateGroup(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale) throws IndexUnreachableException {
         if (ownerIddoc == null) {
             return false;
         }
@@ -786,7 +826,7 @@ public class Metadata implements Serializable {
         boolean found = false;
 
         try {
-            SolrDocumentList groupedMdList = MetadataTools.getGroupedMetadata(ownerIddoc, '+' + SolrConstants.LABEL + ":" + label);
+            SolrDocumentList groupedMdList = MetadataTools.getGroupedMetadata(ownerIddoc, '+' + SolrConstants.LABEL + ":" + label, sortFields);
             if (groupedMdList == null || groupedMdList.isEmpty()) {
                 return false;
             }
@@ -864,7 +904,7 @@ public class Metadata implements Serializable {
                     if (!getChildMetadata().isEmpty()) {
                         for (Metadata child : getChildMetadata()) {
                             // logger.trace("populating child metadata: {}", child.getLabel());
-                            child.populate(se, metadataDocIddoc, locale);
+                            child.populate(se, metadataDocIddoc, sortFields, locale);
                         }
                     }
                 }

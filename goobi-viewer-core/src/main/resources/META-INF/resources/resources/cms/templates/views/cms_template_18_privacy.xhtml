@@ -18,12 +18,6 @@
             <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
         </f:metadata>
     </ui:define>
-    
-    <!-- BREADCRUMBS -->
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
-    
 
 	<!-- CONTENT -->
     <ui:define name="content">
@@ -48,8 +42,11 @@
 					<h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>
 
 	                <!-- PIWIK IFRAME -->
-	                <iframe title="web analytics" src="//#{configurationBean.piwikBaseURL}/index.php?module=CoreAdminHome&amp;action=optOut&amp;language=de"></iframe>	
-				
+	                <ui:fragment rendered="#{configurationBean.piwikTrackingEnabled}">
+	                    <iframe title="web analytics"
+	                     src="//#{configurationBean.piwikBaseURL}/index.php?module=CoreAdminHome&amp;action=optOut&amp;language=#{navigationHelper.localeString}"></iframe>	
+				    </ui:fragment>
+				    
 					<ui:fragment rendered="#{cmsPage.hasContent('text02')}">
 						<div class="tpl-privacy__text-bottom">
 								<h:outputText escape="false" value="#{cmsPage.getContent('text02')}"></h:outputText>

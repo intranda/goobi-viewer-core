@@ -34,7 +34,6 @@ public class DownloadOptionConverter implements Converter<DownloadOption> {
         }
 
         DownloadOption ret = DownloadOption.getByLabel(submittedValue);
-
         return ret;
     }
 
@@ -44,9 +43,6 @@ public class DownloadOptionConverter implements Converter<DownloadOption> {
             return "";
         }
 
-        System.out.println("option: " + option);
-
         return option.getLabel();
-
     }
 }

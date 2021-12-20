@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.search;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -266,14 +267,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#truncateFulltext(List,String)
-     * @verifies truncate string to 200 chars if no terms are given and add prefix and suffix
-     */
-    @Test
-    public void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermsAreGivenAndAddPrefixAndSuffix() throws Exception {
-    }
-
-    /**
-     * @see SearchHelper#truncateFulltext(List,String)
      * @verifies make terms bold if found in text
      */
     @Test
@@ -388,6 +381,17 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertTrue(fragment.contains("<span class=\"search-list--highlight\">beats</span>"));
         }
     }
+    
+    @Test
+    public void truncateFulltext_shouldFindFuzzySearchTermsCorrectly() throws Exception {
+        String original = LOREM_IPSUM;
+        String[] terms = { "dolor~1" };
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true);
+        Assert.assertEquals(4, truncated.size());
+        Assert.assertEquals(2, truncated.stream().filter(t -> t.contains("<span class=\"search-list--highlight\">dolor</span>")).count());
+        Assert.assertEquals(2, truncated.stream().filter(t -> t.contains("<span class=\"search-list--highlight\">dolore</span>")).count());
+    }
+    
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)
@@ -395,38 +399,48 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void extractSearchTermsFromQuery_shouldExtractAllValuesFromQueryExceptFromNOTBlocks() throws Exception {
-        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
-                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
-                null);
-        Assert.assertEquals(4, result.size());
         {
-            Set<String> terms = result.get("MD_X");
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(2, terms.size());
-            Assert.assertTrue(terms.contains("value1"));
-            Assert.assertTrue(terms.contains("value2"));
+            // NOT with brackets
+            Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
+                    "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
+                    null);
+            Assert.assertEquals(5, result.size());
+            {
+                Set<String> terms = result.get("MD_X");
+                Assert.assertNotNull(terms);
+                Assert.assertEquals(2, terms.size());
+                Assert.assertTrue(terms.contains("value1"));
+                Assert.assertTrue(terms.contains("value2"));
+            }
+            {
+                Set<String> terms = result.get(SolrConstants.DEFAULT);
+                Assert.assertNotNull(terms);
+                Assert.assertEquals(2, terms.size());
+                Assert.assertTrue(terms.contains("value3"));
+                Assert.assertTrue(terms.contains(":value4:"));
+            }
+            {
+                Set<String> terms = result.get(SolrConstants.FULLTEXT);
+                Assert.assertNotNull(terms);
+                Assert.assertEquals(1, terms.size());
+                Assert.assertTrue(terms.contains("hello-world"));
+            }
+            {
+                Set<String> terms = result.get(SolrConstants.UGCTERMS);
+                Assert.assertNotNull(terms);
+                Assert.assertEquals(1, terms.size());
+                Assert.assertTrue(terms.contains("comment"));
+            }
+            Assert.assertNull(result.get("MD_Y"));
         }
         {
-            Set<String> terms = result.get(SolrConstants.DEFAULT);
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(2, terms.size());
-            Assert.assertTrue(terms.contains("value3"));
-            Assert.assertTrue(terms.contains(":value4:"));
+            // NOT without brackets
+            Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
+                    "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND SUPERUGCTERMS:\"comment\" AND NOT MD_Y:value_not ",
+                    null);
+            Assert.assertEquals(5, result.size());
+            Assert.assertNull(result.get("MD_Y"));
         }
-        {
-            Set<String> terms = result.get(SolrConstants.FULLTEXT);
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(1, terms.size());
-            Assert.assertTrue(terms.contains("hello-world"));
-        }
-        {
-            Set<String> terms = result.get(SolrConstants.UGCTERMS);
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(1, terms.size());
-            Assert.assertTrue(terms.contains("comment"));
-        }
-        Assert.assertNull(result.get("MD_Y"));
-
     }
 
     /**
@@ -437,7 +451,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void extractSearchTermsFromQuery_shouldHandleMultiplePhrasesInQueryCorrectly() throws Exception {
         Map<String, Set<String>> result =
                 SearchHelper.extractSearchTermsFromQuery("(MD_A:\"value1\" OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value2\")", null);
-        Assert.assertEquals(4, result.size());
+        Assert.assertEquals(5, result.size());
         {
             Set<String> terms = result.get("MD_A");
             Assert.assertNotNull(terms);
@@ -472,7 +486,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void extractSearchTermsFromQuery_shouldSkipDiscriminatorValue() throws Exception {
         Map<String, Set<String>> result =
                 SearchHelper.extractSearchTermsFromQuery("(MD_A:\"value1\" OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value3\")", "value1");
-        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(3, result.size());
         {
             Set<String> terms = result.get("MD_C");
             Assert.assertNotNull(terms);
@@ -498,12 +512,32 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies add title terms field
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldAddTitleTermsField() throws Exception {
+        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
+                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
+                null);
+        Set<String> terms = result.get(SearchHelper._TITLE_TERMS);
+        Assert.assertNotNull(terms);
+        Assert.assertEquals(6, terms.size());
+        Assert.assertTrue(terms.contains("(value1)"));
+        Assert.assertTrue(terms.contains("(value2)"));
+        Assert.assertTrue(terms.contains("(value3)"));
+        Assert.assertTrue(terms.contains("(:value4:)"));
+        Assert.assertTrue(terms.contains("\"hello-world\""));
+        Assert.assertTrue(terms.contains("\"comment\""));
+    }
+
+    /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
      * @verifies not remove truncation
      */
     @Test
     public void extractSearchTermsFromQuery_shouldNotRemoveTruncation() throws Exception {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery("MD_A:*foo*", null);
-        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(2, result.size());
         {
             Set<String> terms = result.get("MD_A");
             Assert.assertNotNull(terms);
@@ -616,6 +650,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("FACET_DOCSTRCT", SearchHelper.facetifyField(SolrConstants.DOCSTRCT));
         //        Assert.assertEquals("FACET_SUPERDOCSTRCT", SearchHelper.facetifyField(SolrConstants.SUPERDOCSTRCT));
         Assert.assertEquals("FACET_TITLE", SearchHelper.facetifyField("MD_TITLE_UNTOKENIZED"));
+        Assert.assertEquals("FACET_FOO", SearchHelper.facetifyField("MD2_FOO_UNTOKENIZED"));
     }
 
     /**
@@ -913,8 +948,37 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             groups.add(group);
         }
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
         Assert.assertEquals(" +((MD_FIELD:val1 AND MD_TITLE:(foo AND bar)) AND (MD_FIELD:val2 OR MD_SHELFMARK:(bla OR blup)))", result);
+    }
+    
+    @Test
+    public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly_fuzzySearch() throws Exception {
+        List<SearchQueryGroup> groups = new ArrayList<>(2);
+        {
+            SearchQueryGroup group = new SearchQueryGroup(null, 2);
+            group.setOperator(SearchQueryGroupOperator.AND);
+            group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+            group.getQueryItems().get(0).setField("MD_FIELD");
+            group.getQueryItems().get(0).setValue("val1");
+            group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+            group.getQueryItems().get(1).setField(SolrConstants.TITLE);
+            group.getQueryItems().get(1).setValue("foo bar");
+            groups.add(group);
+        }
+        {
+            SearchQueryGroup group = new SearchQueryGroup(null, 2);
+            group.setOperator(SearchQueryGroupOperator.OR);
+            group.getQueryItems().get(0).setField("MD_FIELD");
+            group.getQueryItems().get(0).setValue("val2");
+            group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
+            group.getQueryItems().get(1).setField("MD_SHELFMARK");
+            group.getQueryItems().get(1).setValue("bla blup");
+            groups.add(group);
+        }
+
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, true);
+        Assert.assertEquals(" +((MD_FIELD:(val1 val1~1) AND MD_TITLE:((foo) AND (bar))) AND (MD_FIELD:(val2 val2~1) OR MD_SHELFMARK:((bla) OR (blup blup~1))))", result);
     }
 
     /**
@@ -947,7 +1011,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(5).setValue("PPN000");
         groups.add(group);
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
         Assert.assertEquals(" +((MD_FIELD:val))", result);
     }
 
@@ -1009,12 +1073,13 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getBrowseElement_shouldReturnCorrectHitForAggregatedSearch() throws Exception {
         String rawQuery = SolrConstants.IDDOC + ":*";
-        List<SearchHit> hits = SearchHelper.searchWithFulltext(SearchHelper.buildFinalQuery(rawQuery, true), 0, 10, null, null, null, null, null,
-                null, Locale.ENGLISH, null);
+        List<SearchHit> hits =
+                SearchHelper.searchWithAggregation(SearchHelper.buildFinalQuery(rawQuery, null, true, false), 0, 10, null, null, null, null, null,
+                        null, Locale.ENGLISH);
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
-            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true, null);
+            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true, false, null);
             Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
         }
     }
@@ -1231,12 +1296,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void testBuildFinalQuery() throws IndexUnreachableException, PresentationException {
         String query = "DC:dctei";
 
-        String finalQuery = SearchHelper.buildFinalQuery(query, false, null);
+        String finalQuery = SearchHelper.buildFinalQuery(query, null, false, false);
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(65, docs.size());
 
-        finalQuery = SearchHelper.buildFinalQuery(query, false,
-                null);
+        finalQuery = SearchHelper.buildFinalQuery(query, null, false, false);
         docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(65, docs.size());
     }
@@ -1254,7 +1318,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_LANGUAGE_UNTOKENIZED", null, null, false, false, false);
         for (int i = 0; i < 100; ++i) {
             List<BrowseTerm> terms =
-                    SearchHelper.getFilteredTerms(bmfc, null, null, 0, SolrSearchIndex.MAX_HITS, new BrowseTermComparator(Locale.ENGLISH), true);
+                    SearchHelper.getFilteredTerms(bmfc, null, null, 0, SolrSearchIndex.MAX_HITS, new BrowseTermComparator(Locale.ENGLISH));
             Assert.assertFalse(terms.isEmpty());
             Assert.assertTrue(previousSize == -1 || terms.size() == previousSize);
             previousSize = terms.size();
@@ -1274,10 +1338,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateQueryParams_shouldReturnEmptyMapIfSearchHitAggregationOn() throws Exception {
-        DataManager.getInstance().getConfiguration().overrideValue("search.aggregateHits", true);
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAggregateHits());
-
-        Map<String, String> params = SearchHelper.generateQueryParams();
+        Map<String, String> params = SearchHelper.generateQueryParams(null);
         Assert.assertNotNull(params);
         Assert.assertEquals(0, params.size());
     }
@@ -1322,7 +1383,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildFinalQuery_shouldAddJoinStatementIfAggregateHitsTrue() throws Exception {
-        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", true, null);
+        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", null, true, false, null);
         Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
 
@@ -1332,7 +1393,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildFinalQuery_shouldNotAddJoinStatementIfAggregateHitsFalse() throws Exception {
-        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", false, null);
+        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", null, false, false, null);
         Assert.assertEquals("+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
 
@@ -1342,7 +1403,82 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildFinalQuery_shouldRemoveExistingJoinStatement() throws Exception {
-        String finalQuery = SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:*", true, null);
+        String finalQuery = SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:*", null, true, false, null);
         Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
+    }
+
+    /**
+     * @see SearchHelper#buildFinalQuery(String,String,boolean,boolean,HttpServletRequest)
+     * @verifies add embedded query template if boostTopLevelDocstructs true
+     */
+    @Test
+    public void buildFinalQuery_shouldAddEmbeddedQueryTemplateIfBoostTopLevelDocstructsTrue() throws Exception {
+        String finalQuery =
+                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", null, true, true, null);
+        Assert.assertEquals("+("
+                + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(foo bar))")
+                + ") -BOOL_HIDE:true -DC:collection1 -DC:collection2",
+                finalQuery);
+    }
+
+    //    /**
+    //     * @see SearchHelper#buildFinalQuery(String,String,boolean,boolean,HttpServletRequest)
+    //     * @verifies add query prefix if boostTopLevelDocstructs true and termQuery not empty
+    //     */
+    //    @Test
+    //    public void buildFinalQuery_shouldAddQueryPrefixIfBoostTopLevelDocstructsTrueAndTermQueryNotEmpty() throws Exception {
+    //        String finalQuery =
+    //                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", "(foo AND bar)", true, true, null);
+    //        Assert.assertEquals("+(" +
+    //                SearchHelper.BOOSTING_QUERY_TEMPLATE.replace("{0}", "(foo AND bar)") + " "
+    //                + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(foo bar))")
+    //                + ") -BOOL_HIDE:true -DC:collection1 -DC:collection2",
+    //                finalQuery);
+    //    }
+
+    /**
+     * @see SearchHelper#buildFinalQuery(String,String,boolean,boolean,HttpServletRequest)
+     * @verifies escape quotation marks in embedded query
+     */
+    @Test
+    public void buildFinalQuery_shouldEscapeQuotationMarksInEmbeddedQuery() throws Exception {
+        String finalQuery =
+                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(\"foo bar\")", null, true, true, null);
+        Assert.assertEquals("+("
+                + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(\\\"foo bar\\\"))")
+                + ") -BOOL_HIDE:true -DC:collection1 -DC:collection2",
+                finalQuery);
+    }
+    
+    @Test
+    public void testGetWildcards() {
+        String prefix = "*term";
+        String suffix = "term*";
+        String both = "*term*";
+        String neither = "term";
+        {
+            String[] wildcards = SearchHelper.getWildcardsTokens(prefix);
+            assertEquals("*", wildcards[0]);
+            assertEquals("term", wildcards[1]);
+            assertEquals("", wildcards[2]);            
+        }
+        {
+            String[] wildcards = SearchHelper.getWildcardsTokens(suffix);
+            assertEquals("", wildcards[0]);
+            assertEquals("term", wildcards[1]);
+            assertEquals("*", wildcards[2]);            
+        }
+        {
+            String[] wildcards = SearchHelper.getWildcardsTokens(both);
+            assertEquals("*", wildcards[0]);
+            assertEquals("term", wildcards[1]);
+            assertEquals("*", wildcards[2]);            
+        }
+        {
+            String[] wildcards = SearchHelper.getWildcardsTokens(neither);
+            assertEquals("", wildcards[0]);
+            assertEquals("term", wildcards[1]);
+            assertEquals("", wildcards[2]);            
+        }
     }
 }

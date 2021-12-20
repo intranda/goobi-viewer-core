@@ -94,16 +94,6 @@ public class Question {
     @JsonIgnore
     private Campaign owner;
 
-    /**
-     * @deprecated replaced by {@link #text}. Keep for backward database compatibility
-     */
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-    @PrivateOwned
-    //    @JsonSerialize(using = TranslationListSerializer.class)
-    @JsonIgnore
-    @Deprecated
-    private List<QuestionTranslation> translationsLegacy = new ArrayList<>();
-
     @Column(name = "text", nullable = true, columnDefinition = "LONGTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText text;
@@ -179,33 +169,6 @@ public class Question {
         this(orig);
         this.owner = campaign;
     }
-
-    /**
-     * No @PrePersist annotation because it is called from owning campaign
-     */
-    public void onPrePersist() {
-        serializeTranslations();
-    }
-
-    /**
-     * No @PreUpdate annotation because it is called from owning campaign
-     */
-    public void onPreUpdate() {
-        serializeTranslations();
-    }
-
-    /**
-     * No @PostLoad annotation because it is called from owning campaign
-     */
-    public void onPostLoad() {
-        deserializeTranslations();
-    }
-
-    private void serializeTranslations() {
-
-        this.translationsLegacy = Collections.emptyList();
-
-    }
     
     /**
      * Call when metadata list changes
@@ -213,18 +176,6 @@ public class Question {
     public void serializeMetadataFields() {
         if(QuestionType.METADATA.equals(getQuestionType())) {            
             this.metadataFields = getMetadataFieldSelection().entrySet().stream().filter(e -> e.getValue()).map(e -> e.getKey()).collect(Collectors.toList());
-        }
-    }
-
-    private void deserializeTranslations() {
-        if (this.translationsLegacy != null && !this.translationsLegacy.isEmpty()) {
-            this.text = new TranslatedText();
-            for (QuestionTranslation translation : translationsLegacy) {
-                Locale locale = Locale.forLanguageTag(translation.getLanguage());
-                if (this.text.hasLocale(locale)) {
-                    this.text.setText(translation.getValue(), locale);
-                }
-            }
         }
     }
 

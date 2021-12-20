@@ -46,6 +46,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.modules.IModule;
+import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
@@ -163,6 +164,10 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isBookmarksEnabled() {
         return DataManager.getInstance().getConfiguration().isBookmarksEnabled();
+    }
+
+    public boolean isSearchSavingEnabled() {
+        return DataManager.getInstance().getConfiguration().isSearchSavingEnabled();
     }
 
     /**
@@ -805,6 +810,11 @@ public class ConfigurationBean implements Serializable {
         }
     }
 
+    @Deprecated
+    public boolean isPiwikTracking() {
+        return isPiwikTrackingEnabled();
+    }
+
     /**
      * <p>
      * isPiwikTracking.
@@ -812,7 +822,7 @@ public class ConfigurationBean implements Serializable {
      *
      * @return a boolean.
      */
-    public boolean isPiwikTracking() {
+    public boolean isPiwikTrackingEnabled() {
         return DataManager.getInstance().getConfiguration().isPiwikTrackingEnabled();
     }
 
@@ -1412,8 +1422,9 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDisplaySocialMediaShareLinks();
     }
 
+    @Deprecated
     public boolean isAggregateSearchHits() {
-        return DataManager.getInstance().getConfiguration().isAggregateHits();
+        return true;
     }
 
     public String getMapBoxToken() {
@@ -1457,7 +1468,7 @@ public class ConfigurationBean implements Serializable {
      * @return true if default sorting field is 'RANDOM'; false otherwise
      */
     public boolean isDefaultSortFieldRandom() {
-        return "RANDOM".equals(DataManager.getInstance().getConfiguration().getDefaultSortField());
+        return SolrConstants.SORT_RANDOM.equals(DataManager.getInstance().getConfiguration().getDefaultSortField());
     }
 
     public boolean isDisplayUserGeneratedContentBelowImage() {
@@ -1477,12 +1488,20 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplayAnnotationTextInImage() {
         return DataManager.getInstance().getConfiguration().isDisplayAnnotationTextInImage();
     }
-    
+
     public boolean isDisplayAddressSearchInMap() {
         return DataManager.getInstance().getConfiguration().isDisplayAddressSearchInMap();
     }
-    
+
     public boolean isArchivesEnabled() {
         return DataManager.getInstance().getConfiguration().isArchivesEnabled();
+    }
+
+    public String getSearchSortingAscendingKey(String field) {
+        return DataManager.getInstance().getConfiguration().getSearchSortingKeyAscending(field).orElse("searchSortingDropdown_ascending");
+    }
+
+    public String getSearchSortingDescendingKey(String field) {
+        return DataManager.getInstance().getConfiguration().getSearchSortingKeyDescending(field).orElse("searchSortingDropdown_descending");
     }
 }

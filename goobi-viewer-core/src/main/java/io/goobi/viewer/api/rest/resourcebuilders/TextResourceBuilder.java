@@ -82,6 +82,8 @@ public class TextResourceBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(TextResourceBuilder.class);
 
+    private static final String RESOURCE_NOT_FOUND = "Resource not found";
+
     public TextResourceBuilder() {
     }
 
@@ -101,7 +103,22 @@ public class TextResourceBuilder {
         String foldername = DataManager.getInstance().getConfiguration().getFulltextFolder();
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder();
         List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null);
-        return writeZipFile(files, filename);
+        if(files.isEmpty()) {
+            File tempFolder = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_fulltext_" + System.currentTimeMillis());
+            tempFolder.mkdir();
+            Map<Path, String> map = this.getFulltextMap(pi);
+            List<Path> tempFiles = new ArrayList<>();
+            for (Path pagePath : map.keySet()) {
+                String text = map.get(pagePath);
+                File tempFile = new File(tempFolder, FilenameUtils.getBaseName(pagePath.getFileName().toString()) + ".txt");
+                FileUtils.write(tempFile, text, "utf-8");
+                tempFiles.add(tempFile.toPath());
+            }
+            tempFiles.sort((f1,f2) -> f1.getFileName().toString().compareTo(f2.getFileName().toString()));
+            return writeZipFile(tempFiles, filename);
+        } else {            
+            return writeZipFile(files, filename);
+        }
 
     }
 
@@ -122,7 +139,7 @@ public class TextResourceBuilder {
 
         StringBuilder sb = new StringBuilder();
         for (Path path : files) {
-            String xmlString = FileTools.getStringFromFile(path.toFile(), "utf-8");
+            String xmlString = FileTools.getStringFromFile(path.toFile(), StringTools.DEFAULT_ENCODING);
             sb.append(xmlString).append("\n");
         }
         return sb.toString().trim();
@@ -136,7 +153,7 @@ public class TextResourceBuilder {
                 DataManager.getInstance().getConfiguration().getAltoFolder(), fileName);
 
         if (file == null || !Files.isRegularFile(file)) {
-            throw new ContentNotFoundException("Resource not found");
+            throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
         }
 
         try {
@@ -145,7 +162,7 @@ public class TextResourceBuilder {
             //                return new XMLOutputter().outputString(doc);
         } catch (FileNotFoundException e) {
             logger.debug(e.getMessage());
-            throw new ContentNotFoundException("Resource not found");
+            throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             throw new PresentationException("Error reading resource");
@@ -207,7 +224,7 @@ public class TextResourceBuilder {
 
             Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
             if (fulltexts.isEmpty()) {
-                throw new ContentNotFoundException("Resource not found");
+                throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
             }
 
             TEIBuilder builder = new TEIBuilder();
@@ -230,7 +247,7 @@ public class TextResourceBuilder {
 
         }
 
-        throw new ContentNotFoundException("Resource not found");
+        throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
     }
 
     public StreamingOutput getTeiAsZip(String pi, String langCode)
@@ -255,7 +272,7 @@ public class TextResourceBuilder {
 
         Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
         if (fulltexts.isEmpty()) {
-            throw new ContentNotFoundException("Resource not found");
+            throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
         }
 
         TEIBuilder builder = new TEIBuilder();
@@ -315,7 +332,7 @@ public class TextResourceBuilder {
             }
         }
 
-        throw new ContentNotFoundException("Resource not found");
+        throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
     }
 
     public String getContentAsText(String contentFolder, String pi, String fileName)
@@ -333,7 +350,7 @@ public class TextResourceBuilder {
             }
         }
 
-        throw new ContentNotFoundException("Resource not found");
+        throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
     }
 
     /**
@@ -367,13 +384,13 @@ public class TextResourceBuilder {
                     DataManager.getInstance().getConfiguration().getAltoFolder(), fileName.replaceAll("(i?)\\.txt", ".xml"));
             if (file != null && Files.isRegularFile(file)) {
                 try {
-                    return ALTOTools.getFulltext(file, "utf-8");
+                    return ALTOTools.getFulltext(file, StringTools.DEFAULT_ENCODING);
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 }
             }
         }
-        throw new ContentNotFoundException("Resource not found");
+        throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
 
     }
 
@@ -410,7 +427,7 @@ public class TextResourceBuilder {
                             p -> Paths.get(p.toString().replaceAll("(i?)\\.(alto|xml)", ".txt")),
                             p -> {
                                 try {
-                                    return ALTOTools.getFulltext(p, "utf-8");
+                                    return ALTOTools.getFulltext(p, StringTools.DEFAULT_ENCODING);
                                 } catch (IOException e) {
                                     logger.error("Error reading file " + p, e);
                                     return "";

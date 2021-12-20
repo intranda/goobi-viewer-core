@@ -12,12 +12,12 @@
 	<rewrite match="/admin/roles/edit/?$" substitute="/admin/roles/"/>
 	<rewrite match="/admin/record/?$" substitute="/admin/record/new/"/>
 	<rewrite match="/admin/cms/maps/edit/?$" substitute="/admin/cms/maps/"/>
-	
+
 	<!-- GET parameter example -->
 	<!-- <query-param name="language"> #{bean.language} </query-param> -->
-	
-	
-	
+
+
+
 	<!-- INDEX -->
 	<url-mapping id="index">
 		<pattern value="/" />
@@ -31,7 +31,7 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
-	
+
 	<!-- PRIVACY -->
 	<url-mapping id="privacy">
 		<pattern value="/privacy/" />
@@ -39,15 +39,15 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
-	
+
 	<!-- IMPRINT -->
 	<url-mapping id="imprint">
 		<pattern value="/imprint/" />
 		<view-id value="/imprint.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-	</url-mapping>	
-	
+	</url-mapping>
+
 	<!-- TAGS -->
 	<url-mapping id="tags">
 		<pattern value="/tags/" />
@@ -55,7 +55,7 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
-	
+
 	<!-- BROWSE -->
 	<url-mapping id="browse">
 		<pattern value="/browse/" />
@@ -74,21 +74,21 @@
 		<pattern value="/browseHierarchy/" />
 		<view-id value="/browse.xhtml" />
 		<action onPostback="false">#{browseBean.setCollectionField('MD_HIERARCHY')}</action>
-	</url-mapping>	
+	</url-mapping>
 	<url-mapping id="browseFirstRecord">
 		<pattern value="/browse/#{browseBean.collectionField}/#{browseBean.targetCollection}/record/" />
 		<view-id value="/browse.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{browseBean.openWorkInTargetCollection()}</action>
 	</url-mapping>
-	
+
 	<!-- STATISTICS -->
 	<url-mapping id="statistics">
 		<pattern value="/statistics/" />
 		<view-id value="/statistics.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	
+
 	<!-- TIMEMATRIX -->
 	<url-mapping id="timematrix">
 		<pattern value="/timematrix/" />
@@ -106,8 +106,8 @@
     <url-mapping id="archives2">
         <pattern value="/archives/#{archiveBean.currentDatabase}/#{archiveBean.currentResource}/" />
         <view-id value="/archivesContent.xhtml" />
-        <query-param onPostback="false" name="selected">#{archiveBean.selectedEntryId}</query-param>
-        <action onPostback="false">#{archiveBean.initializeArchiveTree()}</action>
+        <query-param onPostback="false" name="selected">#{selectedEntryId}</query-param>
+        <action onPostback="false">#{archiveBean.initializeArchiveTree(selectedEntryId)}</action>
     </url-mapping>
 
 	<!-- FEEDBACK -->
@@ -188,7 +188,7 @@
 		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
 	</url-mapping>
 
-	
+
 	<url-mapping id="searchcalendar">
 		<pattern value="/searchcalendar/" />
 		<view-id value="/searchCalendar.xhtml" />
@@ -204,12 +204,12 @@
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
 		<action onPostback="false">#{searchBean.resetSearchParameters(true)}</action>
 	</url-mapping>
-	
+
 	<url-mapping id="searchList">
 		<pattern value="/searchList/" />
 		<view-id value="/searchList.xhtml" />
 	</url-mapping>
-	
+
 	<!-- COLLECTION BROWSING -->
 	<url-mapping id="browse4">
 		<pattern value="/browse/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacets:searchBean.facets.currentFacetString}/" />
@@ -223,7 +223,7 @@
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.search}</action>
     </url-mapping>
-    
+
     <!-- TERM BROWSING -->
 	<url-mapping id="searchTerm2">
 		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{page:browseBean.currentPage}/" />
@@ -252,7 +252,7 @@
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
     </url-mapping>
-	
+
 	<!-- SIMPLE SEARCH -->
     <url-mapping id="newSearch1">
         <pattern value="/search/#{currentFacetString:searchBean.facets.currentFacetString}/" />
@@ -291,7 +291,7 @@
 		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
-	
+
 	<!-- ADVANCED SEARCH -->
 	   <url-mapping id="searchAdvanced1">
         <pattern value="/searchadvanced/#{currentFacetString:searchBean.facets.currentFacetString}/" />
@@ -318,7 +318,7 @@
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
 	</url-mapping>
-	
+
 	<!-- CALENDAR SEARCH -->
 	<url-mapping id="searchCalendar4">
 		<pattern value="/searchcalendar/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
@@ -326,7 +326,7 @@
 		<action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
-	
+
 	<!-- VIDEO (not a view type but a direct link to the video component for embedding)-->
     <url-mapping id="video2">
         <pattern value="/video/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
@@ -406,7 +406,7 @@
 		<view-id value="/viewObject.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
-	
+
 	<!-- MIRADOR -->
 	<url-mapping id="mirador0">
 		<pattern value="/mirador/" />
@@ -661,7 +661,7 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{downloadBean.openDownloadAction()}</action>
 	</url-mapping>
-	
+
 	<!-- BOOKMARKS -->
     <url-mapping id="bookmarkLists">
         <pattern value="/bookmarks/" />
@@ -742,7 +742,11 @@
         <view-id value="/userBackendAnnotations.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
-	
+    <url-mapping id="userMenuComments">
+        <pattern value="/user/comments/" />
+        <view-id value="/userBackendComments.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 	<!-- ADMIN -->
 	<url-mapping id="admin">
 		<pattern value="/admin/" />
@@ -849,6 +853,17 @@
         <action onPostback="false">#{adminBean.lockTranslation}</action>
     </url-mapping>
 
+		<!-- THEME CONFIGS -->
+    <url-mapping id="adminThemes">
+        <pattern value="/admin/themes/" />
+		<view-id value="/resources/admin/views/adminThemes.xhtml" />
+    </url-mapping>
+    <url-mapping id="adminThemesEdit">
+        <pattern value="/admin/themes/edit/#{themeName}/" />
+        <view-id value="/resources/admin/views/adminThemesEdit.xhtml" />
+        <action onPostback="false">#{adminThemeEditBean.setCurrentThemeName(themeName)}</action>
+    </url-mapping>
+
     <!-- ADMIN STYLES FOR DEVS -->
     <url-mapping id="adminEditTranslations">
         <pattern value="/admin/styles/" />
@@ -912,7 +927,7 @@
         <view-id value="/resources/cms/adminCmsCollections.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsCollectionsBean.currentTab.refresh(cmsCollectionsBean.solrField)}</action>
-        
+
     </url-mapping>
     <url-mapping id="adminCmsEditCollection">
         <pattern value="/admin/cms/collections/edit/#{collectionName}/" />
@@ -956,7 +971,7 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsRecordNoteEditBean.setNoteId(selectedNoteId)}</action>
     </url-mapping>
-        <!-- CMS Sliders -->
+    <!-- CMS Sliders -->
     <url-mapping id="adminCmsSliders">
         <pattern value="/admin/cms/slider/" />
         <view-id value="/resources/cms/adminCmsSliders.xhtml" />
@@ -976,7 +991,7 @@
     <!-- CMS GeoMaps -->
     <url-mapping id="adminCmsGeoMaps">
         <pattern value="/admin/cms/maps/" />
-		<view-id value="/resources/cms/adminCmsGeoMaps.xhtml" />        
+		<view-id value="/resources/cms/adminCmsGeoMaps.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminCmsGeoMapNew">
@@ -990,7 +1005,7 @@
         <view-id value="/resources/cms/adminCmsGeoMapEdit.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
-    
+
 	<!-- CMS -->
 	<url-mapping id="cmsOpenPage1">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/" />
@@ -1015,7 +1030,7 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
 	</url-mapping>
-	
+
 	<url-mapping id="cmsOpenPageWithCollection">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
@@ -1027,7 +1042,7 @@
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	
+
 	<url-mapping id="cmsBrowse3">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{filter:browseBean.currentStringFilter}/#{page:cmsBean.currentPage.listPage}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
@@ -1090,7 +1105,7 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{crowdsourcingBean.setTargetCampaign(null)}</action>
     </url-mapping>
-    
+
     <!-- CROWDSOURCING -->
     <url-mapping id="crowdCampaigns">
 		<pattern value="/campaigns/"/>
@@ -1146,13 +1161,13 @@
         <pattern value="/sitelinks/" />
         <view-id value="/sitelinks.xhtml" />
         <action onPostback="false">#{sitelinkBean.resetAction}</action>
-    </url-mapping>    
+    </url-mapping>
     <url-mapping id="sitelinks1">
         <pattern value="/sitelinks/#{sitelinkBean.value}/" />
         <view-id value="/sitelinks.xhtml" />
         <action onPostback="false">#{sitelinkBean.searchAction}</action>
     </url-mapping>
-    
+
     <!-- EMBEDDABLE CONTENT -->
     <url-mapping id="embedGeoMap">
 		<pattern value="/embed/map/#{mapId}/"/>
@@ -1166,7 +1181,7 @@
 		<pattern value="/api/swagger/" />
 		<view-id value="/restApi.xhtml" />
 	</url-mapping>
-	
+
 	<!-- ERROR -->
 	<url-mapping id="error">
 		<pattern value="/error/" />

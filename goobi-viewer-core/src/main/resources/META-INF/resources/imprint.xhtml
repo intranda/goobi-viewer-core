@@ -18,14 +18,17 @@
     </ui:define>
 
     <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+        <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
     </ui:define>
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
             <div id="imprint" class="view-imprint">
                 <h2>#{msg.imprint}</h2>
-                <p>#{msg.imprint_text}</p>
+                
+                <div class="view-imprint__text">
+	                <p>#{msg.imprint_text}</p>
+                </div>
             </div>
         </f:view>
     </ui:define>

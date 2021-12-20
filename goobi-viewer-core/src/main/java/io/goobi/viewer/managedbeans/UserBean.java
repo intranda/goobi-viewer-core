@@ -731,7 +731,7 @@ public class UserBean implements Serializable {
      * </p>
      */
     public void createFeedback() {
-        logger.trace("createFeedback");
+        // logger.trace("createFeedback");
         lastName = null;
         securityAnswer = null;
         securityQuestion = null;
@@ -1125,6 +1125,7 @@ public class UserBean implements Serializable {
     /**
      * Selects a random security question from configured list and sets <code>currentSecurityQuestion</code> to it.
      * 
+     * @return always true (do not change since that would break rendered conditions on security questions in xhtml)
      * @should not reset securityQuest if not yet answered
      */
     public boolean resetSecurityQuestion() {
@@ -1412,6 +1413,12 @@ public class UserBean implements Serializable {
         this.logout();
         Messages.info(messageKey);
 
+    }
+    
+    public void createBackupOfCurrentUser() {
+        if(getUser() != null) {
+            getUser().backupFields();
+        }
     }
 
 }

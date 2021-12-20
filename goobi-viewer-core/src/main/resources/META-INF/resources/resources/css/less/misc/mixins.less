@@ -48,12 +48,12 @@
 }
 /* VISUALLY HIDDEN */
 .mx-v-hidden {
-    position: absolute; 
+    position: absolute;
     width: 1px;
-    height: 1px; 
-	clip: rect(1px, 1px, 1px, 1px); 
-    white-space: nowrap; 
-    overflow: hidden; 
+    height: 1px;
+	clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+    overflow: hidden;
 }
 /* GRID */
 .mx-grid(@width: 145px; @gap: 15px) {
@@ -85,4 +85,10 @@
 	&:focus {
 	  outline: 0;
 	}
+}
+
+.mx-focus-visible {
+	outline: 2px solid @colorOutline;
+	outline-offset: 2px;
+	z-index: 9999;
 }

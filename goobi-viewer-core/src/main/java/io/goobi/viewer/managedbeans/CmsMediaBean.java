@@ -44,6 +44,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.api.rest.v1.cms.CMSMediaResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -271,6 +272,8 @@ public class CmsMediaBean implements Serializable {
                 }
                 if(!deleted) {
                     Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
+                } else {
+                    CMSMediaResource.removeFromImageCache(item);
                 }
                 reloadMediaList(false);
             } catch (RollbackException e) {
@@ -432,6 +435,7 @@ public class CmsMediaBean implements Serializable {
             case CMSMediaItem.CONTENT_TYPE_PDF:
             case CMSMediaItem.CONTENT_TYPE_XML:
             case CMSMediaItem.CONTENT_TYPE_SVG:
+            case CMSMediaItem.CONTENT_TYPE_ICO:
                 return ThumbnailHandler.getCMSMediaImageApiUrl(item.getFileName());
             case CMSMediaItem.CONTENT_TYPE_GIF:
                 return ThumbnailHandler.getCMSMediaImageApiUrl(item.getFileName()) + "/full.gif";
@@ -678,7 +682,7 @@ public class CmsMediaBean implements Serializable {
      * @return a regex matching only filenames ending with one of the supported image format suffixes
      */
     public static String getImageFilter() {
-        return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2|svg)";
+        return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2|svg|ico)";
     }
     
     public static String getVideoFilter() {

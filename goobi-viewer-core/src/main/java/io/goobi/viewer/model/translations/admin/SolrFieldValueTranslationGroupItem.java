@@ -17,8 +17,11 @@ package io.goobi.viewer.model.translations.admin;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -44,8 +47,9 @@ public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
         super(key, regex);
     }
 
-    /* (non-Javadoc)
+    /**
      * @see io.goobi.viewer.model.translations.TranslationGroupKey#loadValues()
+     * @should load hierarchical entries correctly
      */
     @Override
     protected void loadEntries() throws PresentationException, IndexUnreachableException {
@@ -54,8 +58,30 @@ public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
                 .searchFacetsAndStatistics("*:*", null, Collections.singletonList(key), 1, false);
         FacetField ff = qr.getFacetField(key);
         List<String> keys = new ArrayList<>(ff.getValueCount());
-        for (Count value : ff.getValues()) {
-            keys.add(value.getName());
+        if (!ff.getValues().isEmpty()) {
+            Set<String> addedValues = new HashSet<>();
+            String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(key);
+            boolean useSplittingChar = StringUtils.isNotEmpty(splittingChar);
+            for (Count count : ff.getValues()) {
+                if (useSplittingChar && count.getName().contains(splittingChar)) {
+                    // For collection names, etc., add an entry for every level
+                    String[] valueNameSplit = count.getName().split("[" + splittingChar + "]");
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < valueNameSplit.length; ++i) {
+                        if (i > 0) {
+                            sb.append(splittingChar);
+                        }
+                        sb.append(valueNameSplit[i]);
+                        if (!addedValues.contains(sb.toString())) {
+                            keys.add(sb.toString());
+                            addedValues.add(sb.toString());
+                        }
+                    }
+                } else {
+                    // Regular values
+                    keys.add(count.getName());
+                }
+            }
         }
         Collections.sort(keys);
         createMessageKeyStatusMap(keys);

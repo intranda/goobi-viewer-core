@@ -11,12 +11,14 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('user_mySearches', false, true)}" />
-			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.user_mySearches,1)}" />
+			<f:event type="preRenderView"
+				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.admin__user_profile, request.contextPath.concat('/user/'), 1)}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.user_mySearches,2)}" />
 		</f:metadata>
 	</ui:define>
 
 	<ui:define name="breadcrumbs">
-		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
+		<viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
 	</ui:define>
 
 	<ui:define name="content">
@@ -24,105 +26,106 @@
             <h2>#{msg.user_mySearches}</h2>
 
             <!-- WARNING IF NO SEARCHES EXISTS -->
-            <h:panelGroup rendered="#{userDataBean.searches.isEmpty()}">
-                <div class="alert alert-warning" role="alert">#{msg.searches_noSearchesWarning}</div>
-            </h:panelGroup>
-
-            <!-- SAVED SEARCHES -->
-            <h:panelGroup rendered="#{!userDataBean.searches.isEmpty()}">
-                <h:form id="mySearchesForm" prependId="false">
-                    <h:dataTable
-                        id="mySearchesTable"
-                        styleClass="table my-searches__table user-backend-table"
-                        value="#{userDataBean.searches}"
-                        var="search">
-                        <!-- NAME -->
-                        <h:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{msg.name}" />
-                            </f:facet>
-                            <h:commandLink action="#{searchBean.executeSavedSearchAction(search)}">
-                                <h:outputText value="#{search.name}" escape="true" />
-                            </h:commandLink>
-                        </h:column>
-                        <!-- DATE -->
-                        <h:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{msg.MD_DATEOTHER}" />
-                            </f:facet>
-                            <h:outputText value="#{search.dateUpdated}">
-                                <f:converter converterId="localDateTimeConverter" />
-                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
-                            </h:outputText>
-                        </h:column>
-                        <!-- ACTION -->
-                        <h:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{msg.action}" />
-                            </f:facet>
-                            <!-- NEW HITS NOTIFICATION -->
-                            <ui:fragment rendered="#{search.newHitsNotification}">
-                                <h:commandLink
-                                    action="#{search.toggleNotifications}"
-                                    styleClass="my-searches__action"
-                                    title="#{msg.user_mySearches_disableNotifications}">
-                                    <i class="fa fa-envelope" aria-hidden="true"></i>
-                                </h:commandLink>
-                            </ui:fragment>
-                            <ui:fragment rendered="#{!search.newHitsNotification}">
-                                <h:commandLink
-                                    action="#{search.toggleNotifications}"
-                                    styleClass="my-searches__action"
-                                    title="#{msg.user_mySearches_enableNotifications}">
-                                    <i class="fa fa-envelope-o" aria-hidden="true"></i>
-                                </h:commandLink>
-                            </ui:fragment>
-                            <!-- DELETE SEARCH BUTTON -->
-                            <button
-                                type="button"
-                                class="btn btn--icon my-searches__delete-button"
-                                data-toggle="modal"
-                                data-backdrop="false"
-                                title="#{msg.delete}">
-                                <i class="fa fa-trash-o" aria-hidden="true"></i>
-                            </button>
-                            <!-- DELETE SEARCH MODAL -->
-                            <div class="modal fade my-searches__delete-modal" tabindex="-1" role="dialog">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">#{msg.user_mySearches}</h4>
-                                            <button
-                                                type="button"
-                                                class="fancy-close"
-                                                data-dismiss="modal">
-                                                <span aria-hidden="true">
-                                                    <h:outputText value="&amp;times;" escape="false" />
-                                                </span>
-                                                <span class="sr-only">Close</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>"#{search.name}" #{msg.delete}?</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button
-                                                type="button"
-                                                class="btn"
-                                                data-dismiss="modal">#{msg.cancel}</button>
-                                            <h:commandLink
-                                                value="#{msg.delete}"
-                                                action="#{userDataBean.deleteSearchAction(search)}"
-                                                styleClass="btn btn--success" />
-                                        </div>
-                                    </div>
-                                </div>
-								<div class="alt-backdrop" data-dismiss="modal"></div>
-                            </div>
-                        </h:column>
-                    </h:dataTable>
-                </h:form>
-            </h:panelGroup>
+            <c:choose>
+            	<c:when test="#{userDataBean.getNumSearches(userBean.user) == 0}">
+	                <div class="alert alert-warning" role="alert">#{msg.searches_noSearchesWarning}</div>
+            	</c:when>
+            	<c:otherwise>
+            	    <!-- SAVED SEARCHES -->
+	                <h:form id="mySearchesForm" prependId="false">
+	                    <h:dataTable
+	                        id="mySearchesTable"
+	                        styleClass="table my-searches__table user-backend-table"
+	                        value="#{userDataBean.getSearches(userBean.user, null)}"
+	                        var="search">
+	                        <!-- NAME -->
+	                        <h:column>
+	                            <f:facet name="header">
+	                                <h:outputText value="#{msg.name}" />
+	                            </f:facet>
+	                            <h:commandLink action="#{searchBean.executeSavedSearchAction(search)}">
+	                                <h:outputText value="#{search.name}" escape="true" />
+	                            </h:commandLink>
+	                        </h:column>
+	                        <!-- DATE -->
+	                        <h:column>
+	                            <f:facet name="header">
+	                                <h:outputText value="#{msg.MD_DATEOTHER}" />
+	                            </f:facet>
+	                            <h:outputText value="#{search.dateUpdated}">
+	                                <f:converter converterId="localDateTimeConverter" />
+	                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+	                            </h:outputText>
+	                        </h:column>
+	                        <!-- ACTION -->
+	                        <h:column>
+	                            <f:facet name="header">
+	                                <h:outputText value="#{msg.action}" />
+	                            </f:facet>
+	                            <!-- NEW HITS NOTIFICATION -->
+	                            <ui:fragment rendered="#{search.newHitsNotification}">
+	                                <h:commandLink
+	                                    action="#{search.toggleNotifications}"
+	                                    styleClass="my-searches__action"
+	                                    title="#{msg.user_mySearches_disableNotifications}">
+	                                    <i class="fa fa-envelope" aria-hidden="true"></i>
+	                                </h:commandLink>
+	                            </ui:fragment>
+	                            <ui:fragment rendered="#{!search.newHitsNotification}">
+	                                <h:commandLink
+	                                    action="#{search.toggleNotifications}"
+	                                    styleClass="my-searches__action"
+	                                    title="#{msg.user_mySearches_enableNotifications}">
+	                                    <i class="fa fa-envelope-o" aria-hidden="true"></i>
+	                                </h:commandLink>
+	                            </ui:fragment>
+	                            <!-- DELETE SEARCH BUTTON -->
+	                            <button
+	                                type="button"
+	                                class="btn btn--icon my-searches__delete-button"
+	                                data-toggle="modal"
+	                                data-backdrop="false"
+	                                title="#{msg.delete}">
+	                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+	                            </button>
+	                            <!-- DELETE SEARCH MODAL -->
+	                            <div class="modal fade my-searches__delete-modal" tabindex="-1" role="dialog">
+	                                <div class="modal-dialog">
+	                                    <div class="modal-content">
+	                                        <div class="modal-header">
+	                                            <h4 class="modal-title">#{msg.user_mySearches}</h4>
+	                                            <button
+	                                                type="button"
+	                                                class="fancy-close"
+	                                                data-dismiss="modal">
+	                                                <span aria-hidden="true">
+	                                                    <h:outputText value="&amp;times;" escape="false" />
+	                                                </span>
+	                                                <span class="sr-only">Close</span>
+	                                            </button>
+	                                        </div>
+	                                        <div class="modal-body">
+	                                            <p>"#{search.name}" #{msg.delete}?</p>
+	                                        </div>
+	                                        <div class="modal-footer">
+	                                            <button
+	                                                type="button"
+	                                                class="btn"
+	                                                data-dismiss="modal">#{msg.cancel}</button>
+	                                            <h:commandLink
+	                                                value="#{msg.delete}"
+	                                                action="#{userDataBean.deleteSearchAction(search)}"
+	                                                styleClass="btn btn--success" />
+	                                        </div>
+	                                    </div>
+	                                </div>
+									<div class="alt-backdrop" data-dismiss="modal"></div>
+	                            </div>
+	                        </h:column>
+	                    </h:dataTable>
+	                </h:form>
+            	</c:otherwise>
+            </c:choose>
         </div>
         <script type="text/javascript">
 			$( document ).ready( function() {

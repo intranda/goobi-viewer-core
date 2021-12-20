@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
+import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
@@ -69,8 +70,12 @@ import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
+import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
+import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
@@ -112,6 +117,11 @@ public class ActiveDocumentBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(ActiveDocumentBean.class);
 
+    /**
+     * Regex pattern 'imageToShow' matches if doublePageMode should be active
+     */
+    private static final String DOUBLE_PAGE_PATTERN = "\\d+-\\d+";
+    
     private static int imageContainerWidth = 600;
 
     private final Object lock = new Object();
@@ -332,12 +342,8 @@ public class ActiveDocumentBean implements Serializable {
             logger.debug("update(): (IDDOC {} ; page {} ; thread {})", topDocumentIddoc, imageToShow, Thread.currentThread().getId());
             prevHit = null;
             nextHit = null;
-            boolean doublePageMode = false;
+            boolean doublePageMode = isDoublePageUrl();
             titleBarMetadata.clear();
-
-            if (viewManager != null && viewManager.getCurrentStructElement() != null) {
-                doublePageMode = viewManager.isDoublePageMode();
-            }
 
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
@@ -468,18 +474,11 @@ public class ActiveDocumentBean implements Serializable {
                 // logger.debug("topSe: {}", topSe.getId());
                 if (topSe != null) {
                     for (Metadata md : DataManager.getInstance().getConfiguration().getTitleBarMetadata()) {
-                        md.populate(topSe, String.valueOf(topSe.getLuceneId()), BeanUtils.getLocale());
+                        md.populate(topSe, String.valueOf(topSe.getLuceneId()), md.getSortFields(), BeanUtils.getLocale());
                         if (!md.isBlank()) {
                             titleBarMetadata.add(md);
                         }
                     }
-                }
-
-                // When not aggregating hits, a new page will also be a new search hit in the list
-                // TODO check whether this still works
-                if (imageToShow.equals(String.valueOf(viewManager.getCurrentImageOrder()))
-                        && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
-                    mayChangeHitIndex = true;
                 }
 
                 viewManager.setCurrentImageOrderString(imageToShow);
@@ -489,8 +488,7 @@ public class ActiveDocumentBean implements Serializable {
                 if (searchBean != null && searchBean.getCurrentSearch() != null) {
                     if (searchBean.getCurrentHitIndex() < 0) {
                         // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
-                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), viewManager.getCurrentImageOrder(),
-                                DataManager.getInstance().getConfiguration().isAggregateHits());
+                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), viewManager.getCurrentImageOrder(), true);
                     } else if (mayChangeHitIndex) {
                         // Modify the current hit index
                         searchBean.increaseCurrentHitIndex();
@@ -524,6 +522,19 @@ public class ActiveDocumentBean implements Serializable {
 
     }
 
+    /**
+     * 
+     * @return true if the 'imageToShow' part of the url matches {@link #DOUBLE_PAGE_PATTERN}, 
+     * i.e. if the url suggests that double page mode is expected 
+     */
+    private boolean isDoublePageUrl() {
+        if(StringUtils.isNotBlank(imageToShow) && imageToShow.matches(DOUBLE_PAGE_PATTERN)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     /**
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -1017,9 +1028,9 @@ public class ActiveDocumentBean implements Serializable {
                 page2 = Math.min(page2, viewManager.getPageLoader().getLastPageOrder());
             }
         }
-        if (page == page2) {
-            page2 = Integer.MAX_VALUE;
-        }
+//        if (page == page2) {
+//            page2 = Integer.MAX_VALUE;
+//        }
         String range = page + (page2 != Integer.MAX_VALUE ? "-" + page2 : "");
         // logger.trace("final range: {}", range);
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
@@ -1097,7 +1108,12 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getFirstPageUrl() throws IndexUnreachableException {
         if (viewManager != null) {
-            return getPageUrl(String.valueOf(viewManager.getPageLoader().getFirstPageOrder()));
+            int image = viewManager.getPageLoader().getFirstPageOrder();
+            if(viewManager.isDoublePageMode()) {
+                return getPageUrl(image + "-" + image);
+            } else {                
+                return getPageUrl(Integer.toString(image));
+            }
         }
 
         return null;
@@ -1113,7 +1129,12 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getLastPageUrl() throws IndexUnreachableException {
         if (viewManager != null) {
-            return getPageUrl(String.valueOf(viewManager.getPageLoader().getLastPageOrder()));
+            int image = viewManager.getPageLoader().getLastPageOrder();
+            if(viewManager.isDoublePageMode()) {
+                return getPageUrl(image + "-" + image);
+            } else {                
+                return getPageUrl(Integer.toString(image));
+            }
         }
 
         return null;
@@ -1178,11 +1199,16 @@ public class ActiveDocumentBean implements Serializable {
         // Target image candidate contains two pages
         Optional<PhysicalElement> nextPage = viewManager.getPage(number);
         if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
-            return getPageUrl(String.valueOf(number));
+            return getPageUrl(String.valueOf(number) + "-" + String.valueOf(number));
         }
         // If the immediate neighbor is not a double image, add another step
         number += step;
 
+        nextPage = viewManager.getPage(number);
+        if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
+            return getPageUrl(String.valueOf(number) + "-" + String.valueOf(number));
+        }
+        
         // logger.trace("step: {}", step);
         // logger.trace("Number: {}", number);
 
@@ -2077,9 +2103,8 @@ public class ActiveDocumentBean implements Serializable {
             return null;
         }
 
-        // List<String> relatedItemIdentifiers = viewManager.getTopStructElement().getMetadataValues(identifierField);
-        List<SearchHit> ret = SearchHelper.searchWithFulltext(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null,
-                navigationHelper.getLocale(), BeanUtils.getRequest());
+        List<SearchHit> ret = SearchHelper.searchWithAggregation(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null,
+                navigationHelper.getLocale());
 
         logger.trace("{} related items found", ret.size());
         return ret;
@@ -2244,7 +2269,7 @@ public class ActiveDocumentBean implements Serializable {
         return widget;
     }
 
-    public CMSSidebarElement generateMapWidget(String pi) throws PresentationException {
+    public CMSSidebarElement generateMapWidget(String pi) throws PresentationException, DAOException {
         CMSSidebarElement widget = new CMSSidebarElement();
         widget.setType("widgetGeoMap");
         try {
@@ -2284,13 +2309,17 @@ public class ActiveDocumentBean implements Serializable {
 
             Collection<GeoMapFeature> features = new ArrayList<>();
 
-            String annotationQuery = String.format("+PI_TOPSTRUCT:%s +DOCTYPE:UGC +MD_COORDS:*", pi);
-            SolrDocumentList annoDocs = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getDocs(annotationQuery, Arrays.asList("MD_COORDS", "MD_BODY", "MD_ANNOTATION_ID", "MD_VALUE"));
-            if (annoDocs != null) {
-                for (SolrDocument solrDocument : annoDocs) {
-                    GeoMapFeature feature = new GeoMapFeature(SolrTools.getAsString(solrDocument.getFieldValue("MD_BODY")));
+            List<DisplayUserGeneratedContent> annos = DataManager.getInstance().getDao().getAnnotationsForWork(pi)
+                    .stream()
+                    .filter(a -> PublicationStatus.PUBLISHED.equals(a.getPublicationStatus()))
+                    .filter(a -> StringUtils.isNotBlank(a.getBody()))
+                    .map(a -> new DisplayUserGeneratedContent(a))
+                    .filter(a -> ContentType.GEOLOCATION.equals(a.getType()))
+                    .filter(a -> ContentBean.isAccessible(a, BeanUtils.getRequest()))
+                    .collect(Collectors.toList());
+            for (DisplayUserGeneratedContent anno : annos) {
+                if(anno.getAnnotationBody() instanceof TypedResource) {
+                    GeoMapFeature feature = new GeoMapFeature(((TypedResource)anno.getAnnotationBody()).asJson());
                     features.add(feature);
                 }
             }
@@ -2407,7 +2436,13 @@ public class ActiveDocumentBean implements Serializable {
                     Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
                     if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
                         imageToShow = currentLeftPage.get().getOrder() + "-" + currentRightPage.get().getOrder();
+                    } else if(currentLeftPage.isPresent()) {
+                        imageToShow = currentLeftPage.get().getOrder() + "-" + currentLeftPage.get().getOrder();
+                    } else if(currentRightPage.isPresent()) {
+                        imageToShow = currentRightPage.get().getOrder() + "-" + currentRightPage.get().getOrder();
                     }
+                } else if(doublePageMode) {
+                    imageToShow = String.valueOf(viewManager.getCurrentPage().getOrder() + "-" + viewManager.getCurrentPage().getOrder());
                 } else {
                     imageToShow = String.valueOf(viewManager.getCurrentPage().getOrder());
                 }

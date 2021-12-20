@@ -80,7 +80,10 @@ public class StringTools {
     /** Constant <code>PLUS_REPLACEMENT="U0025"</code> */
     public static final String PLUS_REPLACEMENT = "U002B";
 
+
+    
     /**
+     * Escpae url for submitted form data. A space is encoded as '+'.
      * 
      * @param string String to encode
      * @return URL-encoded string
@@ -212,8 +215,21 @@ public class StringTools {
         if (s == null) {
             throw new IllegalArgumentException("s may not be null");
         }
-
-        return Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+", "");
+        
+        return Normalizer.normalize(s, Normalizer.Form.NFD)
+                .replaceAll("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+", "");
+                
+    }
+    
+    public static String replaceCharacterVariants(String text) {
+        return text.replace("ſ", "s")
+                .replace("ø", "o")
+                .replace("Ø", "O")
+                .replace("Ł", "L")
+                .replace("ł", "l")
+                .replace("Ð", "D")
+                .replace("ð", "d");
+                
     }
 
     /**

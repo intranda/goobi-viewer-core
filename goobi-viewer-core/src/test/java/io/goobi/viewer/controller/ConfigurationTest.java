@@ -120,34 +120,12 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(2, ret.size());
     }
 
-    /**
-     * @see Configuration#getCollectionDefaultSortField(String)
-     * @verifies return correct field for collection
-     */
     @Test
-    public void getCollectionDefaultSortField_shouldReturnCorrectFieldForCollection() throws Exception {
-        Assert.assertEquals("SORT_CREATOR",
-                DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(SolrConstants.DC, "collection1.sub1"));
-    }
-
-    /**
-     * @see Configuration#getCollectionDefaultSortField(String)
-     * @verifies give priority to exact matches
-     */
-    @Test
-    public void getCollectionDefaultSortField_shouldGivePriorityToExactMatches() throws Exception {
-        Assert.assertEquals("SORT_TITLE",
-                DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(SolrConstants.DC, "collection1"));
-    }
-
-    /**
-     * @see Configuration#getCollectionDefaultSortField(String)
-     * @verifies return hyphen if collection not found
-     */
-    @Test
-    public void getCollectionDefaultSortField_shouldReturnHyphenIfCollectionNotFound() throws Exception {
-        Assert.assertEquals("-",
-                DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(SolrConstants.DC, "nonexistingcollection"));
+    public void getCollectionDefaultSortFields_shouldReturnAllFields() {
+        Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
+        assertEquals(2, sortFields.size());
+        assertEquals("SORT_CREATOR", sortFields.get("collection1*"));
+        assertEquals("SORT_TITLE", sortFields.get("collection1"));
     }
 
     /**
@@ -1456,7 +1434,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getDefaultSortField_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("SORT_DEFAULT1;SORT_DEFAULT2;SORT_DEFAULT3", DataManager.getInstance().getConfiguration().getDefaultSortField());
+        Assert.assertEquals(SolrConstants.SORT_RANDOM, DataManager.getInstance().getConfiguration().getDefaultSortField());
     }
 
     /**
@@ -1528,7 +1506,9 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSortFields_shouldReturnReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getSortFields().size());
+        List<String> fields = DataManager.getInstance().getConfiguration().getSortFields();
+        Assert.assertEquals(6, fields.size());
+        Assert.assertEquals("SORT_YEARPUBLISH;SORT_TITLE", fields.get(5));
     }
 
     /**
@@ -2291,15 +2271,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isGroupDuplicateHits()
-     * @verifies return correct value
-     */
-    @Test
-    public void isGroupDuplicateHits_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isGroupDuplicateHits());
-    }
-
-    /**
      * @see Configuration#getRecordGroupIdentifierFields()
      * @verifies return all configured values
      */
@@ -2498,15 +2469,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isSearchExcelExportEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isSearchExcelExportEnabled());
-    }
-
-    /**
-     * @see Configuration#isAggregateHits()
-     * @verifies return correct value
-     */
-    @Test
-    public void isAggregateHits_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isAggregateHits());
     }
 
     /**
@@ -3129,6 +3091,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(1, childMd.getIndentation());
         Assert.assertEquals(md, childMd.getParentMetadata());
         Assert.assertEquals("MD_ARTIST", childMd.getLabel());
+        Assert.assertEquals("SORT_NAME", childMd.getSortField());
         Assert.assertTrue(childMd.isGroup());
         Assert.assertFalse(childMd.isSingleString());
         Assert.assertEquals(7, childMd.getParams().size());

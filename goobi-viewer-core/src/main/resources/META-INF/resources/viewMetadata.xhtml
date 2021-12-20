@@ -23,7 +23,7 @@
     </ui:define>
 
     <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+        <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
     </ui:define>
 
     <ui:define name="content">
@@ -40,7 +40,6 @@
                         <ui:param name="metadataViewIndex" value="#{metadataBean.activeMetadataView.index}"/>
                         <ui:param name="metadataViewLabel"
                             value="#{metadataBean.activeMetadataView.label != null ? metadataBean.activeMetadataView.label : metadataBean.defaultMetadataLabel}"/>
-
                     </ui:include>
                 </ui:insert>
 

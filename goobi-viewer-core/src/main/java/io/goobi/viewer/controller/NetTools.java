@@ -20,6 +20,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -96,7 +97,7 @@ public class NetTools {
      *         or the error message.
      */
     public static String[] callUrlGET(String url) {
-        logger.trace("callUrlGET: {}", url);
+        // logger.trace("callUrlGET: {}", url);
         String[] ret = new String[2];
         try (CloseableHttpClient httpClient = HttpClients.custom().build()) {
             HttpGet httpGet = new HttpGet(url);
@@ -114,7 +115,7 @@ public class NetTools {
                         ret[1] = response.getStatusLine().getReasonPhrase();
                         break;
                     default:
-                        logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
+                        // logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
                         ret[1] = response.getStatusLine().getReasonPhrase();
                         break;
                 }
@@ -203,7 +204,7 @@ public class NetTools {
      * getWebContent.
      * </p>
      *
-     * @param method POST or PUT
+     * @param method POST | PUT | DELETE
      * @param url a {@link java.lang.String} object.
      * @param params a {@link java.util.Map} object.
      * @param cookies a {@link java.util.Map} object.
@@ -368,7 +369,8 @@ public class NetTools {
                 props.setProperty("mail.transport.protocol", "smtp");
                 props.setProperty("mail.smtp.port", String.valueOf(smtpPort));
                 props.setProperty("mail.smtp.host", smtpServer);
-                props.setProperty("mail.smtp.ssl.trust", "*");
+                //                props.setProperty("mail.smtp.ssl.trust", "*");
+                //                props.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
                 props.setProperty("mail.smtp.starttls.enable", "true");
                 props.setProperty("mail.smtp.starttls.required", "true");
                 break;
@@ -392,8 +394,8 @@ public class NetTools {
                 props.setProperty("mail.smtp.port", String.valueOf(smtpPort));
                 props.setProperty("mail.smtp.host", smtpServer);
         }
-        props.setProperty("mail.smtp.connectiontimeout", "15000");
-        props.setProperty("mail.smtp.timeout", "15000");
+        props.setProperty("mail.smtp.connectiontimeout", "30000");
+        props.setProperty("mail.smtp.timeout", "30000");
         props.setProperty("mail.smtp.auth", String.valueOf(auth));
         logger.debug("Connecting to email server " + smtpServer + " on port " + String.valueOf(smtpPort) + " via SMTP security "
                 + smtpSecurity.toUpperCase());
@@ -401,11 +403,13 @@ public class NetTools {
 
         Session session;
         if (auth) {
+            //            props.setProperty("mail.smtp.user", smtpUser);
+            //            props.setProperty("mail.smtp.password", smtpPassword);
             // with authentication
             session = Session.getInstance(props, new javax.mail.Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(smtpUser, smtpUser);
+                    return new PasswordAuthentication(smtpUser, smtpPassword);
                 }
             });
         } else {
@@ -424,8 +428,7 @@ public class NetTools {
             i++;
         }
         msg.setRecipients(Message.RecipientType.TO, addressTo);
-        // Optional : You can also set your custom headers in the Email if you
-        // Want
+        // Optional : You can also set your custom headers in the Email if you want
         // msg.addHeader("MyHeaderName", "myHeaderValue");
         msg.setSubject(subject);
         {

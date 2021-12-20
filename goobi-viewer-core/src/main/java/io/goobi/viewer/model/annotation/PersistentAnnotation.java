@@ -26,10 +26,14 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -45,11 +49,9 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
@@ -58,14 +60,12 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * An Annotation class to store annotation in a database
- *
  * @author florian
+ *
  */
 @Entity
-@Table(name = "annotations")
-public class PersistentAnnotation {
-
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+public abstract class PersistentAnnotation {
     private static final Logger logger = LoggerFactory.getLogger(PersistentAnnotation.class);
 
     @Id
@@ -122,11 +122,35 @@ public class PersistentAnnotation {
 
     @Column(name = "access_condition", nullable = true)
     private String accessCondition;
+    
+    @Column(name = "publication_status")
+    @Enumerated(EnumType.STRING)
+    private PublicationStatus publicationStatus = PublicationStatus.CREATING;
 
+     @Transient
+     private User creator = null;
+    
     /**
      * empty constructor
      */
     public PersistentAnnotation() {
+        this.dateCreated = LocalDateTime.now();
+    }
+    
+    public PersistentAnnotation(PersistentAnnotation source) {
+        this.id = source.id;
+        this.accessCondition = source.accessCondition;
+        this.body = source.body;
+        this.creatorId = source.creatorId;
+        this.dateCreated = source.dateCreated;
+        this.dateModified = source.dateModified;
+        this.generatorId = source.getGeneratorId();
+        this.motivation = source.motivation;
+        this.reviewerId = source.reviewerId;
+        this.target = source.target;
+        this.targetPI = source.targetPI;
+        this.targetPageOrder = source.targetPageOrder;
+        this.publicationStatus = source.publicationStatus;
     }
 
     /**
@@ -135,12 +159,13 @@ public class PersistentAnnotation {
      * @param source a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
      */
     public PersistentAnnotation(WebAnnotation source, Long id, String targetPI, Integer targetPage) {
-        this.dateCreated = DateTools.convertDateToLocalDateTimeViaInstant(source.getCreated());
-        this.dateModified = DateTools.convertDateToLocalDateTimeViaInstant(source.getModified());
+        this.dateCreated = source.getCreated();
+        this.dateModified = source.getModified();
         this.motivation = source.getMotivation();
         this.id = id;
         this.creatorId = null;
         this.generatorId = null;
+        this.accessCondition = source.getRights();
         try {
             if (source.getCreator() != null && source.getCreator().getId() != null) {
                 Long userId = User.getId(source.getCreator().getId());
@@ -252,10 +277,18 @@ public class PersistentAnnotation {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public User getCreator() throws DAOException {
-        if (creatorId != null) {
-            return DataManager.getInstance().getDao().getUser(creatorId);
+        if (this.creator == null && this.creatorId != null) {
+            this.creator = DataManager.getInstance().getDao().getUser(creatorId);
         }
-        return null;
+        return this.creator;
+    }
+    
+    public Optional<User> getCreatorIfPresent() {
+        try {
+            return Optional.ofNullable(getCreator());
+        } catch (DAOException e) {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -266,7 +299,10 @@ public class PersistentAnnotation {
      * @param creator the creator to set
      */
     public void setCreator(User creator) {
-        this.creatorId = creator.getId();
+        this.creator = creator;
+        if(creator != null) {            
+            this.creatorId = creator.getId();
+        }
     }
 
     /**
@@ -320,7 +356,7 @@ public class PersistentAnnotation {
      * @param generator the generator to set
      */
     public void setGenerator(Question generator) {
-        this.generatorId = generator.getId();
+        this.generatorId = Optional.ofNullable(generator).map(Question::getId).orElse(null);
     }
 
     /**
@@ -567,7 +603,7 @@ public class PersistentAnnotation {
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String getContentString() throws IOException, DAOException {
+    public String getContentString() {
 
         if (StringUtils.isNotBlank(body)) {
             try {
@@ -578,7 +614,10 @@ public class PersistentAnnotation {
                     return ((de.intranda.api.annotation.wa.TextualResource) resource).getText();
                 }
 
-            } catch (Throwable e) {
+            } catch (JsonProcessingException e) {
+                logger.trace("Error reading body as json value:'{}'. Error message is '{}'", body, e.toString());
+                return body;
+            } finally {
             }
         }
 
@@ -604,30 +643,6 @@ public class PersistentAnnotation {
     }
 
     /**
-     * Deletes this annotation from the database. If successful, deletes any JSON files in the file system and creates a re-indexing job.
-     * 
-     * @return
-     * @throws DAOException
-     * @throws ViewerConfigurationException
-     */
-    public boolean delete() throws DAOException, ViewerConfigurationException {
-        if (!DataManager.getInstance().getDao().deleteAnnotation(this)) {
-            return false;
-        }
-
-        if (deleteExportedTextFiles() > 0) {
-            try {
-                IndexerTools.reIndexRecord(targetPI);
-                logger.debug("Re-indexing record: {}", targetPI);
-            } catch (RecordNotFoundException e) {
-                logger.error(e.getMessage());
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * @return the accessCondition
      */
     public String getAccessCondition() {
@@ -640,16 +655,7 @@ public class PersistentAnnotation {
     public void setAccessCondition(String accessCondition) {
         this.accessCondition = accessCondition;
     }
-    
-    /**
-     * Find the record status of the generator campaign and pi. If the annotation does not belong to a campaign, return {@link CrowdsourcingStatus.FINISHED}
-     * 
-     * @return  The review status for this annotation
-     * @throws DAOException
-     */
-    public CrowdsourcingStatus getReviewStatus() throws DAOException {
-        return Optional.ofNullable(getGenerator()).map(Question::getOwner).map(c -> getStatus(c, getTargetPI(), getTargetPageOrder())).orElse(CrowdsourcingStatus.FINISHED);
-    }
+
     
     /**
      * @param c
@@ -679,5 +685,36 @@ public class PersistentAnnotation {
         
         return sb.toString();
 
+    }
+    
+    public String getDisplayDate(LocalDateTime date) {
+        return DateTools.format(date, DateTools.formatterDEDateTime, false);
+    }
+    
+    /**
+     * Checks whether the user with the given ID is allowed to edit this comment (i.e. the annotation belongs to this (proper) user.
+     *
+     * @return true if allowed; false otherwise
+     * @should return true if use id equals owner id
+     * @should return false if owner id is null
+     * @should return false if user is null
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     */
+    public boolean mayEdit(User user) {
+        return this.creatorId != null && user != null && this.creatorId.equals(user.getId());
+    }
+    
+    /**
+     * @return the publicationStatus
+     */
+    public PublicationStatus getPublicationStatus() {
+        return publicationStatus;
+    }
+    
+    /**
+     * @param publicationStatus the publicationStatus to set
+     */
+    public void setPublicationStatus(PublicationStatus publicationStatus) {
+        this.publicationStatus = publicationStatus;
     }
 }

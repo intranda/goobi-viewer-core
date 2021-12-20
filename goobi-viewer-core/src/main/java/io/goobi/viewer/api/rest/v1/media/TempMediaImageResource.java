@@ -72,12 +72,12 @@ public class TempMediaImageResource extends ImageResource {
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         request.setAttribute("filename", this.imageURI.toString());
         String requestUrl = request.getRequestURI();
-        String baseImageUrl = urls.path(ApiUrls.TEMP_MEDIA_FILES, ApiUrls.TEMP_MEDIA_FILES_FILE).params(folder, filename).build();
+        String baseImageUrl = urls != null ? urls.path(ApiUrls.TEMP_MEDIA_FILES, ApiUrls.TEMP_MEDIA_FILES_FILE).params(folder, filename).build() : "";
         String imageRequestPath = requestUrl.replace(baseImageUrl, "");
         this.resourceURI = URI.create(baseImageUrl);
-        
+
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        if(parts.size() == 4) {
+        if (parts.size() == 4) {
             //image request
             request.setAttribute("iiif-info", false);
             request.setAttribute("iiif-region", parts.get(0));
@@ -95,34 +95,35 @@ public class TempMediaImageResource extends ImageResource {
      * @return
      */
     private static URI getMediaFileUrl(String foldername, String filename) {
-        Path folder = 
+        Path folder =
                 Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                DataManager.getInstance().getConfiguration().getTempMediaFolder(),
-                Paths.get(foldername).getFileName().toString());
+                        DataManager.getInstance().getConfiguration().getTempMediaFolder(),
+                        Paths.get(foldername).getFileName().toString());
         Path file = folder.resolve(Paths.get(filename).getFileName());
         return PathConverter.toURI(file);
     }
-    
+
     @Override
     public void createResourceURI(HttpServletRequest request, String directory, String filename) throws IllegalRequestException {
         //don't do anyhting. The resource url has already been set in constructor
     }
-    
+
     @Override
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
-    @Operation(tags = {"iiif" }, summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object")
+    @Operation(tags = { "iiif" },
+            summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
-       return super.redirectToCanonicalImageInfo();
+        return super.redirectToCanonicalImageInfo();
     }
-    
+
     /**
      * Delete the file with the given filename in the temp media folder for the given uuid
      * 
      * @param uuid
      * @param filename
-     * @return  A 200 "OK" answer if deletion was successfull, 406 if the file was not found and 500 if there was an error
+     * @return A 200 "OK" answer if deletion was successfull, 406 if the file was not found and 500 if there was an error
      */
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
@@ -130,7 +131,9 @@ public class TempMediaImageResource extends ImageResource {
         try {
             CreateRecordBean bean = BeanUtils.getCreateRecordBean();
             if (bean == null) {
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(TempMediaFileResource.errorMessage("No bean found containing record data")).build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity(TempMediaFileResource.errorMessage("No bean found containing record data"))
+                        .build();
             }
 
             Path file = TempMediaFileResource.getTargetDir(folder).resolve(filename);
@@ -143,12 +146,11 @@ public class TempMediaImageResource extends ImageResource {
                             .entity(TempMediaFileResource.errorMessage("Error reading upload directory: " + e.toString()))
                             .build();
                 }
-            } else {
-                return Response.status(Status.NOT_ACCEPTABLE).entity(TempMediaFileResource.errorMessage("File doesn't exist")).build();
             }
+            return Response.status(Status.NOT_ACCEPTABLE).entity(TempMediaFileResource.errorMessage("File doesn't exist")).build();
         } catch (Throwable e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(TempMediaFileResource.errorMessage("Unknown error: " + e.toString())).build();
         }
     }
-    
+
 }

@@ -1,20 +1,20 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-    
+
     <!-- INTERFACE -->
     <composite:interface>
     	<composite:attribute name="tooltipPlacement" required="false" default="top" />
     </composite:interface>
-    
+
     <!-- IMPLEMENTATION -->
     <composite:implementation>
-        	
+
     	<ui:param name="currentPageOrder" value="#{activeDocumentBean.viewManager.currentImageOrder}"></ui:param>
         <ui:param name="firstPageOrder" value="#{activeDocumentBean.viewManager.firstPageOrder}"></ui:param>
         <ui:param name="lastPageOrder" value="#{activeDocumentBean.viewManager.lastPageOrder}"></ui:param>
@@ -26,11 +26,11 @@
                 <!-- ACTIONS -->
                 <div class="image-controls__actions">
                 <!-- USE OF CUSTOM ICONS FOR IMAGE CONTROLS
-                Place the new icons with identical names in the images/icons/ template folder for example: reference/images/icons/icon_ic-first-page.svg */ --> 
-                    <ul>			
+                Place the new icons with identical names in the images/icons/ template folder for example: reference/images/icons/icon_ic-first-page.svg */ -->
+                    <ul>
                         <!-- START -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
-                        
+
                             <!-- FIRST PAGE -->
                             <ui:fragment rendered="#{pageCount gt 2 and !(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
                                 <li class="image-controls__action #{activeDocumentBean.viewManager.topDocument.rtl ? 'end' : 'start'} #{currentPageOrder == firstPageOrder ? 'inactive' : ''}">
@@ -60,7 +60,7 @@
                                     </ui:fragment>
                                 </li>
                             </ui:fragment>
-                            
+
                             <!-- BACK STEP NAVIGATION -->
                             <ui:fragment rendered="#{pageCount gt 2 and configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.multiPageRecord}">
                                     <ui:fragment rendered="#{configurationBean.pageBrowseStep3Visible}">
@@ -84,7 +84,7 @@
             	                                -#{configurationBean.pageBrowseStep2}
             	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                 <f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
-                                            </h:outputLink>                                        
+                                            </h:outputLink>
                                         </ui:fragment>
                                         <ui:fragment rendered="#{currentPageOrder lt (firstPageOrder + configurationBean.pageBrowseStep2)}">
                                             <span>-#{configurationBean.pageBrowseStep2}</span>
@@ -102,11 +102,11 @@
                                         </ui:fragment>
                                         <ui:fragment rendered="#{currentPageOrder lt (firstPageOrder + configurationBean.pageBrowseStep1)}">
                                             <span>-#{configurationBean.pageBrowseStep1}</span>
-                                        </ui:fragment>                                        
+                                        </ui:fragment>
                                     </li>
                                     </ui:fragment>
                             </ui:fragment>
-                                    
+
                             <!-- PREVIOUS PAGE -->
                             <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
                                 <li class="image-controls__action #{activeDocumentBean.viewManager.topDocument.rtl ? 'forward' : 'back'} #{currentPageOrder == firstPageOrder ? 'inactive' : ''}">
@@ -132,10 +132,10 @@
 	                                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
 	                                            <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}" />
 	                                        </ui:fragment>
-                                    </ui:fragment>                           
+                                    </ui:fragment>
                                 </li>
                             </ui:fragment>
-                            
+
                             <!-- SELECT TEXT -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge configurationBean.pageSelectDropdownDisplayMinPages}">
 	                            <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold}">
@@ -147,8 +147,7 @@
 	                            <li class="image-controls__action select">
 	                                <div class="custom-control custom-control--select">
 	                                        <!-- Image view select -->
-	                                        <h:selectOneMenu rendered="#{navigationHelper.currentPage != 'fulltext'}"
-	                                            onchange="location.href='#{activeDocumentBean.getPageUrlByType(navigationHelper.currentView)}' + $(this).val(); + '/';"
+	                                        <h:selectOneMenu id="pageDropdown" rendered="#{navigationHelper.currentPage != 'fulltext'}"
 	                                            value="#{activeDocumentBean.viewManager.dropdownSelected}">
                                                 <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
                                                 <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__select_page}"/>
@@ -164,6 +163,17 @@
 	                            </li>
                             </ui:fragment>
                             
+                            <script>
+                            
+                            $("#j_idt372\\:pageDropdown").on("change", e => {
+                                let urlBase = "#{activeDocumentBean.getPageUrlByType(navigationHelper.currentView)}"
+                                let pageNo = $(e.target).val();
+                                console.log("change ", urlBase, pageNo);
+                                location.href = urlBase + pageNo + "/";
+                            })
+                            
+                            </script>
+
                             <!-- NEXT PAGE -->
                             <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
                                 <li class="image-controls__action #{activeDocumentBean.viewManager.topDocument.rtl ? 'back' : 'forward'} #{currentPageOrder ge lastPageOrder ? 'inactive' : ''}">
@@ -190,11 +200,11 @@
 	                                            <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}" />
 	                                        </ui:fragment>
                                     	</span>
-                                    </ui:fragment>                                    
+                                    </ui:fragment>
                                 </li>
                             </ui:fragment>
-                            
-                            <!-- FORWARD STEP NAVIGATION --> 
+
+                            <!-- FORWARD STEP NAVIGATION -->
                             <ui:fragment rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and pageCount gt 2}">
 	                                <ui:fragment rendered="#{configurationBean.pageBrowseStep1Visible}">
 	                                    <li class="image-controls__action page-browse #{currentPageOrder gt (lastPageOrder - configurationBean.pageBrowseStep1) ? 'inactive' : ''}">
@@ -207,7 +217,7 @@
 	                                        </ui:fragment>
 	                                        <ui:fragment rendered="#{currentPageOrder gt (lastPageOrder - configurationBean.pageBrowseStep1)}">
 	                                            <span>+#{configurationBean.pageBrowseStep1}</span>
-	                                        </ui:fragment>                                    
+	                                        </ui:fragment>
 	                                    </li>
 	                                </ui:fragment>
 	                                <ui:fragment rendered="#{configurationBean.pageBrowseStep2Visible}">
@@ -235,11 +245,11 @@
 	                                        </ui:fragment>
 	                                        <ui:fragment rendered="#{currentPageOrder gt (lastPageOrder - configurationBean.pageBrowseStep3)}">
 	                                            <span>+#{configurationBean.pageBrowseStep3}</span>
-	                                        </ui:fragment>                                        
+	                                        </ui:fragment>
 	                                    </li>
 	                                </ui:fragment>
 	                        </ui:fragment>
-	                        
+
 	                        <!-- LAST PAGE -->
 	                        <ui:fragment rendered="#{pageCount gt 2 and !(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
 	                            <li class="image-controls__action #{activeDocumentBean.viewManager.topDocument.rtl ? 'start' : 'end'} #{currentPageOrder == lastPageOrder ? 'inactive' : ''}">
@@ -266,12 +276,12 @@
                                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}" />
                                             </ui:fragment>
 	                                    </span>
-	                                </ui:fragment>                                    
+	                                </ui:fragment>
 	                            </li>
                             </ui:fragment>
-                        
+
                         </ui:fragment>
-                            
+
                             <!-- DOUBLE PAGE VIEW -->
                             <ui:fragment
                                 rendered="#{configurationBean.doublePageNavigationEnabled and pageCount gt 1 and activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and !activeDocumentBean.viewManager.currentPage.doubleImage}">
@@ -309,20 +319,20 @@
                         <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext'}">
                             <!-- ROTATE -->
                             <li class="image-controls__action rotate-left">
-                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.rotateLeft}">
+                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.rotateLeft}" role="button" tabindex="0" aria-label="#{msg.rotateLeft}">
                                     <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-rotate-left.svg')}" />
                                     <span class="labeltext">#{msg.rotateLeft}</span>
                                 </a>
                             </li>
                             <li class="image-controls__action rotate-right">
-                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.rotateRight}">
+                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.rotateRight}" role="button" tabindex="0" aria-label="#{msg.rotateRight}">
                                     <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-rotate-right.svg')}" />
                                     <span class="labeltext">#{msg.rotateRight}</span>
                                 </a>
                             </li>
                             <!-- RESET -->
                             <li class="image-controls__action reset">
-                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.resetImage}">
+                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.resetImage}" role="button" tabindex="0" aria-label="#{msg.resetImage}">
                                     <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-reset.svg')}" />
                                     <span class="labeltext">#{msg.resetImage}</span>
                                 </a>
@@ -361,10 +371,10 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
-                        
+
                     </ul>
                 </div>
-                
+
                 <!-- DOCUMENT OPTIONS -->
                 <div class="image-controls__options">
                     <ul>
@@ -381,7 +391,7 @@
                                 </li>
                             </ui:fragment>
                         </ui:fragment>
-                        
+
                         <!-- CROWDSOURCING CAMPAIGN -->
                         <ui:fragment>
                             <ui:repeat var="campaign" value="#{crowdsourcingBean.getActiveCampaignsForRecord(activeDocumentBean.viewManager.pi)}">
@@ -392,16 +402,16 @@
 	                                        styleClass="btn btn--icon">
 	                                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
 	                                    	<f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
-	                                        <f:passThroughAttribute name="data-original-title" value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}" /> 
+	                                        <f:passThroughAttribute name="data-original-title" value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}" />
 	                                        <f:passThroughAttribute name="aria-label" value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}" />
-	                                        
+
 	                                        <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
 	                                    </h:commandLink>
                                     </li>
 <!--                                 </ui:fragment> -->
                             </ui:repeat>
                         </ui:fragment>
-                    
+
                         <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext'}">
                             <!-- FULLTEXT -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
@@ -415,7 +425,7 @@
                                     </h:outputLink>
                                 </li>
                             </ui:fragment>
-                                                
+
                             <!-- SHARE IMAGE REGION -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
                                 <li class="image-controls__option share-image-region">
@@ -425,7 +435,7 @@
                                     </a>
                                 </li>
                             </ui:fragment>
-                        
+
                             <!-- IMAGE FILTER -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
                                 <li class="image-controls__option image-filter">
@@ -433,20 +443,20 @@
                                 	   data-popover-element="#imageFilterPopover"
                                        data-popover-dismiss="click-outside"
                                        aria-label="#{msg.label__image_filter_toolkit}">
-	                                   <i class="fa fa-wrench" aria-hidden="true" 
-		                                  data-toggle="tooltip" 
+	                                   <i class="fa fa-wrench" aria-hidden="true"
+		                                  data-toggle="tooltip"
 	                                	  title="#{msg.label__image_filter_toolkit__error}">
 	                                   </i>
                                     </button>
                                 </li>
                             </ui:fragment>
                         </ui:fragment>
-                        
+
                         <!-- ADD TO BOOKMARK -->
                         <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
                             <li class="image-controls__option add-to-bookmark">
                                 <button type="button" class="btn btn--icon"
-                                    data-bookmark-list-type="add" 
+                                    data-bookmark-list-type="add"
                                     data-pi="#{activeDocumentBean.viewManager.pi}"
                                     data-page="#{activeDocumentBean.viewManager.currentImageOrder}"
                                     role="switch"
@@ -458,8 +468,8 @@
                                 </button>
                             </li>
                         </ui:fragment>
-                        
-                    </ul> 
+
+                    </ul>
                 </div>
             </h:form>
         </nav>

@@ -57,7 +57,6 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -78,7 +77,8 @@ public class RSSFeed {
             SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.IDDOC_PARENT,
             SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.NUMVOLUMES,
             SolrConstants.PERSON_ONEFIELD,
-            SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER, SolrConstants.THUMBNAIL, SolrConstants.THUMBPAGENO,
+            SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER, SolrConstants.THUMBNAIL,
+            SolrConstants.THUMBPAGENO,
             SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
 
     /**
@@ -129,6 +129,7 @@ public class RSSFeed {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should produce feed correctly
      */
     public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language, int maxItems)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
@@ -382,16 +383,14 @@ public class RSSFeed {
      * @return
      */
     private static int getRepresentativePageNumber(SolrDocument doc) {
-        if(doc.containsKey(SolrConstants.THUMBPAGENO)) {
+        if (doc.containsKey(SolrConstants.THUMBPAGENO)) {
             Integer pageNo = SolrTools.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO);
-            if(pageNo != null) {
+            if (pageNo != null) {
                 return pageNo;
-            } else {
-                return 1;
             }
-        } else {
-            return 1;
         }
+
+        return 1;
     }
 
     /**
@@ -426,6 +425,7 @@ public class RSSFeed {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should produce feed correctly
      */
     public static Channel createRssFeed(String rootPath, String query, List<String> filterQueries, int rssFeedItems, String language)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
@@ -763,7 +763,8 @@ public class RSSFeed {
             }
             query = createQuery(query, null, subtheme, servletRequest, false);
             if (StringUtils.isNotBlank(query)) {
-                query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits(), servletRequest);
+                query = SearchHelper.buildFinalQuery(query, null, false, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
+                        servletRequest);
             }
 
             // Optional faceting
@@ -794,7 +795,8 @@ public class RSSFeed {
             }
             query = createQuery(query, null, subtheme, servletRequest, false);
             if (StringUtils.isNotBlank(query)) {
-                query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits(), servletRequest);
+                query = SearchHelper.buildFinalQuery(query, null, true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
+                        servletRequest);
             }
 
             // Optional faceting

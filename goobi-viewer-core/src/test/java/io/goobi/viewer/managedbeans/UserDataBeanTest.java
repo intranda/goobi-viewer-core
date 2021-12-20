@@ -15,11 +15,15 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.util.List;
+
+import org.apache.poi.xssf.model.Comments;
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.security.user.User;
 
 public class UserDataBeanTest extends AbstractDatabaseEnabledTest {
@@ -37,6 +41,22 @@ public class UserDataBeanTest extends AbstractDatabaseEnabledTest {
         ub.setUser(user);
         udb.setBreadcrumbBean(ub);
 
-        Assert.assertEquals(2, udb.getAnnotationCount());
+        Assert.assertEquals(1, udb.getAnnotationCount());
+    }
+
+    /**
+     * @see UserDataBean#getLatestComments(User,int)
+     * @verifies return the latest comments
+     */
+    @Test
+    public void getLatestComments_shouldReturnTheLatestComments() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(user);
+        UserDataBean udb = new UserDataBean();
+        List<Comment> comments = udb.getLatestComments(user, 2);
+        Assert.assertNotNull(comments);
+        Assert.assertEquals(2, comments.size());
+        Assert.assertEquals(Long.valueOf(4), comments.get(0).getId());
+        Assert.assertEquals(Long.valueOf(3), comments.get(1).getId());
     }
 }

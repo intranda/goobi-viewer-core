@@ -21,8 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -35,21 +35,16 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
-import org.bouncycastle.asn1.cmc.BodyPartID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.wa.Dataset;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
-import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.AnnotationConverter;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
@@ -58,16 +53,16 @@ public class ExcelRenderer {
 
     private static final Logger logger = LoggerFactory.getLogger(ExcelRenderer.class);
 
-    private final AnnotationsResourceBuilder annotationBuilder;
+    private final AnnotationConverter annotationConverter;
     
     /**
      * @param annotationBuilder
      */
-    public ExcelRenderer(AnnotationsResourceBuilder annotationBuilder) {
-       this.annotationBuilder = annotationBuilder;
+    public ExcelRenderer(AnnotationConverter annotationConverter) {
+       this.annotationConverter = annotationConverter;
     }
 
-    public HSSFWorkbook render(Map<String, List<PersistentAnnotation>> annotationMap) {
+    public HSSFWorkbook render(Map<String, List<CrowdsourcingAnnotation>> annotationMap) {
         if (annotationMap == null) {
             throw new IllegalArgumentException("No annotations given");
         }
@@ -84,7 +79,7 @@ public class ExcelRenderer {
             short height = 300;
             sheet.setDefaultRowHeight(height);
             createHeaderRow(sheet);
-            List<PersistentAnnotation> annotations = annotationMap.get(type);
+            List<CrowdsourcingAnnotation> annotations = annotationMap.get(type);
             createDataRows(sheet, annotations);
         }
 
@@ -95,9 +90,9 @@ public class ExcelRenderer {
      * @param sheet
      * @param annotations
      */
-    public void createDataRows(HSSFSheet sheet, List<PersistentAnnotation> annotations) {
+    public void createDataRows(HSSFSheet sheet, List<CrowdsourcingAnnotation> annotations) {
         int rowCounter = 1;
-        for (PersistentAnnotation annotation : annotations) {
+        for (CrowdsourcingAnnotation annotation : annotations) {
             try {
                 createDataRow(annotation, sheet, rowCounter);
             } catch (DAOException e) {
@@ -113,7 +108,7 @@ public class ExcelRenderer {
      * @param rowCounter
      * @throws DAOException
      */
-    public void createDataRow(PersistentAnnotation annotation, HSSFSheet sheet, int rowCounter) throws DAOException {
+    public void createDataRow(CrowdsourcingAnnotation annotation, HSSFSheet sheet, int rowCounter) throws DAOException {
         HSSFRow row = sheet.createRow(rowCounter);
         row.setRowStyle(getDataCellStyle(sheet.getWorkbook()));
         HSSFCell idCell = row.createCell(0, CellType.STRING);
@@ -159,9 +154,9 @@ public class ExcelRenderer {
         setCellStyles(titleRow, getHeaderCellStyle(sheet.getWorkbook()));
     }
     
-    private List<String> getBodyValues(PersistentAnnotation anno) {
+    private List<String> getBodyValues(CrowdsourcingAnnotation anno) {
         try {            
-            IResource bodyResource = annotationBuilder.getBodyAsResource(anno);
+            IResource bodyResource = annotationConverter.getBodyAsResource(anno);
             String type = "unknown";
             if(bodyResource instanceof TypedResource) {
                 type = ((TypedResource) bodyResource).getType();

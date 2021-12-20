@@ -17,7 +17,7 @@
 	</ui:define>
 
     <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+        <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
     </ui:define>
 
     <ui:define name="content">
@@ -28,23 +28,25 @@
         		<!-- LEFT SIDE -->
 				<div class="archives__left-side">
 	
-					<div class="archives__select-database-dropdown-wrapper">
-						<div class="archives__select-database-dropdown-label">#{msg.archives__current_collection}:</div>
-						
-						<div class="archives__select-database-dropdown-element">
-		                    <h:form>
-		                    <div class="custom-control custom-control--select">
-			                    <h:selectOneMenu value="#{archiveBean.archiveId}" styleClass="archives__select-database-dropdown" onchange="$(this).next().click()">
-									<f:selectItems value="#{archiveBean.databases}" var="database" itemValue="#{database.combinedId}" itemLabel="#{database.combinedName}" ></f:selectItems>
-								</h:selectOneMenu>
-								<h:commandButton styleClass="d-none" action="pretty:archives2"></h:commandButton>
-								</div>
-		                    </h:form>
-	                    </div>
-					</div>
+					<ui:fragment rendered="#{archiveBean.getNumArchives() > 1}">
+						<div class="archives__select-database-dropdown-wrapper">
+							<div class="archives__select-database-dropdown-label">#{msg.archives__current_collection}:</div>
+							
+							<div class="archives__select-database-dropdown-element">
+			                    <h:form>
+			                    <div class="custom-control custom-control--select archives__select-database-dropdown-element-select">
+				                    <h:selectOneMenu value="#{archiveBean.archiveId}" styleClass="archives__select-database-dropdown" onchange="$(this).next().click()">
+										<f:selectItems value="#{archiveBean.databases}" var="database" itemValue="#{database.combinedId}" itemLabel="#{database.combinedName}" ></f:selectItems>
+									</h:selectOneMenu>
+									<h:commandButton styleClass="d-none" action="pretty:archives2"></h:commandButton>
+									</div>
+			                    </h:form>
+		                    </div>
+						</div>
+					</ui:fragment>
 
                     <div class="archives__tree-heading">
-                    	#{msg.archives__archive_tree_heading}
+                        #{msg.archives__archive_tree_heading}
                     	<span id="archivesSearchTrigger" class="#{not empty archiveBean.searchString ? '-active' : ''}"><i class="fa fa-search"></i></span>
                     </div>
                     <h:panelGroup layout="block" id="treeGroup" styleClass="archives__graphic-tree">

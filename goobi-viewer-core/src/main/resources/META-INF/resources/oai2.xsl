@@ -161,15 +161,16 @@ p.intro {
 </xsl:template>
 
 <xsl:variable name='identifier' select="substring-before(concat(substring-after(/oai:OAI-PMH/oai:request,'identifier='),'&amp;'),'&amp;')" />
+<xsl:variable name="available_formats" select="document(concat(/oai:OAI-PMH/oai:request, '/?verb=ListMetadataFormats'))/oai:OAI-PMH/oai:ListMetadataFormats[1]/oai:metadataFormat/oai:metadataPrefix"/>
 
 <xsl:template match="/">
 <html>
   <head>
-    <title>LOCALHOST - OAI 2.0 Request Results</title>
+    <title>intranda OAI-PMH - OAI 2.0 Request Results</title>
     <style><xsl:call-template name="style"/></style>
   </head>
   <body>
-    <h1>localhost</h1>
+    <h1>intranda OAI-PMH</h1>
     <h2>OAI 2.0 Request Results</h2>
     <xsl:call-template name="quicklinks"/>
     <p class="intro">You are viewing an HTML version of the XML OAI response. To see the underlying XML use your web browsers view source option. More information about this XSLT is at the <a href="#moreinfo">bottom of the page</a>.</p>
@@ -185,12 +186,9 @@ p.intro {
 <xsl:template name="quicklinks">
     <ul class="quicklinks">
       <li><a href="?verb=Identify">Identify</a> | </li>
-      <li><a href="?verb=ListRecords&amp;metadataPrefix=oai_dc">ListRecords (oai_dc)</a> | </li>
-      <li><a href="?verb=ListRecords&amp;metadataPrefix=europeana">ListRecords (ese)</a> | </li>
-      <li><a href="?verb=ListRecords&amp;metadataPrefix=mets">ListRecords (mets)</a> | </li>
-      <li><a href="?verb=ListRecords&amp;metadataPrefix=marcxml">ListRecords (marcxml)</a> | </li>
-      <li><a href="?verb=ListRecords&amp;metadataPrefix=epicur">ListRecords (epicur)</a> | </li>
-      <li><a href="?verb=ListRecords&amp;metadataPrefix=lido">ListRecords (lido)</a> | </li>
+      <xsl:for-each select="$available_formats">
+        <li><a href="?verb=ListRecords&amp;metadataPrefix={.}">ListRecords (<xsl:value-of select="."/>)</a> | </li>
+      </xsl:for-each>
       <li><a href="?verb=ListSets">ListSets</a> | </li>
       <li><a href="?verb=ListMetadataFormats">ListMetadataFormats</a> | </li>
       <li><a href="?verb=ListIdentifiers&amp;metadataPrefix=oai_dc">ListIdentifiers</a></li>
@@ -497,19 +495,18 @@ p.intro {
 </xsl:template>
 
 <xsl:template match="oai:header">
+  <xsl:variable name="oai_identifier" select="oai:identifier"/>
   <h3>OAI Record Header</h3>
   <table class="values">
     <tr><td class="key">OAI Identifier</td>
     <td class="value">
-      <xsl:value-of select="oai:identifier"/>
-      <xsl:text> </xsl:text><a class="link" href="?verb=GetRecord&amp;metadataPrefix=oai_dc&amp;identifier={oai:identifier}">oai_dc</a>
-      <xsl:text> </xsl:text><a class="link" href="?verb=GetRecord&amp;metadataPrefix=europeana&amp;identifier={oai:identifier}">ese</a>
-      <xsl:text> </xsl:text><a class="link" href="?verb=GetRecord&amp;metadataPrefix=mets&amp;identifier={oai:identifier}">mets</a>
-      <xsl:text> </xsl:text><a class="link" href="?verb=GetRecord&amp;metadataPrefix=marcxml&amp;identifier={oai:identifier}">marcxml</a>
-      <xsl:text> </xsl:text><a class="link" href="?verb=GetRecord&amp;metadataPrefix=epicur&amp;identifier={oai:identifier}">epicur</a>
-      <xsl:text> </xsl:text><a class="link" href="?verb=GetRecord&amp;metadataPrefix=lido&amp;identifier={oai:identifier}">lido</a>
-      <xsl:text> </xsl:text><a class="link" href="http://dfg-viewer.de/v1/?set[mets]=http%3A%2F%2Flocalhost%3A8080%2Fviewer%2Foai%3Fverb%3DGetRecord%26metadataPrefix%3Dmets%26identifier%3D{oai:identifier}">DFG-Viewer</a>
-      <xsl:text> </xsl:text><a class="link" href="?verb=ListMetadataFormats&amp;identifier={oai:identifier}">formats</a>
+      <xsl:value-of select="$oai_identifier"/>
+      <xsl:for-each select="$available_formats">
+        <xsl:text> </xsl:text><a class="link" href="?verb=GetRecord&amp;metadataPrefix={.}&amp;identifier={$oai_identifier}">
+          <xsl:value-of select="."/>
+        </a>
+      </xsl:for-each>
+      <xsl:text> </xsl:text><a class="link" href="?verb=ListMetadataFormats&amp;identifier={$oai_identifier}">formats</a>
     </td></tr>
     <tr><td class="key">Datestamp</td>
     <td class="value"><xsl:value-of select="oai:datestamp"/></td></tr>

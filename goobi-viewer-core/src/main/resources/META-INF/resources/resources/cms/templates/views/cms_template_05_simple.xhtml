@@ -17,11 +17,7 @@
 			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
         </f:metadata>
     </ui:define>
-    
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
-    
+
 	<ui:define name="topbar">
 		<h:panelGroup binding="#{cmsDynamicContentBean.topBarContent}"></h:panelGroup>
 	</ui:define>

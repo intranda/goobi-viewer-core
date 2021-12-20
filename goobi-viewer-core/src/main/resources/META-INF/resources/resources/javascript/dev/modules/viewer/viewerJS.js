@@ -305,6 +305,7 @@ var viewerJS = (function () {
 		viewer.initialized.complete();
 		viewer.setCheckedStatus();
 		viewer.slider.init();
+    viewer.accessibility.init();
 	// EOL viewerJS function
     };
     
@@ -514,7 +515,8 @@ var viewerJS = (function () {
 			}
 		}
 	}
-	
+
+	// REQUIRED FIELDS/CHECKBOXES CHECK
 	viewer.initRequiredInputs = function() {
 	
 		let $requireElements = $("[data-require-input]");
@@ -522,24 +524,57 @@ var viewerJS = (function () {
 		$requireElements.each((index, element) => {
 			let $ele = $(element);
 			$ele.attr("disabled", "disabled");
-			let id = $(element).attr("data-require-input");
+			let id = $(element).attr("data-require-input").replace(/[!"#$%&'()*+,.\/:;<=>?@[\\\]^`{|}~]/g, "\\\\$&");
 			let $texts = $("[data-require-input-text='" + id + "']");
-			$texts.on("change paste keyup cut", (e) => {
-				let filled = true;
-				$texts.each((index, element) => {
-					let text = $(element).val();
-					if(!text) {
-						filled = false;
+			let $checkboxes = $("input[data-require-input-checkbox='" + id + "']");
+			let $uncheckedRadios = $('input[data-require-input-checkbox="uncheckedChecker"]');
+			
+			var allCheckboxesChecked = false;
+			var allTextFieldsFilled = false;
+			
+			// CHECK ALL REQUIRED CHECKBOXES AND TEXT FIELDS + CHECK IF RADIO BUTTONS "UNCHECKED"
+			$checkboxes.add($texts).add($uncheckedRadios).on("change paste keyup cut", (e) => {
+				$checkboxes.each((index, element) => {
+					if ( $(element).is(':checked') ) {
+						let isChecked = true;
+						 // console.log("all boxes checked");
+						 // console.log(allCheckboxesChecked);
+						 allCheckboxesChecked = true;
+					} else {
+						let isChecked = false;
+						allCheckboxesChecked = false;
+						// console.log(allCheckboxesChecked);
+						// console.log("not all boxes checked");
 						return false;
 					}
-				});
-				if(filled) {
+					});
+				
+					$texts.each((index, element) => {
+						let text = $(element).val();
+						if(!text) {
+							allTextFieldsFilled = false;
+							// console.log(allTextFieldsFilled);
+							return false;
+						} else {
+							allTextFieldsFilled = true;
+							// console.log(allTextFieldsFilled);
+						}
+					});
+				
+				
+				// ACTIVATE SUBMIT BUTTON IF ALL REQUIRED CHECKBOXES AND TEXTFIELDS ARE FILLED/CHECKED
+				if(allCheckboxesChecked && allTextFieldsFilled == true) {
 					$ele.removeAttr("disabled");
+					// console.log('button activated, removed attribute');
 				} else {
 					$ele.attr("disabled", "disabled");
+					// console.log('button DEactivated, attribute added');
 				}
+				
+				// console.log(allCheckboxesChecked);
 							
-			}); 
+			});
+			
 		});
 	
 	}

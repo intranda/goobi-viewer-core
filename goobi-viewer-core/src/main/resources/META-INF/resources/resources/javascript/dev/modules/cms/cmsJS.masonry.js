@@ -111,10 +111,11 @@ var cmsJS = ( function( cms ) {
             // grid item
             $gridItem = $( '<div />' );
             if ( item.important ) {
-                $gridItem.addClass( 'grid-item important' );
+                $gridItem.addClass( 'grid-item important ' + item.tags.join(' ') );
             }
+
             else {
-                $gridItem.addClass( 'grid-item' );
+                $gridItem.addClass( 'grid-item ' + item.tags.join(' '));
             }
             
             let label = viewerJS.getMetadataValue(item.label, _defaults.language );
@@ -174,7 +175,7 @@ var cmsJS = ( function( cms ) {
             // grid item image
             $gridItemImage = $( '<img />' );
             $gridItemImage.attr( 'src', image );
-			$gridItemImage.attr( 'alt', label );
+            $gridItemImage.attr( 'alt', label );
             $gridItemImage.addClass( 'img-fluid' );
              
             if ( item.link !== '' ) {

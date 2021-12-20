@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -32,6 +33,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,10 +46,11 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
+import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
@@ -639,7 +647,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCommentCount_shouldReturnCorrectCount() throws Exception {
-        Assert.assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null));
+        Assert.assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null, null));
     }
 
     /**
@@ -649,8 +657,20 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getCommentCount_shouldFilterCorrectly() throws Exception {
         Map<String, String> filters = new HashMap<>();
-        filters.put("page", "1");
-        Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(filters));
+        filters.put("targetPageOrder", "1");
+        Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(filters, null));
+    }
+
+    @Test
+    public void getCommentCount_shouldFilterForUserCorrectly() throws Exception {
+        {
+            User owner = DataManager.getInstance().getDao().getUser(1l);
+            Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(null, owner));
+        }
+        {
+            User owner = DataManager.getInstance().getDao().getUser(2l);
+            Assert.assertEquals(1L, DataManager.getInstance().getDao().getCommentCount(null, owner));
+        }
     }
 
     @Test
@@ -658,13 +678,13 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Comment comment = DataManager.getInstance().getDao().getComment(1);
         Assert.assertNotNull(comment);
         Assert.assertEquals(Long.valueOf(1), comment.getId());
-        Assert.assertEquals("PI_1", comment.getPi());
-        Assert.assertEquals(Integer.valueOf(1), comment.getPage());
-        Assert.assertNotNull(comment.getOwner());
-        Assert.assertEquals(Long.valueOf(1), comment.getOwner().getId());
+        Assert.assertEquals("PI_1", comment.getTargetPI());
+        Assert.assertEquals(Integer.valueOf(1), comment.getTargetPageOrder());
+        Assert.assertNotNull(comment.getCreator());
+        Assert.assertEquals(Long.valueOf(1), comment.getCreator().getId());
         Assert.assertEquals("comment 1 text", comment.getText());
         Assert.assertNotNull(comment.getDateCreated());
-        Assert.assertNull(comment.getDateUpdated());
+        Assert.assertNull(comment.getDateModified());
         //        Assert.assertNull(comment.getParent());
         //        Assert.assertEquals(1, comment.getChildren().size());
 
@@ -683,22 +703,22 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void addCommentTest() throws DAOException {
         Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         Comment comment = new Comment();
-        comment.setPi("PI_2");
-        comment.setPage(1);
+        comment.setTargetPI("PI_2");
+        comment.setTargetPageOrder(1);
         comment.setText("new comment text");
-        comment.setOwner(DataManager.getInstance().getDao().getUser(1));
+        comment.setCreator(DataManager.getInstance().getDao().getUser(1));
         Assert.assertTrue(DataManager.getInstance().getDao().addComment(comment));
         Assert.assertNotNull(comment.getId());
         Assert.assertEquals(5, DataManager.getInstance().getDao().getAllComments().size());
 
         Comment comment2 = DataManager.getInstance().getDao().getComment(comment.getId());
         Assert.assertNotNull(comment2);
-        Assert.assertEquals(comment.getPi(), comment2.getPi());
-        Assert.assertEquals(comment.getPage(), comment2.getPage());
+        Assert.assertEquals(comment.getTargetPI(), comment2.getTargetPI());
+        Assert.assertEquals(comment.getTargetPageOrder(), comment2.getTargetPageOrder());
         Assert.assertEquals(comment.getText(), comment2.getText());
-        Assert.assertEquals(comment.getOwner(), comment2.getOwner());
+        Assert.assertEquals(comment.getCreator(), comment2.getCreator());
         Assert.assertNotNull(comment2.getDateCreated());
-        Assert.assertNull(comment2.getDateUpdated());
+        Assert.assertNull(comment2.getDateModified());
     }
 
     @Test
@@ -709,18 +729,18 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         comment.setText("new comment 1 text");
         LocalDateTime now = LocalDateTime.now();
-        comment.setDateUpdated(now);
+        comment.setDateModified(now);
 
         Assert.assertTrue(DataManager.getInstance().getDao().updateComment(comment));
         Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
 
         Comment comment2 = DataManager.getInstance().getDao().getComment(comment.getId());
         Assert.assertNotNull(comment2);
-        Assert.assertEquals(comment.getPi(), comment2.getPi());
-        Assert.assertEquals(comment.getPage(), comment2.getPage());
+        Assert.assertEquals(comment.getTargetPI(), comment2.getTargetPI());
+        Assert.assertEquals(comment.getTargetPageOrder(), comment2.getTargetPageOrder());
         Assert.assertEquals(comment.getText(), comment2.getText());
-        Assert.assertEquals(comment.getOwner(), comment2.getOwner());
-        Assert.assertEquals(now, comment2.getDateUpdated());
+        Assert.assertEquals(comment.getCreator(), comment2.getCreator());
+        Assert.assertEquals(now, comment2.getDateModified());
     }
 
     @Test
@@ -798,10 +818,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork("PI_1");
         Assert.assertEquals(4, comments.size());
-        Assert.assertEquals(newOwner, comments.get(0).getOwner());
-        Assert.assertNotEquals(newOwner, comments.get(1).getOwner());
-        Assert.assertEquals(newOwner, comments.get(2).getOwner());
-        Assert.assertEquals(newOwner, comments.get(3).getOwner());
+        Assert.assertEquals(newOwner, comments.get(0).getCreator());
+        Assert.assertNotEquals(newOwner, comments.get(1).getCreator());
+        Assert.assertEquals(newOwner, comments.get(2).getCreator());
+        Assert.assertEquals(newOwner, comments.get(3).getCreator());
     }
 
     // Search
@@ -1136,7 +1156,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(Long.valueOf(3), boomarkLists.get(0).getId());
         Assert.assertEquals(user, boomarkLists.get(0).getOwner());
     }
-    
+
     @Test
     public void countAllBookmarkListsForUserTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
@@ -1270,7 +1290,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getComments_shouldSortResultsCorrectly() throws Exception {
-        List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, "text", true, null);
+        List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, "body", true, null);
         Assert.assertEquals(2, ret.size());
         Assert.assertEquals(Long.valueOf(4), ret.get(0).getId());
         Assert.assertEquals(Long.valueOf(3), ret.get(1).getId());
@@ -1283,8 +1303,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getComments_shouldFilterResultsCorrectly() throws Exception {
         Map<String, String> filterMap = new HashMap<>();
-        filterMap.put("pi", "pi_1");
-        filterMap.put("text", "ment 2");
+        filterMap.put("targetPI", "pi_1");
+        filterMap.put("body", "ment 2");
         List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, null, true, filterMap);
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("comment 2 text", ret.get(0).getText());
@@ -2316,7 +2336,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
             Assert.assertEquals("+PI:PI_5", campaign.getSolrQuery());
 
-
             Assert.assertEquals(1, campaign.getStatistics().size());
             CampaignRecordStatistic recordStatistic = campaign.getStatistics().get("PI_5");
             Assert.assertNotNull(recordStatistic);
@@ -2401,7 +2420,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getAnnotation_shouldReturnCorrectRow() throws Exception {
-        PersistentAnnotation annotation = DataManager.getInstance().getDao().getAnnotation(1L);
+        CrowdsourcingAnnotation annotation = DataManager.getInstance().getDao().getAnnotation(1L);
         Assert.assertNotNull(annotation);
         Assert.assertEquals(Long.valueOf(1), annotation.getId());
     }
@@ -2415,7 +2434,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
         Assert.assertNotNull(campaign);
 
-        List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaign(campaign);
+        List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaign(campaign);
         Assert.assertEquals(3, annotations.size());
         Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
         Assert.assertEquals(Long.valueOf(2), annotations.get(1).getId());
@@ -2431,7 +2450,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
         Assert.assertNotNull(campaign);
 
-        List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForWork("PI_1");
+        List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForWork("PI_1");
         Assert.assertEquals(3, annotations.size());
         Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
         Assert.assertEquals(Long.valueOf(3), annotations.get(1).getId());
@@ -2455,12 +2474,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getAnnotationsForTarget_shouldReturnCorrectRows() throws Exception {
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI_1", 1);
+            List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI_1", 1);
             Assert.assertEquals(1, annotations.size());
             Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
         }
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI_1", null);
+            List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI_1", null);
             Assert.assertEquals(2, annotations.size());
             Assert.assertEquals(Long.valueOf(3), annotations.get(0).getId());
             Assert.assertEquals(Long.valueOf(4), annotations.get(1).getId());
@@ -2477,17 +2496,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(campaign);
 
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_1", 1);
+            List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_1", 1);
             Assert.assertEquals(1, annotations.size());
             Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
         }
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_1", null);
+            List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_1", null);
             Assert.assertEquals(1, annotations.size());
             Assert.assertEquals(Long.valueOf(3), annotations.get(0).getId());
         }
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_2", 6);
+            List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_2", 6);
             Assert.assertEquals(1, annotations.size());
             Assert.assertEquals(Long.valueOf(2), annotations.get(0).getId());
         }
@@ -2503,7 +2522,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(campaign);
 
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, "PI_1");
+            List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, "PI_1");
             Assert.assertEquals(2, annotations.size());
             Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
             Assert.assertEquals(Long.valueOf(3), annotations.get(1).getId());
@@ -2516,7 +2535,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getAnnotationsForUserId_shouldReturnCorrectRows() throws Exception {
-        List<PersistentAnnotation> result = DataManager.getInstance().getDao().getAnnotationsForUserId(1L);
+        List<CrowdsourcingAnnotation> result = DataManager.getInstance().getDao().getAnnotationsForUserId(1L, null, "id", false);
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
         Assert.assertEquals(Long.valueOf(1), result.get(0).getId());
@@ -2550,7 +2569,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getAnnotations_shouldFilterByCampaignNameCorrectly() throws Exception {
-        List<PersistentAnnotation> result =
+        List<CrowdsourcingAnnotation> result =
                 DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("campaign", "english"));
         Assert.assertEquals(3, result.size());
     }
@@ -2891,6 +2910,21 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals(1L, params.get("generatorId"));
             Assert.assertEquals("%PPN123%", params.get("targetPIbody"));
         }
+
+    }
+    
+    @Test
+    public void testGenerateNullMotivationFilterQuery() {
+        {
+            // campaign ID and record identifier
+            Map<String, String> filters = new HashMap<>(2);
+            filters.put("motivation", "NULL");
+            Map<String, Object> params = new HashMap<>(2);
+            Assert.assertEquals(
+                    " prefix WHERE (a.motivation IS NULL)",
+                    JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
+            Assert.assertEquals(0, params.size());
+        }
     }
 
     @Test
@@ -2930,13 +2964,13 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         assertTrue(DataManager.getInstance().getDao().addRecordNote(note));
         assertNotNull(note.getId());
-        CMSSingleRecordNote pNote = (CMSSingleRecordNote)DataManager.getInstance().getDao().getRecordNote(note.getId());
+        CMSSingleRecordNote pNote = (CMSSingleRecordNote) DataManager.getInstance().getDao().getRecordNote(note.getId());
         assertNotNull(pNote);
         pNote.getRecordTitle().setSelectedLocale(Locale.GERMAN);
         assertEquals(title, pNote.getRecordTitle().getText());
         assertEquals(title, pNote.getRecordTitle().getText(Locale.GERMAN));
     }
-    
+
     @Test
     public void testAddCMSMultiRecordNote() throws DAOException {
 
@@ -2945,7 +2979,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         assertTrue(DataManager.getInstance().getDao().addRecordNote(note));
         assertNotNull(note.getId());
-        CMSMultiRecordNote pNote = (CMSMultiRecordNote)DataManager.getInstance().getDao().getRecordNote(note.getId());
+        CMSMultiRecordNote pNote = (CMSMultiRecordNote) DataManager.getInstance().getDao().getRecordNote(note.getId());
         assertNotNull(pNote);
         assertEquals("DC:dc3d", pNote.getQuery());
     }
@@ -2983,7 +3017,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", true).size());
         assertEquals(0, DataManager.getInstance().getDao().getRecordNotesForPi("PI5", false).size());
     }
-    
+
     @Test
     public void testGetAllMultiRecordNotes() throws DAOException {
         assertEquals(1, DataManager.getInstance().getDao().getAllMultiRecordNotes(true).size());
@@ -3051,6 +3085,78 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<CMSPage> pages = DataManager.getInstance().getDao().getPagesUsingSlider(slider);
         assertEquals(1, pages.size());
         assertEquals(Long.valueOf(2l), pages.iterator().next().getId());
+    }
+
+    /**
+     * @see JPADAO#getCommentsOfUser(User,int,String,boolean)
+     * @verifies sort correctly
+     */
+    @Test
+    public void getCommentsOfUser_shouldSortCorrectly() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(user);
+        {
+            List<Comment> comments = DataManager.getInstance().getDao().getCommentsOfUser(user, 2, "dateCreated", true);
+            assertEquals(2, comments.size());
+            assertEquals(Long.valueOf(3), comments.get(0).getId());
+            assertEquals(Long.valueOf(4), comments.get(1).getId());
+        }
+        {
+            List<Comment> comments = DataManager.getInstance().getDao().getCommentsOfUser(user, 2, "dateModified", true);
+            assertEquals(2, comments.size());
+            assertEquals(Long.valueOf(4), comments.get(0).getId());
+        }
+    }
+    
+    @Test
+    public void testSynchronization() throws DAOException, InterruptedException {
+        
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        IDAO dao = DataManager.getInstance().getDao();
+        
+        Comment comment = new Comment();
+        comment.setBody("Init");
+        dao.addComment(comment);
+        assertNotNull(comment.getId());
+        assertEquals("Init", dao.getComment(comment.getId()).getBody());
+        
+        FutureTask<Boolean> updateResult = new FutureTask<Boolean>(() -> {
+            try {
+                updateComment(dao, comment.getId(), "Changed", 200);
+            } catch (InterruptedException e) {
+                fail("Updating interrupted");
+            }
+        }, true);
+        
+        FutureTask<Boolean> updateResultFast = new FutureTask<Boolean>(() -> {
+            try {
+                updateComment(dao, comment.getId(), "ChangedAgain", 0);
+            } catch (InterruptedException e) {
+                fail("Updating interrupted");
+            }
+        }, true);
+        
+        
+        try {
+            executor.execute(updateResult);
+            assertEquals("Init", dao.getComment(comment.getId()).getBody());
+//            executor.execute(updateResultFast);
+//            updateResultFast.get(100, TimeUnit.MILLISECONDS);
+//            assertEquals("ChangedAgain", dao.getComment(comment.getId()).getBody());
+            updateResult.get(300, TimeUnit.MILLISECONDS);
+            assertEquals("Changed", dao.getComment(comment.getId()).getBody());
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            e.printStackTrace();
+            fail("Updating or retrieving interrupted");
+        }
+
+    }
+    
+    private void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException {
+        dao.startTransaction();
+        Thread.sleep(duration);
+        dao.createNativeQuery("UPDATE annotations_comments SET body='"+content+"' WHERE annotation_id=" + id).executeUpdate();
+        dao.commitTransaction();
     }
 
 }

@@ -36,6 +36,23 @@ var viewerJS = ( function ( viewer ) {
         complete: new rxjs.Subject(),
         success: new rxjs.Subject(),
         error: new rxjs.Subject(),
+        handleResponse: function(success, error) {
+        	this.complete
+		    .pipe(rxjs.operators.first())
+		    .subscribe(response => {
+		        switch(response.responseCode) {
+		            case 200:
+		            	if(success) {
+				        	success(response);
+						}		            	
+						break;
+					default:
+						if(error) {
+						    error(response);
+						}						
+		        }
+		    });
+        },
     	init: function( config ) {
     		if (_debug) {
     		    console.log( 'Initializing: viewerJS.jsfAjax.init' );

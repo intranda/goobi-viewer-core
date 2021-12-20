@@ -30,7 +30,6 @@ public enum SidebarElementType {
     //    chronology("widgetChronology"),
     browsing("widgetBrowsing"),
     crowdsourcing("widgetCrowdsourcing"),
-    mySearches("widgetMySearches"),
     fieldDrillDown("widgetFieldDrillDown", Category.fieldQuery),
     rssFeed("widgetRssFeed", Category.fieldQuery),
     user("widgetUser"),

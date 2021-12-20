@@ -66,7 +66,7 @@ import io.goobi.viewer.model.security.user.User;
 public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
     private WebAnnotation annotation;
-    private PersistentAnnotation daoAnno;
+    private CrowdsourcingAnnotation daoAnno;
     private User creator;
     private Question generator;
     private IResource body;
@@ -74,6 +74,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
     private static AbstractApiUrlManager urls;
     private static AnnotationsResourceBuilder annoBuilder;
+    private static AnnotationConverter converter;
 
     private static ObjectMapper mapper;
 
@@ -82,6 +83,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         AbstractDatabaseEnabledTest.setUpClass();
         urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
         annoBuilder = new AnnotationsResourceBuilder(urls, null);
+        converter = new AnnotationConverter(urls);
 
         mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -106,8 +108,8 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         generator.setTargetSelector(TargetSelector.WHOLE_PAGE);
 
         annotation = new WebAnnotation(URI.create("http://www.example.com/anno/1"));
-        annotation.setCreated(DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2019, 01, 22, 12, 54), false));
-        annotation.setModified(DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2019, 8, 11, 17, 13), false));
+        annotation.setCreated(LocalDateTime.of(2019, 01, 22, 12, 54));
+        annotation.setModified(LocalDateTime.of(2019, 8, 11, 17, 13));
         annotation.setCreator(new Agent(URI.create(creator.getId().toString()), AgentType.PERSON, creator.getNickName()));
         annotation.setGenerator(new Agent(URI.create(generator.getId().toString()), AgentType.SOFTWARE, ""));
 
@@ -118,7 +120,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         annotation.setBody(body);
         annotation.setTarget(target);
 
-        daoAnno = new PersistentAnnotation(annotation, null, "7", 10);
+        daoAnno = new CrowdsourcingAnnotation(annotation, null, "7", 10);
     }
 
     /**
@@ -142,10 +144,10 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
                         + "",
                 targetString);
 
-        IResource retrievedBody = annoBuilder.getBodyAsResource(daoAnno);
+        IResource retrievedBody = converter.getBodyAsResource(daoAnno);
         Assert.assertEquals(body, retrievedBody);
 
-        IResource retrievedTarget = annoBuilder.getTargetAsResource(daoAnno);
+        IResource retrievedTarget = converter.getTargetAsResource(daoAnno);
         Assert.assertEquals(target, retrievedTarget);
 
     }
@@ -169,12 +171,12 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
         em = dao.getFactory().createEntityManager();
         try {
-            List<PersistentAnnotation> list = getAnnotations(em);
+            List<CrowdsourcingAnnotation> list = getAnnotations(em);
             Assert.assertEquals(existingAnnotations + 1, list.size());
 
-            PersistentAnnotation retrieved = list.get(list.size() - 1);
-            Assert.assertEquals(body, annoBuilder.getBodyAsResource(retrieved));
-            Assert.assertEquals(target, annoBuilder.getTargetAsResource(retrieved));
+            CrowdsourcingAnnotation retrieved = list.get(list.size() - 1);
+            Assert.assertEquals(body, converter.getBodyAsResource(retrieved));
+            Assert.assertEquals(target, converter.getTargetAsResource(retrieved));
 
         } finally {
             em.close();
@@ -186,10 +188,10 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
      * @return
      */
     @SuppressWarnings("unchecked")
-    private static List<PersistentAnnotation> getAnnotations(EntityManager em) {
+    private static List<CrowdsourcingAnnotation> getAnnotations(EntityManager em) {
         Query q = em.createQuery("SELECT c FROM PersistentAnnotation c");
         q.setFlushMode(FlushModeType.COMMIT);
-        List<PersistentAnnotation> list = q.getResultList();
+        List<CrowdsourcingAnnotation> list = q.getResultList();
         return list;
     }
 
@@ -198,9 +200,9 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         boolean added = DataManager.getInstance().getDao().addAnnotation(daoAnno);
         Assert.assertTrue(added);
         URI uri = URI.create(Long.toString(daoAnno.getId()));
-        PersistentAnnotation fromDAO = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
-        WebAnnotation webAnno = annoBuilder.getAsWebAnnotation(daoAnno);
-        WebAnnotation fromDAOWebAnno = annoBuilder.getAsWebAnnotation(daoAnno);
+        CrowdsourcingAnnotation fromDAO = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
+        WebAnnotation webAnno = converter.getAsWebAnnotation(daoAnno);
+        WebAnnotation fromDAOWebAnno = converter.getAsWebAnnotation(daoAnno);
         Assert.assertEquals(webAnno.getBody(), fromDAOWebAnno.getBody());
         Assert.assertEquals(webAnno.getTarget(), fromDAOWebAnno.getTarget());
         Assert.assertEquals(webAnno, fromDAOWebAnno);
@@ -209,7 +211,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         fromDAO.setDateModified(changed);
         boolean updated = DataManager.getInstance().getDao().updateAnnotation(fromDAO);
 
-        PersistentAnnotation fromDAO2 = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
+        CrowdsourcingAnnotation fromDAO2 = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
         Assert.assertEquals(fromDAO.getDateModified(), fromDAO2.getDateModified());
     }
 
@@ -220,7 +222,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
                 "        \"format\": \"text/plain\",\n" +
                 "        \"chars\": \"GROSHERZOGLICH\"\n" +
                 "    }";
-        PersistentAnnotation pAnno = new PersistentAnnotation();
+        CrowdsourcingAnnotation pAnno = new CrowdsourcingAnnotation();
         pAnno.setBody(content);
         assertEquals("GROSHERZOGLICH", pAnno.getContentString());
     }
@@ -232,7 +234,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
                 "        \"format\": \"text/plain\",\n" +
                 "        \"value\": \"GROSHERZOGLICH\"\n" +
                 "    }";
-        PersistentAnnotation pAnno = new PersistentAnnotation();
+        CrowdsourcingAnnotation pAnno = new CrowdsourcingAnnotation();
         pAnno.setBody(content);
         assertEquals("GROSHERZOGLICH", pAnno.getContentString());
     }

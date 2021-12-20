@@ -340,25 +340,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         this.statisticMode = orig.statisticMode;
     }
 
-    /**
-     * No @PrePersist annotation because it is called explicitly in {@link IDAO#addCampaign(Campaign)}
-     */
-    public void onPrePersist() {
-        this.questions.forEach(Question::onPrePersist);
-    }
-
-    /**
-     * No @PreUpdate annotation because it is called explicitly in {@link IDAO#updateCampaign(Campaign)}
-     */
-    public void onPreUpdate() {
-        this.questions.forEach(Question::onPreUpdate);
-    }
-
-    @PostLoad
-    public void onPostLoad() {
-        this.questions.forEach(Question::onPostLoad);
-    }
-
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -692,6 +673,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public boolean isUserAllowedAction(User user, CrowdsourcingStatus status) throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("isUserAllowedAction: {}", status);
         if (status == null) {
+            return false;
+        }
+        if (getQuestions().isEmpty()) {
             return false;
         }
         if (!isHasStarted() || isHasEnded()) {
@@ -1461,11 +1445,12 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
                 .filter(result -> isEligibleToEdit(result, status, user))
                 .collect(Collectors.toList());
         int currentIndex = piList.indexOf(currentPi);
-        if(piList.isEmpty()) {
+        if (piList.isEmpty()) {
             return "";
-        } if(currentIndex+1 < piList.size()) {
-            return piList.get(currentIndex+1);
-        } else if(currentIndex != 0) {
+        }
+        if (currentIndex + 1 < piList.size()) {
+            return piList.get(currentIndex + 1);
+        } else if (currentIndex != 0) {
             return piList.get(0);
         } else {
             return "";
@@ -1601,7 +1586,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @return true if record status for the given pi equals status; false otherwise. If no record
      */
     boolean isRecordStatus(String pi, CrowdsourcingStatus status) {
-        boolean ret = Optional.ofNullable(statistics.get(pi)).map(stat -> StatisticMode.RECORD.equals(this.statisticMode) ?  status.equals(stat.getStatus()) : stat.containsPageStatus(status)).orElse(CrowdsourcingStatus.ANNOTATE.equals(status));
+        boolean ret = Optional.ofNullable(statistics.get(pi))
+                .map(stat -> StatisticMode.RECORD.equals(this.statisticMode) ? status.equals(stat.getStatus()) : stat.containsPageStatus(status))
+                .orElse(CrowdsourcingStatus.ANNOTATE.equals(status));
         return ret;
     }
 
@@ -1616,9 +1603,12 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public CrowdsourcingStatus getRecordStatus(String pi) {
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CrowdsourcingStatus.ANNOTATE);
     }
-    
+
     public CrowdsourcingStatus getPageStatus(String pi, int page) {
-        return Optional.ofNullable(statistics.get(pi)).map(s -> s.getPageStatistics().get(pi + "_" + Integer.toString(page))).map(CampaignRecordPageStatistic::getStatus).orElse(CrowdsourcingStatus.ANNOTATE);
+        return Optional.ofNullable(statistics.get(pi))
+                .map(s -> s.getPageStatistics().get(pi + "_" + Integer.toString(page)))
+                .map(CampaignRecordPageStatistic::getStatus)
+                .orElse(CrowdsourcingStatus.ANNOTATE);
     }
 
     /**
@@ -1908,6 +1898,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @Override
     public String toString() {
         return getTitle();
+    }
+
+    /**
+     * @return
+     */
+    public String getAccessConditionValue() {
+        return getTitle(IPolyglott.getDefaultLocale().getLanguage());
     }
 
 }

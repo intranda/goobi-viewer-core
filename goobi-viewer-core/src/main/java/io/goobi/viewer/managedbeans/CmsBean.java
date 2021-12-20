@@ -766,19 +766,20 @@ public class CmsBean implements Serializable {
     public List<CMSPage> getNestedPages(CMSContentItem item) throws DAOException {
         int size = item.getElementsPerPage();
         int offset = item.getListOffset();
-        
+
         Stream<CMSPage> nestedPagesStream = getAllCMSPages().stream()
                 .filter(CMSPage::isPublished)
-                .filter(child -> item.getCategories().isEmpty() || !CollectionUtils.intersection(item.getCategories(), child.getCategories()).isEmpty());
-        
-        if(item.isRandomizeItems()) {
+                .filter(child -> item.getCategories().isEmpty()
+                        || !CollectionUtils.intersection(item.getCategories(), child.getCategories()).isEmpty());
+
+        if (item.isRandomizeItems()) {
             nestedPagesStream = nestedPagesStream.sorted(new RandomComparator<CMSPage>());
         }
-        
+
         nestedPagesStream = nestedPagesStream.skip(offset).limit(size);
         List<CMSPage> nestedPages = nestedPagesStream.collect(Collectors.toList());
-        setNestedPagesCount((int) Math.ceil((offset+nestedPages.size()) / (double) size));
-        
+        setNestedPagesCount((int) Math.ceil((offset + nestedPages.size()) / (double) size));
+
         return nestedPages;
     }
 
@@ -1100,7 +1101,6 @@ public class CmsBean implements Serializable {
         return false;
     }
 
-
     /**
      * 
      * @return the {@link #getCurrentPage()} if one is set, or an empty Optional if the current page is not a cmsPage (i.e. if
@@ -1207,25 +1207,25 @@ public class CmsBean implements Serializable {
      */
     public void setSelectedPage(CMSPage currentPage) throws DAOException {
         if (currentPage != null) {
-                if (currentPage.getId() != null) {
-                    //get page from DAO
-                    this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
-                } else {
-                    this.selectedPage = currentPage;
-                }
-                //Keep unused sidebar elements if page was already loaded to be able to correctly save sidebar elements
-                //                if (previouslySelected != null
-                //                        && previouslySelected.getId() != null
-                //                        && previouslySelected.getId().equals(this.selectedPage.getId())) {
-                //                    this.selectedPage.setUnusedSidebarElements(previouslySelected.getUnusedSidebarElements());
-                //                }
-                PageValidityStatus validityStatus = isPageValid(this.selectedPage);
-                this.selectedPage.setValidityStatus(validityStatus);
-                if (validityStatus.isValid()) {
-                    this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
-                }
-                this.selectedPage.createMissingLanguageVersions(getAllLocales());
-                logger.debug("Selected page: {}", currentPage);
+            if (currentPage.getId() != null) {
+                //get page from DAO
+                this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
+            } else {
+                this.selectedPage = currentPage;
+            }
+            //Keep unused sidebar elements if page was already loaded to be able to correctly save sidebar elements
+            //                if (previouslySelected != null
+            //                        && previouslySelected.getId() != null
+            //                        && previouslySelected.getId().equals(this.selectedPage.getId())) {
+            //                    this.selectedPage.setUnusedSidebarElements(previouslySelected.getUnusedSidebarElements());
+            //                }
+            PageValidityStatus validityStatus = isPageValid(this.selectedPage);
+            this.selectedPage.setValidityStatus(validityStatus);
+            if (validityStatus.isValid()) {
+                this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
+            }
+            this.selectedPage.createMissingLanguageVersions(getAllLocales());
+            logger.debug("Selected page: {}", currentPage);
         } else {
             this.selectedPage = null;
         }
@@ -1281,7 +1281,7 @@ public class CmsBean implements Serializable {
         if (currentPage != null) {
             this.currentPage.setListPage(1);
             navigationHelper.setCmsPage(true);
-            logger.trace("Set current cms page to " + this.currentPage.getTitle());
+            logger.trace("Set current cms page to {}", this.currentPage.getTitle());
         }
     }
 
@@ -1761,7 +1761,8 @@ public class CmsBean implements Serializable {
             SearchFacets facets = searchBean.getFacets();
             search.setPage(searchBean.getCurrentPage());
             searchBean.setHitsPerPage(item.getElementsPerPage());
-            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, !item.isNoSearchAggregation(), item.isGroupBySelected());
+            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, !item.isNoSearchAggregation(),
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
             searchBean.setCurrentSearch(search);
             return null;
         } else if (item == null) {
@@ -1962,6 +1963,7 @@ public class CmsBean implements Serializable {
         } else {
             validateSidebarElement(this.selectedSidebarElement);
             this.selectedPage.addSidebarElement(this.selectedSidebarElement);
+            this.selectedSidebarElement = null;
         }
     }
 
@@ -2825,7 +2827,7 @@ public class CmsBean implements Serializable {
     public String getCmsPagesFilter() {
         return CMSPAGES_FILTER;
     }
-    
+
     /**
      * <p>
      * getNavigationMenuItems.
@@ -2859,7 +2861,7 @@ public class CmsBean implements Serializable {
             return Collections.emptyList();
         }
     }
-    
+
     public List<CMSNavigationItem> getActiveNavigationMenuItems() {
         return getNavigationMenuItems().stream().filter(CMSNavigationItem::isEnabled).collect(Collectors.toList());
     }

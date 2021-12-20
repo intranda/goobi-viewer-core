@@ -4,6 +4,9 @@
     <description>cms__template_05__description</description>
     <icon>cms_template_05_simple.png</icon>
     <html>cms_template_05_simple.xhtml</html>
+    <options>    
+        <topBarSlider>true</topBarSlider>
+    </options>
     <content>
         <item id="text01" order="1" label="cms__template_05__text_above_image__label" inlinehelp="cms__template_05__text_above_image__help" type="HTML" />
         <item id="image01" order="2" label="admin__cms_media_file" type="MEDIA" inlinehelp="cms__template_05__image__help"/>

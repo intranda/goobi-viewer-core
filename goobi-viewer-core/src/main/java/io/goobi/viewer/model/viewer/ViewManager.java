@@ -97,6 +97,7 @@ import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.SelectPageItem;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -136,8 +137,8 @@ public class ViewManager implements Serializable {
     private int rotate = 0;
     private int zoomSlider;
     private int currentImageOrder = -1;
-    private final List<SelectItem> dropdownPages = new ArrayList<>();
-    private final List<SelectItem> dropdownFulltext = new ArrayList<>();
+    private final List<SelectPageItem> dropdownPages = new ArrayList<>();
+    private final List<SelectPageItem> dropdownFulltext = new ArrayList<>();
     private String dropdownSelected = "";
     private int currentThumbnailPage = 1;
     private String pi;
@@ -222,6 +223,20 @@ public class ViewManager implements Serializable {
             this.archiveEntryUri = null;
         }
     }
+    
+    private void setDoublePageModeForDropDown(boolean doublePages) {
+        this.dropdownFulltext.forEach(i -> i.setDoublePageMode(doublePages));
+        this.dropdownPages.forEach(i -> i.setDoublePageMode(doublePages));
+        
+    }
+
+    public String getPageUrl(SelectItem item) {
+        if(isDoublePageMode()) {
+            return item.getValue().toString() + item.getValue().toString();
+        } else {
+            return item.getValue().toString();
+        }
+    }
 
     /**
      * <p>
@@ -298,7 +313,7 @@ public class ViewManager implements Serializable {
             urlBuilder.append("[");
             String imageInfoLeft =
                     (leftPage.isPresent() && leftPage.get().isDoubleImage()) ? null : leftPage.map(page -> getImageInfo(page, pageType)).orElse(null);
-            String imageInfoRight = (rightPage.isPresent() && rightPage.get().isDoubleImage()) ? null
+            String imageInfoRight = (rightPage.isPresent() && (rightPage.get().isDoubleImage() || rightPage.get().equals(leftPage.orElse(null)))) ? null
                     : rightPage.map(page -> getImageInfo(page, pageType)).orElse(null);
             if (StringUtils.isNotBlank(imageInfoLeft)) {
                 urlBuilder.append("\"").append(imageInfoLeft).append("\"");
@@ -1476,7 +1491,7 @@ public class ViewManager implements Serializable {
      *
      * @return the dropdownPages
      */
-    public List<SelectItem> getDropdownPages() {
+    public List<SelectPageItem> getDropdownPages() {
         return dropdownPages;
     }
 
@@ -1487,7 +1502,7 @@ public class ViewManager implements Serializable {
      *
      * @return the dropdownPages
      */
-    public List<SelectItem> getDropdownFulltext() {
+    public List<SelectPageItem> getDropdownFulltext() {
         return dropdownFulltext;
     }
 
@@ -1660,7 +1675,11 @@ public class ViewManager implements Serializable {
      * </p>
      */
     public void updateDropdownSelected() {
-        setDropdownSelected(String.valueOf(currentImageOrder));
+        if(doublePageMode) {
+            setDropdownSelected(String.valueOf(currentImageOrder) + "-" + String.valueOf(currentImageOrder));
+        } else {            
+            setDropdownSelected(String.valueOf(currentImageOrder));
+        }
     }
 
     /**
@@ -3452,6 +3471,7 @@ public class ViewManager implements Serializable {
      */
     public void setDoublePageMode(boolean doublePageMode) {
         this.doublePageMode = doublePageMode;
+        this.setDoublePageModeForDropDown(doublePageMode);
     }
 
     /**
@@ -3542,6 +3562,7 @@ public class ViewManager implements Serializable {
         }
         return firstPageOrientation;
     }
+
 
     /**
      * <p>
@@ -3842,7 +3863,7 @@ public class ViewManager implements Serializable {
         }
         CSL processor = citationProcessorWrapper.getCitationProcessor(citationStyle);
         Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationSource();
-        md.populate(topStructElement, String.valueOf(topStructElement.getLuceneId()), BeanUtils.getLocale());
+        md.populate(topStructElement, String.valueOf(topStructElement.getLuceneId()), null, BeanUtils.getLocale());
         for (MetadataValue val : md.getValues()) {
             if (!val.getCitationValues().isEmpty()) {
                 Citation citation = new Citation(pi, processor, citationProcessorWrapper.getCitationItemDataProvider(),

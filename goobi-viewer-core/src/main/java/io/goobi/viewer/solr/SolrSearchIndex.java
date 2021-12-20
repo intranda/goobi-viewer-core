@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.apache.commons.lang3.StringUtils;
@@ -42,14 +43,18 @@ import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.LukeRequest;
+import org.apache.solr.client.solrj.request.QueryRequest;
 import org.apache.solr.client.solrj.response.LukeResponse;
 import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
+import org.apache.solr.client.solrj.response.SpellCheckResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.luke.FieldFlag;
+import org.apache.solr.common.params.CommonParams;
+import org.apache.solr.common.params.SpellingParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -208,7 +213,7 @@ public final class SolrSearchIndex {
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
      * @param rows {@link java.lang.Integer}
-     * @param sortFields a {@link java.util.List} object.
+     * @param sortFields Optional field/order pairs for sorting
      * @param facetFields a {@link java.util.List} object.
      * @param facetSort a {@link java.lang.String} object.
      * @param fieldList If not null, only the fields in the list will be returned.
@@ -231,11 +236,15 @@ public final class SolrSearchIndex {
             for (int i = 0; i < sortFields.size(); ++i) {
                 StringPair sortField = sortFields.get(i);
                 if (StringUtils.isNotEmpty(sortField.getOne())) {
-                    // If RANDOM is used, generate a randomized sort field
-                    if ("RANDOM".equals(sortField.getOne())) {
+                    if (SolrConstants.SORT_RELEVANCE.equals(sortField.getOne())) {
+                        // If RELEVANCE is used, just add nothing
+                        continue;
+                    } else if (SolrConstants.SORT_RANDOM.equals(sortField.getOne())) {
+                        // If RANDOM is used, generate a randomized sort field
                         sortField.setOne(SolrTools.generateRandomSortField());
                     }
                     solrQuery.addSort(sortField.getOne(), "desc".equals(sortField.getTwo()) ? ORDER.desc : ORDER.asc);
+                    // logger.trace("sort field: {} {}", sortField.getOne(), sortField.getTwo());
                 }
             }
         }
@@ -262,7 +271,7 @@ public final class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(fq);
-                // logger.trace("adding filter query: {}", fq);
+                // logger.trace("adding filter query: {}", fq)
             }
         }
         if (params != null && !params.isEmpty()) {
@@ -271,15 +280,16 @@ public final class SolrSearchIndex {
                 // logger.trace("&{}={}", key, params.get(key));
             }
         }
+        
 
         try {
             //             logger.trace("Solr query : {}", solrQuery.getQuery());
             //             logger.debug("range: {} - {}", first, first + rows);
             //             logger.debug("facetFields: {}", facetFields);
-            //             logger.debug("fieldList: {}", fieldList);
+            //             logger.debug("fieldList: {}", fieldList);                  
             QueryResponse resp = client.query(solrQuery);
             //             logger.debug("found: {}", resp.getResults().getNumFound());
-            //             logger.debug("fetched: {}", resp.getResults().size());
+//                         logger.debug("fetched: {}", resp.getResults().size());
 
             return resp;
         } catch (SolrServerException e) {
@@ -305,6 +315,22 @@ public final class SolrSearchIndex {
         }
     }
 
+    public List<String> querySpellingSuggestions(String query, float accuracy, boolean build) throws IndexUnreachableException {
+        SolrQuery solrQuery = new SolrQuery(query);
+        solrQuery.set(CommonParams.QT, "/spell");
+        solrQuery.set("spellcheck", true);  
+        solrQuery.set(SpellingParams.SPELLCHECK_ACCURACY, Float.toString(accuracy));
+        solrQuery.set(SpellingParams.SPELLCHECK_BUILD, build);
+        try {
+            QueryResponse resp = client.query(solrQuery);
+            QueryRequest request = new QueryRequest(solrQuery);
+            SpellCheckResponse response = request.process(client).getSpellCheckResponse(); 
+            return response.getSuggestions().stream().flatMap(suggestion -> suggestion.getAlternatives().stream()).collect(Collectors.toList());
+        } catch(IOException | SolrException | SolrServerException e) {
+            throw new IndexUnreachableException(e.toString());
+        }
+    }
+    
     /**
      * <p>
      * search.
@@ -313,7 +339,7 @@ public final class SolrSearchIndex {
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
      * @param rows {@link java.lang.Integer}
-     * @param sortFields a {@link java.util.List} object.
+     * @param sortFields Optional field/order pairs for sorting
      * @param facetFields a {@link java.util.List} object.
      * @param fieldList If not null, only the fields in the list will be returned.
      * @param filterQueries a {@link java.util.List} object.
@@ -336,7 +362,7 @@ public final class SolrSearchIndex {
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
      * @param rows {@link java.lang.Integer}
-     * @param sortFields a {@link java.util.List} object.
+     * @param sortFields Optional field/order pairs for sorting
      * @param facetFields a {@link java.util.List} object.
      * @param fieldList If not null, only the fields in the list will be returned.
      * @return {@link org.apache.solr.client.solrj.response.QueryResponse}
@@ -356,7 +382,7 @@ public final class SolrSearchIndex {
      *
      * @param query a {@link java.lang.String} object.
      * @param rows a int.
-     * @param sortFields a {@link java.util.List} object.
+     * @param sortFields Optional field/order pairs for sorting
      * @param fieldList If not null, only the fields in the list will be returned.
      * @return a {@link org.apache.solr.common.SolrDocumentList} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

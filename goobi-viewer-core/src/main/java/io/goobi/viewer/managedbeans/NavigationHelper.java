@@ -82,6 +82,7 @@ import io.goobi.viewer.model.viewer.LabeledLink;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * This bean contains useful navigation parameters.
@@ -1989,9 +1990,9 @@ public class NavigationHelper implements Serializable {
                 });
     }
 
-    private ViewerPath setupRandomSearchSeed(ViewerPath path) {
+    private static ViewerPath setupRandomSearchSeed(ViewerPath path) {
         String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
-        if ("RANDOM".equalsIgnoreCase(defaultSortField)) {
+        if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(defaultSortField)) {
             String parameterPath = path.getParameterPath().toString();
             if (StringUtils.isBlank(parameterPath) || parameterPath.matches("\\/?-\\/-\\/\\d+\\/-\\/-\\/?")) {
                 SearchBean sb = BeanUtils.getSearchBean();
