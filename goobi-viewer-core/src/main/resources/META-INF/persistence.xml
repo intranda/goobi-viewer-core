@@ -78,6 +78,11 @@
 			<property name="eclipselink.id-validation" value="NONE" />
 			<!-- <property name="eclipselink.logging.logger" value="ServerLogger" 
 				/> -->
+
+            <!-- EclipseLink does not support MariaDB directly, so let's set it to MySQL for now, see
+                 https://jira.mariadb.org/browse/CONJ-702?focusedCommentId=205084&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-205084 -->
+            <property name="eclipselink.target-database" value="MySQL"/>
+
 			<!-- <property name="eclipselink.logging.level.sql" value="ALL" /> -->
 			<!-- <property name="eclipselink.logging.parameters" value="true" /> -->
 			<!-- <property name="eclipselink.logging.thread" value="true"/> -->
