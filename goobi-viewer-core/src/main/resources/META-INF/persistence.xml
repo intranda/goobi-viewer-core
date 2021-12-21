@@ -73,6 +73,10 @@
 			<!-- disable logging to separate log file for now as the path can not be influenced in Goobi to go -->
 			<!-- <property name="eclipselink.logging.file" value="/opt/digiverso/logs/viewer_sql.log" /> -->
 
+            <!-- EclipseLink does not support MariaDB directly, so let's set it to MySQL for now, see
+                 https://jira.mariadb.org/browse/CONJ-702?focusedCommentId=205084&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-205084 -->
+            <property name="eclipselink.target-database" value="MySQL"/>
+
 			<!-- <property name="eclipselink.cache.shared.default" value="false" /> -->
             <!-- <property name="eclipselink.logging.logger" value="ServerLogger" /> -->
 			<!-- <property name="eclipselink.logging.level.sql" value="ALL" /> -->
