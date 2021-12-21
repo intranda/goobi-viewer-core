@@ -93,9 +93,13 @@ var viewerJS = (function () {
 	    
 	    viewerJS.initWidgetUsage();
 
-       viewerJS.initFragmentActions();
+        viewerJS.initFragmentActions();
        
-       viewerJS.initRequiredInputs();
+        viewerJS.initRequiredInputs();
+        
+           
+	    console.log("init sticky", viewerJS.sticky);
+	    viewerJS.sticky.init();
        
         // init bookmarks if enabled
         if ( bookmarksEnabled ) { 
@@ -313,6 +317,7 @@ var viewerJS = (function () {
         viewer.jsfAjax.complete.pipe(rxjs.operators.first()).subscribe(() => $(".ajax_loader").hide())
         $(".ajax_loader").show();
     }
+
     
     // refresh HC sticky method (use case: after ajax calls/DOM changes)
     viewer.refreshHCsticky = function () {
