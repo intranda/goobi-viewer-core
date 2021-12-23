@@ -16,27 +16,41 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * @version 3.4.0
- * @module adminJS.sidebar
+ * Module which initializes and manages sticky behaviour of scrollable elements. 
+ * Uses the hc-sticky libary (https://github.com/somewebmedia/hc-sticky)
+ * 
+ * @version 3.2.0
+ * @module viewerJS.stickyElements
  * @requires jQuery
- * @description Module which sets the behavior of the admin sidebar.
  */
-var adminJS = (function(admin) {
-	'use strict';
+var viewerJS = ( function( viewer ) {
+    'use strict';
 
-	var _debug = false;
+	var _debug = true;    
+    
+    viewer.stickyElements = {
+		refresh: new rxjs.Subject(),
+		init: function(config) {
 
-	admin.stickyElements = {
-        /**
-         * @description Method which initializes the admin sidebar module.
-         * @method init
-         */
-		init: function() {
-			if (_debug) {
-				console.log('##############################');
-				console.log('adminJS.sidebar.init');
-				console.log('##############################');
+			if(_debug) {
+				console.log( '##############################' );
+		        console.log( 'viewer.stickyElements.init' );
+		        console.log( '##############################' );
+		        console.log( 'viewer.stickyElements.init: config - ' );
+		        console.log( config );
 			}
+
+			this.refresh
+			.pipe(rxjs.operators.delay(0))
+	        .subscribe(() => {
+	        	console.log("refresh hcSticky rx");
+	        	$(document).ready(() => $(".-refreshHCsticky").hcSticky('refresh', {}));
+	        });
+			
+			/**
+			* Refresh hcsticky after ajax requests
+			**/
+			viewerJS.jsfAjax.success.subscribe(this.refresh);
 
 			// STICKY ELEMENTS TARGETS AND OPTIONS
 			// sticky admin main menu sidebar left side
@@ -63,12 +77,18 @@ var adminJS = (function(admin) {
 					innerTop: -50
 				});
 			}
-		}
-	}
+			
+			// toggle collapseable widgets
+       		$('body').on('click', '.widget__title.collapseable', function () {
+	            $(this).toggleClass('in').next().slideToggle(300, function() {
+					console.log('promise nach jquery animation aufklappen');
+     				viewerJS.stickyElements.refresh.next();
+				});
+			});
 
+		},
 
-
-	return admin;
-
-})(adminJS || {}, jQuery);
+	};
+	return viewer;
+} )( viewerJS || {}, jQuery );
 

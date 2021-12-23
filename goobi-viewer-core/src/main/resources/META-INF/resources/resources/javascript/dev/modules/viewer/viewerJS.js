@@ -98,8 +98,8 @@ var viewerJS = (function () {
         viewerJS.initRequiredInputs();
         
            
-	    console.log("init sticky", viewerJS.sticky);
-	    viewerJS.sticky.init();
+	    console.log("init sticky", viewerJS.stickyElements);
+	    viewerJS.stickyElements.init();
        
         // init bookmarks if enabled
         if ( bookmarksEnabled ) { 
@@ -147,13 +147,7 @@ var viewerJS = (function () {
         	$( '.title__body' ).slideToggle( 'fast' );        	
         } );
 
-        // toggle collapseable widgets
-        $('body').on('click', '.widget__title.collapseable', function () {
-            $(this).toggleClass('in').next().slideToggle(300, function() {
-					 viewer.refreshHCsticky();
-				console.log('promise nach jquery animation aufklappen');
-		});
-		});
+
 
 
 
@@ -317,18 +311,6 @@ var viewerJS = (function () {
         viewer.jsfAjax.complete.pipe(rxjs.operators.first()).subscribe(() => $(".ajax_loader").hide())
         $(".ajax_loader").show();
     }
-
-    
-    // refresh HC sticky method (use case: after ajax calls/DOM changes)
-    viewer.refreshHCsticky = function () {
-    	jQuery(document).ready(function($) {
-
-        	$(".-refreshHCsticky").hcSticky('refresh', {});
-
-    		});
-
-    	console.log('refresh hc sticky done');
-    }
     
     viewer.initTinyMCE  = function(event) {
         //trigger initializazion if either no event was given or if it is a jsf event in status 'success'
@@ -338,8 +320,8 @@ var viewerJS = (function () {
                 viewer.tinyConfig.setup = function (ed) {
                     // listen to changes on tinymce input fields
                     ed.on('init', function (e) {
-                        if(_debug)console.log("init ", e);
-                        viewer.refreshHCsticky();
+                        console.log("init ", e);
+                        viewerJS.stickyElements.refresh.next();
                     });
                     
                     ed.on('change input paste', function (e) {

@@ -38,8 +38,6 @@ var adminJS = ( function() {
             console.log( '##############################' );
         }
         
-        // init sticky elements (sidebars)
-        adminJS.stickyElements.init();
     };
     
     return admin;
