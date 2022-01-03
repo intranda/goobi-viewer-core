@@ -215,6 +215,10 @@
 				    <groupId>commons-configuration</groupId>
 				    <artifactId>commons-configuration</artifactId>
 				</exclusion>
+                <exclusion>
+                    <groupId>joda-time</groupId>
+                    <artifactId>joda-time</artifactId>
+                </exclusion>
 			</exclusions>
 		</dependency>
 
@@ -540,7 +544,11 @@
 					<groupId>javax.servlet</groupId>
 					<artifactId>javax.servlet-api</artifactId>
 				</exclusion>
-			</exclusions>
+                <exclusion>
+                    <groupId>joda-time</groupId>
+                    <artifactId>joda-time</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.mock-server</groupId>
@@ -659,6 +667,12 @@
 			<groupId>com.coveo</groupId>
 			<artifactId>saml-client</artifactId>
 			<version>${saml-client.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>joda-time</groupId>
+                    <artifactId>joda-time</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
