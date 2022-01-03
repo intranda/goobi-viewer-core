@@ -34,6 +34,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
+import de.intranda.digiverso.ocr.alto.utils.AltoCoords;
 import io.goobi.viewer.AbstractTest;
 
 public class ALTOToolsTest extends AbstractTest {
@@ -80,7 +82,7 @@ public class ALTOToolsTest extends AbstractTest {
         terms.add("Monica.");
         terms.add("puh");
         coords = ALTOTools.getWordCoords(altoString, StringTools.DEFAULT_ENCODING, terms, rotation);
-        Assert.assertTrue(coords.size() == 2);
+        Assert.assertEquals(2, coords.size());
         Assert.assertEquals("1032,2248,1136,2280", coords.get(0));
 
         terms = new LinkedHashSet<>();
@@ -191,4 +193,16 @@ public class ALTOToolsTest extends AbstractTest {
         Assert.assertTrue(text.length() > 100);
     }
 
+    @Test
+    public void getMatchALTOWord_findFuzzyTerms() {
+        String[] searchTerms = new String[] {"Steigbügel~1", "Halter~1"};
+        {            
+            Word word = new Word("Steigbugle", new AltoCoords(10, 10, 12, 12));
+            assertEquals(1, ALTOTools.getMatchALTOWord(word, searchTerms));
+        }
+        {
+            Word word = new Word("Ich war beim Steigbügel Häälter", new AltoCoords(10, 10, 12, 12));
+            assertEquals(2, ALTOTools.getMatchALTOWord(word, searchTerms));
+        }
+    }
 }

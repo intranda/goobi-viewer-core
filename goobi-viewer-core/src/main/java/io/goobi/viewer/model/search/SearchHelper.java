@@ -60,6 +60,7 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
@@ -131,6 +132,10 @@ public final class SearchHelper {
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
     /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */
     public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -IDDOC_PARENT:*";
+    /** Constant <code>FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit distance to search. {p} and {s} are prefix and suffix to be applied to the search term */
+    public static final String FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST = "{p}{t}{s} {t}~{d}";
+    /** Constant <code>FUZZY_SEARCH_TERM_TEMPLATE="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit distance to search.*/
+    public static final String FUZZY_SEARCH_TERM_TEMPLATE = "{t}~{d}";
 
     private static final Object lock = new Object();
 
@@ -995,57 +1000,40 @@ public final class SearchHelper {
                     fulltextFragment += " ";
                     break;
                 }
-                Matcher m = Pattern.compile(searchTerm.toLowerCase()).matcher(fulltext.toLowerCase());
-                int lastIndex = -1;
-                while (m.find()) {
-                    // Skip match if it follows right after the last match
-                    if (lastIndex != -1 && m.start() <= lastIndex + searchTerm.length()) {
-                        continue;
-                    }
-                    int indexOfTerm = m.start();
-                    lastIndex = m.start();
-
-                    // fulltextFragment = getTextFragmentFromLine(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
-                    fulltextFragment = getTextFragmentRandomized(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
-                    // fulltextFragment = getTextFragmentStatic(fulltext, targetFragmentLength, fulltextFragment, searchTerm,
-                    // indexOfTerm);
-
-                    indexOfTerm = fulltextFragment.toLowerCase().indexOf(searchTerm.toLowerCase());
-                    int indexOfSpace = fulltextFragment.indexOf(' ');
-                    if (indexOfTerm > indexOfSpace && indexOfSpace >= 0) {
-                        fulltextFragment = fulltextFragment.substring(indexOfSpace, fulltextFragment.length());
-                    }
-
-                    indexOfTerm = fulltextFragment.toLowerCase().indexOf(searchTerm.toLowerCase());
-
-                    if (indexOfTerm < fulltextFragment.lastIndexOf(' ')) {
-                        fulltextFragment = fulltextFragment.substring(0, fulltextFragment.lastIndexOf(' '));
-                    }
-
-                    indexOfTerm = fulltextFragment.toLowerCase().indexOf(searchTerm.toLowerCase());
-                    if (indexOfTerm >= 0) {
-                        fulltextFragment = applyHighlightingToPhrase(fulltextFragment, searchTerm);
-                        fulltextFragment = replaceHighlightingPlaceholders(fulltextFragment);
-                    }
-                    if (StringUtils.isNotBlank(fulltextFragment)) {
-                        // Check for unclosed HTML tags
-                        int lastIndexOfLT = fulltextFragment.lastIndexOf('<');
-                        int lastIndexOfGT = fulltextFragment.lastIndexOf('>');
-                        if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
-                            fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
+                if (FuzzySearchTerm.isFuzzyTerm(searchTerm)) {
+                    FuzzySearchTerm fuzzySearchTerm = new FuzzySearchTerm(searchTerm);
+                    Matcher m = Pattern.compile(FuzzySearchTerm.WORD_PATTERN).matcher(fulltext.toLowerCase());
+                    int lastIndex = -1;
+                    while(m.find()) {
+                        String word = m.group();
+                        if(fuzzySearchTerm.matches(word)) {
+                            if (lastIndex != -1 && m.start() <= lastIndex + searchTerm.length()) {
+                                continue;
+                            }
+                            lastIndex = createFulltextFragment(m, fulltext, word, targetFragmentLength, ret);
+                            if (firstMatchOnly) {
+                                break;
+                            }
                         }
-                        // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
-                        // fulltextFragment = fulltextFragment.replace("<br>", " ");
-                        ret.add(fulltextFragment);
                     }
-                    if (firstMatchOnly) {
-                        break;
+                } else {
+                    Matcher m = Pattern.compile(searchTerm.toLowerCase()).matcher(fulltext.toLowerCase());
+                    int lastIndex = -1;
+                    while (m.find()) {
+                        // Skip match if it follows right after the last match
+                        if (lastIndex != -1 && m.start() <= lastIndex + searchTerm.length()) {
+                            continue;
+                        }
+                        lastIndex = createFulltextFragment(m, fulltext, searchTerm, targetFragmentLength, ret);
+                        if (firstMatchOnly) {
+                            break;
+                        }
                     }
                 }
             }
 
             // If no search term has been found (i.e. when searching for a phrase), make sure no empty string gets delivered
-            if (addFragmentIfNoMatches && StringUtils.isEmpty(fulltextFragment)) {
+            if (addFragmentIfNoMatches && ret.isEmpty()) {
                 if (fulltext.length() > 200) {
                     fulltextFragment = fulltext.substring(0, 200);
                 } else {
@@ -1076,6 +1064,46 @@ public final class SearchHelper {
 
         return ret;
     }
+    
+    private static int createFulltextFragment( Matcher m, String fulltext, String searchTerm, int targetFragmentLength, List<String> ret) {
+        int indexOfTerm = m.start();
+        int lastIndex = m.start();
+
+        // fulltextFragment = getTextFragmentFromLine(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
+        String fragment = getTextFragmentRandomized(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
+        // fulltextFragment = getTextFragmentStatic(fulltext, targetFragmentLength, fulltextFragment, searchTerm,
+        // indexOfTerm);
+
+        indexOfTerm = fragment.toLowerCase().indexOf(searchTerm.toLowerCase());
+        int indexOfSpace = fragment.indexOf(' ');
+        if (indexOfTerm > indexOfSpace && indexOfSpace >= 0) {
+            fragment = fragment.substring(indexOfSpace, fragment.length());
+        }
+
+        indexOfTerm = fragment.toLowerCase().indexOf(searchTerm.toLowerCase());
+
+        if (indexOfTerm < fragment.lastIndexOf(' ')) {
+            fragment = fragment.substring(0, fragment.lastIndexOf(' '));
+        }
+
+        indexOfTerm = fragment.toLowerCase().indexOf(searchTerm.toLowerCase());
+        if (indexOfTerm >= 0) {
+            fragment = applyHighlightingToPhrase(fragment, searchTerm);
+            fragment = replaceHighlightingPlaceholders(fragment);
+        }
+        if (StringUtils.isNotBlank(fragment)) {
+            // Check for unclosed HTML tags
+            int lastIndexOfLT = fragment.lastIndexOf('<');
+            int lastIndexOfGT = fragment.lastIndexOf('>');
+            if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
+                fragment = fragment.substring(0, lastIndexOfLT).trim();
+            }
+            // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+            // fulltextFragment = fulltextFragment.replace("<br>", " ");
+            ret.add(fragment);
+        }
+        return lastIndex;
+    }
 
     /**
      * Adds highlighting markup for all given terms to the phrase.
@@ -1096,6 +1124,9 @@ public final class SearchHelper {
 
         String highlightedValue = phrase;
         for (String term : terms) {
+            //remove fuzzy search suffix
+            FuzzySearchTerm fuzzyTerm = new FuzzySearchTerm(term);
+            term = fuzzyTerm.getTerm();
             // Highlighting single-character terms can take a long time, so skip them
             if (term.length() < 2) {
                 continue;
@@ -1103,13 +1134,40 @@ public final class SearchHelper {
             term = SearchHelper.removeTruncation(term);
             String normalizedPhrase = normalizeString(phrase);
             String normalizedTerm = normalizeString(term);
-            if (StringUtils.contains(normalizedPhrase, normalizedTerm)) {
+            if (contains(normalizedPhrase, normalizedTerm, fuzzyTerm.getMaxDistance())) {
                 highlightedValue = SearchHelper.applyHighlightingToPhrase(highlightedValue, term);
                 // logger.trace("highlighted value: {}", highlightedValue);
             }
         }
 
         return highlightedValue;
+    }
+
+    /**
+     * if maxDistance <= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. 
+     * Otherwise check if the phrase contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
+     * 
+     * @param normalizedPhrase
+     * @param normalizedTerm
+     * @param maxDistance
+     * @return
+     */
+    public static boolean contains(String phrase, String term, int maxDistance) {
+        if(maxDistance > 0 && StringUtils.isNoneBlank(phrase, term)) {
+            Matcher matcher = Pattern.compile("[\\w-]+").matcher(phrase);
+            while(matcher.find()) {
+                String word = matcher.group();
+                if(Math.abs(word.length() - term.length()) <= maxDistance) {                    
+                    int distance = new DamerauLevenshtein(word, term).getSimilarity();
+                    if(distance <= maxDistance) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else {
+            return StringUtils.contains(phrase, term);
+        }
     }
 
     /**
@@ -1779,6 +1837,12 @@ public final class SearchHelper {
         return ret;
     }
 
+    /**
+     * Remove '*' at the start or end of the given value
+     * 
+     * @param value
+     * @return
+     */
     public static String removeTruncation(String value) {
         if (StringUtils.isEmpty(value)) {
             return value;
@@ -2048,6 +2112,8 @@ public final class SearchHelper {
                     if (!"*".equals(term)) {
                         term = ClientUtils.escapeQueryChars(term);
                         term = term.replace("\\*", "*");
+                        //unescape fuzzy search token
+                        term = term.replaceAll("\\\\~(\\d)", "~$1");
                         if (phraseSearch) {
                             term = "\"" + term + "\"";
                         }
@@ -2081,7 +2147,7 @@ public final class SearchHelper {
      * @should skip reserved fields
      * @return a {@link java.lang.String} object.
      */
-    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator) {
+    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator, boolean allowFuzzySearch) {
         logger.trace("generateAdvancedExpandQuery");
         if (groups == null || groups.isEmpty()) {
             return "";
@@ -2125,7 +2191,7 @@ public final class SearchHelper {
                             continue;
                         }
                 }
-                String itemQuery = item.generateQuery(new HashSet<String>(), false);
+                String itemQuery = item.generateQuery(new HashSet<String>(), false, allowFuzzySearch);
                 if (StringUtils.isNotEmpty(itemQuery)) {
                     if (sbGroup.length() > 0) {
                         if (orMode) {
@@ -2636,6 +2702,56 @@ public final class SearchHelper {
         }
         return AGGREGATION_QUERY_PREFIX + "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC)" + " +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition
                 + "\"";
+    }
+
+    /**
+     * Adds a fuzzy search token to the given term.
+     * The maximal Damerau-Levenshtein is calculated from term length
+     * 
+     * @param term the search term
+     * @return the given term with a fuzzy search token appended
+     */
+    public static String addFuzzySearchToken(String term, String prefix, String suffix) {
+        int distance = FuzzySearchTerm.calculateOptimalDistance(term);// DataManager.getInstance().getConfiguration().getFuzzySearchDistance();
+        return addFuzzySearchToken(term, distance, prefix, suffix);
+    }
+
+    /**
+     * @param term the search term. Must be a single word
+     * @param distance the maximum Damerau-Levenshtein distance to a matching word. Must be from 0 to 2, where 0 means no fuzzy search
+     * @return
+     */
+    public static String addFuzzySearchToken(String term, int distance, String prefix, String suffix) {
+        if (distance < 0 || distance > 2) {
+            throw new IllegalArgumentException("Edit distance in fuzzy search must be in the range from 0 to 2. The given distance is " + distance);
+        } else if(distance == 0) {
+            return prefix + term + suffix;
+        } else if (StringUtils.isBlank(term) || term.contains(" ")) {
+            throw new IllegalArgumentException(
+                    "For fuzzy search, term must not be empty and must consist only of a single word. The given term is " + term);
+        } else {
+            return FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST
+                    .replace("{t}", term)
+                    .replace("{d}", Integer.toString(distance))
+                    .replace("{p}", StringUtils.isBlank(prefix) ? "" : prefix)
+                    .replace("{s}", StringUtils.isBlank(suffix) ? "" : suffix);
+        }
+    }
+    
+
+    /**
+     * Separate leading and trailing whildcard token ('*') from the actual term and return an array of length 3 
+     * with the values [leadingWildCard, tokenWithoutWildcards, trailingWildcard]
+     * If leading/trailing wildcards are missing, the corresponding array entries are empty strings
+     * 
+     * @param term
+     * @return array of prefix, token, suffix
+     */
+    public static String[] getWildcardsTokens(String term) {
+        String prefix = term.startsWith("*") ? "*" : "";
+        String suffix = term.endsWith("*") ? "*" : "";
+        String cleanedTerm = term.substring(prefix.length(), term.length()-suffix.length());
+        return new String[]{prefix, cleanedTerm, suffix};
     }
 
 }

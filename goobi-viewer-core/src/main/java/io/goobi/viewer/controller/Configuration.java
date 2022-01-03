@@ -5371,4 +5371,8 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalBoolean("webGuiDisplay.displayAnnotationTextInImage", true);
     }
 
+    public boolean isFuzzySearchEnabled() {
+        return getLocalBoolean("search.fuzzy[@enabled]", false);
+    }
+
 }
