@@ -633,7 +633,7 @@ public class AdminBean implements Serializable {
                     logger.warn("userRole not found");
                     return;
                 }
-                
+
                 switch (dirty) {
                     case "save":
                         logger.trace("Saving UserRole: {}", userRole);
@@ -1994,6 +1994,23 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentTranslationGroup(TranslationGroup currentTranslationGroup) {
         this.currentTranslationGroup = currentTranslationGroup;
+    }
+
+    /**
+     * Triggers a mode for adding new message keys to the first LOCAL_STRINGS type group found.
+     */
+    public void triggerNewMessageEntryMode() {
+        List<TranslationGroup> groups = DataManager.getInstance().getConfiguration().getTranslationGroups();
+        for (TranslationGroup group : groups) {
+            if (group.getType().equals(TranslationGroupType.LOCAL_STRINGS) && !group.getItems().isEmpty()) {
+                setCurrentTranslationGroup(group);
+                MessageEntry entry = MessageEntry.create(group.getItems().get(0).getKey().replace(".*", ""), "", ViewerResourceBundle.getAllLocales());
+                entry.setNewEntryMode(true);
+                group.getAllEntries().add(entry);
+                group.setSelectedEntry(entry);
+                return;
+            }
+        }
     }
 
     /**

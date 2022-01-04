@@ -37,14 +37,35 @@
                             <div class="admin__content-wrapper">
                                 <div class="admin__content-main -sticky -refreshHCsticky">
                                     <h3>#{msg.admin__translations}</h3>
+                                    
+                                    <ui:fragment rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
+                                        <div class="admin__default-block">
+                                            <div class="admin__translations-fields form-group form-row">
+                                                <div class="col-3 control-label admin__form-label #{value.displayHighlight ? 'admin__form-label-highlight' : ''}">
+                                                    <label for="value">#{msg.key}:</label>
+                                                </div>
+                                                <div class="col-9 admin__form-input #{value.displayHighlight ? 'admin__form-input-highlight' : ''}">
+                                                    <h:outputText value="#{adminBean.currentTranslationGroup.selectedEntry.keyPrefix}" />
+                                                    <h:inputText value="#{adminBean.currentTranslationGroup.selectedEntry.keySuffix}" id="key" label="key" immediate="true" styleClass="form-control admin__translations-textarea">
+                                                        <f:ajax execute="@form" event="blur" />
+                                                    </h:inputText>
+                                                </div>
+                                                    <div class="col-3 control-label admin__form-label admin__translations-global-hint" />
+                                                    <div class="col-9 admin__translations-global-key-wrapper admin__translations-global-hint">#{msg.admin__translations_global}: <span class="admin__translations-global-key">#{value.globalValue}</span></div>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
+                                    
                                     <div class="admin__default-block">
                                         <fieldset>
-                                            <div class="form-group form-row">
-                                                <div class="col-3 control-label admin__form-label"></div>
-                                                <div class="col-9 admin__form-input">
-                                                    <strong>#{adminBean.currentTranslationGroup.selectedEntry.key}</strong>
+                                            <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
+                                                <div class="form-group form-row">
+                                                    <div class="col-3 control-label admin__form-label"></div>
+                                                    <div class="col-9 admin__form-input">
+                                                        <strong>#{adminBean.currentTranslationGroup.selectedEntry.key}</strong>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </ui:fragment>
                                             <ui:repeat var="value" value="#{adminBean.currentTranslationGroup.selectedEntry.values}">
                                                 <div class="admin__translations-fields form-group form-row">
                                                     <div class="col-3 control-label admin__form-label #{value.displayHighlight ? 'admin__form-label-highlight' : ''}">

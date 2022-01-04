@@ -78,6 +78,7 @@ public class TranslationGroup {
     private Integer fullyTranslatedEntryCount = null;
     private String filterString;
     private Boolean loadError = null;
+    private boolean newEntryMode = false;
 
     /**
      * Factory method.
@@ -161,7 +162,7 @@ public class TranslationGroup {
         // Create and add new message entry, if key yet not in messages
         try {
             List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
-            MessageEntry entry = MessageEntry.create(key, allLocales);
+            MessageEntry entry = MessageEntry.create(null, key, allLocales);
             getAllEntries().add(entry);
             Collections.sort(getAllEntries());
             setSelectedEntry(entry);
@@ -469,6 +470,20 @@ public class TranslationGroup {
     }
 
     /**
+     * @return the newEntryMode
+     */
+    public boolean isNewEntryMode() {
+        return newEntryMode;
+    }
+
+    /**
+     * @param newEntryMode the newEntryMode to set
+     */
+    public void setNewEntryMode(boolean newEntryMode) {
+        this.newEntryMode = newEntryMode;
+    }
+
+    /**
      * Sets the previous {@link MessageEntry} element in the list active.
      */
     public void prevEntry() {
@@ -553,6 +568,7 @@ public class TranslationGroup {
             ViewerResourceBundle.updateLocalMessageKey(selectedEntry.getKey(), value.getValue(), value.getLanguage());
             value.resetDirtyStatus();
         }
+        selectedEntry.setNewEntryMode(false);
     }
 
     /**

@@ -109,7 +109,7 @@ public class JPADAO implements IDAO {
     private EntityManager emGlobal;
     private Object cmsRequestLock = new Object();
     private Object crowdsourcingRequestLock = new Object();
-        
+
     /**
      * <p>
      * Constructor for JPADAO.
@@ -119,38 +119,6 @@ public class JPADAO implements IDAO {
      */
     public JPADAO() throws DAOException {
         this(null);
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>factory</code>.
-     * </p>
-     *
-     * @return a {@link javax.persistence.EntityManagerFactory} object.
-     */
-    public EntityManagerFactory getFactory() {
-        return this.factory;
-    }
-
-    /**
-     * <p>
-     * getEntityManager.
-     * </p>
-     *
-     * @return {@link javax.persistence.EntityManager} for the current thread
-     */
-    EntityManager getEntityManager() {
-        //        if (threadLocalEm.get() == null) {
-        //            threadLocalEm.set(factory.createEntityManager());
-        //        }
-        //
-        //        return threadLocalEm.get();
-
-        if (emGlobal == null) {
-            emGlobal = factory.createEntityManager();
-        }
-
-        return emGlobal;
     }
 
     /**
@@ -186,6 +154,38 @@ public class JPADAO implements IDAO {
             logger.error(e.getMessage(), e);
             throw new DAOException(e.getMessage());
         }
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>factory</code>.
+     * </p>
+     *
+     * @return a {@link javax.persistence.EntityManagerFactory} object.
+     */
+    public EntityManagerFactory getFactory() {
+        return this.factory;
+    }
+
+    /**
+     * <p>
+     * getEntityManager.
+     * </p>
+     *
+     * @return {@link javax.persistence.EntityManager} for the current thread
+     */
+    EntityManager getEntityManager() {
+        //        if (threadLocalEm.get() == null) {
+        //            threadLocalEm.set(factory.createEntityManager());
+        //        }
+        //
+        //        return threadLocalEm.get();
+
+        if (emGlobal == null) {
+            emGlobal = factory.createEntityManager();
+        }
+
+        return emGlobal;
     }
 
     /**
@@ -3805,9 +3805,9 @@ public class JPADAO implements IDAO {
 
         return false;
     }
-    
+
     public void clear() {
-        if (getEntityManager() != null) { 
+        if (getEntityManager() != null) {
             getEntityManager().clear();
         }
     }
