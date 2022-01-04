@@ -9,14 +9,26 @@
     <!-- =======================
         BASE LIBRARIES
     ======================== -->
+    <!--
+        `cssPaths` contains an array for each css library and the core css,
+        each array contains
+        - an identifier that allows excluding libraries from viewer theme template files
+        - an array of templates to exclude (or empty),
+        - a path to the library file:
+        [
+          name,
+          [don't, render, library, here ],
+          path/to/lib
+        ]
+    -->
     <c:set var="cssPaths" value="#{[
 
       ['bootstrap', [], 'resources/css/libs/bs/bootstrap.custom.css'],
       ['jqueryUI', [], 'resources/css/libs/jQueryUI-1.12.1/jquery-ui.min.css'],
       ['jqueryUI.structure', [], 'resources/css/libs/jQueryUI-1.12.1/jquery-ui.structure.min.css'],
+      ['jqueryUI.slider-rtl', ['templateAdmin', 'templateBlank', 'templateArchives', 'templateFullscreen', 'templateCrowdsourcing'], 'resources/css/libs/jquery.ui.slider-rtl.css'],
       ['font-awesome', [], 'resources/css/libs/font-awesome/css/font-awesome.min.css'],
       ['swiper', ['templateBlank', 'templateArchives', 'templateFullscreen', 'templateCrowdsourcing'], 'resources/css/libs/swiper/swiper-bundle.min.css'],
-      ['jqueryUI.slider-rtl', ['templateAdmin', 'templateBlank', 'templateArchives', 'templateFullscreen', 'templateCrowdsourcing'], 'resources/css/libs/jquery.ui.slider-rtl.css'],
       ['sweetalert', [], 'resources/css/libs/sweetalert/sweetalert2.min.css'],
       ['leaflet', [], 'resources/css/libs/leaflet/leaflet.css'],
       ['leflet.extra-markers', [], 'resources/css/libs/leaflet/extra-markers/leaflet.extra-markers.min.css'],
@@ -30,7 +42,9 @@
 
     <!-- INCLUDE CSS IF CONDITIONS ARE MET -->
     <c:forEach var="path" items="#{cssPaths}">
-      <c:if test="#{!path[1].contains(templateName) and !excludeCSS.contains(path[0]) and !excludeCSS.contains('all')}">
+      <!-- include file, if it is not explicitly excluded -->
+      <!-- (either above, or in the excludeCSS variable, which can be set in template files) -->
+      <c:if test="#{!path[1].contains(templateName) and !excludeCSS.contains(path[0])}">
         <link type="text/css" rel="stylesheet" href="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}" />
       </c:if>
     </c:forEach>
@@ -43,10 +57,11 @@
     </c:if>
 
     <!-- SHOW CSS NAMES IN CONSOLE -->
+    <!-- an easy way to log library names to the console, just pass `showCSS` to the excludeCSS variable in a template file -->
     <c:if test="#{excludeCSS.contains('showCSS')}">
       <c:forEach var="path" items="#{cssPaths}">
         <script>
-          console.log('%c#{path[0]}', 'background: #3365a9; color: #fff; padding: 2px 6px; border-radius: 2px;')
+          console.log('%c#{path[0]}', 'background: #3365a9; color: #fff; padding: 2px 6px; border-radius: 2px;');
         </script>
       </c:forEach>
     </c:if>

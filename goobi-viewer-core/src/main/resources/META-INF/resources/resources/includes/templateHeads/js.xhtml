@@ -9,6 +9,19 @@
     <!-- ===============================
         BASE LIBRARIES + CORE MODULES
     ================================ -->
+    <!--
+        `jsPaths` contains one array for each javascript library,
+        each array contains
+        - an identifier that allows excluding libraries from viewer theme template files
+        - an array of templates to exclude (or empty),
+        - a path to the library file:
+        [
+          name,
+          [don't, render, library, here ],
+          path/to/lib
+        ]
+    -->
+
     <c:set var="jsPaths" value="#{[
 
       ['jquery',
@@ -131,12 +144,15 @@
 
     <!-- INCLUDE FILES IF CONDITIONS ARE MET -->
     <c:forEach var="path" items="#{jsPaths}">
-      <c:if test="#{!path[1].contains(templateName) and !excludeJS.contains(path[0]) and !excludeJS.contains('all')}">
+      <!-- include file, if it is not explicitly excluded -->
+      <!-- (either above, or in the excludeJS variable, which can be set in template files) -->
+      <c:if test="#{!path[1].contains(templateName) and !excludeJS.contains(path[0])}">
         <script type="text/javascript" src="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}"></script>
       </c:if>
     </c:forEach>
 
     <!-- SHOW AVAILABLE BIBS AND SCRIPTS IN CONSOLE -->
+    <!-- an easy way to log library names to the console, just pass `showCSS` to the excludeCSS variable in a template file -->
     <c:if test="#{excludeJS.contains('showJS')}">
       <c:forEach var="path" items="#{jsPaths}">
         <script>
