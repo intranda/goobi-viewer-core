@@ -38,6 +38,13 @@
                     <viewerComponent:downloadsStruct/> 
                     
                     <viewerComponent:downloadsPage/>
+                    
+                    <!-- Module contributions -->
+                    <c:forEach var="module" items="#{configurationBean.modules}">
+                        <c:forEach var="contribution" items="#{module.widgetUsageContributions}">
+                            <ui:include src="/#{contribution}" />
+                        </c:forEach>
+                    </c:forEach>
 
 					<!-- CITE -->
 					<viewerComponent:downloadsCitations/>

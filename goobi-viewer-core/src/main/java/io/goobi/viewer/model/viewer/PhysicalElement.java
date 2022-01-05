@@ -19,13 +19,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,6 +31,7 @@ import java.util.stream.Collectors;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
@@ -72,7 +71,6 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
 import io.goobi.viewer.solr.SolrConstants;
@@ -147,6 +145,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private String fullText;
     /** XML document containing the ALTO document for this page. Saved into a variable so it doesn't have to be expensively loaded multiple times. */
     private String altoText;
+    /** ALTO file charset (determined when loading). */
+    private String altoCharset;
     /** Format of the loaded word coordinates XML document. */
     private CoordsFormat wordCoordsFormat = CoordsFormat.UNCHECKED;
     /** Data repository name for the record to which this page belongs. */
@@ -660,6 +660,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         try {
             filename = FileTools.getFilenameFromPathString(getFileName());
         } catch (FileNotFoundException e) {
+            //
         }
         if (StringUtils.isBlank(filename)) {
             return false;
@@ -729,11 +730,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         try {
             filename = FileTools.getFilenameFromPathString(getFulltextFileName());
         } catch (FileNotFoundException e) {
+            //
         }
         if (StringUtils.isBlank(filename)) {
             try {
                 filename = FileTools.getFilenameFromPathString(getAltoFileName());
             } catch (FileNotFoundException e) {
+                //
             }
         }
         if (StringUtils.isBlank(filename)) {
@@ -880,7 +883,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
             // Load XML document
             try {
-                altoText = loadAlto();
+                StringPair alto = loadAlto();
+                altoText = alto.getOne();
+                altoCharset = alto.getTwo();
                 fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
                 fulltextAccessPermission = false;
@@ -891,7 +896,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
         if (StringUtils.isNotEmpty(altoText)) {
             wordCoordsFormat = CoordsFormat.ALTO;
-            String text = ALTOTools.getFulltext(altoText, false, null);
+            String text = ALTOTools.getFulltext(altoText, altoCharset, false, null);
             if (StringUtils.isNotEmpty(text)) {
                 String cleanText = StringTools.stripJS(text);
                 if (cleanText.length() < text.length()) {
@@ -1022,7 +1027,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         if (altoText != null) {
-            return ALTOTools.getWordCoords(altoText, searchTerms, rotation);
+            return ALTOTools.getWordCoords(altoText, altoCharset, searchTerms, rotation);
         }
         wordCoordsFormat = CoordsFormat.NONE;
 
@@ -1032,7 +1037,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * Loads ALTO data for this page via the REST service, if not yet loaded.
      *
-     * @return true if ALTO successfully loaded; false otherwise
+     * @return StringPair(ALTO,charset)
      * @should load and set alto correctly
      * @should set wordCoordsFormat correctly
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
@@ -1042,7 +1047,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public String loadAlto()
+    public StringPair loadAlto()
             throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("loadAlto: {}", altoFileName);
         if (altoFileName == null) {
@@ -1052,20 +1057,22 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         try {
-            altoText = DataFileTools.loadAlto(altoFileName);
+            StringPair alto = DataFileTools.loadAlto(altoFileName);
             //Text from alto is always plain text
             textContentType = "text/plain";
-            if (altoText != null) {
+            if (alto != null) {
+                altoText = alto.getOne();
+                altoCharset = alto.getTwo();
                 wordCoordsFormat = CoordsFormat.ALTO;
             }
-            return altoText;
+            return alto;
         } catch (ContentNotFoundException e) {
             logger.error(e.getMessage());
         } catch (PresentationException e) {
             logger.error(e.getMessage());
         }
 
-        return "";
+        return new StringPair("", null);
     }
 
     /**
@@ -1536,7 +1543,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CrowdsourcingAnnotation> getComments() throws DAOException {
-        List<CrowdsourcingAnnotation> comments = DataManager.getInstance().getDao().getAnnotationsForTarget(this.pi, this.order, Motivation.COMMENTING);
+        List<CrowdsourcingAnnotation> comments =
+                DataManager.getInstance().getDao().getAnnotationsForTarget(this.pi, this.order, Motivation.COMMENTING);
         Collections.sort(comments, (c1, c2) -> c1.getDateCreated().compareTo(c2.getDateCreated()));
         //        Collections.reverse(comments);
         return comments;
@@ -1577,6 +1585,33 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public String getAltoText() {
         return altoText;
+    }
+
+    /**
+     * 
+     * @param load If true, ALTO will be loaded if altoText is null
+     * @return
+     * @throws ViewerConfigurationException
+     */
+    public String getAltoText(boolean load) throws ViewerConfigurationException {
+        if (altoText == null && fulltextAccessPermission == null && load) {
+            try {
+                loadAlto();
+            } catch (AccessDeniedException e) {
+                    fulltextAccessPermission = false;
+                } catch (JDOMException | IOException | IndexUnreachableException | DAOException e) {
+                    logger.error(e.getMessage(), e);
+                }
+        }
+
+        return altoText;
+    }
+
+    /**
+     * @return the altoCharset
+     */
+    public String getAltoCharset() {
+        return altoCharset;
     }
 
     /**

@@ -80,6 +80,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.export.ExcelExport;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.Location;
@@ -199,7 +200,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Required setter for ManagedProperty injection
+     * Required setter for ManagedProperty injection TODO Is it, though?
      *
      * @param navigationHelper the navigationHelper to set
      */
@@ -2204,7 +2205,12 @@ public class SearchBean implements SearchInterface, Serializable {
                             public Boolean call() {
                                 try {
                                     logger.debug("Writing excel");
-                                    return writeExcelSheet(facesContext, wb);
+                                    ExcelExport export = new ExcelExport();
+                                    export.setWorkbook(wb);
+                                    return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
+                                } catch (IOException e) {
+                                    logger.error(e.getMessage(), e);
+                                    return false;
                                 } finally {
                                     facesContext.responseComplete();
                                 }
@@ -2234,7 +2240,7 @@ public class SearchBean implements SearchInterface, Serializable {
         try {
             Task excelCreationJob = new Task(new TaskParameter(TaskType.SEARCH_EXCEL_EXPORT), task);
             Long jobId = DataManager.getInstance().getRestApiJobManager().addTask(excelCreationJob);
-            Future ready = DataManager.getInstance()
+            Future<?> ready = DataManager.getInstance()
                     .getRestApiJobManager()
                     .triggerTaskInThread(jobId, (HttpServletRequest) facesContext.getExternalContext().getRequest());
             ready.get(timeout, TimeUnit.SECONDS);
@@ -2259,26 +2265,6 @@ public class SearchBean implements SearchInterface, Serializable {
             this.downloadReady = null;
         }
         return "";
-    }
-
-    /**
-     * @param facesContext
-     * @param wb
-     * @throws IOException
-     */
-    private static boolean writeExcelSheet(final FacesContext facesContext, final SXSSFWorkbook wb) {
-        try {
-            wb.write(facesContext.getExternalContext().getResponseOutputStream());
-            if (Thread.interrupted()) {
-                return false;
-            }
-            return true;
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e.getCause());
-            return false;
-        } finally {
-            wb.dispose();
-        }
     }
 
     /**

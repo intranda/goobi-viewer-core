@@ -73,6 +73,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -2515,7 +2516,7 @@ public final class SearchHelper {
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
             throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         SXSSFWorkbook wb = new SXSSFWorkbook(25);
-        SXSSFSheet currentSheet = wb.createSheet("intranda_viewer_search");
+        SXSSFSheet currentSheet = wb.createSheet("Goobi_viewer_search");
 
         CellStyle styleBold = wb.createCellStyle();
         Font font2 = wb.createFont();
@@ -2539,13 +2540,17 @@ public final class SearchHelper {
 
         // Title row
         SXSSFRow row = currentSheet.createRow(currentRowIndex++);
-        for (String field : DataManager.getInstance().getConfiguration().getSearchExcelExportFields()) {
+        for (ExportFieldConfiguration field : DataManager.getInstance().getConfiguration().getSearchExcelExportFields()) {
             SXSSFCell cell = row.createCell(currentCellIndex++);
             cell.setCellStyle(styleBold);
-            cell.setCellValue(new XSSFRichTextString(ViewerResourceBundle.getTranslation(field, locale)));
+            cell.setCellValue(new XSSFRichTextString(ViewerResourceBundle.getTranslation(field.getField(), locale)));
         }
 
-        List<String> exportFields = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();
+        List<ExportFieldConfiguration> exportFields = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();
+        List<String> exportFieldNames = new ArrayList<>(exportFields.size());
+        for (ExportFieldConfiguration field : exportFields) {
+            exportFieldNames.add(field.getField());
+        }
         long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(finalQuery, filterQueries);
         int batchSize = 100;
         int totalBatches = (int) Math.ceil((double) totalHits / batchSize);
@@ -2558,16 +2563,16 @@ public final class SearchHelper {
             }
             logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
             List<SearchHit> batch =
-                    searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields,
+                    searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFieldNames,
                             locale);
 
             for (SearchHit hit : batch) {
                 // Create row
                 currentCellIndex = 0;
                 row = currentSheet.createRow(currentRowIndex++);
-                for (String field : exportFields) {
+                for (ExportFieldConfiguration field : exportFields) {
                     SXSSFCell cell = row.createCell(currentCellIndex++);
-                    String value = hit.getExportMetadata().get(field);
+                    String value = hit.getExportMetadata().get(field.getField());
                     cell.setCellValue(new XSSFRichTextString(value != null ? value : ""));
                 }
             }
