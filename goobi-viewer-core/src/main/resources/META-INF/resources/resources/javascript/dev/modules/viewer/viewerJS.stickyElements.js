@@ -27,19 +27,11 @@ var viewerJS = ( function( viewer ) {
     'use strict';
 
 	var _debug = true;    
-    
+     
     viewer.stickyElements = {
+    	initialized: false,
 		refresh: new rxjs.Subject(),
-		init: function(config) {
-
-			if(_debug) {
-				console.log( '##############################' );
-		        console.log( 'viewer.stickyElements.init' );
-		        console.log( '##############################' );
-		        console.log( 'viewer.stickyElements.init: config - ' );
-		        console.log( config );
-			}
-
+		initRefresh: function() {
 			this.refresh
 			.pipe(rxjs.operators.delay(0))
 	        .subscribe(() => {
@@ -51,52 +43,73 @@ var viewerJS = ( function( viewer ) {
 			* Refresh hcsticky after ajax requests
 			**/
 			viewerJS.jsfAjax.success.subscribe(this.refresh);
-			
-			// STICKY ELEMENTS TARGETS AND OPTIONS
-			// sticky admin main menu sidebar left side
-			if ($(".admin__sidebar").length) {
-				$(".admin__sidebar-inner").hcSticky({
-					stickTo: $('.admin')[0],
-					innerTop: 0
-				});
+		},
+		init: function(config) {
+
+			if(_debug) {
+				console.log( '##############################' );
+		        console.log( 'viewer.stickyElements.init' );
+		        console.log( '##############################' );
+		        console.log( 'viewer.stickyElements.init: config - ' );
+		        console.log( config );
+		        console.log( '##############################' );
+		        console.log( 'viewer.stickyElements.init: initialized - ' );
+		        console.log( this.initialized );
 			}
 
-			// general sticky element for admin backend - sticks to selector .admin__content-wrapper
-			if ($(".admin__sidebar").length) {
-				$('.-sticky').hcSticky({
-					stickTo: $('.admin__content-wrapper')[0],
-					innerTop: -50,
-					bottom: 0
-				});
-			}
-
-			// sticky content main area for create campaign
-			if ($("#crowdAddCampaignView").length) {
-				$('#crowdAddCampaignView .admin__content-main').hcSticky({
-					stickTo: $('.admin__content-wrapper')[0],
-					innerTop: -50
-				});
+			if(!this.initialized) {
+				this.initRefresh();
+				this.initialized = true;
 			}
 			
-			// toggle collapseable widgets
-       		$('body').on('click', '.widget__title.collapseable', function () {
-//	            	window.scrollTo(0,0);
-	            $(this).toggleClass('in').next().slideToggle(300, function() {
-	            	var pos = $(this).position().top;
-		       		var offset = $(this).offset().top;
-		       		var currentPos = document.documentElement.scrollTop;
-		       		if(currentPos > pos) {
-	            		window.scrollTo(0,pos);
-					}		       		
-     				viewerJS.stickyElements.refresh.next();
-				});
-			});
+			if(config.initAdmin) {
+				// STICKY ELEMENTS TARGETS AND OPTIONS
+				// sticky admin main menu sidebar left side
+				if ($(".admin__sidebar").length) {
+					$(".admin__sidebar-inner").hcSticky({
+						stickTo: $('.admin')[0],
+						innerTop: 0
+					});
+				}
+	
+				// general sticky element for admin backend - sticks to selector .admin__content-wrapper
+				if ($(".admin__sidebar").length) {
+					$('.-sticky').hcSticky({
+						stickTo: $('.admin__content-wrapper')[0],
+						innerTop: -50,
+						bottom: 0
+					});
+				}
+				
+				// sticky content main area for create campaign
+				if ($("#crowdAddCampaignView").length) {
+					$('#crowdAddCampaignView .admin__content-main').hcSticky({
+						stickTo: $('.admin__content-wrapper')[0],
+						innerTop: -50
+					});
+				}
+			}
 			
-			// sticky sidebar
-		 	$('[data-target="sticky-sidebar"]').hcSticky({
-		    	top: 100,
-		 	});	
-
+			if(config.initFrontend) {
+				// toggle collapseable widgets
+	       		$('body').on('click', '.widget__title.collapseable', function () {
+	//	            	window.scrollTo(0,0);
+		            $(this).toggleClass('in').next().slideToggle(300, function() {
+		            	var pos = $(this).position().top;
+			       		var offset = $(this).offset().top;
+			       		var currentPos = document.documentElement.scrollTop;
+			       		if(currentPos > pos) {
+		            		window.scrollTo(0,pos);
+						}		       		
+	     				viewerJS.stickyElements.refresh.next();
+					});
+				});
+				
+				// sticky sidebar
+			 	$('[data-target="sticky-sidebar"]').hcSticky({
+			    	top: 100,
+			 	});	
+			}
 		},
 
 	};

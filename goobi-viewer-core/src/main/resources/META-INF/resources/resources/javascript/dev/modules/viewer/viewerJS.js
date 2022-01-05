@@ -96,9 +96,7 @@ var viewerJS = (function () {
         viewerJS.initFragmentActions();
        
         viewerJS.initRequiredInputs();
-        
-        viewerJS.stickyElements.init();
-       
+               
         // init bookmarks if enabled
         if ( bookmarksEnabled ) { 
             viewerJS.bookmarks.init( {
