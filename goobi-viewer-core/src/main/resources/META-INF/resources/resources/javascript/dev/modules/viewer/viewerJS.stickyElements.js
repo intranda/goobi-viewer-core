@@ -43,15 +43,15 @@ var viewerJS = ( function( viewer ) {
 			this.refresh
 			.pipe(rxjs.operators.delay(0))
 	        .subscribe(() => {
-	        	console.log("refresh hcSticky rx");
-	        	$(document).ready(() => $(".-refreshHCsticky").hcSticky('refresh', {}));
+	        	if(_debug)console.log("refresh hcSticky rx");
+	        	$(document).ready(() => $(".-sticky, .-refreshHCsticky").hcSticky('refresh', {}));
 	        });
 			
 			/**
 			* Refresh hcsticky after ajax requests
 			**/
 			viewerJS.jsfAjax.success.subscribe(this.refresh);
-
+			
 			// STICKY ELEMENTS TARGETS AND OPTIONS
 			// sticky admin main menu sidebar left side
 			if ($(".admin__sidebar").length) {
@@ -80,11 +80,22 @@ var viewerJS = ( function( viewer ) {
 			
 			// toggle collapseable widgets
        		$('body').on('click', '.widget__title.collapseable', function () {
+//	            	window.scrollTo(0,0);
 	            $(this).toggleClass('in').next().slideToggle(300, function() {
-					console.log('promise nach jquery animation aufklappen');
+	            	var pos = $(this).position().top;
+		       		var offset = $(this).offset().top;
+		       		var currentPos = document.documentElement.scrollTop;
+		       		if(currentPos > pos) {
+	            		window.scrollTo(0,pos);
+					}		       		
      				viewerJS.stickyElements.refresh.next();
 				});
 			});
+			
+			// sticky sidebar
+		 	$('[data-target="sticky-sidebar"]').hcSticky({
+		    	top: 100,
+		 	});	
 
 		},
 

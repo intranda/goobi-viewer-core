@@ -97,9 +97,7 @@ var viewerJS = (function () {
        
         viewerJS.initRequiredInputs();
         
-           
-	    console.log("init sticky", viewerJS.stickyElements);
-	    viewerJS.stickyElements.init();
+        viewerJS.stickyElements.init();
        
         // init bookmarks if enabled
         if ( bookmarksEnabled ) { 
