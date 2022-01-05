@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -53,6 +54,8 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.cache.CacheUtils;
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -60,7 +63,6 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
-import de.unigoettingen.sub.commons.util.CacheUtils;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -90,10 +92,11 @@ public class UserAvatarResource extends ImageResource {
 
     private static final String FILENAME_TEMPLATE = "user_{id}";
 
+    @Inject
     public UserAvatarResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Parameter(description = "User id") @PathParam("userId") Long userId) throws WebApplicationException, ViewerConfigurationException {
-        super(context, request, response, "", getMediaFileUrl(userId).toString());
+            @Parameter(description = "User id") @PathParam("userId") Long userId, ContentServerCacheManager cacheManager) throws WebApplicationException, ViewerConfigurationException {
+        super(context, request, response, "", getMediaFileUrl(userId).toString(), cacheManager);
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         if (urls == null) {
             throw new ViewerConfigurationException("Could not initioalize API manager, check configuration.");
