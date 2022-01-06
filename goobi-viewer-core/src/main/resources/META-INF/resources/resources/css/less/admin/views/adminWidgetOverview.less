@@ -1,0 +1,46 @@
+/* ==============================================================
+
+   ==============================================================*/
+
+.cms-widgets-overview {
+	&__grid {
+		display: grid; 
+		grid-auto-rows: 1fr; 
+		grid-template-columns: 1fr 1fr 1fr 1fr; 
+		grid-template-rows: repeat(1fr);
+		gap: 25px 25px; 
+		grid-template-areas: ". . . .";
+	}
+	&__single-widget-title{
+	}
+	&__single-widget-title-name {
+		padding-right: 1rem;
+	}
+	&__single-widget-title-type {
+		font-size: 12px;
+		color: #ddd;
+	}
+	&__single-widget-info-label {
+		flex: 0 0 140px;
+		max-width: 140px;
+	}
+	&__single-widget-info-type,
+	&__single-widget-info-used,
+	&__single-widget-info-additional-field {
+		display: flex;
+		margin-bottom: 1rem;
+	}
+}
+
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

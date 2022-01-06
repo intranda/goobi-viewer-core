@@ -1005,6 +1005,16 @@
         <view-id value="/resources/cms/adminCmsGeoMapEdit.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <url-mapping id="adminCmsWidgetsAdd">
+        <pattern value="/admin/cms/widgets/new/" />
+        <view-id value="/resources/cms/adminCmsWidgetsAdd.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsWidgetsOverview">
+        <pattern value="/admin/cms/widgets/overview/" />
+        <view-id value="/resources/cms/adminCmsWidgetsOverview.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 
 	<!-- CMS -->
 	<url-mapping id="cmsOpenPage1">

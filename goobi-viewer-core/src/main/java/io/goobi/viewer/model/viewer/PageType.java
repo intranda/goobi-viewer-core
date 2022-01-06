@@ -78,6 +78,8 @@ public enum PageType {
     //admin/cms
     adminCms("admin/cms"),
     adminCmsOverview("admin/cms/pages"),
+    adminCmsWidgetsOverview("admin/cms/widgets/overview"),
+    adminCmsWidgetsAdd("admin/cms/widgets/new"),
     adminCmsSelectTemplate("admin/cms/pages/templates"),
     adminCmsNewPage("admin/cms/pages/new"),
     adminCmsCategories("admin/cms/categories"),
