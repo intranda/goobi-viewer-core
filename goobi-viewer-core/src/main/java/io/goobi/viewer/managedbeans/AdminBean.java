@@ -51,7 +51,8 @@ import org.omnifaces.cdi.PushContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.util.CacheUtils;
+import de.unigoettingen.sub.commons.cache.CacheUtils;
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -131,6 +132,8 @@ public class AdminBean implements Serializable {
     private Role memberRole;
 
     private Part uploadedAvatarFile;
+    
+    private CacheUtils cacheUtils = new CacheUtils(ContentServerCacheManager.getInstance());
 
     /**
      * <p>
@@ -1662,7 +1665,7 @@ public class AdminBean implements Serializable {
      * @return a int.
      */
     public int deleteFromCache(List<String> identifiers, boolean fromContentCache, boolean fromThumbnailCache) {
-        return CacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache);
+        return cacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache);
     }
 
     /**
@@ -1677,7 +1680,7 @@ public class AdminBean implements Serializable {
      * @return a int.
      */
     public int deleteFromCache(List<String> identifiers, boolean fromContentCache, boolean fromThumbnailCache, boolean fromPdfCache) {
-        return CacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache, fromPdfCache);
+        return cacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache, fromPdfCache);
     }
 
     /**

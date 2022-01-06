@@ -52,12 +52,7 @@ public class Application extends ResourceConfig {
                 String apiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
                 apiUrl = apiUrl.replace("/rest", "/api/v1");
                 bind(new ApiUrls(apiUrl)).to(ApiUrls.class);
-                register(new AbstractBinder() {
-                    @Override
-                    protected void configure() {
-                        bind(ContentServerCacheManager.getInstance()).to(ContentServerCacheManager.class);
-                    }
-                });
+                bind(ContentServerCacheManager.getInstance()).to(ContentServerCacheManager.class);
             }
         };
         this.init(binder, servletConfig);
@@ -71,6 +66,12 @@ public class Application extends ResourceConfig {
     public Application(AbstractBinder binder) {
         super();
         this.init(binder, new HttpServlet() {
+        });
+        register(new AbstractBinder() {
+            @Override
+            protected void configure() {
+                bind(ContentServerCacheManager.getInstance()).to(ContentServerCacheManager.class);
+            }
         });
     }
     

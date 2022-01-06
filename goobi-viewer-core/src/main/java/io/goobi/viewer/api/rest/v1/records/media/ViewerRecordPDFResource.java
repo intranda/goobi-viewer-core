@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -29,6 +30,7 @@ import javax.ws.rs.core.StreamingOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
@@ -55,8 +57,9 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     public ViewerRecordPDFResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) throws ContentLibException {
-        super(context, request, response, "pdf", pi + ".xml");
+            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+            @Context ContentServerCacheManager cacheManager) throws ContentLibException {
+        super(context, request, response, "pdf", pi + ".xml", cacheManager);
         this.filename = pi + ".pdf";
         request.setAttribute("pi", pi);
     }

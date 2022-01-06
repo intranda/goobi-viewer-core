@@ -15,7 +15,8 @@
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -31,7 +32,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -84,7 +84,7 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(url));
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename);
+        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename, null);
         String resourceURI = resource.getResourceURI().toString();
         assertEquals(url, resourceURI);
     }
@@ -107,7 +107,7 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(imageUrl));
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename);
+        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename, null);
         String resourceURI = resource.getResourceURI().toString();
         assertTrue(resourceURI.startsWith(apiUrl));
         assertTrue(resourceURI + " should contain " + filenameEnc, resourceURI.contains(filenameEnc));

@@ -19,14 +19,13 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_IMAGE;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -41,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.image.v3.ImageInformation3;
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -60,12 +60,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 @CORSBinding
 public class CMSMediaImageResource3 extends ImageResource {
 
-    
     public CMSMediaImageResource3(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context ApiUrls urls,
-            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) throws UnsupportedEncodingException {
-        super(context, request, response, "", getMediaFileUrl(filename).toString());
+            @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
+            @Context ContentServerCacheManager cacheManager) throws UnsupportedEncodingException {
+        super(context, request, response, "", getMediaFileUrl(filename).toString(), cacheManager);
         request.setAttribute("filename", this.imageURI.toString());
         request.setAttribute(ImageResource.IIIF_VERSION, "3.0");
 

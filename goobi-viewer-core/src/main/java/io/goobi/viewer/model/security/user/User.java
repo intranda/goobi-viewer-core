@@ -62,6 +62,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
@@ -1721,7 +1722,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         String fileName = Paths.get(uploadedFile.getSubmittedFileName()).getFileName().toString(); // MSIE fix.
         Path destFile = UserAvatarResource.getAvatarFilePath(fileName, getId());
         deleteAvatarFile();
-        UserAvatarResource.removeFromImageCache(destFile);
+        UserAvatarResource.removeFromImageCache(destFile, ContentServerCacheManager.getInstance());
         try (InputStream initialStream = uploadedFile.getInputStream()) {
             if(!Files.isDirectory(destFile.getParent())) {
                 Files.createDirectories(destFile.getParent());

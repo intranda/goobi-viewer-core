@@ -92,10 +92,12 @@ public class UserAvatarResource extends ImageResource {
 
     private static final String FILENAME_TEMPLATE = "user_{id}";
 
-    @Inject
     public UserAvatarResource(
-            @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Parameter(description = "User id") @PathParam("userId") Long userId, ContentServerCacheManager cacheManager) throws WebApplicationException, ViewerConfigurationException {
+            @Context ContainerRequestContext context, 
+            @Context HttpServletRequest request, 
+            @Context HttpServletResponse response,
+            @Parameter(description = "User id") @PathParam("userId") Long userId, 
+            @Context ContentServerCacheManager cacheManager) throws WebApplicationException, ViewerConfigurationException {
         super(context, request, response, "", getMediaFileUrl(userId).toString(), cacheManager);
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         if (urls == null) {
@@ -208,7 +210,7 @@ public class UserAvatarResource extends ImageResource {
             if (Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
                 logger.debug("Successfully downloaded file {}", mediaFile);
                 //upload successful. TODO: check file integrity?
-                removeFromImageCache(mediaFile);
+                removeFromImageCache(mediaFile, this.cacheManager);
                 return Response.status(Status.OK).build();
             }
             String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
@@ -258,9 +260,9 @@ public class UserAvatarResource extends ImageResource {
         return Optional.of(user);
     }
 
-    public static void removeFromImageCache(Path file) {
+    public static void removeFromImageCache(Path file, ContentServerCacheManager cacheManager) {
         String identifier = file.getParent().getFileName().toString() + "_" + file.getFileName().toString().replace(".", "-");
-        CacheUtils.deleteFromCache(identifier, true, true);
+        new CacheUtils(cacheManager).deleteFromCache(identifier, true, true);
     }
 
 }

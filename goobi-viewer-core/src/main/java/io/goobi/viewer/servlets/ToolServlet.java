@@ -30,7 +30,8 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.util.CacheUtils;
+import de.unigoettingen.sub.commons.cache.CacheUtils;
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.Version;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -47,6 +48,8 @@ public class ToolServlet extends HttpServlet implements Serializable {
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(ToolServlet.class);
 
+    private ContentServerCacheManager cacheManager = ContentServerCacheManager.getInstance();
+    
     /** {@inheritDoc} */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -88,7 +91,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
         if (action != null) {
             switch (action) {
                 case "emptyCache":
-                    int deleted = CacheUtils.deleteFromCache(identifier, fromContentCache, fromThumbnailCache, fromPdfCache);
+                    int deleted = new CacheUtils(cacheManager).deleteFromCache(identifier, fromContentCache, fromThumbnailCache, fromPdfCache);
                     response.getWriter().write(deleted + " cache elements belonging to '" + StringEscapeUtils.escapeHtml4(identifier) + "' deleted.");
                     break;
                 case "fillCache":

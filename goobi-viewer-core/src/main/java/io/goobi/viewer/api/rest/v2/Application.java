@@ -25,6 +25,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.EhCacheShutdownListener;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
@@ -52,14 +53,10 @@ public class Application extends ResourceConfig {
                 String apiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
                 apiUrl = apiUrl.replace("/rest", "/api/v2").replace("/api/v1", "/api/v2");
                 bind(new ApiUrls(apiUrl)).to(ApiUrls.class);
-                register(new AbstractBinder() {
-                    @Override
-                    protected void configure() {
-                        bind(ContentServerCacheManager.getInstance()).to(ContentServerCacheManager.class);
-                    }
-                });
+                bind(ContentServerCacheManager.getInstance()).to(ContentServerCacheManager.class);
             }
         };
+//        register(new EhCacheShutdownListener());
         this.init(binder, servletConfig);
     }
 
@@ -71,6 +68,12 @@ public class Application extends ResourceConfig {
     public Application(AbstractBinder binder) {
         super();
         this.init(binder, new HttpServlet() {
+        });
+        register(new AbstractBinder() {
+            @Override
+            protected void configure() {
+                bind(ContentServerCacheManager.getInstance()).to(ContentServerCacheManager.class);
+            }
         });
     }
     
