@@ -47,6 +47,9 @@
                             <div class="cms-widgets-overview__grid">
                                 <!--  INDIVIDUAL IP RANGES -->
                                 <ui:repeat var="ipRange" value="#{adminBean.allIpRanges}">
+                                
+                                
+                                <div class="cms-widgets-overview__single-widget-wrapper">
                                     <div class="admin__boxed-entry">
 
                                     	<!-- TITLE -->
@@ -97,12 +100,6 @@
 												
 											</div>
 										</ui:fragment>
-										
-										
-										
-
-
-
 
 
 										</div>
@@ -124,6 +121,12 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
+									<div class="admin__language-tabs">
+										<viewerComponent:localeSelector object="#{termsOfUseBean}" />
+									</div>
+                                    </div>
+
                                 </ui:repeat>
                             </div>
 						
