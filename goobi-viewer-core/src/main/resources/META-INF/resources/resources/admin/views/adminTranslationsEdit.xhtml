@@ -30,10 +30,13 @@
                             
                         
                         <div class="admin__content-inner-content">
-                            <!-- INFO TEXT -->
-                            <div class="admin__info-text">
-                                <h:outputText value="#{msg.admin__translations_edit_description}" escape="false" />
-                            </div>
+                            <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
+                                <!-- INFO TEXT -->
+                                <div class="admin__info-text">
+                                    <h:outputText value="#{msg.admin__translations_edit_description}" escape="false" />
+                                </div>
+                            </ui:fragment>
+                            
                             <div class="admin__content-wrapper">
                                 <div class="admin__content-main -sticky -refreshHCsticky">
                                     <h3>#{msg.admin__translations}</h3>
@@ -50,8 +53,8 @@
                                                         <f:ajax render="@form" event="blur" />
                                                     </h:inputText>
                                                 </div>
-                                                    <div class="col-3 control-label admin__form-label admin__translations-global-hint" />
-                                                    <div class="col-9 admin__translations-global-key-wrapper admin__translations-global-hint">#{msg.admin__translations_global}: <span class="admin__translations-global-key">#{value.globalValue}</span></div>
+                                                <div class="col-3 control-label admin__form-label admin__translations-global-hint" />
+                                                <div class="col-9 admin__translations-global-key-wrapper admin__translations-global-hint">#{msg.admin__translations_global}: <span class="admin__translations-global-key">#{value.globalValue}</span></div>
                                             </div>
                                         </div>
                                     </ui:fragment>
