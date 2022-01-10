@@ -48,7 +48,34 @@
 		gap: 25px 25px; 
 		grid-template-areas: ". . . .";
 	}
-	&__single-widget-title{
+	&__single-widget-title-wrapper {
+		display: flex;
+		justify-content: space-between;
+	}
+	&__single-widget-title {
+	}
+	&__single-widget-title-indicator {
+		.nav {
+			flex-wrap: wrap;
+		}
+		.nav-tabs {
+			border-bottom: unset;
+		}
+		.nav-tabs li a {
+			display: none;
+		}
+		.admin__language-tab {
+			width: 8px;
+			height: 8px;
+			background: @middlegray;
+			margin-right: 5px;
+			&:last-child {
+				margin-right: 0;
+			}
+			&.-already-translated {
+				background: @greenBar;
+			}
+		}
 	}
 	&__single-widget-title-name {
 		padding-right: 1rem;
