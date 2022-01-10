@@ -425,6 +425,14 @@ public class TranslationGroup {
     }
 
     /**
+     * Sets selectedEntry to null without prior saving.
+     */
+    public void resetSelectedEntry() {
+        this.selectedEntry = null;
+        this.selectedEntryIndex = 0;
+    }
+
+    /**
      * @return the selectedMessageEntryIndex
      */
     public int getSelectedEntryIndex() {

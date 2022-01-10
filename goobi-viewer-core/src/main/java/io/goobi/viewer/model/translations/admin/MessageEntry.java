@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
@@ -221,6 +223,14 @@ public class MessageEntry implements Comparable<MessageEntry> {
      */
     public void setKeySuffix(String keySuffix) {
         this.keySuffix = keySuffix;
+    }
+    
+    /**
+     * 
+     * @return true if keySuffix blank; false otherwise
+     */
+    public boolean isKeySuffixBlank() {
+        return StringUtils.isBlank(keySuffix);
     }
 
     /**

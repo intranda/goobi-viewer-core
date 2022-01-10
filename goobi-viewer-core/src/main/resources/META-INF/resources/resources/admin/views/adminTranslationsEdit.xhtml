@@ -47,7 +47,7 @@
                                                 <div class="col-9 admin__form-input #{value.displayHighlight ? 'admin__form-input-highlight' : ''}">
                                                     <h:outputText value="#{adminBean.currentTranslationGroup.selectedEntry.keyPrefix}" />
                                                     <h:inputText value="#{adminBean.currentTranslationGroup.selectedEntry.keySuffix}" id="key" label="key" immediate="true" styleClass="form-control admin__translations-textarea">
-                                                        <f:ajax execute="@form" event="blur" />
+                                                        <f:ajax render="@form" event="blur" />
                                                     </h:inputText>
                                                 </div>
                                                     <div class="col-3 control-label admin__form-label admin__translations-global-hint" />
@@ -85,32 +85,55 @@
                                     </div>
                                     
                                     
-
-
-	                                    
-	                                    
                                     
 		                            <div class="row no-gutters justify-content-end admin__final-actions">
-	                                    <!-- RETURN BUTTON -->
-	                                    <h:outputLink styleClass="btn admin__cancel-button" value="#{navigationHelper.applicationUrl}admin/translations/">
-	                                        #{msg.admin__translations_return_to_overview}
-	                                    </h:outputLink>
+		                                
+		                                <ui:fragment rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
+                                            <!-- CANCEL BUTTON -->
+                                             <h:commandButton styleClass="btn admin__cancel-button" value="#{msg.button__abort}"
+                                                action="#{adminBean.cancelSelectedMessageEntryAction}">
+                                            </h:commandButton>
+                                            <!-- SAVE BUTTON -->
+                                            <h:commandButton styleClass="btn btn--default mr-3" value="#{msg.button__save}"
+                                                action="#{adminBean.saveSelectedMessageEntryAction}"
+                                                disabled="#{adminBean.currentTranslationGroup.selectedEntry.keySuffixBlank}">
+                                            </h:commandButton>
+		                                </ui:fragment>
+		                                
+		                                <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
+	                                       <!-- RETURN BUTTON -->
+	                                       <h:outputLink styleClass="btn admin__cancel-button" value="#{navigationHelper.applicationUrl}admin/translations/">
+	                                           #{msg.admin__translations_return_to_overview}
+	                                       </h:outputLink>
+	                                       <!-- PREVIOUS BUTTON -->
+	                                       <h:commandButton styleClass="btn btn--default mr-3" value="#{msg.admin__translations_entry_previous}"
+	                                           action="#{adminBean.currentTranslationGroup.prevEntry}">
+	                                           <f:ajax render="@form" />
+	                                       </h:commandButton>
+	                                       <!-- NEXT BUTTON -->
+	                                       <h:commandButton styleClass="btn btn--full" value="#{msg.admin__translations_entry_next}"
+	                                           action="#{adminBean.currentTranslationGroup.nextEntry}">
+	                                           <f:ajax render="@form" />
+	                                       </h:commandButton>
 	                                    
-	                                    <!-- PREVIOUS BUTTON -->
-	                                    <h:commandButton styleClass="btn btn--default mr-3" value="#{msg.admin__translations_entry_previous}"
-	                                        action="#{adminBean.currentTranslationGroup.prevEntry}">
-	                                        <f:ajax render="@form" />
-	                                    </h:commandButton>
-	                                    
-	                                    <!-- NEXT BUTTON -->
-	                                    <h:commandButton styleClass="btn btn--full" value="#{msg.admin__translations_entry_next}"
-	                                        action="#{adminBean.currentTranslationGroup.nextEntry}">
-	                                        <f:ajax render="@form" />
-	                                    </h:commandButton>
+	                                    </ui:fragment>
 		                            </div>
                                     
                                 </div>
                             <div class="admin__content-side">
+                            
+                            <ui:fragment rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
+                                <!-- NEW KEY INFOBOX -->
+                                <div class="admin__default-block">
+                                    <h3>#{msg.admin__translations_did_you_know}</h3>
+                                    <div class="admin__form-help-text in mb-2">
+                                        Lorem ipsum dolor sit amet...
+                                    </div>
+
+                                </div>
+                            </ui:fragment>
+                            
+                            <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                 <div class="admin__default-block">
                                     <h3 class="admin__sidebar-progress-header">#{msg.label__crowdsourcing_campaign_progress} <span class="admin__sidebar-progress-count">(#{adminBean.currentTranslationGroup.fullyTranslatedEntryCount} #{msg.of} #{adminBean.currentTranslationGroup.entryCount})</span></h3>
                                		<div class="admin__sidebar-progressbar">
@@ -159,6 +182,8 @@
 	                                    </ui:repeat>
 									</h:panelGroup>
                                 </div>
+                            </ui:fragment>
+                            
                             </div>
                             </div>
                         </div>

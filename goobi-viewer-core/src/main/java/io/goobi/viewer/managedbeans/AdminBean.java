@@ -1995,7 +1995,7 @@ public class AdminBean implements Serializable {
     public void setCurrentTranslationGroup(TranslationGroup currentTranslationGroup) {
         this.currentTranslationGroup = currentTranslationGroup;
     }
-    
+
     /**
      * 
      * @return true if at least one LOCAL_STRINGS type group is found in config; false otherwise
@@ -2021,11 +2021,39 @@ public class AdminBean implements Serializable {
                 MessageEntry entry =
                         MessageEntry.create(group.getItems().get(0).getKey().replace(".*", ""), "", ViewerResourceBundle.getAllLocales());
                 entry.setNewEntryMode(true);
-                group.getAllEntries().add(entry);
+                //                group.getAllEntries().add(entry);
                 group.setSelectedEntry(entry);
                 return;
             }
         }
+    }
+
+    /**
+     * Saves currently selected message entry in the current translation group and returns to the translations overview page.
+     * 
+     * @return Target page
+     */
+    public String saveSelectedMessageEntryAction() {
+        if (currentTranslationGroup == null || currentTranslationGroup.getSelectedEntry() == null) {
+            return "";
+        }
+
+        currentTranslationGroup.saveSelectedEntry();
+        return "pretty:adminTranslations";
+    }
+
+    /**
+     * Reset selected message entry and returns to the translations overview page.
+     * 
+     * @return Target page
+     */
+    public String cancelSelectedMessageEntryAction() {
+        // Reset selected entry so it doesn't get saved
+        if (currentTranslationGroup != null) {
+            currentTranslationGroup.resetSelectedEntry();
+        }
+
+        return "pretty:adminTranslations";
     }
 
     /**
