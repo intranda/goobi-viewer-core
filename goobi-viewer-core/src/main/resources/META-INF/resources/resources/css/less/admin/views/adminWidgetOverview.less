@@ -55,6 +55,7 @@
 	&__single-widget-title {
 	}
 	&__single-widget-title-indicator {
+		flex-shrink: 0;
 		.nav {
 			flex-wrap: wrap;
 		}
@@ -65,15 +66,22 @@
 			display: none;
 		}
 		.admin__language-tab {
-			width: 8px;
-			height: 8px;
-			background: @middlegray;
+			margin-bottom: 0;
+			&:first-child {
+				background: @blue !important;
+			}
+			width: 10px;
+			height: 10px;
+			background: @grayBar;
 			margin-right: 5px;
 			&:last-child {
 				margin-right: 0;
 			}
 			&.-already-translated {
 				background: @greenBar;
+			}
+			&.-partly-translated {
+				background: @yellowBar;
 			}
 		}
 	}
