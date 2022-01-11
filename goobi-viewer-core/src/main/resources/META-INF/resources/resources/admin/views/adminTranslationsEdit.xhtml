@@ -45,7 +45,7 @@
                                         <div class="admin__default-block">
                                             <div class="admin__translations-fields form-group form-row">
                                                 <div class="col-3 control-label admin__form-label #{value.displayHighlight ? 'admin__form-label-highlight' : ''}">
-                                                    <label for="value">#{msg.key}:</label>
+                                                    <label for="value">#{msg.admin__translations_key}:</label>
                                                 </div>
                                                 <div class="col-9 admin__form-input #{value.displayHighlight ? 'admin__form-input-highlight' : ''}">
                                                     <h:outputText value="#{adminBean.currentTranslationGroup.selectedEntry.keyPrefix}" />
@@ -128,9 +128,9 @@
                             <ui:fragment rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                 <!-- NEW KEY INFOBOX -->
                                 <div class="admin__default-block">
-                                    <h3>#{msg.admin__translations_did_you_know}</h3>
+                                    <h3>#{msg.admin__translations_new_entry_info_title}</h3>
                                     <div class="admin__form-help-text in mb-2">
-                                        Lorem ipsum dolor sit amet...
+                                        <h:outputText value="#{msg.admin__translations_new_entry_info_text}" escape="false" />
                                     </div>
 
                                 </div>
