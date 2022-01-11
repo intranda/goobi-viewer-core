@@ -3151,4 +3151,31 @@ public class ConfigurationTest extends AbstractTest {
     public void isRememberImageZoom_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isRememberImageZoom());
     }
+
+    /**
+     * @see Configuration#isFuzzySearchEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isFuzzySearchEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled());
+    }
+
+    /**
+     * @see Configuration#isProximitySearchEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isProximitySearchEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isProximitySearchEnabled());
+    }
+
+    /**
+     * @see Configuration#getProximitySearchDistance()
+     * @verifies return correct value
+     */
+    @Test
+    public void getProximitySearchDistance_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(20, DataManager.getInstance().getConfiguration().getProximitySearchDistance());
+    }
 }

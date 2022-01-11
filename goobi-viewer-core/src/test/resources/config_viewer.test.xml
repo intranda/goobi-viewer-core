@@ -526,6 +526,13 @@
 				<field>LABEL</field>
 			</excel>
 		</export>
+        
+        <!-- fuzzy/@enabled: If true, fuzzy search will be applied. Default is false. -->
+        <fuzzy enabled="true" />
+        
+        <!-- proximity/@enabled: If true, fuzzy search will be applied. Default is false. -->
+        <!-- proximity/@distance: Maximum number of term spaces between terms. Default is 10. -->
+        <proximity enabled="true" distance="20" />
 	</search>
 
 	<!-- ##### COLLECTION CONFIGURATION ##### -->
