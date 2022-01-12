@@ -1,0 +1,99 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+    <!-- =======================
+        all templates
+    ======================== -->
+    <!-- BASE LIBRARIES-->
+
+    <c:set var="cssPaths" value="#{[
+
+      ['jqueryUI', '/resources/css/libs/jQueryUI-1.12.1/jquery-ui.min.css'],
+      ['jqueryUI.structure', '/resources/css/libs/jQueryUI-1.12.1/jquery-ui.structure.min.css'],
+      ['font-awesome', '/resources/css/libs/font-awesome/css/font-awesome.min.css'],
+      ['swiper', '/resources/css/libs/swiper/swiper-bundle.min.css'],
+      ['jqueryUI.slider-rtl','/resources/css/libs/jquery.ui.slider-rtl.css'],
+      ['sweetalert','/resources/css/libs/sweetalert/sweetalert2.min.css'],
+      ['leaflet', '/resources/css/libs/leaflet/leaflet.css'],
+      ['leflet.extra-markers', '/resources/css/libs/leaflet/extra-markers/leaflet.extra-markers.min.css'],
+      ['leaflet.markercluster', '/resources/css/libs/leaflet/markercluster/MarkerCluster.css'],
+      ['leaflet.draw', '/resources/css/libs/leaflet/draw/leaflet.draw.css'],
+      ['mapbox.gl-geocoder', '/resources/css/libs/mapbox/geocoder/mapbox-gl-geocoder.css'],
+      ['mapbox.gl', '/resources/css/libs/mapbox/mapbox-gl.css'],
+      ['coreCSS', '/resources/css/dist/viewer.min.css']
+
+    ]}" />
+
+
+    <c:forEach var="path" items="#{cssPaths}">
+      <c:if test="#{!excludeCSS.contains(path[0])}">
+        <link type="text/css" rel="stylesheet" href="#{request.contextPath}#{path[1]}?${navigationHelper.buildVersion}" />
+      </c:if>
+    </c:forEach>
+
+
+    <!-- ===================
+      THEME CSS
+    ==================== -->
+    <!--
+    <c:if test="#{!excludeCSS.contains('themeCSS')}">
+ 	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css?${navigationHelper.buildVersion}" />
+    </c:if>
+    -->
+
+
+    <!--
+        ['themeCSS', '/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css']
+        <link type="FUN-TYPE" rel="#{path[0]}" href="#{libsToExclude}" />
+
+      <link type="FUN-TYPE" rel="#{path[0]}" href="#{!libsToExclude.contains(path[0])}" />
+      <c:if test="#{true}">
+    -->
+
+    <!--
+    <c:if test="#{templateName.contains('bootstrap')}">
+      <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/bs/bootstrap.custom.css?${navigationHelper.buildVersion}" />
+    </c:if>
+    -->
+
+    <!-- =======================
+        template.html
+    ======================== -->
+
+    <!-- =======================
+        templateAdmin.html
+    ======================== -->
+    <ui:fragment rendered="#{templateName == 'templateAdmin.html'}">
+
+      <!-- ADDITIONAL LIBRARIES -->
+      <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/sweetalert/sweetalert2.min.css?${navigationHelper.buildVersion}" />
+      <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/swiper/swiper-bundle.min.css" />
+
+      <!-- CORE CSS -->
+      <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/dist/viewer.min.css?${navigationHelper.buildVersion}" />
+    </ui:fragment>
+
+    <!-- =======================
+        templateAdmin.html
+    ======================== -->
+    <ui:fragment rendered="#{templateName == 'templateBlank.html'}">
+
+      <!-- CORE CSS -->
+      <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/dist/viewer.min.css?${navigationHelper.buildVersion}" />
+
+      <!-- THEME CSS -->
+      <!-- EXCLUDED PREVENT MESSED UP STYLING FOR NEW MIRADOR AND SWAGGER API PAGE -->
+
+      <!-- SUBTHEME CSS -->
+      <h:panelGroup rendered="#{navigationHelper.subthemeSelected and navigationHelper.subThemeDiscriminatorValue!='-' and navigationHelper.currentPage != 'label__api_swagger'}">
+          <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.subThemeDiscriminatorValue}.min.css?${navigationHelper.buildVersion}" />
+      </h:panelGroup>
+
+    </ui:fragment>
+
+</ui:composition>

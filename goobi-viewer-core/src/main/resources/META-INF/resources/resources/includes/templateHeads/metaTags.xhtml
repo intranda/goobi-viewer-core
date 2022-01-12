@@ -1,0 +1,27 @@
+<ui:composition
+
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <!-- META TAGS -->
+    <meta charset="utf-8" />
+    <meta name="description" content="" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="generator" content="Goobi viewer" />
+    <meta name="application" content="#{navigationHelper.applicationName}" />
+    <meta name="version" content="#{navigationHelper.version}" />
+    <meta name="build date" content="#{navigationHelper.buildDate}" />
+    <meta name="git-revision" content="#{navigationHelper.buildVersion}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <ui:fragment rendered="#{navigationHelper.displayNoIndexMetaTag}">
+        <meta name="robots" content="noindex" />
+    </ui:fragment>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+</ui:composition>
+

@@ -80,6 +80,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.export.ExcelExport;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.Location;
@@ -199,7 +200,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Required setter for ManagedProperty injection
+     * Required setter for ManagedProperty injection TODO Is it, though?
      *
      * @param navigationHelper the navigationHelper to set
      */
@@ -532,11 +533,25 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("generateAdvancedSearchString");
         StringBuilder sb = new StringBuilder();
         StringBuilder sbInfo = new StringBuilder();
-
+        boolean allowFuzzySearch = DataManager.getInstance().getConfiguration().isFuzzySearchEnabled();
         searchTerms.clear();
         StringBuilder sbCurrentCollection = new StringBuilder();
         //        String currentFacetString = facets.getCurrentFacetStringPrefix(false);
 
+        //Add fuzzy search terms
+        List<SearchQueryGroup> tempQueryGroups = new ArrayList<>();
+        for (SearchQueryGroup group : advancedQueryGroups) {
+            SearchQueryGroup tGroup = new SearchQueryGroup(group.getLocale(), group.getQueryItems().size());
+            tGroup.setOperator(group.getOperator());
+            tempQueryGroups.add(tGroup);
+            for (SearchQueryItem item : group.getQueryItems()) {
+                if(StringUtils.isNotBlank(item.getValue())) {
+                } else {
+                    tGroup.getQueryItems().add(item);
+                }
+            }
+        }
+        
         for (SearchQueryGroup queryGroup : advancedQueryGroups) {
             StringBuilder sbGroup = new StringBuilder();
             if (sb.length() > 0) {
@@ -680,7 +695,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                 } else {
                     // Generate item query
-                    itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true);
+                    itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true, allowFuzzySearch);
                 }
 
                 logger.trace("Item query: {}", itemQuery);
@@ -809,7 +824,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         // Add search hit aggregation parameters, if enabled
         if (!searchTerms.isEmpty()) {
-            String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator)
+            String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator, DataManager.getInstance().getConfiguration().isFuzzySearchEnabled())
                     : SearchHelper.generateExpandQuery(
                             SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups), searchTerms,
                             phraseSearch);
@@ -1091,6 +1106,10 @@ public class SearchBean implements SearchInterface, Serializable {
                 term = ClientUtils.escapeQueryChars(unescapedTerm);
                 term = term.replace("\\*", "*"); // unescape falsely escaped truncation
                 if (term.length() > 0 && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
+                    if(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled()) {                        
+                        String[] wildcards = SearchHelper.getWildcardsTokens(term);
+                        term = SearchHelper.addFuzzySearchToken(wildcards[1], wildcards[0], wildcards[2]);
+                    }
                     logger.trace("term: {}", term);
                     if (!"\\|\\|".equals(term)) {
                         preparedTerms.add(term);
@@ -1161,6 +1180,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("search string: {}", searchStringInternal);
         //        logger.trace("search terms: {}", searchTerms.toString());
     }
+
 
     /**
      * {@inheritDoc}
@@ -2185,7 +2205,12 @@ public class SearchBean implements SearchInterface, Serializable {
                             public Boolean call() {
                                 try {
                                     logger.debug("Writing excel");
-                                    return writeExcelSheet(facesContext, wb);
+                                    ExcelExport export = new ExcelExport();
+                                    export.setWorkbook(wb);
+                                    return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
+                                } catch (IOException e) {
+                                    logger.error(e.getMessage(), e);
+                                    return false;
                                 } finally {
                                     facesContext.responseComplete();
                                 }
@@ -2215,7 +2240,7 @@ public class SearchBean implements SearchInterface, Serializable {
         try {
             Task excelCreationJob = new Task(new TaskParameter(TaskType.SEARCH_EXCEL_EXPORT), task);
             Long jobId = DataManager.getInstance().getRestApiJobManager().addTask(excelCreationJob);
-            Future ready = DataManager.getInstance()
+            Future<?> ready = DataManager.getInstance()
                     .getRestApiJobManager()
                     .triggerTaskInThread(jobId, (HttpServletRequest) facesContext.getExternalContext().getRequest());
             ready.get(timeout, TimeUnit.SECONDS);
@@ -2240,26 +2265,6 @@ public class SearchBean implements SearchInterface, Serializable {
             this.downloadReady = null;
         }
         return "";
-    }
-
-    /**
-     * @param facesContext
-     * @param wb
-     * @throws IOException
-     */
-    private static boolean writeExcelSheet(final FacesContext facesContext, final SXSSFWorkbook wb) {
-        try {
-            wb.write(facesContext.getExternalContext().getResponseOutputStream());
-            if (Thread.interrupted()) {
-                return false;
-            }
-            return true;
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e.getCause());
-            return false;
-        } finally {
-            wb.dispose();
-        }
     }
 
     /**

@@ -15,12 +15,16 @@
  */
 package io.goobi.viewer.solr;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.solr.client.solrj.response.FieldStatsInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -32,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.viewer.StringPair;
 
 public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
@@ -256,5 +261,20 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         Assert.assertEquals("Karl", result.get("MD_AUTHOR:Groos, Karl"));
         Assert.assertEquals("Otto", result.get("MD_AUTHOR:Schubert, Otto"));
         Assert.assertEquals("Gottlob Heinrich", result.get("MD_AUTHOR:Heinse, Gottlob Heinrich"));
+    }
+    
+    @Test
+    public void getSpellingSuggestions() throws IndexUnreachableException {
+        List<String> suggestions = DataManager.getInstance()
+        .getSearchIndex().querySpellingSuggestions("tier", 0.7f, false);
+        assertEquals(1, suggestions.size());
+        assertTrue(suggestions.contains("thier"));
+        
+        suggestions = DataManager.getInstance()
+                .getSearchIndex().querySpellingSuggestions("tier", 0.5f, false);
+                assertEquals(10, suggestions.size());
+                assertTrue(suggestions.contains("thier"));
+                assertTrue(suggestions.contains("teil"));
+        
     }
 }

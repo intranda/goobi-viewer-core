@@ -60,6 +60,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.download.DownloadOption;
+import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -4679,8 +4680,31 @@ public final class Configuration extends AbstractConfiguration {
      * @should return all values
      * @return a {@link java.util.List} object.
      */
-    public List<String> getSearchExcelExportFields() {
-        return getLocalList("search.export.excel.field", new ArrayList<String>(0));
+    public List<ExportFieldConfiguration> getSearchExcelExportFields() {
+        return getExportConfigurations("search.export.excel.field");
+    }
+    
+    /**
+     * 
+     * @param path
+     * @return
+     */
+    List<ExportFieldConfiguration> getExportConfigurations(String path) {
+        if (path == null) {
+            return Collections.emptyList();
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> nodes = getLocalConfigurationsAt(path);
+        List<ExportFieldConfiguration> ret = new ArrayList<>(nodes.size());
+        for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
+            String field = node.getString(".", "");
+            if (StringUtils.isNotBlank(field)) {
+                String label = node.getString("[@label]");
+                ret.add(new ExportFieldConfiguration(field).setLabel(label));
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -5345,6 +5369,10 @@ public final class Configuration extends AbstractConfiguration {
 
     public boolean isDisplayAnnotationTextInImage() {
         return getLocalBoolean("webGuiDisplay.displayAnnotationTextInImage", true);
+    }
+
+    public boolean isFuzzySearchEnabled() {
+        return getLocalBoolean("search.fuzzy[@enabled]", false);
     }
 
 }

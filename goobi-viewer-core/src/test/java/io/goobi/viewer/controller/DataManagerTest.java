@@ -94,6 +94,11 @@ public class DataManagerTest {
                 return null;
             }
 
+            @Override
+            public List<String> getWidgetUsageContributions() {
+                return null;
+            }
+
             /* (non-Javadoc)
              * @see io.goobi.viewer.modules.IModule#getAdminContributions()
              */

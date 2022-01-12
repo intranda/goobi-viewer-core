@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.jboss.weld.contexts.ContextNotActiveException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -381,7 +382,11 @@ public class AccessConditionUtils {
             if (user == null) {
                 UserBean userBean = BeanUtils.getUserBean();
                 if (userBean != null) {
+                    try {
                     user = userBean.getUser();
+                    } catch(ContextNotActiveException e) {
+                        logger.trace("Cannot access bean method from different thread: UserBean.getUser()");
+                    }
                 }
             }
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,

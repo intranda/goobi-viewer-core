@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.search;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +31,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
@@ -259,5 +265,27 @@ public class SearchHitTest extends AbstractSolrEnabledTest {
                 .getLabelShort()
                 .startsWith(
                         "Lorem <span class=\"search-list--highlight\">ipsum</span> dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore"));
+    }
+    
+    @Test
+    public void createSearchHit_findWithUmlaut() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.IDDOC, Long.toString(1l));
+        doc.setField("MD_CREATOR", "Norden");
+        doc.setField("MD_PUBLISHER", "Nørre");
+        Map<String, Set<String>> searchTerms = Collections.singletonMap(SolrConstants.DEFAULT, Collections.singleton("Nörde~1"));
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", searchTerms, Arrays.asList("MD_CREATOR", "MD_PUBLISHER"), Collections.emptyList(), Collections.emptySet(), Collections.emptySet(), null, null);
+        assertEquals(1, hit.getFoundMetadata().size());
+    }
+    
+    @Test
+    public void createSearchHit_findUmlaute() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.IDDOC, Long.toString(1l));
+        doc.setField("MD_CREATOR", "Nörden");
+        doc.setField("MD_PUBLISHER", "Nørre");
+        Map<String, Set<String>> searchTerms = Collections.singletonMap(SolrConstants.DEFAULT, Collections.singleton("Norde~1"));
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", searchTerms, Arrays.asList("MD_CREATOR", "MD_PUBLISHER"), Collections.emptyList(), Collections.emptySet(), Collections.emptySet(), null, null);
+        assertEquals(1, hit.getFoundMetadata().size());
     }
 }
