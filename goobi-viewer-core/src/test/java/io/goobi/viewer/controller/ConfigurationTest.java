@@ -3158,6 +3158,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isFuzzySearchEnabled_shouldReturnCorrectValue() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("search.fuzzy[@enabled]", true);
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled());
     }
 
@@ -3167,6 +3168,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isProximitySearchEnabled_shouldReturnCorrectValue() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("search.proximity[@enabled]", true);
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isProximitySearchEnabled());
     }
 
