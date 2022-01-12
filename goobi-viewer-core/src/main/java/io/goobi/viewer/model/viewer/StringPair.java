@@ -39,9 +39,9 @@ public class StringPair implements Comparable<StringPair>, Serializable {
      * @param two a {@link java.lang.String} object.
      */
     public StringPair(String one, String two) {
-        if (one == null || two == null) {
-            throw new IllegalArgumentException("one and two must be not null.");
-        }
+        //        if (one == null || two == null) {
+        //            throw new IllegalArgumentException("one and two must be not null.");
+        //        }
         this.one = one;
         this.two = two;
     }
