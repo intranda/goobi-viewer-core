@@ -884,7 +884,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             // Load XML document
             try {
                 StringPair alto = loadAlto();
-                altoText = alto.getOne();
+                if (StringUtils.isNotEmpty(alto.getOne())) {
+                    altoText = alto.getOne();
+                }
                 altoCharset = alto.getTwo();
                 fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
@@ -1051,7 +1053,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("loadAlto: {}", altoFileName);
         if (altoFileName == null) {
-            return new StringPair(null, null);
+            return new StringPair("", null);
         } else if (!isFulltextAccessPermission()) {
             throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
