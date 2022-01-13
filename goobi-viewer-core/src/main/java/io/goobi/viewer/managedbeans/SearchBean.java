@@ -533,7 +533,6 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("generateAdvancedSearchString");
         StringBuilder sb = new StringBuilder();
         StringBuilder sbInfo = new StringBuilder();
-        boolean allowFuzzySearch = DataManager.getInstance().getConfiguration().isFuzzySearchEnabled();
         searchTerms.clear();
         StringBuilder sbCurrentCollection = new StringBuilder();
         //        String currentFacetString = facets.getCurrentFacetStringPrefix(false);
@@ -545,13 +544,13 @@ public class SearchBean implements SearchInterface, Serializable {
             tGroup.setOperator(group.getOperator());
             tempQueryGroups.add(tGroup);
             for (SearchQueryItem item : group.getQueryItems()) {
-                if(StringUtils.isNotBlank(item.getValue())) {
+                if (StringUtils.isNotBlank(item.getValue())) {
                 } else {
                     tGroup.getQueryItems().add(item);
                 }
             }
         }
-        
+
         for (SearchQueryGroup queryGroup : advancedQueryGroups) {
             StringBuilder sbGroup = new StringBuilder();
             if (sb.length() > 0) {
@@ -695,7 +694,10 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                 } else {
                     // Generate item query
-                    itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true, allowFuzzySearch);
+                    itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true,
+                            DataManager.getInstance().getConfiguration().isFuzzySearchEnabled(),
+                            DataManager.getInstance().getConfiguration().isProximitySearchEnabled()
+                                    ? DataManager.getInstance().getConfiguration().getProximitySearchDistance() : 0);
                 }
 
                 logger.trace("Item query: {}", itemQuery);
@@ -824,10 +826,15 @@ public class SearchBean implements SearchInterface, Serializable {
 
         // Add search hit aggregation parameters, if enabled
         if (!searchTerms.isEmpty()) {
-            String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator, DataManager.getInstance().getConfiguration().isFuzzySearchEnabled())
+            String expandQuery = activeSearchType == 1
+                    ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator,
+                            DataManager.getInstance().getConfiguration().isFuzzySearchEnabled(),
+                            DataManager.getInstance().getConfiguration().isProximitySearchEnabled()
+                                    ? DataManager.getInstance().getConfiguration().getProximitySearchDistance() : 0)
                     : SearchHelper.generateExpandQuery(
                             SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups), searchTerms,
-                            phraseSearch);
+                            phraseSearch,   DataManager.getInstance().getConfiguration().isProximitySearchEnabled()
+                            ? DataManager.getInstance().getConfiguration().getProximitySearchDistance() : 0);
             currentSearch.setExpandQuery(expandQuery);
         }
 
@@ -993,7 +1000,9 @@ public class SearchBean implements SearchInterface, Serializable {
         try {
             inSearchString = URLDecoder.decode(inSearchString, URL_ENCODING);
         } catch (UnsupportedEncodingException e) {
+            logger.warn(e.getMessage());
         } catch (IllegalArgumentException e) {
+            logger.warn(e.getMessage());
         }
         if ("-".equals(inSearchString)) {
             inSearchString = "";
@@ -1014,29 +1023,6 @@ public class SearchBean implements SearchInterface, Serializable {
             searchStringInternal = SearchHelper.prepareQuery("");
             return;
         }
-
-        // Prepare search term sets for all relevant fields
-        //        if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
-        //            if (searchTerms.get(SolrConstants.DEFAULT) == null) {
-        //                searchTerms.put(SolrConstants.DEFAULT, new HashSet<String>());
-        //            }
-        //            if (searchTerms.get(SolrConstants.FULLTEXT) == null) {
-        //                searchTerms.put(SolrConstants.FULLTEXT, new HashSet<String>());
-        //            }
-        //            if (searchTerms.get(SolrConstants.NORMDATATERMS) == null) {
-        //                searchTerms.put(SolrConstants.NORMDATATERMS, new HashSet<String>());
-        //            }
-        //            if (searchTerms.get(SolrConstants.UGCTERMS) == null) {
-        //                searchTerms.put(SolrConstants.UGCTERMS, new HashSet<String>());
-        //            }
-        //            if (searchTerms.get(SolrConstants.CMS_TEXT_ALL) == null) {
-        //                searchTerms.put(SolrConstants.CMS_TEXT_ALL, new HashSet<String>());
-        //            }
-        //        } else {
-        //            if (searchTerms.get(currentSearchFilter.getField()) == null) {
-        //                searchTerms.put(currentSearchFilter.getField(), new HashSet<String>());
-        //            }
-        //        }
 
         inSearchString = inSearchString.replace(" OR ", " || ");
         inSearchString = inSearchString.replace(" AND ", " && ");
@@ -1106,7 +1092,8 @@ public class SearchBean implements SearchInterface, Serializable {
                 term = ClientUtils.escapeQueryChars(unescapedTerm);
                 term = term.replace("\\*", "*"); // unescape falsely escaped truncation
                 if (term.length() > 0 && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
-                    if(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled()) {                        
+                    if (DataManager.getInstance().getConfiguration().isFuzzySearchEnabled()) {
+                        // Fuzzy search term augmentation
                         String[] wildcards = SearchHelper.getWildcardsTokens(term);
                         term = SearchHelper.addFuzzySearchToken(wildcards[1], wildcards[0], wildcards[2]);
                     }
@@ -1122,7 +1109,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         String prevTerm = preparedTerms.get(previousIndex);
                         String unescapedNextTerm = SearchHelper.cleanUpSearchTerm(termsSplit[i + 1]);
                         String nextTerm = ClientUtils.escapeQueryChars(unescapedNextTerm);
-                        nextTerm = nextTerm.replace("\\*", "*"); // unescape falsely escaped runcation
+                        nextTerm = nextTerm.replace("\\*", "*"); // unescape falsely escaped truncation
                         preparedTerms.remove(previousIndex);
                         preparedTerms.add(prevTerm + " OR " + nextTerm);
                         for (String field : searchTerms.keySet()) {
@@ -1134,16 +1121,35 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             // Construct inner query part
             String innerQuery = SearchHelper.buildTermQuery(preparedTerms);
+            String innerQueryNoOperators = SearchHelper.buildTermQuery(preparedTerms, false);
             if (innerQuery.length() > 0) {
                 StringBuilder sbOuter = new StringBuilder();
                 if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
                     // No filters defined or ALL
                     sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery);
+                    if (DataManager.getInstance().getConfiguration().isProximitySearchEnabled()) {
+                        // Proximity search term augmentation (SUPERFULLTEXT only)
+                        sbOuter.append(") ")
+                                .append(SolrConstants.SUPERFULLTEXT)
+                                .append(":(")
+                                .append(SearchHelper.addProximitySearchToken(innerQueryNoOperators,
+                                        DataManager.getInstance().getConfiguration().getProximitySearchDistance()));
+                    } else {
+                        sbOuter.append(") ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery);
+                    }
                     sbOuter.append(") ").append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery);
                     sbOuter.append(") ");
                     sbOuter.append(SolrConstants.DEFAULT).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.FULLTEXT).append(":(").append(innerQuery);
+                    if (DataManager.getInstance().getConfiguration().isProximitySearchEnabled()) {
+                        // Proximity search term augmentation (FULLTEXT only)
+                        sbOuter.append(") ")
+                                .append(SolrConstants.FULLTEXT)
+                                .append(":(")
+                                .append(SearchHelper.addProximitySearchToken(innerQueryNoOperators,
+                                        DataManager.getInstance().getConfiguration().getProximitySearchDistance()));
+                    } else {
+                        sbOuter.append(") ").append(SolrConstants.FULLTEXT).append(":(").append(innerQuery);
+                    }
                     sbOuter.append(") ").append(SolrConstants.NORMDATATERMS).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.UGCTERMS).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.CMS_TEXT_ALL).append(":(").append(innerQuery).append(')');
@@ -1155,8 +1161,16 @@ public class SearchBean implements SearchInterface, Serializable {
                             sbOuter.append(SolrConstants.DEFAULT).append(":(").append(innerQuery).append(')');
                             break;
                         case SolrConstants.FULLTEXT:
-                            sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery).append(") OR ");
-                            sbOuter.append(SolrConstants.FULLTEXT).append(":(").append(innerQuery).append(')');
+                            if (DataManager.getInstance().getConfiguration().isProximitySearchEnabled()) {
+                                // Proximity search term augmentation (FULLTEXT only)
+                                String proximitySearchInnerQuery = SearchHelper.addProximitySearchToken(innerQueryNoOperators,
+                                        DataManager.getInstance().getConfiguration().getProximitySearchDistance());
+                                sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(proximitySearchInnerQuery).append(") OR ");
+                                sbOuter.append(SolrConstants.FULLTEXT).append(":(").append(proximitySearchInnerQuery).append(')');
+                            } else {
+                                sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery).append(") OR ");
+                                sbOuter.append(SolrConstants.FULLTEXT).append(":(").append(innerQuery).append(')');
+                            }
                             break;
                         case SolrConstants.UGCTERMS:
                             sbOuter.append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery).append(") OR ");
@@ -1180,7 +1194,6 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("search string: {}", searchStringInternal);
         //        logger.trace("search terms: {}", searchTerms.toString());
     }
-
 
     /**
      * {@inheritDoc}

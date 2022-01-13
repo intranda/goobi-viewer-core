@@ -132,10 +132,18 @@ public final class SearchHelper {
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
     /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */
     public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -IDDOC_PARENT:*";
-    /** Constant <code>FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit distance to search. {p} and {s} are prefix and suffix to be applied to the search term */
+    /**
+     * Constant <code>FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit
+     * distance to search. {p} and {s} are prefix and suffix to be applied to the search term
+     */
     public static final String FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST = "{p}{t}{s} {t}~{d}";
-    /** Constant <code>FUZZY_SEARCH_TERM_TEMPLATE="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit distance to search.*/
+    /**
+     * Constant <code>FUZZY_SEARCH_TERM_TEMPLATE="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit distance
+     * to search.
+     */
     public static final String FUZZY_SEARCH_TERM_TEMPLATE = "{t}~{d}";
+    public static final String PROXIMITY_SEARCH_TERM_TEMPLATE_WITH_BOOST = "{p}{t}{s} {t}~{d}";
+    public static final String PROXIMITY_SEARCH_TERM_TEMPLATE = "\"{t}\"~{d}";
 
     private static final Object lock = new Object();
 
@@ -147,6 +155,8 @@ public final class SearchHelper {
     public static Pattern patternNot = Pattern.compile("NOT[ ][a-zA-Z_]+[:][a-zA-Z0-9\\*]+");
     /** Constant <code>patternPhrase</code> */
     public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
+    /** Constant <code>patternPhraseWithProximity</code> */
+    public static Pattern patternPhraseWithProximity = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS + "~[0-9]+");
 
     /** Filter subquery for collection listing (no volumes). */
     static volatile String collectionBlacklistFilterSuffix = null;
@@ -1004,9 +1014,9 @@ public final class SearchHelper {
                     FuzzySearchTerm fuzzySearchTerm = new FuzzySearchTerm(searchTerm);
                     Matcher m = Pattern.compile(FuzzySearchTerm.WORD_PATTERN).matcher(fulltext.toLowerCase());
                     int lastIndex = -1;
-                    while(m.find()) {
+                    while (m.find()) {
                         String word = m.group();
-                        if(fuzzySearchTerm.matches(word)) {
+                        if (fuzzySearchTerm.matches(word)) {
                             if (lastIndex != -1 && m.start() <= lastIndex + searchTerm.length()) {
                                 continue;
                             }
@@ -1064,8 +1074,8 @@ public final class SearchHelper {
 
         return ret;
     }
-    
-    private static int createFulltextFragment( Matcher m, String fulltext, String searchTerm, int targetFragmentLength, List<String> ret) {
+
+    private static int createFulltextFragment(Matcher m, String fulltext, String searchTerm, int targetFragmentLength, List<String> ret) {
         int indexOfTerm = m.start();
         int lastIndex = m.start();
 
@@ -1144,8 +1154,8 @@ public final class SearchHelper {
     }
 
     /**
-     * if maxDistance <= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. 
-     * Otherwise check if the phrase contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
+     * if maxDistance <= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. Otherwise check if the phrase
+     * contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
      * 
      * @param normalizedPhrase
      * @param normalizedTerm
@@ -1153,21 +1163,21 @@ public final class SearchHelper {
      * @return
      */
     public static boolean contains(String phrase, String term, int maxDistance) {
-        if(maxDistance > 0 && StringUtils.isNoneBlank(phrase, term)) {
+        if (maxDistance > 0 && StringUtils.isNoneBlank(phrase, term)) {
             Matcher matcher = Pattern.compile("[\\w-]+").matcher(phrase);
-            while(matcher.find()) {
+            while (matcher.find()) {
                 String word = matcher.group();
-                if(Math.abs(word.length() - term.length()) <= maxDistance) {                    
+                if (Math.abs(word.length() - term.length()) <= maxDistance) {
                     int distance = new DamerauLevenshtein(word, term).getSimilarity();
-                    if(distance <= maxDistance) {
+                    if (distance <= maxDistance) {
                         return true;
                     }
                 }
             }
             return false;
-        } else {
-            return StringUtils.contains(phrase, term);
         }
+
+        return StringUtils.contains(phrase, term);
     }
 
     /**
@@ -1713,6 +1723,8 @@ public final class SearchHelper {
      * @should not remove truncation
      * @should throw IllegalArgumentException if query is null
      * @should add title terms field
+     * @should preserve proximity search tokens
+     * @should not add proximity search terms to title terms
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
         if (query == null) {
@@ -1740,10 +1752,31 @@ public final class SearchHelper {
         Map<String, Set<String>> ret = new HashMap<>();
         ret.put(_TITLE_TERMS, new HashSet<>());
 
-        // Extract phrases and add them directly
+        // Use a copy of the query because the original query gets shortened after every match, causing an IOOBE eventually
+        String queryCopy = query;
+        // Extract proximity search terms
         {
-            // Use a copy of the query because the original query gets shortened after every match, causing an IOOBE eventually
-            String queryCopy = query;
+            Matcher mPhrases = patternPhraseWithProximity.matcher(queryCopy);
+            while (mPhrases.find()) {
+                String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
+                String[] phraseSplit = phrase.split(":");
+                String field = phraseSplit[0];
+                if (SolrConstants.SUPERFULLTEXT.equals(field)) {
+                    field = SolrConstants.FULLTEXT;
+                }
+                String value = phraseSplit[1];
+                if (value.length() > 0 && !stopwords.contains(value)) {
+                    if (ret.get(field) == null) {
+                        ret.put(field, new HashSet<String>());
+                    }
+                    ret.get(field).add(value);
+                }
+                query = query.replace(phrase, "");
+            }
+        }
+        // Extract phrases and add them directly
+        queryCopy = query;
+        {
             Matcher mPhrases = patternPhrase.matcher(queryCopy);
             while (mPhrases.find()) {
                 String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
@@ -2062,6 +2095,8 @@ public final class SearchHelper {
      * @param fields a {@link java.util.List} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param phraseSearch If true, quotation marks are added to terms
+     * @param proximitySearchDistance
+     * @return a {@link java.lang.String} object.
      * @should generate query correctly
      * @should return empty string if no fields match
      * @should skip reserved fields
@@ -2069,9 +2104,10 @@ public final class SearchHelper {
      * @should not escape asterisks
      * @should not escape truncation
      * @should add quotation marks if phraseSearch is true
-     * @return a {@link java.lang.String} object.
+     * @should add proximity search token correctly
      */
-    public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms, boolean phraseSearch) {
+    public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms, boolean phraseSearch,
+            int proximitySearchDistance) {
         logger.trace("generateExpandQuery");
         StringBuilder sbOuter = new StringBuilder();
         if (!searchTerms.isEmpty()) {
@@ -2079,8 +2115,7 @@ public final class SearchHelper {
             logger.trace("searchTerms: {}", searchTerms.toString());
             boolean moreThanOne = false;
             for (String field : fields) {
-                // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return
-                // every single doc
+                // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
                 switch (field) {
                     case SolrConstants.PI_TOPSTRUCT:
                     case SolrConstants.PI_ANCHOR:
@@ -2118,7 +2153,13 @@ public final class SearchHelper {
                             term = "\"" + term + "\"";
                         }
                     }
-                    sbInner.append(term);
+                    if (SolrConstants.FULLTEXT.equals(field) && proximitySearchDistance > 0) {
+                        term = term.replace("\\\"", "\""); // unescape quotation marks
+                        // sbInner.append(SearchHelper.addProximitySearchToken(term, proximitySearchDistance));
+                        sbInner.append(term);
+                    } else {
+                        sbInner.append(term);
+                    }
                 }
                 sbOuter.append(field).append(":");
                 if (multipleTerms) {
@@ -2143,11 +2184,14 @@ public final class SearchHelper {
      *
      * @param groups a {@link java.util.List} object.
      * @param advancedSearchGroupOperator a int.
+     * @param allowFuzzySearch
+     * @param proximitySearchDistance
      * @should generate query correctly
      * @should skip reserved fields
      * @return a {@link java.lang.String} object.
      */
-    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator, boolean allowFuzzySearch) {
+    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator, boolean allowFuzzySearch,
+            int proximitySearchDistance) {
         logger.trace("generateAdvancedExpandQuery");
         if (groups == null || groups.isEmpty()) {
             return "";
@@ -2191,7 +2235,7 @@ public final class SearchHelper {
                             continue;
                         }
                 }
-                String itemQuery = item.generateQuery(new HashSet<String>(), false, allowFuzzySearch);
+                String itemQuery = item.generateQuery(new HashSet<String>(), false, allowFuzzySearch, proximitySearchDistance);
                 if (StringUtils.isNotEmpty(itemQuery)) {
                     if (sbGroup.length() > 0) {
                         if (orMode) {
@@ -2366,7 +2410,17 @@ public final class SearchHelper {
      * @return
      */
     public static String buildTermQuery(Collection<String> searchTerms) {
-        if (searchTerms == null) {
+        return buildTermQuery(searchTerms, true);
+    }
+
+    /**
+     * 
+     * @param searchTerms
+     * @param addOperators
+     * @return
+     */
+    public static String buildTermQuery(Collection<String> searchTerms, boolean addOperators) {
+        if (searchTerms == null || searchTerms.isEmpty()) {
             return "";
         }
 
@@ -2374,7 +2428,11 @@ public final class SearchHelper {
         StringBuilder sbInner = new StringBuilder();
         for (String term : searchTerms) {
             if (sbInner.length() > 0) {
-                sbInner.append(" AND ");
+                if (addOperators) {
+                    sbInner.append(" AND ");
+                } else {
+                    sbInner.append(' ');
+                }
             }
             if (!term.contains(" OR ")) {
                 sbInner.append(term);
@@ -2705,8 +2763,7 @@ public final class SearchHelper {
     }
 
     /**
-     * Adds a fuzzy search token to the given term.
-     * The maximal Damerau-Levenshtein is calculated from term length
+     * Adds a fuzzy search token to the given term. The maximal Damerau-Levenshtein is calculated from term length
      * 
      * @param term the search term
      * @return the given term with a fuzzy search token appended
@@ -2724,7 +2781,7 @@ public final class SearchHelper {
     public static String addFuzzySearchToken(String term, int distance, String prefix, String suffix) {
         if (distance < 0 || distance > 2) {
             throw new IllegalArgumentException("Edit distance in fuzzy search must be in the range from 0 to 2. The given distance is " + distance);
-        } else if(distance == 0) {
+        } else if (distance == 0) {
             return prefix + term + suffix;
         } else if (StringUtils.isBlank(term) || term.contains(" ")) {
             throw new IllegalArgumentException(
@@ -2737,12 +2794,41 @@ public final class SearchHelper {
                     .replace("{s}", StringUtils.isBlank(suffix) ? "" : suffix);
         }
     }
-    
 
     /**
-     * Separate leading and trailing whildcard token ('*') from the actual term and return an array of length 3 
-     * with the values [leadingWildCard, tokenWithoutWildcards, trailingWildcard]
-     * If leading/trailing wildcards are missing, the corresponding array entries are empty strings
+     * 
+     * @param term
+     * @param distance
+     * @return
+     * @should add token correctly
+     */
+    public static String addProximitySearchToken(String term, int distance) {
+        if (StringUtils.isEmpty(term)) {
+            return term;
+        }
+
+        boolean addQuotationMarks = false;
+        if (!term.startsWith("\"") && !term.endsWith("\"")) {
+            addQuotationMarks = true;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (addQuotationMarks) {
+            sb.append('"');
+        }
+        sb.append(term);
+        if (addQuotationMarks) {
+            sb.append('"');
+        }
+        sb.append('~');
+        sb.append(distance);
+
+        return sb.toString();
+    }
+
+    /**
+     * Separate leading and trailing wildcard token ('*') from the actual term and return an array of length 3 with the values [leadingWildCard,
+     * tokenWithoutWildcards, trailingWildcard] If leading/trailing wildcards are missing, the corresponding array entries are empty strings
      * 
      * @param term
      * @return array of prefix, token, suffix
@@ -2750,8 +2836,8 @@ public final class SearchHelper {
     public static String[] getWildcardsTokens(String term) {
         String prefix = term.startsWith("*") ? "*" : "";
         String suffix = term.endsWith("*") ? "*" : "";
-        String cleanedTerm = term.substring(prefix.length(), term.length()-suffix.length());
-        return new String[]{prefix, cleanedTerm, suffix};
+        String cleanedTerm = term.substring(prefix.length(), term.length() - suffix.length());
+        return new String[] { prefix, cleanedTerm, suffix };
     }
 
 }

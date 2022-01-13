@@ -323,9 +323,9 @@ public class SearchQueryItem implements Serializable {
      */
     public void setValue(String value) {
         this.value = StringTools.stripJS(value);
-//        if(StringUtils.isNotBlank(this.value) && !this.value.contains(" ")) {            
-//            this.value = SearchHelper.addFuzzySearchToken(this.value);
-//        }
+        //        if(StringUtils.isNotBlank(this.value) && !this.value.contains(" ")) {            
+        //            this.value = SearchHelper.addFuzzySearchToken(this.value);
+        //        }
     }
 
     /**
@@ -391,14 +391,17 @@ public class SearchQueryItem implements Serializable {
      *
      * @param searchTerms a {@link java.util.Set} object.
      * @param aggregateHits a boolean.
+     * @param allowFuzzySearch If true, search terms will be augmented by fuzzy search tokens
+     * @param proximitySearchDistance If >0, use proximity search with given distance
      * @return a {@link java.lang.String} object.
      * @should generate query correctly
      * @should escape reserved characters
      * @should always use OR operator if searching in all fields
      * @should preserve truncation
      * @should generate range query correctly
+     * @should add proximity search token correctly
      */
-    public String generateQuery(Set<String> searchTerms, boolean aggregateHits, boolean allowFuzzySearch) {
+    public String generateQuery(Set<String> searchTerms, boolean aggregateHits, boolean allowFuzzySearch, int proximitySearchDistance) {
         checkAutoOperator();
         StringBuilder sbItem = new StringBuilder();
 
@@ -552,13 +555,13 @@ public class SearchQueryItem implements Serializable {
                         }
 
                         if (value.contains("-")) {
-                            if(allowFuzzySearch) {
+                            if (allowFuzzySearch) {
                                 //remove wildcards; they don't work with search containing hyphen
                                 String tempValue = SearchHelper.getWildcardsTokens(value)[1];
                                 tempValue = ClientUtils.escapeQueryChars(value);
-                                tempValue =  SearchHelper.addFuzzySearchToken(tempValue, "", "");
+                                tempValue = SearchHelper.addFuzzySearchToken(tempValue, "", "");
                                 sbItem.append("(").append(tempValue).append(")");
-                            } else {                                
+                            } else {
                                 // Hack to enable fuzzy searching for terms that contain hyphens
                                 sbItem.append('"').append(ClientUtils.escapeQueryChars(value)).append('"');
                             }
@@ -584,11 +587,13 @@ public class SearchQueryItem implements Serializable {
                                         .append("]");
                             } else {
                                 // Regular search
-                                String escValue =  ClientUtils.escapeQueryChars(useValue);
-                                if(allowFuzzySearch) {
-                                    escValue =  SearchHelper.addFuzzySearchToken(escValue, prefix, suffix);
+                                String escValue = ClientUtils.escapeQueryChars(useValue);
+                                if (allowFuzzySearch) {
+                                    escValue = SearchHelper.addFuzzySearchToken(escValue, prefix, suffix);
                                     sbItem.append("(").append(escValue).append(")");
-                                } else {                                    
+                                } else if (proximitySearchDistance > 0) {
+                                    escValue = SearchHelper.addProximitySearchToken(escValue, proximitySearchDistance);
+                                } else {
                                     sbItem.append(prefix).append(ClientUtils.escapeQueryChars(useValue)).append(suffix);
                                 }
                             }
@@ -617,7 +622,7 @@ public class SearchQueryItem implements Serializable {
 
         String item = sbItem.toString();
         item = item.replace("\\~", "~");
-        
+
         return item;
     }
 

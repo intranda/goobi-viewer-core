@@ -546,6 +546,39 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertTrue(terms.contains("*foo*"));
         }
     }
+    
+
+    /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies preserve proximity search tokens
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldPreserveProximitySearchTokens() throws Exception {
+        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
+                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello world\"~10 AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
+                null);
+        Set<String> terms = result.get(SolrConstants.FULLTEXT);
+        Assert.assertNotNull(terms);
+        Assert.assertEquals(1, terms.size());
+        Assert.assertTrue(terms.contains("\"hello world\"~10"));
+    }
+    
+
+    /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies not add proximity search terms to title terms
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldNotAddProximitySearchTermsToTitleTerms() throws Exception {
+        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
+                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello world\"~10 AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
+                null);
+        Set<String> terms = result.get(SearchHelper._TITLE_TERMS);
+        Assert.assertNotNull(terms);
+        Assert.assertEquals(5, terms.size());
+        Assert.assertFalse(terms.contains("\"hello world\""));
+        Assert.assertFalse(terms.contains("\"hello world\"~10"));
+    }
 
     /**
      * @see SearchHelper#generateCollectionBlacklistFilterSuffix()
@@ -832,7 +865,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(
                 " +(" + SolrConstants.DEFAULT + ":(one OR two) OR " + SolrConstants.FULLTEXT + ":(two OR three) OR " + SolrConstants.NORMDATATERMS
                         + ":(four OR five) OR " + SolrConstants.UGCTERMS + ":six OR " + SolrConstants.CMS_TEXT_ALL + ":seven)",
-                SearchHelper.generateExpandQuery(fields, searchTerms, false));
+                SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
 
     /**
@@ -846,7 +879,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put("MD_TITLE", new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
 
-        Assert.assertEquals("", SearchHelper.generateExpandQuery(fields, searchTerms, false));
+        Assert.assertEquals("", SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
 
     /**
@@ -869,8 +902,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(
                 " +(" + SolrConstants.DEFAULT + ":(one OR two) OR " + SolrConstants.FULLTEXT + ":(two OR three) OR " + SolrConstants.NORMDATATERMS
                         + ":(four OR five) OR " + SolrConstants.UGCTERMS + ":six OR " + SolrConstants.CMS_TEXT_ALL + ":seven)",
-                SearchHelper.generateExpandQuery(fields, searchTerms, false));
+                SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
+    
 
     /**
      * @see SearchHelper#generateExpandQuery(List,Map)
@@ -881,7 +915,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> fields = Arrays.asList(new String[] { SolrConstants._CALENDAR_DAY });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants._CALENDAR_DAY, new HashSet<>(Arrays.asList(new String[] { "*", })));
-        Assert.assertEquals(" +(YEARMONTHDAY:*)", SearchHelper.generateExpandQuery(fields, searchTerms, false));
+        Assert.assertEquals(" +(YEARMONTHDAY:*)", SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
 
     /**
@@ -893,7 +927,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo*", })));
-        Assert.assertEquals(" +(DEFAULT:foo*)", SearchHelper.generateExpandQuery(fields, searchTerms, false));
+        Assert.assertEquals(" +(DEFAULT:foo*)", SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
 
     /**
@@ -905,7 +939,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "[one]", ":two:" })));
-        Assert.assertEquals(" +(DEFAULT:(\\[one\\] OR \\:two\\:))", SearchHelper.generateExpandQuery(fields, searchTerms, false));
+        Assert.assertEquals(" +(DEFAULT:(\\[one\\] OR \\:two\\:))", SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
 
     /**
@@ -917,7 +951,31 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one two three" })));
-        Assert.assertEquals(" +(DEFAULT:\"one\\ two\\ three\")", SearchHelper.generateExpandQuery(fields, searchTerms, true));
+        Assert.assertEquals(" +(DEFAULT:\"one\\ two\\ three\")", SearchHelper.generateExpandQuery(fields, searchTerms, true, 0));
+    }
+    
+
+    /**
+     * @see SearchHelper#generateExpandQuery(List,Map,boolean,int)
+     * @verifies add proximity search token correctly
+     */
+    @Test
+    public void generateExpandQuery_shouldAddProximitySearchTokenCorrectly() throws Exception {
+        List<String> fields =
+                Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS, SolrConstants.UGCTERMS,
+                        SolrConstants.CMS_TEXT_ALL, SolrConstants.PI_TOPSTRUCT, SolrConstants.PI_ANCHOR, SolrConstants.DC, SolrConstants.DOCSTRCT });
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
+        searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>(Arrays.asList(new String[] { "\"two three\"~10" })));
+        searchTerms.put(SolrConstants.NORMDATATERMS, new HashSet<>(Arrays.asList(new String[] { "four", "five" })));
+        searchTerms.put(SolrConstants.UGCTERMS, new HashSet<>(Arrays.asList(new String[] { "six" })));
+        searchTerms.put(SolrConstants.CMS_TEXT_ALL, new HashSet<>(Arrays.asList(new String[] { "seven" })));
+        searchTerms.put(SolrConstants.PI_ANCHOR, new HashSet<>(Arrays.asList(new String[] { "eight" })));
+        searchTerms.put(SolrConstants.PI_TOPSTRUCT, new HashSet<>(Arrays.asList(new String[] { "nine" })));
+        Assert.assertEquals(
+                " +(" + SolrConstants.DEFAULT + ":(one OR two) OR " + SolrConstants.FULLTEXT + ":\"two\\ three\"~10 OR " + SolrConstants.NORMDATATERMS
+                        + ":(four OR five) OR " + SolrConstants.UGCTERMS + ":six OR " + SolrConstants.CMS_TEXT_ALL + ":seven)",
+                SearchHelper.generateExpandQuery(fields, searchTerms, false, 10));
     }
 
     /**
@@ -949,7 +1007,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             groups.add(group);
         }
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false, 0);
         Assert.assertEquals(" +((MD_FIELD:val1 AND MD_TITLE:(foo AND bar)) AND (MD_FIELD:val2 OR MD_SHELFMARK:(bla OR blup)))", result);
     }
 
@@ -978,7 +1036,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             groups.add(group);
         }
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, true);
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, true, 0);
         Assert.assertEquals(
                 " +((MD_FIELD:(val1 val1~1) AND MD_TITLE:((foo) AND (bar))) AND (MD_FIELD:(val2 val2~1) OR MD_SHELFMARK:((bla) OR (blup blup~1))))",
                 result);
@@ -1014,7 +1072,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(5).setValue("PPN000");
         groups.add(group);
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false, 0);
         Assert.assertEquals(" +((MD_FIELD:val))", result);
     }
 
@@ -1483,5 +1541,14 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             assertEquals("term", wildcards[1]);
             assertEquals("", wildcards[2]);
         }
+    }
+
+    /**
+     * @see SearchHelper#addProximitySearchToken(String,int)
+     * @verifies add token correctly
+     */
+    @Test
+    public void addProximitySearchToken_shouldAddTokenCorrectly() throws Exception {
+        Assert.assertEquals("\"foo bar\"~10", SearchHelper.addProximitySearchToken("foo bar", 10));
     }
 }
