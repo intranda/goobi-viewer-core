@@ -471,6 +471,11 @@ public class SearchQueryItem implements Serializable {
                         sbItem.append('"');
                     }
                     if (SolrConstants.FULLTEXT.equals(field) || SolrConstants.SUPERFULLTEXT.equals(field)) {
+                        // Add proximity search token
+                        if (proximitySearchDistance > 0) {
+                            sbItem.append('~').append(proximitySearchDistance);
+                        }
+                        // Remove quotation marks to add to search terms
                         String val = useValue.replace("\"", "");
                         if (val.length() > 0) {
                             searchTerms.add(val);
@@ -591,8 +596,6 @@ public class SearchQueryItem implements Serializable {
                                 if (allowFuzzySearch) {
                                     escValue = SearchHelper.addFuzzySearchToken(escValue, prefix, suffix);
                                     sbItem.append("(").append(escValue).append(")");
-                                } else if (proximitySearchDistance > 0) {
-                                    escValue = SearchHelper.addProximitySearchToken(escValue, proximitySearchDistance);
                                 } else {
                                     sbItem.append(prefix).append(ClientUtils.escapeQueryChars(useValue)).append(suffix);
                                 }

@@ -219,11 +219,11 @@ public class SearchQueryItemTest extends AbstractTest {
     @Test
     public void generateQuery_shouldAddProximitySearchTokenCorrectly() throws Exception {
         SearchQueryItem item = new SearchQueryItem(null);
-        item.setOperator(SearchItemOperator.AND);
+        item.setOperator(SearchItemOperator.IS);
         item.setField(SolrConstants.FULLTEXT);
         item.setValue("foo bar");
         Set<String> searchTerms = new HashSet<>(2);
-        Assert.assertEquals(SolrConstants.SUPERFULLTEXT + ":\"foo bar\"~10 OR " + SolrConstants.FULLTEXT + ":\"foo bar\"~10",
+        Assert.assertEquals("(" + SolrConstants.SUPERFULLTEXT + ":\"foo bar\"~10 OR " + SolrConstants.FULLTEXT + ":\"foo bar\"~10)",
                 item.generateQuery(searchTerms, true, false, 10));
     }
 

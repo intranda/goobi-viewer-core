@@ -2109,71 +2109,73 @@ public final class SearchHelper {
     public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms, boolean phraseSearch,
             int proximitySearchDistance) {
         logger.trace("generateExpandQuery");
+        if (searchTerms.isEmpty()) {
+            return "";
+        }
+
         StringBuilder sbOuter = new StringBuilder();
-        if (!searchTerms.isEmpty()) {
-            logger.trace("fields: {}", fields.toString());
-            logger.trace("searchTerms: {}", searchTerms.toString());
-            boolean moreThanOne = false;
-            for (String field : fields) {
-                // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
-                switch (field) {
-                    case SolrConstants.PI_TOPSTRUCT:
-                    case SolrConstants.PI_ANCHOR:
-                    case SolrConstants.DC:
-                    case SolrConstants.DOCSTRCT:
-                        continue;
-                    default:
-                        if (field.startsWith(SolrConstants.GROUPID_)) {
-                            continue;
-                        }
-                }
-                Set<String> terms = searchTerms.get(field);
-                if (terms == null || terms.isEmpty()) {
+        logger.trace("fields: {}", fields.toString());
+        logger.trace("searchTerms: {}", searchTerms.toString());
+        boolean moreThanOne = false;
+        for (String field : fields) {
+            // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
+            switch (field) {
+                case SolrConstants.PI_TOPSTRUCT:
+                case SolrConstants.PI_ANCHOR:
+                case SolrConstants.DC:
+                case SolrConstants.DOCSTRCT:
                     continue;
-                }
-                if (sbOuter.length() == 0) {
-                    sbOuter.append(" +(");
-                }
-                if (moreThanOne) {
-                    sbOuter.append(" OR ");
-                }
-                StringBuilder sbInner = new StringBuilder();
-                boolean multipleTerms = false;
-                for (String term : terms) {
-                    if (sbInner.length() > 0) {
-                        sbInner.append(" OR ");
-                        multipleTerms = true;
+                default:
+                    if (field.startsWith(SolrConstants.GROUPID_)) {
+                        continue;
                     }
-                    if (!"*".equals(term)) {
-                        term = ClientUtils.escapeQueryChars(term);
-                        term = term.replace("\\*", "*");
-                        //unescape fuzzy search token
-                        term = term.replaceAll("\\\\~(\\d)", "~$1");
-                        if (phraseSearch) {
-                            term = "\"" + term + "\"";
-                        }
-                    }
-                    if (SolrConstants.FULLTEXT.equals(field) && proximitySearchDistance > 0) {
-                        term = term.replace("\\\"", "\""); // unescape quotation marks
-                        // sbInner.append(SearchHelper.addProximitySearchToken(term, proximitySearchDistance));
-                        sbInner.append(term);
-                    } else {
-                        sbInner.append(term);
-                    }
-                }
-                sbOuter.append(field).append(":");
-                if (multipleTerms) {
-                    sbOuter.append('(');
-                }
-                sbOuter.append(sbInner.toString());
-                if (multipleTerms) {
-                    sbOuter.append(')');
-                }
-                moreThanOne = true;
             }
-            if (sbOuter.length() > 0) {
+            Set<String> terms = searchTerms.get(field);
+            if (terms == null || terms.isEmpty()) {
+                continue;
+            }
+            if (sbOuter.length() == 0) {
+                sbOuter.append(" +(");
+            }
+            if (moreThanOne) {
+                sbOuter.append(" OR ");
+            }
+            StringBuilder sbInner = new StringBuilder();
+            boolean multipleTerms = false;
+            for (String term : terms) {
+                if (sbInner.length() > 0) {
+                    sbInner.append(" OR ");
+                    multipleTerms = true;
+                }
+                if (!"*".equals(term)) {
+                    term = ClientUtils.escapeQueryChars(term);
+                    term = term.replace("\\*", "*");
+                    //unescape fuzzy search token
+                    term = term.replaceAll("\\\\~(\\d)", "~$1");
+                    if (phraseSearch) {
+                        term = "\"" + term + "\"";
+                    }
+                }
+                if (SolrConstants.FULLTEXT.equals(field) && proximitySearchDistance > 0) {
+                    term = term.replace("\\\"", "\""); // unescape quotation marks
+                    // sbInner.append(SearchHelper.addProximitySearchToken(term, proximitySearchDistance));
+                    sbInner.append(term);
+                } else {
+                    sbInner.append(term);
+                }
+            }
+            sbOuter.append(field).append(":");
+            if (multipleTerms) {
+                sbOuter.append('(');
+            }
+            sbOuter.append(sbInner.toString());
+            if (multipleTerms) {
                 sbOuter.append(')');
             }
+            moreThanOne = true;
+        }
+        if (sbOuter.length() > 0) {
+            sbOuter.append(')');
         }
 
         return sbOuter.toString();

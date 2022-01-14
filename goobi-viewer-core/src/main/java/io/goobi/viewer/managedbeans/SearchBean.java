@@ -141,7 +141,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /** Currently selected filter for the regular search. Possible values can be configured. */
     private SearchFilter currentSearchFilter = SearchHelper.SEARCH_FILTER_ALL;
     /** Solr query generated from the user's input (does not include facet filters or blacklists). */
-    private String searchStringInternal = "";
+    String searchStringInternal = "";
     /** User-entered search query that is displayed in the search field after the search. */
     private String searchString = "";
     /** Optional custom filter query. */
@@ -833,8 +833,8 @@ public class SearchBean implements SearchInterface, Serializable {
                                     ? DataManager.getInstance().getConfiguration().getProximitySearchDistance() : 0)
                     : SearchHelper.generateExpandQuery(
                             SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups), searchTerms,
-                            phraseSearch,   DataManager.getInstance().getConfiguration().isProximitySearchEnabled()
-                            ? DataManager.getInstance().getConfiguration().getProximitySearchDistance() : 0);
+                            phraseSearch, DataManager.getInstance().getConfiguration().isProximitySearchEnabled()
+                                    ? DataManager.getInstance().getConfiguration().getProximitySearchDistance() : 0);
             currentSearch.setExpandQuery(expandQuery);
         }
 
@@ -990,6 +990,11 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * @param inSearchString the searchString to set
+     * @should generate phrase search query without filter correctly
+     * @should generate phrase search query with specific filter correctly
+     * @should generate non-phrase search query without filter correctly
+     * @should generate non-phrase search query with specific filter correctly
+     * @should add proximity search token correctly
      */
     void generateSimpleSearchString(String inSearchString) {
         logger.trace("generateSimpleSearchString: {}", inSearchString);
@@ -1026,7 +1031,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         inSearchString = inSearchString.replace(" OR ", " || ");
         inSearchString = inSearchString.replace(" AND ", " && ");
-        inSearchString = inSearchString.toLowerCase(); // Solr won't find non-lowercase strings
+        inSearchString = inSearchString.toLowerCase(); // Regular tokens are lowercase
 
         if (inSearchString.contains("\"")) {
             // Phrase search
@@ -1039,10 +1044,20 @@ public class SearchBean implements SearchInterface, Serializable {
                     if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
                         // For aggregated searches include both SUPER and regular DEFAULT/FULLTEXT fields
                         sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\") OR ");
+                        sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append('"');
+                        if (DataManager.getInstance().getConfiguration().isProximitySearchEnabled()) {
+                            // Proximity search term augmentation
+                            sb.append('~').append(DataManager.getInstance().getConfiguration().getProximitySearchDistance());
+                        }
+                        sb.append(") OR ");
                         sb.append(SolrConstants.SUPERUGCTERMS).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\") OR ");
+                        sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append('"');
+                        if (DataManager.getInstance().getConfiguration().isProximitySearchEnabled()) {
+                            // Proximity search term augmentation
+                            sb.append('~').append(DataManager.getInstance().getConfiguration().getProximitySearchDistance());
+                        }
+                        sb.append(") OR ");
                         sb.append(SolrConstants.NORMDATATERMS).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.CMS_TEXT_ALL).append(":(\"").append(phrase).append("\")");
@@ -1061,8 +1076,20 @@ public class SearchBean implements SearchInterface, Serializable {
                                 sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\")");
                                 break;
                             case SolrConstants.FULLTEXT:
-                                sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\") OR ");
-                                sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\")");
+                                sb.append(SolrConstants.SUPERFULLTEXT)
+                                        .append(":(\"")
+                                        .append(phrase)
+                                        .append('"');
+                                if (DataManager.getInstance().getConfiguration().isProximitySearchEnabled()) {
+                                    // Proximity search term augmentation
+                                    sb.append('~').append(DataManager.getInstance().getConfiguration().getProximitySearchDistance());
+                                }
+                                sb.append(") OR ").append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append('"');
+                                if (DataManager.getInstance().getConfiguration().isProximitySearchEnabled()) {
+                                    // Proximity search term augmentation
+                                    sb.append('~').append(DataManager.getInstance().getConfiguration().getProximitySearchDistance());
+                                }
+                                sb.append(')');
                                 break;
                             case SolrConstants.UGCTERMS:
                                 sb.append(SolrConstants.SUPERUGCTERMS).append(":(\"").append(phrase).append("\") OR ");
@@ -1121,35 +1148,18 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             // Construct inner query part
             String innerQuery = SearchHelper.buildTermQuery(preparedTerms);
-            String innerQueryNoOperators = SearchHelper.buildTermQuery(preparedTerms, false);
             if (innerQuery.length() > 0) {
                 StringBuilder sbOuter = new StringBuilder();
                 if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
                     // No filters defined or ALL
                     sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(innerQuery);
-                    if (DataManager.getInstance().getConfiguration().isProximitySearchEnabled()) {
-                        // Proximity search term augmentation (SUPERFULLTEXT only)
-                        sbOuter.append(") ")
-                                .append(SolrConstants.SUPERFULLTEXT)
-                                .append(":(")
-                                .append(SearchHelper.addProximitySearchToken(innerQueryNoOperators,
-                                        DataManager.getInstance().getConfiguration().getProximitySearchDistance()));
-                    } else {
-                        sbOuter.append(") ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery);
-                    }
+                    sbOuter.append(") ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery);
-                    sbOuter.append(") ");
-                    sbOuter.append(SolrConstants.DEFAULT).append(":(").append(innerQuery);
-                    if (DataManager.getInstance().getConfiguration().isProximitySearchEnabled()) {
-                        // Proximity search term augmentation (FULLTEXT only)
-                        sbOuter.append(") ")
-                                .append(SolrConstants.FULLTEXT)
-                                .append(":(")
-                                .append(SearchHelper.addProximitySearchToken(innerQueryNoOperators,
-                                        DataManager.getInstance().getConfiguration().getProximitySearchDistance()));
-                    } else {
-                        sbOuter.append(") ").append(SolrConstants.FULLTEXT).append(":(").append(innerQuery);
-                    }
+                    sbOuter.append(") ")
+                            .append(SolrConstants.DEFAULT)
+                            .append(":(")
+                            .append(innerQuery);
+                    sbOuter.append(") ").append(SolrConstants.FULLTEXT).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.NORMDATATERMS).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.UGCTERMS).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.CMS_TEXT_ALL).append(":(").append(innerQuery).append(')');
@@ -1161,16 +1171,8 @@ public class SearchBean implements SearchInterface, Serializable {
                             sbOuter.append(SolrConstants.DEFAULT).append(":(").append(innerQuery).append(')');
                             break;
                         case SolrConstants.FULLTEXT:
-                            if (DataManager.getInstance().getConfiguration().isProximitySearchEnabled()) {
-                                // Proximity search term augmentation (FULLTEXT only)
-                                String proximitySearchInnerQuery = SearchHelper.addProximitySearchToken(innerQueryNoOperators,
-                                        DataManager.getInstance().getConfiguration().getProximitySearchDistance());
-                                sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(proximitySearchInnerQuery).append(") OR ");
-                                sbOuter.append(SolrConstants.FULLTEXT).append(":(").append(proximitySearchInnerQuery).append(')');
-                            } else {
-                                sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery).append(") OR ");
-                                sbOuter.append(SolrConstants.FULLTEXT).append(":(").append(innerQuery).append(')');
-                            }
+                            sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery).append(") OR ");
+                            sbOuter.append(SolrConstants.FULLTEXT).append(":(").append(innerQuery).append(')');
                             break;
                         case SolrConstants.UGCTERMS:
                             sbOuter.append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery).append(") OR ");
