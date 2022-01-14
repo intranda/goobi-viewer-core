@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.HtmlParser;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -56,10 +57,6 @@ import io.goobi.viewer.model.misc.NumberIterator;
 @DiscriminatorColumn(name = "widget_type")
 public class CMSSidebarElement {
 
-    /**
-     * 
-     */
-    private static final String JSON_PROPERTYNAME_GEOLOCATIONS = "locations";
     private static final Logger logger = LoggerFactory.getLogger(CMSSidebarElement.class);
     /** Constant <code>HASH_MULTIPLIER=11</code> */
     protected static final int HASH_MULTIPLIER = 11;
@@ -283,8 +280,8 @@ public class CMSSidebarElement {
      * @return
      */
     private static String correctHtml(String string) {
-        for (String key : CMSSidebarManager.getInstance().getHtmlReplacements().keySet()) {
-            String replacement = CMSSidebarManager.getInstance().getHtmlReplacements().get(key);
+        for (String key : HtmlParser.getHtmlReplacements().keySet()) {
+            String replacement = HtmlParser.getHtmlReplacements().get(key);
             string = string.replaceAll(key, replacement);
         }
         return string;
@@ -484,8 +481,7 @@ public class CMSSidebarElement {
     public boolean isValid() {
         if (hasHtml()) {
             Matcher m = patternHtmlTag.matcher(html);
-            //            Set<String> allowedTags = CMSSidebarManager.getInstance().getAllowedHtmlTags();
-            Set<String> disallowedTags = CMSSidebarManager.getInstance().getDisallowedHtmlTags();
+            Set<String> disallowedTags = HtmlParser.getDisallowedHtmlTags();
             while (m.find()) {
                 String tag = m.group();
                 if (tag.startsWith("<!--")) {

@@ -52,6 +52,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.HtmlParser;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.RandomComparator;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -980,7 +981,7 @@ public class CmsBean implements Serializable {
     public static boolean validateSidebarElement(CMSSidebarElement element) {
         if (element != null && !element.isValid()) {
             String msg = ViewerResourceBundle.getTranslation("cms_validationWarningHtmlInvalid", null);
-            Messages.error(msg.replace("{0}", element.getType()).replace("{1}", CMSSidebarManager.getInstance().getDisallowedHtmlTagsForDisplay()));
+            Messages.error(msg.replace("{0}", element.getType()).replace("{1}", HtmlParser.getDisallowedHtmlTagsForDisplay()));
             return false;
         }
         return true;
