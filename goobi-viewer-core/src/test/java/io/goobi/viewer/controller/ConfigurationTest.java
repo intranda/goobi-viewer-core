@@ -2047,7 +2047,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSearchFilters_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getSearchFilters().size());
+        Assert.assertEquals(6, DataManager.getInstance().getConfiguration().getSearchFilters().size());
     }
 
     /**
