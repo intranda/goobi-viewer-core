@@ -406,9 +406,12 @@
 			will be rendered as a radio button. Syntax is "filter_" + Solr field name 
 			(so that individual labels can be added). -->
 		<filters>
-			<filter>filter_FIELD1</filter>
-			<filter>filter_FIELD2</filter>
-			<filter>filter_FIELD3</filter>
+            <filter>filter_ALL</filter>
+            <filter>filter_DEFAULT</filter>
+            <filter>filter_FULLTEXT</filter>
+            <filter>filter_NORMDATATERMS</filter>
+            <filter>filter_UGCTERMS</filter>
+            <filter>filter_CMS_TEXT_ALL</filter>
 		</filters>
 		<!-- @enabled: if false, the option to sort search hits is hidden (since 2.0) -->
         <sorting enabled="false">
