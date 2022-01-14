@@ -84,8 +84,8 @@
 						<h:form id="changeLocalForm1" prependId="false">
 			                <ul class="admin__topbar-backend-dropdown">
 			                    <ui:repeat var="lang" value="#{navigationHelper.supportedLanguages}">
-			                        <li>
-			                             <h:commandLink styleClass="#{navigationHelper.localeString == lang ?'activeLang':''}">
+			                        <li class="#{navigationHelper.localeString == lang ?'activeLang':''}">
+			                             <h:commandLink>
 			                                 <h:outputText value="#{msg['changeLocal_long_' += lang]}" />
 			                                 <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{lang}" />
 			                             </h:commandLink>

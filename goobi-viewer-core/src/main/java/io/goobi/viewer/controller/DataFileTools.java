@@ -38,6 +38,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -416,9 +417,9 @@ public class DataFileTools {
         if (altoFilePath != null) {
             // ALTO file
             try {
-                String alto = loadAlto(altoFilePath);
+                StringPair alto = loadAlto(altoFilePath);
                 if (alto != null) {
-                    return ALTOTools.getFulltext(alto, mergeLineBreakWords, request);
+                    return ALTOTools.getFulltext(alto.getOne(), alto.getTwo(), mergeLineBreakWords, request);
                 }
             } catch (ContentNotFoundException e) {
                 throw new FileNotFoundException(e.getMessage());
@@ -433,14 +434,14 @@ public class DataFileTools {
     /**
      * 
      * @param altoFilePath
-     * @return
+     * @return StringPair(ALTO,charset)
      * @throws ContentNotFoundException
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws FileNotFoundException
      * @should throw ContentNotFoundException
      */
-    public static String loadAlto(String altoFilePath)
+    public static StringPair loadAlto(String altoFilePath)
             throws ContentNotFoundException, IndexUnreachableException, PresentationException, FileNotFoundException {
         if (altoFilePath == null) {
             return null;
@@ -452,10 +453,9 @@ public class DataFileTools {
         // ALTO file
         try {
             TextResourceBuilder builder = new TextResourceBuilder();
-            String alto = builder.getAltoDocument(pi, filename);
-            return alto;
+            return builder.getAltoDocument(pi, filename);
         } catch (ContentNotFoundException e) {
-            return DataManager.getInstance()
+            return new StringPair(DataManager.getInstance()
                     .getRestApiManager()
                     .getContentApiManager()
                     .map(urls -> {
@@ -468,7 +468,7 @@ public class DataFileTools {
                     })
                     .filter(array -> Integer.parseInt(array[0]) < 400)
                     .map(array -> array[1])
-                    .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
+                    .orElseThrow(() -> new ContentNotFoundException("Resource not found")), "");
         }
     }
 

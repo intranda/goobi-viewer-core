@@ -39,9 +39,7 @@ var adminJS = ( function( admin ) {
             }
             
             viewerJS.jsfAjax.success.subscribe(function() {
-            	/* SIDEBAR STICKY */
-           		$('.-sticky').hcSticky('refresh', {});
-           		
+            	
     			/* check if translations area contains zzz on ajax load */
         		$('.admin__translations-textarea').keyup(function() {
             		$('.admin__translations-textarea').each(function(i, obj) {

@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.solr.common.SolrDocument;
-
 import io.goobi.viewer.controller.AbstractConfiguration;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
@@ -91,6 +89,13 @@ public interface IModule extends IndexAugmenter {
     public List<String> getSidebarContributions();
 
     /**
+     * Contributions widget_usage.xhtml.
+     * 
+     * @return List of HTML component URLs.
+     */
+    public List<String> getWidgetUsageContributions();
+
+    /**
      * URLs to widgets containing admin menu links.
      *
      * @return a {@link java.util.List} object.
@@ -111,7 +116,6 @@ public interface IModule extends IndexAugmenter {
      * @return a {@link java.util.List} object.
      */
     public List<String> getWidgets(String type);
-
 
     /**
      * Any clean-up the module might want to do when resetting the currently loaded record.

@@ -29,13 +29,13 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
+import de.intranda.digiverso.ocr.alto.utils.AltoCoords;
 import io.goobi.viewer.AbstractTest;
 
 public class ALTOToolsTest extends AbstractTest {
@@ -51,24 +51,10 @@ public class ALTOToolsTest extends AbstractTest {
     /**
      * @throws java.lang.Exception
      */
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test
@@ -86,8 +72,8 @@ public class ALTOToolsTest extends AbstractTest {
         File testFile = new File("src/test/resources/data/sample_alto.xml");
         int rotation = 0;
 
-        String altoString = FileUtils.readFileToString(testFile, "UTF-8");
-        List<String> coords = ALTOTools.getWordCoords(altoString, Collections.singleton("hinauf"), rotation);
+        String altoString = FileUtils.readFileToString(testFile, StringTools.DEFAULT_ENCODING);
+        List<String> coords = ALTOTools.getWordCoords(altoString, StringTools.DEFAULT_ENCODING, Collections.singleton("hinauf"), rotation);
         Assert.assertFalse(coords.isEmpty());
         Assert.assertEquals("1133,2549,1263,2584", coords.get(0));
 
@@ -95,19 +81,19 @@ public class ALTOToolsTest extends AbstractTest {
         terms.add("Santa");
         terms.add("Monica.");
         terms.add("puh");
-        coords = ALTOTools.getWordCoords(altoString, terms, rotation);
-        Assert.assertTrue(coords.size() == 2);
+        coords = ALTOTools.getWordCoords(altoString, StringTools.DEFAULT_ENCODING, terms, rotation);
+        Assert.assertEquals(2, coords.size());
         Assert.assertEquals("1032,2248,1136,2280", coords.get(0));
 
         terms = new LinkedHashSet<>();
         terms.add("Santa Monica.");
-        coords = ALTOTools.getWordCoords(altoString, terms, rotation);
+        coords = ALTOTools.getWordCoords(altoString, StringTools.DEFAULT_ENCODING, terms, rotation);
         Assert.assertTrue(coords.size() == 2);
         Assert.assertEquals("1032,2248,1136,2280", coords.get(0));
 
         terms = new LinkedHashSet<>();
         terms.add("Santa Monica. puh");
-        coords = ALTOTools.getWordCoords(altoString, terms, rotation);
+        coords = ALTOTools.getWordCoords(altoString, StringTools.DEFAULT_ENCODING, terms, rotation);
         Assert.assertTrue(coords.size() == 0);
     }
 
@@ -119,8 +105,8 @@ public class ALTOToolsTest extends AbstractTest {
     public void getWordCoords_shouldMatchHyphenatedWords() throws Exception {
         File file = new File("src/test/resources/data/viewer/alto/0230L.xml");
         Assert.assertTrue(file.isFile());
-        String altoString = FileTools.getStringFromFile(file, "utf-8");
-        List<String> result = ALTOTools.getWordCoords(altoString, Collections.singleton("wappen"), 0);
+        String altoString = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
+        List<String> result = ALTOTools.getWordCoords(altoString, StringTools.DEFAULT_ENCODING, Collections.singleton("wappen"), 0);
         Assert.assertFalse(result.isEmpty());
     }
 
@@ -132,9 +118,10 @@ public class ALTOToolsTest extends AbstractTest {
     public void getWordCoords_shouldMatchPhrases() throws Exception {
         File file = new File("src/test/resources/data/sample_alto.xml");
         Assert.assertTrue(file.isFile());
-        String altoString = FileTools.getStringFromFile(file, "utf-8");
+        String altoString = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
         {
-            List<String> result = ALTOTools.getWordCoords(altoString, Collections.singleton("ein neues doppelpyramidenrätsel"), 0);
+            List<String> result =
+                    ALTOTools.getWordCoords(altoString, StringTools.DEFAULT_ENCODING, Collections.singleton("ein neues doppelpyramidenrätsel"), 0);
             Assert.assertEquals(3, result.size());
             Assert.assertEquals("843,478,904,509", result.get(0));
             Assert.assertEquals("923,489,1021,509", result.get(1));
@@ -142,7 +129,8 @@ public class ALTOToolsTest extends AbstractTest {
         }
         {
             List<String> result =
-                    ALTOTools.getWordCoords(altoString, Collections.singletonMap("ein neues dreifachpyramidenrätsel", null).keySet(), 0);
+                    ALTOTools.getWordCoords(altoString, StringTools.DEFAULT_ENCODING,
+                            Collections.singletonMap("ein neues dreifachpyramidenrätsel", null).keySet(), 0);
             Assert.assertEquals(0, result.size());
         }
     }
@@ -155,9 +143,9 @@ public class ALTOToolsTest extends AbstractTest {
     public void getWordCoords_shouldMatchDiacriticsViaBaseLetter() throws Exception {
         File file = new File("src/test/resources/data/sample_alto.xml");
         Assert.assertTrue(file.isFile());
-        String altoString = FileTools.getStringFromFile(file, "utf-8");
+        String altoString = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
 
-        List<String> result = ALTOTools.getWordCoords(altoString, Collections.singleton("doppelpyramidenratsel"), 0);
+        List<String> result = ALTOTools.getWordCoords(altoString, StringTools.DEFAULT_ENCODING, Collections.singleton("doppelpyramidenratsel"), 0);
         Assert.assertEquals(1, result.size());
         Assert.assertEquals("1039,477,1482,516", result.get(0));
     }
@@ -170,9 +158,9 @@ public class ALTOToolsTest extends AbstractTest {
     public void alto2Txt_shouldUseExtractFulltextCorrectly() throws Exception {
         File file = new File("src/test/resources/data/viewer/alto/LIWZ_1877_01_05_001.xml");
         Assert.assertTrue(file.isFile());
-        String alto = FileTools.getStringFromFile(file, "utf-8");
+        String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
         Assert.assertNotNull(alto);
-        String text = ALTOTools.alto2Txt(alto, false, null);
+        String text = ALTOTools.alto2Txt(alto, StringTools.DEFAULT_ENCODING, false, null);
         Assert.assertNotNull(text);
         Assert.assertTrue(text.length() > 100);
     }
@@ -185,9 +173,9 @@ public class ALTOToolsTest extends AbstractTest {
     public void alto2Txt_shouldConcatenateWordAtLineBreakCorrectly() throws Exception {
         File file = new File("src/test/resources/data/viewer/alto/0230L.xml");
         Assert.assertTrue(file.isFile());
-        String alto = FileTools.getStringFromFile(file, "utf-8");
+        String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
         Assert.assertNotNull(alto);
-        String text = ALTOTools.alto2Txt(alto, true, null);
+        String text = ALTOTools.alto2Txt(alto, StringTools.DEFAULT_ENCODING, true, null);
         Assert.assertNotNull(text);
         Assert.assertTrue(text.contains("Wappen"));
     }
@@ -200,9 +188,21 @@ public class ALTOToolsTest extends AbstractTest {
     public void getFullText_shouldExtractFulltextCorrectly() throws Exception {
         File file = new File("src/test/resources/data/viewer/data/1/alto/00000010.xml");
         Assert.assertTrue(file.isFile());
-        String text = ALTOTools.getFulltext(file.toPath(), "utf-8");
+        String text = ALTOTools.getFulltext(file.toPath(), StringTools.DEFAULT_ENCODING);
         Assert.assertNotNull(text);
         Assert.assertTrue(text.length() > 100);
     }
 
+    @Test
+    public void getMatchALTOWord_findFuzzyTerms() {
+        String[] searchTerms = new String[] {"Steigbügel~1", "Halter~1"};
+        {            
+            Word word = new Word("Steigbugle", new AltoCoords(10, 10, 12, 12));
+            assertEquals(1, ALTOTools.getMatchALTOWord(word, searchTerms));
+        }
+        {
+            Word word = new Word("Ich war beim Steigbügel Häälter", new AltoCoords(10, 10, 12, 12));
+            assertEquals(2, ALTOTools.getMatchALTOWord(word, searchTerms));
+        }
+    }
 }

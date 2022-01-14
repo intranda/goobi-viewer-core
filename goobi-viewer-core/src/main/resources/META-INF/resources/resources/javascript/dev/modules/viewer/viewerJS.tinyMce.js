@@ -56,26 +56,7 @@ var viewerJS = ( function( viewer ) {
             return c;
         },
         init: function( config ) {
-            this.config = $.extend( true, {}, _defaults, config,
-            		
-            	// CUSTOM TOOLBAR BUTTON FOR ADDING FEEDBACK FORM
-//            	{
-//            	  setup: function (editor) {
-//            	    editor.ui.registry.addButton('addFeedbackModalLink', {
-//            	      text: '<i style="font-family:FontAwesome" class="fa fa-commenting-o"></i>',
-//            	      tooltip: 'Add Link for feedback modal',
-//            	      
-//            	      onAction: function () {
-//            	    	  editor.insertContent('<a class="-feedback-form-link" data-toggle="modal" data-target="#feedbackModal">' + editor.selection.getContent() + '</a>');
-//            	      }
-//            	    
-//            	    });
-//            	  },
-//            	  content_style: ".-feedback-form-link { background-color: #f5f5f5; border-radius: 3px; padding: 2px;} .-feedback-form-link:after { content:' (feedback)'}"
-//            	} 
-            	// EOL CUSTOM TOOLBAR BUTTON
-
-            );
+            this.config = $.extend( true, {}, _defaults, config);
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'viewer.tinyMce.init' );

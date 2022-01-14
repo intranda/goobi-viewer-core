@@ -27,7 +27,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,6 +48,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
@@ -237,13 +240,17 @@ public class SearchHit implements Comparable<SearchHit> {
         if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
             docstructType = DocType.METADATA.name();
         }
+        
+        Map<String, List<String>> searchedFields = new HashMap<>(se.getMetadataFields());
+        searchedFields.put(SolrConstants.FULLTEXT, Collections.singletonList(fulltext));
+        Map<String, Set<String>> foundSearchTerms = getActualSearchTerms(searchTerms, searchedFields);
 
         List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(docstructType);
         BrowseElement browseElement = new BrowseElement(se, metadataList, locale,
-                (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, searchTerms,
+                (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, foundSearchTerms,
                 thumbnailHandler);
         // Add additional metadata fields that aren't configured for search hits but contain search term values
-        browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms, ignoreAdditionalFields, translateAdditionalFields);
+        browseElement.addAdditionalMetadataContainingSearchTerms(se, foundSearchTerms, ignoreAdditionalFields, translateAdditionalFields);
         // Add sorting fields (should be added after all other metadata to avoid duplicates)
         browseElement.addSortFieldsToMetadata(se, sortFields, ignoreAdditionalFields);
 
@@ -287,6 +294,43 @@ public class SearchHit implements Comparable<SearchHit> {
             }
         }
         return hit;
+    }
+
+    /**
+     * replaces any terms with a fuzzy search token with the matching strings found in the valus of fields
+     * 
+     * @param origTerms
+     * @param fields 
+     * @return
+     */
+    private static Map<String, Set<String>> getActualSearchTerms(Map<String, Set<String>> origTerms, Map<String, List<String>> resultFields) {
+        String foundValues = resultFields.values().stream().flatMap(l -> l.stream()).collect(Collectors.joining(" "));
+        Map<String, Set<String>> newFieldTerms = new HashMap<>();
+        if(origTerms == null) {
+            return newFieldTerms;
+        }
+        for (String  solrField : origTerms.keySet()) {
+            Set<String> newTerms = new HashSet<String>();
+            Set<String> terms = origTerms.get(solrField);
+            for(String term : terms) {
+                term = term.replaceAll("^\\(|\\)$", "");
+                term = StringTools.removeDiacriticalMarks(term);
+                if(FuzzySearchTerm.isFuzzyTerm(term)) {
+                    FuzzySearchTerm fuzzy = new FuzzySearchTerm(term);
+                    Matcher m = Pattern.compile(FuzzySearchTerm.WORD_PATTERN).matcher(foundValues);
+                    while(m.find()) {
+                        String word = m.group();
+                        if(fuzzy.matches(word)) {
+                            newTerms.add(word);
+                        }
+                    }
+                } else {
+                    newTerms.add(term);
+                }
+            }
+            newFieldTerms.put(solrField, newTerms);
+        }
+        return newFieldTerms;
     }
 
     /**

@@ -17,11 +17,9 @@ package io.goobi.viewer.api.rest.model.ner;
 
 import java.awt.Rectangle;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * <p>
@@ -33,6 +31,8 @@ public class ElementReference {
     private final String id;
     private Rectangle coordinates;
     private String content;
+    @JsonInclude(Include.NON_EMPTY)
+    private String uri;
     private int page;
 
     /**
@@ -45,6 +45,7 @@ public class ElementReference {
         this.id = null;
         this.coordinates = null;
         this.content = null;
+        this.uri = null;
     }
 
     /**
@@ -55,12 +56,14 @@ public class ElementReference {
      * @param id a {@link java.lang.String} object.
      * @param coordinates a {@link java.awt.Rectangle} object.
      * @param content a {@link java.lang.String} object.
+     * @param uri Value of the URI attribute
      */
-    public ElementReference(String id, Rectangle coordinates, String content) {
+    public ElementReference(String id, Rectangle coordinates, String content, String uri) {
         super();
         this.id = id;
         this.coordinates = coordinates;
         this.content = content;
+        this.uri = uri;
     }
 
     /**
@@ -128,6 +131,20 @@ public class ElementReference {
      */
     public void setContent(String content) {
         this.content = content;
+    }
+
+    /**
+     * @return the uri
+     */
+    public String getUri() {
+        return uri;
+    }
+
+    /**
+     * @param uri the uri to set
+     */
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     /**

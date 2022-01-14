@@ -72,6 +72,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.translations.language.Language;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -112,7 +113,8 @@ public class RecordFileResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        return builder.getAltoDocument(pi, filename);
+        StringPair ret= builder.getAltoDocument(pi, filename);
+        return ret.getOne();
     }
 
     @GET

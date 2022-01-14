@@ -93,10 +93,10 @@ var viewerJS = (function () {
 	    
 	    viewerJS.initWidgetUsage();
 
-       viewerJS.initFragmentActions();
+        viewerJS.initFragmentActions();
        
-       viewerJS.initRequiredInputs();
-       
+        viewerJS.initRequiredInputs();
+               
         // init bookmarks if enabled
         if ( bookmarksEnabled ) { 
             viewerJS.bookmarks.init( {
@@ -116,6 +116,7 @@ var viewerJS = (function () {
         viewer.loadThumbnails();
         viewer.initFragmentNavigation();
         viewer.initStoreScrollPosition();
+        viewer.initSidebarCollapseable();
 
         // AJAX Loader Eventlistener
         viewerJS.jsfAjax.init(_defaults);
@@ -143,10 +144,9 @@ var viewerJS = (function () {
         	$( '.title__body' ).slideToggle( 'fast' );        	
         } );
 
-        // toggle collapseable widgets
-        $('body').on('click', '.widget__title.collapseable', function () {
-            $(this).toggleClass('in').next().slideToggle('fast');
-        });
+
+
+
 
         // fade out message box if it exists
         (function () {
@@ -303,21 +303,20 @@ var viewerJS = (function () {
     viewer.accessibility.init();
 	// EOL viewerJS function
     };
+
     
     viewer.showLoader = function() {
         viewer.jsfAjax.complete.pipe(rxjs.operators.first()).subscribe(() => $(".ajax_loader").hide())
         $(".ajax_loader").show();
     }
-    
-    // refresh HC sticky method (use case: after ajax calls/DOM changes)
-    viewer.refreshHCsticky = function () {
-    	jQuery(document).ready(function($) {
-
-        	$(".-refreshHCsticky").hcSticky('refresh', {});
-
-    		});
-
-    	// console.log('refresh hc sticky done');
+  
+    viewer.initSidebarCollapseable = function() {
+    	viewer.toggledCollapseable = new rxjs.Subject();
+    	$('body').on('click', '.widget__title.collapseable', function (e) {
+			$(this).toggleClass('in').next().slideToggle(300, function() {
+				viewer.toggledCollapseable.next(e);
+		    })
+		})
     }
     
     viewer.initTinyMCE  = function(event) {
@@ -328,8 +327,8 @@ var viewerJS = (function () {
                 viewer.tinyConfig.setup = function (ed) {
                     // listen to changes on tinymce input fields
                     ed.on('init', function (e) {
-                        if(_debug)console.log("init ", e);
-                        viewer.refreshHCsticky();
+                        console.log("init ", e);
+                        viewerJS.stickyElements.refresh.next();
                     });
                     
                     ed.on('change input paste', function (e) {

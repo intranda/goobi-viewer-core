@@ -720,7 +720,7 @@
 	&__sidebar-background,
 	&__sidebar {
 		width: 250px;		
-		background-color: @blue; 
+		background-color: @adminBackend-bg; 
 	}
 	&__sidebar-background {  
 		position: fixed;
@@ -745,7 +745,7 @@
 			bottom: 0;
 		}
 		a, button {
-			color: @white;
+			color: @adminBackend-menu-text;
 			&:hover,
 			&:active,
 			&:focus {
@@ -772,6 +772,7 @@
 				display: flex;
 				align-items: center;
 				max-width: 100%;
+				color: @white;
 			}
 			img {
 				max-width: 30%;
@@ -974,8 +975,8 @@
 		width: 100vw;
 		z-index: 1220;
 		height: 3.5rem;
-		background: @blue;
-		color: @white;
+		background: @adminBackend-bg;
+		color: @adminBackend-menu-text;
 		position: fixed;
 		top: 0;
 		font-size: 1.4rem;
@@ -1002,14 +1003,14 @@
 		visibility: hidden;
 		position: absolute;
 		top: 100%;
-		background: #235396;
+		background: @adminBackend-bg;
 		left: 0;
 		min-width: 250px;
 		transition: all 0.2s ease;
 		li {
 			padding: 0.3rem 0.7rem 0.3rem 2rem;
             &:hover {
-                background-color: #3365a9;
+                background-color: @adminBackend-menu-hover;
             }
         }
 		a {
@@ -1031,7 +1032,7 @@
 		transition: all 0.2s ease;
 		cursor: default;
 		&:hover {
-			background: #235396;
+			background: @adminBackend-menu-hover;
             cursor: pointer;
 			fill: @white;
 		}
@@ -1045,7 +1046,7 @@
 	}		
 	&__topbar-backend-view-frontend-link {
 		padding: 0 2rem;
-		color: @white;
+		color: @adminBackend-menu-text;
 		transition: all 0.2s ease;
 		display: flex;
 		justify-content: center;
@@ -1055,7 +1056,7 @@
 			font-size: 1.6rem;
 		}
 		&:hover {
-			background: #235396;
+			background: @adminBackend-menu-hover;
             color: @white;
 			text-decoration: none;
 		}
@@ -1078,7 +1079,7 @@
 			font-size: 1.6rem;
 		}
 		&:hover {
-			background: #235396;
+			background: @adminBackend-menu-hover;
 			text-decoration: none;
             cursor: pointer;
 			color: @white;
@@ -1094,14 +1095,23 @@
 		cursor: default;
 		.activeLang {
 			font-weight: 700;
-			&:after {
-				font: normal normal normal 14px/1 FontAwesome;
-				content: "\f00c";
-				margin-left: .7rem;
+			background: @adminBackend-active-state;
+			a {
+				&:after {
+					font: normal normal normal 14px/1 FontAwesome;
+					content: "\f00c";
+					margin-left: .7rem;
+				}
 			}
+			&:hover {
+				background: @adminBackend-active-state;
+			}
+
 		}
+
+
 		&:hover {
-			background: #235396;
+			background: @adminBackend-menu-hover;
 			text-decoration: none;
             cursor: pointer;
 			color: @white;
@@ -1129,7 +1139,7 @@
 	}
 	&__topbar-backend-logout-link {
 		padding: 0 2rem;
-		color: @white;
+		color: @adminBackend-menu-text;;
 		transition: all 0.2s ease;
 		display: flex;
 		justify-content: center;
@@ -1139,7 +1149,7 @@
 			font-size: 1.6rem;
 		}
 		&:hover {
-			background: #235396;
+			background: @adminBackend-menu-hover;
             color: white;
 			text-decoration: none;
 		}
@@ -1303,8 +1313,8 @@
 		width: 100vw;
 		z-index: 2400;
 		height: 3.5rem;
-		background: @blue;
-		color: @white;
+		background: @adminBackend-bg;
+		color: @adminBackend-menu-text;
 		position: sticky;
 		top: 0;
 		font-size: 1.4rem;
@@ -1331,14 +1341,14 @@
 		visibility: hidden;
 		position: absolute;
 		top: 100%;
-		background: #235396;
+		background: @adminBackend-bg;
 		left: 0;
 		min-width: 250px;
 		transition: all 0.2s ease;
 		li {
 			padding: 0.3rem 0.7rem 0.3rem 2rem;
             &:hover {
-                background-color: #3365a9;
+                background-color: @adminBackend-menu-hover;
             }
         }
 		a {
@@ -1360,7 +1370,7 @@
 		transition: all 0.2s ease;
 		cursor: default;
 		&:hover {
-			background: #235396;
+			background: @adminBackend-menu-hover;
             cursor: pointer;
 			fill: @white;
 		}
@@ -1385,7 +1395,7 @@
 			font-size: 1.6rem;
 		}
 		&:hover {
-			background: #235396;
+			background: @adminBackend-menu-hover;
             color: @white;
 			text-decoration: none;
 		}
@@ -1408,7 +1418,7 @@
 			font-size: 1.6rem;
 		}
 		&:hover {
-			background: #235396;
+			background: @adminBackend-menu-hover;
 			text-decoration: none;
             cursor: pointer;
 			color: @white;
@@ -1467,7 +1477,7 @@
 			font-size: 1.6rem;
 		}
 		&:hover {
-			background: #235396;
+			background: @adminBackend-menu-hover;
             color: white;
 			text-decoration: none;
 		}

@@ -125,13 +125,14 @@
                                         </h:outputLink>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{currentPageOrder == firstPageOrder}">
-
+										<span>
 	                                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
 	                                            <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}" />
 	                                        </ui:fragment>
 	                                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
 	                                            <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}" />
 	                                        </ui:fragment>
+										</span>
                                     </ui:fragment>
                                 </li>
                             </ui:fragment>
@@ -165,7 +166,7 @@
                             
                             <script>
                             
-                            $("#j_idt372\\:pageDropdown").on("change", e => {
+                            $("##{cc.clientId}\\:pageDropdown").on("change", e => {
                                 let urlBase = "#{activeDocumentBean.getPageUrlByType(navigationHelper.currentView)}"
                                 let pageNo = $(e.target).val();
                                 console.log("change ", urlBase, pageNo);

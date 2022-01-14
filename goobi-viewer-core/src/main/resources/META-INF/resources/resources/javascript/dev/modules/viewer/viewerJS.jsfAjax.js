@@ -93,15 +93,6 @@ var viewerJS = ( function ( viewer ) {
                                 viewerJS.tinyMce.close();
                                 viewerJS.tinyMce.init( viewerJS.tinyConfig );
                             }
-                            // hc sticky recalculation
-                            if ( $('.-refreshHCsticky' ).length > 0 ) {
-                            	setTimeout(
-                            			  function() 
-                            			  {
-                                          	viewer.refreshHCsticky();
-                            			  }, 0);
-
-                    		}
                             this.success.next(data);
                             break;
                         case 'error':

@@ -37,9 +37,8 @@ var adminJS = ( function() {
             console.log( 'adminJS.init' );
             console.log( '##############################' );
         }
-        
-        // init sticky elements (sidebars)
-        adminJS.stickyElements.init();
+        //Initialize sticky elements for admin pages
+        viewerJS.stickyElements.init({initAdmin:true});
     };
     
     return admin;
