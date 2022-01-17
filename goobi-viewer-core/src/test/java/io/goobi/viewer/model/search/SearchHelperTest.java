@@ -560,7 +560,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Set<String> terms = result.get(SolrConstants.FULLTEXT);
         Assert.assertNotNull(terms);
         Assert.assertEquals(1, terms.size());
-        Assert.assertTrue(terms.contains("\"hello world\"~10"));
+        Assert.assertTrue(terms.contains("\"hello world\""));
     }
     
 
@@ -966,7 +966,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                         SolrConstants.CMS_TEXT_ALL, SolrConstants.PI_TOPSTRUCT, SolrConstants.PI_ANCHOR, SolrConstants.DC, SolrConstants.DOCSTRCT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
-        searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>(Arrays.asList(new String[] { "\"two three\"~10" })));
+        searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>(Arrays.asList(new String[] { "\"two three\"" })));
         searchTerms.put(SolrConstants.NORMDATATERMS, new HashSet<>(Arrays.asList(new String[] { "four", "five" })));
         searchTerms.put(SolrConstants.UGCTERMS, new HashSet<>(Arrays.asList(new String[] { "six" })));
         searchTerms.put(SolrConstants.CMS_TEXT_ALL, new HashSet<>(Arrays.asList(new String[] { "seven" })));
@@ -975,6 +975,12 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(
                 " +(" + SolrConstants.DEFAULT + ":(one OR two) OR " + SolrConstants.FULLTEXT + ":\"two\\ three\"~10 OR " + SolrConstants.NORMDATATERMS
                         + ":(four OR five) OR " + SolrConstants.UGCTERMS + ":six OR " + SolrConstants.CMS_TEXT_ALL + ":seven)",
+                SearchHelper.generateExpandQuery(fields, searchTerms, false, 10));
+        
+        searchTerms.clear();
+        searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>(Arrays.asList(new String[] { "\"two three\"" })));
+        Assert.assertEquals(
+                " +(" + SolrConstants.FULLTEXT + ":\"two\\ three\"~10)",
                 SearchHelper.generateExpandQuery(fields, searchTerms, false, 10));
     }
 

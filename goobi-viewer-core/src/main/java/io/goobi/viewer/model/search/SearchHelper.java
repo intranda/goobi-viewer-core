@@ -1769,9 +1769,10 @@ public final class SearchHelper {
                     if (ret.get(field) == null) {
                         ret.put(field, new HashSet<String>());
                     }
-                    ret.get(field).add(value);
+                    ret.get(field).add(value.substring(0, value.indexOf("~")));
                 }
                 query = query.replace(phrase, "");
+                // Do not add to _TITLE_TERMS
             }
         }
         // Extract phrases and add them directly
@@ -2153,16 +2154,14 @@ public final class SearchHelper {
                     //unescape fuzzy search token
                     term = term.replaceAll("\\\\~(\\d)", "~$1");
                     if (phraseSearch) {
-                        term = "\"" + term + "\"";
+                        term = '"' + term + '"';
                     }
                 }
                 if (SolrConstants.FULLTEXT.equals(field) && proximitySearchDistance > 0) {
                     term = term.replace("\\\"", "\""); // unescape quotation marks
-                    // sbInner.append(SearchHelper.addProximitySearchToken(term, proximitySearchDistance));
-                    sbInner.append(term);
-                } else {
-                    sbInner.append(term);
+                    term = SearchHelper.addProximitySearchToken(term, proximitySearchDistance);
                 }
+                sbInner.append(term);
             }
             sbOuter.append(field).append(":");
             if (multipleTerms) {
