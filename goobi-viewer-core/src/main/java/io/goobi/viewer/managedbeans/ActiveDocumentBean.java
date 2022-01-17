@@ -20,7 +20,6 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,7 +69,6 @@ import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
@@ -104,7 +102,6 @@ import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
-import io.goobi.viewer.solr.SolrTools;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
@@ -258,6 +255,7 @@ public class ActiveDocumentBean implements Serializable {
             clearCacheMode = null;
             prevDocstructUrlCache.clear();
             nextDocstructUrlCache.clear();
+            lastReceivedIdentifier = null;
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -317,9 +315,6 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Loads the record with the IDDOC set in <code>currentElementIddoc</code>.
      *
-     * @should create ViewManager correctly
-     * @should update ViewManager correctly if LOGID has changed
-     * @should not override topDocumentIddoc if LOGID has changed
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
@@ -329,6 +324,9 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IDDOCNotFoundException
      * @throws RecordLimitExceededException
      * @throws NumberFormatException
+     * @should create ViewManager correctly
+     * @should update ViewManager correctly if LOGID has changed
+     * @should not override topDocumentIddoc if LOGID has changed
      * @should throw RecordNotFoundException if listing not allowed by default
      * @should load records that have been released via moving wall
      */
@@ -528,11 +526,7 @@ public class ActiveDocumentBean implements Serializable {
      * i.e. if the url suggests that double page mode is expected 
      */
     private boolean isDoublePageUrl() {
-        if(StringUtils.isNotBlank(imageToShow) && imageToShow.matches(DOUBLE_PAGE_PATTERN)) {
-            return true;
-        } else {
-            return false;
-        }
+        return StringUtils.isNotBlank(imageToShow) && imageToShow.matches(DOUBLE_PAGE_PATTERN);
     }
     
     /**
@@ -1111,9 +1105,9 @@ public class ActiveDocumentBean implements Serializable {
             int image = viewManager.getPageLoader().getFirstPageOrder();
             if(viewManager.isDoublePageMode()) {
                 return getPageUrl(image + "-" + image);
-            } else {                
-                return getPageUrl(Integer.toString(image));
             }
+            
+            return getPageUrl(Integer.toString(image));
         }
 
         return null;
@@ -1132,9 +1126,9 @@ public class ActiveDocumentBean implements Serializable {
             int image = viewManager.getPageLoader().getLastPageOrder();
             if(viewManager.isDoublePageMode()) {
                 return getPageUrl(image + "-" + image);
-            } else {                
-                return getPageUrl(Integer.toString(image));
             }
+            
+            return getPageUrl(Integer.toString(image));
         }
 
         return null;
