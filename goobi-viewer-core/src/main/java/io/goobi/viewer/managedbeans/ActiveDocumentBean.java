@@ -118,7 +118,7 @@ public class ActiveDocumentBean implements Serializable {
      * Regex pattern 'imageToShow' matches if doublePageMode should be active
      */
     private static final String DOUBLE_PAGE_PATTERN = "\\d+-\\d+";
-    
+
     private static int imageContainerWidth = 600;
 
     private final Object lock = new Object();
@@ -161,7 +161,7 @@ public class ActiveDocumentBean implements Serializable {
     private BrowseElement nextHit;
 
     /** This persists the last value given to setPersistentIdentifier() and is used for handling a RecordNotFoundException. */
-    private String lastReceivedIdentifier;
+    String lastReceivedIdentifier;
     /** Available languages for this record. */
     private List<String> recordLanguages;
     /** Currently selected language for multilingual records. */
@@ -239,6 +239,7 @@ public class ActiveDocumentBean implements Serializable {
      * TODO This can cause NPEs if called while update() is running.
      * 
      * @throws IndexUnreachableException
+     * @should reset lastReceivedIdentifier
      */
     public void reset() throws IndexUnreachableException {
         synchronized (this) {
@@ -263,7 +264,11 @@ public class ActiveDocumentBean implements Serializable {
             }
 
             // Remove record lock for this record and session
-            DataManager.getInstance().getRecordLockManager().removeLockForPiAndSessionId(pi, BeanUtils.getSession().getId());
+            if (BeanUtils.getSession() != null) {
+                DataManager.getInstance()
+                        .getRecordLockManager()
+                        .removeLockForPiAndSessionId(pi, BeanUtils.getSession().getId());
+            }
         }
     }
 
@@ -522,13 +527,13 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * 
-     * @return true if the 'imageToShow' part of the url matches {@link #DOUBLE_PAGE_PATTERN}, 
-     * i.e. if the url suggests that double page mode is expected 
+     * @return true if the 'imageToShow' part of the url matches {@link #DOUBLE_PAGE_PATTERN}, i.e. if the url suggests that double page mode is
+     *         expected
      */
     private boolean isDoublePageUrl() {
         return StringUtils.isNotBlank(imageToShow) && imageToShow.matches(DOUBLE_PAGE_PATTERN);
     }
-    
+
     /**
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -1022,9 +1027,9 @@ public class ActiveDocumentBean implements Serializable {
                 page2 = Math.min(page2, viewManager.getPageLoader().getLastPageOrder());
             }
         }
-//        if (page == page2) {
-//            page2 = Integer.MAX_VALUE;
-//        }
+        //        if (page == page2) {
+        //            page2 = Integer.MAX_VALUE;
+        //        }
         String range = page + (page2 != Integer.MAX_VALUE ? "-" + page2 : "");
         // logger.trace("final range: {}", range);
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
@@ -1103,10 +1108,10 @@ public class ActiveDocumentBean implements Serializable {
     public String getFirstPageUrl() throws IndexUnreachableException {
         if (viewManager != null) {
             int image = viewManager.getPageLoader().getFirstPageOrder();
-            if(viewManager.isDoublePageMode()) {
+            if (viewManager.isDoublePageMode()) {
                 return getPageUrl(image + "-" + image);
             }
-            
+
             return getPageUrl(Integer.toString(image));
         }
 
@@ -1124,10 +1129,10 @@ public class ActiveDocumentBean implements Serializable {
     public String getLastPageUrl() throws IndexUnreachableException {
         if (viewManager != null) {
             int image = viewManager.getPageLoader().getLastPageOrder();
-            if(viewManager.isDoublePageMode()) {
+            if (viewManager.isDoublePageMode()) {
                 return getPageUrl(image + "-" + image);
             }
-            
+
             return getPageUrl(Integer.toString(image));
         }
 
@@ -1202,7 +1207,7 @@ public class ActiveDocumentBean implements Serializable {
         if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
             return getPageUrl(String.valueOf(number) + "-" + String.valueOf(number));
         }
-        
+
         // logger.trace("step: {}", step);
         // logger.trace("Number: {}", number);
 
@@ -2303,7 +2308,9 @@ public class ActiveDocumentBean implements Serializable {
 
             Collection<GeoMapFeature> features = new ArrayList<>();
 
-            List<DisplayUserGeneratedContent> annos = DataManager.getInstance().getDao().getAnnotationsForWork(pi)
+            List<DisplayUserGeneratedContent> annos = DataManager.getInstance()
+                    .getDao()
+                    .getAnnotationsForWork(pi)
                     .stream()
                     .filter(a -> PublicationStatus.PUBLISHED.equals(a.getPublicationStatus()))
                     .filter(a -> StringUtils.isNotBlank(a.getBody()))
@@ -2312,8 +2319,8 @@ public class ActiveDocumentBean implements Serializable {
                     .filter(a -> ContentBean.isAccessible(a, BeanUtils.getRequest()))
                     .collect(Collectors.toList());
             for (DisplayUserGeneratedContent anno : annos) {
-                if(anno.getAnnotationBody() instanceof TypedResource) {
-                    GeoMapFeature feature = new GeoMapFeature(((TypedResource)anno.getAnnotationBody()).asJson());
+                if (anno.getAnnotationBody() instanceof TypedResource) {
+                    GeoMapFeature feature = new GeoMapFeature(((TypedResource) anno.getAnnotationBody()).asJson());
                     features.add(feature);
                 }
             }
@@ -2430,12 +2437,12 @@ public class ActiveDocumentBean implements Serializable {
                     Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
                     if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
                         imageToShow = currentLeftPage.get().getOrder() + "-" + currentRightPage.get().getOrder();
-                    } else if(currentLeftPage.isPresent()) {
+                    } else if (currentLeftPage.isPresent()) {
                         imageToShow = currentLeftPage.get().getOrder() + "-" + currentLeftPage.get().getOrder();
-                    } else if(currentRightPage.isPresent()) {
+                    } else if (currentRightPage.isPresent()) {
                         imageToShow = currentRightPage.get().getOrder() + "-" + currentRightPage.get().getOrder();
                     }
-                } else if(doublePageMode) {
+                } else if (doublePageMode) {
                     imageToShow = String.valueOf(viewManager.getCurrentPage().getOrder() + "-" + viewManager.getCurrentPage().getOrder());
                 } else {
                     imageToShow = String.valueOf(viewManager.getCurrentPage().getOrder());
