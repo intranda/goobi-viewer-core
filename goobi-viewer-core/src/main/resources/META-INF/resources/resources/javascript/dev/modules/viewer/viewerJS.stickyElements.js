@@ -26,7 +26,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
 
-	var _debug = true;    
+	var _debug = false;    
      
     viewer.stickyElements = {
     	initialized: false,
@@ -92,17 +92,14 @@ var viewerJS = ( function( viewer ) {
 			
 			if(config.initFrontend) {
 				// toggle collapseable widgets
-	       		$('body').on('click', '.widget__title.collapseable', function () {
-	//	            	window.scrollTo(0,0);
-		            $(this).toggleClass('in').next().slideToggle(300, function() {
-		            	var pos = $(this).position().top;
-			       		var offset = $(this).offset().top;
-			       		var currentPos = document.documentElement.scrollTop;
-			       		if(currentPos > pos) {
-		            		window.scrollTo(0,pos);
-						}		       		
-	     				viewerJS.stickyElements.refresh.next();
-					});
+	       		viewer.toggledCollapseable.subscribe(e => {
+	            	var pos = $(e.target).position().top;
+		       		var offset = $(e.target).offset().top;
+		       		var currentPos = document.documentElement.scrollTop;
+		       		if(currentPos > pos) {
+	            		window.scrollTo(0,pos);
+					}		       		
+     				viewerJS.stickyElements.refresh.next();
 				});
 				
 				// sticky sidebar

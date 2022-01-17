@@ -73,8 +73,12 @@
         <aside id="fullscreenViewSidebar" class="fullscreen__view-sidebar" tabindex="-1">
             <!-- SIDEBAR PANEL CONTROLS -->
             <div id="fullscreenSidebarPanelControls" class="fullscreen__view-sidebar-panel-controls">
-                <button class="btn btn--clean" data-close="all-tabs" title="#{msg.allClose}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allClose}"></button>
-                <button class="btn btn--clean" data-open="all-tabs" title="#{msg.allOpen}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allOpen}"></button>
+                <button class="btn btn--clean" data-close="all-tabs" title="#{msg.allClose}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allClose}">
+                	<ui:include src="/resources/images/icons/icon_fs-minus.svg"/>
+                </button>
+                <button class="btn btn--clean" data-open="all-tabs" title="#{msg.allOpen}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allOpen}">
+                	<ui:include src="/resources/images/icons/icon_fs-plus.svg"/>
+				</button>
             </div>
 
             <div class="fullscreen__view-sidebar-inner">

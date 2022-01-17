@@ -116,6 +116,7 @@ var viewerJS = (function () {
         viewer.loadThumbnails();
         viewer.initFragmentNavigation();
         viewer.initStoreScrollPosition();
+        viewer.initSidebarCollapseable();
 
         // AJAX Loader Eventlistener
         viewerJS.jsfAjax.init(_defaults);
@@ -302,10 +303,20 @@ var viewerJS = (function () {
     viewer.accessibility.init();
 	// EOL viewerJS function
     };
+
     
     viewer.showLoader = function() {
         viewer.jsfAjax.complete.pipe(rxjs.operators.first()).subscribe(() => $(".ajax_loader").hide())
         $(".ajax_loader").show();
+    }
+  
+    viewer.initSidebarCollapseable = function() {
+    	viewer.toggledCollapseable = new rxjs.Subject();
+    	$('body').on('click', '.widget__title.collapseable', function (e) {
+			$(this).toggleClass('in').next().slideToggle(300, function() {
+				viewer.toggledCollapseable.next(e);
+		    })
+		})
     }
     
     viewer.initTinyMCE  = function(event) {
