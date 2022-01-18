@@ -7,7 +7,7 @@
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h2 class="modal-title">{modalTitle}</h2>
+					<h1 class="h2 modal-title">{modalTitle}</h1>
 					<button class="fancy-close" data-dismiss="modal"
 						aria-label="Close">
 						<span aria-hidden="true">x</span>
