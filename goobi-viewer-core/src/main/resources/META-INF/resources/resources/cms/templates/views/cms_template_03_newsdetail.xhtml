@@ -39,7 +39,7 @@
                     </div>
                 </h:panelGroup>
 
-				<h2>#{cmsPage.title}</h2>
+				<h1 class="h2">#{cmsPage.title}</h1>
 				
 				<!-- DATE -->
                 <h:panelGroup rendered="#{cmsPage.getContent('A0') != ''}">
@@ -51,7 +51,7 @@
 				<!-- NEWS DETAIL CONTENT 1 -->
 				<h:panelGroup rendered="#{cmsPage.hasContent('A2')}">
 					<div class="tpl-news-detail__content">
-						<h3>#{cmsPage.getContent('A1')}</h3>
+						<h2>#{cmsPage.getContent('A1')}</h2>
 						
 						<div class="row">
                             <div class="col-12 col-sm-3">
@@ -78,7 +78,7 @@
                 <!-- NEWS DETAIL CONTENT 2 -->
                 <h:panelGroup rendered="#{cmsPage.hasContent('B2')}">
 	                <div class="tpl-news-detail__content">
-	                    <h3>#{cmsPage.getContent('B1')}</h3>
+	                    <h2>#{cmsPage.getContent('B1')}</h2>
 						
 						<div class="row">
 							<div class="col-12 col-sm-3">
@@ -103,7 +103,7 @@
                 <!-- NEWS DETAIL CONTENT 3 -->
                 <h:panelGroup rendered="#{cmsPage.hasContent('C2')}">
 	                <div class="tpl-news-detail__content">
-	                    <h3>#{cmsPage.getContent('C1')}</h3>
+	                    <h2>#{cmsPage.getContent('C1')}</h2>
 	                    
 	                    <div class="row">
 							<div class="col-12 col-sm-3">
@@ -130,7 +130,7 @@
                 <!-- NEWS DETAIL CONTENT 4 -->
                 <h:panelGroup rendered="#{cmsPage.hasContent('D2')}">
 	                <div class="tpl-news-detail__content">
-	                    <h3>#{cmsPage.getContent('D1')}</h3>
+	                    <h2>#{cmsPage.getContent('D1')}</h2>
 	                    
 	                    <div class="row">
 							<div class="col-12 col-sm-3">

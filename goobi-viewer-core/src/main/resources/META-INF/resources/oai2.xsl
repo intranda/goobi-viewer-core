@@ -80,7 +80,7 @@ body {
     margin: 10px 10px 10px 10px;
 }
 
-h1, h2, h3 {
+h1, h1, h2 {
 	font-family: sans-serif;
 	clear: left;
 }
@@ -90,10 +90,10 @@ h1 {
 	padding-bottom: 4px;
 	margin-bottom: 0px;
 }
-h2 {
+h1 {
 	margin-bottom: 0.5em;
 }
-h3 {
+h2 {
 	margin-bottom: 0.3em;
 	font-size: medium;
 }
@@ -125,7 +125,7 @@ a:hover {
 	border-style: solid;
 	border-color: #222299;
 }
-h2.oaiRecordTitle {
+h1.oaiRecordTitle {
 	background-color: #ffffff;
 	font-size: medium;
 	font-weight: bold;
@@ -170,13 +170,13 @@ p.intro {
     <style><xsl:call-template name="style"/></style>
   </head>
   <body>
-    <h1>intranda OAI-PMH</h1>
-    <h2>OAI 2.0 Request Results</h2>
+    <h1 class="h2">intranda OAI-PMH</h1>
+    <h1 class="h2">OAI 2.0 Request Results</h1>
     <xsl:call-template name="quicklinks"/>
     <p class="intro">You are viewing an HTML version of the XML OAI response. To see the underlying XML use your web browsers view source option. More information about this XSLT is at the <a href="#moreinfo">bottom of the page</a>.</p>
     <xsl:apply-templates select="/oai:OAI-PMH" />
     <xsl:call-template name="quicklinks"/>
-    <h2><a name="moreinfo">About the XSLT</a></h2>
+    <h1 class="h2"><a name="moreinfo">About the XSLT</a></h1>
     <p>An XSLT file has converted the <a href="http://www.openarchives.org">OAI-PMH 2.0</a> responses into XHTML which looks nice in a browser which supports XSLT such as Mozilla, Firebird and Internet Explorer. The XSLT file was created by <a href="http://www.ecs.soton.ac.uk/people/cjg">Christopher Gutteridge</a> at the University of Southampton as part of the <a href="http://software.eprints.org">GNU EPrints system</a>, and is freely redistributable under the <a href="http://www.gnu.org">GPL</a>.</p><p>If you want to use the XSL file on your own OAI interface you may but due to the way XSLT works you must install the XSL file on the same server as the OAI script, you can't just link to this copy.</p><p>For more information or to download the XSL file please see the <a href="http://software.eprints.org/xslt.php">OAI to XHTML XSLT homepage</a>.</p>
 
   </body>
@@ -206,7 +206,7 @@ p.intro {
 <!--  verb: [<xsl:value-of select="oai:request/@verb" />]<br /> -->
   <xsl:choose>
     <xsl:when test="oai:error">
-      <h2>OAI Error(s)</h2>
+      <h1 class="h2">OAI Error(s)</h1>
       <p>The request could not be completed due to the following error or errors.</p>
       <div class="results">
         <xsl:apply-templates select="oai:error"/>
@@ -269,7 +269,7 @@ p.intro {
 -->
 
 <xsl:template match="oai:description/*" priority="-100">
-  <h2>Unsupported Description Type</h2>
+  <h1 class="h2">Unsupported Description Type</h1>
   <p>The XSL currently does not support this type of description.</p>
   <div class="xmlSource">
     <xsl:apply-templates select="." mode='xmlMarkup' />
@@ -282,7 +282,7 @@ p.intro {
 -->
 
 <xsl:template match="id:oai-identifier" xmlns:id="http://www.openarchives.org/OAI/2.0/oai-identifier">
-  <h2>OAI-Identifier</h2>
+  <h1 class="h2">OAI-Identifier</h1>
   <table class="values">
     <tr><td class="key">Scheme</td>
     <td class="value"><xsl:value-of select="id:scheme"/></td></tr>
@@ -301,19 +301,19 @@ p.intro {
 -->
 
 <xsl:template match="ep:eprints" xmlns:ep="http://www.openarchives.org/OAI/1.1/eprints">
-  <h2>EPrints Description</h2>
-  <h3>Content</h3>
+  <h1 class="h2">EPrints Description</h1>
+  <h2>Content</h2>
   <xsl:apply-templates select="ep:content"/>
   <xsl:if test="ep:submissionPolicy">
-    <h3>Submission Policy</h3>
+    <h2>Submission Policy</h2>
     <xsl:apply-templates select="ep:submissionPolicy"/>
   </xsl:if>
-  <h3>Metadata Policy</h3>
+  <h2>Metadata Policy</h2>
   <xsl:apply-templates select="ep:metadataPolicy"/>
-  <h3>Data Policy</h3>
+  <h2>Data Policy</h2>
   <xsl:apply-templates select="ep:dataPolicy"/>
   <xsl:if test="ep:content">
-    <h3>Content</h3>
+    <h2>Content</h2>
     <xsl:apply-templates select="ep:content"/>
   </xsl:if>
   <xsl:apply-templates select="ep:comment"/>
@@ -329,7 +329,7 @@ p.intro {
 </xsl:template>
 
 <xsl:template match="ep:comment" xmlns:ep="http://www.openarchives.org/OAI/1.1/eprints">
-  <h3>Comment</h3>
+  <h2>Comment</h2>
   <div><xsl:value-of select="."/></div>
 </xsl:template>
 
@@ -339,7 +339,7 @@ p.intro {
 -->
 
 <xsl:template match="fr:friends" xmlns:fr="http://www.openarchives.org/OAI/2.0/friends/">
-  <h2>Friends</h2>
+  <h1 class="h2">Friends</h1>
   <ul>
     <xsl:apply-templates select="fr:baseURL"/>
   </ul>
@@ -357,13 +357,13 @@ p.intro {
 -->
 
 <xsl:template match="br:branding" xmlns:br="http://www.openarchives.org/OAI/2.0/branding/">
-  <h2>Branding</h2>
+  <h1 class="h2">Branding</h1>
   <xsl:apply-templates select="br:collectionIcon"/>
   <xsl:apply-templates select="br:metadataRendering"/>
 </xsl:template>
 
 <xsl:template match="br:collectionIcon" xmlns:br="http://www.openarchives.org/OAI/2.0/branding/">
-  <h3>Icon</h3>
+  <h2>Icon</h2>
   <xsl:choose>
     <xsl:when test="link!=''">
       <a href="{br:link}"><img src="{br:url}" alt="{br:title}" width="{br:width}" height="{br:height}" border="0" /></a>
@@ -375,7 +375,7 @@ p.intro {
 </xsl:template>
 
 <xsl:template match="br:metadataRendering" xmlns:br="http://www.openarchives.org/OAI/2.0/branding/">
-  <h3>Metadata Rendering Rule</h3>
+  <h2>Metadata Rendering Rule</h2>
   <table class="values">
     <tr><td class="key">URL</td>
     <td class="value"><xsl:value-of select="."/></td></tr>
@@ -393,7 +393,7 @@ p.intro {
 -->
 
 <xsl:template match="gw:gateway" xmlns:gw="http://www.openarchives.org/OAI/2.0/gateway/x">
-  <h2>Gateway Information</h2>
+  <h1 class="h2">Gateway Information</h1>
   <table class="values">
     <tr><td class="key">Source</td>
     <td class="value"><xsl:value-of select="gw:source"/></td></tr>
@@ -445,7 +445,7 @@ p.intro {
 </xsl:template>
 
 <xsl:template match="oai:set">
-  <h2>Set</h2>
+  <h1 class="h2">Set</h1>
   <table class="values">
     <tr><td class="key">setName</td>
     <td class="value"><xsl:value-of select="oai:setName"/></td></tr>
@@ -468,7 +468,7 @@ p.intro {
 </xsl:template>
 
 <xsl:template match="oai:metadataFormat">
-  <h2>Metadata Format</h2>
+  <h1 class="h2">Metadata Format</h1>
   <table class="values">
     <tr><td class="key">metadataPrefix</td>
     <td class="value"><xsl:value-of select="oai:metadataPrefix"/></td></tr>
@@ -486,7 +486,7 @@ p.intro {
 <!-- record object -->
 
 <xsl:template match="oai:record">
-  <h2 class="oaiRecordTitle">OAI Record: <xsl:value-of select="oai:header/oai:identifier"/></h2>
+  <h1 class="oaiRecordTitle">OAI Record: <xsl:value-of select="oai:header/oai:identifier"/></h1>
   <div class="oaiRecord">
     <xsl:apply-templates select="oai:header" />
     <xsl:apply-templates select="oai:metadata" />
@@ -496,7 +496,7 @@ p.intro {
 
 <xsl:template match="oai:header">
   <xsl:variable name="oai_identifier" select="oai:identifier"/>
-  <h3>OAI Record Header</h3>
+  <h2>OAI Record Header</h2>
   <table class="values">
     <tr><td class="key">OAI Identifier</td>
     <td class="value">
@@ -568,7 +568,7 @@ p.intro {
 
 <xsl:template match="oai_dc:dc"  xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" >
   <div class="dcdata">
-    <h3>Dublin Core Metadata (oai_dc)</h3>
+    <h2>Dublin Core Metadata (oai_dc)</h2>
     <table class="dcdata">
       <xsl:apply-templates select="*" />
     </table>

@@ -29,8 +29,8 @@
             <h:panelGroup rendered="#{bookmarkBean.currentBookmarkListShared or (userBean.loggedIn and bookmarkBean.currentBookmarkList.isMayView(userBean.user))}">
                 <div class="row no-gutters">
                     <div class="col-10">
-                    	<h2 class="-sr-only">#{msg.bookmarkList_myBookmarkLists}</h2>
-                        <h3>#{bookmarkBean.currentBookmarkList.name}</h3>
+                    	<h1 class="-sr-only">#{msg.bookmarkList_myBookmarkLists}</h1>
+                        <h2>#{bookmarkBean.currentBookmarkList.name}</h2>
                     </div>
                     <div class="col-2">
                         <!-- ACTION -->

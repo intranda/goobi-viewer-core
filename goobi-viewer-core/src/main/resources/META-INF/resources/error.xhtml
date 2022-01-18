@@ -37,7 +37,7 @@
 
 				<!-- ERROR GENERAL -->
                 <h:panelGroup rendered="#{type == 'general'}">
-                    <h2>#{msg.failure}</h2>
+                    <h1 class="h2">#{msg.failure}</h1>
 
                     <p>
                         <h:outputText value="#{msg.generalError}" escape="false"/><br />
@@ -62,7 +62,7 @@
 
                 <!-- ERROR RECORD DELETED -->
 				<h:panelGroup rendered="#{type == 'recordDeleted' or typeHttp == 'recordDeleted'}">
-					<h2>#{msg.errRecordDeletedTitle}</h2>
+					<h1 class="h2">#{msg.errRecordDeletedTitle}</h1>
 
                     <div class="alert alert-danger" role="alert">
                         <h:outputText rendered="#{errMsg != null}" value="#{errMsg}" />
@@ -81,7 +81,7 @@
 
 				<!-- ERROR RECORD NOT FOUND -->
                 <h:panelGroup rendered="#{type == 'recordNotFound'}">
-                    <h2>#{msg.errRecordNotFoundTitle}</h2>
+                    <h1 class="h2">#{msg.errRecordNotFoundTitle}</h1>
 
                     <h:form>
                         <div class="alert alert-danger" role="alert">
@@ -102,7 +102,7 @@
 
                 <!-- ERROR RECORD LIMIT EXCEEDED -->
                 <h:panelGroup rendered="#{type == 'errRecordLimitExceeded'}">
-                    <h2>#{msg.errRecordLimitExceededTitle}</h2>
+                    <h1 class="h2">#{msg.errRecordLimitExceededTitle}</h1>
 
                     <h:form>
                         <div class="alert alert-danger" role="alert">
@@ -121,7 +121,7 @@
 
                 <!-- INDEX UNREACHABLE -->
                 <h:panelGroup rendered="#{type == 'indexUnreachable'}">
-                    <h3>#{msg.errIndexUnreachableTitle}</h3>
+                    <h2>#{msg.errIndexUnreachableTitle}</h2>
 
                     <div class="alert alert-danger" role="alert">
                         <h:outputText rendered="#{errMsg == null}" value="#{msg.errIndexUnreachableMsg}" />
@@ -142,7 +142,7 @@
 
                 <!-- DAO ERROR -->
                 <h:panelGroup rendered="#{type == 'dao'}">
-                    <h2>#{msg.errDAOExceptionTitle}</h2>
+                    <h1 class="h2">#{msg.errDAOExceptionTitle}</h1>
 
                     <div class="alert alert-danger" role="alert">
                         <h:outputText value="#{msg.errDAOExceptionMsg}" />
@@ -163,7 +163,7 @@
 
                 <!-- BASEX ERROR -->
                 <h:panelGroup rendered="#{type == 'basex'}">
-                    <h2>#{msg.errBaseXExceptionTitle}</h2>
+                    <h1 class="h2">#{msg.errBaseXExceptionTitle}</h1>
 
                     <div class="alert alert-danger" role="alert">
                         <h:outputText value="#{msg.errDAOExceptionMsg}" />
@@ -184,7 +184,7 @@
 
                 <!-- CONFIG ERROR -->
                 <h:panelGroup rendered="#{type == 'configuration'}">
-                    <h2>#{msg.errViewerConfigurationExceptionTitle}</h2>
+                    <h1 class="h2">#{msg.errViewerConfigurationExceptionTitle}</h1>
 
                     <div class="alert alert-danger" role="alert">
                         <h:outputText value="#{msg.errViewerConfigurationExceptionMsg}" />
@@ -205,7 +205,7 @@
 
                 <!-- DOWNLOAD ERROR -->
                 <h:panelGroup rendered="#{type == 'download'}">
-                    <h2>#{msg.errDownloadExceptionTitle}</h2>
+                    <h1 class="h2">#{msg.errDownloadExceptionTitle}</h1>
 
                     <p>
                         <h:outputText rendered="#{errMsg != null}" value="#{msg[errMsg]}" />
@@ -227,7 +227,7 @@
 
 				<!-- ERROR VIEW EXPIRED -->
 				<h:panelGroup rendered="#{type == 'viewExpired'}">
-					<h2>#{msg.sessionExpiredTitle}</h2>
+					<h1 class="h2">#{msg.sessionExpiredTitle}</h1>
 
                     <div class="alert alert-danger" role="alert">
                         <h:outputText value="#{msg.sessionExpired}" escape="false" />

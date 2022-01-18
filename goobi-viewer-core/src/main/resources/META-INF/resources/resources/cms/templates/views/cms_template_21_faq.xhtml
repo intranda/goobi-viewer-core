@@ -36,7 +36,7 @@
                     </div>
                 </ui:fragment>
 
-				<h2>#{cmsBean.getPage(cmsPage).title}</h2>                
+				<h1 class="h2">#{cmsBean.getPage(cmsPage).title}</h1>                
                 
                 <!-- FAQ DESCRIPTION -->
                 <ui:fragment rendered="#{cmsPage.hasContent('description')}">
@@ -53,7 +53,7 @@
     						<c:forEach var="faqItem" items="#{cmsPage.getContentItem('faqList').nestedPages}" varStatus="status">
                                 <div class="card" id="card-#{faqItem.id}">
     								<div class="card-header" role="tab" id="heading-#{faqItem.id}">
-    									<h3 class="card-title">
+    									<h2 class="h3 card-title">
     										<a 
                                                 href="#collapse-#{faqItem.id}"
                                                 role="button" 
@@ -71,7 +71,7 @@
 												data-collapse-show="#collapse-#{faqItem.id}"
 												aria-label="#{msg.aria__label_faq_direct_link}">
                                             </a>
-    									</h3>
+    									</h2>
     								</div>
     								<div 
                                         role="region"
@@ -115,14 +115,14 @@
                     <ui:fragment rendered="#{cmsPage.getProperty('DISPLAY_CHILD_TAGS_AS_HEADERS').booleanValue}">
                             <!-- CLASSIFICATIONS -->
                             <c:forEach var="category" items="#{cmsPage.getContentItem('faqList').sortedCategories}" varStatus="classification_status">
-                                <h3 class="tpl-faq__subheader">#{msg[category]}</h3>
+                                <h2 class="h3 tpl-faq__subheader">#{msg[category]}</h2>
 		                        <div class="accordion tpl-faq__list" id="faqAccordion" role="tablist" aria-multiselectable="true">
                                 
 	                                <!-- FAQ ITEMS -->
 	                                <c:forEach var="faqItem" items="#{cmsPage.getContentItem('faqList').getNestedPages(category)}" varStatus="status">
 	                                    <div class="card" id="card-#{faqItem.id}-#{category.id}">
 	                                        <div class="card-header" role="tab" id="heading-#{faqItem.id}-#{category.id}">
-	                                            <h4 class="card-title">
+	                                            <h3 class="h4 card-title">
 	                                                <a 
 	                                                    href="#collapse-#{faqItem.id}-#{category.id}" 
 	                                                    role="button" class="#{(classification_status.count eq 1) and (status.count eq 1) ? '' : 'collapsed'}"
@@ -138,7 +138,7 @@
 	                                                    href="#card-#{faqItem.id}-#{category.id}"
 	                                                    data-collapse-show="#collapse-#{faqItem.id}-#{category.id}">
 	                                                </a> 
-	                                            </h4>
+	                                            </h3>
 	                                        </div>
 	                                        <div 
 	                                            role="region" 

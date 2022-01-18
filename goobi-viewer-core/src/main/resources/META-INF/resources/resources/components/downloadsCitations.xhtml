@@ -13,7 +13,7 @@
 
         <!-- CITATION LINKS -->
         <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks}">
-            <h4 id="titleCiteLinks" class="widget-usage__subtitle">#{msg.citeLinks}</h4>
+            <h3 id="titleCiteLinks" class="h4 widget-usage__subtitle">#{msg.citeLinks}</h3>
 
             <div class="widget-usage__citelinks" >
             <span data-toggle="modal" data-backdrop="false" data-focus="false" data-target="#citationLinksModal">
@@ -36,7 +36,7 @@
         <!-- CITATION RECOMMENDATION -->
 		<ui:fragment
 		    rendered="#{configurationBean.displaySidebarWidgetUsageCitationRecommendation and fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0}">
-			<h4 id="titleCiteRecommendation" class="widget-usage__subtitle">#{msg.citeRecommendation__title}</h4>
+			<h3 id="titleCiteRecommendation" class="h4 widget-usage__subtitle">#{msg.citeRecommendation__title}</h3>
 
 			<div class="widget-usage__citerecommendation">
 				<h:form>

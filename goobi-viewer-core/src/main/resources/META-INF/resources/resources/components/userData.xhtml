@@ -17,7 +17,7 @@
 		<div class="user-settings">
 			<h:form id="editUser" styleClass="form-horizontal form-group"
 				role="form" prependId="false">
-				<h3>#{msg.general}</h3>
+				<h2 class="h3">#{msg.general}</h2>
 				<div class="user-settings__form-wrapper">
 
 					<!-- prevent autocomplete in IE, Chrome and Firefox -->
@@ -134,7 +134,7 @@
 
 				<!-- PASSWORD NEW USER -->
 				<ui:fragment rendered="#{cc.attrs.user.id == null}">
-					<h3>#{msg.password}</h3>
+					<h2 class="h3">#{msg.password}</h2>
 					<div class="user-settings__form-wrapper">
 						<p>#{msg.admin__user_create_password_info_text}</p>
 						<div class="form-horizontal" role="form">
@@ -167,7 +167,7 @@
 				<!-- PASSWORD CHANGE FOR EXISTING USER -->
 				<ui:fragment
 					rendered="#{cc.attrs.user.id != null and !cc.attrs.user.anonymous}">
-					<h3>#{msg.changePassword}</h3>
+					<h2 class="h3">#{msg.changePassword}</h2>
 					<div class="user-settings__form-wrapper">
 						<p>#{msg.admin__user_password_info_text}</p>
 						<div class="form-horizontal" role="form">
@@ -200,7 +200,7 @@
 
 			<h:form id="deleteUser" styleClass="form-horizontal" role="form" rendered="#{not empty cc.attrs.user.id}"
 				prependId="false">
-				<h3>#{msg.admin__user_delete}</h3>
+				<h2 class="h3">#{msg.admin__user_delete}</h2>
 				<div class="admin__default-block -danger">
 					<p>#{msg.admin__user_delete_description}:</p>
 					<div class="form-group">

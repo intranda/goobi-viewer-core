@@ -16,10 +16,10 @@
         <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group}">
             <div id="widgetUsage" class="widget widget-usage">
                 <!-- WIDGET TITLE -->
-				<h3 class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
+				<h2 class="h3 widget__title #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
                     <span>#{msg.widgetUsage}</span>
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
-                </h3>
+                </h2>
                 
                 <!-- WIDGET BODY -->
 				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
@@ -31,7 +31,7 @@
                     </ui:fragment>
                     
                     <!-- WORK -->
-                    <h4 id="titleWork" class="widget-usage__subtitle">#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}</h4>
+                    <h3 id="titleWork" class="h4 widget-usage__subtitle">#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}</h3>
        
                     <viewerComponent:downloadsWork/>
                     

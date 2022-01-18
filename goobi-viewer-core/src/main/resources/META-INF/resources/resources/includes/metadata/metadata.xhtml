@@ -17,9 +17,9 @@
     <!-- METADATA -->
     <div id="metadataElementWrapper" class="metadata">
 	    <div class="metadata__title-wrapper">
-	    	<h2 class="metadata__title">
+	    	<h1 class="h2 metadata__title">
 	    	    #{activeDocumentBean.viewManager.metadataViewOnly ? activeDocumentBean.viewManager.topDocument.label : msg[metadataViewLabel]}
-	    	</h2>
+	    	</h1>
             <!-- ADD TO BOOKMARK -->
             <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
                     <button type="button" class="btn btn--icon metadata__bookmark-button"
@@ -44,9 +44,9 @@
             <div class="metadata__events">
                 <div class="metadata__elements metadata__elements-level-0 metadata__grouped-wrapper">
             
-                <h4 class="metadata__heading level-0">
+                <h3 class="metadata__heading level-0">
                     <h:outputText value="#{msg[event.label]}" escape="false" />
-                </h4>
+                </h3>
             
                 <c:forEach items="#{event.metadata}" var="metadata">
                     <ui:fragment rendered="#{!metadata.blank}">

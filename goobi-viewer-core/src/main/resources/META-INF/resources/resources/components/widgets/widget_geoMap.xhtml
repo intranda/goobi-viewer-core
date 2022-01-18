@@ -24,14 +24,14 @@
             <!-- STANDARD -->
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
                 <div id="widgetGeoMap_#{cc.attrs.widget.geoMapId}" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
-                    <h3>
+                    <h2 class="h3">
                         #{cc.attrs.title}
                         <ui:fragment rendered="#{cc.attrs.allowFullscreen}">
 	                        <button id="expandMap_#{cc.attrs.widget.geoMapId}" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="widget-geomap__expand" aria-label="#{msg.fullscreen_enter}">
 	                        	<i class="fa fa-expand"/>
 	                        </button>
                         </ui:fragment>
-                    </h3>
+                    </h2>
 
                     <!-- MAP -->
                     <viewerComponent:geoMap highlightDocumentId="#{cc.attrs.highlightDocumentId}"

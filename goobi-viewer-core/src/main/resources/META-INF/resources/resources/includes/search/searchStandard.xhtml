@@ -19,7 +19,7 @@
     <div class="search-standard">
         <!-- SEARCH STANDRAD TITLE -->
         <div class="search-standard__title">
-            <h3>
+            <h2>
                 <h:outputText rendered="#{!search.searchInDcFlag and title == ''}" value="#{msg.searchGlobalDescription}" />
                 <h:panelGroup rendered="#{!search.searchInDcFlag and title != ''}">
                 	#{title}
@@ -32,7 +32,7 @@
                     </ui:repeat>
                 </h:panelGroup>
                 
-            </h3>
+            </h2>
 	        <!-- SEARCH STANDARD HELP -->
 	        <div class="search-standard__help">
 	            <button type="button" data-toggle="modal" data-target="#searchHelpModal" data-backdrop="false" aria-label="#{msg.search_helpModalTitle}">
@@ -107,7 +107,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="searchHelpModalLabel">#{msg.search_helpModalTitle}</h4>
+                    <h3 class="modal-title" id="searchHelpModalLabel">#{msg.search_helpModalTitle}</h3>
                     <button type="button" class="fancy-close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">
                             <h:outputText value="&amp;times;" escape="false" />
