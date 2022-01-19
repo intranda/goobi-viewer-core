@@ -1015,29 +1015,6 @@ public class SearchBean implements SearchInterface, Serializable {
             return;
         }
 
-        // Prepare search term sets for all relevant fields
-        //        if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
-        //            if (searchTerms.get(SolrConstants.DEFAULT) == null) {
-        //                searchTerms.put(SolrConstants.DEFAULT, new HashSet<String>());
-        //            }
-        //            if (searchTerms.get(SolrConstants.FULLTEXT) == null) {
-        //                searchTerms.put(SolrConstants.FULLTEXT, new HashSet<String>());
-        //            }
-        //            if (searchTerms.get(SolrConstants.NORMDATATERMS) == null) {
-        //                searchTerms.put(SolrConstants.NORMDATATERMS, new HashSet<String>());
-        //            }
-        //            if (searchTerms.get(SolrConstants.UGCTERMS) == null) {
-        //                searchTerms.put(SolrConstants.UGCTERMS, new HashSet<String>());
-        //            }
-        //            if (searchTerms.get(SolrConstants.CMS_TEXT_ALL) == null) {
-        //                searchTerms.put(SolrConstants.CMS_TEXT_ALL, new HashSet<String>());
-        //            }
-        //        } else {
-        //            if (searchTerms.get(currentSearchFilter.getField()) == null) {
-        //                searchTerms.put(currentSearchFilter.getField(), new HashSet<String>());
-        //            }
-        //        }
-
         inSearchString = inSearchString.replace(" OR ", " || ");
         inSearchString = inSearchString.replace(" AND ", " && ");
         inSearchString = inSearchString.toLowerCase(); // Solr won't find non-lowercase strings
