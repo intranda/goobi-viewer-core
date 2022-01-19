@@ -142,8 +142,6 @@ public final class SearchHelper {
      * to search.
      */
     public static final String FUZZY_SEARCH_TERM_TEMPLATE = "{t}~{d}";
-    public static final String PROXIMITY_SEARCH_TERM_TEMPLATE_WITH_BOOST = "{p}{t}{s} {t}~{d}";
-    public static final String PROXIMITY_SEARCH_TERM_TEMPLATE = "\"{t}\"~{d}";
 
     private static final Object lock = new Object();
 
@@ -155,8 +153,8 @@ public final class SearchHelper {
     public static Pattern patternNot = Pattern.compile("NOT[ ][a-zA-Z_]+[:][a-zA-Z0-9\\*]+");
     /** Constant <code>patternPhrase</code> */
     public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
-    /** Constant <code>patternPhraseWithProximity</code> */
-    public static Pattern patternPhraseWithProximity = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS + "~[0-9]+");
+    /** Constant <code>patternProximitySearchToken</code> */
+    public static Pattern patternProximitySearchToken = Pattern.compile("~[0-9]+");
 
     /** Filter subquery for collection listing (no volumes). */
     static volatile String collectionBlacklistFilterSuffix = null;
@@ -1723,10 +1721,10 @@ public final class SearchHelper {
      * @should not remove truncation
      * @should throw IllegalArgumentException if query is null
      * @should add title terms field
-     * @should preserve proximity search tokens
-     * @should not add proximity search terms to title terms
+     * @should remove proximity search tokens
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
+        logger.trace("extractSearchTermsFromQuery:{}", query);
         if (query == null) {
             throw new IllegalArgumentException("query may not be null");
         }
@@ -1752,36 +1750,13 @@ public final class SearchHelper {
         Map<String, Set<String>> ret = new HashMap<>();
         ret.put(_TITLE_TERMS, new HashSet<>());
 
+        // Drop proximity search tokens
+        query = query.replaceAll(patternProximitySearchToken.pattern(), "");
+
         // Use a copy of the query because the original query gets shortened after every match, causing an IOOBE eventually
         String queryCopy = query;
-        // Extract proximity search terms
         {
-            Matcher mPhrases = patternPhraseWithProximity.matcher(queryCopy);
-            while (mPhrases.find()) {
-                String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
-                String[] phraseSplit = phrase.split(":");
-                String field = phraseSplit[0];
-                if (SolrConstants.SUPERFULLTEXT.equals(field)) {
-                    field = SolrConstants.FULLTEXT;
-                }
-                String value = phraseSplit[1];
-                if (value.length() > 0 && !stopwords.contains(value)) {
-                    if (ret.get(field) == null) {
-                        ret.put(field, new HashSet<String>());
-                    }
-                    if (value.contains("~")) {
-                        ret.get(field).add(value.substring(0, value.indexOf("~")));
-                    } else {
-                        ret.get(field).add(value);
-                    }
-                }
-                query = query.replace(phrase, "");
-                // Do not add to _TITLE_TERMS
-            }
-        }
-        // Extract phrases and add them directly
-        queryCopy = query;
-        {
+            // Extract phrases and add them directly
             Matcher mPhrases = patternPhrase.matcher(queryCopy);
             while (mPhrases.find()) {
                 String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
@@ -1801,7 +1776,7 @@ public final class SearchHelper {
                     if (ret.get(field) == null) {
                         ret.put(field, new HashSet<String>());
                     }
-                    logger.trace("phraseWoQuot: {}", phraseWithoutQuotation);
+                    // logger.trace("term: {}:{}", field, phraseWithoutQuotation);
                     ret.get(field).add(phraseWithoutQuotation);
                 }
                 query = query.replace(phrase, "");
@@ -2154,7 +2129,7 @@ public final class SearchHelper {
                 }
                 if (!"*".equals(term)) {
                     boolean quotationMarksApplied = false;
-                    if((term.startsWith("\"") && term.endsWith("\""))) {
+                    if ((term.startsWith("\"") && term.endsWith("\""))) {
                         quotationMarksApplied = true;
                     }
                     term = ClientUtils.escapeQueryChars(term);
@@ -2170,7 +2145,7 @@ public final class SearchHelper {
                     term = term.replace("\\\"", "\""); // unescape quotation marks
                     term = SearchHelper.addProximitySearchToken(term, proximitySearchDistance);
                 }
-                logger.trace("term: {}", term);
+                // logger.trace("term: {}", term);
                 sbInner.append(term);
             }
             sbOuter.append(field).append(":");

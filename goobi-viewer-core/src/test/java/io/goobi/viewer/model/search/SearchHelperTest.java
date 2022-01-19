@@ -550,34 +550,17 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String,String)
-     * @verifies preserve proximity search tokens
+     * @verifies remove proximity search tokens
      */
     @Test
-    public void extractSearchTermsFromQuery_shouldPreserveProximitySearchTokens() throws Exception {
+    public void extractSearchTermsFromQuery_shouldRemoveProximitySearchTokens() throws Exception {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
                 "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello world\"~10 AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
                 null);
         Set<String> terms = result.get(SolrConstants.FULLTEXT);
         Assert.assertNotNull(terms);
         Assert.assertEquals(1, terms.size());
-        Assert.assertTrue(terms.contains("\"hello world\""));
-    }
-    
-
-    /**
-     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
-     * @verifies not add proximity search terms to title terms
-     */
-    @Test
-    public void extractSearchTermsFromQuery_shouldNotAddProximitySearchTermsToTitleTerms() throws Exception {
-        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
-                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello world\"~10 AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
-                null);
-        Set<String> terms = result.get(SearchHelper._TITLE_TERMS);
-        Assert.assertNotNull(terms);
-        Assert.assertEquals(5, terms.size());
-        Assert.assertFalse(terms.contains("\"hello world\""));
-        Assert.assertFalse(terms.contains("\"hello world\"~10"));
+        Assert.assertTrue(terms.contains("hello world"));
     }
 
     /**
