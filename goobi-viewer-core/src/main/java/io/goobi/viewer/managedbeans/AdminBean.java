@@ -633,7 +633,7 @@ public class AdminBean implements Serializable {
                     logger.warn("userRole not found");
                     return;
                 }
-                
+
                 switch (dirty) {
                     case "save":
                         logger.trace("Saving UserRole: {}", userRole);
@@ -1994,6 +1994,66 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentTranslationGroup(TranslationGroup currentTranslationGroup) {
         this.currentTranslationGroup = currentTranslationGroup;
+    }
+
+    /**
+     * 
+     * @return true if at least one LOCAL_STRINGS type group is found in config; false otherwise
+     */
+    public boolean isNewMessageEntryModeAllowed() {
+        for (TranslationGroup group : DataManager.getInstance().getConfiguration().getTranslationGroups()) {
+            if (group.getType().equals(TranslationGroupType.LOCAL_STRINGS) && !group.getItems().isEmpty()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Triggers a mode for adding new message keys to the first LOCAL_STRINGS type group found.
+     */
+    public void triggerNewMessageEntryMode() {
+        List<TranslationGroup> groups = DataManager.getInstance().getConfiguration().getTranslationGroups();
+        for (TranslationGroup group : groups) {
+            if (group.getType().equals(TranslationGroupType.LOCAL_STRINGS) && !group.getItems().isEmpty()) {
+                setCurrentTranslationGroup(group);
+                MessageEntry entry =
+                        MessageEntry.create(group.getItems().get(0).getKey().replace(".*", ""), "", ViewerResourceBundle.getAllLocales());
+                entry.setNewEntryMode(true);
+                //                group.getAllEntries().add(entry);
+                group.setSelectedEntry(entry);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Saves currently selected message entry in the current translation group and returns to the translations overview page.
+     * 
+     * @return Target page
+     */
+    public String saveSelectedMessageEntryAction() {
+        if (currentTranslationGroup == null || currentTranslationGroup.getSelectedEntry() == null) {
+            return "";
+        }
+
+        currentTranslationGroup.saveSelectedEntry();
+        return "pretty:adminTranslations";
+    }
+
+    /**
+     * Reset selected message entry and returns to the translations overview page.
+     * 
+     * @return Target page
+     */
+    public String cancelSelectedMessageEntryAction() {
+        // Reset selected entry so it doesn't get saved
+        if (currentTranslationGroup != null) {
+            currentTranslationGroup.resetSelectedEntry();
+        }
+
+        return "pretty:adminTranslations";
     }
 
     /**
