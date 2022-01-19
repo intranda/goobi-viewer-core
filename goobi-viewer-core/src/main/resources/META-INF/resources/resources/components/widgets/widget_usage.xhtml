@@ -9,7 +9,7 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" >
-    
+
     <composite:interface />
 
     <composite:implementation>
@@ -20,7 +20,7 @@
                     <span>#{msg.widgetUsage}</span>
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                 </h2>
-                
+
                 <!-- WIDGET BODY -->
 				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
                     <!-- INTRODUCTION TEXT -->
@@ -29,16 +29,16 @@
                             <h:outputText value="#{msg[configurationBean.sidebarWidgetUsageIntroductionText]}" escape="false" />
                         </p>
                     </ui:fragment>
-                    
+
                     <!-- WORK -->
                     <h3 id="titleWork" class="h4 widget-usage__subtitle">#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}</h3>
-       
+
                     <viewerComponent:downloadsWork/>
-                    
-                    <viewerComponent:downloadsStruct/> 
-                    
+
+                    <viewerComponent:downloadsStruct/>
+
                     <viewerComponent:downloadsPage/>
-                    
+
                     <!-- Module contributions -->
                     <c:forEach var="module" items="#{configurationBean.modules}">
                         <c:forEach var="contribution" items="#{module.widgetUsageContributions}">
@@ -48,12 +48,12 @@
 
 					<!-- CITE -->
 					<viewerComponent:downloadsCitations/>
-                    
+
                 </div>
-            </div>   
-            
+            </div>
+
             <!-- Set up download modal for work and struct PDF -->
-            <script>    
+            <script>
             	var downloadModalConfig = {
                     downloadBtn: $( ".download-modal-widget" ),
                     path: "#{navigationHelper.applicationUrl}",
@@ -78,10 +78,10 @@
                         saveBtn: "#{msg.downloadGenerateFile}",
                     }
                 };
-                
+
                 viewerJS.downloadModal.init( downloadModalConfig );
                 viewerJS.clipboard.init();
-            </script>    
+            </script>
         </ui:fragment>
     </composite:implementation>
 </ui:composition>

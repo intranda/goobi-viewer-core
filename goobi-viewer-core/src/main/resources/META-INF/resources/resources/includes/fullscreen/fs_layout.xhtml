@@ -20,7 +20,7 @@
         <main id="fullscreenViewImage" class="fullscreen__view-image">
 
         	<!-- heading for screen readers -->
-        	<!-- 
+        	<!--
         	<h1 class="-sr-only">Goobi viewer</h1>
  			-->
             <div class="fullscreen__view-image-inner">
@@ -95,7 +95,7 @@
 
                 <!-- SIDEBAR WORK TITLE -->
                 <div class="fullscreen__view-sidebar-work-title">
-                    <h2>#{activeDocumentBean.titleBarLabel}</h2>
+                    <h1 class="h2">#{activeDocumentBean.titleBarLabel}</h1>
                 </div>
 
                <!-- SEARCH IN CURRENT ITEM -->
@@ -108,9 +108,9 @@
 
                     <!-- METADATA -->
                     <div id="panel-1" class="fullscreen__view-sidebar-accordeon-panel fs-metadata">
-                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                        <h2 class="h3 fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                             <span>#{msg.bibData}</span>
-                        </h3>
+                        </h2>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             <ui:include src="/resources/includes/metadata/metadata.xhtml" />

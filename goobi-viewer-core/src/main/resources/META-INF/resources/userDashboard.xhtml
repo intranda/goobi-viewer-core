@@ -36,9 +36,9 @@
 
             <!-- USER LOGGED IN -->
             <ui:fragment rendered="#{userBean.loggedIn}">
-            
+
             	<!-- ACTIVITIES BLOCK -->
-				<h2>#{msg.label__user_crowdsourcing_activity}</h2>
+				<h2 class="h3">#{msg.label__user_crowdsourcing_activity}</h2>
 				<c:set value="#{userDataBean.getLatestActivity(userBean.user, 6)}" var="activities" scope="view"/>
 				<div class="user-dashboard__form-wrapper">
 					<c:choose>
@@ -71,12 +71,12 @@
 					</c:choose>
 
 				</div>
-				
+
 				<!-- OVERVIEW BLOCK -->
 			<c:if test="#{configurationBean.bookmarksEnabled or configurationBean.searchSavingEnabled or configurationBean.userCommentsEnabled}">
-				<h2>#{msg.admin__overview}</h2>
+				<h2 class="h3">#{msg.admin__overview}</h2>
 				<div class="user-dashboard__form-wrapper-container">
-				
+
 					<!-- BOOKMARKS BOX -->
 					<div class="user-dashboard__form-wrapper -w50" jsf:rendered="#{configurationBean.bookmarksEnabled}">
 					<h3 class="h4">#{msg.bookmarks}</h3>
@@ -99,7 +99,7 @@
 									<h:outputFormat value="#{msg.user_dashboard__bookmarklists_stored}">
 										 <f:param value="#{userDataBean.getNumBookmarkLists(user)}" />
 									</h:outputFormat>
-								</div>	
+								</div>
 								<!-- GO TO BOOKMARKS OVERVIEW PAGE -->
 								<a styleClass="user-dashboard__show-all-link" href="#{request.contextPath}/user/bookmarks/">
 									#{msg.bookmarkList_overview_all}
@@ -115,7 +115,7 @@
 
 					<!-- SEARCHES BOX -->
 					<div class="user-dashboard__form-wrapper -w50" jsf:rendered="#{configurationBean.searchSavingEnabled}">
-					
+
 						<h3 class="h4">#{msg.label__user_searches}</h3>
 								<!-- SAVED SEARCHES -->
 						<c:choose>
@@ -151,14 +151,14 @@
 							</c:otherwise>
 						</c:choose>
 					</div>
-					
+
 					</div>
-					
+
 					<div class="user-dashboard__form-wrapper-container" jsf:rendered="#{configurationBean.userCommentsEnabled}">
 						<!-- COMMENTS BOX -->
 						<div class="user-dashboard__form-wrapper -w100">
 							<h3 class="h4">#{msg.userComments}</h3>
-							
+
 							<c:choose>
 								<c:when test="#{userDataBean.getNumComments(userBean.user) > 0}">
 									<div class="user-dashboard__comments-wrapper">
@@ -197,8 +197,8 @@
     <ui:define name="sidebar">
 		<h:panelGroup layout="block" styleClass="user-settings__profile-image-box">
 				<img class="user-settings__profile-image" src="#{userBean.user.getAvatarUrl(300)}" alt="User Avatar" />
-				
-				
+
+
 					<div class="user-dashboard__sidebar-welcome-text">
 						<h:outputFormat value="#{msg.user_dashboard__hello}" escape="false">
 							 <f:param value="#{userBean.user.displayName}" />
