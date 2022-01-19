@@ -1769,7 +1769,11 @@ public final class SearchHelper {
                     if (ret.get(field) == null) {
                         ret.put(field, new HashSet<String>());
                     }
-                    ret.get(field).add(value.substring(0, value.indexOf("~")));
+                    if (value.contains("~")) {
+                        ret.get(field).add(value.substring(0, value.indexOf("~")));
+                    } else {
+                        ret.get(field).add(value);
+                    }
                 }
                 query = query.replace(phrase, "");
                 // Do not add to _TITLE_TERMS
@@ -2149,11 +2153,16 @@ public final class SearchHelper {
                     multipleTerms = true;
                 }
                 if (!"*".equals(term)) {
+                    boolean quotationMarksApplied = false;
+                    if((term.startsWith("\"") && term.endsWith("\""))) {
+                        quotationMarksApplied = true;
+                    }
                     term = ClientUtils.escapeQueryChars(term);
                     term = term.replace("\\*", "*");
                     //unescape fuzzy search token
                     term = term.replaceAll("\\\\~(\\d)", "~$1");
-                    if (phraseSearch) {
+                    logger.trace("term: {}", term);
+                    if (phraseSearch && !quotationMarksApplied) {
                         term = '"' + term + '"';
                     }
                 }
@@ -2161,6 +2170,7 @@ public final class SearchHelper {
                     term = term.replace("\\\"", "\""); // unescape quotation marks
                     term = SearchHelper.addProximitySearchToken(term, proximitySearchDistance);
                 }
+                logger.trace("term: {}", term);
                 sbInner.append(term);
             }
             sbOuter.append(field).append(":");
@@ -2177,6 +2187,7 @@ public final class SearchHelper {
             sbOuter.append(')');
         }
 
+        logger.trace("expand query generated: {}", sbOuter.toString());
         return sbOuter.toString();
     }
 

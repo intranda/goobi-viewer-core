@@ -1556,5 +1556,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void addProximitySearchToken_shouldAddTokenCorrectly() throws Exception {
         Assert.assertEquals("\"foo bar\"~10", SearchHelper.addProximitySearchToken("foo bar", 10));
+        Assert.assertEquals("\"foo bar\"~10", SearchHelper.addProximitySearchToken("\"foo bar\"", 10));
     }
 }
