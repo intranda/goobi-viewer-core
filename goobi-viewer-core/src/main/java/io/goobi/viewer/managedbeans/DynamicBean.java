@@ -112,10 +112,10 @@ public class DynamicBean implements Serializable {
         }
     }
     
-    public void addComponent(String id, String type, String...attributes ) {
+    public void addComponent(String id, String type, Map<String, Object> attributes ) {
         DynamicContentType contentType = DynamicContentType.valueOf(type.toUpperCase());
         try {            
-            DynamicContent content = new DynamicContent(contentType);
+            DynamicContent content = new DynamicContent(contentType, DynamicContentBuilder.getFilenameForType(contentType));
             content.setId(id);
             content.setAttributes(attributes);
             this.components.add(content);

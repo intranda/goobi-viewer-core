@@ -315,30 +315,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @return a boolean.
      */
     public boolean saveSidebarElements() {
-        logger.trace("selected elements:{}\n", sidebarElementString);
-        if (sidebarElementString != null) {
-            List<CMSSidebarElement> selectedElements = new ArrayList<>();
-            String[] ids = sidebarElementString.split("\\&?item=");
-            for (int i = 0; i < ids.length; ++i) {
-                if (StringUtils.isBlank(ids[i])) {
-                    continue;
-                }
-
-                CMSSidebarElement element = getAvailableSidebarElement(ids[i]);
-                if (element != null) {
-                    // element.setType(ids[i]);
-                    //                    element.setValue("bds");
-                    element.setOrder(i);
-                    //		    element.setId(null);
-                    element.setOwnerPage(this);
-                    element.serialize();
-                    selectedElements.add(element);
-                }
-            }
-            setSidebarElements(selectedElements);
-            return true;
-        }
-
+        //TODO: new save routine
         return false;
     }
 
@@ -354,57 +331,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 ci.resetData();
             }
         }
-    }
-
-    /**
-     * @param string
-     * @return
-     */
-    private CMSSidebarElement getAvailableSidebarElement(String id) {
-        for (CMSSidebarElement visibleElement : getSidebarElements()) {
-            if (Integer.toString(visibleElement.getSortingId()).equals(id)) {
-                return visibleElement;
-            }
-        }
-        for (CMSSidebarElement unusedElement : getUnusedSidebarElements()) {
-            if (Integer.toString(unusedElement.getSortingId()).equals(id)) {
-                return unusedElement;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>unusedSidebarElements</code>.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<CMSSidebarElement> getUnusedSidebarElements() {
-        if (unusedSidebarElements == null) {
-            createUnusedSidebarElementList();
-        }
-        return unusedSidebarElements;
-    }
-
-    /**
-     *
-     */
-    private void createUnusedSidebarElementList() {
-        unusedSidebarElements = CMSSidebarManager.getAvailableSidebarElements();
-        Iterator<CMSSidebarElement> unusedIterator = unusedSidebarElements.iterator();
-
-        while (unusedIterator.hasNext()) {
-            CMSSidebarElement unusedElement = unusedIterator.next();
-            for (CMSSidebarElement visibleElement : getSidebarElements()) {
-                if (visibleElement.equals(unusedElement)) {
-                    unusedIterator.remove();
-                    break;
-                }
-            }
-        }
-
     }
 
     /**
@@ -589,7 +515,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      */
     public void setSidebarElements(List<CMSSidebarElement> sidebarElements) {
         this.sidebarElements = sidebarElements;
-        createUnusedSidebarElementList();
 
     }
 

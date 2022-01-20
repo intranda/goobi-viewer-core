@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSSlider;
+import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.maps.GeoMap;
 
 /**
@@ -61,16 +62,16 @@ public class DynamicContentBuilder {
         UIComponent composite = null;
         switch (content.getType()) {
             case GEOMAP:
-                String id = content.getAttribute(0);
+                String id = (String)content.getAttributes().get("geoMapId");
                 try {
                     if (id != null && id.matches("\\d+")) {
                         GeoMap map = DataManager.getInstance().getDao().getGeoMap(Long.parseLong(id));
                         if (map != null) {
-                            composite = loadCompositeComponent(parent, "geoMap.xhtml", "components");
+                            composite = loadCompositeComponent(parent, content.getComponentFilename(), "components");
                             composite.getAttributes().put("geoMap", map);
                             //if query param linkTarget is given, open links from map in that target,
                             //otherwise open them in a new tab
-                            String linkTarget = content.getAttribute(1);
+                            String linkTarget = (String)content.getAttributes().get("linkTarget");
                             if(StringUtils.isNotBlank(linkTarget)) {
                                 composite.getAttributes().put("linkTarget", linkTarget);
                             } else {
@@ -87,14 +88,14 @@ public class DynamicContentBuilder {
                 }
                 break;
             case SLIDER:
-                String sliderId = content.getAttribute(0);
+                String sliderId = (String)content.getAttributes().get("sliderId");
                 try {
                     if (sliderId != null && sliderId.matches("\\d+")) {
                         CMSSlider slider = DataManager.getInstance().getDao().getSlider(Long.parseLong(sliderId));
                         if (slider != null) {
-                            composite = loadCompositeComponent(parent, "cmsSlider.xhtml", "components");
+                            composite = loadCompositeComponent(parent, content.getComponentFilename() , "components");
                             composite.getAttributes().put("slider", slider);
-                            String linkTarget = content.getAttribute(1);
+                            String linkTarget = (String)content.getAttributes().get("linkTarget");
                             if(StringUtils.isNotBlank(linkTarget)) {
                                 composite.getAttributes().put("linkTarget", linkTarget);
                             } else {
@@ -109,6 +110,13 @@ public class DynamicContentBuilder {
                 } catch (NumberFormatException | DAOException e) {
                     logger.error("Error retrieving content from DAO", e);
                 }
+            case WIDGET:
+                composite = loadCompositeComponent(parent, content.getComponentFilename(), "components/widgets");
+                if(content.getAttributes().containsKey("widget")) {                    
+                    CustomSidebarWidget widget = (CustomSidebarWidget) content.getAttributes().get("widget");
+                    composite.getAttributes().put("widget", widget);
+                }
+                
         }
         if (composite != null) {
             composite.setId(content.getId());
@@ -177,7 +185,7 @@ public class DynamicContentBuilder {
         UIComponent component = null;
         switch (content.getType()) {
             case GEOMAP:
-                String id = content.getAttribute(0);
+                String id = (String)content.getAttributes().get("geoMapId");
                 try {
                     if (id != null && id.matches("\\d+")) {
                         GeoMap map = DataManager.getInstance().getDao().getGeoMap(Long.parseLong(id));
@@ -205,10 +213,21 @@ public class DynamicContentBuilder {
         return Optional.ofNullable(component);
     }
     
-    public DynamicContent createContent(String id, DynamicContentType type, String...attributes ) {
-            DynamicContent content = new DynamicContent(type);
+    public DynamicContent createContent(String id, DynamicContentType type, Map<String, Object> attributes ) {
+            DynamicContent content = new DynamicContent(type, getFilenameForType(type));
             content.setId(id);
             content.setAttributes(attributes);
             return content;
+    }
+
+    public static String getFilenameForType(DynamicContentType type) {
+        switch(type) {
+            case GEOMAP:
+                return "geoMap.xhtml";
+            case SLIDER:
+                return "cmsSlider.xhtml";
+            default:
+                return "";
+        }
     }
 }

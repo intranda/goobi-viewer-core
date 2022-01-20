@@ -84,7 +84,6 @@ import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
-import io.goobi.viewer.model.cms.CMSSidebarManager;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
@@ -836,10 +835,8 @@ public class CmsBean implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<CMSSidebarElement> getSidebarElements(boolean isCMSPage) {
-        if (isCMSPage && getCurrentPage() != null && !getCurrentPage().isUseDefaultSidebar()) {
-            return getCurrentPage().getSidebarElements();
-        }
-        return CMSSidebarManager.getDefaultSidebarElements();
+        //TODO: refactor sidebar element list
+        return null;
     }
 
     /**

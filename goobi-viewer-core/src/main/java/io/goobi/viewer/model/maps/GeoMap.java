@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,6 +54,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
@@ -542,6 +545,20 @@ public class GeoMap {
      */
     public void updateFeatures() {
         this.featuresAsString = null;
+    }
+
+    public IMetadataValue getTitles() {
+        Map<String, String> titles = translations.stream().filter(t -> METADATA_TAG_TITLE.equals(t.getTag()))
+        .filter(t -> !t.isEmpty())
+        .collect(Collectors.toMap(MapTranslation::getLanguage, MapTranslation::getValue));
+        return new MultiLanguageMetadataValue(titles);
+    }
+    
+    public IMetadataValue getDescriptions() {
+        Map<String, String> titles = translations.stream().filter(t -> METADATA_TAG_DESCRIPTION.equals(t.getTag()))
+        .filter(t -> !t.isEmpty())
+        .collect(Collectors.toMap(MapTranslation::getLanguage, MapTranslation::getValue));
+        return new MultiLanguageMetadataValue(titles);
     }
 
 }

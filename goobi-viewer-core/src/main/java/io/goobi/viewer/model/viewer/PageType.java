@@ -94,6 +94,7 @@ public enum PageType {
     adminCmsGeoMapNew("admin/cms/maps/new"),
     adminCmsRecordNotes("admin/cms/recordnotes", "cms__record_notes__title_plural"),
     adminCmsSliders("admin/cms/slider", "cms__sliders__title"),
+    adminCmsSidebarWidgets("admin/cms/widgets/overview", "cms_widgets__title"),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing

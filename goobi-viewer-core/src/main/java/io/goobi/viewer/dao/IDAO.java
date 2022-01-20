@@ -40,6 +40,7 @@ import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -2320,7 +2321,7 @@ public interface IDAO {
      * @return
      * @throws DAOException
      */
-    List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, String filterString,
+    public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, String filterString,
             Map<String, Object> filterParams) throws DAOException;
 
     /**
@@ -2328,18 +2329,28 @@ public interface IDAO {
      * @return
      * @throws DAOException 
      */
-    List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String commenting) throws DAOException;
+    public List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String commenting) throws DAOException;
 
     /**
      * @return
      * @throws DAOException
      */
-    List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean sortDescending) throws DAOException;
+    public List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean sortDescending) throws DAOException;
 
     /**
      * @return
      * @throws DAOException
      */
-    long getTotalAnnotationCount() throws DAOException;
+    public long getTotalAnnotationCount() throws DAOException;
+    
+    public List<CustomSidebarWidget> getAllCustomWidgets() throws DAOException;
+    
+    public CustomSidebarWidget getCustomWidget(Long id) throws DAOException;
+    
+    public boolean addCustomWidget(CustomSidebarWidget widget) throws DAOException;
+    
+    public boolean updateCustomWidget(CustomSidebarWidget widget) throws DAOException;
+    
+    public boolean deleteCustomWidget(Long id) throws DAOException;
 
 }

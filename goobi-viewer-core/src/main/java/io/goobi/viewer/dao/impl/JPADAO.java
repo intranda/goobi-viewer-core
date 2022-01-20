@@ -70,6 +70,7 @@ import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -5455,6 +5456,68 @@ public class JPADAO implements IDAO {
         try {
             getEntityManager().getTransaction().begin();
             ThemeConfiguration o = getEntityManager().getReference(ThemeConfiguration.class, theme.getId());
+            getEntityManager().remove(o);
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public List<CustomSidebarWidget> getAllCustomWidgets() throws DAOException {
+        preQuery();
+        Query q = getEntityManager().createQuery("SELECT t FROM CustomSidebarWidget t");
+        return q.getResultList();
+    }
+
+    @Override
+    public CustomSidebarWidget getCustomWidget(Long id) throws DAOException {
+        if (id == null) {
+            return null;
+        }
+        preQuery();
+        try {
+            CustomSidebarWidget o = getEntityManager().getReference(CustomSidebarWidget.class, id);
+            return CustomSidebarWidget.clone(o);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean addCustomWidget(CustomSidebarWidget widget) throws DAOException {
+        preQuery();
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().persist(widget);
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            logger.error(e.toString(), e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateCustomWidget(CustomSidebarWidget widget) throws DAOException {
+        preQuery();
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().merge(widget);
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteCustomWidget(Long id) throws DAOException {
+        preQuery();
+        try {
+            getEntityManager().getTransaction().begin();
+            CustomSidebarWidget o = getEntityManager().getReference(CustomSidebarWidget.class, id);
             getEntityManager().remove(o);
             getEntityManager().getTransaction().commit();
             return true;

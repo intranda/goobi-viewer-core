@@ -7,11 +7,29 @@ package io.goobi.viewer.model.cms.widgets;
  * @author florian
  *
  */
-public enum AutomaticWigetTypes {
+public enum AutomaticWigetTypes implements WidgetContentType {
     
     /**
      * Widget displaying a geomap created in CMS
      */
-    WIDGET_CMSGEOMAP
+    WIDGET_CMSGEOMAP("widgetGeoMap", "geoMap.xhtml");
+    
+    private final String label;
+    private final String filename;
+    
+    private AutomaticWigetTypes(String label, String filename) {
+        this.label = label;
+        this.filename = filename;
+    }
+    
+    public String getLabel() {
+        return this.label;
+    }
+
+    @Override
+    public String getFilename() {
+        return this.filename;
+    }
+   
 
 }
