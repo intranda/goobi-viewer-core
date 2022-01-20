@@ -141,16 +141,11 @@
 															<i class="fa fa-check" aria-hidden="true"></i> <i
 																class="fa fa-exclamation" aria-hidden="true"></i>
 														</div>
-														<h:selectManyListbox id="pagesSelect"
-															styleClass="form-control -validation-input"
-															required="true"
-															requiredMessage="#{msg.info__input_required}"
-															value="#{widget.collections}">
+													
 															<h:selectManyCheckbox value="#{widget.pageIds}">
 																<f:selectItems value="#{cmsBean.validCMSPages}" var="page" itemLabel="#{page.title}" itemValue="#{page.id}"></f:selectItems>
 															</h:selectManyCheckbox>
 															
-														</h:selectManyListbox>
 														<span class="admin__form-help-text">#{msg.cms__edit_widget__collections__help}</span>
 													</div>
 													<div class="col-1 admin__form-help-icon">

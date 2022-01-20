@@ -9,6 +9,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import io.goobi.viewer.dao.converter.NumberListConverter;
+import io.goobi.viewer.model.cms.PageList;
 
 @Entity
 @DiscriminatorValue("PageListSidebarWidget")
@@ -33,6 +34,10 @@ public class PageListSidebarWidget extends CustomSidebarWidget {
     
     public void setPageIds(List<Long> pageIds) {
         this.pageIds = pageIds;
+    }
+    
+    public PageList getPageList() {
+        return new PageList(pageIds);
     }
     
     @Override
