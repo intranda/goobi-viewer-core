@@ -164,7 +164,7 @@ public class ALTOTools {
     private static List<TagCount> createNERTag(Tag tag) {
         String value = tag.getLabel();
         value = value.replaceAll(TAG_LABEL_IGNORE_REGEX, "");
-        Type type = Type.getType(tag.getType());
+        Type type = Type.getByLabel(tag.getType());
         if (type == null) {
             logger.trace("Unknown tag type: {}, using {}", tag.getType(), Type.misc.name());
             type = Type.misc;

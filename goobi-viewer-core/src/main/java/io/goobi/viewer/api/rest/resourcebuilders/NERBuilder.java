@@ -110,7 +110,7 @@ public class NERBuilder {
                 topStructPi = SolrTools.getAsString(solrDocuments.get(0).getFieldValue(SolrConstants.PI_TOPSTRUCT));
             }
             DocumentReference doc = new DocumentReference(topStructPi);
-            NERTag.Type type = NERTag.Type.getType(typeString);
+            NERTag.Type type = NERTag.Type.getByLabel(typeString);
             for (int index = 0; index < solrDocuments.size(); index += rangeSize) {
                 List<SolrDocument> rangeList = solrDocuments.subList(index, Math.min(index + rangeSize, solrDocuments.size()));
                 TagGroup range = createPageReference(rangeList);
