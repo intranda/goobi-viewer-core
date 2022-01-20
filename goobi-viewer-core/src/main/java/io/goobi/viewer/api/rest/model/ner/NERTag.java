@@ -19,10 +19,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -40,7 +36,8 @@ public class NERTag {
         person("person"),
         location("location", "place"),
         corporation("corporation", "corporate", "institution"),
-        event("event");
+        event("event"),
+        misc("miscellaneous");
 
         private List<String> labels;
 

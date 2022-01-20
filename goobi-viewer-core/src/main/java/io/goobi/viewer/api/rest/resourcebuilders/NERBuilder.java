@@ -104,15 +104,13 @@ public class NERBuilder {
         SolrDocumentList solrDocuments = DataManager.getInstance().getSearchIndex().search(query, fieldList);
         Collections.sort(solrDocuments, docOrderComparator);
 
-        NERTag.Type type = NERTag.Type.getType(typeString);
-
         if (solrDocuments != null && !solrDocuments.isEmpty()) {
             String topStructPi = null;
             if (solrDocuments.get(0).containsKey(SolrConstants.PI_TOPSTRUCT)) {
                 topStructPi = SolrTools.getAsString(solrDocuments.get(0).getFieldValue(SolrConstants.PI_TOPSTRUCT));
             }
             DocumentReference doc = new DocumentReference(topStructPi);
-
+            NERTag.Type type = NERTag.Type.getType(typeString);
             for (int index = 0; index < solrDocuments.size(); index += rangeSize) {
                 List<SolrDocument> rangeList = solrDocuments.subList(index, Math.min(index + rangeSize, solrDocuments.size()));
                 TagGroup range = createPageReference(rangeList);

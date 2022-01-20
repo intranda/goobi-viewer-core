@@ -166,7 +166,8 @@ public class ALTOTools {
         value = value.replaceAll(TAG_LABEL_IGNORE_REGEX, "");
         Type type = Type.getType(tag.getType());
         if (type == null) {
-            logger.warn("Unknown tag type: {}", tag.getType());
+            logger.trace("Unknown tag type: {}, using {}", tag.getType(), Type.misc.name());
+            type = Type.misc;
         }
         ElementReference element = null;
 
