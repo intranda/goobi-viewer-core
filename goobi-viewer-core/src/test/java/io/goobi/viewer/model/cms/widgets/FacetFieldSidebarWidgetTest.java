@@ -22,9 +22,7 @@ public class FacetFieldSidebarWidgetTest extends AbstractDatabaseEnabledTest {
         widget.getTitle().setValue("Titel", Locale.GERMAN);
         widget.getTitle().setValue("Title", Locale.ENGLISH);
         widget.setFacetField(SolrConstants.LABEL);
-        widget.setDescendingSorting(false);
         widget.setFilterQuery("+DC:all");
-        widget.setNumericSorting(true);
         
         IDAO dao = DataManager.getInstance().getDao();
         
@@ -34,8 +32,6 @@ public class FacetFieldSidebarWidgetTest extends AbstractDatabaseEnabledTest {
         assertFalse(copy.isEmpty(Locale.GERMAN));
         assertEquals(widget.getFacetField(), copy.getFacetField());
         assertEquals(widget.getFilterQuery(), copy.getFilterQuery());
-        assertEquals(widget.isDescendingSorting(), copy.isDescendingSorting());
-        assertEquals(widget.isNumericSorting(), copy.isNumericSorting());
         
     }
 

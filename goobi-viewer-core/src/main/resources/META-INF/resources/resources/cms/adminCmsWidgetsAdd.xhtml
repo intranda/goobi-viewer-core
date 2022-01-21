@@ -1,12 +1,12 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
 	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
 	<f:event listener="cmswidgetEditBean.startConversation()"
@@ -34,252 +34,189 @@
 				</div>
 
 				<h:form prependId="false">
-	
-						<div class="admin__content-inner-content">
-						
+
+					<div class="admin__content-inner-content">
+
 						<div class="admin__content-wrapper">
-						
-						<div class="admin__content-main -sticky -refreshHCsticky">
-						
-						  <ui:fragment rendered="#{customWidgetEditBean.widgetType == null}">
-							<div class="admin__info-text">#{msg.cms__add_widget__select_type}:</div>
-	
-							<div class="admin__entry-list -w33">
-								<ui:repeat var="type" value="#{customWidgetEditBean.widgetTypes}">
-									<div class="admin__boxed-entry -w33">
-										<div class="d-flex flex-column h-100">
-											<div>
-												<h3>#{msg[type.label]}</h3>
-											</div>
-											<div class="mb-2">
-												<p>#{msg[type.description]}</p>
-											</div>
-											<div class="mt-auto">
-												<div class="d-flex">
-													<button jsf:action="#{customWidgetEditBean.createWidget(type)}" class="btn btn--default ml-auto">#{msg.action__select}</button>
-												</div>
-											</div>
-										</div>
-									</div>
-								</ui:repeat>
-							</div>
-						</ui:fragment>
-						
-						<ui:fragment rendered="#{customWidgetEditBean.widgetType != null}">
-							<c:set var="widget" value="#{customWidgetEditBean.widget}" scope="view"/>
-							<div class="form-horizontal form-group admin__content-wrapper">
-								<div class="w-100">
-									<h3 class="admin__content-inner-content__form_title mt-0">
-										#{msg.general}
-									</h3>
-									
-									
-									<!-- LANGUAGE TABS -->
-									<div class="admin__language-tabs">
-										<viewerComponent:localeSelector object="#{widget}"/>
-									</div>
-									<div class="admin__default-block">
-	
-										<!-- TITLE -->
-												<div class="form-group form-row">
-													<div class="col-2 control-label admin__form-label">
-														<label for="widgetTitle">
-															#{msg.label__cms_page_title}: 
-															<ui:fragment rendered="#{widget.isDefaultLocaleSelected()}">
-																<span class="admin__label-required-field">(#{msg.form__required_field})</span>
-															</ui:fragment>
-														</label>
-													</div>
 
-													<div class="col-9 cms-module__option-control admin__form-input">
-													
-									                    <h:message for="widgetTitle" errorClass="-validation-message -danger"></h:message>
-		                                                 <div class="-validation-mark">
-		                                                     <i class="fa fa-check" aria-hidden="true"></i>
-		                                                     <i class="fa fa-exclamation" aria-hidden="true"></i>
-		                                                 </div>
-		                                                 
-														<h:inputText value="#{widget.title.text}"
-															id="widgetTitle" label="widgetTitle"
-															styleClass="form-control -validation-input" required="#{widget.isDefaultLocaleSelected()}"
-															requiredMessage="#{msg.info__input_required}">
-															<f:passThroughAttribute name="aria-label" value="#{msg.label__cms_page_title}"/>
-														</h:inputText>
-														<span class="admin__form-help-text">#{msg.help__cms_page_title}</span>
-													</div>
+							<div class="admin__content-main -sticky -refreshHCsticky">
 
-													<div class="col-1 admin__form-help-icon">
-														<button type="button" class="btn btn--clean"
-															data-toggle="helptext" aria-label="inline help icon">
-															<i class="fa fa-question-circle" aria-hidden="true"></i>
-														</button>
-													</div>
-												</div>
+								<ui:fragment
+									rendered="#{customWidgetEditBean.widgetType == null}">
+									<div class="admin__info-text">#{msg.cms__add_widget__select_type}:</div>
 
-									</div>
-									
-									<ui:fragment rendered="#{widget.type == 'WIDGET_CMSPAGES'}">
-									<h3 class="admin__content-inner-content__form_title mt-0">
-										#{msg.settings}
-									</h3>
-									
-									<div class="admin__default-block">
-												<div class="form-group form-row">
-													<div class="col-2 control-label admin__form-label">
-														<label for="pagesSelect">
-															#{msg.admin__cms_pages}: <span
-															class="admin__label-required-field">(#{msg.form__required_field})</span>
-														</label>
+									<div class="admin__entry-list -w33">
+										<ui:repeat var="type"
+											value="#{customWidgetEditBean.widgetTypes}">
+											<div class="admin__boxed-entry -w33">
+												<div class="d-flex flex-column h-100">
+													<div>
+														<h3>#{msg[type.label]}</h3>
 													</div>
-	
-													<div
-														class="col-9 admin__form-input cms-module__option-control">
-	
-														<h:message for="pagesSelect"
-															errorClass="-validation-message -danger"></h:message>
-														<div class="-validation-mark">
-															<i class="fa fa-check" aria-hidden="true"></i> <i
-																class="fa fa-exclamation" aria-hidden="true"></i>
+													<div class="mb-2">
+														<p>#{msg[type.description]}</p>
+													</div>
+													<div class="mt-auto">
+														<div class="d-flex">
+															<button
+																jsf:action="#{customWidgetEditBean.createWidget(type)}"
+																class="btn btn--default ml-auto">#{msg.action__select}</button>
 														</div>
-													
-															<h:selectManyCheckbox value="#{widget.pageIds}">
-																<f:selectItems value="#{cmsBean.validCMSPages}" var="page" itemLabel="#{page.title}" itemValue="#{page.id}"></f:selectItems>
-															</h:selectManyCheckbox>
-															
-														<span class="admin__form-help-text">#{msg.cms__edit_widget__collections__help}</span>
-													</div>
-													<div class="col-1 admin__form-help-icon">
-														<button type="button" class="btn btn--clean"
-															data-toggle="helptext" aria-label="inline help icon">
-															<i class="fa fa-question-circle" aria-hidden="true"></i>
-														</button>
 													</div>
 												</div>
+											</div>
+										</ui:repeat>
 									</div>
-									</ui:fragment>		
-									
-									
+								</ui:fragment>
+
+								<ui:fragment
+									rendered="#{customWidgetEditBean.widgetType != null}">
+									<c:set var="widget" value="#{customWidgetEditBean.widget}"
+										scope="view" />
+									<!-- HTML -->
 									<ui:fragment rendered="#{widget.type == 'WIDGET_HTML'}">
-									<h3 class="admin__content-inner-content__form_title mt-0">
-										#{msg.settings}
-									</h3>		
-												
-									<div class="admin__default-block">
-									
-										<div class="form-group form-row">
-											<h:outputLabel value="#{msg.cms_sidebarElement_html}:" styleClass="col-2 control-label" />
-											<div class="col-9">
-												<h:inputTextarea value="#{widget.htmlText.text}" styleClass="form-control tinyMCE">
-													<f:passThroughAttribute name="aria-label" value="#{msg.cms_sidebarElement_html}" />
-												</h:inputTextarea>
-												<span class="admin__form-help-text">#{msg.cms__edit_widget__style__help}</span>
-											</div>
-											<div class="col-1 admin__form-help-icon">
-												<button type="button" class="btn btn--clean"
-													data-toggle="helptext" aria-label="inline help icon">
-													<i class="fa fa-question-circle" aria-hidden="true"></i>
-												</button>
-											</div>
-											
-										</div>
-									
-									</div>
+
+										<viewerForms:inputFormBlock title="#{msg.general}"
+											languageSelector="#{widget}">
+
+											<!-- TITLE -->
+											<viewerForms:textInputField value="#{widget.title.text}"
+												label="#{msg.label__cms_page_title}" required="#{widget.isDefaultLocaleSelected()}"
+												helpText="#{msg.help__cms_page_title}" />
+											<!-- HTML -->
+											<viewerForms:htmlInputField value="#{widget.htmlText.text}"
+												label="#{msg.cms_sidebarElement_html}" required="true"
+												helpText="#{msg.admin_widgets__html__help}" />
+
+										</viewerForms:inputFormBlock>
 									</ui:fragment>
-									
-	
-									<h3 class="admin__content-inner-content__form_title mt-0">
-										#{msg.settings}
-									</h3>		
-												
-									<div class="admin__default-block">
-										
-										<!-- STYLE -->
-										<div class="form-group form-row">
-											<div class="col-2 control-label admin__form-label">
-												<label for="styleSelect">
-													#{msg.cms__edit_widget__style__label}: </label>
-											</div>
 
-											<div class="col-9 admin__form-input cms-module__option-control">
-												<h:inputText value="#{widget.styleClass}"
-															id="styleSelect" label="styleSelect"
-															styleClass="form-control -validation-input" required="false"
-															requiredMessage="#{msg.info__input_required}">
-															<f:passThroughAttribute name="aria-label" value="#{msg.cms__edit_widget__style__label}"/>
-												</h:inputText>
-<!-- 												<select onchange="setStyle({widgetStyle : this.value});" id="styleSelect" class="form-control" data-value="#{widget.cssStyle}" data-options="widget-styles"> -->
-<!-- 													<option value="" disabled="disabled">#{msg.action__select}</option> -->
-<!-- 												</select> -->
-												<span class="admin__form-help-text">#{msg.cms__edit_widget__style__help}</span>
-											</div>
-											<div class="col-1 admin__form-help-icon">
-												<button type="button" class="btn btn--clean"
-													data-toggle="helptext" aria-label="inline help icon">
-													<i class="fa fa-question-circle" aria-hidden="true"></i>
-												</button>
-											</div>
-										</div>
-										
-										<!-- COLLAPSED -->
-										<div class="form-group form-row">
-											<div class="col-2 control-label admin__form-label">
-												<label for="toggleCollapsed">
-													#{msg.cms__edit_widget__collapsed__label}: </label>
-											</div>
+									<!-- CMS PAGES -->
+									<ui:fragment rendered="#{widget.type == 'WIDGET_CMSPAGES'}">
 
-											<div class="col-9 admin__form-input cms-module__option-control">
-												<viewerComponent:toggleSwitch
-													name="toggleCollapsed"
-													value="#{widget.collapsed}"/>  
-												<span class="admin__form-help-text">#{msg.cms__edit_widget__collapsed__help}</span>
-											</div>
-											<div class="col-1 admin__form-help-icon">
-												<button type="button" class="btn btn--clean"
-													data-toggle="helptext" aria-label="inline help icon">
-													<i class="fa fa-question-circle" aria-hidden="true"></i>
-												</button>
-											</div>
-										</div>
-		
-								</div>
+										<viewerForms:inputFormBlock title="#{msg.general}"
+											languageSelector="#{widget}">
+											<!-- TITLE -->
+											<viewerForms:textInputField value="#{widget.title.text}"
+												label="#{msg.label__cms_page_title}" required="#{widget.isDefaultLocaleSelected()}"
+												helpText="#{msg.help__cms_page_title}" />
+										</viewerForms:inputFormBlock>
+
+										<viewerForms:inputFormBlock title="#{msg.settings}">
+
+											<viewerForms:manySelectField label="#{msg.admin__cms_pages}"
+												value="#{widget.pageIds}"
+												selectValues="#{cmsBean.validCMSPages}" var="page"
+												itemLabel="#{page.title}" itemValue="#{page.id}"
+												helpText="#{msg.cms__edit_widget__collections__help}" />
+
+										</viewerForms:inputFormBlock>
+
+									</ui:fragment>
+
+									<ui:fragment rendered="#{widget.type == 'WIDGET_FIELDFACETS'}">
+
+										<viewerForms:inputFormBlock title="#{msg.settings}">
+
+											<viewerForms:singleSelectField
+												label="#{msg.label__solrfield}" required="true"
+												value="#{widget.facetField}"
+												selectValues="#{cmsBean.getLuceneFields(true)}" var="field"
+												itemValue="#{field}" itemLabel="#{msg[field]}"
+												helpText="#{msg.cms_widget__solrfield__help}" />
+
+											<viewerForms:textInputField
+												label="#{msg.admin_widgets__filter_query__label}"
+												required="false" value="#{widget.filterQuery}"
+												helpText="#{msg.cms_widget__filter_query__help}" />
+
+											<viewerForms:singleSelectField label="#{msg.cms_itemCount}"
+												required="false" value="#{widget.numEntries}"
+												selectValues="#{[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]}"
+												helpText="#{msg.cms_widget__solrfield__help}" />
+
+										</viewerForms:inputFormBlock>
+
+									</ui:fragment>
+
+									<ui:fragment rendered="#{widget.type == 'WIDGET_RSSFEED'}">
+
+										<viewerForms:inputFormBlock title="#{msg.general}"
+											languageSelector="#{widget}">
+											<!-- TITLE -->
+											<viewerForms:textInputField value="#{widget.title.text}"
+												label="#{msg.label__cms_page_title}" required="#{widget.isDefaultLocaleSelected()}"
+												helpText="#{msg.help__cms_page_title}" />
+										</viewerForms:inputFormBlock>
+
+										<viewerForms:inputFormBlock title="#{msg.settings}">
+
+											<viewerForms:singleSelectField label="#{msg.sortBy}"
+												required="true" value="#{widget.sortField}"
+												selectValues="#{cmsBean.getPossibleSortFields()}"
+												var="field" itemValue="#{field}" itemLabel="#{msg[field]}"
+												helpText="#{msg.cms_widget__solr_sortfield__help}" />
+
+											<viewerForms:textInputField
+												label="#{msg.admin_widgets__filter_query__label}"
+												required="false" value="#{widget.filterQuery}"
+												helpText="#{msg.cms_widget__filter_query__help}" />
+
+											<viewerForms:singleSelectField label="#{msg.cms_itemCount}"
+												required="false" value="#{widget.numEntries}"
+												selectValues="#{[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]}"
+												helpText="#{msg.cms_widget__solrfield__help}" />
+
+											<viewerForms:booleanSelectField
+												label="#{msg.cms_sidebarElement_sortDescending}"
+												value="#{widget.descendingSorting}"
+												helpText="#{msg.cms_widget__sort_descending__help}" />
+
+										</viewerForms:inputFormBlock>
+
+									</ui:fragment>
+
+									<viewerForms:inputFormBlock title="#{msg.settings}">
+
+										<viewerForms:textInputField
+											label="#{msg.cms__edit_widget__style__label}"
+											required="false" value="#{widget.styleClass}"
+											helpText="#{msg.cms__edit_widget__style__help}" />
+
+										<viewerForms:booleanSelectField
+											label="#{msg.cms__edit_widget__collapsed__label}"
+											value="#{widget.collapsed}"
+											helpText="#{msg.cms__edit_widget__collapsed__help}" />
+
+									</viewerForms:inputFormBlock>
+
+								</ui:fragment>
+
+								<div
+									class="row no-gutters justify-content-end admin__final-actions">
+									<a class="btn btn--cancel"
+										href="#{customWidgetEditBean.returnUrl}">#{msg.button__abort}
+									</a>
+									<button class="btn btn--success"
+										jsf:action="#{customWidgetEditBean.save()}">#{msg.button__save}</button>
 								</div>
 								
-								
 							</div>
-							</ui:fragment>
-	
-							<div
-								class="row no-gutters justify-content-end admin__final-actions">
-								<a class="btn btn--cancel"
-									href="#{customWidgetEditBean.returnUrl}">#{msg.button__abort}
-								</a>
-								<button class="btn btn--success" jsf:action="#{customWidgetEditBean.save()}">
-									
-									#{msg.button__save}
-									
-								</button>
-							</div>
-							
-							
-													</div>
-							
 							
 							<div class="admin__content-side">
-                                <div class="admin__default-block">
-                                    <h:panelGroup binding="#{customWidgetEditBean.previewGroup}"/>
-                                </div>
-                            </div>
-
+								<div class="admin__default-block">
+									<h:panelGroup binding="#{customWidgetEditBean.previewGroup}" />
+								</div>
+							</div>
 							
 						</div>
-						</div>
-						
-						
+
+					</div>
 
 				</h:form>
 			</h:panelGroup>
-		</div>	
-		
+		</div>
+
 	</ui:define>
 
 </ui:composition>
