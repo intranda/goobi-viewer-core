@@ -960,6 +960,7 @@ public final class SearchHelper {
      * @param targetFragmentLength Desired (approximate) length of the text fragment.
      * @param firstMatchOnly If true, only the fragment for the first match will be returned
      * @param addFragmentIfNoMatches If true, a fragment will be added even if no term was matched
+     * @param proximitySearchDistance
      * @should not add prefix and suffix to text
      * @should truncate string to 200 chars if no terms are given
      * @should truncate string to 200 chars if no term has been found
@@ -972,7 +973,7 @@ public final class SearchHelper {
      * @return a {@link java.util.List} object.
      */
     public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly,
-            boolean addFragmentIfNoMatches) {
+            boolean addFragmentIfNoMatches, int proximitySearchDistance) {
         // logger.trace("truncateFulltext");
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
@@ -1009,6 +1010,7 @@ public final class SearchHelper {
                     break;
                 }
                 if (FuzzySearchTerm.isFuzzyTerm(searchTerm)) {
+                    // Fuzzy search
                     FuzzySearchTerm fuzzySearchTerm = new FuzzySearchTerm(searchTerm);
                     Matcher m = Pattern.compile(FuzzySearchTerm.WORD_PATTERN).matcher(fulltext.toLowerCase());
                     int lastIndex = -1;
@@ -1019,6 +1021,25 @@ public final class SearchHelper {
                                 continue;
                             }
                             lastIndex = createFulltextFragment(m, fulltext, word, targetFragmentLength, ret);
+                            if (firstMatchOnly) {
+                                break;
+                            }
+                        }
+                    }
+                } else if (proximitySearchDistance > 0 && searchTerm.contains(" ")) {
+                    // TODO Proximity search
+                    String regex = buildProximitySearchRegexPattern(searchTerm, proximitySearchDistance);
+                    if (regex != null) {
+                        Matcher m = Pattern.compile(regex).matcher(fulltext.toLowerCase());
+                        int lastIndex = -1;
+                        while (m.find()) {
+                            // Skip match if it follows right after the last match
+                            if (lastIndex != -1 && m.start() <= lastIndex + searchTerm.length()) {
+                                continue;
+                            }
+                            String fragment = fulltext.substring(m.start(), m.end());
+                            logger.trace("fragment: {}", fragment);
+                            lastIndex = createFulltextFragment(m, fulltext, fragment, targetFragmentLength, ret);
                             if (firstMatchOnly) {
                                 break;
                             }
@@ -1073,6 +1094,40 @@ public final class SearchHelper {
         return ret;
     }
 
+    /**
+     * Builds regex for proximity search full-text snippets.
+     * 
+     * @param searchTerm Search term containing multiple words
+     * @param proximitySearchDistance Maximum distance between word
+     * @return
+     * @should build regex correctly
+     */
+    static String buildProximitySearchRegexPattern(String searchTerm, int proximitySearchDistance) {
+        if (StringUtils.isEmpty(searchTerm)) {
+            return null;
+        }
+        String[] searchTermSplit = searchTerm.toLowerCase().split(" ");
+        StringBuilder sbPattern = new StringBuilder("\\b(?:");
+        for (int i = 0; i < searchTermSplit.length; ++i) {
+            if (i > 0) {
+                sbPattern.append("\\W+(?:\\w+\\W+){0,").append(proximitySearchDistance).append("}?");
+            }
+            sbPattern.append(searchTermSplit[i]);
+        }
+        sbPattern.append(")\\b");
+
+        return sbPattern.toString();
+    }
+
+    /**
+     * 
+     * @param m
+     * @param fulltext
+     * @param searchTerm
+     * @param targetFragmentLength
+     * @param ret
+     * @return
+     */
     private static int createFulltextFragment(Matcher m, String fulltext, String searchTerm, int targetFragmentLength, List<String> ret) {
         int indexOfTerm = m.start();
         int lastIndex = m.start();

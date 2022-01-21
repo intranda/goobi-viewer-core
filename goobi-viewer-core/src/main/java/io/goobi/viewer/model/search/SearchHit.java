@@ -234,13 +234,15 @@ public class SearchHit implements Comparable<SearchHit> {
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         List<String> fulltextFragments =
                 (fulltext == null || searchTerms == null) ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
-                        DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true);
+                        DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true,
+                        DataManager.getInstance().getConfiguration().isProximitySearchEnabled()
+                                ? DataManager.getInstance().getConfiguration().getProximitySearchDistance() : 0);
         StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc, ownerDoc);
         String docstructType = se.getDocStructType();
         if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
             docstructType = DocType.METADATA.name();
         }
-        
+
         Map<String, List<String>> searchedFields = new HashMap<>(se.getMetadataFields());
         searchedFields.put(SolrConstants.FULLTEXT, Collections.singletonList(fulltext));
         Map<String, Set<String>> foundSearchTerms = getActualSearchTerms(searchTerms, searchedFields);
@@ -300,27 +302,27 @@ public class SearchHit implements Comparable<SearchHit> {
      * replaces any terms with a fuzzy search token with the matching strings found in the valus of fields
      * 
      * @param origTerms
-     * @param fields 
+     * @param fields
      * @return
      */
     private static Map<String, Set<String>> getActualSearchTerms(Map<String, Set<String>> origTerms, Map<String, List<String>> resultFields) {
         String foundValues = resultFields.values().stream().flatMap(l -> l.stream()).collect(Collectors.joining(" "));
         Map<String, Set<String>> newFieldTerms = new HashMap<>();
-        if(origTerms == null) {
+        if (origTerms == null) {
             return newFieldTerms;
         }
-        for (String  solrField : origTerms.keySet()) {
+        for (String solrField : origTerms.keySet()) {
             Set<String> newTerms = new HashSet<String>();
             Set<String> terms = origTerms.get(solrField);
-            for(String term : terms) {
+            for (String term : terms) {
                 term = term.replaceAll("^\\(|\\)$", "");
                 term = StringTools.removeDiacriticalMarks(term);
-                if(FuzzySearchTerm.isFuzzyTerm(term)) {
+                if (FuzzySearchTerm.isFuzzyTerm(term)) {
                     FuzzySearchTerm fuzzy = new FuzzySearchTerm(term);
                     Matcher m = Pattern.compile(FuzzySearchTerm.WORD_PATTERN).matcher(foundValues);
-                    while(m.find()) {
+                    while (m.find()) {
                         String word = m.group();
-                        if(fuzzy.matches(word)) {
+                        if (fuzzy.matches(word)) {
                             newTerms.add(word);
                         }
                     }
@@ -434,7 +436,9 @@ public class SearchHit implements Comparable<SearchHit> {
                             hitPages.put(page, truncatedStrings);
                         }
                         truncatedStrings.addAll(SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.CMS_TEXT_ALL), highlightedValue,
-                                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true));
+                                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true,
+                                DataManager.getInstance().getConfiguration().isProximitySearchEnabled()
+                                        ? DataManager.getInstance().getConfiguration().getProximitySearchDistance() : 0));
 
                     }
                 }
@@ -509,7 +513,9 @@ public class SearchHit implements Comparable<SearchHit> {
             }
             // logger.trace(fulltext);
             List<String> fulltextFragments = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT),
-                    fulltext, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false);
+                    fulltext, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false,
+                    DataManager.getInstance().getConfiguration().isProximitySearchEnabled()
+                            ? DataManager.getInstance().getConfiguration().getProximitySearchDistance() : 0);
 
             int count = 0;
             if (fulltextFragments != null && !fulltextFragments.isEmpty()) {
