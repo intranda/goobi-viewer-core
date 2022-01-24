@@ -26,7 +26,7 @@
 
     <ui:define name="content">
         <div id="userAccount" class="user-account">
-            <h1 class="h2">#{msg.admin__user_profile}</h1>
+            <h1 >#{msg.admin__user_profile}</h1>
             <!-- USER NOT LOGGED IN -->
             <ui:fragment rendered="#{!userBean.loggedIn}">
                 <div class="alert alert-warning" role="alert">
@@ -38,7 +38,7 @@
             <ui:fragment rendered="#{userBean.loggedIn}">
 
             	<!-- ACTIVITIES BLOCK -->
-				<h2 class="h3">#{msg.label__user_crowdsourcing_activity}</h2>
+				<h2 >#{msg.label__user_crowdsourcing_activity}</h2>
 				<c:set value="#{userDataBean.getLatestActivity(userBean.user, 6)}" var="activities" scope="view"/>
 				<div class="user-dashboard__form-wrapper">
 					<c:choose>
@@ -74,12 +74,12 @@
 
 				<!-- OVERVIEW BLOCK -->
 			<c:if test="#{configurationBean.bookmarksEnabled or configurationBean.searchSavingEnabled or configurationBean.userCommentsEnabled}">
-				<h2 class="h3">#{msg.admin__overview}</h2>
+				<h2 >#{msg.admin__overview}</h2>
 				<div class="user-dashboard__form-wrapper-container">
 
 					<!-- BOOKMARKS BOX -->
 					<div class="user-dashboard__form-wrapper -w50" jsf:rendered="#{configurationBean.bookmarksEnabled}">
-					<h3 class="h4">#{msg.bookmarks}</h3>
+					<h3 >#{msg.bookmarks}</h3>
 						<c:choose>
 							<c:when test="#{userDataBean.getNumBookmarkLists(userBean.user) > 0}">
 								<div class="user-dashboard__bookmarks-wrapper">
@@ -116,7 +116,7 @@
 					<!-- SEARCHES BOX -->
 					<div class="user-dashboard__form-wrapper -w50" jsf:rendered="#{configurationBean.searchSavingEnabled}">
 
-						<h3 class="h4">#{msg.label__user_searches}</h3>
+						<h3 >#{msg.label__user_searches}</h3>
 								<!-- SAVED SEARCHES -->
 						<c:choose>
 							<c:when test="#{userDataBean.getNumSearches(userBean.user) > 0}">
@@ -157,7 +157,7 @@
 					<div class="user-dashboard__form-wrapper-container" jsf:rendered="#{configurationBean.userCommentsEnabled}">
 						<!-- COMMENTS BOX -->
 						<div class="user-dashboard__form-wrapper -w100">
-							<h3 class="h4">#{msg.userComments}</h3>
+							<h3 >#{msg.userComments}</h3>
 
 							<c:choose>
 								<c:when test="#{userDataBean.getNumComments(userBean.user) > 0}">
