@@ -5384,23 +5384,23 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalBoolean("search.fuzzy[@enabled]", false);
     }
     
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public boolean isProximitySearchEnabled() {
-        return getLocalBoolean("search.proximity[@enabled]", false);
-    }
-    
-    
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public int getProximitySearchDistance() {
-        return getLocalInt("search.proximity[@distance]", 10);
-    }
+//    /**
+//     * 
+//     * @return
+//     * @should return correct value
+//     */
+//    public boolean isProximitySearchEnabled() {
+//        return getLocalBoolean("search.proximity[@enabled]", false);
+//    }
+//    
+//    
+//    /**
+//     * 
+//     * @return
+//     * @should return correct value
+//     */
+//    public int getProximitySearchDistance() {
+//        return getLocalInt("search.proximity[@distance]", 10);
+//    }
 
 }

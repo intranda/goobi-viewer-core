@@ -993,7 +993,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             groups.add(group);
         }
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false, 0);
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
         Assert.assertEquals(" +((MD_FIELD:val1 AND MD_TITLE:(foo AND bar)) AND (MD_FIELD:val2 OR MD_SHELFMARK:(bla OR blup)))", result);
     }
 
@@ -1022,7 +1022,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             groups.add(group);
         }
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, true, 0);
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, true);
         Assert.assertEquals(
                 " +((MD_FIELD:(val1 val1~1) AND MD_TITLE:((foo) AND (bar))) AND (MD_FIELD:(val2 val2~1) OR MD_SHELFMARK:((bla) OR (blup blup~1))))",
                 result);
@@ -1058,7 +1058,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(5).setValue("PPN000");
         groups.add(group);
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false, 0);
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
         Assert.assertEquals(" +((MD_FIELD:val))", result);
     }
 
@@ -1071,7 +1071,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         // TODO makes this more robust against changes to the index
         String query = "DOCSTRCT:monograph AND MD_YEARPUBLISH:18*";
         SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, query, Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null,
-                null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, null);
+                null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, 0, null);
         String[] cellValues0 =
                 new String[] { "Persistent identifier", "13473260X", "AC08311001", "AC03343066", "PPN193910888" };
         String[] cellValues1 =
@@ -1122,11 +1122,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String rawQuery = SolrConstants.IDDOC + ":*";
         List<SearchHit> hits =
                 SearchHelper.searchWithAggregation(SearchHelper.buildFinalQuery(rawQuery, null, true, false), 0, 10, null, null, null, null, null,
-                        null, Locale.ENGLISH);
+                        null, Locale.ENGLISH, 0);
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
-            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true, false, null);
+            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true, false, 0, null);
             Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
         }
     }
@@ -1540,6 +1540,25 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#removeProximitySearchToken(String)
+     * @verifies remove token correctly
+     */
+    @Test
+    public void removeProximitySearchToken_shouldRemoveTokenCorrectly() throws Exception {
+        Assert.assertEquals("\"foo bar\"", SearchHelper.removeProximitySearchToken("\"foo bar\"~10"));
+    }
+
+    /**
+     * @see SearchHelper#removeProximitySearchToken(String)
+     * @verifies return unmodified term if no token found
+     */
+    @Test
+    public void removeProximitySearchToken_shouldReturnUnmodifiedTermIfNoTokenFound() throws Exception {
+        Assert.assertEquals("\"foo bar\"", SearchHelper.removeProximitySearchToken("\"foo bar\""));
+        Assert.assertEquals("", SearchHelper.removeProximitySearchToken(""));
+    }
+
+    /**
      * @see SearchHelper#buildProximitySearchRegexPattern(String,int)
      * @verifies build regex correctly
      */
@@ -1547,5 +1566,42 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void buildProximitySearchRegexPattern_shouldBuildRegexCorrectly() throws Exception {
         Assert.assertEquals("\\b(?:one\\W+(?:\\w+\\W+){0,10}?two\\W+(?:\\w+\\W+){0,10}?three)\\b",
                 SearchHelper.buildProximitySearchRegexPattern("one two three", 10));
+    }
+
+    /**
+     * @see SearchHelper#extractProximitySearchDistanceFromQuery(String)
+     * @verifies return 0 if query empty
+     */
+    @Test
+    public void extractProximitySearchDistanceFromQuery_shouldReturn0IfQueryEmpty() throws Exception {
+        Assert.assertEquals(0, SearchHelper.extractProximitySearchDistanceFromQuery(null));
+        Assert.assertEquals(0, SearchHelper.extractProximitySearchDistanceFromQuery(""));
+    }
+
+    /**
+     * @see SearchHelper#extractProximitySearchDistanceFromQuery(String)
+     * @verifies return 0 if query does not contain token
+     */
+    @Test
+    public void extractProximitySearchDistanceFromQuery_shouldReturn0IfQueryDoesNotContainToken() throws Exception {
+        Assert.assertEquals(0, SearchHelper.extractProximitySearchDistanceFromQuery("\"foo bar\""));
+    }
+
+    /**
+     * @see SearchHelper#extractProximitySearchDistanceFromQuery(String)
+     * @verifies return 0 if query not phrase search
+     */
+    @Test
+    public void extractProximitySearchDistanceFromQuery_shouldReturn0IfQueryNotPhraseSearch() throws Exception {
+        Assert.assertEquals(0, SearchHelper.extractProximitySearchDistanceFromQuery("foo~10"));
+    }
+
+    /**
+     * @see SearchHelper#extractProximitySearchDistanceFromQuery(String)
+     * @verifies extract distance correctly
+     */
+    @Test
+    public void extractProximitySearchDistanceFromQuery_shouldExtractDistanceCorrectly() throws Exception {
+        Assert.assertEquals(10, SearchHelper.extractProximitySearchDistanceFromQuery("\"foobar\"~10"));
     }
 }

@@ -154,7 +154,7 @@ public final class SearchHelper {
     /** Constant <code>patternPhrase</code> */
     public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
     /** Constant <code>patternProximitySearchToken</code> */
-    public static Pattern patternProximitySearchToken = Pattern.compile("~[0-9]+");
+    public static Pattern patternProximitySearchToken = Pattern.compile("~([0-9]+)");
 
     /** Filter subquery for collection listing (no volumes). */
     static volatile String collectionBlacklistFilterSuffix = null;
@@ -172,6 +172,7 @@ public final class SearchHelper {
      * @param searchTerms a {@link java.util.Map} object.
      * @param exportFields a {@link java.util.List} object.
      * @param locale a {@link java.util.Locale} object.
+     * @param proximitySearchDistance
      * @return List of <code>StructElement</code>s containing the search hits.
      * @should return all hits
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -181,9 +182,10 @@ public final class SearchHelper {
      */
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields,
             List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
-            List<String> exportFields, Locale locale)
+            List<String> exportFields, Locale locale, int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return searchWithAggregation(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, false);
+        return searchWithAggregation(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, false,
+                proximitySearchDistance);
     }
 
     /**
@@ -200,6 +202,7 @@ public final class SearchHelper {
      * @param exportFields a {@link java.util.List} object.
      * @param locale a {@link java.util.Locale} object.
      * @param keepSolrDoc
+     * @param proximitySearchDistance
      * @return List of <code>StructElement</code>s containing the search hits.
      * @should return all hits
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -209,7 +212,7 @@ public final class SearchHelper {
      */
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields,
             List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
-            List<String> exportFields, Locale locale, boolean keepSolrDoc)
+            List<String> exportFields, Locale locale, boolean keepSolrDoc, int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("searchWithAggregation: {}", query);
         QueryResponse resp =
@@ -230,7 +233,7 @@ public final class SearchHelper {
             // logger.trace("Creating search hit from {}", doc);
             SearchHit hit =
                     SearchHit.createSearchHit(doc, null, null, locale, null, searchTerms, exportFields, sortFields, ignoreFields,
-                            translateFields, null, thumbs);
+                            translateFields, null, proximitySearchDistance, thumbs);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
@@ -348,7 +351,7 @@ public final class SearchHelper {
      */
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, boolean boostTopLevelDocstructs,
-            HttpServletRequest request)
+            int proximitySearchDistance, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String finalQuery = prepareQuery(query);
         String termQuery = null;
@@ -358,7 +361,8 @@ public final class SearchHelper {
         finalQuery = buildFinalQuery(finalQuery, termQuery, aggregateHits, boostTopLevelDocstructs);
         logger.trace("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits =
-                SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale);
+                SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale,
+                        proximitySearchDistance);
         if (!hits.isEmpty()) {
             return hits.get(0).getBrowseElement();
         }
@@ -2191,7 +2195,7 @@ public final class SearchHelper {
                     term = term.replace("\\*", "*");
                     //unescape fuzzy search token
                     term = term.replaceAll("\\\\~(\\d)", "~$1");
-                    logger.trace("term: {}", term);
+                    // logger.trace("term: {}", term);
                     if (phraseSearch && !quotationMarksApplied) {
                         term = '"' + term + '"';
                     }
@@ -2227,13 +2231,11 @@ public final class SearchHelper {
      * @param groups a {@link java.util.List} object.
      * @param advancedSearchGroupOperator a int.
      * @param allowFuzzySearch
-     * @param proximitySearchDistance
      * @should generate query correctly
      * @should skip reserved fields
      * @return a {@link java.lang.String} object.
      */
-    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator, boolean allowFuzzySearch,
-            int proximitySearchDistance) {
+    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator, boolean allowFuzzySearch) {
         logger.trace("generateAdvancedExpandQuery");
         if (groups == null || groups.isEmpty()) {
             return "";
@@ -2277,7 +2279,7 @@ public final class SearchHelper {
                             continue;
                         }
                 }
-                String itemQuery = item.generateQuery(new HashSet<String>(), false, allowFuzzySearch, proximitySearchDistance);
+                String itemQuery = item.generateQuery(new HashSet<String>(), false, allowFuzzySearch);
                 if (StringUtils.isNotEmpty(itemQuery)) {
                     if (sbGroup.length() > 0) {
                         if (orMode) {
@@ -2525,7 +2527,7 @@ public final class SearchHelper {
         }
 
         logger.trace("rawQuery: {}", rawQuery);
-        logger.trace("termQuery: {}", termQuery);
+        // logger.trace("termQuery: {}", termQuery);
         StringBuilder sbQuery = new StringBuilder();
         if (rawQuery.contains(AGGREGATION_QUERY_PREFIX)) {
             rawQuery = rawQuery.replace(AGGREGATION_QUERY_PREFIX, "");
@@ -2613,8 +2615,8 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static SXSSFWorkbook exportSearchAsExcel(String finalQuery, String exportQuery, List<StringPair> sortFields, List<String> filterQueries,
-            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, int proximitySearchDistance,
+            HttpServletRequest request) throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         SXSSFWorkbook wb = new SXSSFWorkbook(25);
         SXSSFSheet currentSheet = wb.createSheet("Goobi_viewer_search");
 
@@ -2664,7 +2666,7 @@ public final class SearchHelper {
             logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
             List<SearchHit> batch =
                     searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFieldNames,
-                            locale);
+                            locale, proximitySearchDistance);
 
             for (SearchHit hit : batch) {
                 // Create row
@@ -2866,6 +2868,60 @@ public final class SearchHelper {
         sb.append(distance);
 
         return sb.toString();
+    }
+
+    /**
+     * 
+     * @param term Search term containing proximity search token
+     * @return
+     * @should remove token correctly
+     * @should return unmodified term if no token found
+     */
+    public static String removeProximitySearchToken(String term) {
+        if (StringUtils.isEmpty(term) || !term.contains("\"~")) {
+            return term;
+        }
+
+        Matcher m = SearchHelper.patternProximitySearchToken.matcher(term);
+        if (m.find()) {
+            String num = m.group(1);
+            if (StringUtils.isNotBlank(num)) {
+                return term.replace("~" + num, "");
+            }
+        }
+
+        return term;
+    }
+
+    /**
+     * 
+     * @param query
+     * @return
+     * @should return 0 if query empty
+     * @should return 0 if query does not contain token
+     * @should return 0 if query not phrase search
+     * @should extract distance correctly
+     */
+    public static int extractProximitySearchDistanceFromQuery(String query) {
+        if (StringUtils.isEmpty(query) || !query.contains("\"~")) {
+            return 0;
+        }
+
+        int ret = 0;
+        Matcher m = SearchHelper.patternProximitySearchToken.matcher(query);
+        if (m.find()) {
+            String num = m.group(1);
+            if (StringUtils.isNotBlank(num)) {
+                try {
+                    ret = Integer.valueOf(num);
+                    logger.trace("Extracted proximity search distance: {}", ret);
+                } catch (NumberFormatException e) {
+                    logger.warn(e.getMessage());
+                }
+            }
+        }
+
+        return ret;
     }
 
     /**

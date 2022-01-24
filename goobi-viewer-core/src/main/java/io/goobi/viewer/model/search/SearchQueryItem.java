@@ -392,7 +392,6 @@ public class SearchQueryItem implements Serializable {
      * @param searchTerms a {@link java.util.Set} object.
      * @param aggregateHits a boolean.
      * @param allowFuzzySearch If true, search terms will be augmented by fuzzy search tokens
-     * @param proximitySearchDistance If >0, use proximity search with given distance
      * @return a {@link java.lang.String} object.
      * @should generate query correctly
      * @should escape reserved characters
@@ -401,7 +400,7 @@ public class SearchQueryItem implements Serializable {
      * @should generate range query correctly
      * @should add proximity search token correctly
      */
-    public String generateQuery(Set<String> searchTerms, boolean aggregateHits, boolean allowFuzzySearch, int proximitySearchDistance) {
+    public String generateQuery(Set<String> searchTerms, boolean aggregateHits, boolean allowFuzzySearch) {
         checkAutoOperator();
         StringBuilder sbItem = new StringBuilder();
 
@@ -451,6 +450,7 @@ public class SearchQueryItem implements Serializable {
                     sbItem.append('(');
                 }
                 String useValue = value.trim();
+                int proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
                 boolean additionalField = false;
                 for (String field : fields) {
                     if (additionalField) {
@@ -467,13 +467,13 @@ public class SearchQueryItem implements Serializable {
                         sbItem.append('"');
                     }
                     sbItem.append(useValue);
-                    if (useValue.charAt(useValue.length() - 1) != '"') {
+                    if (useValue.charAt(useValue.length() - 1) != '"' && proximitySearchDistance == 0) {
                         sbItem.append('"');
                     }
                     if (SolrConstants.FULLTEXT.equals(field) || SolrConstants.SUPERFULLTEXT.equals(field)) {
                         // Add proximity search token
                         if (proximitySearchDistance > 0) {
-                            sbItem.append('~').append(proximitySearchDistance);
+                            //                            sbItem.append('~').append(proximitySearchDistance);
                         }
                         // Remove quotation marks to add to search terms
                         String val = useValue.replace("\"", "");
