@@ -297,18 +297,16 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateSimpleSearchString_shouldAddProximitySearchTokenCorrectly() throws Exception {
-        DataManager.getInstance().getConfiguration().overrideValue("search.proximity[@enabled]", true);
-
         SearchBean bean = new SearchBean();
 
         // All
-        bean.generateSimpleSearchString("\"foo bar\"");
+        bean.generateSimpleSearchString("\"foo bar\"~20");
         Assert.assertTrue(bean.searchStringInternal.contains("SUPERFULLTEXT:(\"foo bar\"~20)"));
         Assert.assertTrue(bean.searchStringInternal.contains(" FULLTEXT:(\"foo bar\"~20)"));
 
         // Just full-text
         bean.setCurrentSearchFilterString("filter_FULLTEXT");
-        bean.generateSimpleSearchString("\"foo bar\"");
+        bean.generateSimpleSearchString("\"foo bar\"~20");
         Assert.assertEquals("SUPERFULLTEXT:(\"foo bar\"~20) OR FULLTEXT:(\"foo bar\"~20)", bean.searchStringInternal);
     }
 
