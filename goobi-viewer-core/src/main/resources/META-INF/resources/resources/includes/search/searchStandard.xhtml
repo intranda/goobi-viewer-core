@@ -19,7 +19,7 @@
     <div class="search-standard">
         <!-- SEARCH STANDRAD TITLE -->
         <div class="search-standard__title">
-            <h2 class="h3">
+            <h2 >
                 <h:outputText rendered="#{!search.searchInDcFlag and title == ''}" value="#{msg.searchGlobalDescription}" />
                 <h:panelGroup rendered="#{!search.searchInDcFlag and title != ''}">
                 	#{title}
@@ -107,7 +107,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 class="h4 modal-title" id="searchHelpModalLabel">#{msg.search_helpModalTitle}</h2>
+                    <h2 class=" modal-title" id="searchHelpModalLabel">#{msg.search_helpModalTitle}</h2>
                     <button type="button" class="fancy-close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">
                             <h:outputText value="&amp;times;" escape="false" />

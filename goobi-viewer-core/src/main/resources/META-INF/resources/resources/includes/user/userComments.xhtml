@@ -20,7 +20,7 @@
 			<!-- USER NOT LOGGED IN -->
 			<ui:fragment rendered="#{!userBean.loggedIn}">
 				<div class="user-comments__message-login">
-					<h2 class="h3">#{msg.commentAdd}</h2>
+					<h2 >#{msg.commentAdd}</h2>
 
 					<h:outputText value="#{msg.commentDescription} " escape="false" />
 
@@ -36,7 +36,7 @@
 
 			<h:form id="userCommentsForm" prependId="false">
 				<ui:fragment rendered="#{userBean.loggedIn}">
-					<h2 class="h3">#{msg.userComments}</h2>
+					<h2 >#{msg.userComments}</h2>
 				</ui:fragment>
 
 				<!-- EXISTING COMMENTS -->

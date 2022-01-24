@@ -137,7 +137,7 @@ var adminJS = ( function( admin ) {
     			});
     			
     			if($('.admin__table-entry').length == 0) {
-    				$('.admin__table-content').append('<br/><p class="">#{msg.hitsZero}</p>');
+    				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
     			}
     			
     			$('.admin__translations-search-input').keyup(function() {
@@ -163,7 +163,7 @@ var adminJS = ( function( admin ) {
     			});
     			
     			if($('.admin__table-entry').length == 0) {
-    				$('.admin__table-content').append('<br/><p class="">#{msg.hitsZero}</p>');
+    				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
     			}
             });
         }

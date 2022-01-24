@@ -25,7 +25,7 @@
             <!-- STANDARD -->
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
                 <div id="widgetLeaflet" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
-                    <h2 class="h3">
+                    <h2 >
                         #{msg.widgetGeoLocations}
                         </h2>
 
@@ -37,7 +37,7 @@
             <!-- FOLDOUT -->
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
                 <div id="widgetLeaflet" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
-                    <h2 class="h3">
+                    <h2 >
                         #{msg.widgetGeoLocations}
                         <a href="#widgetLeafletCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="widgetLeafletCollapse">
                             <h:outputText value="#{msg.widgetGeoLocations}" escape="false" />

@@ -18,7 +18,7 @@
             <div class="compName_rssFeed rss_wrapp men_wrapp rss_elem_wrapp sidebar-widget widget #{cc.attrs.widget.cssClass}">
                 <h:panelGroup
                     rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == 'FOLDOUT' or cc.attrs.widget.type == null}">
-                    <h2 class="h3">
+                    <h2 >
                         #{cc.attrs.widget.widgetTitle ? cc.attrs.widget.widgetTitle : msg.lastImports}
                         <a
                             href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}"
