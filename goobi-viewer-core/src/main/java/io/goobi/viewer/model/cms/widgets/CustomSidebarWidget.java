@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
+import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
@@ -125,7 +126,7 @@ public class CustomSidebarWidget implements IPolyglott {
         return description;
     }
 
-    public CustomWidgetTypes getType() {
+    public CustomWidgetType getType() {
         return null;
     }
 

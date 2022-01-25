@@ -36,7 +36,6 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
-import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
@@ -1379,17 +1378,6 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteCMSPage(CMSPage page) throws DAOException;
-
-    /**
-     * <p>
-     * getCMSSidebarElement.
-     * </p>
-     *
-     * @param id a long.
-     * @return a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public CMSSidebarElement getCMSSidebarElement(long id) throws DAOException;
 
     /**
      * <p>

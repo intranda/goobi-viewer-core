@@ -1,4 +1,4 @@
-package io.goobi.viewer.model.cms.widgets;
+package io.goobi.viewer.model.cms.widgets.type;
 
 public enum WidgetGenerationType {
     DEFAULT(""),

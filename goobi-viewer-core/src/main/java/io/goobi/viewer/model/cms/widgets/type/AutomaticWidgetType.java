@@ -1,4 +1,4 @@
-package io.goobi.viewer.model.cms.widgets;
+package io.goobi.viewer.model.cms.widgets.type;
 
 /**
  * All types of sidebar widgets which are generated automatically if certain conditions are met, usually if certain CMS content exists
@@ -7,7 +7,7 @@ package io.goobi.viewer.model.cms.widgets;
  * @author florian
  *
  */
-public enum AutomaticWigetTypes implements WidgetContentType {
+public enum AutomaticWidgetType implements WidgetContentType {
     
     /**
      * Widget displaying a geomap created in CMS
@@ -17,7 +17,7 @@ public enum AutomaticWigetTypes implements WidgetContentType {
     private final String label;
     private final String filename;
     
-    private AutomaticWigetTypes(String label, String filename) {
+    private AutomaticWidgetType(String label, String filename) {
         this.label = label;
         this.filename = filename;
     }

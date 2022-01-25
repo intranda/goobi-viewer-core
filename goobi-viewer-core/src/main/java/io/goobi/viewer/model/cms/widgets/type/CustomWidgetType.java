@@ -1,4 +1,4 @@
-package io.goobi.viewer.model.cms.widgets;
+package io.goobi.viewer.model.cms.widgets.type;
 
 /**
  * Types of sidebar widgets that contain individual configuration and must be created by a user
@@ -6,7 +6,7 @@ package io.goobi.viewer.model.cms.widgets;
  * @author florian
  *
  */
-public enum CustomWidgetTypes implements WidgetContentType {
+public enum CustomWidgetType implements WidgetContentType {
     
     /**
      * Displays an RSS feed. Number and sorting of feed item may be configured, as well as a search query to filter the feed items 
@@ -29,7 +29,7 @@ public enum CustomWidgetTypes implements WidgetContentType {
     private final String description;
     private final String filename;
     
-    private CustomWidgetTypes(String label, String description, String filename) {
+    private CustomWidgetType(String label, String description, String filename) {
         this.label = label;
         this.description = description;
         this.filename = filename;

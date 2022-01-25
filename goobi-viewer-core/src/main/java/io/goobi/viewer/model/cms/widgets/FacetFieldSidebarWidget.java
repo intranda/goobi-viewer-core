@@ -5,6 +5,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 @Entity
@@ -55,8 +56,8 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     }
     
     @Override
-    public CustomWidgetTypes getType() {
-        return CustomWidgetTypes.WIDGET_FIELDFACETS;
+    public CustomWidgetType getType() {
+        return CustomWidgetType.WIDGET_FIELDFACETS;
     }
     
     public int getNumEntries() {

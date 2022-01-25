@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.solr.SolrConstants;
 
 @Entity
@@ -81,8 +82,8 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     }
     
     @Override
-    public CustomWidgetTypes getType() {
-        return CustomWidgetTypes.WIDGET_RSSFEED;
+    public CustomWidgetType getType() {
+        return CustomWidgetType.WIDGET_RSSFEED;
     }
     
 }

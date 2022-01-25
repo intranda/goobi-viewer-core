@@ -16,12 +16,12 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.widgets.AutomaticWigetTypes;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
-import io.goobi.viewer.model.cms.widgets.DefaultWidgetTypes;
 import io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
-import io.goobi.viewer.model.cms.widgets.WidgetGenerationType;
+import io.goobi.viewer.model.cms.widgets.type.AutomaticWidgetType;
+import io.goobi.viewer.model.cms.widgets.type.DefaultWidgetType;
+import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 import io.goobi.viewer.model.maps.GeoMap;
 
 @Named("cmsSidebarWidgetsBean")
@@ -36,7 +36,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
         
         List<WidgetDisplayElement> widgets = new ArrayList<WidgetDisplayElement>();
         
-        for (DefaultWidgetTypes widgetType : DefaultWidgetTypes.values()) {
+        for (DefaultWidgetType widgetType : DefaultWidgetType.values()) {
             WidgetDisplayElement widget = new WidgetDisplayElement(
                     ViewerResourceBundle.getTranslations(widgetType.getLabel(), true), 
                     ViewerResourceBundle.getTranslations(widgetType.getDescription(), true), 
@@ -46,7 +46,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
             widgets.add(widget);
         }
         
-        for (AutomaticWigetTypes widgetType : AutomaticWigetTypes.values()) {
+        for (AutomaticWidgetType widgetType : AutomaticWidgetType.values()) {
             switch(widgetType) {
                 case WIDGET_CMSGEOMAP:
                     for (GeoMap geoMap : DataManager.getInstance().getDao().getAllGeoMaps()) {                        
@@ -81,12 +81,12 @@ public class CMSSidebarWidgetsBean implements Serializable {
         return null;
     }
 
-    private List<CMSPage> getEmbeddingPages(AutomaticWigetTypes widgetType, GeoMap geoMap) {
+    private List<CMSPage> getEmbeddingPages(AutomaticWidgetType widgetType, GeoMap geoMap) {
         List<CMSPage> pages = new ArrayList<>();
         return pages;
     }
 
-    private List<CMSPage> getEmbeddingPages(DefaultWidgetTypes widgetType) {
+    private List<CMSPage> getEmbeddingPages(DefaultWidgetType widgetType) {
         List<CMSPage> pages = new ArrayList<>();
         return pages;
     }

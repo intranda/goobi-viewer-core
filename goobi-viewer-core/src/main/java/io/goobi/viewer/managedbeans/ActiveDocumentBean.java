@@ -20,7 +20,6 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,10 +69,8 @@ import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
 import io.goobi.viewer.model.download.DownloadJob;
@@ -104,7 +101,6 @@ import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
-import io.goobi.viewer.solr.SolrTools;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
@@ -174,7 +170,7 @@ public class ActiveDocumentBean implements Serializable {
 
     private String clearCacheMode;
 
-    private Map<String, CMSSidebarElement> mapWidget = new HashMap<>();
+    private Map<String, GeoMap> mapWidget = new HashMap<>();
 
     private int reloads = 0;
 
@@ -2260,8 +2256,8 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      */
-    public synchronized CMSSidebarElement getMapWidget() throws PresentationException, DAOException, IndexUnreachableException {
-        CMSSidebarElement widget = this.mapWidget.get(getPersistentIdentifier());
+    public synchronized GeoMap getMapWidget() throws PresentationException, DAOException, IndexUnreachableException {
+        GeoMap widget = this.mapWidget.get(getPersistentIdentifier());
         //        if (widget == null) {
         widget = generateMapWidget(getPersistentIdentifier());
         this.mapWidget = Collections.singletonMap(getPersistentIdentifier(), widget);
@@ -2269,9 +2265,7 @@ public class ActiveDocumentBean implements Serializable {
         return widget;
     }
 
-    public CMSSidebarElement generateMapWidget(String pi) throws PresentationException, DAOException {
-        CMSSidebarElement widget = new CMSSidebarElement();
-        widget.setType("widgetGeoMap");
+    public GeoMap generateMapWidget(String pi) throws PresentationException, DAOException {
         try {
             if ("-".equals(pi)) {
                 return null;
@@ -2346,12 +2340,12 @@ public class ActiveDocumentBean implements Serializable {
             features = features.stream().distinct().collect(Collectors.toList());
             if (!features.isEmpty()) {
                 map.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
-                widget.setGeoMap(map);
             }
+            return map;
         } catch (IndexUnreachableException e) {
             logger.error("Unable to load geomap", e);
+            return null;
         }
-        return widget;
     }
 
     /**

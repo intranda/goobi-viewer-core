@@ -23,9 +23,6 @@
         <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
         <class>io.goobi.viewer.model.cms.CMSPageTemplateEnabled</class>
         <class>io.goobi.viewer.model.cms.CMSProperty</class>
-        <class>io.goobi.viewer.model.cms.CMSSidebarElement</class>
-        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
-        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
         <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
         <class>io.goobi.viewer.model.cms.widgets.CustomSidebarWidget</class>
 		<class>io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget</class>
@@ -66,6 +63,10 @@
 		<class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
 		<class>io.goobi.viewer.model.translations.Translation</class>
 		<class>io.goobi.viewer.dao.converter.SimpleMediaHolderConverter</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -154,6 +155,10 @@
 		<class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
 		<class>io.goobi.viewer.model.translations.Translation</class>
 		<class>io.goobi.viewer.dao.converter.SimpleMediaHolderConverter</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" />

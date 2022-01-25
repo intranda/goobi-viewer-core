@@ -16,11 +16,11 @@ import io.goobi.viewer.exceptions.AjaxResponseException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
-import io.goobi.viewer.model.cms.widgets.CustomWidgetTypes;
 import io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.PageListSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.RssFeedSidebarWidget;
+import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.model.jsf.DynamicContent;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.DynamicContentType;
@@ -53,7 +53,7 @@ public class CustomWidgetEditBean implements Serializable {
         }
     }
     
-    public CustomWidgetTypes getWidgetType() {
+    public CustomWidgetType getWidgetType() {
         if(widget == null) {
             return null;
         } else {
@@ -61,8 +61,8 @@ public class CustomWidgetEditBean implements Serializable {
         }
     }
     
-    public List<CustomWidgetTypes> getWidgetTypes() {
-        return Arrays.asList(CustomWidgetTypes.values());
+    public List<CustomWidgetType> getWidgetTypes() {
+        return Arrays.asList(CustomWidgetType.values());
     }
     
     public String getReturnUrl() {
@@ -83,7 +83,7 @@ public class CustomWidgetEditBean implements Serializable {
         }
     }
     
-    public void createWidget(CustomWidgetTypes type) {
+    public void createWidget(CustomWidgetType type) {
         switch(type) {
             case WIDGET_CMSPAGES:
                 this.widget = new PageListSidebarWidget();

@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 
 import io.goobi.viewer.dao.converter.NumberListConverter;
 import io.goobi.viewer.model.cms.PageList;
+import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 
 @Entity
 @DiscriminatorValue("PageListSidebarWidget")
@@ -41,8 +42,8 @@ public class PageListSidebarWidget extends CustomSidebarWidget {
     }
     
     @Override
-    public CustomWidgetTypes getType() {
-        return CustomWidgetTypes.WIDGET_CMSPAGES;
+    public CustomWidgetType getType() {
+        return CustomWidgetType.WIDGET_CMSPAGES;
     }
 
 }

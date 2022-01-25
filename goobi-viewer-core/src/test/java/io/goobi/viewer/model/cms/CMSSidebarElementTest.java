@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.model.cms.CMSSidebarElement;
+import io.goobi.viewer.model.cms.widgets.CMSSidebarElement;
 
 public class CMSSidebarElementTest {
 

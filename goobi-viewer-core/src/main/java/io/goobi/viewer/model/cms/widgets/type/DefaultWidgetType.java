@@ -1,4 +1,4 @@
-package io.goobi.viewer.model.cms.widgets;
+package io.goobi.viewer.model.cms.widgets.type;
 
 /**
  * Types of widgets that are always available for CMS pages and cannot be configured
@@ -6,7 +6,7 @@ package io.goobi.viewer.model.cms.widgets;
  * @author florian
  *
  */
-public enum DefaultWidgetTypes implements WidgetContentType {
+public enum DefaultWidgetType implements WidgetContentType {
 
     /**
      * Browsing or "Stöbern" widget, containing all browse terms which are configured in the viewer-config
@@ -30,7 +30,7 @@ public enum DefaultWidgetTypes implements WidgetContentType {
     private final String description;
     private final String filename;
     
-    private DefaultWidgetTypes(String label, String description, String filename) {
+    private DefaultWidgetType(String label, String description, String filename) {
         this.label = label;
         this.description = description;
         this.filename = filename;

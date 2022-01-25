@@ -66,11 +66,11 @@ import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
-import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -2966,25 +2966,6 @@ public class JPADAO implements IDAO {
         CMSPage original = getCMSPage(id);
         CMSPage copy = new CMSPage(original);
         return copy;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CMSSidebarElement getCMSSidebarElement(long id) throws DAOException {
-
-        synchronized (cmsRequestLock) {
-            logger.trace("getCMSSidebarElement: {}", id);
-            preQuery();
-            try {
-                CMSSidebarElement o = getEntityManager().getReference(CMSSidebarElement.class, id);
-                getEntityManager().refresh(o);
-                return o;
-            } catch (EntityNotFoundException e) {
-                return null;
-            } finally {
-                logger.trace("getCMSSidebarElement END");
-            }
-        }
     }
 
     /** {@inheritDoc} */

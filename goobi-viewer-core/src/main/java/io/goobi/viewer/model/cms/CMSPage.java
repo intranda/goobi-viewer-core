@@ -84,6 +84,7 @@ import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.misc.Harvestable;
 import io.goobi.viewer.model.search.SearchInterface;
@@ -338,7 +339,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * addSidebarElement.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
+     * @param element a {@link io.goobi.viewer.model.cms.widgets.CMSSidebarElement} object.
      */
     public void addSidebarElement(CMSSidebarElement element) {
         if (element != null) {

@@ -38,7 +38,6 @@ public class DatabaseUpdater {
             new UserUpdate(),
             new CMSRecordNoteUpdate(), 
             new CMSMediaUpdate(), 
-            new SidebarWidgetTypeUpdate(), 
             new CMSCategoryUpdate(), 
             new LicenseTypeUpdate(), 
             new CMSContentItemUpdate(), 
