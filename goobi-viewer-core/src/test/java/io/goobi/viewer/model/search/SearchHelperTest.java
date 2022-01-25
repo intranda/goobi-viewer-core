@@ -274,7 +274,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void truncateFulltext_shouldMakeTermsBoldIfFoundInText() throws Exception {
         String original = LOREM_IPSUM;
         String[] terms = { "ipsum", "tempor", "labore" };
-        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, true);
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, true, 0);
         Assert.assertFalse(truncated.isEmpty());
         //        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">ipsum</span>"));
         Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">tempor</span>"));
@@ -289,7 +289,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void truncateFulltext_shouldNotAddPrefixAndSuffixToText() throws Exception {
         String original = "text";
-        List<String> truncated = SearchHelper.truncateFulltext(null, original, 200, true, true);
+        List<String> truncated = SearchHelper.truncateFulltext(null, original, 200, true, true, 0);
         Assert.assertFalse(truncated.isEmpty());
         Assert.assertEquals("text", truncated.get(0));
     }
@@ -301,7 +301,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermsAreGiven() throws Exception {
         String original = LOREM_IPSUM;
-        List<String> truncated = SearchHelper.truncateFulltext(null, original, 200, true, true);
+        List<String> truncated = SearchHelper.truncateFulltext(null, original, 200, true, true, 0);
         Assert.assertFalse(truncated.isEmpty());
         Assert.assertEquals(original.substring(0, 200), truncated.get(0));
     }
@@ -315,12 +315,12 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String original = LOREM_IPSUM;
         String[] terms = { "boogers" };
         {
-            List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, true);
+            List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, true, 0);
             Assert.assertFalse(truncated.isEmpty());
             Assert.assertEquals(original.substring(0, 200), truncated.get(0));
         }
         {
-            List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, false);
+            List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, false, 0);
             Assert.assertTrue(truncated.isEmpty());
         }
     }
@@ -331,10 +331,10 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void truncateFulltext_shouldRemoveUnclosedHTMLTags() throws Exception {
-        List<String> truncated = SearchHelper.truncateFulltext(null, "Hello <a href", 200, true, true);
+        List<String> truncated = SearchHelper.truncateFulltext(null, "Hello <a href", 200, true, true, 0);
         Assert.assertFalse(truncated.isEmpty());
         Assert.assertEquals("Hello", truncated.get(0));
-        truncated = SearchHelper.truncateFulltext(null, "Hello <a href ...> and then <b", 200, true, true);
+        truncated = SearchHelper.truncateFulltext(null, "Hello <a href ...> and then <b", 200, true, true, 0);
         Assert.assertEquals("Hello and then", truncated.get(0));
     }
 
@@ -346,7 +346,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void truncateFulltext_shouldReturnMultipleMatchFragmentsCorrectly() throws Exception {
         String original = LOREM_IPSUM;
         String[] terms = { "in" };
-        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true);
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
         Assert.assertEquals(7, truncated.size());
         for (String fragment : truncated) {
             Assert.assertTrue(fragment.contains("<span class=\"search-list--highlight\">in</span>"));
@@ -361,7 +361,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void truncateFulltext_shouldReplaceLineBreaksWithSpaces() throws Exception {
         String original = "one<br>two<br>three";
         String[] terms = { "two" };
-        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true);
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
         Assert.assertEquals(1, truncated.size());
         for (String fragment : truncated) {
             Assert.assertTrue(fragment.contains("<span class=\"search-list--highlight\">two</span>"));
@@ -376,7 +376,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void truncateFulltext_shouldHighlightMultiWordTermsWhileRemovingStopwords() throws Exception {
         String original = "funky beats";
         String[] terms = { "two beats one" };
-        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true);
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
         Assert.assertEquals(1, truncated.size());
         for (String fragment : truncated) {
             Assert.assertTrue(fragment.contains("<span class=\"search-list--highlight\">beats</span>"));
@@ -387,7 +387,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void truncateFulltext_shouldFindFuzzySearchTermsCorrectly() throws Exception {
         String original = LOREM_IPSUM;
         String[] terms = { "dolor~1" };
-        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true);
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
         Assert.assertEquals(4, truncated.size());
         Assert.assertEquals(2, truncated.stream().filter(t -> t.contains("<span class=\"search-list--highlight\">dolor</span>")).count());
         Assert.assertEquals(2, truncated.stream().filter(t -> t.contains("<span class=\"search-list--highlight\">dolore</span>")).count());
@@ -544,6 +544,21 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertEquals(1, terms.size());
             Assert.assertTrue(terms.contains("*foo*"));
         }
+    }
+
+    /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies remove proximity search tokens
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldRemoveProximitySearchTokens() throws Exception {
+        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
+                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello world\"~10 AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
+                null);
+        Set<String> terms = result.get(SolrConstants.FULLTEXT);
+        Assert.assertNotNull(terms);
+        Assert.assertEquals(1, terms.size());
+        Assert.assertTrue(terms.contains("hello world"));
     }
 
     /**
@@ -831,7 +846,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(
                 " +(" + SolrConstants.DEFAULT + ":(one OR two) OR " + SolrConstants.FULLTEXT + ":(two OR three) OR " + SolrConstants.NORMDATATERMS
                         + ":(four OR five) OR " + SolrConstants.UGCTERMS + ":six OR " + SolrConstants.CMS_TEXT_ALL + ":seven)",
-                SearchHelper.generateExpandQuery(fields, searchTerms, false));
+                SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
 
     /**
@@ -845,7 +860,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put("MD_TITLE", new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
 
-        Assert.assertEquals("", SearchHelper.generateExpandQuery(fields, searchTerms, false));
+        Assert.assertEquals("", SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
 
     /**
@@ -868,7 +883,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(
                 " +(" + SolrConstants.DEFAULT + ":(one OR two) OR " + SolrConstants.FULLTEXT + ":(two OR three) OR " + SolrConstants.NORMDATATERMS
                         + ":(four OR five) OR " + SolrConstants.UGCTERMS + ":six OR " + SolrConstants.CMS_TEXT_ALL + ":seven)",
-                SearchHelper.generateExpandQuery(fields, searchTerms, false));
+                SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
 
     /**
@@ -880,7 +895,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> fields = Arrays.asList(new String[] { SolrConstants._CALENDAR_DAY });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants._CALENDAR_DAY, new HashSet<>(Arrays.asList(new String[] { "*", })));
-        Assert.assertEquals(" +(YEARMONTHDAY:*)", SearchHelper.generateExpandQuery(fields, searchTerms, false));
+        Assert.assertEquals(" +(YEARMONTHDAY:*)", SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
 
     /**
@@ -892,7 +907,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo*", })));
-        Assert.assertEquals(" +(DEFAULT:foo*)", SearchHelper.generateExpandQuery(fields, searchTerms, false));
+        Assert.assertEquals(" +(DEFAULT:foo*)", SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
 
     /**
@@ -904,7 +919,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "[one]", ":two:" })));
-        Assert.assertEquals(" +(DEFAULT:(\\[one\\] OR \\:two\\:))", SearchHelper.generateExpandQuery(fields, searchTerms, false));
+        Assert.assertEquals(" +(DEFAULT:(\\[one\\] OR \\:two\\:))", SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
 
     /**
@@ -916,7 +931,36 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one two three" })));
-        Assert.assertEquals(" +(DEFAULT:\"one\\ two\\ three\")", SearchHelper.generateExpandQuery(fields, searchTerms, true));
+        Assert.assertEquals(" +(DEFAULT:\"one\\ two\\ three\")", SearchHelper.generateExpandQuery(fields, searchTerms, true, 0));
+    }
+
+    /**
+     * @see SearchHelper#generateExpandQuery(List,Map,boolean,int)
+     * @verifies add proximity search token correctly
+     */
+    @Test
+    public void generateExpandQuery_shouldAddProximitySearchTokenCorrectly() throws Exception {
+        List<String> fields =
+                Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS, SolrConstants.UGCTERMS,
+                        SolrConstants.CMS_TEXT_ALL, SolrConstants.PI_TOPSTRUCT, SolrConstants.PI_ANCHOR, SolrConstants.DC, SolrConstants.DOCSTRCT });
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
+        searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>(Arrays.asList(new String[] { "\"two three\"" })));
+        searchTerms.put(SolrConstants.NORMDATATERMS, new HashSet<>(Arrays.asList(new String[] { "four", "five" })));
+        searchTerms.put(SolrConstants.UGCTERMS, new HashSet<>(Arrays.asList(new String[] { "six" })));
+        searchTerms.put(SolrConstants.CMS_TEXT_ALL, new HashSet<>(Arrays.asList(new String[] { "seven" })));
+        searchTerms.put(SolrConstants.PI_ANCHOR, new HashSet<>(Arrays.asList(new String[] { "eight" })));
+        searchTerms.put(SolrConstants.PI_TOPSTRUCT, new HashSet<>(Arrays.asList(new String[] { "nine" })));
+        Assert.assertEquals(
+                " +(" + SolrConstants.DEFAULT + ":(one OR two) OR " + SolrConstants.FULLTEXT + ":\"two\\ three\"~10 OR " + SolrConstants.NORMDATATERMS
+                        + ":(four OR five) OR " + SolrConstants.UGCTERMS + ":six OR " + SolrConstants.CMS_TEXT_ALL + ":seven)",
+                SearchHelper.generateExpandQuery(fields, searchTerms, false, 10));
+
+        searchTerms.clear();
+        searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>(Arrays.asList(new String[] { "\"two three\"" })));
+        Assert.assertEquals(
+                " +(" + SolrConstants.FULLTEXT + ":\"two\\ three\"~10)",
+                SearchHelper.generateExpandQuery(fields, searchTerms, false, 10));
     }
 
     /**
@@ -1026,7 +1070,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         // TODO makes this more robust against changes to the index
         String query = "DOCSTRCT:monograph AND MD_YEARPUBLISH:18*";
         SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, query, Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null,
-                null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, null);
+                null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, 0, null);
         String[] cellValues0 =
                 new String[] { "Persistent identifier", "13473260X", "AC08311001", "AC03343066", "PPN193910888" };
         String[] cellValues1 =
@@ -1077,11 +1121,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String rawQuery = SolrConstants.IDDOC + ":*";
         List<SearchHit> hits =
                 SearchHelper.searchWithAggregation(SearchHelper.buildFinalQuery(rawQuery, null, true, false), 0, 10, null, null, null, null, null,
-                        null, Locale.ENGLISH);
+                        null, Locale.ENGLISH, 0);
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
-            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true, false, null);
+            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true, false, 0, null);
             Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
         }
     }
@@ -1482,5 +1526,81 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             assertEquals("term", wildcards[1]);
             assertEquals("", wildcards[2]);
         }
+    }
+
+    /**
+     * @see SearchHelper#addProximitySearchToken(String,int)
+     * @verifies add token correctly
+     */
+    @Test
+    public void addProximitySearchToken_shouldAddTokenCorrectly() throws Exception {
+        Assert.assertEquals("\"foo bar\"~10", SearchHelper.addProximitySearchToken("foo bar", 10));
+        Assert.assertEquals("\"foo bar\"~10", SearchHelper.addProximitySearchToken("\"foo bar\"", 10));
+    }
+
+    /**
+     * @see SearchHelper#removeProximitySearchToken(String)
+     * @verifies remove token correctly
+     */
+    @Test
+    public void removeProximitySearchToken_shouldRemoveTokenCorrectly() throws Exception {
+        Assert.assertEquals("\"foo bar\"", SearchHelper.removeProximitySearchToken("\"foo bar\"~10"));
+    }
+
+    /**
+     * @see SearchHelper#removeProximitySearchToken(String)
+     * @verifies return unmodified term if no token found
+     */
+    @Test
+    public void removeProximitySearchToken_shouldReturnUnmodifiedTermIfNoTokenFound() throws Exception {
+        Assert.assertEquals("\"foo bar\"", SearchHelper.removeProximitySearchToken("\"foo bar\""));
+        Assert.assertEquals("", SearchHelper.removeProximitySearchToken(""));
+    }
+
+    /**
+     * @see SearchHelper#buildProximitySearchRegexPattern(String,int)
+     * @verifies build regex correctly
+     */
+    @Test
+    public void buildProximitySearchRegexPattern_shouldBuildRegexCorrectly() throws Exception {
+        Assert.assertEquals("\\b(?:one\\W+(?:\\w+\\W+){0,10}?two\\W+(?:\\w+\\W+){0,10}?three)\\b",
+                SearchHelper.buildProximitySearchRegexPattern("one two three", 10));
+    }
+
+    /**
+     * @see SearchHelper#extractProximitySearchDistanceFromQuery(String)
+     * @verifies return 0 if query empty
+     */
+    @Test
+    public void extractProximitySearchDistanceFromQuery_shouldReturn0IfQueryEmpty() throws Exception {
+        Assert.assertEquals(0, SearchHelper.extractProximitySearchDistanceFromQuery(null));
+        Assert.assertEquals(0, SearchHelper.extractProximitySearchDistanceFromQuery(""));
+    }
+
+    /**
+     * @see SearchHelper#extractProximitySearchDistanceFromQuery(String)
+     * @verifies return 0 if query does not contain token
+     */
+    @Test
+    public void extractProximitySearchDistanceFromQuery_shouldReturn0IfQueryDoesNotContainToken() throws Exception {
+        Assert.assertEquals(0, SearchHelper.extractProximitySearchDistanceFromQuery("\"foo bar\""));
+    }
+
+    /**
+     * @see SearchHelper#extractProximitySearchDistanceFromQuery(String)
+     * @verifies return 0 if query not phrase search
+     */
+    @Test
+    public void extractProximitySearchDistanceFromQuery_shouldReturn0IfQueryNotPhraseSearch() throws Exception {
+        Assert.assertEquals(0, SearchHelper.extractProximitySearchDistanceFromQuery("foo~10"));
+    }
+
+    /**
+     * @see SearchHelper#extractProximitySearchDistanceFromQuery(String)
+     * @verifies extract distance correctly
+     */
+    @Test
+    public void extractProximitySearchDistanceFromQuery_shouldExtractDistanceCorrectly() throws Exception {
+        Assert.assertEquals(10, SearchHelper.extractProximitySearchDistanceFromQuery("\"foobar\"~10"));
     }
 }
