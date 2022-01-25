@@ -73,7 +73,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        SearchHelper.collectionBlacklistFilterSuffix = null;
     }
 
     /**
@@ -1319,7 +1318,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         int previousSize = -1;
         Map<String, Long> previousCounts = new HashMap<>();
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_LANGUAGE_UNTOKENIZED", null, null, false, false, false);
-        for (int i = 0; i < 100; ++i) {
+        for (int i = 0; i < 10; ++i) {
             List<BrowseTerm> terms =
                     SearchHelper.getFilteredTerms(bmfc, null, null, 0, SolrSearchIndex.MAX_HITS, new BrowseTermComparator(Locale.ENGLISH));
             Assert.assertFalse(terms.isEmpty());
