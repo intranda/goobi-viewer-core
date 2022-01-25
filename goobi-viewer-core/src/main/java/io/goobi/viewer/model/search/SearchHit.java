@@ -159,6 +159,8 @@ public class SearchHit implements Comparable<SearchHit> {
     private int hitsPopulated = 0;
     @JsonIgnore
     private SolrDocument solrDoc = null;
+    @JsonIgnore
+    private int proximitySearchDistance = 0;
 
     /**
      * Private constructor. Use createSearchHit() from other classes.
@@ -219,6 +221,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param ignoreAdditionalFields a {@link java.util.Set} object.
      * @param translateAdditionalFields a {@link java.util.Set} object.
      * @param overrideType a {@link io.goobi.viewer.model.search.SearchHit.HitType} object.
+     * @param proximitySearchDistance
      * @param thumbnailHandler
      * @should add export fields correctly
      * @return a {@link io.goobi.viewer.model.search.SearchHit} object.
@@ -230,17 +233,17 @@ public class SearchHit implements Comparable<SearchHit> {
     public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Set<String> ownerAlreadyHasMetadata,
             Locale locale, String fulltext, Map<String, Set<String>> searchTerms, List<String> exportFields,
             List<StringPair> sortFields, Set<String> ignoreAdditionalFields, Set<String> translateAdditionalFields,
-            HitType overrideType, ThumbnailHandler thumbnailHandler)
+            HitType overrideType, int proximitySearchDistance, ThumbnailHandler thumbnailHandler)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         List<String> fulltextFragments =
                 (fulltext == null || searchTerms == null) ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
-                        DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true);
+                        DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true, proximitySearchDistance);
         StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc, ownerDoc);
         String docstructType = se.getDocStructType();
         if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
             docstructType = DocType.METADATA.name();
         }
-        
+
         Map<String, List<String>> searchedFields = new HashMap<>(se.getMetadataFields());
         searchedFields.put(SolrConstants.FULLTEXT, Collections.singletonList(fulltext));
         Map<String, Set<String>> foundSearchTerms = getActualSearchTerms(searchTerms, searchedFields);
@@ -283,6 +286,7 @@ public class SearchHit implements Comparable<SearchHit> {
         SearchHit hit = new SearchHit(hitType, browseElement, searchTerms, locale);
         hit.populateFoundMetadata(doc, ownerAlreadyHasMetadata,
                 ignoreAdditionalFields, translateAdditionalFields);
+        hit.proximitySearchDistance = proximitySearchDistance;
 
         // Export fields for Excel export
         if (exportFields != null && !exportFields.isEmpty()) {
@@ -300,27 +304,27 @@ public class SearchHit implements Comparable<SearchHit> {
      * replaces any terms with a fuzzy search token with the matching strings found in the valus of fields
      * 
      * @param origTerms
-     * @param fields 
+     * @param fields
      * @return
      */
     private static Map<String, Set<String>> getActualSearchTerms(Map<String, Set<String>> origTerms, Map<String, List<String>> resultFields) {
         String foundValues = resultFields.values().stream().flatMap(l -> l.stream()).collect(Collectors.joining(" "));
         Map<String, Set<String>> newFieldTerms = new HashMap<>();
-        if(origTerms == null) {
+        if (origTerms == null) {
             return newFieldTerms;
         }
-        for (String  solrField : origTerms.keySet()) {
+        for (String solrField : origTerms.keySet()) {
             Set<String> newTerms = new HashSet<String>();
             Set<String> terms = origTerms.get(solrField);
-            for(String term : terms) {
+            for (String term : terms) {
                 term = term.replaceAll("^\\(|\\)$", "");
                 term = StringTools.removeDiacriticalMarks(term);
-                if(FuzzySearchTerm.isFuzzyTerm(term)) {
+                if (FuzzySearchTerm.isFuzzyTerm(term)) {
                     FuzzySearchTerm fuzzy = new FuzzySearchTerm(term);
                     Matcher m = Pattern.compile(FuzzySearchTerm.WORD_PATTERN).matcher(foundValues);
-                    while(m.find()) {
+                    while (m.find()) {
                         String word = m.group();
-                        if(fuzzy.matches(word)) {
+                        if (fuzzy.matches(word)) {
                             newTerms.add(word);
                         }
                     }
@@ -434,7 +438,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             hitPages.put(page, truncatedStrings);
                         }
                         truncatedStrings.addAll(SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.CMS_TEXT_ALL), highlightedValue,
-                                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true));
+                                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true, proximitySearchDistance));
 
                     }
                 }
@@ -509,7 +513,7 @@ public class SearchHit implements Comparable<SearchHit> {
             }
             // logger.trace(fulltext);
             List<String> fulltextFragments = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT),
-                    fulltext, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false);
+                    fulltext, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false, proximitySearchDistance);
 
             int count = 0;
             if (fulltextFragments != null && !fulltextFragments.isEmpty()) {
@@ -619,7 +623,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
                         if (ownerDoc != null) {
                             ownerHit = createSearchHit(ownerDoc, null, null, locale, fulltext, searchTerms, null, null, ignoreFields,
-                                    translateFields, null, thumbnailHandler);
+                                    translateFields, null, proximitySearchDistance, thumbnailHandler);
                             children.add(ownerHit);
                             ownerHits.put(ownerIddoc, ownerHit);
                             ownerDocs.put(ownerIddoc, ownerDoc);
@@ -635,7 +639,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         SearchHit childHit =
                                 createSearchHit(childDoc, ownerDocs.get(ownerIddoc),
                                         ownerHit.getBrowseElement().getExistingMetadataFields(), locale, fulltext, searchTerms, null,
-                                        null, ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null,
+                                        null, ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null, proximitySearchDistance,
                                         thumbnailHandler);
                         // Skip grouped metadata child hits that have no additional (unique) metadata to display
                         if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty()) {
@@ -666,7 +670,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     if (!ownerHits.containsKey(iddoc)) {
                         SearchHit childHit =
                                 createSearchHit(childDoc, null, null, locale, fulltext, searchTerms, null, null, ignoreFields,
-                                        translateFields, null, thumbnailHandler);
+                                        translateFields, null, proximitySearchDistance, thumbnailHandler);
                         children.add(childHit);
                         ownerHits.put(iddoc, childHit);
                         ownerDocs.put(iddoc, childDoc);

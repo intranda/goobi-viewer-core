@@ -2919,10 +2919,10 @@ public final class Configuration extends AbstractConfiguration {
         fields.remove(defaultField);
         fields.add(0, defaultField);
         for (String field : fields) {
-                options.add(new SearchSortingOption(field, true));
-                if (!SolrConstants.SORT_RANDOM.equals(field) && !SolrConstants.SORT_RELEVANCE.equals(field)) {
-                    options.add(new SearchSortingOption(field, false));
-                }
+            options.add(new SearchSortingOption(field, true));
+            if (!SolrConstants.SORT_RANDOM.equals(field) && !SolrConstants.SORT_RELEVANCE.equals(field)) {
+                options.add(new SearchSortingOption(field, false));
+            }
         }
         return options;
     }
@@ -4683,7 +4683,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<ExportFieldConfiguration> getSearchExcelExportFields() {
         return getExportConfigurations("search.export.excel.field");
     }
-    
+
     /**
      * 
      * @param path
@@ -5367,12 +5367,40 @@ public final class Configuration extends AbstractConfiguration {
         return ret;
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean isDisplayAnnotationTextInImage() {
         return getLocalBoolean("webGuiDisplay.displayAnnotationTextInImage", true);
     }
 
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
     public boolean isFuzzySearchEnabled() {
         return getLocalBoolean("search.fuzzy[@enabled]", false);
     }
+    
+//    /**
+//     * 
+//     * @return
+//     * @should return correct value
+//     */
+//    public boolean isProximitySearchEnabled() {
+//        return getLocalBoolean("search.proximity[@enabled]", false);
+//    }
+//    
+//    
+//    /**
+//     * 
+//     * @return
+//     * @should return correct value
+//     */
+//    public int getProximitySearchDistance() {
+//        return getLocalInt("search.proximity[@distance]", 10);
+//    }
 
 }
