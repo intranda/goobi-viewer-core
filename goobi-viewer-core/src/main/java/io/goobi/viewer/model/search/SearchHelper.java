@@ -156,9 +156,6 @@ public final class SearchHelper {
     /** Constant <code>patternProximitySearchToken</code> */
     public static Pattern patternProximitySearchToken = Pattern.compile("~([0-9]+)");
 
-    /** Filter subquery for collection listing (no volumes). */
-    static volatile String collectionBlacklistFilterSuffix = null;
-
     /**
      * Main search method for aggregated search.
      *
@@ -785,25 +782,12 @@ public final class SearchHelper {
     }
 
     /**
-     * Returns a Solr query suffix that filters out collections defined in the collection blacklist. This suffix is only generated once per
-     * application lifecycle.
-     *
+     * Returns a Solr query suffix that filters out collections defined in the collection blacklist.
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
     public static String getCollectionBlacklistFilterSuffix(String field) {
-        String suffix = collectionBlacklistFilterSuffix;
-        if (suffix == null) {
-            synchronized (lock) {
-                suffix = collectionBlacklistFilterSuffix;
-                if (suffix == null) {
-                    suffix = generateCollectionBlacklistFilterSuffix(field);
-                    collectionBlacklistFilterSuffix = suffix;
-                }
-            }
-        }
-
-        return suffix;
+        return  generateCollectionBlacklistFilterSuffix(field);
     }
 
     /**

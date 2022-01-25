@@ -73,7 +73,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        SearchHelper.collectionBlacklistFilterSuffix = null;
     }
 
     /**

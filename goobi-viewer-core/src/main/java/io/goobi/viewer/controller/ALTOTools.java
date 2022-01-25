@@ -20,6 +20,7 @@ import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,6 +122,10 @@ public class ALTOTools {
      * @return a {@link java.util.List} object.
      */
     public static List<TagCount> getNERTags(String alto, String charset, NERTag.Type type) {
+        // Make sure an empty charset value is changed to null to avoid exceptions
+        if (StringUtils.isBlank(charset)) {
+            charset = null;
+        }
         List<TagCount> ret = new ArrayList<>();
         try {
             AltoDocument doc = AltoDocument.getDocumentFromString(alto, charset);
@@ -131,6 +136,8 @@ public class ALTOTools {
                     addTags(createNERTag(tag), ret);
                 }
             }
+        } catch (UnsupportedEncodingException e) {
+            logger.error("{}: {}", e.getMessage(), charset);
         } catch (Throwable e) {
             logger.error(e.getMessage(), e);
             // logger.trace("Error loading ALTO from XML:\n{}", alto);
