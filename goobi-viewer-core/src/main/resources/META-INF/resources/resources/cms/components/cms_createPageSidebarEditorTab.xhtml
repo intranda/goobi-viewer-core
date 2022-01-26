@@ -13,12 +13,141 @@
 
 	<composite:implementation>
 		<div role="tabpanel"
-			class="tab-pane #{cmsBean.selectedLocale == null ? 'active':''}"
+			class="tab-pane #{cmsBean.selectedLocale == null ? 'active':''} sidebar-editor__wrapper"
 			id="sidebarTab">
+			
+				
+				
+
+			
 			<!-- sidebar editor -->
-			<div id="sidebarEditorWrapper">
+
+				<h:panelGroup id="sidebarEditorWrapper" styleClass="sidebar-editor" layout="block">
+					<h:panelGroup rendered="#{!cmsBean.selectedPage.useDefaultSidebar}">
+							
+							
+							<div class="sidebar-editor__left">
+								<h3>#{msg.cms_pageSidebar}</h3>
+								
+								<div class="sidebar-editor__left-inner">
+
+									<ui:repeat var="element"
+										value="#{cmsBean.selectedPage.sidebarElements}">
+
+										<div class="sidebar-editor__widget-item">
+											<!-- MOVE ITEM UP OR DOWN -->
+											<div class="sidebar-editor__move">
+											
+												<button type="button" class="btn btn--clean sidebar-editor__move-up"
+													jsf:action="#{cmsBean.selectedPage.moveUpSidebarElement(element)}">
+													<i class="fa fa-arrow-up" aria-hidden="true"></i>
+												</button>
+												
+												<button type="button" class="btn btn--clean sidebar-editor__move-down"
+													jsf:action="#{cmsBean.selectedPage.moveDownSidebarElement(element)}">
+													<i class="fa fa-arrow-down" aria-hidden="true"></i>
+												</button>
+												
+											</div> 
+											
+											<!-- ITEM LABEL -->
+											<div>#{element.title}</div> 
+											
+											<!-- ITEM DELETE -->
+											<div>
+												<h:commandLink
+													styleClass="admin__table-action-link -redlink"
+													action="#{cmsBean.selectedPage.removeSidebarElement(element)}"
+													aria-label="#{msg.delete}">#{msg.delete}
+													<f:ajax render="@form"/>
+												</h:commandLink>
+											</div>				
+										</div>
+									</ui:repeat>
+									
+
+									<div class="sidebar-editor__widget-item">
+										<!-- MOVE ITEM UP OR DOWN -->
+										<div class="sidebar-editor__move-wrapper">
+											<!-- MOVE ITEM UP ARROW -->
+											<button type="button" class="btn btn--clean sidebar-editor__move-up"
+												jsf:action="#{cmsBean.selectedPage.moveUpSidebarElement(element)}">
+												<i class="fa fa-arrow-up" aria-hidden="true"></i>
+											</button>
+											<!-- MOVE ITEM DOWN ARROW -->
+											<button type="button" class="btn btn--clean sidebar-editor__move-down"
+												jsf:action="#{cmsBean.selectedPage.moveDownSidebarElement(element)}">
+												<i class="fa fa-arrow-down" aria-hidden="true"></i>
+											</button>
+											
+										</div> 
+										<!-- ITEM LABEL -->
+										<div class="sidebar-editor__widget-item-label">Irgendein Widget</div> 
+										<!-- ITEM DELETE BUTTON-->
+										<h:commandLink
+											styleClass="admin__table-action-link -redlink sidebar-editor__widget-item-delete-button"
+											action="#{cmsBean.selectedPage.removeSidebarElement(element)}"
+											aria-label="#{msg.delete}">#{msg.delete}
+											<f:ajax render="@form"/>
+										</h:commandLink>						
+									</div>
+								</div>
+							</div>
+
+							<c:set var="widgets" value="#{cmsSidebarWidgetsBean.allWidgets}" scope="view"/>
+							
+							<div class="sidebar-editor__right">
+							
+								<h3>#{msg.cms_menu_availableComponents}</h3>
+								
+								<div class="sidebar-editor__right-inner">
+
+<!-- 									TO DO: REWORK THIS TO UI REPEAT WITH SINGLE CHECKBOXES AND LABELS -->
+									<h:selectManyCheckbox value="#{selectedWidgets}">
+										<f:selectItems value="#{widgets}" var="widget" itemValue="#{widget}" itemLabel="#{widget.title}"/>
+									</h:selectManyCheckbox>
+
+
+									<!-- DEMO CONTENT: 3 WIDGET CHECKBOXES -->
+									<div class="sidebar-editor__choose-widget-item">
+									  <input type="checkbox" id="scales1" name="scales1" />
+									  <label for="scales1">Widget 1</label>
+									</div>
+									
+									<div class="sidebar-editor__choose-widget-item">
+									  <input type="checkbox" id="scales2" name="scales2" />
+									  <label for="scales2">Widget 2</label>
+									</div>
+									
+									<div class="sidebar-editor__choose-widget-item">
+									  <input type="checkbox" id="scales3" name="scales3" />
+									  <label for="scales3">Widget 3</label>
+									</div>
+									<!-- DEMO CONTENT END -->
+									
+
+
+									<!-- NOT WORKING FUNCTIONALITY -->
+									<ui:repeat var="widget" value="#{selectedWidgets}">
+										<h:selectBooleanCheckbox value="#{selectedWidgets[widget]}"/>
+									</ui:repeat>
+
+
+									<button class="btn btn--default sidebar-editor__add-widgets-button" jsf:action="#{cmsBean.selectedPage.addToSidebar(selectedWidgets)}">
+										#{msg.action__add_to_sidebar}
+										<f:ajax render="@form"/>
+									</button>
+
+								</div>
+								
+								
+								
+							</div>
+					</h:panelGroup>
+				</h:panelGroup>
+				
 				<!-- choose standard sidebar for current page -->
-				<div class="sidebar-editor sidebar-editor-choose-standard">
+				<div class="sidebar-editor-choose-standard">
 					<h:selectBooleanCheckbox id="checkboxUseDefaultSidebar"
 						value="#{cmsBean.selectedPage.useDefaultSidebar}"
 						onclick="cmsJS.createPage.disablePreview();">
@@ -29,79 +158,6 @@
 					</h:selectBooleanCheckbox>
 				</div>
 
-				<h:panelGroup id="sidebar_editor_group">
-					<h:panelGroup rendered="#{!cmsBean.selectedPage.useDefaultSidebar}">
-						<div class="sidebar-editor sidebar-editor-editor">
-							<div class="sidebar-editor-left">
-								<h3>#{msg.cms_pageSidebar}</h3>
-								<ul>
-									<ui:repeat var="element"
-										value="#{cmsBean.selectedPage.sidebarElements}">
-										<li>
-											<!-- ITEM ORDER -->
-											<div>
-												<button type="button" class="btn btn--clean"
-													jsf:action="#{cmsBean.selectedPage.moveUpSidebarElement(element)}">
-													<i class="fa fa-arrow-up" aria-hidden="true"></i>
-												</button>
-												<button type="button" class="btn btn--clean"
-													jsf:action="#{cmsBean.selectedPage.moveDownSidebarElement(element)}">
-													<i class="fa fa-arrow-down" aria-hidden="true"></i>
-												</button>
-											</div> <!-- ITEM LABEL -->
-											<div>#{element.title}</div> <!-- ITEM DELETE -->
-											<div>
-												<h:commandLink
-													styleClass="admin__table-action-link -redlink"
-													action="#{cmsBean.selectedPage.removeSidebarElement(element)}"
-													aria-label="#{msg.delete}">#{msg.delete}
-													<f:ajax render="@form"/></h:commandLink>
-											</div>
-
-										</li>
-
-									</ui:repeat>
-									
-									<li>
-											<!-- ITEM ORDER -->
-											<div>
-												<button type="button" class="btn btn--clean">
-													<i class="fa fa-arrow-up" aria-hidden="true"></i>
-												</button>
-												<button type="button" class="btn btn--clean">
-													<i class="fa fa-arrow-down" aria-hidden="true"></i>
-												</button>
-											</div> <!-- ITEM LABEL -->
-											<div>Irgendein Widget</div> <!-- ITEM DELETE -->
-											<div>
-												<h:commandLink
-													styleClass="admin__table-action-link -redlink"
-													aria-label="#{msg.delete}" value="#{msg.delete}">
-													<f:ajax render="@form"/></h:commandLink>
-											</div>
-
-										</li>
-									
-								</ul>
-							</div>
-
-							<c:set var="widgets" value="#{cmsSidebarWidgetsBean.allWidgets}" scope="view"/>
-							
-							<div class="sidebar-editor-left">
-								<h3>#{msg.cms_menu_availableComponents}</h3>
-								<h:selectManyCheckbox value="#{selectedWidgets}">
-									<f:selectItems value="#{widgets}" var="widget" itemValue="#{widget}" itemLabel="#{widget.title}"/>
-								</h:selectManyCheckbox>
-								<button class="btn btn--default" jsf:action="#{cmsBean.selectedPage.addToSidebar(selectedWidgets)}">
-									#{msg.action__add_to_sidebar}
-									<f:ajax render="@form"/>
-								</button>
-							</div>
-						</div>
-					</h:panelGroup>
-				</h:panelGroup>
-
-			</div>
 		</div>
 	</composite:implementation>
 

@@ -212,6 +212,69 @@
                 }
             }
         }
+
+	// NEW STYLING
+	.sidebar-editor {
+		display: flex;
+		column-gap: 2rem;
+		&__wrapper {
+			padding: 2rem;
+		}
+		&__left,
+		&__right {
+			flex: 0 0 calc(~"50% - 1rem");
+			max-width: calc(~"50% - 1rem");
+		}
+		&__right {
+		}
+		&__left-inner {
+			display: flex;
+		}
+		&__right-inner {
+			border: 1px solid #ccc;
+			padding: 0.8rem;
+		}
+		&__widget-item {
+			display: flex;
+			background: #f1f1f1;
+			border: 1px solid #ccc;
+			flex: 0 0 100%;
+			max-width: 100%;
+			padding: 1.2rem;
+		}
+		&__widget-label {}
+		&__widget-item-delete-button {
+			margin-left: auto;
+		}
+		&__widget-order-wrapper {}
+		&__move-wrapper {
+			margin-right: 1.5rem;
+		}
+		&__move-up {
+			margin-inline-end: 0.8rem;
+		}
+		&__move-down {}
+		&__right-inner {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		&__choose-widget-item {
+			user-select: none;
+			margin-bottom: 0.4rem;
+			input {
+				margin-right: 0.5rem;
+			}
+			label {}
+		}
+		&__add-widgets-button {
+			margin-top: 2rem;
+			margin-left: auto;
+		}
+
+	}
+
+
     }
     #cmsCreatePageMetadataItemWrapper {
         border: 2px solid #eee;
