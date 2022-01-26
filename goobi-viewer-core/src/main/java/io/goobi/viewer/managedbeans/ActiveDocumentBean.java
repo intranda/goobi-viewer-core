@@ -170,7 +170,7 @@ public class ActiveDocumentBean implements Serializable {
 
     private String clearCacheMode;
 
-    private Map<String, GeoMap> mapWidget = new HashMap<>();
+    private Map<String, GeoMap> geoMaps = new HashMap<>();
 
     private int reloads = 0;
 
@@ -2256,16 +2256,16 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      */
-    public synchronized GeoMap getMapWidget() throws PresentationException, DAOException, IndexUnreachableException {
-        GeoMap widget = this.mapWidget.get(getPersistentIdentifier());
-        //        if (widget == null) {
-        widget = generateMapWidget(getPersistentIdentifier());
-        this.mapWidget = Collections.singletonMap(getPersistentIdentifier(), widget);
-        //        }
+    public synchronized GeoMap getGeoMap() throws PresentationException, DAOException, IndexUnreachableException {
+        GeoMap widget = this.geoMaps.get(getPersistentIdentifier());
+        if (widget == null) {
+            widget = generateGeoMap(getPersistentIdentifier());
+            this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
+        }
         return widget;
     }
 
-    public GeoMap generateMapWidget(String pi) throws PresentationException, DAOException {
+    public GeoMap generateGeoMap(String pi) throws PresentationException, DAOException {
         try {
             if ("-".equals(pi)) {
                 return null;
