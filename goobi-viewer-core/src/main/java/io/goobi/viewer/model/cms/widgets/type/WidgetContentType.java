@@ -23,4 +23,18 @@ public interface WidgetContentType {
             }
         }
     }
+    
+
+    public static WidgetGenerationType getGenerationType(WidgetContentType type) {
+        switch (type.getClass().getSimpleName()) {
+            case "DefaultWidgetType":
+                return WidgetGenerationType.DEFAULT;
+            case "AutomaticWidgetType":
+                return WidgetGenerationType.AUTOMATIC;
+            case "CustomWidgetType":
+                return WidgetGenerationType.CUSTOM;
+            default:
+                throw new IllegalArgumentException("Generation type for WidgetContentType " + type + " not known");
+        }
+    }
 }

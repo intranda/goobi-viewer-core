@@ -88,26 +88,13 @@ public class CMSSidebarElement {
     }
 
     public CMSSidebarElement(WidgetContentType type) {
-        this.generationType = getGenerationType(type);
+        this.generationType = WidgetContentType.getGenerationType(type);
         this.contentType = type;
     }
 
     public CMSSidebarElement(WidgetContentType type, CMSPage owner) {
         this(type);
         this.ownerPage = owner;
-    }
-
-    private WidgetGenerationType getGenerationType(WidgetContentType type) {
-        switch (type.getClass().getSimpleName()) {
-            case "DefaultWidgetType":
-                return WidgetGenerationType.DEFAULT;
-            case "AutomaticWidgetType":
-                return WidgetGenerationType.AUTOMATIC;
-            case "CustomWidgetType":
-                return WidgetGenerationType.CUSTOM;
-            default:
-                throw new IllegalArgumentException("Generation type for WidgetContentType " + type + " not known");
-        }
     }
 
     public static CMSSidebarElement copy(CMSSidebarElement orig, CMSPage owner) {

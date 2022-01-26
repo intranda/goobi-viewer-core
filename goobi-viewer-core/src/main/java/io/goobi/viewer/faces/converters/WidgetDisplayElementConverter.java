@@ -1,5 +1,6 @@
 package io.goobi.viewer.faces.converters;
 
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,6 +9,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
 
@@ -25,18 +27,19 @@ public class WidgetDisplayElementConverter implements Converter<WidgetDisplayEle
             WidgetContentType type = WidgetContentType.valueOf(matcher.group(1));
             Long id = Long.valueOf(matcher.group(2));
             if(type != null) {
-                WidgetDisplayElement element = new WidgetDisplayElement(null, null, null, null, type)
+                WidgetDisplayElement element = new WidgetDisplayElement(new SimpleMetadataValue(), new SimpleMetadataValue(), Collections.emptyList(), WidgetContentType.getGenerationType(type), type, id);
+                return element;
             }
             
         }
-        
+        return null;
     }
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, WidgetDisplayElement value) {
         String s = STRING_REPRESENTATION_PATTERN
                 .replace("{contentType}", value.getContentType().getName())
-                .replace("{id}", Long.toString(value.getId()));
+                .replace("{id}", value.getId() != null ?  Long.toString(value.getId()) : "");
         return s;
     }
 

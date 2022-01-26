@@ -154,7 +154,6 @@ public class CmsBean implements Serializable {
     private HashMap<Long, Boolean> editablePages = new HashMap<>();
     private List<String> solrSortFields = null;
     private List<String> solrGroupFields = null;
-    private List<String> selectedWidgets = new ArrayList<>();
     
     private List<String> luceneFields = null;
 
@@ -2759,14 +2758,6 @@ public class CmsBean implements Serializable {
 
     public List<CMSNavigationItem> getActiveNavigationMenuItems() {
         return getNavigationMenuItems().stream().filter(CMSNavigationItem::isEnabled).collect(Collectors.toList());
-    }
-    
-    public List<String> getSelectedWidgets() {
-        return selectedWidgets;
-    }
-    
-    public void setSelectedWidgets(List<String> selectedWidgets) {
-        this.selectedWidgets = selectedWidgets;
     }
 
 }
