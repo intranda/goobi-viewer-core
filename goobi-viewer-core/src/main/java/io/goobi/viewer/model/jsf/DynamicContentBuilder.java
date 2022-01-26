@@ -68,6 +68,7 @@ public class DynamicContentBuilder {
                         GeoMap map = DataManager.getInstance().getDao().getGeoMap(Long.parseLong(id));
                         if (map != null) {
                             composite = loadCompositeComponent(parent, content.getComponentFilename(), "components");
+                            if(composite != null) {
                             composite.getAttributes().put("geoMap", map);
                             //if query param linkTarget is given, open links from map in that target,
                             //otherwise open them in a new tab
@@ -76,6 +77,7 @@ public class DynamicContentBuilder {
                                 composite.getAttributes().put("linkTarget", linkTarget);
                             } else {
                                 composite.getAttributes().put("linkTarget", "_blank");
+                            }
                             }
                         } else {
                             logger.error("Cannot build GeoMap content. No map found with id = " + id);
@@ -94,12 +96,14 @@ public class DynamicContentBuilder {
                         CMSSlider slider = DataManager.getInstance().getDao().getSlider(sliderId);
                         if (slider != null) {
                             composite = loadCompositeComponent(parent, content.getComponentFilename() , "components");
+                            if(composite != null) {
                             composite.getAttributes().put("slider", slider);
                             String linkTarget = (String)content.getAttributes().get("linkTarget");
                             if(StringUtils.isNotBlank(linkTarget)) {
                                 composite.getAttributes().put("linkTarget", linkTarget);
                             } else {
                                 composite.getAttributes().put("linkTarget", "_blank");
+                            }
                             }
                         } else {
                             logger.error("Cannot build content. No item found with id = " + sliderId);
@@ -113,9 +117,8 @@ public class DynamicContentBuilder {
                 break;
             case WIDGET:
                 composite = loadCompositeComponent(parent, content.getComponentFilename(), "components/widgets");
-                if(content.getAttributes().containsKey("widget")) {                    
-                    CustomSidebarWidget widget = (CustomSidebarWidget) content.getAttributes().get("widget");
-                    composite.getAttributes().put("widget", widget);
+                for (String attribute : content.getAttributes().keySet()) {
+                    composite.getAttributes().put(attribute, content.getAttributes().get(attribute));
                 }
                 
         }
@@ -132,6 +135,9 @@ public class DynamicContentBuilder {
      */
     private UIComponent loadCompositeComponent(UIComponent parent, String name, String library) {
         Resource componentResource = context.getApplication().getResourceHandler().createResource(name, library);
+        if(componentResource ==  null) {
+            return null;
+        }
         UIComponent composite = application.createComponent(context, componentResource);
 
         // This basically creates <composite:implementation>.

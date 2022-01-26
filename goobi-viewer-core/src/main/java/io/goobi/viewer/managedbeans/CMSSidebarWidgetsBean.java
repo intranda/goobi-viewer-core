@@ -4,8 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.component.html.HtmlPanelGroup;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.slf4j.Logger;
@@ -19,15 +23,23 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
 import io.goobi.viewer.model.cms.widgets.type.AutomaticWidgetType;
 import io.goobi.viewer.model.cms.widgets.type.DefaultWidgetType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
+import io.goobi.viewer.model.jsf.DynamicContent;
+import io.goobi.viewer.model.jsf.DynamicContentBuilder;
+import io.goobi.viewer.model.jsf.DynamicContentType;
 import io.goobi.viewer.model.maps.GeoMap;
 
 @Named("cmsSidebarWidgetsBean")
-@SessionScoped
+@ViewScoped
 public class CMSSidebarWidgetsBean implements Serializable {
 
+    private HtmlPanelGroup sidebarGroup = null;
+    
     private static final long serialVersionUID = -6039330925483238481L;
     
     private static final Logger logger = LoggerFactory.getLogger(CMSSidebarWidgetsBean.class);
@@ -95,6 +107,35 @@ public class CMSSidebarWidgetsBean implements Serializable {
         DataManager.getInstance().getDao().deleteCustomWidget(id);
     }
 
+    public HtmlPanelGroup getSidebarGroup(List<CMSSidebarElement> elements) {
+        if(elements != null && !elements.isEmpty()) {
+            sidebarGroup = new HtmlPanelGroup();
+            elements.sort((e1,e2) -> Integer.compare(e1.getOrder(), e2.getOrder()));
+            for (CMSSidebarElement element : elements) {                
+                loadWidgetComponent(element, sidebarGroup);
+            }
+        }
+        return sidebarGroup;
+    }
+    
+    public void setSidebarGroup(HtmlPanelGroup sidebarGroup) {
+        this.sidebarGroup = sidebarGroup;
+    }
+    
+    private void loadWidgetComponent(CMSSidebarElement component, HtmlPanelGroup parent) {
+        DynamicContentBuilder builder = new DynamicContentBuilder();
+        DynamicContent content = new DynamicContent(DynamicContentType.WIDGET, component.getContentType().getFilename());
+        content.setId("sidebar_widget_" + component.getId());
+        if(component instanceof CMSSidebarElementCustom) {            
+            content.setAttributes(Map.of("widget", ((CMSSidebarElementCustom) component).getWidget()));
+        } else if(component instanceof CMSSidebarElementAutomatic) {
+            content.setAttributes(Map.of("geoMap", ((CMSSidebarElementAutomatic) component).getMap()));
+        }
+        UIComponent widgetComponent = builder.build(content, parent);
+        if(widgetComponent == null) {
+            logger.error("Error loading widget " + component);
+        }
+    }
     
 }
 

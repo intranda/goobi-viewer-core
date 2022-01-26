@@ -157,8 +157,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @PrivateOwned
     private List<CMSSidebarElement> sidebarElements = new ArrayList<>();
 
-    @Transient
-    private List<CMSSidebarElement> unusedSidebarElements;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cms_page_cms_categories", joinColumns = @JoinColumn(name = "page_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
@@ -314,17 +312,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return id.compareTo(o.getId());
     }
 
-    /**
-     * <p>
-     * saveSidebarElements.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean saveSidebarElements() {
-        //TODO: new save routine
-        return false;
-    }
 
     /**
      * <p>
@@ -566,7 +553,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     public void moveDownSidebarElement(CMSSidebarElement element) {
         int currentIndex = this.sidebarElements.indexOf(element);
-        if (currentIndex > -1 && currentIndex < this.sidebarElements.size()) {
+        if (currentIndex > -1 && currentIndex < this.sidebarElements.size()-1) {
             int newIndex = currentIndex + 1;
             CMSSidebarElement removed = this.sidebarElements.remove(currentIndex);
             this.sidebarElements.add(newIndex, element);
@@ -2138,14 +2125,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @Override
     public String getPi() {
         return getRelatedPI();
-    }
-
-    /**
-     * @param unusedSidebarElements2
-     */
-    public void setUnusedSidebarElements(List<CMSSidebarElement> unusedSidebarElements2) {
-        this.unusedSidebarElements = unusedSidebarElements2;
-
     }
 
     public SearchInterface getSearchFunctionality() {

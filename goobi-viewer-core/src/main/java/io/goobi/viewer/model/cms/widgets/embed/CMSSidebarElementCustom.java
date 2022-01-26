@@ -13,8 +13,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
 @DiscriminatorValue("CUSTOM")
 public class CMSSidebarElementCustom extends CMSSidebarElement {
 
-    @ManyToOne
-    @JoinColumn(name = "custom_widget_id", nullable = false)
+    @JoinColumn(name = "custom_widget_id")
     private CustomSidebarWidget widget;
     
     public CMSSidebarElementCustom() {

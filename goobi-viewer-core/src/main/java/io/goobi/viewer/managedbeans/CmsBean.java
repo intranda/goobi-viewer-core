@@ -154,7 +154,7 @@ public class CmsBean implements Serializable {
     private HashMap<Long, Boolean> editablePages = new HashMap<>();
     private List<String> solrSortFields = null;
     private List<String> solrGroupFields = null;
-    
+
     private List<String> luceneFields = null;
 
     /**
@@ -865,7 +865,6 @@ public class CmsBean implements Serializable {
         // resetImageDisplay();
         // Validate
         logger.trace("save sidebar elements");
-        selectedPage.saveSidebarElements();
         logger.trace("validate page");
         if (!validatePage(selectedPage, getDefaultLocale().getLanguage())) {
             logger.warn("Cannot save invalid page");
@@ -874,6 +873,7 @@ public class CmsBean implements Serializable {
         logger.trace("reset item data");
         selectedPage.resetItemData();
         writeCategoriesToPage();
+        setSidebarElementOrder(selectedPage);
 
         // Save
         boolean success = false;
@@ -912,6 +912,12 @@ public class CmsBean implements Serializable {
             cmsNavigationBean.getItemManager().addAvailableItem(new SelectableNavigationItem(this.selectedPage));
         }
         logger.trace("Done saving page");
+    }
+
+    private void setSidebarElementOrder(CMSPage page) {
+        for (int i = 0; i < page.getSidebarElements().size(); i++) {
+            page.getSidebarElements().get(i).setOrder(i);
+        }
     }
 
     /**
@@ -1308,10 +1314,6 @@ public class CmsBean implements Serializable {
      * @param selectedLocale a {@link java.util.Locale} object.
      */
     public void setSelectedLocale(Locale selectedLocale) {
-        if (this.selectedLocale == null) {
-            // currently in sidebar view: save before leaving
-            selectedPage.saveSidebarElements();
-        }
         this.selectedLocale = selectedLocale;
 
     }
@@ -1859,7 +1861,6 @@ public class CmsBean implements Serializable {
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
     }
-
 
     /**
      * <p>

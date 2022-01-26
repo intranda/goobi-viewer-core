@@ -11,6 +11,9 @@ import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AjaxResponseException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -30,6 +33,9 @@ import io.goobi.viewer.model.viewer.PageType;
 @ViewScoped
 public class CustomWidgetEditBean implements Serializable {
 
+    private static final Logger logger = LoggerFactory.getLogger(CustomWidgetEditBean.class);
+
+    
     private static final long serialVersionUID = 4892069370268036814L;
     private CustomSidebarWidget widget = null;
     private String returnUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.adminCmsSidebarWidgets.getName();
@@ -114,6 +120,9 @@ public class CustomWidgetEditBean implements Serializable {
         content.setId("sidebar_widget_" + component.getId());
         content.setAttributes(Map.of("widget", component));
         UIComponent widgetComponent = builder.build(content, parent);
+        if(widgetComponent == null) {
+            logger.error("Error loading widget " + component);
+        }
     }
 
     public void setPreviewGroup(HtmlPanelGroup previewGroup) {

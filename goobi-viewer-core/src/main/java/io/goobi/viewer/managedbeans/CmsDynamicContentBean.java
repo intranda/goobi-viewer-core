@@ -79,7 +79,9 @@ public class CmsDynamicContentBean implements Serializable{
         } else if(this.cmsPage.getTopBarSlider() != null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             DynamicContent slider = builder.createContent("topBarSlider", DynamicContentType.SLIDER, Map.of("sliderId", cmsPage.getTopBarSlider().getId()));
-            builder.build(slider, this.topBarGroup);
+            if(builder.build(slider, this.topBarGroup) == null) {
+                logger.error("Error building slider compoenent from slider " + cmsPage.getTopBarSlider().getId());
+            }
         }
         
 

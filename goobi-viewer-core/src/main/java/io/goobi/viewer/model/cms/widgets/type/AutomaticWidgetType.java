@@ -12,7 +12,7 @@ public enum AutomaticWidgetType implements WidgetContentType {
     /**
      * Widget displaying a geomap created in CMS
      */
-    WIDGET_CMSGEOMAP("widgetGeoMap", "geoMap.xhtml");
+    WIDGET_CMSGEOMAP("widgetGeoMap", "widget_geoMap.xhtml");
     
     private final String label;
     private final String filename;

@@ -43,5 +43,15 @@ public class CmsPageEditBean implements Serializable {
         return this.sidebarWidgets.entrySet().stream().filter(e -> e.getValue()).map(Map.Entry::getKey).collect(Collectors.toList());
     }
     
+    public void resetSelectedWidgets() {
+        this.sidebarWidgets.entrySet().forEach(e -> e.setValue(false));
+    }
+    
+    public List<WidgetDisplayElement> getAndResetSelectedWidgets() {
+        List<WidgetDisplayElement> selected = getSelectedWidgets();
+        resetSelectedWidgets();
+        return selected;
+    }
+    
 
 }

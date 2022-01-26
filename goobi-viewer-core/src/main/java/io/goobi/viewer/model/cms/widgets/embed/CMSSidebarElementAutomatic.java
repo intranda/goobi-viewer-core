@@ -15,8 +15,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
 @DiscriminatorValue("AUTOMATIC")
 public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     
-    @ManyToOne
-    @JoinColumn(name = "geomap_id", nullable = false)
+    @JoinColumn(name = "geomap_id")
     private GeoMap map;
 
     public CMSSidebarElementAutomatic() {

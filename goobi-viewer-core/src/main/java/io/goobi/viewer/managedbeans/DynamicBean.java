@@ -108,7 +108,11 @@ public class DynamicBean implements Serializable {
         DynamicContentBuilder builder = new DynamicContentBuilder();
         for (DynamicContent content : components) {
             UIComponent component = builder.build(content, this.formGroup);
-            logger.trace("Added dynamic content " + component);
+            if(component == null) {
+                logger.error("Error loading component " + component);
+            } else {                
+                logger.trace("Added dynamic content " + component);
+            }
         }
     }
     

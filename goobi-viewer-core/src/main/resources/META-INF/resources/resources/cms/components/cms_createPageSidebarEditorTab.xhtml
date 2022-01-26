@@ -22,32 +22,34 @@
 					<h:panelGroup rendered="#{!cmsBean.selectedPage.useDefaultSidebar}">
 							
 							
-							<div class="sidebar-editor__left">
+							<h:panelGroup layout="block" id="selectedWidgetsGroup" class="sidebar-editor__left">
 								<h3>#{msg.cms_pageSidebar}</h3>
 								
 								<div class="sidebar-editor__left-inner">
 
-									<ui:repeat var="element"
+									<ui:repeat var="element" varStatus="status"
 										value="#{cmsBean.selectedPage.sidebarElements}">
 
 										<div class="sidebar-editor__widget-item">
 											<!-- MOVE ITEM UP OR DOWN -->
-											<div class="sidebar-editor__move">
+											<div class="sidebar-editor__move-wrapper">
 											
-												<button type="button" class="btn btn--clean sidebar-editor__move-up"
+												<button class="btn btn--clean sidebar-editor__move-up" rendered="#{!status.first}"
 													jsf:action="#{cmsBean.selectedPage.moveUpSidebarElement(element)}">
 													<i class="fa fa-arrow-up" aria-hidden="true"></i>
+													<f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
 												</button>
 												
-												<button type="button" class="btn btn--clean sidebar-editor__move-down"
+												<button class="btn btn--clean sidebar-editor__move-down" rendered="#{!status.last}"
 													jsf:action="#{cmsBean.selectedPage.moveDownSidebarElement(element)}">
 													<i class="fa fa-arrow-down" aria-hidden="true"></i>
+													<f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
 												</button>
 												
 											</div> 
 											
 											<!-- ITEM LABEL -->
-											<div>#{element.title}</div> 
+											<div class="sidebar-editor__widget-item-label">#{element.title}</div> 
 											
 											<!-- ITEM DELETE -->
 											<div>
@@ -60,68 +62,25 @@
 											</div>				
 										</div>
 									</ui:repeat>
-									
-
-									<div class="sidebar-editor__widget-item">
-										<!-- MOVE ITEM UP OR DOWN -->
-										<div class="sidebar-editor__move-wrapper">
-											<!-- MOVE ITEM UP ARROW -->
-											<button type="button" class="btn btn--clean sidebar-editor__move-up"
-												jsf:action="#{cmsBean.selectedPage.moveUpSidebarElement(element)}">
-												<i class="fa fa-arrow-up" aria-hidden="true"></i>
-											</button>
-											<!-- MOVE ITEM DOWN ARROW -->
-											<button type="button" class="btn btn--clean sidebar-editor__move-down"
-												jsf:action="#{cmsBean.selectedPage.moveDownSidebarElement(element)}">
-												<i class="fa fa-arrow-down" aria-hidden="true"></i>
-											</button>
-											
-										</div> 
-										<!-- ITEM LABEL -->
-										<div class="sidebar-editor__widget-item-label">Irgendein Widget</div> 
-										<!-- ITEM DELETE BUTTON-->
-										<h:commandLink
-											styleClass="admin__table-action-link -redlink sidebar-editor__widget-item-delete-button"
-											action="#{cmsBean.selectedPage.removeSidebarElement(element)}"
-											aria-label="#{msg.delete}">#{msg.delete}
-											<f:ajax render="@form"/>
-										</h:commandLink>						
-									</div>
 								</div>
-							</div>
+							</h:panelGroup>
 
-							<div class="sidebar-editor__right">
+							<h:panelGroup layout="block" id="availableWidgetsGroup" class="sidebar-editor__right">
 							
 								<h3>#{msg.cms_menu_availableComponents}</h3>
 								
 								<div class="sidebar-editor__right-inner">
 
 									<ui:repeat var="widget" value="#{cmsPageEditBean.sidebarWidgets.keySet()}" varStatus="status">
-										<div class="sidebar-editor__choose-widget-item">
-										  <input type="checkbox" id="scales#{status.index}" name="scales#{status.index}" jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
-										  	<f:ajax event="change"></f:ajax>
-										  </input>
-										  <label for="scales#{status.index}">#{widget.title}</label>
-										</div>
+										<ui:fragment rendered="#{!cmsBean.selectedPage.containsSidebarElement(widget)}">
+											<div class="sidebar-editor__choose-widget-item">
+											  <input type="checkbox" id="scales#{status.index}" name="scales#{status.index}" jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
+											  	<f:ajax event="change"></f:ajax>
+											  </input>
+											  <label for="scales#{status.index}">#{widget.title}</label>
+											</div>
+										</ui:fragment>
 									</ui:repeat>
-
-									<!-- DEMO CONTENT: 3 WIDGET CHECKBOXES -->
-									<div class="sidebar-editor__choose-widget-item">
-									  <input type="checkbox" id="scales1" name="scales1" />
-									  <label for="scales1">Widget 1</label>
-									</div>
-									
-									<div class="sidebar-editor__choose-widget-item">
-									  <input type="checkbox" id="scales2" name="scales2" />
-									  <label for="scales2">Widget 2</label>
-									</div>
-									
-									<div class="sidebar-editor__choose-widget-item">
-									  <input type="checkbox" id="scales3" name="scales3" />
-									  <label for="scales3">Widget 3</label>
-									</div>
-									<!-- DEMO CONTENT END -->
-									
 
 
 									<!-- NOT WORKING FUNCTIONALITY -->
@@ -130,7 +89,7 @@
 									</ui:repeat>
 
 
-									<button class="btn btn--default sidebar-editor__add-widgets-button" jsf:action="#{cmsBean.selectedPage.addToSidebar(cmsPageEditBean.selectedWidgets)}">
+									<button class="btn btn--default sidebar-editor__add-widgets-button" jsf:action="#{cmsBean.selectedPage.addToSidebar(cmsPageEditBean.getAndResetSelectedWidgets())}">
 										#{msg.action__add_to_sidebar}
 										<f:ajax render="@form"/>
 									</button>
@@ -139,7 +98,7 @@
 								
 								
 								
-							</div>
+							</h:panelGroup>
 					</h:panelGroup>
 				</h:panelGroup>
 				
