@@ -8,6 +8,7 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * Class for displaying available widgets in GUI
@@ -16,8 +17,8 @@ import io.goobi.viewer.model.translations.IPolyglott;
  *
  */
 public class WidgetDisplayElement implements IPolyglott{
-    private final IMetadataValue title;
-    private final IMetadataValue description;
+    private final TranslatedText title;
+    private final TranslatedText description;
     private final List<CMSPage> embeddingPages;
     private final WidgetGenerationType generationType;
     private final WidgetContentType contentType;
@@ -46,8 +47,8 @@ public class WidgetDisplayElement implements IPolyglott{
     public WidgetDisplayElement(IMetadataValue title, IMetadataValue description, List<CMSPage> embeddingPages, WidgetGenerationType generationType,
             WidgetContentType contentType, Long id) {
         super();
-        this.title = title;
-        this.description = description;
+        this.title = new TranslatedText(title, getSelectedLocale());
+        this.description = new TranslatedText(description, getSelectedLocale());
         this.embeddingPages = embeddingPages;
         this.generationType = generationType;
         this.contentType = contentType;

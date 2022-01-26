@@ -8,6 +8,8 @@ import javax.persistence.ManyToOne;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.widgets.type.AutomaticWidgetType;
 import io.goobi.viewer.model.maps.GeoMap;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 @Entity
 @DiscriminatorValue("AUTOMATIC")
@@ -35,5 +37,10 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
 
     public GeoMap getMap() {
         return map;
+    }
+    
+    @Override
+    public TranslatedText getTitle() {
+        return new TranslatedText(map.getTitles(), IPolyglott.getCurrentLocale());
     }
 }

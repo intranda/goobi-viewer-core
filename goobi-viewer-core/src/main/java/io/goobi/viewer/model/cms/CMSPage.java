@@ -84,6 +84,7 @@ import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.misc.Harvestable;
@@ -517,6 +518,22 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public void setSidebarElements(List<CMSSidebarElement> sidebarElements) {
         this.sidebarElements = sidebarElements;
 
+    }
+    
+    public void addToSidebar(List<WidgetDisplayElement> widgets) {
+        //TODO implement
+    }
+    
+    public void moveUpSidebarElement(CMSSidebarElement element) {
+        //TODO implement
+    }
+    
+    public void moveDownSidebarElement(CMSSidebarElement element) {
+        //TODO implement
+    }
+    
+    public void removeSidebarElement(CMSSidebarElement element) {
+        //TODO implement
     }
 
     /**

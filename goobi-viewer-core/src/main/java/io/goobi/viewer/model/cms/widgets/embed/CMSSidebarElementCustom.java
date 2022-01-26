@@ -7,6 +7,7 @@ import javax.persistence.ManyToOne;
 
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 @Entity
 @DiscriminatorValue("CUSTOM")
@@ -31,5 +32,10 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
 
     public CustomSidebarWidget getWidget() {
         return widget;
+    }
+    
+    @Override
+    public TranslatedText getTitle() {
+        return widget.getTitle();
     }
 }

@@ -95,7 +95,6 @@ public class CMSSidebarWidgetsBean implements Serializable {
         DataManager.getInstance().getDao().deleteCustomWidget(id);
     }
 
-
     
 }
 

@@ -5,14 +5,14 @@
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
 	<composite:interface>
-    	<composite:attribute name="widget" type="io.goobi.viewer.model.cms.CMSSidebarElement" required="true" />
+		<composite:attribute name="collapse" required="false" default="false" type="java.lang.Boolean"/>
     </composite:interface>
 
 	<composite:implementation>
-		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled and configurationBean.displaySidebarBrowsingTerms and (cc.attrs.widget.type == 'widgetBrowsing' or cc.attrs.widget.type == null)}">
-			<div id="widgetBrowsing" class="widget #{cc.attrs.widget.cssClass}">
+		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled and configurationBean.displaySidebarBrowsingTerms}">
+			<div id="widgetBrowsing" class="widget">
 				<h:form id="widgetBrowsingForm">
-					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.type == null}">				
+					<h:panelGroup rendered="#{cc.attrs.collapse == false}">				
 						<h3>#{msg.browseTitle}</h3>
 						
 						<ul>
@@ -36,7 +36,7 @@
 						</ul>
 					</h:panelGroup>
 					
-					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
+					<h:panelGroup rendered="#{cc.attrs.collapse == true}">
 						<h3>
 							<a href="#browseCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="browseCollapse">
 								#{msg.browseTitle}

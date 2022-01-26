@@ -18,6 +18,7 @@ package io.goobi.viewer.model.cms.widgets.embed;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -33,10 +34,13 @@ import javax.persistence.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 import io.goobi.viewer.model.misc.NumberIterator;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * <p>
@@ -48,6 +52,7 @@ import io.goobi.viewer.model.misc.NumberIterator;
 @Table(name = "cms_sidebar_elements")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "generation_type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("BASE")
 public class CMSSidebarElement {
 
     public static final String WIDGET_TYPE_DEFAULT = "DEFAULT";
@@ -75,7 +80,6 @@ public class CMSSidebarElement {
     @Column(name = "generation_type", nullable = false)
     private WidgetGenerationType generationType;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "content_type", nullable = false)
     private WidgetContentType contentType;
 
@@ -188,5 +192,9 @@ public class CMSSidebarElement {
     public void setContentType(WidgetContentType contentType) {
         this.contentType = contentType;
     }
+
+    public TranslatedText getTitle() {
+        return new TranslatedText(ViewerResourceBundle.getTranslation(getContentType().getLabel(), IPolyglott.getCurrentLocale()));
+    } 
 
 }

@@ -76,14 +76,16 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
 
     }
 
-    /**
-     * @param label
-     */
-    public TranslatedText(IMetadataValue label) {
-        super(label.getLanguages()
+    public TranslatedText(IMetadataValue orig) {
+        this(orig, IPolyglott.getCurrentLocale());
+    }
+    
+    public TranslatedText(IMetadataValue orig, Locale initialLocale) {
+        super(orig.getLanguages()
                 .stream()
-                .filter(lang -> label.getValue(lang).isPresent())
-                .collect(Collectors.toMap(lang -> lang, lang -> label.getValue(lang).get())));
+                .filter(lang -> orig.getValue(lang).isPresent())
+                .collect(Collectors.toMap(lang -> lang, lang -> orig.getValue(lang).get())));
+        this.selectedLocale = initialLocale;
     }
 
     public Locale getSelectedLocale() {
@@ -153,6 +155,11 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
      */
     public boolean hasLocale(Locale locale) {
         return super.getLanguages().stream().anyMatch(l -> l.equalsIgnoreCase(locale.getLanguage()));
+    }
+    
+    @Override
+    public String toString() {
+        return getText();
     }
 
 }

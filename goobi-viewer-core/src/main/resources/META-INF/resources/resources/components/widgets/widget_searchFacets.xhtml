@@ -11,14 +11,12 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
     <composite:interface>
-        <composite:attribute name="widget" type="io.goobi.viewer.model.cms.CMSSidebarElement" required="true" />
     </composite:interface>
 
     <composite:implementation>
-        <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null}">
             <h:panelGroup
                 rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() != null}">
-                <div id="searchListFacetsWrapper" class="widget-search-facets #{cc.attrs.widget.cssClass}">
+                <div id="searchListFacetsWrapper" class="widget-search-facets">
                     <h:form id="searchListFacetsForm" prependId="false">
                         <!-- FACETS -->
                         <c:forEach var="field" items="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}" varStatus="status">
@@ -110,6 +108,5 @@
                     <viewerComponent:searchHelpText />
                 </div>
             </h:panelGroup>
-        </h:panelGroup>
     </composite:implementation>
 </ui:composition>
