@@ -55,7 +55,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
                                 geoMap.getDescriptions(), 
                                 getEmbeddingPages(widgetType, geoMap), 
                                 WidgetGenerationType.AUTOMATIC,
-                                widgetType);
+                                widgetType, geoMap.getId());
                         widgets.add(widget);
                     }
             }

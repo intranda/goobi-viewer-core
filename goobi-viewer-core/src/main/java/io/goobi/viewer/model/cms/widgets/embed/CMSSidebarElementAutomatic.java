@@ -22,10 +22,9 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     public CMSSidebarElementAutomatic() {
         super();
     }
-
     
-    public CMSSidebarElementAutomatic(GeoMap map) {
-        super(AutomaticWidgetType.WIDGET_CMSGEOMAP);
+    public CMSSidebarElementAutomatic(GeoMap map, CMSPage owner) {
+        super(AutomaticWidgetType.WIDGET_CMSGEOMAP, owner);
         this.map = map;
     }
     

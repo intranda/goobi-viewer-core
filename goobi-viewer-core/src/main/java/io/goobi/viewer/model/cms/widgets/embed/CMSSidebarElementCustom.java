@@ -20,8 +20,8 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     public CMSSidebarElementCustom() {
     }
     
-    public CMSSidebarElementCustom(CustomSidebarWidget widget) {
-        super(widget.getType());
+    public CMSSidebarElementCustom(CustomSidebarWidget widget, CMSPage owner) {
+        super(widget.getType(), owner);
         this.widget = widget;
     }
     

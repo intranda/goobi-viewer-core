@@ -88,10 +88,10 @@ public class DynamicContentBuilder {
                 }
                 break;
             case SLIDER:
-                String sliderId = (String)content.getAttributes().get("sliderId");
+                Long sliderId = (Long)content.getAttributes().get("sliderId");
                 try {
-                    if (sliderId != null && sliderId.matches("\\d+")) {
-                        CMSSlider slider = DataManager.getInstance().getDao().getSlider(Long.parseLong(sliderId));
+                    if (sliderId != null) {
+                        CMSSlider slider = DataManager.getInstance().getDao().getSlider(sliderId);
                         if (slider != null) {
                             composite = loadCompositeComponent(parent, content.getComponentFilename() , "components");
                             composite.getAttributes().put("slider", slider);
@@ -110,6 +110,7 @@ public class DynamicContentBuilder {
                 } catch (NumberFormatException | DAOException e) {
                     logger.error("Error retrieving content from DAO", e);
                 }
+                break;
             case WIDGET:
                 composite = loadCompositeComponent(parent, content.getComponentFilename(), "components/widgets");
                 if(content.getAttributes().containsKey("widget")) {                    

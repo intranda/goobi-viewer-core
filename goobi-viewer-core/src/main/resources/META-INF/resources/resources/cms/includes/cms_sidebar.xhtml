@@ -21,16 +21,15 @@
 		<c:if test="#{!cmsPage.useDefaultSidebar}">
 			<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
 				<widgetComponent:widget_custom widget="#{element}" />
-				<widgetComponent:widget_chronology widget="#{element}" />
-				<widgetComponent:widget_searchFacets_configurable widget="#{element}" />
-				<widgetComponent:widget_geoFacetting widget="#{element}" search="#{cmsPage.getSearchFunctionality()}"/>
-				<widgetComponent:widget_searchFacets widget="#{element}" />
+				<widgetComponent:widget_chronology />
+				<widgetComponent:widget_geoFacetting search="#{cmsPage.getSearchFunctionality()}"/>
+				<widgetComponent:widget_searchFacets />
 				<widgetComponent:widget_searchField widget="#{element}" />
-				<widgetComponent:widget_browsing widget="#{element}" />
+				<widgetComponent:widget_browsing />
 				<widgetComponent:widget_rssFeed widget="#{element}" />
-				<widgetComponent:widget_workCount widget="#{element}" />
+				<widgetComponent:widget_workCount />
 				<widgetComponent:widget_cmsPageLinks widget="#{element}" />
-				<widgetComponent:widget_geoMap widget="#{element}" />
+				<widgetComponent:widget_geoMap map="#{element.geoMap}" />
 				<widgetComponent:widget_fieldFacets widget="#{element}" />
 			</c:forEach>
 		</c:if>
