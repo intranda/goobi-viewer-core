@@ -279,8 +279,8 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix,
-            boolean addCollectionBlacklistSuffix) throws IndexUnreachableException {
+    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix)
+            throws IndexUnreachableException {
         StringBuilder sbSuffix = new StringBuilder("");
         if (addStaticQuerySuffix && StringUtils.isNotBlank(DataManager.getInstance().getConfiguration().getStaticQuerySuffix())) {
             String staticSuffix = DataManager.getInstance().getConfiguration().getStaticQuerySuffix();
@@ -783,11 +783,12 @@ public final class SearchHelper {
 
     /**
      * Returns a Solr query suffix that filters out collections defined in the collection blacklist.
+     * 
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
     public static String getCollectionBlacklistFilterSuffix(String field) {
-        return  generateCollectionBlacklistFilterSuffix(field);
+        return generateCollectionBlacklistFilterSuffix(field);
     }
 
     /**
@@ -877,6 +878,7 @@ public final class SearchHelper {
      */
     public static String getPersonalFilterQuerySuffix(User user, String ipAddress)
             throws IndexUnreachableException, PresentationException, DAOException {
+        logger.trace("getPersonalFilterQuerySuffix: {}", ipAddress);
         // No restrictions for admins
         if (user != null && user.isSuperuser()) {
             return "";

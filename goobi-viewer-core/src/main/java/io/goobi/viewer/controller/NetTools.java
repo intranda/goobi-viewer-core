@@ -575,6 +575,7 @@ public class NetTools {
      * @return
      */
     public static boolean isIpAddressLocalhost(String address) {
+        // logger.trace("isIpAddressLocalhost: {}", address);
         if (address == null) {
             return false;
         }
