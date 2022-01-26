@@ -49,7 +49,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
  * Wrapper to link sidebar widgets to cms-pages. Has a subclass for each type of sidebar widget
  */
 @Entity
-@Table(name = "cms_sidebar_elements")
+@Table(name = "cms_page_sidebar_elements")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "generation_type", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("BASE")
