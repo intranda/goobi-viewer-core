@@ -47,4 +47,9 @@ public enum DefaultWidgetType implements WidgetContentType {
     public String getFilename() {
         return filename;
     }
+    
+    @Override
+    public String getName() {
+        return name();
+    }
 }

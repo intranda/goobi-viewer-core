@@ -91,6 +91,7 @@ import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.SelectableNavigationItem;
 import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
@@ -143,7 +144,6 @@ public class CmsBean implements Serializable {
     private Locale selectedLocale;
     private Locale selectedMediaLocale;
     private CMSMediaItem selectedMediaItem;
-    private CMSSidebarElement selectedSidebarElement;
     private boolean displaySidebarEditor = false;
     private int nestedPagesCount = 0;
     private boolean editMode = false;
@@ -154,7 +154,8 @@ public class CmsBean implements Serializable {
     private HashMap<Long, Boolean> editablePages = new HashMap<>();
     private List<String> solrSortFields = null;
     private List<String> solrGroupFields = null;
-
+    private List<String> selectedWidgets = new ArrayList<>();
+    
     private List<String> luceneFields = null;
 
     /**
@@ -1860,32 +1861,6 @@ public class CmsBean implements Serializable {
         this.editMode = editMode;
     }
 
-    /**
-     * <p>
-     * Setter for the field <code>selectedSidebarElement</code>.
-     * </p>
-     *
-     * @param selectedSidebarElement a {@link io.goobi.viewer.model.cms.widgets.CMSSidebarElement} object.
-     */
-    public void setSelectedSidebarElement(CMSSidebarElement selectedSidebarElement) {
-        this.selectedSidebarElement = selectedSidebarElement;
-    }
-
-
-    /**
-     * <p>
-     * saveSidebarElement.
-     * </p>
-     */
-    public void saveSidebarElement() {
-        getSelectedPage().saveSidebarElements();
-        if (this.selectedSidebarElement == null || this.selectedPage == null) {
-            logger.error("Cannot write sidebar-element " + this.selectedSidebarElement + " to page " + this.selectedPage);
-        } else {
-            this.selectedPage.addSidebarElement(this.selectedSidebarElement);
-            this.selectedSidebarElement = null;
-        }
-    }
 
     /**
      * <p>
@@ -2784,6 +2759,14 @@ public class CmsBean implements Serializable {
 
     public List<CMSNavigationItem> getActiveNavigationMenuItems() {
         return getNavigationMenuItems().stream().filter(CMSNavigationItem::isEnabled).collect(Collectors.toList());
+    }
+    
+    public List<String> getSelectedWidgets() {
+        return selectedWidgets;
+    }
+    
+    public void setSelectedWidgets(List<String> selectedWidgets) {
+        this.selectedWidgets = selectedWidgets;
     }
 
 }

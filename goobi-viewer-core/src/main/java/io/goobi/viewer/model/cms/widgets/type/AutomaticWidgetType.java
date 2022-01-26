@@ -30,6 +30,11 @@ public enum AutomaticWidgetType implements WidgetContentType {
     public String getFilename() {
         return this.filename;
     }
+
+    @Override
+    public String getName() {
+        return name();
+    }
    
 
 }

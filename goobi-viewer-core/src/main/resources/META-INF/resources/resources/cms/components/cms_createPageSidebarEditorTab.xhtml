@@ -89,12 +89,11 @@
 							
 							<div class="sidebar-editor-left">
 								<h3>#{msg.cms_menu_availableComponents}</h3>
-								<h:selectManyCheckbox value="#{selectedWidgets}">
-									<f:selectItems value="#{widgets}" var="widget" itemValue="#{widget}" itemLabel="#{widget.title}"/>
+								<h:selectManyCheckbox value="#{cmsBean.selectedWidgets}">
+									<f:selectItems value="#{widgets}" var="widget" itemValue="#{widget.contentType.toString()}" itemLabel="#{widget.title}"/>
 								</h:selectManyCheckbox>
-								<button class="btn btn--default" jsf:action="#{cmsBean.selectedPage.addToSidebar(selectedWidgets)}">
+								<button class="btn btn--default" jsf:action="#{cmsBean.selectedPage.addToSidebar(cmsBean.selectedWidgets)}">
 									#{msg.action__add_to_sidebar}
-									<f:ajax render="@form"/>
 								</button>
 							</div>
 						</div>
