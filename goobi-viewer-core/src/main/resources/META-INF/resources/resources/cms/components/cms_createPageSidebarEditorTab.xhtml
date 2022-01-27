@@ -49,7 +49,7 @@
 											</div> 
 											
 											<!-- ITEM LABEL -->
-											<div class="sidebar-editor__widget-item-label">#{element.title}</div> 
+											<div class="sidebar-editor__widget-item-label">#{element.title.getText(navigationHelper.locale)}</div> 
 											
 											<!-- ITEM DELETE -->
 											<div>
@@ -71,13 +71,13 @@
 								
 								<div class="sidebar-editor__right-inner">
 
-									<ui:repeat var="widget" value="#{cmsPageEditBean.sidebarWidgets.keySet()}" varStatus="status">
+									<ui:repeat var="widget" value="#{cmsPageEditBean.sidebarWidgets.keySet().stream().sorted().toList()}" varStatus="status">
 										<ui:fragment rendered="#{!cmsBean.selectedPage.containsSidebarElement(widget)}">
 											<div class="sidebar-editor__choose-widget-item">
 											  <input type="checkbox" id="scales#{status.index}" name="scales#{status.index}" jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
 											  	<f:ajax event="change"></f:ajax>
 											  </input>
-											  <label for="scales#{status.index}">#{widget.title}</label>
+											  <label for="scales#{status.index}">#{widget.title.getText(navigationHelper.locale)}</label>
 											</div>
 										</ui:fragment>
 									</ui:repeat>

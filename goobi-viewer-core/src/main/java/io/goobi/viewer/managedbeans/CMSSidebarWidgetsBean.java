@@ -2,26 +2,25 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
-import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
-import io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic;
@@ -35,7 +34,7 @@ import io.goobi.viewer.model.jsf.DynamicContentType;
 import io.goobi.viewer.model.maps.GeoMap;
 
 @Named("cmsSidebarWidgetsBean")
-@ViewScoped
+@RequestScoped
 public class CMSSidebarWidgetsBean implements Serializable {
 
     private HtmlPanelGroup sidebarGroup = null;
@@ -44,6 +43,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     
     private static final Logger logger = LoggerFactory.getLogger(CMSSidebarWidgetsBean.class);
 
+    @Inject
+    CmsBean cmsBean;
+    
     public List<WidgetDisplayElement> getAllWidgets() throws DAOException {
         
         List<WidgetDisplayElement> widgets = new ArrayList<WidgetDisplayElement>();
@@ -83,7 +85,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
                     widget.getType(), widget.getId());
             widgets.add(element);
         }
-        
+                
         return widgets;
         
     }
@@ -116,6 +118,11 @@ public class CMSSidebarWidgetsBean implements Serializable {
             }
         }
         return sidebarGroup;
+    }
+    
+    public HtmlPanelGroup getSidebarGroup() {
+        List<CMSSidebarElement> elements = Optional.ofNullable(cmsBean).map(CmsBean::getCurrentPage).map(CMSPage::getSidebarElements).orElse(Collections.emptyList());
+        return getSidebarGroup(elements);
     }
     
     public void setSidebarGroup(HtmlPanelGroup sidebarGroup) {

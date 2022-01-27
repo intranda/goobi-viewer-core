@@ -19,7 +19,7 @@
 
 		<!-- CUSTOM SIDEBAR -->
 		<c:if test="#{!cmsPage.useDefaultSidebar}">
-			<h:panelGroup binding="#{cmsSidebarWidgetsBean.getSidebarGroup(cmsPage.sidebarElements)}"></h:panelGroup>
+			<h:panelGroup binding="#{cmsSidebarWidgetsBean.sidebarGroup}"></h:panelGroup>
 		</c:if>
 
 		<!-- DEFAULT SIDEBAR -->

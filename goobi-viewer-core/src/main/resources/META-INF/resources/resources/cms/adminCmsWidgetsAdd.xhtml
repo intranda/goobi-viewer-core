@@ -204,9 +204,11 @@
 							</div>
 							
 							<div class="admin__content-side">
-								<div class="admin__default-block">
-									<h:panelGroup binding="#{customWidgetEditBean.previewGroup}" />
-								</div>
+								<ui:fragment rendered="#{widget != null}">
+									<div class="admin__default-block">
+										<h:panelGroup binding="#{customWidgetEditBean.previewGroup}" />
+									</div>
+								</ui:fragment>
 							</div>
 							
 						</div>

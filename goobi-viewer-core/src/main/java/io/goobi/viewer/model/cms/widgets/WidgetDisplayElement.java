@@ -3,6 +3,10 @@ package io.goobi.viewer.model.cms.widgets;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.runner.manipulation.Sortable;
+
+import com.amazonaws.util.StringUtils;
+
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
@@ -16,7 +20,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
  * @author florian
  *
  */
-public class WidgetDisplayElement implements IPolyglott{
+public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDisplayElement>{
     private final TranslatedText title;
     private final TranslatedText description;
     private final List<CMSPage> embeddingPages;
@@ -57,13 +61,13 @@ public class WidgetDisplayElement implements IPolyglott{
     /**
      * @return the title
      */
-    public IMetadataValue getTitle() {
+    public TranslatedText getTitle() {
         return title;
     }
     /**
      * @return the description
      */
-    public IMetadataValue getDescription() {
+    public TranslatedText getDescription() {
         return description;
     }
     /**
@@ -114,6 +118,16 @@ public class WidgetDisplayElement implements IPolyglott{
     @Override
     public void setSelectedLocale(Locale locale) {
         //Do nothing
+    }
+    
+    @Override
+    public String toString() {
+        return getTitle().getText();
+    }
+
+    @Override
+    public int compareTo(WidgetDisplayElement other) {
+        return StringUtils.compare(this.getTitle().getText(), other.getTitle().getText());
     }
 
 }
