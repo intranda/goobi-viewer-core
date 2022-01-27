@@ -2,95 +2,102 @@
    Style declarations for userBackendComments.xhtml
    ==============================================================*/
 /* USER COMMENTS TABLE */
-#userCommentsTable {}
+#userCommentsTable {
+}
 
 .user-comments {
-	&__table {
-		background: #fff;
-		border: 1px solid #ccc;
-		margin-bottom: 2rem;
-	}
-	&__table-title {
-		display: grid;
-		grid-template-columns: 2fr 2fr 1fr;
-	  	gap: 10px;
-		padding: 1rem 2rem;
-		border-bottom: 1px solid #6f6f6f;
-		font-weight: 600;
-		font-size: 1.6rem;
-	}
-	&__table-body {}
-	.admin__table-sorting-arrow-hidden {
-		opacity: 0;
-		color: #1a1a1a;
-		margin-left: .6rem;
-		transition: all .2s ease;
-	}
-	&__table-title-target,
-	&__table-title-comment,
-	&__table-title-date {
-		display: flex;
-		&:hover {
-			.admin__table-sorting-arrow-hidden {
-				opacity: 1;
-			}
-		}
-	}
-	&__table-entry {
-		display: grid;
-		grid-template-columns: 2fr 2fr 1fr;
-	  	grid-template-rows: minmax(20px, 1fr);
-	  	gap: 10px;
-		padding: 1rem 2rem;
-		transition: background .2s ease;
-		&:hover {
-			background: #f7f7f7;
-			.user-comments__table-entry-action-link {
-				opacity: 1;
-			}
-		}
-	}
-	&__table-entry-label-record {
-		display: block;
-		font-weight: bold;
-		text-decoration: underline;
-	}
-	&__table-entry-action-link {
-		opacity: 0;
-		transition: opacity .2s ease;
-	}
+  &__table {
+    background: #fff;
+    border: 1px solid #ccc;
+    margin-bottom: 2rem;
+  }
+  &__table-title {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    gap: 10px;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #6f6f6f;
+    font-weight: 600;
+    font-size: 1.6rem;
+  }
+  &__table-body {
+  }
+  .admin__table-sorting-arrow-hidden {
+    opacity: 0;
+    color: #1a1a1a;
+    margin-left: 0.6rem;
+    transition: all 0.2s ease;
+  }
+  &__table-title-target,
+  &__table-title-comment,
+  &__table-title-date {
+    display: flex;
+    &:hover {
+      .admin__table-sorting-arrow-hidden {
+        opacity: 1;
+      }
+    }
+  }
+  &__table-entry {
+    word-wrap: anywhere;
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    grid-template-rows: minmax(20px, 1fr);
+    gap: 10px;
+    padding: 1rem 2rem;
+    transition: background 0.2s ease;
+    &:hover {
+      background: #f7f7f7;
+      .user-comments__table-entry-action-link {
+        opacity: 1;
+      }
+    }
+  }
+  &__table-entry-label-record {
+    display: block;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  &__table-entry-action-link {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	.user-comments {
-		&__table-title {
-			display: none;
-		}
-		&__table-entry {
-			grid-template-columns: 1fr;
-			&:nth-child(odd) {
-				background: #f7f7f7;
-			}
-		}
-		&__table-entry-action-link {
-			opacity: 1;
-		}
-		.admin__search-input-wrapper {
-			margin-top: 0.5rem;
-		}
-		.admin__search-action {
-			min-height: 30px;
-			margin-top: 0.5rem;
-		}
-	}
+  .user-comments {
+    &__table-title {
+      display: none;
+    }
+    &__table-entry {
+      grid-template-columns: 1fr;
+      &:nth-child(odd) {
+        background: #f7f7f7;
+      }
+    }
+    &__table-entry-action-link {
+      opacity: 1;
+    }
+    .admin__search-input-wrapper {
+      margin-top: 0.5rem;
+    }
+    .admin__search-action {
+      min-height: 30px;
+      margin-top: 0.5rem;
+    }
+  }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}
+

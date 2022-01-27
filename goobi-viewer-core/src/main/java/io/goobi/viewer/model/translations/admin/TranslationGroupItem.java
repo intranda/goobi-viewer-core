@@ -183,7 +183,7 @@ public abstract class TranslationGroupItem {
         entries = new ArrayList<>(keys.size());
         List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
         for (String k : keys) {
-            entries.add(MessageEntry.create(k, allLocales));
+            entries.add(MessageEntry.create(null, k, allLocales));
         }
     }
 }

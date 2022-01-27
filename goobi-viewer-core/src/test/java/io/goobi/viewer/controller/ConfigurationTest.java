@@ -2047,7 +2047,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSearchFilters_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getSearchFilters().size());
+        Assert.assertEquals(6, DataManager.getInstance().getConfiguration().getSearchFilters().size());
     }
 
     /**
@@ -3150,5 +3150,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isRememberImageZoom_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isRememberImageZoom());
+    }
+
+    /**
+     * @see Configuration#isFuzzySearchEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isFuzzySearchEnabled_shouldReturnCorrectValue() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("search.fuzzy[@enabled]", true);
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled());
     }
 }

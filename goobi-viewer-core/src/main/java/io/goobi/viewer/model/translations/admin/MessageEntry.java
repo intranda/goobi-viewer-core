@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
@@ -32,25 +34,32 @@ public class MessageEntry implements Comparable<MessageEntry> {
         FULL;
     }
 
-    private final String key;
+    private String keyPrefix;
+    private String keySuffix;
     private final List<MessageValue> values;
+    private boolean newEntryMode = false;
 
     /**
      * Factory method that creates a <code>MessageEntry</code> instance with values initialized for all given locales.
      * 
-     * @param key Message key
+     * @param keyPrefix Message key prefix (optional)
+     * @param keySuffix Message key suffix (or entire key if no prefix)
      * @param allLocales List of locales
      * @return new <code>MessageEntry</code>
      * @should create MessageEntry correctly
      */
-    public static MessageEntry create(String key, List<Locale> allLocales) {
-        if (key == null) {
-            throw new IllegalArgumentException("key may not be null");
+    public static MessageEntry create(String keyPrefix, String keySuffix, List<Locale> allLocales) {
+        if (keySuffix == null) {
+            throw new IllegalArgumentException("keySuffix may not be null");
         }
         if (allLocales == null) {
             throw new IllegalArgumentException("allLocales may not be null");
         }
+        if (keyPrefix == null) {
+            keyPrefix = "";
+        }
 
+        String key = keyPrefix + keySuffix;
         List<MessageValue> values = new ArrayList<>(allLocales.size());
         for (Locale locale : allLocales) {
             String translation = ViewerResourceBundle.getTranslation(key, locale, false, false, false, false);
@@ -58,7 +67,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
             values.add(new MessageValue(locale.getLanguage(), translation, globalTranslation));
         }
 
-        return new MessageEntry(key, values);
+        return new MessageEntry(keyPrefix, keySuffix, values);
     }
 
     /**
@@ -67,7 +76,21 @@ public class MessageEntry implements Comparable<MessageEntry> {
      * @param values
      */
     public MessageEntry(String key, List<MessageValue> values) {
-        this.key = key;
+        this.keyPrefix = "";
+        this.keySuffix = key;
+        this.values = values;
+    }
+
+    /**
+     * Constructor with a composite key.
+     * 
+     * @param keyPrefix
+     * @param keySuffix
+     * @param values
+     */
+    public MessageEntry(String keyPrefix, String keySuffix, List<MessageValue> values) {
+        this.keyPrefix = keyPrefix != null ? keyPrefix : "";
+        this.keySuffix = keySuffix;
         this.values = values;
     }
 
@@ -78,7 +101,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((key == null) ? 0 : key.hashCode());
+        result = prime * result + ((getKey() == null) ? 0 : getKey().hashCode());
         return result;
     }
 
@@ -94,10 +117,10 @@ public class MessageEntry implements Comparable<MessageEntry> {
         if (getClass() != obj.getClass())
             return false;
         MessageEntry other = (MessageEntry) obj;
-        if (key == null) {
-            if (other.key != null)
+        if (getKey() == null) {
+            if (other.getKey() != null)
                 return false;
-        } else if (!key.equals(other.key))
+        } else if (!getKey().equals(other.getKey()))
             return false;
         return true;
     }
@@ -109,7 +132,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
      */
     @Override
     public int compareTo(MessageEntry o) {
-        return this.key.compareTo(o.key);
+        return this.getKey().compareTo(o.getKey());
     }
 
     /**
@@ -171,7 +194,43 @@ public class MessageEntry implements Comparable<MessageEntry> {
      * @return the key
      */
     public String getKey() {
-        return key;
+        return keyPrefix + keySuffix;
+    }
+
+    /**
+     * @return the keyPrefix
+     */
+    public String getKeyPrefix() {
+        return keyPrefix;
+    }
+
+    /**
+     * @param keyPrefix the keyPrefix to set
+     */
+    public void setKeyPrefix(String keyPrefix) {
+        this.keyPrefix = keyPrefix;
+    }
+
+    /**
+     * @return the keySuffix
+     */
+    public String getKeySuffix() {
+        return keySuffix;
+    }
+
+    /**
+     * @param keySuffix the keySuffix to set
+     */
+    public void setKeySuffix(String keySuffix) {
+        this.keySuffix = keySuffix;
+    }
+    
+    /**
+     * 
+     * @return true if keySuffix blank; false otherwise
+     */
+    public boolean isKeySuffixBlank() {
+        return StringUtils.isBlank(keySuffix);
     }
 
     /**
@@ -180,4 +239,19 @@ public class MessageEntry implements Comparable<MessageEntry> {
     public List<MessageValue> getValues() {
         return values;
     }
+
+    /**
+     * @return the newEntryMode
+     */
+    public boolean isNewEntryMode() {
+        return newEntryMode;
+    }
+
+    /**
+     * @param newEntryMode the newEntryMode to set
+     */
+    public void setNewEntryMode(boolean newEntryMode) {
+        this.newEntryMode = newEntryMode;
+    }
+
 }
