@@ -4,8 +4,8 @@
             	xmlns:h="http://xmlns.jcp.org/jsf/html"
             	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
             	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-    
-	<!-- 
+
+	<!--
 	Beispiel Aufruf für diese Komponente:
 			<ui:include src="resources/includes/title.xhtml">
 				<ui:param name="title" value="true"/> optional
@@ -30,18 +30,18 @@
     	<div id="title" class="title">
     		<!-- TITLE HEADER -->
 			<div class="title__header">
-				<h2 class="h3">
+				<h1 class="h2">
 					<!-- PAGE TYPE -->
 					<span class="title__header-page-type">
 						<h:outputText value="#{msg[navigationHelper.currentView]}" escape="false" />:
 					</span>
-					
+
 					<!-- LABEL -->
 					<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
-				
+
 					<!-- ICON -->
 					<i class="fa fa-angle-down" aria-hidden="true"></i>
-				</h2>
+				</h1>
 			</div>
 
 			<!-- TITLE BODY -->
@@ -63,7 +63,7 @@
 							</ui:fragment>
 						</div>
 					</ui:fragment>
-					
+
 					<!-- METADATA -->
 					<div class="title__body-metadata">
 						<dl>
@@ -73,12 +73,12 @@
 								</dt>
 								<dd>
 									<ui:repeat value="#{metadata.values}" var="val">
-										<span class="title-value"> 
+										<span class="title-value">
 											<h:outputFormat rendered="#{!metadata.group}" value="#{msg[val.masterValue]}" escape="false">
                                                 <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
                                                     <f:param value="#{val.getComboValueShort(ind)}" />
                                                 </c:forEach>
-											</h:outputFormat> 
+											</h:outputFormat>
 											<h:outputFormat rendered="#{metadata.group}" value="#{msg[val.masterValue]}" escape="false">
                                                 <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
                                                     <f:param value="#{val.getParamLabelWithColon(ind)}" />
@@ -103,7 +103,7 @@
 								</dd>
 							</dl>
 						</ui:fragment>
-						
+
 						<!-- PURL -->
 						<ui:fragment rendered="#{purl and configurationBean.displayTitlePURL}">
 							<dl>
@@ -124,7 +124,7 @@
 									<div class="title__body-metadata-breadcrumbs">
 										<ui:repeat
 											value="#{activeDocumentBean.viewManager.currentDocumentHierarchy}"
-											var="docStruct" 
+											var="docStruct"
 											varStatus="status">
 											<ui:fragment rendered="#{!status.last}">
 												<a href="#{docStruct.url}" title="#{msg[docStruct.label]}">#{msg[docStruct.label]}</a>
@@ -139,11 +139,11 @@
 									</div>
 								</dd>
 							</dl>
-	
+
 							<!-- TRUNCATE TITLE BREADCRUMBS -->
 							<script type="text/javascript">
 	                        	var maxStringLength = #{configurationBean.titleBreadcrumbsMaxTitleLength};
-	                        	
+
 	                        	$( '.bread_label' ).each( function() {
 	                        		$( this ).html( viewerJS.helper.truncateString( $( this ).html(), maxStringLength ) );
 	                        	});

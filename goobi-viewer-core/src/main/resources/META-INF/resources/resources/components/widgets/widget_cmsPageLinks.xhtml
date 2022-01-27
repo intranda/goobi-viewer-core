@@ -14,7 +14,7 @@
 				<div id="widgetCmsPageLinks-#{cc.attrs.widget.order}" class="widget #{cc.attrs.widget.cssClass}">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD'}">
 						<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
-							<h3>#{msg[cc.attrs.widget.widgetTitle]}</h3>
+							<h2 >#{msg[cc.attrs.widget.widgetTitle]}</h2>
 						</ui:fragment>
 
 						<ul>
@@ -28,7 +28,7 @@
 						</ul>
 					</h:panelGroup>
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
-						<h3>
+						<h2 >
 							<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
 								#{msg[cc.attrs.widget.widgetTitle]}
 							</ui:fragment>
@@ -39,7 +39,7 @@
                                 #{msg[cc.attrs.widget.type]}
                                 <i class="fa fa-arrow-down" aria-hidden="true"></i>
                             </a>
-                        </h3>
+                        </h2>
 
 						<ul>
 							<ui:repeat value="#{cc.attrs.widget.linkedPages}" var="pageId">

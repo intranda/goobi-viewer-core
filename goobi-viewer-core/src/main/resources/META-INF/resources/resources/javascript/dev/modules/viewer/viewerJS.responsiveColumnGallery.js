@@ -215,7 +215,7 @@ var viewerJS = ( function( viewer ) {
                     image += '<div class="rcg-image-overlay" style="background-color:' + _defaults.overlayColor + '"></div>';
                     image += '</a>';
                     image += '<div class="rcg-image-title">';
-                    image += '<h4>' + n.title + '</h4>';
+                    image += '<h3>' + n.title + '</h3>';
                     image += '</div>';
                     image += '<img src="' + _defaults.themePath + _defaults.imagePath + n.name + '" alt="' + n.alt + '" />';
                     if ( _defaults.lightbox.active ) {

@@ -177,7 +177,7 @@ var viewerJS = ( function( viewer ) {
         
         popover += '<div class="ner-popover" style="top:' + positionTop + 'px; left:' + positionLeft + 'px">';
         popover += '<div class="ner-popover-close" title="Fenster schlie&szlig;en">&times;</div>';
-        popover += '<div class="ner-popover-header"><h4>' + title + '</h4></div>';
+        popover += '<div class="ner-popover-header"><h3>' + title + '</h3></div>';
         popover += '<div class="ner-popover-body">';
         popover += '<dl class="dl-horizontal">';
         $.each( $.parseJSON( data ), function( i, object ) {
@@ -260,7 +260,7 @@ var viewerJS = ( function( viewer ) {
         var popoverDetail = '';
         
         popoverDetail += '<div class="ner-popover-detail">';
-        popoverDetail += '<div class="ner-popover-detail-header"><h4>' + title + '</h4></div>';
+        popoverDetail += '<div class="ner-popover-detail-header"><h3>' + title + '</h3></div>';
         popoverDetail += '<div class="ner-popover-detail-body">';
         popoverDetail += '<dl class="dl-horizontal">';
         $.each( $.parseJSON( data ), function( i, object ) {

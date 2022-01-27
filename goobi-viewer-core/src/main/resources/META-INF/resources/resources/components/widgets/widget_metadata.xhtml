@@ -15,7 +15,7 @@
 
                 <!-- SIDEBAR METADATA -->
 				<div id="widgetMetadata" class="widget widget-metadata">
-					<h3>#{msg[metadataBean.defaultSidebarMetadataLabel]}</h3>
+					<h2 >#{msg[metadataBean.defaultSidebarMetadataLabel]}</h2>
 					
 					<dl>
 						<ui:repeat value="#{metadataBean.getBottomMetadataElement(0).sidebarMetadataList}" var="metadata">
@@ -63,7 +63,7 @@
                         <div id="widgetMetadata" class="widget widget-metadata">
                             <ui:repeat value="#{metadataBean.events}" var="event">
                                 <ui:fragment rendered="#{event.hasSidebarMetadata}">
-                                <h3>#{msg[event.label]}</h3>
+                                <h2 >#{msg[event.label]}</h2>
                                 <dl>
                                     <ui:repeat value="#{event.sidebarMetadata}" var="metadata">
                                         <h:panelGroup rendered="#{!metadata.blank}">

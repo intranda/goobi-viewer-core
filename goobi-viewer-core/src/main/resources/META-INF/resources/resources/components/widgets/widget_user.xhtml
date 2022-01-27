@@ -12,7 +12,7 @@
         <h:panelGroup rendered="#{(cc.attrs.widget.type == 'widgetUser' or cc.attrs.widget == null) and userBean.loggedIn}">
             <div id="widgetUser" class="widget widget-user #{cc.attrs.widget.cssClass}">
                 <h:form id="widgetUserStandardForm" prependId="false">
-                    <h3>#{msg.menuUser_user}</h3>
+                    <h2 >#{msg.menuUser_user}</h2>
 
                     <ul>
                         <li class="#{navigationHelper.currentPage == 'user' ? 'active' : ''}">

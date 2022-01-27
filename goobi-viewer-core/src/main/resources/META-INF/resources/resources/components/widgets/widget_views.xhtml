@@ -22,7 +22,7 @@
 	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and !activeDocumentBean.viewManager.metadataViewOnly and not activeDocumentBean.anchor and not activeDocumentBean.group}">
 		<div id="widgetViews" class="widget">
 			<h:form id="widgetViewsForm">
-				<h3>#{msg.view}</h3>
+				<h2 >#{msg.view}</h2>
 				<ul>
 					<!-- Object -->
 					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayObjectViewLink}">
@@ -101,7 +101,7 @@
 
 					<!-- External full-text URL -->
 					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayExternalFulltextLink}">
-						<li class=""><h:outputLink
+						<li ><h:outputLink
 								value="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT')}"
 								target="_blank">
 								<h:outputText value="#{msg.fulltextExternal}" />

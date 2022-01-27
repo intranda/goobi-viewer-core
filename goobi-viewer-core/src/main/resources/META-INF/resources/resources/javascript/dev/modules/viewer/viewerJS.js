@@ -139,7 +139,7 @@ var viewerJS = (function () {
         }
         
         // toggle work title body
-        $('body').on( 'click', '.title__header h2', function () {
+        $('body').on( 'click', '.title__header h1', function () {
         	$( this ).find( '.fa' ).toggleClass( 'in' );
         	$( '.title__body' ).slideToggle( 'fast' );        	
         } );

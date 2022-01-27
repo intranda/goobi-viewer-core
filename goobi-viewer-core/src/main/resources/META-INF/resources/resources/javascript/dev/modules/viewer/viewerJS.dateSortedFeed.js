@@ -169,7 +169,7 @@ var viewerJS = ( function( viewer ) {
     function _renderFeed( data ) {
         var feed = '';
         $.each( data, function( i, j ) {
-            feed += '<h4>' + _dateConverter( j.date ) + '</h4>';
+            feed += '<h3>' + _dateConverter( j.date ) + '</h3>';
             $.each( j, function( m, n ) {
                 if ( n.title ) {
                     for ( var x = 0; x <= n.title.length; x++ ) {
