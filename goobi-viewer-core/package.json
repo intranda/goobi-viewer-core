@@ -57,7 +57,7 @@
     "swagger-ui-dist": "~3.52.3",
     "sweetalert2": "~11.1.7",
     "swiper": "~6.8.4",
-    "three": "~0.132.2",
+    "three": "~0.137.0",
     "tinymce": "~5.10.0"
   }
 }
