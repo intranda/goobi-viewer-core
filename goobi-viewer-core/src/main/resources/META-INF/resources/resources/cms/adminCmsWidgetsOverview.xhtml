@@ -43,7 +43,7 @@
 						
                             <div class="cms-widgets-overview__grid">
                                 <!--  INDIVIDUAL IP RANGES -->
-                                <ui:repeat var="widget" value="#{cmsSidebarWidgetsBean.allWidgets}">
+                                <ui:repeat var="widget" value="#{cmsSidebarWidgetsBean.getAllWidgets(true)}">
                                 
                                 
                                 <div class="cms-widgets-overview__single-widget-wrapper">
@@ -86,15 +86,14 @@
 											</ui:fragment>
 											
 											<!-- WHERE IS THIS WIDGET DISPLAYED -->
-											<c:set var="pages" value="#{widget.embeddingPages}" scope="view"></c:set>
-											<ui:fragment rendered="#{not empty pages}">
+											<ui:fragment rendered="#{not empty widget.embeddingPages}">
 												<div class="cms-widgets-overview__single-widget-info-used">
 													<div class="cms-widgets-overview__single-widget-info-label">#{msg.usage}</div>
 													
 													<!-- LIST ALL PAGES ON WHICH THIS WIDGET IS ACTIVE -->
 	
 													<div class="cms-widgets-overview__single-widget-info-data-wrapper">
-														<ui:repeat var="page" value="#{pages}">
+														<ui:repeat var="page" value="#{widget.embeddingPages}">
 															<div class="cms-widgets-overview__single-widget-info-data">
 																<a href="#{page.url}">#{page.getTitle(navigationHelper.locale)}</a>
 															</div>
@@ -105,10 +104,13 @@
 											</ui:fragment>
 
 											<!-- ADDITIONAL INFO DEPENDING ON WIDGET TYPE -->
-											<ui:fragment rendered="#{false}">
+											<ui:fragment rendered="#{widget.generationType == 'AUTOMATIC'}">
 												<div class="cms-widgets-overview__single-widget-info-additional-field">
 													
-													<div class="cms-widgets-overview__single-widget-info-label">#{msg.maps}</div>
+													<div class="cms-widgets-overview__single-widget-info-label">#{msg.map}</div>
+													<div class="cms-widgets-overview__single-widget-info-data-wrapper">
+														<a href="#{request.contextPath}/admin/cms/maps/edit/#{widget.id}/">#{widget.title.getText(navigationHelper.locale)}</a>
+													</div>
 				
 												</div>
 											</ui:fragment>

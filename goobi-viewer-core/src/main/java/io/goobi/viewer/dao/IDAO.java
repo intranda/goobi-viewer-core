@@ -2340,5 +2340,7 @@ public interface IDAO {
     public boolean updateCustomWidget(CustomSidebarWidget widget) throws DAOException;
     
     public boolean deleteCustomWidget(Long id) throws DAOException;
+    
+    public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException;
 
 }

@@ -58,7 +58,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
             WidgetDisplayElement widget = new WidgetDisplayElement(
                     ViewerResourceBundle.getTranslations(widgetType.getLabel(), true), 
                     ViewerResourceBundle.getTranslations(widgetType.getDescription(), true), 
-                    queryAdditionalInformation ? getEmbeddingPages(widgetType): Collections.emptyList(), 
+                    Collections.emptyList(), 
                     WidgetGenerationType.DEFAULT,
                     widgetType);
             widgets.add(widget);
@@ -71,7 +71,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
                         WidgetDisplayElement widget = new WidgetDisplayElement(
                                 geoMap.getTitles(), 
                                 geoMap.getDescriptions(), 
-                                getEmbeddingPages(widgetType, geoMap), 
+                                Collections.emptyList(), 
                                 WidgetGenerationType.AUTOMATIC,
                                 widgetType, geoMap.getId());
                         widgets.add(widget);
@@ -84,7 +84,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
             WidgetDisplayElement element = new WidgetDisplayElement(
                     widget.getTitle(), 
                     ViewerResourceBundle.getTranslations(widget.getType().getDescription(), true), 
-                    getEmbeddingPages(widget),
+                    queryAdditionalInformation ? getEmbeddingPages(widget): Collections.emptyList(),
                     WidgetGenerationType.CUSTOM,
                     widget.getType(), widget.getId());
             widgets.add(element);
@@ -95,19 +95,14 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
     
     private List<CMSPage> getEmbeddingPages(CustomSidebarWidget widget) {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            return DataManager.getInstance().getDao().getPagesUsingWidget(widget);
+        } catch (DAOException e) {
+            logger.error("Error querying embedding pages ", e);
+            return Collections.emptyList();
+        }
     }
 
-    private List<CMSPage> getEmbeddingPages(AutomaticWidgetType widgetType, GeoMap geoMap) {
-        List<CMSPage> pages = new ArrayList<>();
-        return pages;
-    }
-
-    private List<CMSPage> getEmbeddingPages(DefaultWidgetType widgetType) {
-        List<CMSPage> pages = new ArrayList<>();
-        return pages;
-    }
     
     public void deleteWidget(Long id) throws DAOException {
         DataManager.getInstance().getDao().deleteCustomWidget(id);

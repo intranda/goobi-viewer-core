@@ -75,7 +75,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
     /**
      * @return the embeddingPages
-     
+     */
     public List<CMSPage> getEmbeddingPages() {
         return embeddingPages;
     }

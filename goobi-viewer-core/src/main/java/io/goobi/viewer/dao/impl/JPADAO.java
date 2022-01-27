@@ -71,6 +71,8 @@ import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -5505,5 +5507,22 @@ public class JPADAO implements IDAO {
         } catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    @Override
+    public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException {
+        preQuery();
+
+        Query qItems = getEntityManager().createQuery(
+                "SELECT element FROM CMSSidebarElementCustom element WHERE element.widget = :widget");
+        qItems.setParameter("widget", widget);
+        List<CMSSidebarElementCustom> itemList = qItems.getResultList();
+
+        List<CMSPage> pageList = itemList.stream()
+                .map(CMSSidebarElementCustom::getOwnerPage)
+                .distinct()
+                .collect(Collectors.toList());
+        
+        return pageList;
     }
 }
