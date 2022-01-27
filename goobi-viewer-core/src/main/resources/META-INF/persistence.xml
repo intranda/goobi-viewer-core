@@ -67,6 +67,7 @@
 		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic</class>
 		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
 		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
+		<class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -159,6 +160,8 @@
 		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic</class>
 		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
 		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
+		<class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
+		
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" />

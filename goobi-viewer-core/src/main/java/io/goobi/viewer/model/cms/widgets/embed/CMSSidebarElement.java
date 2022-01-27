@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.cms.widgets.embed;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
@@ -34,6 +35,7 @@ import javax.persistence.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.dao.converter.WidgetContentTypeConverter;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
@@ -80,6 +82,7 @@ public class CMSSidebarElement {
     @Column(name = "generation_type", nullable = false)
     private WidgetGenerationType generationType;
 
+    @Convert(converter = WidgetContentTypeConverter.class)
     @Column(name = "content_type", nullable = false)
     private WidgetContentType contentType;
 
