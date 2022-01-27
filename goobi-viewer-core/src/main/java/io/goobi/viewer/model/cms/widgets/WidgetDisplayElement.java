@@ -1,5 +1,7 @@
 package io.goobi.viewer.model.cms.widgets;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -21,6 +23,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
  *
  */
 public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDisplayElement>{
+        
     private final TranslatedText title;
     private final TranslatedText description;
     private final List<CMSPage> embeddingPages;
@@ -72,7 +75,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
     /**
      * @return the embeddingPages
-     */
+     
     public List<CMSPage> getEmbeddingPages() {
         return embeddingPages;
     }

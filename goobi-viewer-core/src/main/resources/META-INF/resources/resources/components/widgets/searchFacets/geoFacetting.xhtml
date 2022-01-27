@@ -14,7 +14,7 @@
     <composite:implementation>
     <ui:param name="search" value="#{cc.attrs.search != null ? cc.attrs.search : searchBean}"></ui:param>
         <!--  WIDGET Geo facetting -->
-        <ui:fragment rendered="#{(searchBean.showGeoFacetMap) and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
+        <ui:fragment rendered="#{searchBean.showGeoFacetMap}">
         <h:form>
 	        <div class="widget widget-geofacetting">
 				<div class="widget-geofacetting__topbar">

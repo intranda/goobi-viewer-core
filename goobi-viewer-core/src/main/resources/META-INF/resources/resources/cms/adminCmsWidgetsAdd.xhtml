@@ -84,10 +84,9 @@
 												label="#{msg.label__cms_page_title}" required="#{widget.isDefaultLocaleSelected()}"
 												helpText="#{msg.help__cms__edit_widget__title}" />
 											<!-- HTML -->
-											<viewerForms:htmlInputField value="#{widget.htmlText.text}"
-												label="#{msg.cms_sidebarElement_html}" required="true"
+											<viewerForms:htmlInputField value="#{widget.htmlText.text}" 
+												label="#{msg.cms_sidebarElement_html}" required="#{widget.isDefaultLocaleSelected()}"
 												helpText="#{msg.help__cms__edit_widget__html}" />
-
 										</viewerForms:inputFormBlock>
 									</ui:fragment>
 

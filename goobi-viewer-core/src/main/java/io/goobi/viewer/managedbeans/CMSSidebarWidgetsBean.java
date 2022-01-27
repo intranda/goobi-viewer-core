@@ -47,6 +47,10 @@ public class CMSSidebarWidgetsBean implements Serializable {
     CmsBean cmsBean;
     
     public List<WidgetDisplayElement> getAllWidgets() throws DAOException {
+        return getAllWidgets(false);
+    }
+        
+    public List<WidgetDisplayElement> getAllWidgets(boolean queryAdditionalInformation) throws DAOException {
         
         List<WidgetDisplayElement> widgets = new ArrayList<WidgetDisplayElement>();
         
@@ -54,7 +58,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
             WidgetDisplayElement widget = new WidgetDisplayElement(
                     ViewerResourceBundle.getTranslations(widgetType.getLabel(), true), 
                     ViewerResourceBundle.getTranslations(widgetType.getDescription(), true), 
-                    getEmbeddingPages(widgetType), 
+                    queryAdditionalInformation ? getEmbeddingPages(widgetType): Collections.emptyList(), 
                     WidgetGenerationType.DEFAULT,
                     widgetType);
             widgets.add(widget);
