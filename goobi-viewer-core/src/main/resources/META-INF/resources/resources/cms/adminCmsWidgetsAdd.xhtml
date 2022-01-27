@@ -85,7 +85,7 @@
 												helpText="#{msg.help__cms_page_title}" />
 											<!-- HTML -->
 											<viewerForms:htmlInputField value="#{widget.htmlText.text}"
-												label="#{msg.cms_sidebarElement_html}" required="true"
+												label="#{msg.cms_sidebarElement_html}" required="#{widget.isDefaultLocaleSelected()}"
 												helpText="#{msg.admin_widgets__html__help}" />
 
 										</viewerForms:inputFormBlock>
