@@ -25,7 +25,7 @@
 	    	<!-- neighbours is a pair of optionals holding the ids of the previous and succeeding archives entry. This format is used to avoid querying solr more than once -->
 	    	<c:set scope="view" var="neighbours" value="#{archiveBean.findIndexedNeighbours(activeDocumentBean.viewManager.archiveEntryIdentifier)}"/>
             <div id="widgetArchives" class="widget widget-archives">
-                <h2 class=" widget-archives__heading">
+                <h2 class="widget-archives__heading">
 	                <span>#{msg.archives}</span>
 		                <a class="widget-archives__prev #{neighbours.left.present ? '':'-disabled'}" 
                            disabled="disabled"

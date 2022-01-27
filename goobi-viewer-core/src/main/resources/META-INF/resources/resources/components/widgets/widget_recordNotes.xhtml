@@ -17,7 +17,7 @@
         <!-- WIDGET RECORD NOTES -->
 		<ui:repeat var="note" varStatus="status" value="#{cc.attrs.notes}">
                 <div id="widgetRecordNotes_#{status.index}" class="widget widget-record-notes">
-                    <h2 class=" widget__title">
+                    <h2 class="widget__title">
                         <span>#{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}</span>
                     </h2>
                     <div class="widget__body">

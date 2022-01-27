@@ -16,7 +16,7 @@
 	        <div class="metadata__element-wrapper">
 
     	    	<ui:fragment rendered="#{renderTitle and !metadataElement.hasMetadataTypeLabels(metadataBean.activeMetadataView.index)}">
-    	            <h2 class=" metadata__elements-h2">
+    	            <h2 class="metadata__elements-h2">
     	                <h:outputText value="#{msg[metadataElement.docStructTypeLabel]}" />
     	            </h2>
     	        </ui:fragment>
@@ -24,7 +24,7 @@
 
                 <c:forEach var="type" items="#{metadataElement.metadataTypes}">
                    	<ui:fragment rendered="#{not empty type.getTabName(metadataBean.activeMetadataView.index)}">
-                        <h2 class=" metadata__elements-h2">
+                        <h2 class="metadata__elements-h2">
                             <h:outputText value="#{msg[type.getTabName(metadataBean.activeMetadataView.index)]}" />
                         </h2>
                     </ui:fragment>
