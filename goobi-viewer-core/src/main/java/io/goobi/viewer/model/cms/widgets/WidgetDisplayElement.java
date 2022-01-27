@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.runner.manipulation.Sortable;
-
 import com.amazonaws.util.StringUtils;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
