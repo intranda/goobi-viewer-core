@@ -82,11 +82,11 @@
 											<!-- TITLE -->
 											<viewerForms:textInputField value="#{widget.title.text}"
 												label="#{msg.label__cms_page_title}" required="#{widget.isDefaultLocaleSelected()}"
-												helpText="#{msg.help__cms_page_title}" />
+												helpText="#{msg.help__cms__edit_widget__title}" />
 											<!-- HTML -->
 											<viewerForms:htmlInputField value="#{widget.htmlText.text}"
 												label="#{msg.cms_sidebarElement_html}" required="true"
-												helpText="#{msg.admin_widgets__html__help}" />
+												helpText="#{msg.help__cms__edit_widget__html}" />
 
 										</viewerForms:inputFormBlock>
 									</ui:fragment>
@@ -99,10 +99,10 @@
 											<!-- TITLE -->
 											<viewerForms:textInputField value="#{widget.title.text}"
 												label="#{msg.label__cms_page_title}" required="#{widget.isDefaultLocaleSelected()}"
-												helpText="#{msg.help__cms_page_title}" />
+												helpText="#{msg.help__cms__edit_widget__title}" />
 										</viewerForms:inputFormBlock>
 
-										<viewerForms:inputFormBlock title="#{msg.settings}">
+										<viewerForms:inputFormBlock title="#{msg.cms__edit_widget__settings}">
 
 											<viewerForms:manySelectField label="#{msg.admin__cms_pages}"
 												value="#{widget.pageIds}"
@@ -116,17 +116,17 @@
 
 									<ui:fragment rendered="#{widget.type == 'WIDGET_FIELDFACETS'}">
 
-										<viewerForms:inputFormBlock title="#{msg.settings}">
+										<viewerForms:inputFormBlock title="#{msg.cms__edit_widget__settings}">
 
 											<viewerForms:singleSelectField
-												label="#{msg.label__solrfield}" required="true"
+												label="#{msg.cms__edit_widget__solrfield_label}" required="true"
 												value="#{widget.facetField}"
 												selectValues="#{cmsBean.getLuceneFields(true)}" var="field"
 												itemValue="#{field}" itemLabel="#{msg[field]}"
 												helpText="#{msg.cms_widget__solrfield__help}" />
 
 											<viewerForms:textInputField
-												label="#{msg.admin_widgets__filter_query__label}"
+												label="#{msg.cms__edit_widget__filter_query_label}"
 												required="false" value="#{widget.filterQuery}"
 												helpText="#{msg.cms_widget__filter_query__help}" />
 
@@ -146,10 +146,10 @@
 											<!-- TITLE -->
 											<viewerForms:textInputField value="#{widget.title.text}"
 												label="#{msg.label__cms_page_title}" required="#{widget.isDefaultLocaleSelected()}"
-												helpText="#{msg.help__cms_page_title}" />
+												helpText="#{msg.help__cms__edit_widget__title}" />
 										</viewerForms:inputFormBlock>
 
-										<viewerForms:inputFormBlock title="#{msg.settings}">
+										<viewerForms:inputFormBlock title="#{msg.cms__edit_widget__settings}">
 
 											<viewerForms:singleSelectField label="#{msg.sortBy}"
 												required="true" value="#{widget.sortField}"
@@ -158,7 +158,7 @@
 												helpText="#{msg.cms_widget__solr_sortfield__help}" />
 
 											<viewerForms:textInputField
-												label="#{msg.admin_widgets__filter_query__label}"
+												label="#{msg.cms__edit_widget__filter_query_label}"
 												required="false" value="#{widget.filterQuery}"
 												helpText="#{msg.cms_widget__filter_query__help}" />
 
@@ -176,17 +176,17 @@
 
 									</ui:fragment>
 
-									<viewerForms:inputFormBlock title="#{msg.settings}">
+									<viewerForms:inputFormBlock title="#{msg.cms__edit_widget__additional_settings}">
 
 										<viewerForms:textInputField
 											label="#{msg.cms__edit_widget__style__label}"
 											required="false" value="#{widget.styleClass}"
-											helpText="#{msg.cms__edit_widget__style__help}" />
+											helpText="#{msg.help__cms__edit_widget__css}" />
 
 										<viewerForms:booleanSelectField
 											label="#{msg.cms__edit_widget__collapsed__label}"
 											value="#{widget.collapsed}"
-											helpText="#{msg.cms__edit_widget__collapsed__help}" />
+											helpText="#{msg.help__cms__edit_widget__collapsed}" />
 
 									</viewerForms:inputFormBlock>
 
