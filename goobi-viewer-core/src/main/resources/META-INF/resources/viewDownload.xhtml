@@ -40,7 +40,7 @@
 	                    <h:panelGroup rendered="#{downloadBean.downloadJob.status == 'ERROR'}">
 	                    	<div class="card card-danger">
 	                    		<div class="card-header">
-	                                <h1 class="card-title">#{msg.downloadQueueTitle}</h2>
+	                                <h2 class="card-title">#{msg.downloadQueueTitle}</h2>
 	                            </div>
 	                            <div class="card-body">
 	                            	#{downloadBean.downloadJob.message}
@@ -52,7 +52,7 @@
 	                    <h:panelGroup rendered="#{downloadBean.downloadJob.status == 'WAITING' or downloadBean.downloadJob.status == 'UNDEFINED'}">
 	                        <div class="card card-info">
 	                            <div class="card-header">
-	                                <h1 class="card-title">#{msg.downloadQueueTitle}</h2>
+	                                <h2 class="card-title">#{msg.downloadQueueTitle}</h2>
 	                            </div>
 	                            <div class="card-body">
 	                            	<div class="row">
@@ -79,7 +79,7 @@
 	                        <!-- LICENSE TEXT -->
 	                        <div class="card card-success">
 	                            <div class="card-header">
-	                                <h1 class="card-title">#{msg.downloadLicenseHeading}</h2>
+	                                <h2 class="card-title">#{msg.downloadLicenseHeading}</h2>
 	                            </div>
 	                            <div class="card-body">
 			                        <div class="download__status-license-text">
