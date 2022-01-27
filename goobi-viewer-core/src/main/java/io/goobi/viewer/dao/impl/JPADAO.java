@@ -149,6 +149,7 @@ public class JPADAO implements IDAO {
 
             // threadLocalEm.set(factory.createEntityManager());
             emGlobal = factory.createEntityManager();
+            // factory.unwrap(java.sql.Connection.class);
             preQuery();
         } catch (DatabaseException | PersistenceException e) {
             logger.error(e.getMessage(), e);

@@ -281,6 +281,26 @@ public final class SearchHelper {
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix)
             throws IndexUnreachableException {
+        return getAllSuffixes(request, addStaticQuerySuffix, addCollectionBlacklistSuffix, null);
+    }
+
+    /**
+     * Returns all suffixes relevant to search filtering.
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param addStaticQuerySuffix a boolean.
+     * @param addCollectionBlacklistSuffix a boolean.
+     * @param addDiscriminatorValueSuffix a boolean.
+     * @param privilege Privilege to check
+     * @should add static suffix
+     * @should not add static suffix if not requested
+     * @should add collection blacklist suffix
+     * @should add discriminator value suffix
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
+            String privilege) throws IndexUnreachableException {
         StringBuilder sbSuffix = new StringBuilder("");
         if (addStaticQuerySuffix && StringUtils.isNotBlank(DataManager.getInstance().getConfiguration().getStaticQuerySuffix())) {
             String staticSuffix = DataManager.getInstance().getConfiguration().getStaticQuerySuffix();
@@ -292,7 +312,7 @@ public final class SearchHelper {
         if (addCollectionBlacklistSuffix) {
             sbSuffix.append(getCollectionBlacklistFilterSuffix(SolrConstants.DC));
         }
-        String filterQuerySuffix = getFilterQuerySuffix(request);
+        String filterQuerySuffix = getFilterQuerySuffix(request, privilege);
         // logger.trace("filterQuerySuffix: {}", filterQuerySuffix);
         if (filterQuerySuffix != null) {
             sbSuffix.append(filterQuerySuffix);
@@ -851,12 +871,15 @@ public final class SearchHelper {
      * Updates the calling agent's session with a personalized filter sub-query.
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param privilege
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static void updateFilterQuerySuffix(HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
-        String filterQuerySuffix = getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request));
+    public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        String filterQuerySuffix =
+                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request), privilege);
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
         request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
     }
@@ -866,6 +889,7 @@ public final class SearchHelper {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param ipAddress a {@link java.lang.String} object.
+     * @param privilege Privilege to check
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -875,8 +899,9 @@ public final class SearchHelper {
      * @should construct suffix correctly if user has overriding license privilege
      * @should construct suffix correctly if ip range has license privilege
      * @should construct suffix correctly if moving wall license
+     * @should construct suffix correctly for alternate privilege
      */
-    public static String getPersonalFilterQuerySuffix(User user, String ipAddress)
+    public static String getPersonalFilterQuerySuffix(User user, String ipAddress, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         logger.trace("getPersonalFilterQuerySuffix: {}", ipAddress);
         // No restrictions for admins
@@ -887,6 +912,9 @@ public final class SearchHelper {
         if (NetTools.isIpAddressLocalhost(ipAddress)
                 && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
             return "";
+        }
+        if (privilege == null) {
+            privilege = IPrivilegeHolder.PRIV_LIST;
         }
 
         StringBuilder query = new StringBuilder();
@@ -906,14 +934,14 @@ public final class SearchHelper {
             }
 
             // License type contains listing privilege
-            if (licenseType.isOpenAccess() || licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
+            if (licenseType.isOpenAccess() || licenseType.getPrivileges().contains(privilege)) {
                 query.append(licenseType.getFilterQueryPart(false));
                 usedLicenseTypes.add(licenseType.getName());
                 continue;
             }
 
             if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
-                    new HashSet<>(Collections.singletonList(licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
+                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, null)) {
                 // If the user has an explicit permission to list a certain license type, ignore all other license types
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
                 query.append(licenseType.getFilterQueryPart(false));
@@ -925,7 +953,7 @@ public final class SearchHelper {
                         continue;
                     }
                     if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
-                            new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress,
+                            new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress,
                             null)) {
                         query.append(overridingLicenseType.getFilterQueryPart(false));
                         usedLicenseTypes.add(overridingLicenseType.getName());
@@ -2536,8 +2564,7 @@ public final class SearchHelper {
         }
 
         // Suffixes
-        String suffixes = getAllSuffixes(request, true,
-                true);
+        String suffixes = getAllSuffixes(request, true, true, null);
         if (StringUtils.isNotBlank(suffixes)) {
             sbQuery.append(suffixes);
         }
@@ -2547,9 +2574,10 @@ public final class SearchHelper {
 
     /**
      * @param request
+     * @param privilege
      * @return Filter query suffix string from the HTTP session
      */
-    static String getFilterQuerySuffix(HttpServletRequest request) {
+    static String getFilterQuerySuffix(HttpServletRequest request, String privilege) {
         if (request == null) {
             request = BeanUtils.getRequest();
         }
@@ -2565,7 +2593,7 @@ public final class SearchHelper {
         // If not suffix generated yet, initiate update
         if (ret == null) {
             try {
-                updateFilterQuerySuffix(request);
+                updateFilterQuerySuffix(request, privilege);
                 ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
             } catch (IndexUnreachableException e) {
                 logger.error(e.getMessage(), e);
