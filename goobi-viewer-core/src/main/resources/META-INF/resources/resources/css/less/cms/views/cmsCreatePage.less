@@ -243,10 +243,16 @@
 			max-width: 100%;
 			padding: 1.2rem;
 			margin-bottom: 0.5rem;
+			&:hover {
+				.sidebar-editor__widget-item-delete-button {
+					opacity: 1;
+				}
+			}
 		}
 		&__widget-label {}
 		&__widget-item-delete-button {
 			margin-left: auto;
+			transition: 0.2s ease all;
 		}
 		&__widget-order-wrapper {}
 		&__move-wrapper {
@@ -263,11 +269,20 @@
 		}
 		&__choose-widget-item {
 			user-select: none;
-			margin-bottom: 0.4rem;
+			padding: 0.5rem 0.5rem;
+			display: flex;
+			width: 100%;
+			min-height: 29px;
 			input {
 				margin-right: 0.5rem;
 			}
-			label {}
+			label {
+				flex-grow: 1;
+				margin-bottom: 0;
+			}
+			&:hover {
+				background: #f1f2f3;
+			}
 		}
 		&__add-widgets-button {
 			margin-top: 2rem;

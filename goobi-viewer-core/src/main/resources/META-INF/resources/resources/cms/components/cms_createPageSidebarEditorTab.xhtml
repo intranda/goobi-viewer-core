@@ -52,14 +52,12 @@
 											<div class="sidebar-editor__widget-item-label">#{element.title.getText(navigationHelper.locale)}</div> 
 											
 											<!-- ITEM DELETE -->
-											<div>
-												<h:commandLink
-													styleClass="admin__table-action-link -redlink"
+											<h:commandLink
+													styleClass="admin__table-action-link sidebar-editor__widget-item-delete-button -redlink"
 													action="#{cmsBean.selectedPage.removeSidebarElement(element)}"
 													aria-label="#{msg.delete}">#{msg.delete}
 													<f:ajax render="@form"/>
-												</h:commandLink>
-											</div>				
+											</h:commandLink>			
 										</div>
 									</ui:repeat>
 								</div>

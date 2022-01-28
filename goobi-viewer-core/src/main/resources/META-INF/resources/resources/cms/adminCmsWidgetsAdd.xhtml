@@ -153,17 +153,17 @@
 												value="#{widget.facetField}"
 												selectValues="#{cmsBean.getLuceneFields(true)}" var="field"
 												itemValue="#{field}" itemLabel="#{msg[field]}"
-												helpText="#{msg.cms_widget__solrfield__help}" />
+												helpText="#{msg.help__cms__edit_widget__solrfield}" />
 
 											<viewerForms:textInputField
 												label="#{msg.cms__edit_widget__filter_query_label}"
 												required="false" value="#{widget.filterQuery}"
-												helpText="#{msg.cms_widget__filter_query__help}" />
+												helpText="#{msg.help__cms__edit_widget__filter_query_label}" />
 
 											<viewerForms:singleSelectField label="#{msg.cms_itemCount}"
 												required="false" value="#{widget.numEntries}"
 												selectValues="#{[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]}"
-												helpText="#{msg.cms_widget__solrfield__help}" />
+												helpText="#{msg.help__cms__edit_widget__count}" />
 
 										</viewerForms:inputFormBlock>
 
@@ -190,17 +190,17 @@
 											<viewerForms:textInputField
 												label="#{msg.cms__edit_widget__filter_query_label}"
 												required="false" value="#{widget.filterQuery}"
-												helpText="#{msg.cms_widget__filter_query__help}" />
+												helpText="#{msg.help__cms__edit_widget__filter_query_label}" />
 
 											<viewerForms:singleSelectField label="#{msg.cms_itemCount}"
 												required="false" value="#{widget.numEntries}"
 												selectValues="#{[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]}"
-												helpText="#{msg.cms_widget__solrfield__help}" />
+												helpText="#{msg.help__cms__edit_widget__count}" />
 
 											<viewerForms:booleanSelectField
 												label="#{msg.cms_sidebarElement_sortDescending}"
 												value="#{widget.descendingSorting}"
-												helpText="#{msg.cms_widget__sort_descending__help}" />
+												helpText="#{msg.help__cms__edit_widget__descending}" />
 
 										</viewerForms:inputFormBlock>
 
