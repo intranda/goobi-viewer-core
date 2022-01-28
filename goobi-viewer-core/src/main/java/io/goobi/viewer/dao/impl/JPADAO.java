@@ -5006,8 +5006,8 @@ public class JPADAO implements IDAO {
         List<CMSContentItem> itemList = qItems.getResultList();
 
         Query qWidgets = getEntityManager().createQuery(
-                "SELECT ele FROM CMSSidebarElement ele WHERE ele.geoMapId = :mapId");
-        qWidgets.setParameter("mapId", map.getId());
+                "SELECT ele FROM CMSSidebarElementAutomatic ele WHERE ele.map = :map");
+        qWidgets.setParameter("map", map);
         List<CMSSidebarElement> widgetList = qWidgets.getResultList();
 
         Stream<CMSPage> itemPages = itemList.stream()

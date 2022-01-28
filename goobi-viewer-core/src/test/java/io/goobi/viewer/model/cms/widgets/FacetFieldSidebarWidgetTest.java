@@ -19,8 +19,6 @@ public class FacetFieldSidebarWidgetTest extends AbstractDatabaseEnabledTest {
         FacetFieldSidebarWidget widget = new FacetFieldSidebarWidget();
         widget.getDescription().setValue("Beschreibung", Locale.GERMAN);
         widget.getDescription().setValue("Description", Locale.ENGLISH);
-        widget.getTitle().setValue("Titel", Locale.GERMAN);
-        widget.getTitle().setValue("Title", Locale.ENGLISH);
         widget.setFacetField(SolrConstants.LABEL);
         widget.setFilterQuery("+DC:all");
         
@@ -29,7 +27,6 @@ public class FacetFieldSidebarWidgetTest extends AbstractDatabaseEnabledTest {
         dao.addCustomWidget(widget);
         FacetFieldSidebarWidget copy = (FacetFieldSidebarWidget) dao.getCustomWidget(widget.getId());
         assertNotNull(copy);
-        assertFalse(copy.isEmpty(Locale.GERMAN));
         assertEquals(widget.getFacetField(), copy.getFacetField());
         assertEquals(widget.getFilterQuery(), copy.getFilterQuery());
         
