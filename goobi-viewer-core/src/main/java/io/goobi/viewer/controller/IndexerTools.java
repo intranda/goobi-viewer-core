@@ -69,7 +69,7 @@ public class IndexerTools {
     }
 
     public static void triggerReIndexRecord(String pi, List<? extends IndexAugmenter> augmenters) {
-          
+
         Thread backgroundThread = new Thread(new Runnable() {
 
             @Override
@@ -105,7 +105,7 @@ public class IndexerTools {
     public static synchronized boolean reIndexRecord(String pi) throws DAOException, RecordNotFoundException {
         return reIndexRecord(pi, getAllAugmenters(pi, null));
     }
-    
+
     /**
      * Writes the record into the hotfolder for re-indexing. Modules can contribute data for re-indexing. Execution of method can take a while, so if
      * performance is of importance, use <code>triggerReIndexRecord</code> instead.
@@ -116,7 +116,8 @@ public class IndexerTools {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
      */
-    public static synchronized boolean reIndexRecord(String pi, Collection<? extends IndexAugmenter> augmenters) throws DAOException, RecordNotFoundException {
+    public static synchronized boolean reIndexRecord(String pi, Collection<? extends IndexAugmenter> augmenters)
+            throws DAOException, RecordNotFoundException {
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
         }
@@ -157,19 +158,20 @@ public class IndexerTools {
             File altoDir =
                     new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ALTO_CROWDSOURCING);
             File annotationsDir =
-                    new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + AnnotationIndexAugmenter.SUFFIX_ANNOTATIONS);
+                    new File(DataManager.getInstance().getConfiguration().getHotfolder(),
+                            sbNamingScheme.toString() + AnnotationIndexAugmenter.SUFFIX_ANNOTATIONS);
             File cmsDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_CMS);
 
             File recordXmlFileInHotfolder = new File(DataManager.getInstance().getConfiguration().getHotfolder(), recordXmlFile.getName());
             if (recordXmlFileInHotfolder.exists() || fulltextDir.exists() || altoDir.exists() || annotationsDir.exists() || cmsDir.exists()) {
                 logger.info("'{}' is already being indexed, looking for an alternative naming scheme...", sbNamingScheme.toString());
-                int iteration = 0;
+                long iteration = System.currentTimeMillis();
                 // Just checking for the presence of the record XML file at this
                 // point, because this method is synchronized and no two
                 // instances should be running at the same time.
                 while ((recordXmlFileInHotfolder =
                         new File(DataManager.getInstance().getConfiguration().getHotfolder(), pi + "#" + iteration + ".xml")).exists()) {
-                    iteration++;
+                    iteration = System.currentTimeMillis();
                 }
                 sbNamingScheme.append('#').append(iteration);
                 logger.info("Alternative naming scheme: {}", sbNamingScheme.toString());
@@ -187,7 +189,7 @@ public class IndexerTools {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
-        
+
         // Module augmentations
         for (IndexAugmenter module : augmenters) {
             try {
@@ -226,14 +228,16 @@ public class IndexerTools {
             throws DAOException, PresentationException, IndexUnreachableException, IOException {
         return reIndexPage(pi, page, getAllAugmenters(pi, page));
     }
-        /**
+
+    /**
      * @return
-         * @throws DAOException 
+     * @throws DAOException
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static Collection<? extends IndexAugmenter> getAllAugmenters(String pi, Integer page) throws DAOException {
         List<IndexAugmenter> augmenters = new ArrayList<>();
         augmenters.addAll(DataManager.getInstance().getModules());
-        List annos =  DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
+        List annos = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
         List comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page);
         IndexAugmenter annoAugmenter = new AnnotationIndexAugmenter(annos);
         IndexAugmenter commentAugmenter = new AnnotationIndexAugmenter(comments);
@@ -242,21 +246,21 @@ public class IndexerTools {
         return augmenters;
     }
 
-        /**
-         * <p>
-         * reIndexPage.
-         * </p>
-         *
-         * @param pi a {@link java.lang.String} object.
-         * @param page a int.
-         * @return a boolean.
-         * @throws io.goobi.viewer.exceptions.DAOException if any.
-         * @throws io.goobi.viewer.exceptions.PresentationException if any.
-         * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-         * @throws java.io.IOException if any.
-         */
-        public static synchronized boolean reIndexPage(String pi, int page, Collection<? extends IndexAugmenter> augmenters)
-                throws DAOException, PresentationException, IndexUnreachableException, IOException {
+    /**
+     * <p>
+     * reIndexPage.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param page a int.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.io.IOException if any.
+     */
+    public static synchronized boolean reIndexPage(String pi, int page, Collection<? extends IndexAugmenter> augmenters)
+            throws DAOException, PresentationException, IndexUnreachableException, IOException {
         logger.trace("reIndexPage: {}/{}", pi, page);
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
