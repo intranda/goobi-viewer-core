@@ -41,7 +41,8 @@ public class DatabaseUpdater {
             new CMSCategoryUpdate(), 
             new LicenseTypeUpdate(), 
             new CMSContentItemUpdate(), 
-            new AnnotationUpdate()
+            new AnnotationUpdate(),
+            new SidebarWidgetUpdate()
          };
 
     private final IDAO dao;

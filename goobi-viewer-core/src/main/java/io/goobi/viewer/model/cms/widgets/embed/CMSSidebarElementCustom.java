@@ -33,6 +33,10 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
         return widget;
     }
     
+    public void setWidget(CustomSidebarWidget widget) {
+        this.widget = widget;
+    }
+    
     @Override
     public TranslatedText getTitle() {
         return widget.getTitle();
