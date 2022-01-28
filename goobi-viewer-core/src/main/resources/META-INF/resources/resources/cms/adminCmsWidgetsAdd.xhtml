@@ -103,11 +103,42 @@
 
 										<viewerForms:inputFormBlock title="#{msg.cms__edit_widget__settings}">
 
-											<viewerForms:manySelectField label="#{msg.admin__cms_pages}"
-												value="#{widget.pageIds}"
-												selectValues="#{cmsBean.validCMSPages}" var="page"
-												itemLabel="#{page.title}" itemValue="#{page.id}"
-												helpText="#{msg.cms__edit_widget__collections__help}" />
+											<div class="form-group form-row">
+												<div class="col-2 control-label admin__form-label">
+													<label> #{msg.admin__cms_pages}:
+													</label>
+												</div>
+										
+												<div class="col-9 cms-module__option-control admin__form-input">
+										
+													<ul>
+														<ui:repeat var="var" value="#{customWidgetEditBean.cmsPageMap.keySet().stream().sorted().toList()}">
+										                     <li>
+										                         <label>
+										                             <h:selectBooleanCheckbox type="checkbox" 
+											                             value="#{customWidgetEditBean.cmsPageMap[var]}">
+										                                 <f:ajax event="change" execute="@this" />
+										                             </h:selectBooleanCheckbox>
+										                             <h:outputFormat value="#{var.title}" escape="false">
+										                                </h:outputFormat>
+										                         </label>
+										                     </li>
+										                 </ui:repeat>
+													</ul>
+													<ui:fragment rendered="#{not empty cc.attrs.helpText}">
+														<span class="admin__form-help-text">#{msg.cms__edit_widget__collections__help}</span>
+													</ui:fragment>
+												</div>
+										
+												<div class="col-1 admin__form-help-icon">
+													<ui:fragment rendered="#{not empty cc.attrs.helpText}">
+														<button type="button" class="btn btn--clean" data-toggle="helptext"
+															aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
+													</ui:fragment>
+												</div>
+											</div>
 
 										</viewerForms:inputFormBlock>
 
