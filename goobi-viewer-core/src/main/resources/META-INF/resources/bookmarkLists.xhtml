@@ -25,7 +25,7 @@
 
     <ui:define name="content">
         <div id="userBookmarkLists" class="user-bookshelves">
-            <h2>#{msg.bookmarkList_bookmarkLists}</h2>
+            <h1 >#{msg.bookmarkList_bookmarkLists}</h1>
 
 			<!-- MESSAGE -->
 			<h:panelGroup rendered="#{!configurationBean.bookmarksEnabled}">
@@ -38,7 +38,7 @@
 
                 <!-- PUBLIC BOOKMARK LISTS -->
                 <h:panelGroup rendered="#{!bookmarkBean.publicBookmarkLists.isEmpty()}">
-                    <h3>#{msg.bookmarkList_publicBookmarkLists}</h3>
+                    <h2>#{msg.bookmarkList_publicBookmarkLists}</h2>
                     <h:form id="pubicBookmarkListsForm" prependId="false">
                         <div class="row no-margin">
                            <ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml" source="">

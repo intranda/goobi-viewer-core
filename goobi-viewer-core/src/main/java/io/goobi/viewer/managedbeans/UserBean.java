@@ -50,7 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ocpsoft.pretty.PrettyContext;
-import com.sun.faces.context.RequestMap;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -60,7 +59,6 @@ import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.faces.validators.EmailValidator;
-import io.goobi.viewer.faces.validators.PasswordValidator;
 import io.goobi.viewer.filters.LoginFilter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -74,8 +72,6 @@ import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
-import io.goobi.viewer.model.security.user.UserTools;
-import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
@@ -310,7 +306,7 @@ public class UserBean implements Serializable {
      * 
      * @param provider
      * @param result
-     * @param loginRequest 
+     * @param loginRequest
      * @throws IllegalStateException
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
@@ -365,11 +361,10 @@ public class UserBean implements Serializable {
                     }
 
                     // Update personal filter query suffix
-                    SearchHelper.updateFilterQuerySuffix(request);
+                    SearchHelper.updateFilterQuerySuffix(request, null);
 
                     // Reset loaded user-generated content lists
                     BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class).ifPresent(ContentBean::resetContentList);
-
 
                     // Add this user to configured groups
                     if (provider.getAddUserToGroups() != null && !provider.getAddUserToGroups().isEmpty()) {
@@ -425,7 +420,7 @@ public class UserBean implements Serializable {
         }
         try {
             wipeSession(request);
-            SearchHelper.updateFilterQuerySuffix(request);
+            SearchHelper.updateFilterQuerySuffix(request, null);
             // Reset loaded user-generated content lists
             BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class).ifPresent(ContentBean::resetContentList);
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
@@ -518,11 +513,17 @@ public class UserBean implements Serializable {
 
             try {
                 BeanUtils.getBeanFromRequest(request, "cmsBean", CmsBean.class)
-                .ifPresentOrElse(bean -> bean.invalidate(), () -> {throw new IllegalStateException("Cann access cmsBean to invalidate");});
+                        .ifPresentOrElse(bean -> bean.invalidate(), () -> {
+                            throw new IllegalStateException("Cann access cmsBean to invalidate");
+                        });
                 BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
-                .ifPresentOrElse(bean -> bean.resetAccess(), () -> {throw new IllegalStateException("Cann access activeDocumentBean to resetAccess");});
+                        .ifPresentOrElse(bean -> bean.resetAccess(), () -> {
+                            throw new IllegalStateException("Cann access activeDocumentBean to resetAccess");
+                        });
                 BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
-                .ifPresentOrElse(bean -> bean.cleanSessionObjects(), () -> {throw new IllegalStateException("Cann access sessionBean to cleanSessionObjects");});
+                        .ifPresentOrElse(bean -> bean.cleanSessionObjects(), () -> {
+                            throw new IllegalStateException("Cann access sessionBean to cleanSessionObjects");
+                        });
             } catch (Throwable e) {
                 logger.warn(e.getMessage());
             }
@@ -1414,9 +1415,9 @@ public class UserBean implements Serializable {
         Messages.info(messageKey);
 
     }
-    
+
     public void createBackupOfCurrentUser() {
-        if(getUser() != null) {
+        if (getUser() != null) {
             getUser().backupFields();
         }
     }

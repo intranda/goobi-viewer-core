@@ -35,7 +35,7 @@ public class MessageEntryTest extends AbstractTest {
      */
     @Test
     public void create_shouldCreateMessageEntryCorrectly() throws Exception {
-        MessageEntry entry = MessageEntry.create("foo", Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN }));
+        MessageEntry entry = MessageEntry.create(null, "foo", Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN }));
         Assert.assertNotNull(entry);
         Assert.assertEquals("foo", entry.getKey());
         Assert.assertEquals(2, entry.getValues().size());

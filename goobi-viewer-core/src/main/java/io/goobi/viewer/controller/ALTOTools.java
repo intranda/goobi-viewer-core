@@ -20,6 +20,7 @@ import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,6 +122,10 @@ public class ALTOTools {
      * @return a {@link java.util.List} object.
      */
     public static List<TagCount> getNERTags(String alto, String charset, NERTag.Type type) {
+        // Make sure an empty charset value is changed to null to avoid exceptions
+        if (StringUtils.isBlank(charset)) {
+            charset = null;
+        }
         List<TagCount> ret = new ArrayList<>();
         try {
             AltoDocument doc = AltoDocument.getDocumentFromString(alto, charset);
@@ -131,6 +136,8 @@ public class ALTOTools {
                     addTags(createNERTag(tag), ret);
                 }
             }
+        } catch (UnsupportedEncodingException e) {
+            logger.error("{}: {}", e.getMessage(), charset);
         } catch (Throwable e) {
             logger.error(e.getMessage(), e);
             // logger.trace("Error loading ALTO from XML:\n{}", alto);
@@ -164,7 +171,11 @@ public class ALTOTools {
     private static List<TagCount> createNERTag(Tag tag) {
         String value = tag.getLabel();
         value = value.replaceAll(TAG_LABEL_IGNORE_REGEX, "");
-        Type type = Type.getType(tag.getType());
+        Type type = Type.getByLabel(tag.getType());
+        if (type == null) {
+            logger.trace("Unknown tag type: {}, using {}", tag.getType(), Type.misc.name());
+            type = Type.misc;
+        }
         ElementReference element = null;
 
         List<TagCount> ret = new ArrayList<>(tag.getReferences().size());
@@ -668,47 +679,47 @@ public class ALTOTools {
         for (String altoWord : contents) {
             for (String searchWord : words) {
                 FuzzySearchTerm fuzzy = new FuzzySearchTerm(searchWord);
-                if(fuzzy.matches(altoWord)) {
+                if (fuzzy.matches(altoWord)) {
                     hits++;
                 }
             }
         }
         return hits;
-        
-//        if (content.trim().contains(" ")) {
-//            // not a word, but a line
-//            content = content.trim().replaceAll("\\s+", " ").toLowerCase();
-//            int hitCount = words.length;
-//            StringBuilder sbMatchString = new StringBuilder();
-//            for (String string : words) {
-//                if (sbMatchString.length() > 0) {
-//                    sbMatchString.append(' ');
-//                }
-//                sbMatchString.append(string.toLowerCase());
-//            }
-//            String matchString = sbMatchString.toString();
-//            for (; hitCount > 0; hitCount--) {
-//                if (content.contains(matchString)) {
-//                    break;
-//                } else if (!matchString.contains(" ")) {
-//                    // last word didn't match, so no match
-//                    return 0;
-//                } else {
-//                    matchString = matchString.substring(0, matchString.lastIndexOf(' '));
-//                }
-//            }
-//            return hitCount;
-//        }
+
+        //        if (content.trim().contains(" ")) {
+        //            // not a word, but a line
+        //            content = content.trim().replaceAll("\\s+", " ").toLowerCase();
+        //            int hitCount = words.length;
+        //            StringBuilder sbMatchString = new StringBuilder();
+        //            for (String string : words) {
+        //                if (sbMatchString.length() > 0) {
+        //                    sbMatchString.append(' ');
+        //                }
+        //                sbMatchString.append(string.toLowerCase());
+        //            }
+        //            String matchString = sbMatchString.toString();
+        //            for (; hitCount > 0; hitCount--) {
+        //                if (content.contains(matchString)) {
+        //                    break;
+        //                } else if (!matchString.contains(" ")) {
+        //                    // last word didn't match, so no match
+        //                    return 0;
+        //                } else {
+        //                    matchString = matchString.substring(0, matchString.lastIndexOf(' '));
+        //                }
+        //            }
+        //            return hitCount;
+        //        }
         //for both the search term and the alto string, make lower case, normalize characters, remove diacriticals and remove all non-word characters
-//        FuzzySearchTerm fuzzy = new FuzzySearchTerm(words[0]);
-//        return fuzzy.matches(content) ? 1 : 0;
-//        String word = StringTools.removeDiacriticalMarks(words[0].toLowerCase()).replaceAll("[^\\w-]", "");
-//        String contentString = StringTools.removeDiacriticalMarks(content.trim().toLowerCase()).replaceAll("[^\\w-]", "");
-//        if (StringUtils.isNoneBlank(word, contentString) && word.equals(contentString)) {
-//            return 1;
-//        }
-//
-//        return 0;
+        //        FuzzySearchTerm fuzzy = new FuzzySearchTerm(words[0]);
+        //        return fuzzy.matches(content) ? 1 : 0;
+        //        String word = StringTools.removeDiacriticalMarks(words[0].toLowerCase()).replaceAll("[^\\w-]", "");
+        //        String contentString = StringTools.removeDiacriticalMarks(content.trim().toLowerCase()).replaceAll("[^\\w-]", "");
+        //        if (StringUtils.isNoneBlank(word, contentString) && word.equals(contentString)) {
+        //            return 1;
+        //        }
+        //
+        //        return 0;
     }
 
     /**

@@ -15,7 +15,7 @@
 	
 		<h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.userGeneratedContentsForDisplay != null}">
 			<div id="userGeneratedContentWidget" class="widget">
-				<h3>#{msg.crowdsourcing_userGeneratedContent}</h3>
+				<h2 >#{msg.crowdsourcing_userGeneratedContent}</h2>
 				<ul>
 					<ui:repeat var="content" value="#{activeDocumentBean.viewManager.currentPage.userGeneratedContentsForDisplay}">
 						<h:panelGroup rendered="#{content.title == ''?'false':'true'}">

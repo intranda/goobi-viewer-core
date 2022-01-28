@@ -112,7 +112,7 @@ public class JPADAO implements IDAO {
     private EntityManager emGlobal;
     private Object cmsRequestLock = new Object();
     private Object crowdsourcingRequestLock = new Object();
-        
+
     /**
      * <p>
      * Constructor for JPADAO.
@@ -122,6 +122,42 @@ public class JPADAO implements IDAO {
      */
     public JPADAO() throws DAOException {
         this(null);
+    }
+
+    /**
+     * <p>
+     * Constructor for JPADAO.
+     * </p>
+     *
+     * @param inPersistenceUnitName a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public JPADAO(String inPersistenceUnitName) throws DAOException {
+        logger.trace("JPADAO({})", inPersistenceUnitName);
+        //        logger.debug(System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML));
+        //        System.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, DataManager.getInstance().getConfiguration().getConfigLocalPath() + "persistence.xml");
+        //        logger.debug(System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML));
+        String persistenceUnitName = inPersistenceUnitName;
+        if (StringUtils.isEmpty(persistenceUnitName)) {
+            persistenceUnitName = DEFAULT_PERSISTENCE_UNIT_NAME;
+        }
+        logger.info("Using persistence unit: {}", persistenceUnitName);
+        try {
+            // Create EntityManagerFactory in a custom class loader
+            final Thread currentThread = Thread.currentThread();
+            final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
+            currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
+            factory = Persistence.createEntityManagerFactory(persistenceUnitName);
+            currentThread.setContextClassLoader(saveClassLoader);
+
+            // threadLocalEm.set(factory.createEntityManager());
+            emGlobal = factory.createEntityManager();
+            // factory.unwrap(java.sql.Connection.class);
+            preQuery();
+        } catch (DatabaseException | PersistenceException e) {
+            logger.error(e.getMessage(), e);
+            throw new DAOException(e.getMessage());
+        }
     }
 
     /**
@@ -154,41 +190,6 @@ public class JPADAO implements IDAO {
         }
 
         return emGlobal;
-    }
-
-    /**
-     * <p>
-     * Constructor for JPADAO.
-     * </p>
-     *
-     * @param inPersistenceUnitName a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public JPADAO(String inPersistenceUnitName) throws DAOException {
-        logger.trace("JPADAO({})", inPersistenceUnitName);
-        //        logger.debug(System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML));
-        //        System.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, DataManager.getInstance().getConfiguration().getConfigLocalPath() + "persistence.xml");
-        //        logger.debug(System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML));
-        String persistenceUnitName = inPersistenceUnitName;
-        if (StringUtils.isEmpty(persistenceUnitName)) {
-            persistenceUnitName = DEFAULT_PERSISTENCE_UNIT_NAME;
-        }
-        logger.info("Using persistence unit: {}", persistenceUnitName);
-        try {
-            // Create EntityManagerFactory in a custom class loader
-            final Thread currentThread = Thread.currentThread();
-            final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
-            currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
-            factory = Persistence.createEntityManagerFactory(persistenceUnitName);
-            currentThread.setContextClassLoader(saveClassLoader);
-
-            // threadLocalEm.set(factory.createEntityManager());
-            emGlobal = factory.createEntityManager();
-            preQuery();
-        } catch (DatabaseException | PersistenceException e) {
-            logger.error(e.getMessage(), e);
-            throw new DAOException(e.getMessage());
-        }
     }
 
     /**
@@ -3789,9 +3790,9 @@ public class JPADAO implements IDAO {
 
         return false;
     }
-    
+
     public void clear() {
-        if (getEntityManager() != null) { 
+        if (getEntityManager() != null) {
             getEntityManager().clear();
         }
     }

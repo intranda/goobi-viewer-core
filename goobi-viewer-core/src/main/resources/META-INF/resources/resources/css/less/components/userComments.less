@@ -13,7 +13,7 @@
 		border: 1px solid @middlegray;
 		background-color: @lightgray;
 		text-align: center;
-		h3 {}
+		h2 {}
 		.btn {
 			margin-top: 15px;
 		}
@@ -180,6 +180,7 @@
 				background-color: @white;
 				opacity: 0.4;
 				transition: all 0.3s ease-in;
+				color: #222;
 				&:focus {
 					height: 100px;
 					opacity: 1;
@@ -201,10 +202,11 @@
 		left: 0;
 		padding: 10px 15px;
 	}
-	.user-comments__edit-comment-button,
-	.user-comments__delete-comment-button {
+	&__edit-comment-button,
+	&__delete-comment-button {
 		opacity: 0;
 		transition: opacity 0.2s ease;
+		padding: 0;
 	}
 	&__edit-comment-button {
 		color: @blue;

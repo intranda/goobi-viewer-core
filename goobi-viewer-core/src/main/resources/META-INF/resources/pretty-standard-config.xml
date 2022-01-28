@@ -842,14 +842,20 @@
         <action onPostback="false">#{adminBean.lockTranslation}</action>
         <action onPostback="false">#{adminBean.saveAndResetCurrentTranslationGroup}</action>
     </url-mapping>
-    <url-mapping id="adminEditTranslations">
+    <url-mapping id="adminTranslationsEdit">
         <pattern value="/admin/translations/edit/#{groupId:adminBean.currentTranslationGroupId}/" />
         <view-id value="/resources/admin/views/adminTranslationsEdit.xhtml" />
         <action onPostback="false">#{adminBean.lockTranslation}</action>
     </url-mapping>
-    <url-mapping id="adminEditTranslations2">
+    <url-mapping id="adminTranslationsEdit2">
         <pattern value="/admin/translations/edit/#{groupId:adminBean.currentTranslationGroupId}/#{currentTranslationKey:adminBean.currentTranslationMessageKey}/" />
         <view-id value="/resources/admin/views/adminTranslationsEdit.xhtml" />
+        <action onPostback="false">#{adminBean.lockTranslation}</action>
+    </url-mapping>
+    <url-mapping id="adminTranslationsNew">
+        <pattern value="/admin/translations/new/" />
+        <view-id value="/resources/admin/views/adminTranslationsEdit.xhtml" />
+        <action onPostback="false">#{adminBean.triggerNewMessageEntryMode}</action>
         <action onPostback="false">#{adminBean.lockTranslation}</action>
     </url-mapping>
 

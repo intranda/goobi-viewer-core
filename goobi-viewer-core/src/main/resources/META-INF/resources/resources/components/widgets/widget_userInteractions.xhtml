@@ -12,7 +12,7 @@
             rendered="#{userBean.loggedIn and activeDocumentBean.recordLoaded and (userBean.user.superuser or (configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS') or userBean.user.hasPrivilegesForTemplate('templateOverviewPage'))}">
             <div id="widgetUserInteractions" class="widget widget-user-interactions">
                 <h:form id="widgetUserInteractionsStandardForm" prependId="false">
-                    <h3>#{msg.menuUser_workInteractions}</h3>
+                    <h2 >#{msg.menuUser_workInteractions}</h2>
                     <ul>
                         <h:panelGroup
                             rendered="#{userBean.user.maySetRepresentativeImage and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS'}">
@@ -35,7 +35,7 @@
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h4 class="modal-title" id="transkribusModalLabel">#{msg.transkribus_add}</h4>
+                                                <h3 class="modal-title" id="transkribusModalLabel">#{msg.transkribus_add}</h3>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">
                                                         <h:outputText value="&amp;times;" escape="false" />
@@ -104,7 +104,7 @@
                     <!-- CLEAR CACHE -->
                     <ui:fragment rendered="#{userBean.admin}">
                         <ul>
-                            <h4>#{msg.cache_clear__title}</h4>
+                            <h3 >#{msg.cache_clear__title}</h3>
                             <p class="widget-user-interactions__info-text">#{msg.cache_clear__info_text}</p>
                             <div class="widget-user-interactions__clear_cache">
                                 <div class="custom-control custom-control--select">
@@ -138,7 +138,7 @@
                     <!-- DELETE RECORD -->
                     <ui:fragment rendered="#{userBean.admin and !activeDocumentBean.viewManager.hasVolumes}">
                         <ul class="widget-user-interactions__delete-record-wrapper">
-                        <h4>#{msg.deleteRecord}</h4>
+                        <h3 >#{msg.deleteRecord}</h3>
                         <div class="widget-user-interactions__delete-record">
                             <!-- HAS NO URNS -->
 <!--                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.hasUrns}"> -->

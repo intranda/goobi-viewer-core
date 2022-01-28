@@ -16,8 +16,6 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.net.URI;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -218,7 +216,7 @@ public class CmsCollectionsBean implements Serializable {
         }
 
         // Return new MessageEntry containing empty values for each language
-        return MessageEntry.create(solrFieldValue, ViewerResourceBundle.getAllLocales());
+        return MessageEntry.create(null, solrFieldValue, ViewerResourceBundle.getAllLocales());
     }
 
     /**

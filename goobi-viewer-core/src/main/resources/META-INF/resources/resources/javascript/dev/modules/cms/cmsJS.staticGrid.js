@@ -91,7 +91,7 @@ var cmsJS = ( function( cms ) {
             _gridTile = $( '<div class="grid-tile" />' );
             // title
             _gridTileTitle = $( '<div class="grid-tile__title" />' );
-            _gridTileTitleH4 = $( '<h4 />' );
+            _gridTileTitleH4 = $( '<h3 />' );
             _gridTileTitleLink = $( '<a />' );
             if ( item.url !== '' ) {
                 _gridTileTitleLink.attr( 'href', item.link );

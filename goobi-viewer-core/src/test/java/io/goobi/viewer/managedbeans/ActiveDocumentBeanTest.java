@@ -350,4 +350,17 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1-2/", adb.getPageUrl(-1));
     }
 
+    /**
+     * @see ActiveDocumentBean#reset()
+     * @verifies reset lastReceivedIdentifier
+     */
+    @Test
+    public void reset_shouldResetLastReceivedIdentifier() throws Exception {
+        ActiveDocumentBean bean = new ActiveDocumentBean();
+        bean.lastReceivedIdentifier = "PPN123";
+        Assert.assertEquals("PPN123", bean.lastReceivedIdentifier);
+        bean.reset();
+        Assert.assertNull(bean.lastReceivedIdentifier);
+    }
+
 }

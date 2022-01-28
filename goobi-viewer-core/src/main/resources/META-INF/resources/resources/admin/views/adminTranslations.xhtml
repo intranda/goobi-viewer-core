@@ -24,6 +24,12 @@
                         <div class="admin__title-bar">
                             <!-- TITLE -->
                             <h2 class="admin__title">#{msg.admin__translations}</h2>
+                            <!-- ADD NEW TRANSLATIONS -->
+                            <ui:fragment rendered="#{adminBean.newMessageEntryModeAllowed and adminBean.hasAccessPermissingForTranslationFiles()}">
+                                <a href="#{navigationHelper.getPageUrl('adminTranslationsNew')}/" class="btn btn--default admin__title-bar-action">
+                                    #{msg.add}
+                                </a>
+                            </ui:fragment>
                         </div>
 
                         <div class="admin__content-inner-content">

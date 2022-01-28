@@ -79,6 +79,10 @@
 	<licenses license_id="3" license_type_id="6" ip_range_id="1"
 		description="desc license 3 desc" />
 	<license_privileges license_id="3" privilege_name="LIST" />
+	
+	<licenses license_id="4" license_type_id="3" user_group_id="1"
+		description="desc license 4 desc" />
+	<license_privileges license_id="4" privilege_name="DOWNLOAD_METADATA" />
 
 	<bookshelves bookshelf_id="1" owner_id="1" name="bookmark list 1 name"
 		description="bookmark list 1 desc" public="false"

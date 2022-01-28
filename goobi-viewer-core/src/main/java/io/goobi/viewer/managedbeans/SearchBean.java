@@ -141,7 +141,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /** Currently selected filter for the regular search. Possible values can be configured. */
     private SearchFilter currentSearchFilter = SearchHelper.SEARCH_FILTER_ALL;
     /** Solr query generated from the user's input (does not include facet filters or blacklists). */
-    private String searchStringInternal = "";
+    String searchStringInternal = "";
     /** User-entered search query that is displayed in the search field after the search. */
     private String searchString = "";
     /** Optional custom filter query. */
@@ -171,6 +171,8 @@ public class SearchBean implements SearchInterface, Serializable {
     private String searchInCurrentItemString;
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
     private Search currentSearch;
+    /** If >0, proximity search will be applied to phrase searches. */
+    private int proximitySearchDistance = 0;
 
     private volatile FutureTask<Boolean> downloadReady;
     private volatile FutureTask<Boolean> downloadComplete;
@@ -379,6 +381,7 @@ public class SearchBean implements SearchInterface, Serializable {
         resetSearchParameters(true);
         searchInCurrentItemString = null;
         customFilterQuery = null;
+        proximitySearchDistance = 0;
 
         // After resetting, return to the correct search entry page
         switch (activeSearchType) {
@@ -533,7 +536,6 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("generateAdvancedSearchString");
         StringBuilder sb = new StringBuilder();
         StringBuilder sbInfo = new StringBuilder();
-        boolean allowFuzzySearch = DataManager.getInstance().getConfiguration().isFuzzySearchEnabled();
         searchTerms.clear();
         StringBuilder sbCurrentCollection = new StringBuilder();
         //        String currentFacetString = facets.getCurrentFacetStringPrefix(false);
@@ -545,13 +547,13 @@ public class SearchBean implements SearchInterface, Serializable {
             tGroup.setOperator(group.getOperator());
             tempQueryGroups.add(tGroup);
             for (SearchQueryItem item : group.getQueryItems()) {
-                if(StringUtils.isNotBlank(item.getValue())) {
+                if (StringUtils.isNotBlank(item.getValue())) {
                 } else {
                     tGroup.getQueryItems().add(item);
                 }
             }
         }
-        
+
         for (SearchQueryGroup queryGroup : advancedQueryGroups) {
             StringBuilder sbGroup = new StringBuilder();
             if (sb.length() > 0) {
@@ -695,7 +697,8 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                 } else {
                     // Generate item query
-                    itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true, allowFuzzySearch);
+                    itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true,
+                            DataManager.getInstance().getConfiguration().isFuzzySearchEnabled());
                 }
 
                 logger.trace("Item query: {}", itemQuery);
@@ -821,13 +824,16 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
         currentSearch.setFacetString(facets.getCurrentFacetString());
         currentSearch.setCustomFilterQuery(customFilterQuery);
+        currentSearch.setProximitySearchDistance(proximitySearchDistance);
 
         // Add search hit aggregation parameters, if enabled
         if (!searchTerms.isEmpty()) {
-            String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator, DataManager.getInstance().getConfiguration().isFuzzySearchEnabled())
+            String expandQuery = activeSearchType == 1
+                    ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator,
+                            DataManager.getInstance().getConfiguration().isFuzzySearchEnabled())
                     : SearchHelper.generateExpandQuery(
                             SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups), searchTerms,
-                            phraseSearch);
+                            phraseSearch, proximitySearchDistance);
             currentSearch.setExpandQuery(expandQuery);
         }
 
@@ -983,6 +989,11 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * @param inSearchString the searchString to set
+     * @should generate phrase search query without filter correctly
+     * @should generate phrase search query with specific filter correctly
+     * @should generate non-phrase search query without filter correctly
+     * @should generate non-phrase search query with specific filter correctly
+     * @should add proximity search token correctly
      */
     void generateSimpleSearchString(String inSearchString) {
         logger.trace("generateSimpleSearchString: {}", inSearchString);
@@ -993,7 +1004,9 @@ public class SearchBean implements SearchInterface, Serializable {
         try {
             inSearchString = URLDecoder.decode(inSearchString, URL_ENCODING);
         } catch (UnsupportedEncodingException e) {
+            logger.warn(e.getMessage());
         } catch (IllegalArgumentException e) {
+            logger.warn(e.getMessage());
         }
         if ("-".equals(inSearchString)) {
             inSearchString = "";
@@ -1015,36 +1028,18 @@ public class SearchBean implements SearchInterface, Serializable {
             return;
         }
 
-        // Prepare search term sets for all relevant fields
-        //        if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
-        //            if (searchTerms.get(SolrConstants.DEFAULT) == null) {
-        //                searchTerms.put(SolrConstants.DEFAULT, new HashSet<String>());
-        //            }
-        //            if (searchTerms.get(SolrConstants.FULLTEXT) == null) {
-        //                searchTerms.put(SolrConstants.FULLTEXT, new HashSet<String>());
-        //            }
-        //            if (searchTerms.get(SolrConstants.NORMDATATERMS) == null) {
-        //                searchTerms.put(SolrConstants.NORMDATATERMS, new HashSet<String>());
-        //            }
-        //            if (searchTerms.get(SolrConstants.UGCTERMS) == null) {
-        //                searchTerms.put(SolrConstants.UGCTERMS, new HashSet<String>());
-        //            }
-        //            if (searchTerms.get(SolrConstants.CMS_TEXT_ALL) == null) {
-        //                searchTerms.put(SolrConstants.CMS_TEXT_ALL, new HashSet<String>());
-        //            }
-        //        } else {
-        //            if (searchTerms.get(currentSearchFilter.getField()) == null) {
-        //                searchTerms.put(currentSearchFilter.getField(), new HashSet<String>());
-        //            }
-        //        }
-
         inSearchString = inSearchString.replace(" OR ", " || ");
         inSearchString = inSearchString.replace(" AND ", " && ");
-        inSearchString = inSearchString.toLowerCase(); // Solr won't find non-lowercase strings
+        inSearchString = inSearchString.toLowerCase(); // Regular tokens are lowercase
 
         if (inSearchString.contains("\"")) {
             // Phrase search
             phraseSearch = true;
+            // Determine proximity search distance if token present, then remove it from the term
+            proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(inSearchString);
+            if (proximitySearchDistance > 0) {
+                inSearchString = SearchHelper.removeProximitySearchToken(inSearchString);
+            }
             String[] toSearch = inSearchString.split("\"");
             StringBuilder sb = new StringBuilder();
             for (String phrase : toSearch) {
@@ -1053,10 +1048,20 @@ public class SearchBean implements SearchInterface, Serializable {
                     if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
                         // For aggregated searches include both SUPER and regular DEFAULT/FULLTEXT fields
                         sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\") OR ");
+                        sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append('"');
+                        if (proximitySearchDistance > 0) {
+                            // Proximity search term augmentation
+                            sb.append('~').append(proximitySearchDistance);
+                        }
+                        sb.append(") OR ");
                         sb.append(SolrConstants.SUPERUGCTERMS).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\") OR ");
+                        sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append('"');
+                        if (proximitySearchDistance > 0) {
+                            // Proximity search term augmentation
+                            sb.append('~').append(proximitySearchDistance);
+                        }
+                        sb.append(") OR ");
                         sb.append(SolrConstants.NORMDATATERMS).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.CMS_TEXT_ALL).append(":(\"").append(phrase).append("\")");
@@ -1075,8 +1080,20 @@ public class SearchBean implements SearchInterface, Serializable {
                                 sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\")");
                                 break;
                             case SolrConstants.FULLTEXT:
-                                sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\") OR ");
-                                sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\")");
+                                sb.append(SolrConstants.SUPERFULLTEXT)
+                                        .append(":(\"")
+                                        .append(phrase)
+                                        .append('"');
+                                if (proximitySearchDistance > 0) {
+                                    // Proximity search term augmentation
+                                    sb.append('~').append(proximitySearchDistance);
+                                }
+                                sb.append(") OR ").append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append('"');
+                                if (proximitySearchDistance > 0) {
+                                    // Proximity search term augmentation
+                                    sb.append('~').append(proximitySearchDistance);
+                                }
+                                sb.append(')');
                                 break;
                             case SolrConstants.UGCTERMS:
                                 sb.append(SolrConstants.SUPERUGCTERMS).append(":(\"").append(phrase).append("\") OR ");
@@ -1106,7 +1123,8 @@ public class SearchBean implements SearchInterface, Serializable {
                 term = ClientUtils.escapeQueryChars(unescapedTerm);
                 term = term.replace("\\*", "*"); // unescape falsely escaped truncation
                 if (term.length() > 0 && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
-                    if(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled()) {                        
+                    if (DataManager.getInstance().getConfiguration().isFuzzySearchEnabled()) {
+                        // Fuzzy search term augmentation
                         String[] wildcards = SearchHelper.getWildcardsTokens(term);
                         term = SearchHelper.addFuzzySearchToken(wildcards[1], wildcards[0], wildcards[2]);
                     }
@@ -1122,7 +1140,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         String prevTerm = preparedTerms.get(previousIndex);
                         String unescapedNextTerm = SearchHelper.cleanUpSearchTerm(termsSplit[i + 1]);
                         String nextTerm = ClientUtils.escapeQueryChars(unescapedNextTerm);
-                        nextTerm = nextTerm.replace("\\*", "*"); // unescape falsely escaped runcation
+                        nextTerm = nextTerm.replace("\\*", "*"); // unescape falsely escaped truncation
                         preparedTerms.remove(previousIndex);
                         preparedTerms.add(prevTerm + " OR " + nextTerm);
                         for (String field : searchTerms.keySet()) {
@@ -1141,8 +1159,10 @@ public class SearchBean implements SearchInterface, Serializable {
                     sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery);
-                    sbOuter.append(") ");
-                    sbOuter.append(SolrConstants.DEFAULT).append(":(").append(innerQuery);
+                    sbOuter.append(") ")
+                            .append(SolrConstants.DEFAULT)
+                            .append(":(")
+                            .append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.FULLTEXT).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.NORMDATATERMS).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.UGCTERMS).append(":(").append(innerQuery);
@@ -1180,7 +1200,6 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("search string: {}", searchStringInternal);
         //        logger.trace("search terms: {}", searchTerms.toString());
     }
-
 
     /**
      * {@inheritDoc}
@@ -1640,13 +1659,14 @@ public class SearchBean implements SearchInterface, Serializable {
             //            return currentSearch.getHits().get(currentHitIndex + 1).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex + 1, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery),
-                    searchTerms,
-                    BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
+                    searchTerms, BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
+                    proximitySearchDistance, BeanUtils.getRequest());
         }
         //        return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
         return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(),
                 facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery), searchTerms,
-                BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
+                BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance,
+                BeanUtils.getRequest());
     }
 
     /**
@@ -1673,14 +1693,14 @@ public class SearchBean implements SearchInterface, Serializable {
             //            return currentSearch.getHits().get(currentHitIndex - 1).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex - 1, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery),
-                    searchTerms,
-                    BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
+                    searchTerms, BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
+                    proximitySearchDistance, BeanUtils.getRequest());
         } else if (currentSearch.getHitsCount() > 0) {
             //            return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery),
-                    searchTerms,
-                    BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), BeanUtils.getRequest());
+                    searchTerms, BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
+                    proximitySearchDistance, BeanUtils.getRequest());
         }
 
         return null;
@@ -2193,7 +2213,7 @@ public class SearchBean implements SearchInterface, Serializable {
         BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
             if (!facesContext.getResponseComplete()) {
                 try (SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery,
-                        DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), locale)) {
+                        DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance, locale)) {
                     if (wb == null) {
                         job.setError("Failed to create excel sheet");
                     } else if (Thread.interrupted()) {
@@ -2272,6 +2292,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param finalQuery Complete query with suffixes.
      * @param exportQuery Query constructed from the user's input, without any secret suffixes.
      * @param boostTopLevelDocstructs
+     * @param proximitySearchDistance
      * @param locale
      * @return
      * @throws InterruptedException
@@ -2281,7 +2302,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws PresentationException
      */
     private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, String finalQuery, String exportQuery, boolean boostTopLevelDocstructs,
-            Locale locale) throws InterruptedException, ViewerConfigurationException {
+            int proximitySearchDistance, Locale locale) throws InterruptedException, ViewerConfigurationException {
         try {
             HttpServletRequest request = BeanUtils.getRequest(facesContext);
             if (request == null) {
@@ -2294,7 +2315,7 @@ public class SearchBean implements SearchInterface, Serializable {
             Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
             final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(finalQuery, exportQuery, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), params, searchTerms, locale,
-                    true, request);
+                    true, proximitySearchDistance, request);
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }

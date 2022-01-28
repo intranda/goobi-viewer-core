@@ -36,7 +36,7 @@
                     </div>
                 </h:panelGroup>
 
-				<h2>#{cmsPage.title}</h2>				
+				<h1 >#{cmsPage.title}</h1>				
 				
 				<!-- DATE -->
                 <h:panelGroup rendered="#{cmsPage.hasContent('A0')}">
@@ -47,7 +47,7 @@
 				
 				<div class="tpl-news__content">
 				<h:panelGroup rendered="#{cmsPage.hasContent('A1')}">
-					<h3>#{cmsPage.getContent('A1')}</h3>
+					<h2 >#{cmsPage.getContent('A1')}</h2>
 				</h:panelGroup>
 					<h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>
 				</div>

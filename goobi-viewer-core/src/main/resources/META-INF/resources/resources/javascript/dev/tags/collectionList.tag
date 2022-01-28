@@ -10,13 +10,13 @@
 				<img if="{collection.thumbnail}" class="img-fluid" src="{collection.thumbnail['@id']}"/>
 			</div>
 			
-			<h4 class="card-title">
+			<h3 class="card-title">
 				<a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a>
 				<a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false">
 					<span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span>
 					<i class="fa fa-angle-flip" aria-hidden="true"></i>
 				</a>
-			</h4>
+			</h3>
 			
 			<div class="tpl-stacked-collection__actions">
 				<div class="tpl-stacked-collection__info-toggle">

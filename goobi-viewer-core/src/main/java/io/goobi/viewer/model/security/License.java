@@ -572,7 +572,7 @@ public class License implements IPrivilegeHolder, Serializable {
             // Skip PRIV_CMS_PAGES
             if (privileges.contains(priv) && !IPrivilegeHolder.PRIV_CMS_PAGES.equals(priv)) {
                 ret.add(priv);
-                logger.debug("has priv: {}", priv);
+                // logger.debug("has priv: {}", priv);
             }
         }
 

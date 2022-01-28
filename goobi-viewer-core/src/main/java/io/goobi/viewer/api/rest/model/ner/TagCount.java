@@ -157,8 +157,9 @@ public class TagCount implements Comparable<TagCount> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        if (obj != null && obj.getClass().equals(this.getClass())) {
-            return getValue().equals(((TagCount) obj).getValue()) && getType().equals(((TagCount) obj).getType());
+        if (getValue() != null && getType() != null && obj != null && obj.getClass().equals(this.getClass())) {
+            TagCount other = (TagCount) obj;
+            return getValue().equals(other.getValue()) && getType().equals(other.getType());
         }
         return false;
     }

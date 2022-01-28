@@ -25,7 +25,7 @@
     
         <!-- CAPTION -->
         <figcaption>
-            <h4>{getTitleOrLabel(manifest)}</h4>
+            <h3>{getTitleOrLabel(manifest)}</h3>
             <p>
                 <span each="{md in metadataList}">
                     {getMetadataValue(manifest, md)}

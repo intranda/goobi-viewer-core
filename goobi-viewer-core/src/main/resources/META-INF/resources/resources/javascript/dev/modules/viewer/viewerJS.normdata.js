@@ -185,7 +185,7 @@ var viewerJS = ( function( viewer ) {
         
         html += '<div id="normdataPopover-' + id + '" class="normdata-popover">';
         html += '<div class="normdata-popover-title">';
-        html += '<h4>' + _defaults.lang.popoverTitle + '</h4>';
+        html += '<h3>' + _defaults.lang.popoverTitle + '</h3>';
         html += '<i class="normdata-popover-close fa fa-times" title="' + _defaults.lang.popoverClose + '" aria-hidden="true"></i>';
         html += '</div>';
         html += '<div class="normdata-popover-content">';

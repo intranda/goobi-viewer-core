@@ -34,10 +34,10 @@
 				<h:panelGroup
 					rendered="#{crowdsourcingBean.selectedCampaign != null}">
 					<div class="admin__title-bar">
-						<h2 class="admin__title">#{crowdsourcingBean.editMode ?
+						<h1 class="admin__title">#{crowdsourcingBean.editMode ?
 							msg.admin__crowdsourcing_campaign_edit :
 							msg.admin__crowdsourcing_campaign_new}
-						</h2>
+						</h1>
 					</div>
 					<div class="admin__content-inner-content">
 						<h:form id="createCampaignForm" prependId="true">
@@ -47,7 +47,7 @@
 									<div class="admin__content-wrapper">
 									<div class="admin__content-main -refreshHCsticky">
 										<!-- GENERAL INFORMATION (TITLE + TEXT) -->
-										<h3>#{msg.admin__category_general}</h3>
+										<h2>#{msg.admin__category_general}</h2>
 										
 										<h:panelGroup id="titleDataGroup">
 										<!-- NEW CAMPAIGN LANGUAGE TABS GENERAL -->
@@ -233,13 +233,13 @@
 										<!-- ADD QUESTION BUTTON -->
 										<h:panelGroup id="addQuestionButton">
 											<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
-												<h3>#{msg.admin__crowdsourcing_questions}
+												<h2>#{msg.admin__crowdsourcing_questions}
 												<!-- Add new question link -->
 												<h:commandButton styleClass="btn btn--default admin__title-bar-action"
 													action="#{crowdsourcingBean.addNewQuestionAction}"
 													value="#{msg.add}" title="#{msg.add}" alt="#{msg.add}">
 												</h:commandButton>
-												</h3>
+												</h2>
 											</ui:fragment>
 										</h:panelGroup>
 										
@@ -460,7 +460,7 @@
 									<div class="admin__content-side -sticky">
 										<!-- VISIBILITY OF CAMPAIGN -->
 										<div class="admin__default-block">
-											<h3>#{msg.admin__crowdsourcing_campaign_settings}</h3>
+											<h2>#{msg.admin__crowdsourcing_campaign_settings}</h2>
 											
 											<!-- VISIBILITY STATUS -->
 											<div class="form-row form-group crowdsourcing-annotations__sidebar-visibility">
@@ -657,7 +657,7 @@
 					                   	
 					                   	<!-- REVIEW SETTING-->
 											<h:panelGroup id="reviewSettingsGroup" layout="block" styleClass="admin__default-block crowdsourcing-annotations__sidebar-review-settings">
-												<h3>#{msg.label__crowdsourcing_review}</h3>
+												<h2>#{msg.label__crowdsourcing_review}</h2>
 												<div class="admin__form-help-text in mb-2">
 												#{msg.admin__crowdsourcing_review__help}
 												</div>
@@ -707,7 +707,7 @@
 					                   	<!-- ACCESS LICENCE WIDGET -->
 										<div class="admin__default-block crowdsourcing-annotations__access-licence">
 											<div class="crowdsourcing-annotations__sidebar-access-licence">
-												<h3>#{msg.access_licence}</h3>
+												<h2>#{msg.access_licence}</h2>
 												<div class="admin__form-help-text in mb-2">
 												#{msg.admin__crowdsourcing_campaign_access_licence__help}
 												</div>
@@ -721,7 +721,7 @@
 					                   	<!-- ACTIVATE LOG WIDGET -->
 										<div class="admin__default-block">
 											<div class="crowdsourcing-annotations__sidebar-log">
-												<h3>#{msg.log}</h3>
+												<h2>#{msg.log}</h2>
 												<div class="admin__form-help-text in mb-2">
 												#{msg.admin__crowdsourcing_campaign_show_log__help}
 												</div>
@@ -735,7 +735,7 @@
                                             <!-- STATISTIC MODE -->
                                             <h:panelGroup id="statisticModeGroup" layout="block"
                                                 styleClass="admin__default-block crowdsourcing-annotations__sidebar-statistic-settings">
-                                                <h3>#{msg.label__crowdsourcing_campaign_statistic_mode}</h3>
+                                                <h2>#{msg.label__crowdsourcing_campaign_statistic_mode}</h2>
                                                 <div class="admin__form-help-text in mb-2">
                                                     #{msg.admin__crowdsourcing_campaign_statistic_mode__help}
                                                 </div>
@@ -757,7 +757,7 @@
 										<h:panelGroup id="statisticsArea">
 											<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
 												<div class="admin__default-block mb-0">
-													<h3>#{msg.admin__crowdsourcing_campaign_statistics}</h3>
+													<h2>#{msg.admin__crowdsourcing_campaign_statistics}</h2>
 													<!-- METADATA WRAPPER -->
 													<crowdsourcingComponent:crowdsourcing_addCampaignMetadataItemWrapper
 														id="metadata_component" />

@@ -14,7 +14,7 @@
 				<div id="widgetCmsPageLinks-#{cc.attrs.widget.id}" class="widget #{cc.attrs.widget.styleClass}">
 					<h:panelGroup rendered="#{!cc.attrs.widget.collapsed}">
 						<ui:fragment rendered="#{!cc.attrs.widget.title.isEmpty()}">
-							<h3>#{cc.attrs.widget.title.text}</h3>
+							<h2>#{cc.attrs.widget.title.text}</h2>
 						</ui:fragment>
 
 						<ul>
@@ -28,7 +28,7 @@
 						</ul>
 					</h:panelGroup>
 					<h:panelGroup rendered="#{cc.attrs.widget.collapsed}">
-						<h3>
+						<h2>
 							<ui:fragment rendered="#{!cc.attrs.widget.title.isEmpty()}">
 								#{cc.attrs.widget.title.text}
 							</ui:fragment>
@@ -36,7 +36,7 @@
                                 #{cc.attrs.widget.title.text}
                                 <i class="fa fa-arrow-down" aria-hidden="true"></i>
                             </a>
-                        </h3>
+                        </h2>
 
 						<div id="customCollapse-#{cc.attrs.widget.id}" class="collapse">
 							<ul>

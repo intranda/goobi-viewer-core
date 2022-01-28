@@ -24,7 +24,7 @@
 
     <ui:define name="content">
         <div id="userBookmarkLists" class="user-bookmark">
-            <h2>#{msg.bookmarkList_bookmarkLists}</h2>
+            <h1 >#{msg.bookmarkList_bookmarkLists}</h1>
 
 			<!-- MESSAGE -->
 			<h:panelGroup rendered="#{!configurationBean.bookmarksEnabled}">
@@ -39,7 +39,7 @@
 				<!-- ADD BOOKMARK LIST -->
 				<div class="row">
 					<div class="col-12 col-md-8">
-						<h3>#{msg.bookmarkList_myBookmarkLists}</h3>
+						<h2 >#{msg.bookmarkList_myBookmarkLists}</h2>
 					</div>
 					<div class="col-12 col-md-4">
 						<div class="user-bookmark__add-bookmark">
@@ -80,7 +80,7 @@
 
 				<!-- BOOKMARK LISTS SHARED WITH THIS USER -->
                 <h:panelGroup rendered="#{!bookmarkBean.getBookmarkListsSharedWithUser(userBean.user).isEmpty()}">
-                    <h3>#{msg.bookmarkList_otherBookmarkLists}</h3>
+                    <h2 >#{msg.bookmarkList_otherBookmarkLists}</h2>
                     <h:form id="otherBookmarkListsForm" styleClass="bookmarklist_form" prependId="false">
                         <div class="row no-margin">
                             <ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml">
@@ -93,7 +93,7 @@
 
                 <!-- PUBLIC BOOKMARK LISTS -->
                 <h:panelGroup rendered="#{!bookmarkBean.publicBookmarkLists.isEmpty()}">
-                    <h3>#{msg.bookmarkList_publicBookmarkLists}</h3>
+                    <h2 >#{msg.bookmarkList_publicBookmarkLists}</h2>
                     <h:form id="pubicBookmarkListsForm" styleClass="bookmarklist_form" prependId="false">
                         <div class="row no-margin">
                            <ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml" source="">
