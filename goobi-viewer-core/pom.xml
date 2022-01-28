@@ -146,7 +146,7 @@
         <swagger.version>2.1.12</swagger.version>
         <tomcat.version>9.0.58</tomcat.version>
         <weld-servlet-shaded.version>3.1.8.Final</weld-servlet-shaded.version>
-        <xerces.version>2.12.1</xerces.version>
+        <xerces.version>2.12.2</xerces.version>
         <xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
         <xml-apis.version>1.4.01</xml-apis.version>
     </properties>
