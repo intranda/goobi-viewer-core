@@ -1,11 +1,9 @@
 package io.goobi.viewer.model.cms.widgets;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import com.amazonaws.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.model.cms.CMSPage;
