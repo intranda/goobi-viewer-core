@@ -155,6 +155,22 @@ var viewerJS = ( function( viewer ) {
 		
     }
 
+	//post notification on ajax/success
+	viewer.jsfAjax.success.subscribe(e => {
+		let $messages = $(".messages #messages");
+		console.log("messages element", $messages);
+		$messages.children(".alert.alert-danger").each((index, child) => {
+			viewerJS.swaltoasts.error($(child).text());
+			let $elementsWithValidationError = $(".-validation-message.-danger");
+			if($elementsWithValidationError.length > 0) {
+				$elementsWithValidationError.get(0).scrollIntoView({block: "center"});
+			}
+		});
+		$messages.children(".alert.alert-success").each((index, child) => {
+			viewerJS.swaltoasts.success($(child).text());
+		});
+	});
+
     
     return viewer;
     

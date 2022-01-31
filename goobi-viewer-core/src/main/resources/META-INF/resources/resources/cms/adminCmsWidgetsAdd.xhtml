@@ -4,6 +4,7 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:o="http://omnifaces.org/ui"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
 	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
@@ -229,7 +230,7 @@
 									</a>
 									<button class="btn btn--success"
 										jsf:action="#{customWidgetEditBean.save()}">#{msg.button__save}
-									<f:ajax execute="@form" render="previewGroup" 
+									<f:ajax execute="@all" render="@all" 
 										onevent="e => viewerJS.swaltoasts.onSuccess(e).success(&quot;#{msg.cms__edit_widget__save_widget__success}&quot;)"
 										onerror="e => viewerJS.swaltoasts.error(e.responseText)"></f:ajax>	
 									</button>
