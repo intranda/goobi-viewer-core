@@ -124,7 +124,7 @@
                                                 <a href="#{navigationHelper.applicationUrl}admin/cms/widgets/edit/#{widget.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{widget.title.getValue(navigationHelper.locale).orElse('')}">#{msg.edit}</a>
 
                                                 <!-- DELETE -->
-                                                <h:commandLink
+                                                <h:commandLink rendered="#{empty widget.embeddingPages}"
                                                     styleClass="admin__boxed-entry-actions-delete -redlink"
                                                     onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.cms_widget__delete_this_widget, widget.title.getValue(navigationHelper.locale).orElse(&quot;&quot;))}&quot; ) ) { return false };"
                                                     action="adminCmsWidgetsOverview"

@@ -14,7 +14,7 @@
             <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/rssFeedLib/jquery.jfeed.js"></script>
             <div class="compName_rssFeed rss_wrapp men_wrapp rss_elem_wrapp sidebar-widget widget #{cc.attrs.widget.styleClass}">
                     <h2>
-                        #{cc.attrs.widget.title.isEmpty() ? msg.lastImports : cc.attrs.widget.title.text}
+                        #{cc.attrs.widget.title.isEmpty() ? msg.lastImports : cc.attrs.widget.title.textOrDefault}
                         <a
                             href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}&amp;sortField=#{cc.attrs.widget.sortField}&amp;sortDescending=#{cc.attrs.widget.descendingSorting}"
                             title="#{msg.rssSubscribe}"

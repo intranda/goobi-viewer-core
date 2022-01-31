@@ -15,17 +15,17 @@
 			
 				<h:panelGroup rendered="#{!cc.attrs.widget.collapsed}">
 					<ui:fragment rendered="#{!cc.attrs.widget.title.isEmpty()}">
-						<h2>#{cc.attrs.widget.title.text}</h2>
+						<h2>#{cc.attrs.widget.title.textOrDefault}</h2>
 					</ui:fragment>
 						<div class="widget__body">
-							<h:outputText escape="false" value="#{cc.attrs.widget.htmlText.text}"></h:outputText>
+							<h:outputText escape="false" value="#{cc.attrs.widget.htmlText.textOrDefault}"></h:outputText>
 						</div>
 				</h:panelGroup>
 				
 				<h:panelGroup rendered="#{cc.attrs.widget.collapsed}">
 					<h2>
                         <button type="button" class="btn btn--clean" href="#customCollapse-#{cc.attrs.widget.id}" data-toggle="collapse" aria-expanded="false" aria-controls="customCollapse">
-                            #{cc.attrs.widget.title.text}
+                            #{cc.attrs.widget.title.textOrDefault}
 
                             <i class="fa fa-arrow-down" aria-hidden="true"></i>
                         </button>
@@ -33,7 +33,7 @@
 					<div id="customCollapse-#{cc.attrs.widget.id}" class="collapse">
 
 						<div class="widget__body">
-							<h:outputText escape="false" value="#{cc.attrs.widget.htmlText.text}"></h:outputText>
+							<h:outputText escape="false" value="#{cc.attrs.widget.htmlText.textOrDefault}"></h:outputText>
 						</div>
 					</div>
 				</h:panelGroup>

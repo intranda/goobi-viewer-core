@@ -23,6 +23,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AjaxResponseException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget;
@@ -124,7 +125,7 @@ public class CustomWidgetEditBean implements Serializable {
             }
         }
         } catch(DAOException e) {
-            throw new AjaxResponseException(e.toString());
+            throw new AjaxResponseException(ViewerResourceBundle.getTranslationWithParameters("cms__edit_widget__save_widget__error", BeanUtils.getLocale(), e.getMessage()));
         }
     }
     
