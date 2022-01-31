@@ -15,6 +15,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,10 @@ public class CustomWidgetEditBean implements Serializable {
     @Inject
     public CustomWidgetEditBean(CmsBean cmsBean) {
         try {
-            this.cmsPageMap = cmsBean.getAllCMSPages().stream().collect(Collectors.toMap(Function.identity(), p -> Boolean.FALSE));
+            this.cmsPageMap = cmsBean.getAllCMSPages().stream()
+                    .filter(CMSPage::isPublished)
+                    .filter(p -> StringUtils.isNotBlank(p.getMenuTitle()))
+                    .collect(Collectors.toMap(Function.identity(), p -> Boolean.FALSE));
         } catch (DAOException e) {
             logger.error(e.toString(), e);
         }

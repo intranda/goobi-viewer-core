@@ -100,6 +100,10 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
         return super.getValue(locale).orElse(getValue(DEFAULT_LANGUAGE).orElse(""));
     }
 
+    public String getTextOrDefault() {
+        return getTextOrDefault(IPolyglott.getCurrentLocale(), IPolyglott.getDefaultLocale());
+    }
+    
     public String getTextOrDefault(Locale locale, Locale defaultLocale) {
         return super.getValue(locale)
                 .orElse(getValue(defaultLocale)

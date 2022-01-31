@@ -52,7 +52,7 @@
                                     	<!-- TITLE -->
                                         <div class="cms-widgets-overview__single-widget-title-wrapper">                                    	
 	                                        <h3 class="cms-widgets-overview__single-widget-title">
-	                                        	<span class="cms-widgets-overview__single-widget-title-name">#{widget.title.getValue(navigationHelper.locale).orElse("")}</span>
+	                                        	<span class="cms-widgets-overview__single-widget-title-name">#{widget.title.textOrDefault}</span>
 	                                        	<ui:fragment rendered="#{widget.generationType != 'DEFAULT'}" >
 		                                        	<span class="cms-widgets-overview__single-widget-title-type">(#{msg[widget.generationType.label]})</span>
 	                                        	</ui:fragment>
