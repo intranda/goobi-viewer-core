@@ -5,7 +5,8 @@
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
 	<composite:interface>
 		<composite:attribute name="label" required="true" />
@@ -13,10 +14,10 @@
 		<composite:attribute name="required" required="false" default="false" type="java.lang.Boolean" />
 		<composite:attribute name="requiredMessage" required="false" default="#{msg.info__input_required}"></composite:attribute>
 		<composite:attribute name="helpText" required="false" default=""></composite:attribute>
-		<composite:attribute name="selectValues" required="true" type="java.util.List" />
+		<composite:attribute name="selectValues" required="true" type="java.util.Map" />
 		<composite:attribute name="var" required="false" default="var"/>
-		<composite:attribute name="itemLabel" required="false" default="#{var.toString()}"/>
-		<composite:attribute name="itemValue" required="false" default="#{var}"/>
+		<composite:attribute name="itemLabel" required="false" default="#{var.toString()}" method-signature="java.lang.String itemLabel(java.lang.Object)"/>
+		<composite:attribute name="itemValue" required="false" default="#{var}" method-signature="java.lang.Object itemLabel(java.lang.Object)"/>
 	</composite:interface>
 
 	<composite:implementation>
@@ -39,11 +40,21 @@
 						class="fa fa-exclamation" aria-hidden="true"></i>
 				</div>
 
-				<h:selectManyCheckbox
-					id="#{cc.attrs.clientId}_input" class="form-control" aria-label="#{cc.attrs.label}"
-					value="#{cc.attrs.value}">
-					<f:selectItems value="#{cc.attrs.selectValues}" var="#{cc.attrs.var}" itemLabel="#{cc.attrs.itemLabel}" itemValue="#{cc.attrs.itemValue}"></f:selectItems>
-				</h:selectManyCheckbox>
+				<ul>
+					<ui:repeat var="var" value="#{cc.attrs.selectValues.keySet().stream().sorted().toList()}">
+	                     <li>
+	                         <label>
+	                             <h:selectBooleanCheckbox type="checkbox" 
+		                             value="#{cc.attrs.selectValues[var]}">
+	                                 <f:ajax event="change" execute="@this" render="#{cc.attrs.render}" />
+	                             </h:selectBooleanCheckbox>
+	                             <h:outputFormat value="#{cc.attrs.itemLabel.invoke(cc.getFacesContext().getELContext(), var)}" escape="false">
+                                 </h:outputFormat>
+	                             
+	                         </label>
+	                     </li>
+	                 </ui:repeat>
+				</ul>
 				<ui:fragment rendered="#{not empty cc.attrs.helpText}">
 					<span class="admin__form-help-text">#{cc.attrs.helpText}</span>
 				</ui:fragment>

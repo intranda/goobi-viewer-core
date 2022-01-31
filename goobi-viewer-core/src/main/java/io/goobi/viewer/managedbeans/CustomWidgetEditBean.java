@@ -4,13 +4,18 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +23,8 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AjaxResponseException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget;
@@ -40,6 +47,19 @@ public class CustomWidgetEditBean implements Serializable {
     private CustomSidebarWidget widget = null;
     private String returnUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.adminCmsSidebarWidgets.getName();
     private HtmlPanelGroup previewGroup = null;
+    private Map<CMSPage, Boolean> cmsPageMap;
+    
+    @Inject
+    public CustomWidgetEditBean(CmsBean cmsBean) {
+        try {
+            this.cmsPageMap = cmsBean.getAllCMSPages().stream()
+                    .filter(CMSPage::isPublished)
+                    .filter(p -> StringUtils.isNotBlank(p.getMenuTitle()))
+                    .collect(Collectors.toMap(Function.identity(), p -> Boolean.FALSE));
+        } catch (DAOException e) {
+            logger.error(e.toString(), e);
+        }
+    }
     
     public CustomSidebarWidget getWidget() {
         return widget;
@@ -47,8 +67,22 @@ public class CustomWidgetEditBean implements Serializable {
     
     public void setWidget(CustomSidebarWidget widget) {
         this.widget = widget;
+        if(this.widget != null && CustomWidgetType.WIDGET_CMSPAGES.equals(this.widget.getType())) {            
+            fillCmsPageMap(((PageListSidebarWidget)this.widget).getPageIds());
+        }
     }
     
+    private void fillCmsPageMap(List<Long> pageIds) {
+       this.cmsPageMap.keySet().forEach(page -> {
+           if(pageIds.contains(page.getId())) {
+               this.cmsPageMap.put(page, Boolean.TRUE);
+           } else {
+               this.cmsPageMap.put(page, Boolean.FALSE);
+           }
+       });
+        
+    }
+
     public Long getWidgetId() {
         return Optional.ofNullable(widget).map(CustomSidebarWidget::getId).orElse(null);
     }
@@ -78,6 +112,12 @@ public class CustomWidgetEditBean implements Serializable {
     public void save() throws AjaxResponseException {
         try {
         if(widget != null) {
+            if(CustomWidgetType.WIDGET_CMSPAGES.equals(this.widget.getType())) {           
+                List<Long> pageIds = this.cmsPageMap.entrySet().stream()
+                        .filter(Entry::getValue).map(Entry::getKey).map(CMSPage::getId)
+                        .collect(Collectors.toList());
+                ((PageListSidebarWidget)this.widget).setPageIds(pageIds);
+            }
             if(widget.getId() != null) {                
                 DataManager.getInstance().getDao().updateCustomWidget(widget);
             } else {
@@ -85,7 +125,7 @@ public class CustomWidgetEditBean implements Serializable {
             }
         }
         } catch(DAOException e) {
-            throw new AjaxResponseException(e.toString());
+            throw new AjaxResponseException(ViewerResourceBundle.getTranslationWithParameters("cms__edit_widget__save_widget__error", BeanUtils.getLocale(), e.getMessage()));
         }
     }
     
@@ -127,5 +167,13 @@ public class CustomWidgetEditBean implements Serializable {
 
     public void setPreviewGroup(HtmlPanelGroup previewGroup) {
         this.previewGroup = previewGroup;
+    }
+    
+    public Map<CMSPage, Boolean> getCmsPageMap() {
+        return cmsPageMap;
+    }
+    
+    public void setCmsPageMap(Map<CMSPage, Boolean> cmsPageMap) {
+        this.cmsPageMap = cmsPageMap;
     }
 }

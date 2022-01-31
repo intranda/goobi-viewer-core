@@ -15,6 +15,9 @@
 			type="java.util.List" />
 		<composite:attribute name="selectMessage" default="select" />
 		<composite:attribute name="render" default="@none" />
+		<composite:attribute name="var" default="var" />
+		<composite:attribute name="itemLabel" default="#{o -> o.toString()}" />
+		<composite:attribute name="itemValue" default="#{cc.attrs.var}" />
 	</composite:interface>
 
 
@@ -23,15 +26,14 @@
 			<div class="multiselect-dropdown-trigger"
 				data-toggle="option-dropdown">#{msg[cc.attrs.selectMessage]}</div>
 			<ul>
-				<ui:repeat var="option" value="#{cc.selection.keySet()}">
+				<ui:repeat var="var" value="#{cc.valueMap.keySet().stream().sorted().toList()}">
                      <li>
                          <label>
-                             <h:selectBooleanCheckbox id="option" type="checkbox" 
-	                             value="#{cc.selection[option]}"
-	                             valueChangeListener="#{cc.onSelectItem}">
+                             <h:selectBooleanCheckbox type="checkbox" 
+	                             value="#{cc.valueMap[var]}">
                                  <f:ajax event="change" execute="@this" render="#{cc.attrs.render}" />
                              </h:selectBooleanCheckbox>
-                             #{msg[option]}
+                             #{cc.getLabel(var)}
                          </label>
                      </li>
                  </ui:repeat>

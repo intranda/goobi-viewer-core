@@ -52,7 +52,7 @@
                                     	<!-- TITLE -->
                                         <div class="cms-widgets-overview__single-widget-title-wrapper">                                    	
 	                                        <h3 class="cms-widgets-overview__single-widget-title">
-	                                        	<span class="cms-widgets-overview__single-widget-title-name">#{widget.title.getValue(navigationHelper.locale).orElse("")}</span>
+	                                        	<span class="cms-widgets-overview__single-widget-title-name">#{widget.title.textOrDefault}</span>
 	                                        	<ui:fragment rendered="#{widget.generationType != 'DEFAULT'}" >
 		                                        	<span class="cms-widgets-overview__single-widget-title-type">(#{msg[widget.generationType.label]})</span>
 	                                        	</ui:fragment>
@@ -124,7 +124,7 @@
                                                 <a href="#{navigationHelper.applicationUrl}admin/cms/widgets/edit/#{widget.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{widget.title.getValue(navigationHelper.locale).orElse('')}">#{msg.edit}</a>
 
                                                 <!-- DELETE -->
-                                                <h:commandLink
+                                                <h:commandLink rendered="#{empty widget.embeddingPages}"
                                                     styleClass="admin__boxed-entry-actions-delete -redlink"
                                                     onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.cms_widget__delete_this_widget, widget.title.getValue(navigationHelper.locale).orElse(&quot;&quot;))}&quot; ) ) { return false };"
                                                     action="adminCmsWidgetsOverview"
