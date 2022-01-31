@@ -16,8 +16,8 @@
 			type="io.goobi.viewer.model.cms.widget.CustomSidebarWidget"
 			required="true" />
 	</composite:interface>
-
     <composite:implementation>
+    	<ui:fragment rendered="#{not empty cc.attrs.widget.facetField}">
                 <div id="searchListFacetsWrapper" class="widget-search-facets #{cc.attrs.widget.styleClass}">
                     <h:form id="searchListFacetsForm" prependId="false">
                         <!-- DRILL DOWN -->
@@ -48,11 +48,12 @@
                     </h:form>
                 </div>
 
-			<h:panelGroup
-				rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() == null}">
-				<div id="widgetSearchHelp" class="widget-searchhelp">
-					<viewerComponent:searchHelpText />
-				</div>
-			</h:panelGroup>
+				<h:panelGroup
+					rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() == null}">
+					<div id="widgetSearchHelp" class="widget-searchhelp">
+						<viewerComponent:searchHelpText />
+					</div>
+				</h:panelGroup>
+			</ui:fragment>
 	</composite:implementation>
 </ui:composition>
