@@ -1,6 +1,5 @@
 package io.goobi.viewer.managedbeans;
 
-import java.awt.image.ComponentSampleModel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -12,16 +11,11 @@ import java.util.stream.Collectors;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
-import javax.faces.event.PhaseId;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.omnifaces.util.Ajax;
-import org.omnifaces.util.Callback;
-import org.omnifaces.util.Components;
-import org.omnifaces.util.Events;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +164,7 @@ public class CustomWidgetEditBean implements Serializable {
         return previewGroup;
     }
 
-    private void loadWidgetComponent(CustomSidebarWidget component, HtmlPanelGroup parent) {
+    private boolean loadWidgetComponent(CustomSidebarWidget component, HtmlPanelGroup parent) {
         DynamicContentBuilder builder = new DynamicContentBuilder();
         DynamicContent content = new DynamicContent(DynamicContentType.WIDGET, component.getType().getFilename());
         content.setId("sidebar_widget_" + component.getId());
@@ -179,6 +173,7 @@ public class CustomWidgetEditBean implements Serializable {
         if (widgetComponent == null) {
             logger.error("Error loading widget " + component);
         }
+        return widgetComponent != null;
     }
 
     public void setPreviewGroup(HtmlPanelGroup previewGroup) {

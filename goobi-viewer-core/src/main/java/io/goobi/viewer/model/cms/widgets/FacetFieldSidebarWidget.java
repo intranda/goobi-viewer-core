@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.model.translations.TranslatedText;
@@ -75,5 +77,5 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     public TranslatedText getTitle() {
         return new TranslatedText(ViewerResourceBundle.getTranslations(this.facetField, true));
     }
-    
+
 }

@@ -230,20 +230,13 @@
 									</a>
 									<button class="btn btn--success"
 										jsf:action="#{customWidgetEditBean.save()}">#{msg.button__save}
-									<f:ajax execute="@all" render="@all" 
-										onevent="e => viewerJS.swaltoasts.onSuccess(e).success(&quot;#{msg.cms__edit_widget__save_widget__success}&quot;)"
-										onerror="e => viewerJS.swaltoasts.error(e.responseText)"></f:ajax>	
 									</button>
 								</div>
 								
 							</div>
 							
 							<div class="admin__content-side">
-								<ui:fragment rendered="#{widget != null}">
-									<div class="admin__default-block">
-										<h:panelGroup id="previewGroup" binding="#{customWidgetEditBean.previewGroup}" />
-									</div>
-								</ui:fragment>
+								<h:panelGroup id="previewGroup" binding="#{customWidgetEditBean.previewGroup}" />
 							</div>
 							
 						</div>

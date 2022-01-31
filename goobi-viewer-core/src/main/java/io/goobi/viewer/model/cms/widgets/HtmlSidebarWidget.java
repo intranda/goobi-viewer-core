@@ -7,6 +7,8 @@ import javax.persistence.Convert;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.model.translations.IPolyglott;
@@ -48,4 +50,5 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
     public CustomWidgetType getType() {
         return CustomWidgetType.WIDGET_HTML;
     }
+    
 }

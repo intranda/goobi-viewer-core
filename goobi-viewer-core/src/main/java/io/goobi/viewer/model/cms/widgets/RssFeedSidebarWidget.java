@@ -85,5 +85,6 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     public CustomWidgetType getType() {
         return CustomWidgetType.WIDGET_RSSFEED;
     }
+
     
 }
