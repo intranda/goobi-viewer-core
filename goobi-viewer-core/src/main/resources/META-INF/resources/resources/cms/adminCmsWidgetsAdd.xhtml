@@ -39,7 +39,8 @@
 
 						<div class="admin__content-wrapper">
 
-							<div class="admin__content-main -sticky -refreshHCsticky">
+							<!-- MAIN CONTENT -->
+							<div class="admin__content-main #{customWidgetEditBean.widgetType != null ? '-partial' : '-full'} -sticky -refreshHCsticky">
 
 								<ui:fragment
 									rendered="#{customWidgetEditBean.widgetType == null}">
@@ -245,20 +246,24 @@
 
 								</ui:fragment>
 
-								<div
-									class="row no-gutters justify-content-end admin__final-actions">
-									<a class="btn btn--cancel"
-										href="#{customWidgetEditBean.returnUrl}">#{msg.button__abort}
-									</a>
-									<button class="btn btn--success"
-										jsf:action="#{customWidgetEditBean.save()}">#{msg.button__save}
-									</button>
-								</div>
+
+								<ui:fragment rendered="#{widget != null}">
+									<div
+										class="row no-gutters justify-content-end admin__final-actions">
+										<a class="btn btn--cancel"
+											href="#{customWidgetEditBean.returnUrl}">#{msg.button__abort}
+										</a>
+										<button class="btn btn--success"
+											jsf:action="#{customWidgetEditBean.save()}">#{msg.button__save}
+										</button>
+									</div>
+								</ui:fragment>
 
 							</div>
-
-							<div class="admin__content-side">
-								<ui:fragment rendered="#{widget != null}">
+							
+							<!-- SIDEBAR -->
+							<ui:fragment rendered="#{widget != null}">
+								<div class="admin__content-side">
 									<ui:fragment rendered="#{widget.id != null}">
 										<div class="admin__default-block">
 											<button class="btn d-none" jsf:action="#{customWidgetEditBean.refresh}">
@@ -273,8 +278,9 @@
 										<h3>#{msg.title__did_you_know}</h3>
 										<p>#{msg.cms__edit_widget__sidebar_information}</p>
 									</div>
-								</ui:fragment>
-							</div>
+								</div>
+							</ui:fragment>
+
 
 						</div>
 

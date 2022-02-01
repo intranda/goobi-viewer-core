@@ -338,6 +338,11 @@
                 color: @middlegray;
             }
 	    }
+		h3 {
+			.fa {
+				margin-inline-end: 0.5rem;
+			}
+		}
 	}
 	&__boxed-entry-progress {
 		background: @grayBar;
@@ -1720,6 +1725,10 @@ color: #7c7c7c;
 		max-width: calc(~"100% - 420px");
 		position: relative;
 		align-self: flex-start;
+		&.-full {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
 	}
 	&__content-side {
 		max-width: 420px;
