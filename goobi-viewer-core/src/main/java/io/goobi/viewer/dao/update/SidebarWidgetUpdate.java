@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget;
@@ -30,6 +31,8 @@ import io.goobi.viewer.model.cms.widgets.type.DefaultWidgetType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 import io.goobi.viewer.model.maps.GeoMap;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 public class SidebarWidgetUpdate implements IModelUpdate {
 
@@ -129,7 +132,7 @@ public class SidebarWidgetUpdate implements IModelUpdate {
             case WIDGET_HTML:
                 if(StringUtils.isNotBlank(inner_html)) {
                     HtmlSidebarWidget htmlWidget = new HtmlSidebarWidget();
-                    widget.getTitle().mapEach(oldValue -> widget_title);
+                    htmlWidget.getTitle().setValue(widget_title, IPolyglott.getDefaultLocale());
                     htmlWidget.getHtmlText().mapEach(oldValue -> inner_html);
                     widget = htmlWidget;
                 } else {
@@ -138,13 +141,17 @@ public class SidebarWidgetUpdate implements IModelUpdate {
                 break;
             case WIDGET_CMSPAGES:
                 PageListSidebarWidget pageWidget = new PageListSidebarWidget();
-                widget.getTitle().mapEach(oldValue -> widget_title);
+                pageWidget.getTitle().setValue(widget_title, IPolyglott.getDefaultLocale());
                 pageWidget.setPageIds(parseIds(linked_pages, "\\s*;\\s*"));
                 widget = pageWidget;
                 break;
             case WIDGET_RSSFEED:
                 RssFeedSidebarWidget rssWidget = new RssFeedSidebarWidget();
-                widget.getTitle().mapEach(oldValue -> widget_title);
+                if(StringUtils.isNotBlank(widget_title)) {                    
+                    rssWidget.getTitle().setValue(widget_title, IPolyglott.getDefaultLocale());
+                } else {
+                    rssWidget.setTitle(new TranslatedText(ViewerResourceBundle.getTranslations("lastImports")));
+                }
                 rssWidget.setFilterQuery(additional_query);
                 widget = rssWidget;
                 break;
