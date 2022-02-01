@@ -51,7 +51,24 @@
 											<div class="admin__boxed-entry -w33">
 												<div class="d-flex flex-column h-100">
 													<div>
-														<h3>#{msg[type.label]}</h3>
+													<!-- ADD RSS WIDGET TITLE -->
+													<ui:fragment rendered="#{type == 'WIDGET_RSSFEED'}">
+														<h3><i class="fa fa-rss" aria-hidden="true"></i> #{msg[type.label]}</h3>
+														
+													</ui:fragment>
+													<!-- ADD FACETING WIDGET TITLE -->
+													<ui:fragment rendered="#{type == 'WIDGET_FIELDFACETS'}">
+														<h3><i class="fa fa-list-ul" aria-hidden="true"></i> #{msg[type.label]}</h3>
+													</ui:fragment>
+													<!-- ADD PAGES WIDGET TITLE -->
+													<ui:fragment rendered="#{type == 'WIDGET_CMSPAGES'}">
+														<h3><i class="fa fa-clone" aria-hidden="true"></i> #{msg[type.label]}</h3>
+													</ui:fragment>
+													<!-- ADD HTML WIDGET TITLE -->
+													<ui:fragment rendered="#{type == 'WIDGET_HTML'}">
+														<h3><i class="fa fa-code" aria-hidden="true"></i> #{msg[type.label]}</h3>
+													</ui:fragment>
+													
 													</div>
 													<div class="mb-2">
 														<p>#{msg[type.description]}</p>

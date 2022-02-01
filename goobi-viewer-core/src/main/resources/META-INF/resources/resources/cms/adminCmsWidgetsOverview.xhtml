@@ -52,7 +52,49 @@
                                     	<!-- TITLE -->
                                         <div class="cms-widgets-overview__single-widget-title-wrapper">                                    	
 	                                        <h3 class="cms-widgets-overview__single-widget-title">
-	                                        	<span class="cms-widgets-overview__single-widget-title-name">#{widget.title.textOrDefault}</span>
+	                                        	<!-- RSS FEED TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_RSSFEED'}" >
+	                                        		<i class="fa fa-rss" aria-hidden="true"></i> <span class="cms-widgets-overview__single-widget-title-name">#{widget.title.textOrDefault}</span>
+	                                        	</ui:fragment>
+	                                        	<!-- FACETS TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_FACETTING'}" >
+	                                        		<i class="fa fa-list-ul" aria-hidden="true"></i> <span class="cms-widgets-overview__single-widget-title-name">#{widget.title.textOrDefault}</span>
+	                                        	</ui:fragment>
+	                                        	<!-- FACETS 2 TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_FIELDFACETS'}" >
+	                                        		<i class="fa fa-list-alt" aria-hidden="true"></i> <span class="cms-widgets-overview__single-widget-title-name">#{widget.title.textOrDefault}</span>
+	                                        	</ui:fragment>
+	                                        	<!-- PAGES TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_CMSPAGES'}" >
+	                                        		<i class="fa fa-clone" aria-hidden="true"></i> <span class="cms-widgets-overview__single-widget-title-name">#{widget.title.textOrDefault}</span>
+	                                        	</ui:fragment>
+	                                        	<!-- HTML TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_HTML'}" >
+	                                        		<i class="fa fa-code" aria-hidden="true"></i> <span class="cms-widgets-overview__single-widget-title-name">#{widget.title.textOrDefault}</span>
+	                                        	</ui:fragment>
+	                                        	<!-- MAP TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_CMSGEOMAP'}" >
+	                                        		<i class="fa fa-map-o" aria-hidden="true"></i> <span class="cms-widgets-overview__single-widget-title-name">#{widget.title.textOrDefault}</span>
+	                                        	</ui:fragment>
+	                                        	<!-- SEARCH TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_SEARCH'}" >
+	                                        		<i class="fa fa-search" aria-hidden="true"></i> <span class="cms-widgets-overview__single-widget-title-name">#{widget.title.textOrDefault}</span>
+	                                        	</ui:fragment>
+	                                        	<!-- WORK COUNT TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_WORKCOUNT'}" >
+	                                        		<i class="fa fa-circle-o" aria-hidden="true"></i> <span class="cms-widgets-overview__single-widget-title-name">#{widget.title.textOrDefault}</span>
+	                                        	</ui:fragment>
+	                                        	<!-- BROWSING TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_BROWSING'}" >
+	                                        		<i class="fa fa-list-alt" aria-hidden="true"></i> <span class="cms-widgets-overview__single-widget-title-name">#{widget.title.textOrDefault}</span>
+	                                        	</ui:fragment>
+	                                        	
+	                                        	
+
+	                                        	
+	                                        	
+	                                        	
+	                                        	<!-- ADDITION TO TITLE -->
 	                                        	<ui:fragment rendered="#{widget.generationType != 'DEFAULT'}" >
 		                                        	<span class="cms-widgets-overview__single-widget-title-type">(#{msg[widget.generationType.label]})</span>
 	                                        	</ui:fragment>
@@ -107,11 +149,18 @@
 											<ui:fragment rendered="#{widget.generationType == 'AUTOMATIC'}">
 												<div class="cms-widgets-overview__single-widget-info-additional-field">
 													
-													<div class="cms-widgets-overview__single-widget-info-label">#{msg.map}</div>
-													<div class="cms-widgets-overview__single-widget-info-data-wrapper">
-														<a href="#{request.contextPath}/admin/cms/maps/edit/#{widget.id}/">#{widget.title.getText(navigationHelper.locale)}</a>
-													</div>
-				
+<!-- 													<div class="cms-widgets-overview__single-widget-info-label">#{msg.map}</div> -->
+<!-- 													<div class="cms-widgets-overview__single-widget-info-data-wrapper"> -->
+<!-- 														<a href="#{request.contextPath}/admin/cms/maps/edit/#{widget.id}/">#{widget.title.getText(navigationHelper.locale)}</a> -->
+<!-- 													</div> -->
+													
+			                                        <div class="row admin__boxed-entry-actions">
+			                                            <div class="col-3 d-flex">
+			                                                <!-- EDIT -->
+			                                                <a href="#{request.contextPath}/admin/cms/maps/edit/#{widget.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{widget.title.getValue(navigationHelper.locale).orElse('')}">#{msg.edit}</a>
+			                                            </div>
+			                                        </div>
+							
 												</div>
 											</ui:fragment>
 										</div>
