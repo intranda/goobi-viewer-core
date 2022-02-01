@@ -154,10 +154,11 @@ var viewerJS = ( function( viewer ) {
 		}
 		
     }
-
-	//post notification on ajax/success
-	viewer.jsfAjax.success.subscribe(e => {
+    
+    	
+	function showJsfMessagesAsSweetAlert() {
 		let $messages = $(".messages #messages");
+		//console.log("showJsfMessagesAsSweetAlert", $messages);
 		//handle error messages
 		$messages.children(".alert.alert-danger").each((index, child) => {
 			//show error message
@@ -172,7 +173,14 @@ var viewerJS = ( function( viewer ) {
 		$messages.children(".alert.alert-success").each((index, child) => {
 			viewerJS.swaltoasts.success($(child).text());
 		});
+	}
+
+	//post notification on ajax/success
+	viewer.jsfAjax.success.subscribe(e => {
+		showJsfMessagesAsSweetAlert();
 	});
+	$(document).ready(() => showJsfMessagesAsSweetAlert());
+
 
     
     return viewer;
