@@ -251,10 +251,14 @@ public class ThumbnailHandler {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(int order, String pi, int width, int height)
-            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        PhysicalElement page = getPage(pi, order);
-        if (page != null) {
-            return getThumbnailUrl(page, width, height);
+            throws ViewerConfigurationException {
+        try {
+            PhysicalElement page = getPage(pi, order);
+            if (page != null) {
+                return getThumbnailUrl(page, width, height);
+            }
+        } catch (IndexUnreachableException | PresentationException | DAOException e) {
+            logger.error("Unable to load thumbnail for PI {} and page {}. Reason: {}", pi, order, e.toString());
         }
         return null;
     }
@@ -536,7 +540,7 @@ public class ThumbnailHandler {
      *
      * @return the url of the entire, max-size image in the original format. If no Watermark needs to be included and forwarding images is allowed in
      *         contentServer, then this streams the original image file to the client
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param page a {)@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      */
     public String getFullImageUrl(PhysicalElement page) {
         return getFullImageUrl(page, Scale.MAX);

@@ -259,15 +259,19 @@
 
 							<div class="admin__content-side">
 								<ui:fragment rendered="#{widget != null}">
+									<ui:fragment rendered="#{widget.id != null}">
+										<div class="admin__default-block">
+											<button class="btn d-none" jsf:action="#{customWidgetEditBean.refresh}">
+												<i class="fa fa-refresh"></i>
+												<f:ajax execute="@form" render="previewGroup"></f:ajax>
+											</button>
+											<h:panelGroup id="previewGroup"
+												binding="#{customWidgetEditBean.previewGroup}" />
+										</div>
+									</ui:fragment>
 									<div class="admin__default-block">
 										<h3>#{msg.title__did_you_know}</h3>
 										<p>#{msg.cms__edit_widget__sidebar_information}</p>
-										<button class="btn d-none" jsf:action="#{customWidgetEditBean.refresh}">
-											<i class="fa fa-refresh"></i>
-											<f:ajax execute="@form" render="previewGroup"></f:ajax>
-										</button>
-										<h:panelGroup id="previewGroup"
-											binding="#{customWidgetEditBean.previewGroup}" />
 									</div>
 								</ui:fragment>
 							</div>

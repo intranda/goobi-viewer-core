@@ -134,6 +134,10 @@ public class CustomSidebarWidget implements IPolyglott {
         return title;
     }
 
+    public void setTitle(TranslatedText title) {
+        this.title = title;
+    }
+    
     /**
      * @return the description
      */
