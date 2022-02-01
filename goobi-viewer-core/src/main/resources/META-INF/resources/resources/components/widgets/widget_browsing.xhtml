@@ -13,7 +13,7 @@
 			<div id="widgetBrowsing" class="widget #{cc.attrs.widget.cssClass}">
 				<h:form id="widgetBrowsingForm">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.type == null}">				
-						<h3>#{msg.browseTitle}</h3>
+						<h2 >#{msg.browseTitle}</h2>
 						
 						<ul>
 							<ui:repeat value="#{browseBean.getBrowsingMenuItems(navigationHelper.localeString)}" var="item">
@@ -37,12 +37,12 @@
 					</h:panelGroup>
 					
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
-						<h3>
+						<h2 >
 							<a href="#browseCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="browseCollapse">
 								#{msg.browseTitle}
 								<i class="fa fa-arrow-down" aria-hidden="true"></i>
 							</a>
-						</h3>
+						</h2>
 						
 						<div id="browseCollapse" class="collapse">
 							<ul>

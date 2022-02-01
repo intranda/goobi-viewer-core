@@ -435,7 +435,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void userGroupLicenseTest() throws DAOException {
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
         Assert.assertNotNull(userGroup);
-        Assert.assertEquals(1, userGroup.getLicenses().size());
+        Assert.assertEquals(2, userGroup.getLicenses().size());
         Assert.assertEquals(1, userGroup.getLicenses().get(0).getPrivileges().size());
         for (String priv : userGroup.getLicenses().get(0).getPrivileges()) {
             Assert.assertEquals("license 2 priv 1", priv);
@@ -447,7 +447,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
             UserGroup userGroup2 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
             Assert.assertNotNull(userGroup2);
-            Assert.assertEquals(1, userGroup2.getLicenses().size());
+            Assert.assertEquals(2, userGroup2.getLicenses().size());
         }
 
         // Adding a new license should update the attached object with ID
@@ -458,7 +458,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
             UserGroup userGroup2 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
             Assert.assertNotNull(userGroup2);
-            Assert.assertEquals(2, userGroup2.getLicenses().size());
+            Assert.assertEquals(3, userGroup2.getLicenses().size());
             Assert.assertNotNull(userGroup2.getLicenses().get(0).getId());
             Assert.assertNotNull(userGroup2.getLicenses().get(1).getId());
         }
@@ -469,7 +469,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
             UserGroup userGroup3 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
             Assert.assertNotNull(userGroup3);
-            Assert.assertEquals(1, userGroup3.getLicenses().size());
+            Assert.assertEquals(2, userGroup3.getLicenses().size());
         }
     }
 

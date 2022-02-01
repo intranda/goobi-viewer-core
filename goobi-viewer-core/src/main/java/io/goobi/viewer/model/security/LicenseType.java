@@ -517,7 +517,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
         for (String priv : Arrays.asList(IPrivilegeHolder.PRIVS_RECORD)) {
             if (privileges.contains(priv)) {
                 ret.add(priv);
-                logger.trace("has priv: {}", priv);
+                // logger.trace("has priv: {}", priv);
             }
         }
 

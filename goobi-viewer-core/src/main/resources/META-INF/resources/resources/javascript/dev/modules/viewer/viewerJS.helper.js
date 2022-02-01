@@ -133,7 +133,7 @@ var viewerJS = ( function( viewer ) {
             modal += '<div class="modal-dialog" role="document">';
             modal += '<div class="modal-content">';
             modal += '<div class="modal-header">';
-            modal += '<h4 class="modal-title" id="' + _defaults.label + '">' + _defaults.string.title + '</h4>';
+            modal += '<h3 class="modal-title" id="' + _defaults.label + '">' + _defaults.string.title + '</h3>';
             modal += '<button type="button" class="fancy-close" data-dismiss="modal" aria-label="' + _defaults.string.closeBtn + '">';
             modal += '<span aria-hidden="true">x</span>';
             modal += '</button>';

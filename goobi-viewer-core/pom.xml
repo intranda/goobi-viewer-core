@@ -82,7 +82,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.9</alto.version>
-		<ics.version>3.2.0</ics.version>
+		<ics.version>3.2.1</ics.version>
 		<tei-conversion.version>1.2.2</tei-conversion.version>
 
 		<iiif-api-model.version>2.2.0</iiif-api-model.version>
@@ -121,7 +121,7 @@
         <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
         <!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
         <javax.jstl.version>1.2</javax.jstl.version>
-        <jaxb-runtime.version>2.3.5</jaxb-runtime.version>
+        <jaxb-runtime.version>2.3.6</jaxb-runtime.version>
         <jdom2.version>2.0.6.1</jdom2.version>
         <jersey.version>2.35</jersey.version>
         <jersey-guava.version>2.26-b03</jersey-guava.version>
@@ -131,7 +131,7 @@
         <jsoup.version>1.14.3</jsoup.version>
         <junit.version>4.13.2</junit.version>
         <mariadb-java-client.version>2.7.5</mariadb-java-client.version>
-        <mockito.version>4.3.0</mockito.version>
+        <mockito.version>4.3.1</mockito.version>
         <mockserver.version>5.11.2</mockserver.version>
         <oauth.version>1.0.2</oauth.version>
         <omnifaces.version>3.13</omnifaces.version>
@@ -139,14 +139,14 @@
         <poi.version>5.2.0</poi.version>
         <prettyfaces.version>3.5.1.Final</prettyfaces.version>
         <rome.version>1.18.0</rome.version>
-        <slf4j.version>1.7.34</slf4j.version>
+        <slf4j.version>1.7.35</slf4j.version>
         <log4j.version>2.17.1</log4j.version>
         <solr.version>8.11.1</solr.version>
         <saml-client.version>4.0.0</saml-client.version>
         <swagger.version>2.1.12</swagger.version>
         <tomcat.version>9.0.58</tomcat.version>
         <weld-servlet-shaded.version>3.1.8.Final</weld-servlet-shaded.version>
-        <xerces.version>2.12.1</xerces.version>
+        <xerces.version>2.12.2</xerces.version>
         <xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
         <xml-apis.version>1.4.01</xml-apis.version>
     </properties>

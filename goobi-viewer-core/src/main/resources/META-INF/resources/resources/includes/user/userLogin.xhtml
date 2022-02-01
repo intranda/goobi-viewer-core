@@ -19,7 +19,7 @@
         <div id="userLoginWrapper" class="user-login__wrapper">
             <!-- USER LOGIN HEADER -->
             <div class="user-login__header">
-                <h3>#{msg.login__header_title}</h3>
+                <h2>#{msg.login__header_title}</h2>
                 <div class="user-login__header-logo"></div>
             </div>
             
@@ -257,7 +257,7 @@
                 <!-- USER LOGIN BODY LOGIN OPEN ID -->
                 <ui:fragment rendered="#{userBean.hasProvidersOfType('openId') or userBean.hasProvidersOfType('saml')}">
                 <div id="userLoginOpenId" class="user-login__body-login-open-id">                    
-                    <h4><span>#{msg.login__login_with_other_provider}</span></h4>
+                    <h3><span>#{msg.login__login_with_other_provider}</span></h3>
                     
                     <h:form id="userLoginOpenIdForm">
                         <ul>

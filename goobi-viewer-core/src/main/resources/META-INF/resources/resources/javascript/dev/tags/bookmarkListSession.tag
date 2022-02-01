@@ -14,7 +14,7 @@
 							</div>
 						</div>
 						<div class="col-7 no-padding">
-							<h4>{bookmark.name}</h4>
+							<h3>{bookmark.name}</h3>
 						</div>
 					</div>
 				</a>
