@@ -39,7 +39,6 @@
     }
   }
   &__table-entry {
-    word-break: break-all;
     display: grid;
     grid-template-columns: 2fr 2fr 1fr;
     grid-template-rows: minmax(20px, 1fr);
@@ -51,6 +50,14 @@
       .user-comments__table-entry-action-link {
         opacity: 1;
       }
+    }
+    &-label,
+    &-text {
+      word-break: break-all;
+    }
+    &-label {
+      color: @colorFonts;
+      text-decoration: underline;
     }
   }
   &__table-entry-label-record {
