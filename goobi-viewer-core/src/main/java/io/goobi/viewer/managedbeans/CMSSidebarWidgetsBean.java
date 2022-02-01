@@ -41,6 +41,7 @@ import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
 import io.goobi.viewer.model.cms.widgets.type.AutomaticWidgetType;
+import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.model.cms.widgets.type.DefaultWidgetType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 import io.goobi.viewer.model.jsf.DynamicContent;
@@ -88,7 +89,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
                                 geoMap.getDescriptions(), 
                                 Collections.emptyList(), 
                                 WidgetGenerationType.AUTOMATIC,
-                                widgetType, geoMap.getId());
+                                widgetType, geoMap.getId(), null);
                         widgets.add(widget);
                     }
             }
@@ -101,7 +102,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
                     ViewerResourceBundle.getTranslations(widget.getType().getDescription(), true), 
                     queryAdditionalInformation ? getEmbeddingPages(widget): Collections.emptyList(),
                     WidgetGenerationType.CUSTOM,
-                    widget.getType(), widget.getId());
+                    widget.getType(), widget.getId(), CustomWidgetType.WIDGET_FIELDFACETS.equals(widget.getType()) ? null : widget);
             widgets.add(element);
         }
                 

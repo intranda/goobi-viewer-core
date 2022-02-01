@@ -40,7 +40,11 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     private final List<CMSPage> embeddingPages;
     private final WidgetGenerationType generationType;
     private final WidgetContentType contentType;
+    /**
+     * Identifier of the underlying CustomSidebarWidget or GeoMap, if any
+     */
     private final Long id;
+    private final IPolyglott translations;
     
     
     /**
@@ -52,7 +56,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
      */
     public WidgetDisplayElement(IMetadataValue title, IMetadataValue description, List<CMSPage> embeddingPages, WidgetGenerationType generationType,
             WidgetContentType contentType) {
-        this(title, description, embeddingPages, generationType, contentType, null);
+        this(title, description, embeddingPages, generationType, contentType, null, null);
     }
     
     /**
@@ -63,7 +67,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
      * @param contentType
      */
     public WidgetDisplayElement(IMetadataValue title, IMetadataValue description, List<CMSPage> embeddingPages, WidgetGenerationType generationType,
-            WidgetContentType contentType, Long id) {
+            WidgetContentType contentType, Long id, IPolyglott translations) {
         super();
         this.title = new TranslatedText(title, getSelectedLocale());
         this.description = new TranslatedText(description, getSelectedLocale());
@@ -71,6 +75,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
         this.generationType = generationType;
         this.contentType = contentType;
         this.id = id;
+        this.translations = translations;
     }
     /**
      * @return the title
@@ -132,6 +137,14 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     @Override
     public void setSelectedLocale(Locale locale) {
         //Do nothing
+    }
+    
+    public boolean hasTranslations() {
+        return this.translations != null;
+    }
+    
+    public IPolyglott getTranslations() {
+        return this.translations;
     }
     
     @Override

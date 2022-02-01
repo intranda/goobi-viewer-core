@@ -58,9 +58,9 @@
 	                                        	</ui:fragment>
 	                                        </h3>
 	                                        
-	                                        <ui:fragment rendered="#{widget.generationType == 'CUSTOM'}">
+	                                        <ui:fragment rendered="#{widget.hasTranslations()}">
 		                                        <div class="cms-widgets-overview__single-widget-title-indicator">
-		                                        	<viewerComponent:translationState object="#{widget}" />
+		                                        	<viewerComponent:translationState object="#{widget.translations}" />
 		                                        </div>
 	                                        </ui:fragment>
                                         </div>
