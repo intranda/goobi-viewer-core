@@ -262,16 +262,27 @@
 		}
 		&__choose-widget-item {
 			user-select: none;
-			padding: 0.5rem 0.5rem;
+			padding: 0rem 0.5rem;
 			display: flex;
 			width: 100%;
-			min-height: 29px;
+			min-height: 30px;
+			align-items: center;
 			input {
 				margin-right: 0.5rem;
 			}
 			label {
+				align-self: stretch;
+				display: flex;
+				align-items: center;
 				flex-grow: 1;
 				margin-bottom: 0;
+				
+			}
+			.fa {
+				width: 1.8rem;
+				max-width: 1.8rem;
+				flex: 0 0 1.8rem;
+				margin-inline: 0.3rem;
 			}
 			&:hover {
 				background: #f1f2f3;

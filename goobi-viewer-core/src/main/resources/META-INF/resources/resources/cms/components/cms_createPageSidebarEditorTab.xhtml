@@ -75,7 +75,45 @@
 											  <input type="checkbox" id="scales#{status.index}" name="scales#{status.index}" jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
 											  	<f:ajax event="change"></f:ajax>
 											  </input>
+
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_RSSFEED'}" >
+	                                        		<i class="fa fa-rss" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- FACETS TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_FACETTING'}" >
+	                                        		<i class="fa fa-list-ul" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- FACETS 2 TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_FIELDFACETS'}" >
+	                                        		<i class="fa fa-list-alt" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- PAGES TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_CMSPAGES'}" >
+	                                        		<i class="fa fa-clone" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- HTML TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_HTML'}" >
+	                                        		<i class="fa fa-code" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- MAP TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_CMSGEOMAP'}" >
+	                                        		<i class="fa fa-map-o" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- SEARCH TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_SEARCH'}" >
+	                                        		<i class="fa fa-search" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- WORK COUNT TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_WORKCOUNT'}" >
+	                                        		<i class="fa fa-circle-o" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- BROWSING TITLE -->
+	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_BROWSING'}" >
+	                                        		<i class="fa fa-list-alt" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	
 											  <label for="scales#{status.index}">#{widget.title.textOrDefault}</label>
+
 											</div>
 										</ui:fragment>
 									</ui:repeat>
