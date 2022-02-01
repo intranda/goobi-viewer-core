@@ -20,17 +20,17 @@
                 <h:panelGroup rendered="#{userBean.admin and adminBean.currentUserGroup != null}">
                     <div class="admin__title-bar">
                         <h:panelGroup rendered="#{adminBean.currentUserGroup.id == null}">
-                            <h2 class="admin__title">#{msg.admin__group_create_new}</h2>
+                            <h1 class="admin__title">#{msg.admin__group_create_new}</h1>
                         </h:panelGroup>
 
                         <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-                            <h2 class="admin__title">#{msg.admin__group_edit}</h2>
+                            <h1 class="admin__title">#{msg.admin__group_edit}</h1>
                         </h:panelGroup>
                     </div>
 
                     <div class="admin__content-inner-content" role="form">
                         <h:form id="editUserGroupGeneral" styleClass="form-horizontal" prependId="false">
-                            <h3>#{msg.general}</h3>
+                            <h2>#{msg.general}</h2>
 
                             <div class="admin__default-block">
                                 <fieldset>
@@ -90,7 +90,7 @@
                             </div>
 
                             <!-- TODO changes made here are not reset when canceling! -->
-                            <h3>#{msg.admin__user_group_manage_members}</h3>
+                            <h2>#{msg.admin__user_group_manage_members}</h2>
                             <div class="admin__default-block">
                                 <p>#{msg.admin__user_group_manage_members_info_text}</p>
 

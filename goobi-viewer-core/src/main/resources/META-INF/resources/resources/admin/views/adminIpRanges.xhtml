@@ -21,7 +21,7 @@
                     <h:form id="adminIpRangesForm" prependId="false">
                         <div class="admin__title-bar">
                             <!-- TITLE -->
-                            <h2 class="admin__title">#{msg.admin__ip_ranges}</h2>
+                            <h1 class="admin__title">#{msg.admin__ip_ranges}</h1>
                             <!-- CREATE NEW IP RANGE -->
                             <a href="#{navigationHelper.getPageUrl('adminIpRangeNew')}/" class="btn btn--default admin__title-bar-action">
                                 #{msg.add}
@@ -39,7 +39,7 @@
                                 <ui:repeat var="ipRange" value="#{adminBean.allIpRanges}">
                                     <div class="admin__boxed-entry -w33">
                                         <div class="row">
-                                            <h3 class="col-12">#{ipRange.name}</h3>
+                                            <h2 class="col-12">#{ipRange.name}</h2>
                                         </div>
                                         <!-- DESCRIPTION -->
                                         <div class="row">
