@@ -202,4 +202,8 @@ public class CustomWidgetEditBean implements Serializable {
     public void setCmsPageMap(Map<CMSPage, Boolean> cmsPageMap) {
         this.cmsPageMap = cmsPageMap;
     }
+    
+    public void refresh() {
+        //NOOP
+    }
 }

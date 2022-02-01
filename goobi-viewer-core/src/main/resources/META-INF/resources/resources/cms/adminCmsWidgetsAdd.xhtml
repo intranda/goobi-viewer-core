@@ -3,8 +3,7 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:o="http://omnifaces.org/ui"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:o="http://omnifaces.org/ui"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
 	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
@@ -82,11 +81,13 @@
 
 											<!-- TITLE -->
 											<viewerForms:textInputField value="#{widget.title.text}"
-												label="#{msg.label__cms_page_title}" required="#{widget.isDefaultLocaleSelected()}"
+												label="#{msg.label__cms_page_title}"
+												required="#{widget.isDefaultLocaleSelected()}"
 												helpText="#{msg.help__cms__edit_widget__title}" />
 											<!-- HTML -->
-											<viewerForms:htmlInputField value="#{widget.htmlText.text}" 
-												label="#{msg.cms_sidebarElement_html}" required="#{widget.isDefaultLocaleSelected()}"
+											<viewerForms:htmlInputField value="#{widget.htmlText.text}"
+												label="#{msg.cms_sidebarElement_html}"
+												required="#{widget.isDefaultLocaleSelected()}"
 												helpText="#{msg.help__cms__edit_widget__html}" />
 										</viewerForms:inputFormBlock>
 									</ui:fragment>
@@ -98,43 +99,43 @@
 											languageSelector="#{widget}">
 											<!-- TITLE -->
 											<viewerForms:textInputField value="#{widget.title.text}"
-												label="#{msg.label__cms_page_title}" required="#{widget.isDefaultLocaleSelected()}"
+												label="#{msg.label__cms_page_title}"
+												required="#{widget.isDefaultLocaleSelected()}"
 												helpText="#{msg.help__cms__edit_widget__title}" />
 										</viewerForms:inputFormBlock>
 
-										<viewerForms:inputFormBlock title="#{msg.cms__edit_widget__settings}">
+										<viewerForms:inputFormBlock
+											title="#{msg.cms__edit_widget__settings}">
 
 											<div class="form-group form-row">
 												<div class="col-2 control-label admin__form-label">
-													<label> #{msg.admin__cms_pages}:
-													</label>
+													<label> #{msg.admin__cms_pages}: </label>
 												</div>
-										
-												<div class="col-9 cms-module__option-control admin__form-input">
-										
+
+												<div
+													class="col-9 cms-module__option-control admin__form-input">
+
 													<ul>
-														<ui:repeat var="var" value="#{customWidgetEditBean.cmsPageMap.keySet().stream().sorted().toList()}">
-										                     <li>
-										                         <label>
-										                             <h:selectBooleanCheckbox type="checkbox" 
-											                             value="#{customWidgetEditBean.cmsPageMap[var]}">
-										                                 <f:ajax event="change" execute="@this" />
-										                             </h:selectBooleanCheckbox>
-										                             <h:outputFormat value="#{var.title}" escape="false">
-										                                </h:outputFormat>
-										                         </label>
-										                     </li>
-										                 </ui:repeat>
+														<ui:repeat var="var"
+															value="#{customWidgetEditBean.cmsPageMap.keySet().stream().sorted().toList()}">
+															<li><label> <h:selectBooleanCheckbox
+																		type="checkbox"
+																		value="#{customWidgetEditBean.cmsPageMap[var]}">
+																		<f:ajax event="change" execute="@this" />
+																	</h:selectBooleanCheckbox> <h:outputFormat value="#{var.title}" escape="false">
+																	</h:outputFormat>
+															</label></li>
+														</ui:repeat>
 													</ul>
 													<ui:fragment rendered="#{not empty cc.attrs.helpText}">
 														<span class="admin__form-help-text">#{msg.cms__edit_widget__collections__help}</span>
 													</ui:fragment>
 												</div>
-										
+
 												<div class="col-1 admin__form-help-icon">
 													<ui:fragment rendered="#{not empty cc.attrs.helpText}">
-														<button type="button" class="btn btn--clean" data-toggle="helptext"
-															aria-label="inline help icon">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
 															<i class="fa fa-question-circle" aria-hidden="true"></i>
 														</button>
 													</ui:fragment>
@@ -147,11 +148,12 @@
 
 									<ui:fragment rendered="#{widget.type == 'WIDGET_FIELDFACETS'}">
 
-										<viewerForms:inputFormBlock title="#{msg.cms__edit_widget__settings}">
+										<viewerForms:inputFormBlock
+											title="#{msg.cms__edit_widget__settings}">
 
 											<viewerForms:singleSelectField
-												label="#{msg.cms__edit_widget__solrfield_label}" required="true"
-												value="#{widget.facetField}"
+												label="#{msg.cms__edit_widget__solrfield_label}"
+												required="true" value="#{widget.facetField}"
 												selectValues="#{cmsBean.getLuceneFields(true)}" var="field"
 												itemValue="#{field}" itemLabel="#{msg[field]}"
 												helpText="#{msg.help__cms__edit_widget__solrfield}" />
@@ -176,11 +178,13 @@
 											languageSelector="#{widget}">
 											<!-- TITLE -->
 											<viewerForms:textInputField value="#{widget.title.text}"
-												label="#{msg.label__cms_page_title}" required="#{widget.isDefaultLocaleSelected()}"
+												label="#{msg.label__cms_page_title}"
+												required="#{widget.isDefaultLocaleSelected()}"
 												helpText="#{msg.help__cms__edit_widget__title}" />
 										</viewerForms:inputFormBlock>
 
-										<viewerForms:inputFormBlock title="#{msg.cms__edit_widget__settings}">
+										<viewerForms:inputFormBlock
+											title="#{msg.cms__edit_widget__settings}">
 
 											<viewerForms:singleSelectField label="#{msg.sortBy}"
 												required="true" value="#{widget.sortField}"
@@ -207,7 +211,8 @@
 
 									</ui:fragment>
 
-									<viewerForms:inputFormBlock title="#{msg.cms__edit_widget__additional_settings}">
+									<viewerForms:inputFormBlock
+										title="#{msg.cms__edit_widget__additional_settings}">
 
 										<viewerForms:textInputField
 											label="#{msg.cms__edit_widget__style__label}"
@@ -232,13 +237,24 @@
 										jsf:action="#{customWidgetEditBean.save()}">#{msg.button__save}
 									</button>
 								</div>
-								
+
 							</div>
-							
+
 							<div class="admin__content-side">
-								<h:panelGroup id="previewGroup" binding="#{customWidgetEditBean.previewGroup}" />
+								<ui:fragment rendered="#{widget != null}">
+									<div class="admin__default-block">
+										<h3>#{msg.title__did_you_know}</h3>
+										<p>#{msg.cms__edit_widget__sidebar_information}</p>
+										<button class="btn d-none" jsf:action="#{customWidgetEditBean.refresh}">
+											<i class="fa fa-refresh"></i>
+											<f:ajax execute="@form" render="previewGroup"></f:ajax>
+										</button>
+										<h:panelGroup id="previewGroup"
+											binding="#{customWidgetEditBean.previewGroup}" />
+									</div>
+								</ui:fragment>
 							</div>
-							
+
 						</div>
 
 					</div>
