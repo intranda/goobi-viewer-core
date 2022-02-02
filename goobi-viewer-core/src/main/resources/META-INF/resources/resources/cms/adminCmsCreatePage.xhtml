@@ -28,9 +28,9 @@
 
                 <h:panelGroup rendered="#{cmsBean.selectedPage != null}">
 	                <div class="admin__title-bar">
-	                    <h2 class="admin__title">
+	                    <h1 class="admin__title">
 	                        #{cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.name]}
-	                    </h2>
+	                    </h1>
 	                    <!-- EXIT -->
                         <a 
                             href="#{request.contextPath}#{navigationHelper.previousViewUrl}"
@@ -297,7 +297,7 @@
 						<div class="modal-content">
 						<h:form>
 							<div class="modal-header">
-								<h4 class="modal-title" id="addSidebarItemModalLabel">#{msg.cms_menu_create_item_title}</h4>
+								<h3 class="modal-title" id="addSidebarItemModalLabel">#{msg.cms_menu_create_item_title}</h3>
 								<button type="button" class="close" data-dismiss="modal">
 									<span aria-hidden="true"> <h:outputText value="&amp;times;" escape="false" />
 									</span> <span class="sr-only">Close</span>

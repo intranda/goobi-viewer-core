@@ -23,7 +23,7 @@
 
 					<div class="admin__title-bar">
 						<!-- TITLE -->
-						<h2 class="admin__title">#{msg.cms__sliders__title}</h2>
+						<h1 class="admin__title">#{msg.cms__sliders__title}</h1>
 						<!-- CREATE NEW NOTE -->
 						<ui:fragment rendered="#{userBean.user.cmsAdmin}">
 							<a href="#{navigationHelper.applicationUrl}admin/cms/slider/new/"
@@ -45,7 +45,7 @@
 						<div class="admin__entry-list -w33">
 							<ui:repeat var="slider" value="#{cmsSliderBean.sliders}">
 								<div class="admin__boxed-entry -w33">
-									<div class="row"><h3 class="col-12">#{slider.name}</h3></div>
+									<div class="row"><h2 class="col-12">#{slider.name}</h2></div>
 									<div class="row"><p class="col-12">#{slider.description}</p></div>
 									<dl class="row">
 										<dt class="col-sm-4">#{msg.label__type}:</dt>

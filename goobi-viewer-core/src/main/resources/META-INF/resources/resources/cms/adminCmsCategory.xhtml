@@ -21,10 +21,10 @@
             <div id="adminCmsCategories">
                 <div class="admin__title-bar">
                     <ui:fragment rendered="#{!cmsCategoriesBean.editing}">
-                        <h2 class="admin__title">#{msg.admin__category_new}</h2>
+                        <h1 class="admin__title">#{msg.admin__category_new}</h1>
                     </ui:fragment>
                     <ui:fragment rendered="#{cmsCategoriesBean.editing}">
-                        <h2 class="admin__title">#{msg.admin__category_edit}</h2>
+                        <h1 class="admin__title">#{msg.admin__category_edit}</h1>
                     </ui:fragment>
                 </div>
 
@@ -32,7 +32,7 @@
 
                     <!-- CREATE / EDIT -->
                     <h:form id="adminCategoryCreateForm" prependId="false">
-                        <h3>#{msg.admin__category_general}</h3>
+                        <h2>#{msg.admin__category_general}</h2>
 
                         <div class="admin__default-block">
                             <fieldset>

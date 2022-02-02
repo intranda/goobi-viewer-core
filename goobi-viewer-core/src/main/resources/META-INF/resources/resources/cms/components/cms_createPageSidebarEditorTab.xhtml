@@ -50,14 +50,14 @@
 							<div class="row">
 								<div class="col-12 col-sm-12 col-md-6 col-lg-6">
 									<div class="sidebar-editor-editor-left">
-										<h3 class="admin__h3">#{msg.cms_menu_visibleComponents}</h3>
+										<h2 class="admin__h3">#{msg.cms_menu_visibleComponents}</h2>
 
 										<ul id="visibleItemList">
 											<ui:repeat var="element" varStatus="status" value="#{cmsBean.selectedPage.sidebarElements}" prependId="false">
 												<li sortposition="item_#{element.sortingId}"><h:panelGroup id="visibleItem">
 														<div class="sidebar-editor-widget-item">
 															<div class="sidebar-editor-widget-item-header">
-																<h4>#{msg[element.type]}</h4>
+																<h3>#{msg[element.type]}</h3>
                                                                 <i class="fa fa-pencil-square-o widget-edit" title="Widget Editor" aria-hidden="true"></i>
 															</div>
 															<div class="sidebar-editor-widget-item-body">
@@ -196,7 +196,7 @@
 										</div>
 										<div class="col-10">
 											<div class="sidebar-editor-editor-right">
-												<h4>#{msg.cms_menu_availableComponents}</h4>
+												<h3>#{msg.cms_menu_availableComponents}</h3>
 		
 												<ul id="availableItemList">
 													<ui:repeat var="element" value="#{cmsBean.selectedPage.unusedSidebarElements}">
@@ -204,7 +204,7 @@
 															<h:panelGroup id="availableItem" rendered="#{element.category != 'geoMap' or geoMapBean.allMaps.size() > 0}">
 																<div class="sidebar-editor-widget-item">
 																	<div class="sidebar-editor-widget-item-header">
-																		<h4>#{msg[element.type]}</h4>
+																		<h3>#{msg[element.type]}</h3>
 		                                                                <i class="fa fa-pencil-square-o widget-edit" title="Widget Editor" aria-hidden="true"></i>
 																	</div>
 		
@@ -212,7 +212,7 @@
 																		<div class="sidebar-editor-item-widget-editor">
 																				<ui:fragment rendered="#{element.category != 'geoMap'}">
 																				<div class="form-group">
-																					<h4>#{msg.cms_sidebarElement_widgetmode}:</h4>
+																					<h3>#{msg.cms_sidebarElement_widgetmode}:</h3>
 																					<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
 																						<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
 																						<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
@@ -228,7 +228,7 @@
 																				</ui:fragment>
 																			<h:panelGroup id="inputHtml" rendered="#{element.hasHtml()}">
 																				<div class="form-group">
-																					<h4>#{msg.cms_sidebarElement_html}:</h4>
+																					<h3>#{msg.cms_sidebarElement_html}:</h3>
 																					<h:inputTextarea value="#{element.html}" styleClass="form-control" />
 																				</div>
 																			</h:panelGroup>

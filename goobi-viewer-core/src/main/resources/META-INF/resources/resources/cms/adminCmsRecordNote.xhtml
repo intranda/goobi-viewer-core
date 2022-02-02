@@ -2,7 +2,7 @@
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	
+
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
@@ -17,7 +17,7 @@
 				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsRecordNotes')}" />
 		</f:metadata>
 	</ui:define>
-	
+
 	<ui:param name="note" value="#{cmsRecordNoteEditBean.note}"></ui:param>
 
 	<ui:define name="content">
@@ -29,7 +29,7 @@
 			<h:panelGroup id="mainGroup" layout="block" rendered="#{userBean.user.cmsAdmin}">
 				<!-- TITLE -->
 				<div class="admin__title-bar">
-					<h2 class="admin__title">#{cmsRecordNoteEditBean.newNote ? msg.cms__record_notes__add_note : msg.cms__record_notes_edit__title}</h2>
+					<h1 class="admin__title">#{cmsRecordNoteEditBean.newNote ? msg.cms__record_notes__add_note : msg.cms__record_notes_edit__title}</h1>
 				</div>
 
 				<div class="admin__content-inner-content">
@@ -38,16 +38,16 @@
 					<h:form id="selectRecord"
 						prependId="false"
 						rendered="#{!cmsRecordNoteEditBean.recordSelected}">
-					
+
 						<div class="form-horizontal form-group admin__content-wrapper">
 							<div class="w-100">
-								<h3 class="admin__content-inner-content__form_title mt-0">
+								<h2 class="admin__content-inner-content__form_title mt-0">
 								#{msg.general}
 									<span class="ajax_loader"> <img
 										src="#{request.contextPath}/resources/images/infinity_loader.gif"
 										class="img-responsive" alt="Waiting..." />
 									</span>
-								</h3>
+								</h2>
 								<div class="admin__default-block">
 										<div>
 											<label for="inputRecordIdentifier">#{msg.cms__record_notes__input_idenfier_or_query}:
@@ -64,7 +64,7 @@
 					                            	</h:selectOneRadio>
 				                            	</div>
 				                            	<div class="admin__form-input cms-module__option-control">
-				
+
 													<h:message for="inputRecordIdentifier"
 														errorClass="-validation-message -danger"></h:message>
 													<div class="-validation-mark">
@@ -93,23 +93,23 @@
 					                            	</h:selectOneRadio>
 				                            	</div>
 				                            	<div class="admin__form-input cms-module__option-control">
-				
+
 													<h:message for="inputQuery"
-														infoClass="-validation-message -success" 
+														infoClass="-validation-message -success"
 			                        					warnClass="-validation-message -warning"
 														errorClass="-validation-message -danger" />
 													<div class="-validation-mark">
 														<i class="fa fa-check" aria-hidden="true"></i> <i
 															class="fa fa-exclamation" aria-hidden="true"></i>
 													</div>
-													
+
 													<h:inputText id="inputQuery" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'MULTI'}"
 														styleClass="form-control -validation-input"
 														requiredMessage="#{msg.info__input_required}"
 														required="#{cmsRecordNoteEditBean.currentNoteType eq 'MULTI'}"
 														validatorMessage="#{msg.inline_help__solr_query_danger}"
 														value="#{cmsRecordNoteEditBean.recordQuery}">
-														
+
 														<f:validator validatorId="solrQueryValidator"
 															for="inputQuery" />
 													</h:inputText>
@@ -119,18 +119,18 @@
 		                            	</div>
 									</div>
 								</div>
-								
+
 								<div
 									class="row no-gutters justify-content-end admin__final-actions">
 
 									<a class="btn btn--cancel" tabindex="3"
 										href="#{cmsRecordNoteEditBean.returnUrl}">#{msg.button__abort}
-									</a> 
+									</a>
 									<h:commandButton class="btn btn--default" tabindex="2"
 									onclick="viewerJS.showLoader()" value="#{msg.button__continue}">
 										<f:ajax render="mainGroup" execute="@form" onevent="viewerJS.initTinyMCE"></f:ajax>
 									</h:commandButton>
-									
+
 								</div>
 							</div>
 						</div>
@@ -141,37 +141,37 @@
 							<div class="admin__content-main -sticky -refreshHCsticky">
 								<h:form id="editRecordNote" prependId="false">
 									<div class="admin__record-notes-box-editable">
-									
+
 									<ui:fragment rendered="#{cmsRecordNoteEditBean.isMultiRecordNote()}">
-										<h3>#{msg.general}</h3>
-										
+										<h2>#{msg.general}</h2>
+
 										<div class="admin__default-block">
-										
+
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
 												<label for="inputQuery2">#{msg.cms__record_notes__type_query}:
 												</label>
 												<span class="admin__label-required-field">(#{msg.form__required_field})</span>
 											</div>
-											
+
 											<div class="cms-module__option-control col-9 admin__form-input">
-											
+
 											<h:panelGroup id="inputQueryGroup">
-												
+
 												<div class="cms-module__option-message">
-												
+
 													<h:messages for="inputQuery2"
 														infoClass="cms-module__option-message-status success"
 														warnClass="cms-module__option-message-status warning"
 														errorClass="cms-module__option-message-status danger" />
-														
+
 													<div class="cms-module__option-message-mark">
 														<i class="fa fa-check" aria-hidden="true"></i> <i
 															class="fa fa-exclamation" aria-hidden="true"></i>
 													</div>
-													
+
 												</div>
-												
+
 													<h:inputText id="inputQuery2" tabindex="1"
 														styleClass="form-control -validation-input"
 														requiredMessage="#{msg.info__input_required}"
@@ -180,7 +180,7 @@
 														<f:validator validatorId="solrQueryValidator" for="inputQuery2" />
 														<f:ajax event="blur" render="inputQueryGroup" />
 													</h:inputText>
-												
+
 												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
 											</h:panelGroup>
 											</div>
@@ -188,20 +188,20 @@
 										</div>
 										<script>$(document).ready(() => $("#inputQuery2").trigger("blur"))</script>
 									</ui:fragment>
-									
-									<h3>#{msg.cms__record_notes_edit_text__title}</h3>
-									
+
+									<h2>#{msg.cms__record_notes_edit_text__title}</h2>
+
 										<div class="admin__language-tabs">
 											<viewerComponent:localeSelector
 												object="#{cmsRecordNoteEditBean}" />
 										</div>
-				
+
 										<div class="admin__default-block">
 											<div class="tab-content">
 												<!-- LOCALIZE TABS -->
 												<h:panelGroup
 													rendered="#{cmsRecordNoteEditBean.selectedLocale != null}">
-																										
+
 													<div class="form-group form-row">
 														<div class="col-2 control-label admin__form-label">
 															<label for="recordNoteTitle">#{msg.title}: <ui:fragment
@@ -210,7 +210,7 @@
 																</ui:fragment>
 															</label>
 														</div>
-				
+
 														<div
 															class="col-9 admin__form-input cms-module__option-control">
 															<h:message for="recordNoteTitle"
@@ -234,10 +234,10 @@
 															</button>
 														</div>
 													</div>
-				
+
 													<!-- EDIT RECORD NOTE -->
 													<div class="form-group form-row">
-				
+
 														<div class="col-2 control-label admin__form-label">
 															<label for="recordNoteText">#{msg.cms__record_notes_table__text_heading}: <ui:fragment
 																	rendered="#{cmsRecordNoteEditBean.isDefaultLocaleSelected()}">
@@ -245,7 +245,7 @@
 																</ui:fragment>
 															</label>
 														</div>
-				
+
 														<div
 															class="col-9 admin__form-input input_form__option_control">
 															<h:message for="recordNoteText"
@@ -270,37 +270,37 @@
 													</div>
 												</h:panelGroup>
 											</div>
-											
+
 											<!-- SHOW OR HIDE RECORD NOTE -->
 										</div>
-							
+
 									</div>
-	
+
 									<!-- ABORT/SHOW/SAVE RECORD NOTE -->
 									<div
 										class="row no-gutters justify-content-end admin__final-actions">
-				
+
 										<a class="btn btn--cancel"
 											href="#{cmsRecordNoteEditBean.returnUrl}">#{msg.button__abort}
-										</a> 
+										</a>
 										<button class="btn btn--success"
 											jsf:action="#{cmsRecordNoteEditBean.save()}">
 											#{msg.button__save}
 											<f:ajax render="@form :messages :noteInfoGroup" execute="@form"></f:ajax>
 										</button>
 									</div>
-									
+
 								</h:form>
 							</div>
-							
+
 							<!-- SIDEBAR START -->
 							<div class="admin__content-side">
-							
+
 								<!-- VISIBLE YES / NO -->
 								<div class="admin__default-block">
 									<h:form>
 										<div class="admin__record-notes-visibility">
-											<h3>#{msg.cms__record_notes_visibility}</h3>
+											<h2>#{msg.cms__record_notes_visibility}</h2>
 											<div class="admin__form-help-text in mb-2">
 											#{msg.cms__record_notes_edit_text__toggle_help}
 											</div>
@@ -312,10 +312,10 @@
 									</h:form>
 
 								</div>
-							
+
 								<!-- RECORD INFOS + DISPLAY LINK -->
 								<ui:fragment rendered="#{cmsRecordNoteEditBean.isSingleRecordNote()}">
-									
+
 									<h:panelGroup layout="block" id="noteInfoShowRecord" styleClass="admin__default-block">
 										<h2>#{msg.show}</h2>
 										<div class="admin__form-help-text in mb-4 admin__record-notes-info-box">
@@ -326,8 +326,8 @@
 													<a class="btn btn--default" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(note)}">#{msg.show}</a>
 					                            </div>
 											</div>
-									</h:panelGroup>								
-									
+									</h:panelGroup>
+
 									<div class="admin__default-block">
 										<h2>#{msg.cms__record_notes_select_record__title}</h2>
 										<div class="admin__record-notes-info-box">
@@ -346,9 +346,9 @@
 											</div>
 										</div>
 									</div>
-								</ui:fragment>								
-								
-								
+								</ui:fragment>
+
+
 								<ui:fragment rendered="#{cmsRecordNoteEditBean.isMultiRecordNote()}">
 								<h:panelGroup layout="block" id="noteInfoGroup" styleClass="admin__default-block">
 									<h2>#{msg.show}</h2>
@@ -366,12 +366,12 @@
 									</ui:fragment>
 								</h:panelGroup>
 								</ui:fragment>
-								
+
 								<div class="admin__default-block">
                                     <h2>#{msg.cms__record_notes_text_editor_hints__title}</h2>
                                     <h:outputText escape="false" value="#{msg.cms__record_notes_text_editor_hints__text}"></h:outputText>
 								</div>
-								
+
 							<!-- SIDEBAR EOL -->
 							</div>
 						</div>
@@ -379,7 +379,7 @@
 				</div>
 			</h:panelGroup>
 	        <script>
-	        
+
 	        viewerJS.jsfAjax.success.pipe(rxjs.operators.merge(rxjs.fromEvent(window, "load")))
 	        .subscribe(e => {
 	            console.log("set checkboxes");

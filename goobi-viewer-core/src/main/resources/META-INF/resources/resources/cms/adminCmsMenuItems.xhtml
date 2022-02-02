@@ -20,7 +20,7 @@
                 <h:form id="editMenuForm" prependId="false">
                     <div class="admin__title-bar">
                         <!-- TITLE -->
-                        <h2 class="admin__title">#{msg.cms_menu_heading}</h2>
+                        <h1 class="admin__title">#{msg.cms_menu_heading}</h1>
                     </div>
 
 					<div class="admin__content-inner-content">
@@ -60,7 +60,7 @@
                         <div class="cms-menu__editor">
                             <!-- VISIBLE ITEMS -->
                             <div class="cms-menu__visible-items">
-                                <h3 class="admin__h3">#{msg.cms_menu_main_menu}</h3>
+                                <h2 class="admin__h3">#{msg.cms_menu_main_menu}</h2>
 
                                 <ul id="visibleItemList" class="cms-menu__visible-items-list">
                                     <ui:repeat varStatus="status" var="visibleItem" value="#{cmsNavigationBean.visibleMenuItems}">
@@ -172,16 +172,16 @@
 
                             <!-- AVAILABLE ITEMS -->
                             <div class="cms-menu__available-items">
-                                <h3 class="admin__h3">#{msg.cms_menu_available_items}</h3>
+                                <h2 class="admin__h3">#{msg.cms_menu_available_items}</h2>
 
                                 <div class="cms-menu__available-items-list">
                                     <ul>
                                         <!-- PAGES -->
                                         <li>
-                                            <h4 data-toggle="available-items" class="in available-item__heading">
+                                            <h3 data-toggle="available-items" class="in available-item__heading">
                                                 #{msg.cms_menu_pages}
                                                 <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                            </h4>
+                                            </h3>
 
                                             <div class="cms-menu__available-items-toggle in">
                                                 <div class="cms-menu__available-items-list-pages">
@@ -210,10 +210,10 @@
 
                                         <!-- ADD MENU ITEM -->
                                         <li>
-                                            <h4 class="available-item__heading" data-toggle="available-items">
+                                            <h3 class="available-item__heading" data-toggle="available-items">
                                                 #{msg.cms_menu_create_item}
                                                 <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                            </h4>
+                                            </h3>
 
                                             <div class="cms-menu__available-items-toggle cms-menu__available-items-list-add-item">
                                                 <!-- OPTION -->
