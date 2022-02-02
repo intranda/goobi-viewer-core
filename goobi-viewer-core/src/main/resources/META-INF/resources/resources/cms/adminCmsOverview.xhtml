@@ -1,7 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                
+
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -41,32 +41,32 @@
                             <!-- FILTER -->
                             <!-- TODO add categories and subtheme to this filter, too -->
                             <div class="admin__table-filter">
-                                <viewerComponent:dataTableColumnFilter key="admin__cms_page_search" 
+                                <viewerComponent:dataTableColumnFilter key="admin__cms_page_search"
                                 filter="#{cmsBean.lazyModelPages.getFilter(cmsBean.cmsPagesFilter)}"/>
                             </div>
                         </div>
 
 
                         <!-- ALL PAGES TABLE -->
-                        <div id="cmsOverviewWrapper" class="admin__table-content">
+                        <div id="cmsOverviewWrapper" class="admin__table-content" role="grid" aria-label="Overview of all pages">
                             <!-- TITLE ROW -->
-                            <div class="row no-gutters admin__table-title">
+                            <div class="row no-gutters admin__table-title" role="row">
                                 <!-- PAGE COL -->
-                                <div class="col-6 d-flex ">#{msg.page}</div>
+                                <div class="col-6 d-flex" role="columnheader">#{msg.page}</div>
 
                                 <!-- CLASSIFICATIONS COL -->
-                                <div class="col-2 d-flex">
+                                <div class="col-2 d-flex" role="columnheader">
                                     #{msg.admin__cms_categories}
                                 </div>
 
                                 <!-- DATE COL -->
-	                            <div class="col-2 d-flex">                            
+	                            <div class="col-2 d-flex">
 	                                <viewerComponent:sortingArrow filterType="dateUpdated" colHeading="#{msg.cms_pageMetadata_lastEdited}" list="#{cmsBean.lazyModelPages}" />
 	                            </div>
 
                                 <!-- TRANSLATIONS COL -->
                                 <div class="col-2">
-	                                <div class="row no-gutters">
+	                                <div class="row no-gutters" role="columnheader" aria-label="Shows available language versions of a page">
 	                                    <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
 	                                        <div class="col-2 d-flex">#{locale.language}</div>
 	                                    </c:forEach>
@@ -77,18 +77,18 @@
 
                             <!-- INDIVIDUAL PAGE ROWS -->
                             <ui:repeat var="page" value="#{cmsBean.displayedPages}">
-                                <div class="row no-gutters admin__table-entry #{page.validityStatus == 'VALID' ? '' : 'invalid_template'} #{page.published == true ? '' : '-unpublished'}">
+                                <div class="row no-gutters admin__table-entry #{page.validityStatus == 'VALID' ? '' : 'invalid_template'} #{page.published == true ? '' : '-unpublished'}" role="row">
                                     <div class="col-6 d-flex">
                                         <ui:fragment rendered="#{page.validityStatus == 'VALID'}">
-                                        	<div class="admin__table-img align-self-center">
+                                        	<div class="admin__table-img align-self-center" role="presentation">
                                             	<img alt="#{page.template.name}" src="#{cmsBean.getIconUrlByTemplateId(page.templateId)}" />
                                             </div>
                                         </ui:fragment>
-                                        <ui:fragment rendered="#{page.validityStatus != 'VALID'}">
+                                        <ui:fragment rendered="#{page.validityStatus != 'VALID'}" role="gridcell">
                                             <img class="admin__table-img align-self-center" alt="#{msg.cms_invalid_no_template}" src="#{request.contextPath}/resources/cms/images/img_missing_template.png" />
                                         </ui:fragment>
 
-                                        <div class="admin__table-data">
+                                        <div class="admin__table-data" role="gridcell">
                                             <span class="admin__table-name #{page.published == true ? '' : '-unpublished'}">#{page.title}</span>
                                             <ui:fragment rendered="#{page.title != page.menuTitle}">
                                                 <span class="admin__table-additional-info">#{page.menuTitle}</span>
@@ -110,7 +110,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-2 d-flex align-items-center align-content-center flex-wrap">
+                                    <div class="col-2 d-flex align-items-center align-content-center flex-wrap" role="gridcell">
                                         <ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
                                         <span class="badge badge-warning">#{msg.admin__cms_static_page}</span>
                                         </ui:fragment>
@@ -121,21 +121,21 @@
                                             <div class="badge badge-violet">#{category.name}</div>
                                         </ui:repeat>
                                     </div>
-                                     <div class="col-2 d-flex align-items-center">
+                                     <div class="col-2 d-flex align-items-center" role="gridcell">
                                         <h:outputText value="#{page.dateUpdated}">
                                             <f:converter converterId="localDateTimeConverter" />
                                             <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                                         </h:outputText>
                                     </div>
-                                    <div class="col-2 d-flex flex-column justify-content-center">
-	                                    <div class="row no-gutters">
+                                    <div class="col-2 d-flex flex-column justify-content-center" role="gridcell" aria-label="#{cmsBean.getAllLocales()}">
+	                                    <div class="row no-gutters" role="presentation">
 	                                        <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
 	                                            <div class="col-2">
 	                                                <!-- LANGUAGE COMPLETE -->
 	                                                <ui:fragment rendered="#{page.isLanguageComplete(locale)}">
 	                                                    <i class="fa fa-check-square-o" aria-hidden="true"></i>
 	                                                </ui:fragment>
-	
+
 	                                                <!-- LANGUAGE INCOMPLETE -->
 	                                                <ui:fragment rendered="#{!page.isLanguageComplete(locale)}">
 	                                                    <i class="fa fa-square-o" aria-hidden="true"></i>
