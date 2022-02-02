@@ -5,88 +5,151 @@
 /* MY SEARCHES */
 /* BLOCK */
 .my-searches {
-	/* ELEMENT */
-	h2 {}
-	&__table {
-		thead {
-            tr {
-                th {
-                    &:nth-child(1) {}
-                    &:nth-child(2) {}
-                    &:nth-child(3) {
-                    	text-align: center;
-                    }
-                }
-            }
+  /* ELEMENT */
+  h2 {
+  }
+  &__table {
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+    * {
+      border-left: 0 !important;
+      border-right: 0 !important;
+      border-top: 0 !important;
+      border-bottom: 0 !important;
+    }
+    &__actions {
+      display: flex;
+      a,
+      button {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        &:focus,
+        &:hover,
+        &:active {
+          text-decoration: none;
+          opacity: 1;
+          transition: opacity 0.2s ease;
         }
-        tbody {
-            tr {
-                td {
-                	&:nth-child(1) {}
-                    &:nth-child(2) {}
-                    &:nth-child(3) {
-                    	text-align: center;
-                    }
-                }
-            }
+      }
+    }
+    tr {
+      &:hover {
+        .my-searches__table__actions {
+          a,
+          button {
+            /* Show on hovering the whole row */
+            opacity: 1;
+            transition: opacity 0.2s ease;
+          }
         }
-	}
-	&__action,
-	&__delete-button {
-		display: inline-block;
-    	padding: 0 5px;
-		text-decoration: none;
-		&:hover,
-		&:active,
-		&:focus {
-			text-decoration: none;
-		}
-	}
-	&__action {}
-	&__delete-button {}
-	&__delete-modal {}
+      }
+    }
+    th {
+    }
+    thead {
+      border-bottom: 1px solid #6f6f6f !important;
+      tr {
+        th {
+          &:nth-child(1) {
+          }
+          &:nth-child(2) {
+          }
+          &:nth-child(3) {
+            text-align: center;
+          }
+        }
+      }
+    }
+    tbody {
+      tr {
+        &:hover {
+          background: #f7f7f7;
+        }
+        td {
+          &:nth-child(1) {
+          }
+          &:nth-child(2) {
+          }
+          &:nth-child(3) {
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+  &__action,
+  &__delete-button {
+    display: inline-block;
+    padding: 0 5px;
+    text-decoration: none;
+    &:hover,
+    &:active,
+    &:focus {
+      text-decoration: none;
+    }
+    &:first-child {
+      padding-left: 0;
+    }
+  }
+  &__action {
+  }
+  &__delete-button {
+  }
+  &__delete-modal {
+  }
 }
 
 /* DEPRECATED SINCE 3.4 */
 #mySearches {
-    h2 {}
-    #my_saved_searches_data_table {
-        thead {
-            tr {
-                th {
-                    &:nth-child(1) {}
-                    &:nth-child(2) {}
-                    &:nth-child(3) {
-                    	text-align: center;
-                    }
-                }
-            }
+  h2 {
+  }
+  #my_saved_searches_data_table {
+    thead {
+      tr {
+        th {
+          &:nth-child(1) {
+          }
+          &:nth-child(2) {
+          }
+          &:nth-child(3) {
+            text-align: center;
+          }
         }
-        tbody {
-            tr {
-                td {
-                	&:nth-child(1) {}
-                    &:nth-child(2) {}
-                    &:nth-child(3) {
-                    	text-align: center;
-                    	button {
-                    		padding: 0 5px;
-                    	}
-                    }
-                }
-            }
-        }
+      }
     }
+    tbody {
+      tr {
+        td {
+          &:nth-child(1) {
+          }
+          &:nth-child(2) {
+          }
+          &:nth-child(3) {
+            text-align: center;
+            button {
+              padding: 0 5px;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

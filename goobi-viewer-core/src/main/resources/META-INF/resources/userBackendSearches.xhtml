@@ -43,25 +43,13 @@
 	                            <f:facet name="header">
 	                                <h:outputText value="#{msg.name}" />
 	                            </f:facet>
-	                            <h:commandLink action="#{searchBean.executeSavedSearchAction(search)}">
-	                                <h:outputText value="#{search.name}" escape="true" />
+	                            <div>#{search.name}</div>
+	                            <div class="my-searches__table__actions">
+	                            <h:commandLink
+																action="#{searchBean.executeSavedSearchAction(search)}"
+	                              styleClass="my-searches__action">
+	                                <h:outputText value="#{msg.show}" escape="true" />
 	                            </h:commandLink>
-	                        </h:column>
-	                        <!-- DATE -->
-	                        <h:column>
-	                            <f:facet name="header">
-	                                <h:outputText value="#{msg.MD_DATEOTHER}" />
-	                            </f:facet>
-	                            <h:outputText value="#{search.dateUpdated}">
-	                                <f:converter converterId="localDateTimeConverter" />
-	                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
-	                            </h:outputText>
-	                        </h:column>
-	                        <!-- ACTION -->
-	                        <h:column>
-	                            <f:facet name="header">
-	                                <h:outputText value="#{msg.action}" />
-	                            </f:facet>
 	                            <!-- NEW HITS NOTIFICATION -->
 	                            <ui:fragment rendered="#{search.newHitsNotification}">
 	                                <h:commandLink
@@ -76,7 +64,7 @@
 	                                    action="#{search.toggleNotifications}"
 	                                    styleClass="my-searches__action"
 	                                    title="#{msg.user_mySearches_enableNotifications}">
-	                                    <i class="fa fa-envelope-o" aria-hidden="true"></i>
+										#{msg.email}
 	                                </h:commandLink>
 	                            </ui:fragment>
 	                            <!-- DELETE SEARCH BUTTON -->
@@ -86,7 +74,7 @@
 	                                data-toggle="modal"
 	                                data-backdrop="false"
 	                                title="#{msg.delete}">
-	                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+									#{msg.delete}
 	                            </button>
 	                            <!-- DELETE SEARCH MODAL -->
 	                            <div class="modal fade my-searches__delete-modal" tabindex="-1" role="dialog">
@@ -121,6 +109,17 @@
 	                                </div>
 									<div class="alt-backdrop" data-dismiss="modal"></div>
 	                            </div>
+	                            </div> <!-- end my-searches__table__actions -->
+	                        </h:column>
+	                        <!-- DATE -->
+	                        <h:column>
+	                            <f:facet name="header">
+	                                <h:outputText value="#{msg.MD_DATEOTHER}" />
+	                            </f:facet>
+	                            <h:outputText value="#{search.dateUpdated}">
+	                                <f:converter converterId="localDateTimeConverter" />
+	                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+	                            </h:outputText>
 	                        </h:column>
 	                    </h:dataTable>
 	                </h:form>
