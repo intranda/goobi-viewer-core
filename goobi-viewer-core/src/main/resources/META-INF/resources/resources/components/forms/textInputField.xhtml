@@ -12,6 +12,8 @@
 		<composite:attribute name="required" required="false" default="false" type="java.lang.Boolean" />
 		<composite:attribute name="requiredMessage" required="false" default="#{msg.info__input_required}"></composite:attribute>
 		<composite:attribute name="helpText" required="false" default=""></composite:attribute>
+		<composite:attribute name="validatorId" required="false" default="anyStringValidator"></composite:attribute>
+		<composite:attribute name="validatorMessage" required="false" default=""></composite:attribute>
 	</composite:interface>
 
 	<composite:implementation>
@@ -27,7 +29,10 @@
 
 			<div class="col-9 cms-module__option-control admin__form-input">
 
-				<h:message for="#{cc.attrs.clientId}_input" errorClass="-validation-message -danger"></h:message>
+				<h:message for="#{cc.attrs.clientId}_input"
+														infoClass="-validation-message -success"
+			                        					warnClass="-validation-message -warning"
+														errorClass="-validation-message -danger" />
 				<div class="-validation-mark">
 					<i class="fa fa-check" aria-hidden="true"></i>
 					<i class="fa fa-exclamation" aria-hidden="true"></i>
@@ -35,9 +40,12 @@
 
 				<h:inputText value="#{cc.attrs.value}" id="#{cc.attrs.clientId}_input"
 					label="#{cc.attrs.clientId}_input" styleClass="form-control -validation-input"
-					required="#{cc.attrs.required}" requiredMessage="#{cc.attrs.requiredMessage}">
+					required="#{cc.attrs.required}" requiredMessage="#{cc.attrs.requiredMessage}" validatorMessage="#{cc.attrs.validatorMessage}">
 					<f:passThroughAttribute name="aria-label" value="#{cc.attrs.label}" />
+					<f:validator validatorId="#{cc.attrs.validatorId}" for="#{cc.attrs.clientId}_input"  />
 				</h:inputText>
+				
+				
 				<ui:fragment rendered="#{not empty cc.attrs.helpText}">
 					<span class="admin__form-help-text">#{cc.attrs.helpText}</span>
 				</ui:fragment>

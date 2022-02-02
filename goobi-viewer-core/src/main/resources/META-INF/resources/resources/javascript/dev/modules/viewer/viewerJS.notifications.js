@@ -158,7 +158,6 @@ var viewerJS = ( function( viewer ) {
     	
 	function showJsfMessagesAsSweetAlert() {
 		let $messages = $(".messages #messages");
-		//console.log("showJsfMessagesAsSweetAlert", $messages);
 		//handle error messages
 		$messages.children(".alert.alert-danger").each((index, child) => {
 			//show error message

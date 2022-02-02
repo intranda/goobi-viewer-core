@@ -2836,6 +2836,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public List<FacetItem> getFieldFacetValues(String field, int num, String filterQuery) throws IndexUnreachableException, PresentationException {
+        try {
         num = num <= 0 ? Integer.MAX_VALUE : num;
         String query = "+(ISWORK:* OR ISANCHOR:*) " + SearchHelper.getAllSuffixes();
         if (StringUtils.isNotBlank(filterQuery)) {
@@ -2852,6 +2853,10 @@ public class SearchBean implements SearchInterface, Serializable {
                 .sorted((f1, f2) -> Long.compare(f2.getCount(), f1.getCount()))
                 .limit(num)
                 .collect(Collectors.toList());
+        } catch(PresentationException e) {
+            logger.warn("Error rendering field facet values: {}", e.toString());
+            return Collections.emptyList();
+        }
     }
 
     /**

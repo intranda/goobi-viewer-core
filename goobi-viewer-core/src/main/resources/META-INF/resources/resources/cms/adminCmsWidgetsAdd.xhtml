@@ -179,7 +179,8 @@
 											<viewerForms:textInputField
 												label="#{msg.cms__edit_widget__filter_query_label}"
 												required="false" value="#{widget.filterQuery}"
-												helpText="#{msg.help__cms__edit_widget__filter_query_label}" />
+												helpText="#{msg.help__cms__edit_widget__filter_query_label}"
+												validatorId="solrQueryValidator" validatorMessage="#{msg.inline_help__solr_query_danger}"/>
 
 											<viewerForms:singleSelectField label="#{msg.cms_itemCount}"
 												required="false" value="#{widget.numEntries}"
@@ -213,7 +214,8 @@
 											<viewerForms:textInputField
 												label="#{msg.cms__edit_widget__filter_query_label}"
 												required="false" value="#{widget.filterQuery}"
-												helpText="#{msg.help__cms__edit_widget__filter_query_label}" />
+												helpText="#{msg.help__cms__edit_widget__filter_query_label}"
+												validatorId="solrQueryValidator" validatorMessage="#{msg.inline_help__solr_query_danger}" />
 
 											<viewerForms:singleSelectField label="#{msg.cms_itemCount}"
 												required="false" value="#{widget.numEntries}"
