@@ -4,7 +4,7 @@
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:o="http://omnifaces.org/ui"	
+    xmlns:o="http://omnifaces.org/ui"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -16,16 +16,16 @@
     <composite:implementation>
 
     <ui:fragment rendered="#{userBean.admin}">
-    
+
    	<!-- ADMIN FRONTEND TOPBAR (ACTION MENU) -->
-   	<div class="admin__topbar-frontend" role="navigation">
-   	
+   	<nav class="admin__topbar-frontend" aria-label="Admin navigation">
+
    		<!-- LOGO MENU -->
    		<div class="admin__topbar-frontend-logo-menu -dropdown">
    			<div class="admin__topbar-frontend-logo">
 				<ui:include src="/resources/images/goobi_logo.svg" alt="Goobi Viewer"/>
 			</div>
-      <ul class="admin__topbar-frontend-dropdown"> 
+      <ul class="admin__topbar-frontend-dropdown">
         <li><a href="https://goobi.io" target="_blank" rel="noopener">#{msg.admin__about_goobi}</a></li>
         <li><a href="https://docs.goobi.io/" target="_blank" rel="noopener">#{msg.admin__documentation}</a></li>
         <li><a href="https://community.goobi.io/" target="_blank" rel="noopener">#{msg.admin__community}</a></li>
@@ -74,7 +74,7 @@
                     <f:ajax event="update" render="hotfolderFileCountGroup" />
                 </o:socket>
             </div>
-		
+
             <!-- LOGOUT -->
             <div class="admin__topbar-frontend-logout">
                 <h:form>
@@ -85,7 +85,7 @@
                 </h:form>
             </div>
     	</div>
-   	</div>
+   	</nav>
 
 </ui:fragment>
 

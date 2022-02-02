@@ -23,7 +23,7 @@
                     <h:form id="adminTranslations" prependId="false">
                         <div class="admin__title-bar">
                             <!-- TITLE -->
-                            <h2 class="admin__title">#{msg.admin__translations}</h2>
+                            <h1 class="admin__title">#{msg.admin__translations}</h1>
                             <!-- ADD NEW TRANSLATIONS -->
                             <ui:fragment rendered="#{adminBean.newMessageEntryModeAllowed and adminBean.hasAccessPermissingForTranslationFiles()}">
                                 <a href="#{navigationHelper.getPageUrl('adminTranslationsNew')}/" class="btn btn--default admin__title-bar-action">
@@ -48,7 +48,7 @@
 		                                        <div class="row">
 		                                        	<div class="col-12 col-lg-9">
 		                                        	<!-- GROUP TITLE -->
-		                                            <h3>#{msg[group.name]}</h3>
+		                                            <h2>#{msg[group.name]}</h2>
 		                                            
 		                                       		<!-- DESCRIPTION -->
 		                                            <ui:fragment rendered="#{group.description ne ''}">
@@ -93,7 +93,7 @@
 	                            </c:when>
 	                            <c:otherwise>
 	                            	<div class="admin__boxed-entry -danger">
-	                            		<h3>#{msg.admin__translations__missing_write_permissions__title}</h3>
+	                            		<h2>#{msg.admin__translations__missing_write_permissions__title}</h2>
 	                            		<h:outputText escape="false" value="#{msg.admin__translations__missing_write_permissions__description}"></h:outputText>
 	                            	</div>
 	                            </c:otherwise>

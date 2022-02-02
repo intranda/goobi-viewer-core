@@ -26,10 +26,10 @@
 				<div class="admin__title-bar">
 					<!-- TITLE -->
 					<c:if test="#{cmsSliderEditBean.newSlider}">
-						<h2 class="admin__title">#{msg.cms__add_slider__title}</h2>
+						<h1 class="admin__title">#{msg.cms__add_slider__title}</h1>
 					</c:if>
 					<c:if test="#{!cmsSliderEditBean.newSlider}">
-						<h2 class="admin__title">#{msg.cms__edit_slider__title}</h2>
+						<h1 class="admin__title">#{msg.cms__edit_slider__title}</h1>
 					</c:if>
 				</div>
 
@@ -48,7 +48,7 @@
 									<div class="admin__boxed-entry -w25">
 										<div class="d-flex flex-column h-100">
 											<div>
-												<h3>#{msg[type.label]}</h3>
+												<h2>#{msg[type.label]}</h2>
 											</div>
 											<div class="mb-2">
 												<p>#{msg['cms__slider_type_description__'.concat(type.name().toLowerCase())]}</p>
@@ -71,12 +71,12 @@
 	
 							<div class="form-horizontal form-group admin__content-wrapper">
 								<div class="w-100">
-									<h3 class="admin__content-inner-content__form_title mt-0">
+									<h2 class="admin__content-inner-content__form_title mt-0">
 										#{msg.general} <span class="ajax_loader"> <img
 											src="#{request.contextPath}/resources/images/infinity_loader.gif"
 											class="img-responsive" alt="Waiting..." />
 										</span>
-									</h3>
+									</h2>
 									<div class="admin__default-block">
 	
 										<!-- TITLE -->
@@ -377,7 +377,7 @@
 									</div>
 									<h:panelGroup id="previewSlider" >
 										<h:panelGroup layout="block" class="cms-sliders-select__preview" rendered="#{not slider.isEmpty()}">
-											<h3>#{msg.title__preview}</h3>
+											<h2>#{msg.title__preview}</h2>
 <!-- 												<iframe src="#{request.contextPath}" id="previewIframeSlider"></iframe> -->
 											<div class="cms-sliders-select__preview-inner">
 												<h:outputText id="previewSource" class="hidden" value="#{cmsSliderEditBean.sliderSource}"></h:outputText>

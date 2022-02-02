@@ -24,7 +24,7 @@
                     <h:form id="adminTranslationsEditForm" prependId="false">
                         <div class="admin__title-bar">
                             <!-- TITLE -->
-                            <h2 class="admin__title">#{msg[adminBean.currentTranslationGroup.name]}</h2>
+                            <h1 class="admin__title">#{msg[adminBean.currentTranslationGroup.name]}</h1>
                         </div>
 
                         <div class="admin__content-inner-content">
@@ -37,7 +37,7 @@
 
                             <div class="admin__content-wrapper">
                                 <div class="admin__content-main -sticky -refreshHCsticky">
-                                    <h3>#{msg.admin__translations}</h3>
+                                    <h2>#{msg.admin__translations}</h2>
 
                                     <ui:fragment rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                         <div class="admin__default-block">
@@ -137,7 +137,7 @@
                             <ui:fragment rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                 <!-- NEW KEY INFOBOX -->
                                 <div class="admin__default-block">
-                                    <h3>#{msg.title__did_you_know}</h3>
+                                    <h2>#{msg.title__did_you_know}</h2>
                                     <div class="in mb-2">
                                         <h:outputText value="#{msg.admin__translations_new_entry_info_text}" escape="false" />
                                     </div>
@@ -147,14 +147,14 @@
 
                             <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                 <div class="admin__default-block">
-                                    <h3 class="admin__sidebar-progress-header">#{msg.label__crowdsourcing_campaign_progress} <span class="admin__sidebar-progress-count">(#{adminBean.currentTranslationGroup.fullyTranslatedEntryCount} #{msg.of} #{adminBean.currentTranslationGroup.entryCount})</span></h3>
+                                    <h2 class="admin__sidebar-progress-header">#{msg.label__crowdsourcing_campaign_progress} <span class="admin__sidebar-progress-count">(#{adminBean.currentTranslationGroup.fullyTranslatedEntryCount} #{msg.of} #{adminBean.currentTranslationGroup.entryCount})</span></h2>
                                		<div class="admin__sidebar-progressbar">
 										<div class="admin__sidebar-progressbar-complete" style="flex: 0 0 #{adminBean.currentTranslationGroup.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
 										<div class="admin__sidebar-progressbar-partially" style="flex: 0 0 #{adminBean.currentTranslationGroup.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
 									</div>
                                 </div>
                                 <div class="admin__default-block">
-                                    <h3>#{msg.admin__overview}</h3>
+                                    <h2>#{msg.admin__overview}</h2>
 									<div class="admin__form-help-text in mb-2">
 										#{msg.admin__translations_edit_overview_description}
 									</div>

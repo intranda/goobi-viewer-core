@@ -21,14 +21,14 @@
                 <h:panelGroup rendered="#{userBean.admin and adminBean.currentLicenseType != null}">
                     <h:form id="editLicenseTypeForm" styleClass="form-horizontal" prependId="false">
                         <div class="admin__title-bar">
-                            <h2 class="admin__title">
+                            <h1 class="admin__title">
                                 <h:outputText value="#{msg.admin__license_new}"  rendered="#{adminBean.currentLicenseType.id == null}" />
                                 <h:outputText value="#{msg.admin__license_edit}" rendered="#{adminBean.currentLicenseType.id != null}" />
-                            </h2>
+                            </h1>
                         </div>
 
                         <div class="admin__content-inner-content">
-                            <h3>#{msg.general}</h3>
+                            <h2>#{msg.general}</h2>
                             <div class="admin__default-block">
                                 <div class="form-group form-row">
                                     <h:outputLabel for="name" styleClass="col-sm-2 control-label" value="#{msg.name}:" />
@@ -67,7 +67,7 @@
                             </div>
 
                             <!-- FUNCTIONS -->
-                            <h3>#{msg.admin__license_functions}</h3>
+                            <h2>#{msg.admin__license_functions}</h2>
                             <div class="admin__default-block pb-0">
                                 <div class="form-group form-row mb-3">
                                     <div class="col-2 control-label admin__form-label">
@@ -249,7 +249,7 @@
                             </div>
 
                             <!-- OVERRIDING LICENSES -->
-                            <h3>#{msg.admin__license_overriding}</h3>
+                            <h2>#{msg.admin__license_overriding}</h2>
 
                             <div class="admin__default-block">
                                 <div class="form-group form-row">

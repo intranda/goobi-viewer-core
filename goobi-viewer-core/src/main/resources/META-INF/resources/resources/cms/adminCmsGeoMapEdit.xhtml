@@ -42,15 +42,15 @@
     
         <ui:fragment id="cmsGeoMaps" rendered="#{userBean.user.isHasCmsPrivilege('CMS_GEOMAPS')}">
             <div id="cmsGeoMaps">
-                <h2 class="admin__content-inner-title">#{msg.cms__geomaps__title}
-                </h2>
+                <h1 class="admin__content-inner-title">#{msg.cms__geomaps__title}
+                </h1>
                 <div class="admin__content-inner-content">
 	                <div class="admin__info-text">
 	               		<h:outputText escape="false" value="#{msg.cms__geomap_edit__description}"></h:outputText>
 	               </div>
                 
                     <h:form id="geoMapEditForm" prependId="false">
-                        <h3>#{msg.cms__geomaps__metadata__title}</h3>
+                        <h2>#{msg.cms__geomaps__metadata__title}</h2>
                         <h:panelGroup id="metadataPanel" >
                         	<ul class="nav nav-tabs" role="tablist">
                         		<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
@@ -115,7 +115,7 @@
                             </div>
                        </h:panelGroup>
                         <div class="admin__content-inner-content__form_title">
-	                        <h3>#{msg.cms__geomaps__map__title}</h3>
+	                        <h2>#{msg.cms__geomaps__map__title}</h2>
 	                        <span class="ajax_loader">
 								<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." />
 							</span>
@@ -256,7 +256,7 @@
 		                        	<div>#{msg.cms__geomaps__map__help}</div>
 		                        	<map class="input_form__geomap" id="geomap"></map>
 		                        	<popover id="geoMapPopoverTemplate">
-		                        		<h4 data-metadata="title"></h4>
+		                        		<h3 data-metadata="title"></h3>
 		                        		<span data-metadata="description"></span>
 		                        	</popover>
 		                        	<ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL'}">
