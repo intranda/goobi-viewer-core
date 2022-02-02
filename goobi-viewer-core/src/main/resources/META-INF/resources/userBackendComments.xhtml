@@ -81,13 +81,11 @@
 										<div class="user-comments__table-entry" role="row">
 											<!-- TARGET -->
 												<div class="user-comments__table-entry-label" role="cell">
-													<!--
 													<h:outputText styleClass="user-comments__table-entry-label-record" rendered="#{comment.targetPageOrder != null}" value="#{comment.targetPI}, #{msg.page} #{comment.targetPageOrder}" />
-													-->
 													<a
 														href="#{navigationHelper.objectUrl}#{comment.targetLink}"
-														class="user-comments__table-entry-label" target="_blank"
-														aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{comment.targetPI})">#{comment.targetPI}, #{msg.page} #{comment.targetPageOrder}</a>
+														class="user-comments__table-entry-action-link" target="_blank"
+														aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{comment.targetPI})">#{msg.show}</a>	
 												</div>
 
 											<!-- TEXT -->
