@@ -26,10 +26,10 @@
 				<div class="admin__title-bar">
 					<!-- TITLE -->
 					<c:if test="#{customWidgetEditBean.widgetType == null}">
-						<h2 class="admin__title">#{msg.cms__add_widget__title}</h2>
+						<h1 class="admin__title">#{msg.cms__add_widget__title}</h1>
 					</c:if>
 					<c:if test="#{customWidgetEditBean.widgetType != null}">
-						<h2 class="admin__title">#{msg.cms__edit_widget__title}</h2>
+						<h1 class="admin__title">#{msg.cms__edit_widget__title}</h1>
 					</c:if>
 				</div>
 
@@ -46,28 +46,28 @@
 									rendered="#{customWidgetEditBean.widgetType == null}">
 									<div class="admin__info-text">#{msg.cms__add_widget__select_type}:</div>
 
-									<div class="admin__entry-list -w33">
+									<div class="admin__entry-list -w25">
 										<ui:repeat var="type"
 											value="#{customWidgetEditBean.widgetTypes}">
-											<div class="admin__boxed-entry -w33">
+											<div class="admin__boxed-entry -w25">
 												<div class="d-flex flex-column h-100">
 													<div>
 													<!-- ADD RSS WIDGET TITLE -->
 													<ui:fragment rendered="#{type == 'WIDGET_RSSFEED'}">
-														<h3><i class="fa fa-rss" aria-hidden="true"></i> #{msg[type.label]}</h3>
+														<h2><i class="fa fa-rss" aria-hidden="true"></i> #{msg[type.label]}</h2>
 														
 													</ui:fragment>
 													<!-- ADD FACETING WIDGET TITLE -->
 													<ui:fragment rendered="#{type == 'WIDGET_FIELDFACETS'}">
-														<h3><i class="fa fa-list-ul" aria-hidden="true"></i> #{msg[type.label]}</h3>
+														<h2><i class="fa fa-list-ul" aria-hidden="true"></i> #{msg[type.label]}</h2>
 													</ui:fragment>
 													<!-- ADD PAGES WIDGET TITLE -->
 													<ui:fragment rendered="#{type == 'WIDGET_CMSPAGES'}">
-														<h3><i class="fa fa-clone" aria-hidden="true"></i> #{msg[type.label]}</h3>
+														<h2><i class="fa fa-clone" aria-hidden="true"></i> #{msg[type.label]}</h2>
 													</ui:fragment>
 													<!-- ADD HTML WIDGET TITLE -->
 													<ui:fragment rendered="#{type == 'WIDGET_HTML'}">
-														<h3><i class="fa fa-code" aria-hidden="true"></i> #{msg[type.label]}</h3>
+														<h2><i class="fa fa-code" aria-hidden="true"></i> #{msg[type.label]}</h2>
 													</ui:fragment>
 													
 													</div>
@@ -275,7 +275,7 @@
 										</div>
 									</ui:fragment>
 									<div class="admin__default-block">
-										<h3>#{msg.title__did_you_know}</h3>
+										<h2>#{msg.title__did_you_know}</h2>
 										<p>#{msg.cms__edit_widget__sidebar_information}</p>
 									</div>
 								</div>

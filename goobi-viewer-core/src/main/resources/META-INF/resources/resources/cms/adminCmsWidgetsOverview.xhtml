@@ -24,7 +24,7 @@
 
 				<div class="admin__title-bar">
 					<!-- TITLE -->
-					<h2 class="admin__title">#{msg.admin__widgets}</h2>
+					<h1 class="admin__title">#{msg.admin__widgets}</h1>
                     <!-- CREATE NEW IP RANGE -->
                     <a href="#{navigationHelper.getPageUrl('adminCmsWidgetsAdd')}/" class="btn btn--default admin__title-bar-action">
                     	#{msg.add}
@@ -51,7 +51,7 @@
 
                                     	<!-- TITLE -->
                                         <div class="cms-widgets-overview__single-widget-title-wrapper">                                    	
-	                                        <h3 class="cms-widgets-overview__single-widget-title">
+	                                        <h2 class="cms-widgets-overview__single-widget-title">
 	                                        	<!-- RSS FEED TITLE -->
 	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_RSSFEED'}" >
 	                                        		<i class="fa fa-rss" aria-hidden="true"></i> <span class="cms-widgets-overview__single-widget-title-name">#{widget.title.textOrDefault}</span>
@@ -98,7 +98,7 @@
 	                                        	<ui:fragment rendered="#{widget.generationType != 'DEFAULT'}" >
 		                                        	<span class="cms-widgets-overview__single-widget-title-type">(#{msg[widget.generationType.label]})</span>
 	                                        	</ui:fragment>
-	                                        </h3>
+	                                        </h2>
 	                                        
 	                                        <ui:fragment rendered="#{widget.hasTranslations()}">
 		                                        <div class="cms-widgets-overview__single-widget-title-indicator">
