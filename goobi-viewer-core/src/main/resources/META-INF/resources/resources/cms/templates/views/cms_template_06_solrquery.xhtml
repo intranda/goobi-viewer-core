@@ -79,7 +79,7 @@
 	                    
 		                	<ui:repeat var="hitSet" value="#{cmsBean.getGroupedQueryResults(cmsBean.queryResults, cmsPage.getContentItem('queryList01').groupBy)}">
 	                    		<div class="solr-query-collection__thumbs">
-			                        <h2 >#{msg[hitSet.key]}</h2>
+			                        <h1 >#{msg[hitSet.key]}</h1>
 			                        <div class="row">
 			                            <ui:repeat var="hit" value="#{hitSet.value}">
 			                                <div class="col-12 col-sm-4">

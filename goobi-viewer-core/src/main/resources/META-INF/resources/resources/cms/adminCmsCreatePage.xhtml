@@ -28,9 +28,9 @@
 
                 <h:panelGroup rendered="#{cmsBean.selectedPage != null}">
 	                <div class="admin__title-bar">
-	                    <h2 class="admin__title">
+	                    <h1 class="admin__title">
 	                        #{cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.name]}
-	                    </h2>
+	                    </h1>
 	                    <!-- EXIT -->
                         <a 
                             href="#{request.contextPath}#{navigationHelper.previousViewUrl}"

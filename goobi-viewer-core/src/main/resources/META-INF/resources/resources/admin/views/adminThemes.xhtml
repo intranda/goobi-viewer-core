@@ -30,7 +30,7 @@
 
       <!-- TITLE -->
       <div class="admin__title-bar">
-        <h2 class="admin__title">#{msg.admin__themes__title}</h2>
+        <h1 class="admin__title">#{msg.admin__themes__title}</h1>
       </div>
 
       <div id="adminThemes" class="admin__content-inner-content">
@@ -41,12 +41,12 @@
             <ui:fragment>
                 <div class="admin__default-block mb-5 #{adminThemesBean.mainThemeConfigured ? '-success-box' : '-danger' }">
                     <div class="row">
-                      <h3 class="col-12">
+                      <h2 class="col-12">
                         #{adminThemesBean.mainThemeConfigured ?
                           msg.admin__themes__main_heading_configured :
                           msg.admin__themes__main_heading_notConfigured
                         }
-                      </h3>
+                      </h2>
                     </div>
                     <a href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}/"
                         class="row admin__license-unconfigured-entry">
@@ -75,9 +75,9 @@
 			<ui:fragment rendered="#{not empty adminThemesBean.notConfiguredSubThemes}">
             	<div class="admin__default-block mb-5 -danger">
                     <div class="row">
-                      <h3 class="col-12">
+                      <h2 class="col-12">
                           #{msg.admin__themes__sub_heading_notConfigured}
-                      </h3>
+                      </h2>
                     </div>
                     <ui:repeat var="themeName" value="#{adminThemesBean.notConfiguredSubThemes}">
                     	<a href="#{request.contextPath}/admin/themes/edit/#{themeName}/"
@@ -98,9 +98,9 @@
             <ui:repeat var="theme" value="#{adminThemesBean.configuredSubThemes}">
 				<div class="admin__default-block mb-5 -success-box}">
                     <div class="row">
-                      <h3 class="col-12">
+                      <h2 class="col-12">
                           #{msg.admin__themes__sub_heading_configured}
-                      </h3>
+                      </h2>
                     </div>
                     <!-- value: Theme Names -->
                     <a href="#{request.contextPath}/admin/themes/edit/#{theme.name}/"

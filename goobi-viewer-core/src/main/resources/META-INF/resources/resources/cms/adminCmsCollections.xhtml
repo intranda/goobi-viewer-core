@@ -25,7 +25,7 @@
 			
 				<!-- TITLE -->
 				<div class="admin__title-bar">
-					<h2 class="admin__title">#{msg.admin__cms_collections}</h2>
+					<h1 class="admin__title">#{msg.admin__cms_collections}</h1>
 				</div>
 
 				<div class="admin__content-inner-content">
@@ -39,7 +39,7 @@
 						<div class="admin__content-wrapper">
 						
 							<div class="admin__content-main -sticky -refreshHCsticky">
-								<h3>#{msg.admin__cms_collections_collection_tree}</h3>
+								<h2>#{msg.admin__cms_collections_collection_tree}</h2>
                                     
                                 <h:panelGroup layout="block" id="collectionTreeGroup">
                         
@@ -160,7 +160,7 @@
 							    <!-- IMPORT -->
                                 <ui:fragment rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}">
                                     <div class="admin__default-block -danger">
-                                        <h3>#{msg.admin__cms_collections_import}</h3>
+                                        <h2>#{msg.admin__cms_collections_import}</h2>
                                         <div class="admin__form-help-text in mb-2">
                                             #{msg.admin__cms_collections_import_desc}
                                         </div>
@@ -184,7 +184,7 @@
 												<div class="admin__default-block -warning">
 	
 													<!-- GROUP TITLE -->
-													<h3>#{msg.admin__cms_collections_translation}</h3>
+													<h2>#{msg.admin__cms_collections_translation}</h2>
 
                                                     <div class="admin__form-help-text in mb-2">
 														#{msg.admin__cms_collections_translation_desc}
@@ -239,7 +239,7 @@
 									</c:when>
 									<c:otherwise>
 										<div class="admin__boxed-entry -danger">
-											<h3>#{msg.admin__translations__missing_write_permissions__title}</h3>
+											<h2>#{msg.admin__translations__missing_write_permissions__title}</h2>
 											<h:outputText escape="false"
 												value="#{msg.admin__translations__missing_write_permissions__description}"></h:outputText>
 										</div>
@@ -250,7 +250,7 @@
                                 <!-- COLLECTION INDEX FIELD -->
                                 <ui:fragment rendered="#{cmsCollectionsBean.displaySolrFieldSelectionWidget}">
                                     <div class="admin__default-block">
-                                        <h3>#{msg.admin__cms_collections_solr_field}</h3>
+                                        <h2>#{msg.admin__cms_collections_solr_field}</h2>
                                         <div class="admin__form-help-text in mb-4">#{msg.admin__cms_collections_solr_field_desc}</div>						
                                         <div class="d-flex">
                                             <h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect"
@@ -265,7 +265,7 @@
 								
 								<!-- PREVIEW -->
 								<div class="admin__default-block">
-									<h3>#{msg.admin__cms_collections_preview}</h3>
+									<h2>#{msg.admin__cms_collections_preview}</h2>
 									<div class="admin__form-help-text in mb-4">
 										#{msg.admin__cms_collections_preview_description}
 									</div>
