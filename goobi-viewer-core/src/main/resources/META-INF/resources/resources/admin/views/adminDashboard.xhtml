@@ -60,23 +60,23 @@
                                 <div class="row">
                                     <h3 class="col-9">#{msg.cms_overview}</h3>
                                 </div>
-                                <div id="last-CMS-pages-table" class="admin__table-content -slim">
+                                <div id="last-CMS-pages-table" class="admin__table-content -slim" role="grid">
                                     <!-- TITLE ROW -->
-                                    <div class="row no-gutters admin__table-title">
-                                        <div class="col-6 d-flex">
+                                    <div class="row no-gutters admin__table-title" role="row">
+                                        <div class="col-6 d-flex" role="gridcell">
                                             <span>#{msg.page}</span>
                                         </div>
-                                        <div class="col-4 d-flex">
+                                        <div class="col-4 d-flex" role="gridcell">
                                             <span>#{msg.admin__cms_categories}</span>
                                         </div>
-                                        <div class="col-2 d-flex">
+                                        <div class="col-2 d-flex" role="gridcell">
                                             <span>#{msg.cms_pageMetadata_lastEdited}</span>
                                         </div>
                                     </div>
                                     <!-- INDIVIDUAL ENTRIES -->
                                     <ui:repeat var="page" value="#{cmsBean.getMostRecentlyEditedPages(3)}">
-                                    <div class="row no-gutters admin__table-entry">
-                                        <div class="col-6 d-flex flex-column">
+                                    <div class="row no-gutters admin__table-entry" role="row">
+                                        <div class="col-6 d-flex flex-column" role="gridcell">
                                             <!-- PAGE TITLE -->
                                             <span class="admin__last-pages-title">#{page.title}</span>
                                             <!-- ACTIONS -->
@@ -89,7 +89,7 @@
                                                    class="admin__table-action-link" aria-label="#{msg.edit}: #{page.title}">#{msg.edit}</a>
                                             </div>
                                         </div>
-                                        <div class="col-4">
+                                        <div class="col-4" role="gridcell">
                                             <ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
                                             <span class="badge badge-warning">#{msg.admin__cms_static_page}</span>
                                             </ui:fragment>
@@ -97,7 +97,7 @@
 	                                            <div class="badge badge-violet">#{category.name}</div>
 	                                        </ui:repeat>
                                         </div>
-                                        <div class="col-2 d-flex">
+                                        <div class="col-2 d-flex" role="gridcell">
                                         	<h:outputText value="#{page.dateUpdated}">
                                                 <f:converter converterId="localDateTimeConverter" />
                                                 <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
