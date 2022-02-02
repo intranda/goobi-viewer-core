@@ -47,7 +47,7 @@
 												</button>
 												
 											</div> 
-											
+											 
 											<!-- ITEM LABEL -->
 											<div class="sidebar-editor__widget-item-label">#{element.title.textOrDefault}</div> 
 											
@@ -137,15 +137,14 @@
 								
 							</h:panelGroup>
 					</h:panelGroup>
-				</h:panelGroup>
-				
+				</h:panelGroup> 
 				<!-- choose standard sidebar for current page -->
 				<div class="sidebar-editor__choose-standard">
 					<h:selectBooleanCheckbox id="checkboxUseDefaultSidebar"
 						value="#{cmsBean.selectedPage.useDefaultSidebar}"
 						onclick="cmsJS.createPage.disablePreview();">
 						<span><h:outputText value="#{msg.cms_pageSidebarUseDefault}" /></span>
-						<f:ajax render="cmsCreatePageAccessControl" />
+						<f:ajax event="change" render="sidebarEditorWrapper" />
 						<f:passThroughAttribute name="aria-label"
 							value="#{msg.cms_pageSidebarUseDefault}" />
 					</h:selectBooleanCheckbox>
