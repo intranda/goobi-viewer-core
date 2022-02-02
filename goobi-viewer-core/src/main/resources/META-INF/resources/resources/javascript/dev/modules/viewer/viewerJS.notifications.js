@@ -162,16 +162,22 @@ var viewerJS = ( function( viewer ) {
 		//handle error messages
 		$messages.children(".alert.alert-danger").each((index, child) => {
 			//show error message
-			viewerJS.swaltoasts.error($(child).text());
-			//scroll to first validation message
-			let $elementsWithValidationError = $(".-validation-message.-danger");
-			if($elementsWithValidationError.length > 0) {
-				$elementsWithValidationError.get(0).scrollIntoView({block: "center"});
+			let text = $(child).text();
+			if(text && text.trim().length > 0) {
+				viewerJS.swaltoasts.error(text);
+				//scroll to first validation message
+				let $elementsWithValidationError = $(".-validation-message.-danger");
+				if($elementsWithValidationError.length > 0) {
+					$elementsWithValidationError.get(0).scrollIntoView({block: "center"});
+				}
 			}
 		});
 		//show success message
 		$messages.children(".alert.alert-success").each((index, child) => {
-			viewerJS.swaltoasts.success($(child).text());
+			let text = $(child).text();
+			if(text && text.trim().length > 0) {
+				viewerJS.swaltoasts.success(text);
+			}
 		});
 	}
 

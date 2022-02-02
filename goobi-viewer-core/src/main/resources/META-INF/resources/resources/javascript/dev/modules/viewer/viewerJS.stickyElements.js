@@ -37,8 +37,8 @@ var viewerJS = ( function( viewer ) {
 	        .subscribe(() => {
 	        	if(_debug)console.log("refresh hcSticky rx");
 	        	$(document).ready(() => $(".-sticky, .-refreshHCsticky").hcSticky('refresh', {}));
-	        });
-			
+	        }); 
+			 
 			/**
 			* Refresh hcsticky after ajax requests
 			**/
