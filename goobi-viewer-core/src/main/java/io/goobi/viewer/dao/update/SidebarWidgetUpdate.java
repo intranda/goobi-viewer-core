@@ -3,6 +3,7 @@ package io.goobi.viewer.dao.update;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -127,12 +128,11 @@ public class SidebarWidgetUpdate implements IModelUpdate {
             Integer result_display_limit, String search_field, WidgetContentType contentType, String widget_mode, String css_class) {
         CustomWidgetType customType = (CustomWidgetType) contentType;
         CustomSidebarWidget widget = new CustomSidebarWidget();
-        
         switch (customType) {
             case WIDGET_HTML:
                 if(StringUtils.isNotBlank(inner_html)) {
                     HtmlSidebarWidget htmlWidget = new HtmlSidebarWidget();
-                    htmlWidget.getTitle().setValue(widget_title, IPolyglott.getDefaultLocale());
+                    setTitle(widget_title, htmlWidget);
                     htmlWidget.getHtmlText().mapEach(oldValue -> inner_html);
                     widget = htmlWidget;
                 } else {
@@ -141,12 +141,13 @@ public class SidebarWidgetUpdate implements IModelUpdate {
                 break;
             case WIDGET_CMSPAGES:
                 PageListSidebarWidget pageWidget = new PageListSidebarWidget();
-                pageWidget.getTitle().setValue(widget_title, IPolyglott.getDefaultLocale());
+                setTitle(widget_title, pageWidget);
                 pageWidget.setPageIds(parseIds(linked_pages, "\\s*;\\s*"));
                 widget = pageWidget;
                 break;
             case WIDGET_RSSFEED:
                 RssFeedSidebarWidget rssWidget = new RssFeedSidebarWidget();
+                setTitle(StringUtils.isBlank(widget_title) ? "lastImports" : widget_title, rssWidget);
                 if(StringUtils.isNotBlank(widget_title)) {                    
                     rssWidget.getTitle().setValue(widget_title, IPolyglott.getDefaultLocale());
                 } else {
@@ -168,6 +169,15 @@ public class SidebarWidgetUpdate implements IModelUpdate {
         widget.setStyleClass(css_class);
         
         return widget;
+    }
+
+    private void setTitle(String widget_title, CustomSidebarWidget htmlWidget) {
+        TranslatedText translatedTitle = new TranslatedText(ViewerResourceBundle.getTranslations(widget_title, false));
+        if(translatedTitle.isEmpty()) {
+            htmlWidget.getTitle().setValue(widget_title, IPolyglott.getDefaultLocale());                        
+        } else {
+            htmlWidget.setTitle(translatedTitle);
+        }
     }
 
     private WidgetContentType parseContentType(String type) {
