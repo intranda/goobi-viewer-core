@@ -87,7 +87,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
                         WidgetDisplayElement widget = new WidgetDisplayElement(
                                 geoMap.getTitles(), 
                                 geoMap.getDescriptions(), 
-                                Collections.emptyList(), 
+                                getEmbeddingPages(geoMap), 
                                 WidgetGenerationType.AUTOMATIC,
                                 widgetType, geoMap.getId(), null);
                         widgets.add(widget);
@@ -110,6 +110,15 @@ public class CMSSidebarWidgetsBean implements Serializable {
         
     }
     
+    private List<CMSPage> getEmbeddingPages(GeoMap geoMap) {
+        try {
+            return DataManager.getInstance().getDao().getPagesUsingMapInSidebar(geoMap);
+        } catch (DAOException e) {
+            logger.error("Error querying embedding pages ", e);
+            return Collections.emptyList();
+        }
+    }
+
     private List<CMSPage> getEmbeddingPages(CustomSidebarWidget widget) {
         try {
             return DataManager.getInstance().getDao().getPagesUsingWidget(widget);

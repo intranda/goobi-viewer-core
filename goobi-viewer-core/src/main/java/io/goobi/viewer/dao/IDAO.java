@@ -2187,6 +2187,15 @@ public interface IDAO {
      * @throws DAOException
      */
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException;
+    
+    /**
+     * Return a list of CMS-pages embedding the given map in a sidebar widget
+     * 
+     * @param map
+     * @return
+     * @throws DAOException
+     */
+    public List<CMSPage> getPagesUsingMapInSidebar(GeoMap map) throws DAOException;
 
     /**
      * @param subtheme

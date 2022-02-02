@@ -5023,7 +5023,24 @@ public class JPADAO implements IDAO {
                 .collect(Collectors.toList());
         return pageList;
     }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSPage> getPagesUsingMapInSidebar(GeoMap map) throws DAOException {
+        preQuery();
 
+        Query qWidgets = getEntityManager().createQuery(
+                "SELECT ele FROM CMSSidebarElementAutomatic ele WHERE ele.map = :map");
+        qWidgets.setParameter("map", map);
+        List<CMSSidebarElement> widgetList = qWidgets.getResultList();
+        
+        List<CMSPage> pageList = widgetList.stream()
+                .map(CMSSidebarElement::getOwnerPage)
+                .distinct()
+                .collect(Collectors.toList());
+        return pageList;
+    }
+    
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#saveTermsOfUse(io.goobi.viewer.model.security.TermsOfUse)
      */
