@@ -41,10 +41,10 @@
 	&__grid {
 		display: grid; 
 		grid-auto-rows: 1fr; 
-		grid-template-columns: 1fr 1fr 1fr 1fr; 
+		grid-template-columns: 1fr 1fr 1fr; 
 		grid-template-rows: repeat(1fr);
 		gap: 25px 25px; 
-		grid-template-areas: ". . . .";
+		grid-template-areas: ". . .";
 	}
 	&__single-widget-title-wrapper {
 		display: flex;
@@ -93,6 +93,7 @@
 	&__single-widget-info-label {
 		flex: 0 0 140px;
 		max-width: 140px;
+		font-weight: 700;
 	}
 	&__single-widget-info-type,
 	&__single-widget-info-used,
