@@ -40,7 +40,7 @@ import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
- * Class to persist user generated CMS-Sidebar widgets in the database
+ * Class to persist user generated CMS-Sidebar widgets in the database. There are 
  * 
  * @author florian
  *

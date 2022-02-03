@@ -25,12 +25,14 @@
 
 				<div class="admin__title-bar">
 					<!-- TITLE -->
-					<c:if test="#{customWidgetEditBean.widgetType == null}">
-						<h1 class="admin__title">#{msg.cms__add_widget__title}</h1>
-					</c:if>
-					<c:if test="#{customWidgetEditBean.widgetType != null}">
-						<h1 class="admin__title">#{msg.cms__edit_widget__title}</h1>
-					</c:if>
+					<c:choose>
+						<c:when test="#{customWidgetEditBean.widget == null or (empty customWidgetEditBean.widget.id)}">
+							<h1 class="admin__title">#{msg.cms__add_widget__title}</h1>
+						</c:when>
+						<c:otherwise>
+							<h1 class="admin__title">#{msg.cms__edit_widget__title}</h1>
+						</c:otherwise>
+					</c:choose>
 				</div>
 
 				<h:form prependId="false">
@@ -257,6 +259,7 @@
 										</a>
 										<button class="btn btn--success"
 											jsf:action="#{customWidgetEditBean.save()}">#{msg.button__save}
+											<f:ajax execute="@form" render="@form :messages"></f:ajax>
 										</button>
 									</div>
 								</ui:fragment>

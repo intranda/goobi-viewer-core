@@ -27,7 +27,7 @@
                         
                         
                         <!-- TO DO: ADAPT THIS -->
-                        <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_CATEGORIES')}">
+                        <ui:fragment rendered="#{userBean.user.cmsAdmin}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsWidgetsAdd' ? 'active' : ''}">
                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsWidgetsOverview')}/">
                                     <i class="fa fa-square" aria-hidden="true"></i>

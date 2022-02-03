@@ -80,7 +80,7 @@ public enum PageType {
     //admin/cms
     adminCms("admin/cms"),
     adminCmsOverview("admin/cms/pages"),
-    adminCmsWidgetsOverview("admin/cms/widgets/overview"),
+    adminCmsWidgetsOverview("admin/cms/widgets", "cms_widgets__title"),
     adminCmsWidgetsAdd("admin/cms/widgets/new"),
     adminCmsSelectTemplate("admin/cms/pages/templates"),
     adminCmsNewPage("admin/cms/pages/new"),
@@ -96,7 +96,7 @@ public enum PageType {
     adminCmsGeoMapNew("admin/cms/maps/new"),
     adminCmsRecordNotes("admin/cms/recordnotes", "cms__record_notes__title_plural"),
     adminCmsSliders("admin/cms/slider", "cms__sliders__title"),
-    adminCmsSidebarWidgets("admin/cms/widgets/overview", "cms_widgets__title"),
+    adminCmsSidebarWidgets("admin/cms/widgets", "cms_widgets__title"),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing

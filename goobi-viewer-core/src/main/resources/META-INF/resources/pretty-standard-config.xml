@@ -1023,7 +1023,7 @@
         <action onPostback="false">#{customWidgetEditBean.setWidgetId(widgetId)}</action>
     </url-mapping>
     <url-mapping id="adminCmsWidgetsOverview">
-        <pattern value="/admin/cms/widgets/overview/" />
+        <pattern value="/admin/cms/widgets/" />
         <view-id value="/resources/cms/adminCmsWidgetsOverview.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
