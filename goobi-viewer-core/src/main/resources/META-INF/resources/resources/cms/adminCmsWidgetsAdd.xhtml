@@ -275,7 +275,8 @@
 												<i class="fa fa-refresh"></i>
 												<f:ajax execute="@form" render="previewGroup"></f:ajax>
 											</button>
-											<h:panelGroup id="previewGroup"
+											<h2>#{msg.title__preview}</h2>
+											<h:panelGroup id="previewGroup" layout="block" styleClass="admin__default-preview"
 												binding="#{customWidgetEditBean.previewGroup}" />
 										</div>
 									</ui:fragment>
