@@ -1761,6 +1761,23 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         this.localAvatarUpdated = localAvatarUpdated;
     }
 
-
+    public String getBackendDisplayName() {
+        if(StringUtils.isAllBlank(this.nickName, this.firstName, this.lastName)) {
+            return this.email;
+        } else {
+            String name = "";
+            if(StringUtils.isNotBlank(nickName)) {
+                name += (nickName + " - ");
+            }
+            if(StringUtils.isNotBlank(firstName)) {
+                name += (firstName + " ");
+            }
+            if(StringUtils.isNotBlank(lastName)) {
+                name += (lastName + " ");
+            }
+            name += "(" + email + ")";
+            return name;
+        }
+    }
     
 }
