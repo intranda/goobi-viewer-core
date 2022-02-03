@@ -43,7 +43,7 @@
 						
                             <div class="cms-widgets-overview__grid">
                                 <!--  INDIVIDUAL IP RANGES -->
-                                <ui:repeat var="widget" value="#{cmsSidebarWidgetsBean.getAllWidgets(true)}">
+                                <ui:repeat var="widget" value="#{cmsSidebarWidgetsBean.getAllWidgets(true).stream().sorted().toList()}">
                                 
                                 
                                 <div class="cms-widgets-overview__single-widget-wrapper">
@@ -137,7 +137,7 @@
 													<div class="cms-widgets-overview__single-widget-info-data-wrapper">
 														<ui:repeat var="page" value="#{widget.embeddingPages}">
 															<div class="cms-widgets-overview__single-widget-info-data">
-																<a href="#{page.url}">#{page.getTitle(navigationHelper.locale)}</a>
+																<a href="#{page.adminBackendUrl}">#{page.getTitle(navigationHelper.locale)}</a>
 															</div>
 														</ui:repeat>
 													</div>

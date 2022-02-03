@@ -5023,7 +5023,7 @@ public class JPADAO implements IDAO {
                 .collect(Collectors.toList());
         return pageList;
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getPagesUsingMapInSidebar(GeoMap map) throws DAOException {
@@ -5033,14 +5033,14 @@ public class JPADAO implements IDAO {
                 "SELECT ele FROM CMSSidebarElementAutomatic ele WHERE ele.map = :map");
         qWidgets.setParameter("map", map);
         List<CMSSidebarElement> widgetList = qWidgets.getResultList();
-        
+
         List<CMSPage> pageList = widgetList.stream()
                 .map(CMSSidebarElement::getOwnerPage)
                 .distinct()
                 .collect(Collectors.toList());
         return pageList;
     }
-    
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#saveTermsOfUse(io.goobi.viewer.model.security.TermsOfUse)
      */
@@ -5488,42 +5488,48 @@ public class JPADAO implements IDAO {
 
     @Override
     public boolean addCustomWidget(CustomSidebarWidget widget) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(widget);
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            logger.error(e.toString(), e);
-            return false;
+        synchronized (cmsRequestLock) {
+            preQuery();
+            try {
+                getEntityManager().getTransaction().begin();
+                getEntityManager().persist(widget);
+                getEntityManager().getTransaction().commit();
+                return true;
+            } catch (IllegalArgumentException e) {
+                logger.error(e.toString(), e);
+                return false;
+            }
         }
     }
 
     @Override
     public boolean updateCustomWidget(CustomSidebarWidget widget) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(widget);
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
+        synchronized (cmsRequestLock) {
+            preQuery();
+            try {
+                getEntityManager().getTransaction().begin();
+                getEntityManager().merge(widget);
+                getEntityManager().getTransaction().commit();
+                return true;
+            } catch (IllegalArgumentException e) {
+                return false;
+            }
         }
     }
 
     @Override
     public boolean deleteCustomWidget(Long id) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            CustomSidebarWidget o = getEntityManager().getReference(CustomSidebarWidget.class, id);
-            getEntityManager().remove(o);
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
+        synchronized (cmsRequestLock) {
+            preQuery();
+            try {
+                getEntityManager().getTransaction().begin();
+                CustomSidebarWidget o = getEntityManager().getReference(CustomSidebarWidget.class, id);
+                getEntityManager().remove(o);
+                getEntityManager().getTransaction().commit();
+                return true;
+            } catch (IllegalArgumentException e) {
+                return false;
+            }
         }
     }
 
@@ -5540,7 +5546,7 @@ public class JPADAO implements IDAO {
                 .map(CMSSidebarElementCustom::getOwnerPage)
                 .distinct()
                 .collect(Collectors.toList());
-        
+
         return pageList;
     }
 }
