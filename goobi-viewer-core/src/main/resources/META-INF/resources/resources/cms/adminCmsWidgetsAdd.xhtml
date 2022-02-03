@@ -279,6 +279,35 @@
 												binding="#{customWidgetEditBean.previewGroup}" />
 										</div>
 									</ui:fragment>
+									
+									<div class="admin__default-block">
+												<div class="d-flex flex-column h-100">
+													<div>
+													<!-- ADD RSS WIDGET TITLE -->
+													<ui:fragment rendered="#{widget.type == 'WIDGET_RSSFEED'}">
+														<h2><i class="fa fa-rss" aria-hidden="true"></i> #{msg[widget.type.label]}</h2>
+														
+													</ui:fragment>
+													<!-- ADD FACETING WIDGET TITLE -->
+													<ui:fragment rendered="#{widget.type == 'WIDGET_FIELDFACETS'}">
+														<h2><i class="fa fa-list-ul" aria-hidden="true"></i> #{msg[widget.type.label]}</h2>
+													</ui:fragment>
+													<!-- ADD PAGES WIDGET TITLE -->
+													<ui:fragment rendered="#{widget.type == 'WIDGET_CMSPAGES'}">
+														<h2><i class="fa fa-clone" aria-hidden="true"></i> #{msg[widget.type.label]}</h2>
+													</ui:fragment>
+													<!-- ADD HTML WIDGET TITLE -->
+													<ui:fragment rendered="#{widget.type == 'WIDGET_HTML'}">
+														<h2><i class="fa fa-code" aria-hidden="true"></i> #{msg[widget.type.label]}</h2>
+													</ui:fragment>
+													
+													</div>
+													<div class="mb-2">
+														<p>#{msg[widget.type.description]}</p>
+													</div>
+												</div>
+											</div>
+									
 									<div class="admin__default-block">
 										<h2>#{msg.title__did_you_know}</h2>
 										<p>#{msg.cms__edit_widget__sidebar_information}</p>
