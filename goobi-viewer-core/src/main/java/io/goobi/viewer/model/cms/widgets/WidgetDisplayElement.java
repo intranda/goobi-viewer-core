@@ -18,6 +18,8 @@ package io.goobi.viewer.model.cms.widgets;
 import java.util.List;
 import java.util.Locale;
 
+import javax.persistence.GenerationType;
+
 import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
@@ -28,7 +30,10 @@ import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
- * Class for displaying available widgets in GUI
+ * Class for displaying information about available sidebar widgets in /admin/cms/widgets and  the sidebar edit tab of /admin/cms/pages/edit.
+ * Widgets are distinguished by {@link #getGenerationType()} 
+ * into default widgets with static GUI, automatic widgets provided by other custom content and custom widgets explicitly created by users
+ * They are further distinguished by {@link #getContentType()} corresponding to the individual widget xhtml component
  * 
  * @author florian
  *
@@ -48,6 +53,8 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     
     
     /**
+     * Default constructor for widgets without underlying data (i.e. default widgets)
+     * 
      * @param title
      * @param description
      * @param embeddingPages
@@ -60,11 +67,16 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
     
     /**
+     * 
+     * Default constructor for widgets with underlying data identified by the given id
+     * 
      * @param title
      * @param description
      * @param embeddingPages
      * @param generationType
      * @param contentType
+     * @param id    the database id of the underlying content. The type of content depends on generationType and contentType
+     * @param translations  used to display translation status of the widget. Usually the underlying custom widget
      */
     public WidgetDisplayElement(IMetadataValue title, IMetadataValue description, List<CMSPage> embeddingPages, WidgetGenerationType generationType,
             WidgetContentType contentType, Long id, IPolyglott translations) {
@@ -78,36 +90,44 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
         this.translations = translations;
     }
     /**
+     * The displayed title of the element 
      * @return the title
      */
     public TranslatedText getTitle() {
         return title;
     }
     /**
+     * A description of the element
      * @return the description
      */
     public TranslatedText getDescription() {
         return description;
     }
     /**
+     * A list of CMS pages using this element. Only used to automatic and custom widgets
      * @return the embeddingPages
      */
     public List<CMSPage> getEmbeddingPages() {
         return embeddingPages;
     }
     /**
-     * @return the generationType
+     * Describes they way in which way data for this widget is created and stored
+     * @return the {@link GenerationType generation type}
      */
     public WidgetGenerationType getGenerationType() {
         return generationType;
     }
     /**
+     * Describes the specific xhtml component used for this widget
      * @return the contentType
      */
     public WidgetContentType getContentType() {
         return contentType;
     }
-    
+    /**
+     * Identifier of the underlying data, if any
+     * @return
+     */
     public Long getId() {
         return id;
     }
@@ -134,24 +154,41 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     public Locale getSelectedLocale() {
         return IPolyglott.getCurrentLocale();
     }
+    /**
+     * Not used, since this element isn't editable
+     */
     @Override
     public void setSelectedLocale(Locale locale) {
         //Do nothing
     }
     
+    /**
+     * 
+     * @return true if an object exists providing the translation status of the widget
+     */
     public boolean hasTranslations() {
         return this.translations != null;
     }
     
+    /**
+     * 
+     * @return the object providing the translation status of the widget
+     */
     public IPolyglott getTranslations() {
         return this.translations;
     }
     
+    /**
+     * @return the text of the {@link #getTitle() title} in the current faces context language
+     */
     @Override
     public String toString() {
         return getTitle().getText();
     }
 
+    /**
+     * Two elements are equal if their titles are equal
+     */
     @Override
     public int compareTo(WidgetDisplayElement other) {
         return StringUtils.compare(this.getTitle().getText(), other.getTitle().getText());

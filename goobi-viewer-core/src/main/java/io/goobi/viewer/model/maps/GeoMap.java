@@ -63,6 +63,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -254,9 +255,9 @@ public class GeoMap {
     }
 
     public String getTitle() {
-        MapTranslation title = getTitle(BeanUtils.getNavigationHelper().getLocale().getLanguage());
+        MapTranslation title = getTitle(IPolyglott.getCurrentLocale().getLanguage());
         if (title.isEmpty()) {
-            title = getTitle(BeanUtils.getNavigationHelper().getDefaultLocale().getLanguage());
+            title = getTitle(IPolyglott.getDefaultLocale().getLanguage());
         }
         return title.getValue();
     }

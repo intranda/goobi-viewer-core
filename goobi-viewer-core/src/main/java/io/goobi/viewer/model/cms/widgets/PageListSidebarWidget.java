@@ -24,9 +24,16 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import io.goobi.viewer.dao.converter.NumberListConverter;
+import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.PageList;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 
+/**
+ * A subtype of {@link CustomSidebarWidget} to display a list of links to CMS pages
+ * 
+ * @author florian
+ *
+ */
 @Entity
 @DiscriminatorValue("PageListSidebarWidget")
 public class PageListSidebarWidget extends CustomSidebarWidget {
@@ -35,23 +42,42 @@ public class PageListSidebarWidget extends CustomSidebarWidget {
     @Convert(converter = NumberListConverter.class)
     private List<Long> pageIds = new ArrayList<>();
     
+    /**
+     * Empty default constructor
+     */
     public PageListSidebarWidget() {
         
     }
     
+    /**
+     * Cloning constructor
+     * @param o
+     */
     public PageListSidebarWidget(PageListSidebarWidget o) {
         super(o);
         this.pageIds = new ArrayList<>(o.pageIds);
     }
     
+    /**
+     * 
+     * @return the ids of the listed {@link CMSPage CMSPages}
+     */
     public List<Long> getPageIds() {
         return pageIds;
     }
     
+    /**
+     * set the list of ids of listed {@link CMSPage CMSPages}
+     * @param pageIds
+     */
     public void setPageIds(List<Long> pageIds) {
         this.pageIds = pageIds;
     }
     
+    /**
+     * 
+     * @return a listing of the ids of linked {@link CMSPage CMSPages}
+     */
     public PageList getPageList() {
         return new PageList(pageIds);
     }

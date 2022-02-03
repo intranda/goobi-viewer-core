@@ -29,6 +29,11 @@ import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
+/**
+ * A subtype of {@link CustomSidebarWidget} to display a html text in different languages
+ * @author florian
+ *
+ */
 @Entity
 @DiscriminatorValue("HtmlSidebarWidget")
 public class HtmlSidebarWidget extends CustomSidebarWidget {
@@ -37,15 +42,26 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText htmlText = new TranslatedText(IPolyglott.getLocalesStatic());
     
+    /**
+     * Empty default constructor
+     */
     public HtmlSidebarWidget() {
         
     }
     
+    /**
+     * Cloning constructor
+     * @param o
+     */
     public HtmlSidebarWidget(HtmlSidebarWidget o) {
         super(o);
         this.htmlText = new TranslatedText(o.htmlText);
     }
     
+    /**
+     * 
+     * @return the html text
+     */
     public TranslatedText getHtmlText() {
         return htmlText;
     }

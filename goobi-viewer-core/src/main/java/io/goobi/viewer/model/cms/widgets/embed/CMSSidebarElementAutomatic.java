@@ -26,6 +26,11 @@ import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
+/**
+ * Wrapper for automatic widgets contained in a CMSPage. Currently always bound to a {@link GeoMap} object to display in this widget
+ * @author florian
+ *
+ */
 @Entity
 @DiscriminatorValue("AUTOMATIC")
 public class CMSSidebarElementAutomatic extends CMSSidebarElement {
@@ -33,25 +38,45 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     @JoinColumn(name = "geomap_id")
     private GeoMap map;
 
+    /**
+     * Empty constructor for the DAO
+     */
     public CMSSidebarElementAutomatic() {
         super();
     }
     
+    /**
+     * Default constructor for a {@link GeoMap} to display and an owning {@link CMSPage}
+     * @param map
+     * @param owner
+     */
     public CMSSidebarElementAutomatic(GeoMap map, CMSPage owner) {
         super(AutomaticWidgetType.WIDGET_CMSGEOMAP, owner);
         this.map = map;
     }
     
+    /**
+     * Cloning constructor assigning the given CMSPage as owner 
+     * @param orig
+     * @param owner
+     */
     public CMSSidebarElementAutomatic(CMSSidebarElementAutomatic orig, CMSPage owner) {
         super(orig.getContentType(), owner);
         this.map = orig.map;
     }
 
-
+    /**
+     * The underlying {@link GeoMap}
+     * @return the map
+     */
     public GeoMap getMap() {
         return map;
     }
     
+    /**
+     * The title of the underlying geomap
+     * @return the title
+     */
     @Override
     public TranslatedText getTitle() {
         return new TranslatedText(map.getTitles(), IPolyglott.getCurrentLocale());
