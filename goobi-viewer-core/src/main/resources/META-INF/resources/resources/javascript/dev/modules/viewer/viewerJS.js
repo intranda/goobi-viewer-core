@@ -46,6 +46,7 @@ var viewerJS = (function () {
 
     var viewer = {};
     viewer.initialized = new rxjs.Subject();
+    viewer.toggledCollapseable = new rxjs.Subject();
     
     
 
@@ -310,7 +311,6 @@ var viewerJS = (function () {
     }
   
     viewer.initSidebarCollapseable = function() {
-    	viewer.toggledCollapseable = new rxjs.Subject();
     	$('body').on('click', '.widget__title.collapseable', function (e) {
 			$(this).toggleClass('in').next().slideToggle(300, function() {
 				viewer.toggledCollapseable.next(e);
