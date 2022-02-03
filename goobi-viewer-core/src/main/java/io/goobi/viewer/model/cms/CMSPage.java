@@ -72,6 +72,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -2184,5 +2185,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 logger.error("Unable to set topbar slider: {}", e.toString());
             }
         }
+    }
+    
+    public String getAdminBackendUrl() {
+        String prettyId = "adminCmsEditPage";
+        return PrettyUrlTools.getAbsolutePageUrl(prettyId, this.getId());
     }
 }

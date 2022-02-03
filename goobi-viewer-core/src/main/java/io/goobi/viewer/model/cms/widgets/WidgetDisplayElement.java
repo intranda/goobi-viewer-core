@@ -191,7 +191,12 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
      */
     @Override
     public int compareTo(WidgetDisplayElement other) {
-        return StringUtils.compare(this.getTitle().getText(), other.getTitle().getText());
+        int typeCompare = Integer.compare(this.generationType.ordinal(), other.generationType.ordinal());
+        if(typeCompare == 0) {            
+            return StringUtils.compare(this.getTitle().getText(), other.getTitle().getText());
+        } else {
+            return typeCompare;
+        }
     }
 
 }
