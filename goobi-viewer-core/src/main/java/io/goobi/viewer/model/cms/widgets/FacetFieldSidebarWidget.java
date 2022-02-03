@@ -25,6 +25,12 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.model.translations.TranslatedText;
 
+/**
+ * A subtype of {@link CustomSidebarWidget} to display a list of possible values of a given SOLR field and link to a search listing of items with a specific value
+ * 
+ * @author florian
+ *
+ */
 @Entity
 @DiscriminatorValue("FacetFieldSidebarWidget")
 public class FacetFieldSidebarWidget extends CustomSidebarWidget {
@@ -36,10 +42,18 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     @Column(name = "num_entries")
     private int numEntries = 5;
     
+    /**
+     * Empty default constructor
+     */
     public FacetFieldSidebarWidget() {
         
     }
     
+    /**
+     * Cloning constructor
+     * 
+     * @param o
+     */
     public FacetFieldSidebarWidget(FacetFieldSidebarWidget o) {
         super(o);
         this.facetField = o.facetField;
@@ -48,24 +62,29 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     }
     
     /**
+     * Contains the SOLR field holding the values to list
      * @return the facetField
      */
     public String getFacetField() {
         return facetField;
     }
     /**
+     * Set the SOLR field for which to list values
      * @param facetField the facetField to set
      */
     public void setFacetField(String facetField) {
         this.facetField = facetField;
     }
     /**
+     * An additional SOLR query. If this is not empty, only values of the {@link #getFacetField()} 
+     * are listed that are contained in documents meeting this query. This is also true for the linked result lists  
      * @return the filterQuery
      */
     public String getFilterQuery() {
         return filterQuery;
     }
     /**
+     * Set the value of {@link #getFilterQuery()}
      * @param filterQuery the filterQuery to set
      */
     public void setFilterQuery(String filterQuery) {
@@ -77,10 +96,18 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
         return CustomWidgetType.WIDGET_FIELDFACETS;
     }
     
+    /**
+     * 
+     * @return the number of field values displayed in the widget
+     */
     public int getNumEntries() {
         return numEntries;
     }
     
+    /**
+     * Set the number of field values displayed in the widget
+     * @param numEntries
+     */
     public void setNumEntries(int numEntries) {
         this.numEntries = numEntries;
     }

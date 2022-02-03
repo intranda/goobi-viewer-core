@@ -86,20 +86,38 @@ public class CMSSidebarElement {
     @Column(name = "content_type", nullable = false)
     private WidgetContentType contentType;
 
+    /**
+     * Empty constructor for the DAO
+     */
     public CMSSidebarElement() {
 
     }
 
+    /**
+     * Default constructor for a certain type of widget
+     * @param type
+     */
     public CMSSidebarElement(WidgetContentType type) {
         this.generationType = WidgetContentType.getGenerationType(type);
         this.contentType = type;
     }
 
+    /**
+     * Default constructor for a certain type of widget and owning CMSPage
+     * @param type
+     */
     public CMSSidebarElement(WidgetContentType type, CMSPage owner) {
         this(type);
         this.ownerPage = owner;
     }
 
+    /**
+     * Clones the given sidebar element and assigns the given CMSPage as owner.
+     * Depends on cloning constructors of subclasses
+     * @param orig
+     * @param owner
+     * @return
+     */
     public static CMSSidebarElement copy(CMSSidebarElement orig, CMSPage owner) {
         switch (orig.getClass().getSimpleName()) {
             case "CMSSidebarElementDefault":
@@ -114,6 +132,7 @@ public class CMSSidebarElement {
     }
 
     /**
+     * the database id
      * @return the id
      */
     public Long getId() {
@@ -128,6 +147,7 @@ public class CMSSidebarElement {
     }
 
     /**
+     * the {@link CMSPage} containing the element
      * @return the ownerPage
      */
     public CMSPage getOwnerPage() {
@@ -142,6 +162,7 @@ public class CMSSidebarElement {
     }
 
     /**
+     * The order in which the element is shown. Low numbers are displayed on top of the sidebar, high numbers at the bottom
      * @return the order
      */
     public int getOrder() {
@@ -156,6 +177,7 @@ public class CMSSidebarElement {
     }
 
     /**
+     * the {@link WidgetGenerationType} of the underlying widget
      * @return the generationType
      */
     public WidgetGenerationType getGenerationType() {
@@ -170,6 +192,7 @@ public class CMSSidebarElement {
     }
 
     /**
+     * the {@link WidgetContentType} of the underlying widget
      * @return the contentType
      */
     public WidgetContentType getContentType() {
@@ -183,8 +206,12 @@ public class CMSSidebarElement {
         this.contentType = contentType;
     }
 
+    /**
+     * The title displayed for this element when editing the owning CMSPage
+     * @return
+     */
     public TranslatedText getTitle() {
-        return new TranslatedText(ViewerResourceBundle.getTranslation(getContentType().getLabel(), IPolyglott.getCurrentLocale()));
+        return new TranslatedText(ViewerResourceBundle.getTranslations(getContentType().getLabel()));
     } 
 
 }

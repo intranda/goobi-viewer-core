@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -164,6 +165,26 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     @Override
     public String toString() {
         return getText();
+    }
+    
+    public boolean equals(Object obj) {
+        if (obj.getClass().equals(TranslatedText.class)) {
+            TranslatedText other = (TranslatedText)obj;
+            if(other.getLanguages().size() != this.getLanguages().size()) {
+                return false;
+            }
+            for (ValuePair pair : this.getValues()) {
+                Locale locale = pair.getLocale();
+                String value = pair.getValue();
+                boolean same = Objects.equals(other.getValue(locale).orElse(""), value == null ? "" : value);
+                if(!same) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

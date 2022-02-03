@@ -40,7 +40,12 @@ import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
- * Class to persist user generated CMS-Sidebar widgets in the database. There are 
+ * Class to persist user generated CMS-Sidebar widgets in the database. 
+ * Different types of widgets containing different data are encoded in subclasses. This main class should be considered effectively abstract,
+ * even though it cannot be marked as abstract due to dao persistence restrictions.
+ * The exact type of custom widget can be gathered from #{CustomSidebarWidget{@link #getType()}
+ * 
+ * Each inheriting class must implement a cloning constructor, i.e. a constructor taking an argument of the same class and copying all its data
  * 
  * @author florian
  *
@@ -64,6 +69,9 @@ public class CustomSidebarWidget implements IPolyglott {
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText title = new TranslatedText(IPolyglott.getLocalesStatic());
 
+    /**
+     * Currently not in use
+     */
     @Column(name = "widget_description", columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText description = new TranslatedText(IPolyglott.getLocalesStatic());
@@ -74,16 +82,25 @@ public class CustomSidebarWidget implements IPolyglott {
     @Column(name = "collapsed")
     private boolean collapsed = false;
     
+    /**
+     * The currently selected locale when editing the widget. Any changes must be passed down to any translatable proberties of the widget, e.g. the title
+     */
     @Transient
     private Locale locale = IPolyglott.getCurrentLocale();
 
     public CustomSidebarWidget() {
     }
 
+    /**
+     * Cloning constructor.
+     * @param source
+     */
     public CustomSidebarWidget(CustomSidebarWidget source) {
         this.id = source.id;
         this.title = new TranslatedText(source.title);
         this.description = new TranslatedText(source.description);
+        this.collapsed = source.collapsed;
+        this.styleClass = source.styleClass;
     }
 
     @Override
@@ -145,33 +162,51 @@ public class CustomSidebarWidget implements IPolyglott {
         return description;
     }
 
+    /**
+     * Return the type of this custom sidebar widget. Must be implemented by subclasses of {@link CustomSidebarWidget}
+     * @return
+     */
     public CustomWidgetType getType() {
         return null;
     }
 
-    
+    /**
+     * 
+     * @return the css style class to use for this widget, if any
+     */
     public String getStyleClass() {
         return styleClass;
     }
 
+    /**
+     * Set the css style class to use for this widget
+     * @param styleClass
+     */
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
     }
     
     /**
-     * @return the collapsed
+     * @return true if the widget should initially be displayed in a collapsed state with a button to expand it
      */
     public boolean isCollapsed() {
         return collapsed;
     }
 
     /**
+     * Set this widget to be displayed as a collapseable
      * @param collapsed the collapsed to set
      */
     public void setCollapsed(boolean collapsed) {
         this.collapsed = collapsed;
     }
 
+    /**
+     * Creates a copy of the given custom widget o. Depends on cloning constructors if sublass
+     * 
+     * @param o
+     * @return
+     */
     public static CustomSidebarWidget clone(CustomSidebarWidget o) {
         if (o == null) {
             return null;
