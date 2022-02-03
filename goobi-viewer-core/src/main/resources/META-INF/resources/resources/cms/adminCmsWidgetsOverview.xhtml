@@ -120,7 +120,7 @@
 											<!-- TYPE OF WIDGET -->
 											<ui:fragment rendered="#{widget.generationType != 'DEFAULT'}" >
 												<div class="cms-widgets-overview__single-widget-info-type">
-													<div class="cms-widgets-overview__single-widget-info-label">#{msg.type}</div>
+													<div class="cms-widgets-overview__single-widget-info-label">#{msg.type}:</div>
 													<div class="cms-widgets-overview__single-widget-info-data">
 														#{msg[widget.contentType.label]}
 													</div>
@@ -130,7 +130,7 @@
 											<!-- WHERE IS THIS WIDGET DISPLAYED -->
 											<ui:fragment rendered="#{not empty widget.embeddingPages}">
 												<div class="cms-widgets-overview__single-widget-info-used">
-													<div class="cms-widgets-overview__single-widget-info-label">#{msg.cms_widgets__usage}</div>
+													<div class="cms-widgets-overview__single-widget-info-label">#{msg.cms_widgets__usage}:</div>
 													
 													<!-- LIST ALL PAGES ON WHICH THIS WIDGET IS ACTIVE -->
 	
