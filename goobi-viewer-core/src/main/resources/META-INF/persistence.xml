@@ -23,10 +23,12 @@
         <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
         <class>io.goobi.viewer.model.cms.CMSPageTemplateEnabled</class>
         <class>io.goobi.viewer.model.cms.CMSProperty</class>
-        <class>io.goobi.viewer.model.cms.CMSSidebarElement</class>
-        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
-        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
         <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
+        <class>io.goobi.viewer.model.cms.widgets.CustomSidebarWidget</class>
+		<class>io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget</class>
+		<class>io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget</class>
+		<class>io.goobi.viewer.model.cms.widgets.RssFeedSidebarWidget</class>
+		<class>io.goobi.viewer.model.cms.widgets.PageListSidebarWidget</class>
         <class>io.goobi.viewer.model.maps.GeoMap</class>
         <class>io.goobi.viewer.model.maps.MapTranslation</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.Campaign</class>
@@ -52,6 +54,7 @@
 		<class>io.goobi.viewer.model.log.LogMessage</class>
 		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
 		<class>io.goobi.viewer.dao.converter.StringListConverter</class>
+		<class>io.goobi.viewer.dao.converter.NumberListConverter</class>
 		<class>io.goobi.viewer.model.cms.CMSRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
@@ -60,6 +63,11 @@
 		<class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
 		<class>io.goobi.viewer.model.translations.Translation</class>
 		<class>io.goobi.viewer.dao.converter.SimpleMediaHolderConverter</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
+		<class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -72,6 +80,10 @@
 
 			<!-- disable logging to separate log file for now as the path can not be influenced in Goobi to go -->
 			<!-- <property name="eclipselink.logging.file" value="/opt/digiverso/logs/viewer_sql.log" /> -->
+
+            <!-- EclipseLink does not support MariaDB directly, so let's set it to MySQL for now, see
+                 https://jira.mariadb.org/browse/CONJ-702?focusedCommentId=205084&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-205084 -->
+            <property name="eclipselink.target-database" value="MySQL"/>
 
 			<!-- <property name="eclipselink.cache.shared.default" value="false" /> -->
             <!-- <property name="eclipselink.logging.logger" value="ServerLogger" /> -->
@@ -104,6 +116,11 @@
         <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
         <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
         <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
+		<class>io.goobi.viewer.model.cms.widgets.CustomSidebarWidget</class>
+		<class>io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget</class>
+		<class>io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget</class>
+		<class>io.goobi.viewer.model.cms.widgets.RssFeedSidebarWidget</class>
+		<class>io.goobi.viewer.model.cms.widgets.PageListSidebarWidget</class>
         <class>io.goobi.viewer.model.maps.GeoMap</class>
         <class>io.goobi.viewer.model.maps.MapTranslation</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.Campaign</class>
@@ -130,6 +147,7 @@
 		<class>io.goobi.viewer.model.log.LogMessage</class>
 		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
 		<class>io.goobi.viewer.dao.converter.StringListConverter</class>
+		<class>io.goobi.viewer.dao.converter.NumberListConverter</class>
 		<class>io.goobi.viewer.model.cms.CMSRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
 		<class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
@@ -138,7 +156,12 @@
 		<class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
 		<class>io.goobi.viewer.model.translations.Translation</class>
 		<class>io.goobi.viewer.dao.converter.SimpleMediaHolderConverter</class>
-
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
+		<class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
+		
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" />

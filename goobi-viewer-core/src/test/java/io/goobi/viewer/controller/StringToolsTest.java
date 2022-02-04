@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.controller;
 
+import static org.junit.Assert.assertEquals;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -278,16 +280,5 @@ public class StringToolsTest {
     public void unescapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
         Assert.assertEquals("+A/\\|?Z", StringTools.unescapeCriticalUrlChracters("U002BAU002FU005CU007CU003FZ"));
     }
-
-    //   @Test
-    //    public void testGetGeoSearchPoints() {
-    //        String searchString = "WKT_COORDS:\"IsWithin(POLYGON((1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2))) distErrPct=0\"";
-    //    
-    //        double[][] points = StringTools.getGeoSearchPoints(searchString);
-    //        assertEquals(4, points.length);
-    //        assertEquals(1.1, points[0][0], 0.0);
-    //        assertEquals(1.2, points[0][1], 0.0);
-    //        assertEquals(4.1, points[3][0], 0.0);
-    //        assertEquals(4.2, points[3][1], 0.0);
-    //    }
+    
 }

@@ -13,24 +13,43 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.cms;
+package io.goobi.viewer.model.export;
 
-import org.junit.Assert;
-import org.junit.Test;
+public class ExportFieldConfiguration {
 
-import io.goobi.viewer.model.cms.CMSSidebarElementWithQuery;
+    private final String field;
+    private String label;
 
-public class CMSSidebarElementWithQueryTest {
+    public ExportFieldConfiguration(String field) {
+        this.field = field;
+    }
 
     /**
-     * @see CMSSidebarElementWithQuery#getAdditionalQuerySuffix()
-     * @verifies build suffix correctly
+     * @return the field
      */
-    @Test
-    public void getAdditionalQuerySuffix_shouldBuildSuffixCorrectly() throws Exception {
-        CMSSidebarElementWithQuery element = new CMSSidebarElementWithQuery();
-        Assert.assertEquals("", element.getAdditionalQuerySuffix());
-        element.setAdditionalQuery("foo:bar");
-        Assert.assertEquals(" AND (foo:bar)", element.getAdditionalQuerySuffix());
+    public String getField() {
+        return field;
     }
+
+    /**
+     * @return the label
+     * @should return field if label null
+     */
+    public String getLabel() {
+        if (label != null) {
+            return label;
+        }
+
+        return field;
+    }
+
+    /**
+     * @param label the label to set
+     * @return this
+     */
+    public ExportFieldConfiguration setLabel(String label) {
+        this.label = label;
+        return this;
+    }
+
 }

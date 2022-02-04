@@ -842,14 +842,20 @@
         <action onPostback="false">#{adminBean.lockTranslation}</action>
         <action onPostback="false">#{adminBean.saveAndResetCurrentTranslationGroup}</action>
     </url-mapping>
-    <url-mapping id="adminEditTranslations">
+    <url-mapping id="adminTranslationsEdit">
         <pattern value="/admin/translations/edit/#{groupId:adminBean.currentTranslationGroupId}/" />
         <view-id value="/resources/admin/views/adminTranslationsEdit.xhtml" />
         <action onPostback="false">#{adminBean.lockTranslation}</action>
     </url-mapping>
-    <url-mapping id="adminEditTranslations2">
+    <url-mapping id="adminTranslationsEdit2">
         <pattern value="/admin/translations/edit/#{groupId:adminBean.currentTranslationGroupId}/#{currentTranslationKey:adminBean.currentTranslationMessageKey}/" />
         <view-id value="/resources/admin/views/adminTranslationsEdit.xhtml" />
+        <action onPostback="false">#{adminBean.lockTranslation}</action>
+    </url-mapping>
+    <url-mapping id="adminTranslationsNew">
+        <pattern value="/admin/translations/new/" />
+        <view-id value="/resources/admin/views/adminTranslationsEdit.xhtml" />
+        <action onPostback="false">#{adminBean.triggerNewMessageEntryMode}</action>
         <action onPostback="false">#{adminBean.lockTranslation}</action>
     </url-mapping>
 
@@ -1003,6 +1009,22 @@
     <url-mapping id="adminCmsGeoMapEdit">
         <pattern value="/admin/cms/maps/edit/#{mapId:geoMapBean.currentMapId}/" />
         <view-id value="/resources/cms/adminCmsGeoMapEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsWidgetsAdd">
+        <pattern value="/admin/cms/widgets/new/" />
+        <view-id value="/resources/cms/adminCmsWidgetsAdd.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsWidgetsEdit">
+        <pattern value="/admin/cms/widgets/edit/#{widgetId}/" />
+        <view-id value="/resources/cms/adminCmsWidgetsAdd.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{customWidgetEditBean.setWidgetId(widgetId)}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsWidgetsOverview">
+        <pattern value="/admin/cms/widgets/" />
+        <view-id value="/resources/cms/adminCmsWidgetsOverview.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 
@@ -1172,7 +1194,7 @@
     <url-mapping id="embedGeoMap">
 		<pattern value="/embed/map/#{mapId}/"/>
         <view-id value="/contentOnly.xhtml" />
-		<action onPostback="false">#{dynamicBean.addComponent('map', 'geoMap', mapId, linkTarget)}</action>
+		<action onPostback="false">#{dynamicBean.addComponent('map', 'geoMap', {'geoMapId':mapId, 'linkTarget':linkTarget})}</action>
 		<query-param name="linkTarget">#{linkTarget}</query-param>
 	</url-mapping>
 

@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.solr.SolrConstants;
@@ -74,5 +75,16 @@ public class IpRangeTest extends AbstractDatabaseEnabledTest {
     public void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionListEmpty() throws Exception {
         IpRange ipRange = new IpRange();
         Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<String>(0), null, "restricted", "PPN123"));
+    }
+
+    /**
+     * @see IpRange#matchIp(String)
+     * @verifies match IPv6 localhost to IPv4 mask
+     */
+    @Test
+    public void matchIp_shouldMatchIPv6LocalhostToIPv4Mask() throws Exception {
+        IpRange ipRange = new IpRange();
+        ipRange.setSubnetMask("127.0.0.1/32");
+        Assert.assertTrue(ipRange.matchIp(NetTools.ADDRESS_LOCALHOST_IPV6));
     }
 }

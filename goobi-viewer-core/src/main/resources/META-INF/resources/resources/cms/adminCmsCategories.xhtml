@@ -21,7 +21,7 @@
         <ui:fragment id="cmsCategoriesAccessControl" rendered="#{userBean.user.isHasCmsPrivilege('CMS_CATEGORIES')}">
             <div id="adminCmsCategories">
                 <div class="admin__title-bar">
-                    <h2 class="admin__title">#{msg.admin__categories}</h2>
+                    <h1 class="admin__title">#{msg.admin__categories}</h1>
                     <a href="#{navigationHelper.applicationUrl}admin/cms/categories/new/" class="btn btn--default admin__title-bar-action">
                         #{msg.add}
                     </a>
@@ -44,7 +44,7 @@
                                 <div class="row no-gutters admin__table-entry">
                                     <div class="col-4 d-flex">
                                         <div class="admin__table-data">
-                                            <span>#{category.name}</span>
+                                            <span>#{category.name}</span> 
                                             <div>
                                                 <!-- EDIT -->
                                                 <a href="#{navigationHelper.applicationUrl}admin/cms/categories/edit/#{category.id}/"
@@ -66,6 +66,12 @@
                 </div>
             </div>
         </ui:fragment>
+        <script>
+        	// Create no entries found message
+  			if($('.admin__table-entry').length == 0) {
+  				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+  			}    
+        </script>
     </ui:define>
 </ui:composition>
 

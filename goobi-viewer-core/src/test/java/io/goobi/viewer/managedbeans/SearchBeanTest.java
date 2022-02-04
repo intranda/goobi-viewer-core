@@ -240,6 +240,77 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchBean#generateSimpleSearchString(String)
+     * @verifies generate phrase search query without filter correctly
+     */
+    @Test
+    public void generateSimpleSearchString_shouldGeneratePhraseSearchQueryWithoutFilterCorrectly() throws Exception {
+        SearchBean bean = new SearchBean();
+        bean.generateSimpleSearchString("\"foo bar\"");
+        Assert.assertEquals(
+                "SUPERDEFAULT:(\"foo bar\") OR SUPERFULLTEXT:(\"foo bar\") OR SUPERUGCTERMS:(\"foo bar\") OR DEFAULT:(\"foo bar\") OR FULLTEXT:(\"foo bar\") OR NORMDATATERMS:(\"foo bar\") OR UGCTERMS:(\"foo bar\") OR CMS_TEXT_ALL:(\"foo bar\")",
+                bean.searchStringInternal);
+    }
+
+    /**
+     * @see SearchBean#generateSimpleSearchString(String)
+     * @verifies generate phrase search query with specific filter correctly
+     */
+    @Test
+    public void generateSimpleSearchString_shouldGeneratePhraseSearchQueryWithSpecificFilterCorrectly() throws Exception {
+        SearchBean bean = new SearchBean();
+        bean.setCurrentSearchFilterString("filter_FULLTEXT");
+        bean.generateSimpleSearchString("\"foo bar\"");
+        Assert.assertEquals("SUPERFULLTEXT:(\"foo bar\") OR FULLTEXT:(\"foo bar\")", bean.searchStringInternal);
+    }
+    
+
+    /**
+     * @see SearchBean#generateSimpleSearchString(String)
+     * @verifies generate non-phrase search query without filter correctly
+     */
+    @Test
+    public void generateSimpleSearchString_shouldGenerateNonphraseSearchQueryWithoutFilterCorrectly() throws Exception {
+        SearchBean bean = new SearchBean();
+        bean.generateSimpleSearchString("foo bar");
+        Assert.assertEquals(
+                "SUPERDEFAULT:(foo AND bar) SUPERFULLTEXT:(foo AND bar) SUPERUGCTERMS:(foo AND bar) DEFAULT:(foo AND bar) FULLTEXT:(foo AND bar) NORMDATATERMS:(foo AND bar) UGCTERMS:(foo AND bar) CMS_TEXT_ALL:(foo AND bar)",
+                bean.searchStringInternal);
+    }
+    
+
+    /**
+     * @see SearchBean#generateSimpleSearchString(String)
+     * @verifies generate non-phrase search query with specific filter correctly
+     */
+    @Test
+    public void generateSimpleSearchString_shouldGenerateNonphraseSearchQueryWithSpecificFilterCorrectly() throws Exception {
+        SearchBean bean = new SearchBean();
+        bean.setCurrentSearchFilterString("filter_FULLTEXT");
+        bean.generateSimpleSearchString("foo bar");
+        Assert.assertEquals("SUPERFULLTEXT:(foo AND bar) OR FULLTEXT:(foo AND bar)", bean.searchStringInternal);
+    }
+
+    /**
+     * @see SearchBean#generateSimpleSearchString(String)
+     * @verifies add proximity search token correctly
+     */
+    @Test
+    public void generateSimpleSearchString_shouldAddProximitySearchTokenCorrectly() throws Exception {
+        SearchBean bean = new SearchBean();
+
+        // All
+        bean.generateSimpleSearchString("\"foo bar\"~20");
+        Assert.assertTrue(bean.searchStringInternal.contains("SUPERFULLTEXT:(\"foo bar\"~20)"));
+        Assert.assertTrue(bean.searchStringInternal.contains(" FULLTEXT:(\"foo bar\"~20)"));
+
+        // Just full-text
+        bean.setCurrentSearchFilterString("filter_FULLTEXT");
+        bean.generateSimpleSearchString("\"foo bar\"~20");
+        Assert.assertEquals("SUPERFULLTEXT:(\"foo bar\"~20) OR FULLTEXT:(\"foo bar\"~20)", bean.searchStringInternal);
+    }
+
+    /**
      * @see SearchBean#generateAdvancedSearchString()
      * @verifies construct query correctly
      */
@@ -857,7 +928,6 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Collection<SearchSortingOption> options = sb.getSearchSortingOptions();
         Assert.assertEquals(10, options.size());
         Iterator<SearchSortingOption> iterator = options.iterator();
-        assertEquals("random_12345", iterator.next().getField()); 
+        assertEquals("random_12345", iterator.next().getField());
     }
-
 }

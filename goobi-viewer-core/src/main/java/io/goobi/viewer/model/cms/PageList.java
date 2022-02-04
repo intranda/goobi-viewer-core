@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -52,7 +53,11 @@ public class PageList implements Iterable<String> {
     public PageList() {
         super();
     }
-
+    
+    public PageList(List<Long> pageIds) {
+        this.pages = pageIds.stream().map(l -> Long.toString(l)).collect(Collectors.toList());
+    }
+ 
     /**
      * <p>
      * Constructor for PageList.

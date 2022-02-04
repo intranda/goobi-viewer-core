@@ -1,0 +1,332 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:o="http://omnifaces.org/ui"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+	<f:event listener="cmswidgetEditBean.startConversation()"
+		type="preRenderView"></f:event>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsSidebarWidgets')}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+		<div id="cmsWidgetsAdd" class="cms-widgets-add -h100">
+			<h:panelGroup rendered="#{userBean.user.cmsAdmin}">
+
+				<div class="admin__title-bar">
+					<!-- TITLE -->
+					<c:choose>
+						<c:when test="#{customWidgetEditBean.widget == null or (empty customWidgetEditBean.widget.id)}">
+							<h1 class="admin__title">#{msg.cms__add_widget__title}</h1>
+						</c:when>
+						<c:otherwise>
+							<h1 class="admin__title">#{msg.cms__edit_widget__title}</h1>
+						</c:otherwise>
+					</c:choose>
+				</div>
+
+				<h:form prependId="false" class="-h100">
+
+					<div class="admin__content-inner-content -h100">
+
+						<div class="admin__content-wrapper -h100">
+
+							<!-- MAIN CONTENT -->
+							<div class="admin__content-main #{customWidgetEditBean.widgetType != null ? '-partial' : '-full'} -sticky -refreshHCsticky">
+
+								<ui:fragment
+									rendered="#{customWidgetEditBean.widgetType == null}">
+									<div class="admin__info-text">#{msg.cms__add_widget__select_type}:</div>
+
+									<div class="admin__entry-list -w25">
+										<ui:repeat var="type"
+											value="#{customWidgetEditBean.widgetTypes}">
+											<div class="admin__boxed-entry -w25">
+												<div class="d-flex flex-column h-100">
+													<div>
+													<!-- ADD RSS WIDGET TITLE -->
+													<ui:fragment rendered="#{type == 'WIDGET_RSSFEED'}">
+														<h2><i class="fa fa-rss" aria-hidden="true"></i> #{msg[type.label]}</h2>
+														
+													</ui:fragment>
+													<!-- ADD FACETING WIDGET TITLE -->
+													<ui:fragment rendered="#{type == 'WIDGET_FIELDFACETS'}">
+														<h2><i class="fa fa-list-ul" aria-hidden="true"></i> #{msg[type.label]}</h2>
+													</ui:fragment>
+													<!-- ADD PAGES WIDGET TITLE -->
+													<ui:fragment rendered="#{type == 'WIDGET_CMSPAGES'}">
+														<h2><i class="fa fa-clone" aria-hidden="true"></i> #{msg[type.label]}</h2>
+													</ui:fragment>
+													<!-- ADD HTML WIDGET TITLE -->
+													<ui:fragment rendered="#{type == 'WIDGET_HTML'}">
+														<h2><i class="fa fa-code" aria-hidden="true"></i> #{msg[type.label]}</h2>
+													</ui:fragment>
+													
+													</div>
+													<div>
+														<p>#{msg[type.description]}</p>
+													</div>
+													<div class="mt-auto">
+														<div class="d-flex">
+															<button
+																jsf:action="#{customWidgetEditBean.createWidget(type)}"
+																class="btn btn--default ml-auto">#{msg.action__select}</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</ui:repeat>
+									</div>
+								</ui:fragment>
+
+								<ui:fragment
+									rendered="#{customWidgetEditBean.widgetType != null}">
+									<c:set var="widget" value="#{customWidgetEditBean.widget}"
+										scope="view" />
+									<!-- HTML -->
+									<ui:fragment rendered="#{widget.type == 'WIDGET_HTML'}">
+
+										<viewerForms:inputFormBlock title="#{msg.general}"
+											languageSelector="#{widget}">
+
+											<!-- TITLE -->
+											<viewerForms:textInputField value="#{widget.title.text}"
+												label="#{msg.label__cms_page_title}"
+												required="#{widget.isDefaultLocaleSelected()}"
+												helpText="#{msg.help__cms__edit_widget__title}" />
+											<!-- HTML -->
+											<viewerForms:htmlInputField value="#{widget.htmlText.text}"
+												label="#{msg.cms_sidebarElement_html}"
+												required="#{widget.isDefaultLocaleSelected()}"
+												helpText="#{msg.help__cms__edit_widget__html}" />
+										</viewerForms:inputFormBlock>
+									</ui:fragment>
+
+									<!-- CMS PAGES -->
+									<ui:fragment rendered="#{widget.type == 'WIDGET_CMSPAGES'}">
+
+										<viewerForms:inputFormBlock title="#{msg.general}"
+											languageSelector="#{widget}">
+											<!-- TITLE -->
+											<viewerForms:textInputField value="#{widget.title.text}"
+												label="#{msg.label__cms_page_title}"
+												required="#{widget.isDefaultLocaleSelected()}"
+												helpText="#{msg.help__cms__edit_widget__title}" />
+										</viewerForms:inputFormBlock>
+
+										<viewerForms:inputFormBlock
+											title="#{msg.cms__edit_widget__settings}">
+
+											<div class="form-group form-row">
+												<div class="col-2 control-label admin__form-label">
+													<label> #{msg.pages}: </label>
+												</div>
+
+												<div
+													class="col-9 cms-widgets-add__pages-selection cms-module__option-control admin__form-input">
+
+													<ul>
+														<ui:repeat var="var"
+															value="#{customWidgetEditBean.cmsPageMap.keySet().stream().sorted().toList()}">
+															<li><label> <h:selectBooleanCheckbox
+																		type="checkbox"
+																		value="#{customWidgetEditBean.cmsPageMap[var]}">
+																		<f:ajax event="change" execute="@this" />
+																	</h:selectBooleanCheckbox> <h:outputFormat value="#{var.title}" escape="false">
+																	</h:outputFormat>
+															</label></li>
+														</ui:repeat>
+													</ul>
+													<ui:fragment rendered="#{not empty cc.attrs.helpText}">
+														<span class="admin__form-help-text">#{msg.cms__edit_widget__collections__help}</span>
+													</ui:fragment>
+												</div>
+
+												<div class="col-1 admin__form-help-icon">
+													<ui:fragment rendered="#{not empty cc.attrs.helpText}">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
+													</ui:fragment>
+												</div>
+											</div>
+
+										</viewerForms:inputFormBlock>
+
+									</ui:fragment>
+
+									<ui:fragment rendered="#{widget.type == 'WIDGET_FIELDFACETS'}">
+
+										<viewerForms:inputFormBlock
+											title="#{msg.cms__edit_widget__settings}">
+
+											<viewerForms:singleSelectField
+												label="#{msg.cms__edit_widget__solrfield_label}"
+												required="true" value="#{widget.facetField}"
+												selectValues="#{cmsBean.getLuceneFields(true)}" var="field"
+												itemValue="#{field}" itemLabel="#{msg[field]}"
+												helpText="#{msg.help__cms__edit_widget__solrfield}" />
+
+											<viewerForms:textInputField
+												label="#{msg.cms__edit_widget__filter_query_label}"
+												required="false" value="#{widget.filterQuery}"
+												helpText="#{msg.help__cms__edit_widget__filter_query_label}"
+												validatorId="solrQueryValidator" validatorMessage="#{msg.inline_help__solr_query_danger}"/>
+
+											<viewerForms:singleSelectField label="#{msg.cms_itemCount}"
+												required="false" value="#{widget.numEntries}"
+												selectValues="#{[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]}"
+												helpText="#{msg.help__cms__edit_widget__count}" />
+
+										</viewerForms:inputFormBlock>
+
+									</ui:fragment>
+
+									<ui:fragment rendered="#{widget.type == 'WIDGET_RSSFEED'}">
+
+										<viewerForms:inputFormBlock title="#{msg.general}"
+											languageSelector="#{widget}">
+											<!-- TITLE -->
+											<viewerForms:textInputField value="#{widget.title.text}"
+												label="#{msg.label__cms_page_title}"
+												required="#{widget.isDefaultLocaleSelected()}"
+												helpText="#{msg.help__cms__edit_widget__title}" />
+										</viewerForms:inputFormBlock>
+
+										<viewerForms:inputFormBlock
+											title="#{msg.cms__edit_widget__settings}">
+
+											<viewerForms:singleSelectField label="#{msg.sortBy}"
+												required="true" value="#{widget.sortField}"
+												selectValues="#{cmsBean.getPossibleSortFields()}"
+												var="field" itemValue="#{field}" itemLabel="#{msg[field]}"
+												helpText="#{msg.cms_widget__solr_sortfield__help}" />
+
+											<viewerForms:textInputField
+												label="#{msg.cms__edit_widget__filter_query_label}"
+												required="false" value="#{widget.filterQuery}"
+												helpText="#{msg.help__cms__edit_widget__filter_query_label}"
+												validatorId="solrQueryValidator" validatorMessage="#{msg.inline_help__solr_query_danger}" />
+
+											<viewerForms:singleSelectField label="#{msg.cms_itemCount}"
+												required="false" value="#{widget.numEntries}"
+												selectValues="#{[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]}"
+												helpText="#{msg.help__cms__edit_widget__count}" />
+
+											<viewerForms:booleanSelectField
+												label="#{msg.cms_sidebarElement_sortDescending}"
+												value="#{widget.descendingSorting}"
+												helpText="#{msg.help__cms__edit_widget__descending}" />
+
+										</viewerForms:inputFormBlock>
+
+									</ui:fragment>
+
+									<viewerForms:inputFormBlock
+										title="#{msg.cms__edit_widget__additional_settings}">
+
+										<viewerForms:textInputField
+											label="#{msg.cms__edit_widget__style__label}"
+											required="false" value="#{widget.styleClass}"
+											helpText="#{msg.help__cms__edit_widget__css}" />
+
+										<viewerForms:booleanSelectField
+											label="#{msg.cms__edit_widget__collapsed__label}"
+											value="#{widget.collapsed}"
+											helpText="#{msg.help__cms__edit_widget__collapsed}" />
+
+									</viewerForms:inputFormBlock>
+
+								</ui:fragment>
+
+
+								<ui:fragment rendered="#{widget != null}">
+									<div
+										class="row no-gutters justify-content-end admin__final-actions">
+										<a class="btn btn--cancel"
+											href="#{customWidgetEditBean.returnUrl}">#{msg.button__abort}
+										</a>
+										<button class="btn btn--success"
+											jsf:action="#{customWidgetEditBean.save()}">#{msg.button__save}
+											<f:ajax execute="@form" render="@form :messages"></f:ajax>
+										</button>
+									</div>
+								</ui:fragment>
+
+							</div>
+							
+							<!-- SIDEBAR -->
+							<ui:fragment rendered="#{widget != null}">
+								<div class="admin__content-side -refreshHCsticky -sticky">
+									<ui:fragment rendered="#{widget.id != null}">
+										<div class="admin__default-block">
+											<button class="btn d-none" jsf:action="#{customWidgetEditBean.refresh}">
+												<i class="fa fa-refresh"></i>
+												<f:ajax execute="@form" render="previewGroup"></f:ajax>
+											</button>
+											<h2>#{msg.title__preview}</h2>
+											<h:panelGroup id="previewGroup" layout="block" styleClass="admin__default-preview"
+												binding="#{customWidgetEditBean.previewGroup}" />
+										</div>
+									</ui:fragment>
+									
+									<div class="admin__default-block">
+												<div class="d-flex flex-column h-100">
+													<div>
+													<!-- ADD RSS WIDGET TITLE -->
+													<ui:fragment rendered="#{widget.type == 'WIDGET_RSSFEED'}">
+														<h2><i class="fa fa-rss" aria-hidden="true"></i> #{msg[widget.type.label]}</h2>
+														
+													</ui:fragment>
+													<!-- ADD FACETING WIDGET TITLE -->
+													<ui:fragment rendered="#{widget.type == 'WIDGET_FIELDFACETS'}">
+														<h2><i class="fa fa-list-ul" aria-hidden="true"></i> #{msg[widget.type.label]}</h2>
+													</ui:fragment>
+													<!-- ADD PAGES WIDGET TITLE -->
+													<ui:fragment rendered="#{widget.type == 'WIDGET_CMSPAGES'}">
+														<h2><i class="fa fa-clone" aria-hidden="true"></i> #{msg[widget.type.label]}</h2>
+													</ui:fragment>
+													<!-- ADD HTML WIDGET TITLE -->
+													<ui:fragment rendered="#{widget.type == 'WIDGET_HTML'}">
+														<h2><i class="fa fa-code" aria-hidden="true"></i> #{msg[widget.type.label]}</h2>
+													</ui:fragment>
+													
+													</div>
+													<div class="cms-widgets-add__widget-description">
+														<p>#{msg[widget.type.description]}</p>
+													</div>
+												</div>
+											</div>
+									
+									<div class="admin__default-block">
+										<h2>#{msg.title__did_you_know}</h2>
+										<p class="admin__did-you-know-text">#{msg.cms__edit_widget__sidebar_information}</p>
+									</div>
+								</div>
+							</ui:fragment>
+
+
+						</div>
+
+					</div>
+
+				</h:form>
+			</h:panelGroup>
+		</div>
+
+	</ui:define>
+
+</ui:composition>
+
+

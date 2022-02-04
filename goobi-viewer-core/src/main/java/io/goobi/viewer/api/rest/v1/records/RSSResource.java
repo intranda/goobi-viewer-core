@@ -61,9 +61,11 @@ public class RSSResource {
             @Parameter(description = "Search query to filter results (optional)") @QueryParam("query") String query,
             @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)" )@QueryParam("facets") String facets,
             @Parameter(description = "Facet query operator. '0' (default) means that facet queries are chained using logical 'AND', '1' means that they are chained using logical 'OR' (optional)" )
-            @QueryParam("facetQueryOperator") Integer facetQueryOperator) throws ContentLibException {
+            @QueryParam("facetQueryOperator") Integer facetQueryOperator,
+            @Parameter(description = "The solr field to sort the results by. Default is 'DATECERATED' (optional)" )@QueryParam("sortField") String sortField,
+            @Parameter(description = "Set to 'false' to sort entries in ascending order. Default is 'true' (optional)" )@QueryParam("sortDescending") Boolean sortDescending) throws ContentLibException {
 
-        return RSSFeed.createRssFeed(language, maxHits, subtheme, query, facets, facetQueryOperator, servletRequest);
+        return RSSFeed.createRssFeed(language, maxHits, subtheme, query, facets, facetQueryOperator, servletRequest, sortField, sortDescending == null ? true : sortDescending);
     }
 
     
@@ -80,9 +82,11 @@ public class RSSResource {
             @Parameter(description = "Search query to filter results (optional)") @QueryParam("query") String query,
             @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)" )@QueryParam("facets") String facets,
             @Parameter(description = "Facet query operator. '0' (default) means that facet queries are chained using logical 'AND', '1' means that they are chained using logical 'OR' (optional)" )
-            @QueryParam("facetQueryOperator") Integer facetQueryOperator) throws ContentLibException {
+            @QueryParam("facetQueryOperator") Integer facetQueryOperator,
+            @Parameter(description = "The solr field to sort the results by. Default is 'DATECERATED' (optional)" )@QueryParam("sortField") String sortField,
+            @Parameter(description = "Set to 'false' to sort entries in ascending order. Default is 'true' (optional)" )@QueryParam("sortDescending") Boolean sortDescending) throws ContentLibException {
         
-        return RSSFeed.createRssResponse(language, maxHits, subtheme, query, facets, facetQueryOperator, servletRequest);
+        return RSSFeed.createRssResponse(language, maxHits, subtheme, query, facets, facetQueryOperator, servletRequest, sortField, sortDescending == null ? true : sortDescending);
     }
 
 }

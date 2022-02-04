@@ -20,7 +20,6 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -128,24 +127,37 @@ public class NetTools {
     }
 
     /**
+     * 
+     * @param url URL to call
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws HTTPException
+     */
+    public static String getWebContentGET(String url) throws ClientProtocolException, IOException, HTTPException {
+        return getWebContentGET(url, HTTP_TIMEOUT);
+    }
+
+    /**
      * <p>
      * getWebContentGET.
      * </p>
      *
-     * @param urlString a {@link java.lang.String} object.
+     * @param url URL to call
+     * @param timeout Custom timeout
      * @return a {@link java.lang.String} object.
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
-    public static String getWebContentGET(String urlString) throws ClientProtocolException, IOException, HTTPException {
+    public static String getWebContentGET(String url, int timeout) throws ClientProtocolException, IOException, HTTPException {
         RequestConfig defaultRequestConfig = RequestConfig.custom()
-                .setSocketTimeout(HTTP_TIMEOUT)
-                .setConnectTimeout(HTTP_TIMEOUT)
-                .setConnectionRequestTimeout(HTTP_TIMEOUT)
+                .setSocketTimeout(timeout)
+                .setConnectTimeout(timeout)
+                .setConnectionRequestTimeout(timeout)
                 .build();
         try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build()) {
-            HttpGet get = new HttpGet(urlString);
+            HttpGet get = new HttpGet(url);
             try (CloseableHttpResponse response = httpClient.execute(get); StringWriter writer = new StringWriter()) {
                 int code = response.getStatusLine().getStatusCode();
                 if (code == HttpStatus.SC_OK) {
@@ -563,6 +575,7 @@ public class NetTools {
      * @return
      */
     public static boolean isIpAddressLocalhost(String address) {
+        // logger.trace("isIpAddressLocalhost: {}", address);
         if (address == null) {
             return false;
         }
@@ -605,5 +618,19 @@ public class NetTools {
         }
 
         return sbUrl.toString();
+    }
+
+    /**
+     * return true if the given string is a whole number between 200 and 399 (inclusive) 
+     * @param string
+     * @return
+     */
+    public static boolean isStatusOk(String string) {
+        try {            
+            int code = Integer.parseInt(string);
+            return 200 <= code && code < 400;
+        } catch(NullPointerException | NumberFormatException e) {
+            return false;
+        }
     }
 }

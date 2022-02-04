@@ -60,6 +60,7 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
@@ -72,6 +73,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -130,6 +132,16 @@ public final class SearchHelper {
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
     /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */
     public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -IDDOC_PARENT:*";
+    /**
+     * Constant <code>FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit
+     * distance to search. {p} and {s} are prefix and suffix to be applied to the search term
+     */
+    public static final String FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST = "{p}{t}{s} {t}~{d}";
+    /**
+     * Constant <code>FUZZY_SEARCH_TERM_TEMPLATE="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit distance
+     * to search.
+     */
+    public static final String FUZZY_SEARCH_TERM_TEMPLATE = "{t}~{d}";
 
     private static final Object lock = new Object();
 
@@ -141,9 +153,8 @@ public final class SearchHelper {
     public static Pattern patternNot = Pattern.compile("NOT[ ][a-zA-Z_]+[:][a-zA-Z0-9\\*]+");
     /** Constant <code>patternPhrase</code> */
     public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
-
-    /** Filter subquery for collection listing (no volumes). */
-    static volatile String collectionBlacklistFilterSuffix = null;
+    /** Constant <code>patternProximitySearchToken</code> */
+    public static Pattern patternProximitySearchToken = Pattern.compile("~([0-9]+)");
 
     /**
      * Main search method for aggregated search.
@@ -158,6 +169,7 @@ public final class SearchHelper {
      * @param searchTerms a {@link java.util.Map} object.
      * @param exportFields a {@link java.util.List} object.
      * @param locale a {@link java.util.Locale} object.
+     * @param proximitySearchDistance
      * @return List of <code>StructElement</code>s containing the search hits.
      * @should return all hits
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -167,9 +179,10 @@ public final class SearchHelper {
      */
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields,
             List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
-            List<String> exportFields, Locale locale)
+            List<String> exportFields, Locale locale, int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return searchWithAggregation(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, false);
+        return searchWithAggregation(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, false,
+                proximitySearchDistance);
     }
 
     /**
@@ -186,6 +199,7 @@ public final class SearchHelper {
      * @param exportFields a {@link java.util.List} object.
      * @param locale a {@link java.util.Locale} object.
      * @param keepSolrDoc
+     * @param proximitySearchDistance
      * @return List of <code>StructElement</code>s containing the search hits.
      * @should return all hits
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -195,7 +209,7 @@ public final class SearchHelper {
      */
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields,
             List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
-            List<String> exportFields, Locale locale, boolean keepSolrDoc)
+            List<String> exportFields, Locale locale, boolean keepSolrDoc, int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("searchWithAggregation: {}", query);
         QueryResponse resp =
@@ -216,7 +230,7 @@ public final class SearchHelper {
             // logger.trace("Creating search hit from {}", doc);
             SearchHit hit =
                     SearchHit.createSearchHit(doc, null, null, locale, null, searchTerms, exportFields, sortFields, ignoreFields,
-                            translateFields, null, thumbs);
+                            translateFields, null, proximitySearchDistance, thumbs);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
@@ -265,8 +279,28 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix,
-            boolean addCollectionBlacklistSuffix) throws IndexUnreachableException {
+    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix)
+            throws IndexUnreachableException {
+        return getAllSuffixes(request, addStaticQuerySuffix, addCollectionBlacklistSuffix, null);
+    }
+
+    /**
+     * Returns all suffixes relevant to search filtering.
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param addStaticQuerySuffix a boolean.
+     * @param addCollectionBlacklistSuffix a boolean.
+     * @param addDiscriminatorValueSuffix a boolean.
+     * @param privilege Privilege to check
+     * @should add static suffix
+     * @should not add static suffix if not requested
+     * @should add collection blacklist suffix
+     * @should add discriminator value suffix
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
+            String privilege) throws IndexUnreachableException {
         StringBuilder sbSuffix = new StringBuilder("");
         if (addStaticQuerySuffix && StringUtils.isNotBlank(DataManager.getInstance().getConfiguration().getStaticQuerySuffix())) {
             String staticSuffix = DataManager.getInstance().getConfiguration().getStaticQuerySuffix();
@@ -278,7 +312,7 @@ public final class SearchHelper {
         if (addCollectionBlacklistSuffix) {
             sbSuffix.append(getCollectionBlacklistFilterSuffix(SolrConstants.DC));
         }
-        String filterQuerySuffix = getFilterQuerySuffix(request);
+        String filterQuerySuffix = getFilterQuerySuffix(request, privilege);
         // logger.trace("filterQuerySuffix: {}", filterQuerySuffix);
         if (filterQuerySuffix != null) {
             sbSuffix.append(filterQuerySuffix);
@@ -334,7 +368,7 @@ public final class SearchHelper {
      */
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, boolean boostTopLevelDocstructs,
-            HttpServletRequest request)
+            int proximitySearchDistance, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String finalQuery = prepareQuery(query);
         String termQuery = null;
@@ -344,7 +378,8 @@ public final class SearchHelper {
         finalQuery = buildFinalQuery(finalQuery, termQuery, aggregateHits, boostTopLevelDocstructs);
         logger.trace("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits =
-                SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale);
+                SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale,
+                        proximitySearchDistance);
         if (!hits.isEmpty()) {
             return hits.get(0).getBrowseElement();
         }
@@ -767,25 +802,13 @@ public final class SearchHelper {
     }
 
     /**
-     * Returns a Solr query suffix that filters out collections defined in the collection blacklist. This suffix is only generated once per
-     * application lifecycle.
-     *
+     * Returns a Solr query suffix that filters out collections defined in the collection blacklist.
+     * 
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
     public static String getCollectionBlacklistFilterSuffix(String field) {
-        String suffix = collectionBlacklistFilterSuffix;
-        if (suffix == null) {
-            synchronized (lock) {
-                suffix = collectionBlacklistFilterSuffix;
-                if (suffix == null) {
-                    suffix = generateCollectionBlacklistFilterSuffix(field);
-                    collectionBlacklistFilterSuffix = suffix;
-                }
-            }
-        }
-
-        return suffix;
+        return generateCollectionBlacklistFilterSuffix(field);
     }
 
     /**
@@ -848,12 +871,15 @@ public final class SearchHelper {
      * Updates the calling agent's session with a personalized filter sub-query.
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param privilege
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static void updateFilterQuerySuffix(HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
-        String filterQuerySuffix = getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request));
+    public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        String filterQuerySuffix =
+                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request), privilege);
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
         request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
     }
@@ -863,6 +889,7 @@ public final class SearchHelper {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param ipAddress a {@link java.lang.String} object.
+     * @param privilege Privilege to check
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -872,9 +899,11 @@ public final class SearchHelper {
      * @should construct suffix correctly if user has overriding license privilege
      * @should construct suffix correctly if ip range has license privilege
      * @should construct suffix correctly if moving wall license
+     * @should construct suffix correctly for alternate privilege
      */
-    public static String getPersonalFilterQuerySuffix(User user, String ipAddress)
+    public static String getPersonalFilterQuerySuffix(User user, String ipAddress, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
+        logger.trace("getPersonalFilterQuerySuffix: {}", ipAddress);
         // No restrictions for admins
         if (user != null && user.isSuperuser()) {
             return "";
@@ -883,6 +912,9 @@ public final class SearchHelper {
         if (NetTools.isIpAddressLocalhost(ipAddress)
                 && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
             return "";
+        }
+        if (privilege == null) {
+            privilege = IPrivilegeHolder.PRIV_LIST;
         }
 
         StringBuilder query = new StringBuilder();
@@ -902,14 +934,14 @@ public final class SearchHelper {
             }
 
             // License type contains listing privilege
-            if (licenseType.isOpenAccess() || licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
+            if (licenseType.isOpenAccess() || licenseType.getPrivileges().contains(privilege)) {
                 query.append(licenseType.getFilterQueryPart(false));
                 usedLicenseTypes.add(licenseType.getName());
                 continue;
             }
 
             if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
-                    new HashSet<>(Collections.singletonList(licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
+                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, null)) {
                 // If the user has an explicit permission to list a certain license type, ignore all other license types
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
                 query.append(licenseType.getFilterQueryPart(false));
@@ -921,7 +953,7 @@ public final class SearchHelper {
                         continue;
                     }
                     if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
-                            new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress,
+                            new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress,
                             null)) {
                         query.append(overridingLicenseType.getFilterQueryPart(false));
                         usedLicenseTypes.add(overridingLicenseType.getName());
@@ -946,6 +978,7 @@ public final class SearchHelper {
      * @param targetFragmentLength Desired (approximate) length of the text fragment.
      * @param firstMatchOnly If true, only the fragment for the first match will be returned
      * @param addFragmentIfNoMatches If true, a fragment will be added even if no term was matched
+     * @param proximitySearchDistance
      * @should not add prefix and suffix to text
      * @should truncate string to 200 chars if no terms are given
      * @should truncate string to 200 chars if no term has been found
@@ -958,7 +991,7 @@ public final class SearchHelper {
      * @return a {@link java.util.List} object.
      */
     public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly,
-            boolean addFragmentIfNoMatches) {
+            boolean addFragmentIfNoMatches, int proximitySearchDistance) {
         // logger.trace("truncateFulltext");
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
@@ -994,57 +1027,60 @@ public final class SearchHelper {
                     fulltextFragment += " ";
                     break;
                 }
-                Matcher m = Pattern.compile(searchTerm.toLowerCase()).matcher(fulltext.toLowerCase());
-                int lastIndex = -1;
-                while (m.find()) {
-                    // Skip match if it follows right after the last match
-                    if (lastIndex != -1 && m.start() <= lastIndex + searchTerm.length()) {
-                        continue;
-                    }
-                    int indexOfTerm = m.start();
-                    lastIndex = m.start();
-
-                    // fulltextFragment = getTextFragmentFromLine(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
-                    fulltextFragment = getTextFragmentRandomized(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
-                    // fulltextFragment = getTextFragmentStatic(fulltext, targetFragmentLength, fulltextFragment, searchTerm,
-                    // indexOfTerm);
-
-                    indexOfTerm = fulltextFragment.toLowerCase().indexOf(searchTerm.toLowerCase());
-                    int indexOfSpace = fulltextFragment.indexOf(' ');
-                    if (indexOfTerm > indexOfSpace && indexOfSpace >= 0) {
-                        fulltextFragment = fulltextFragment.substring(indexOfSpace, fulltextFragment.length());
-                    }
-
-                    indexOfTerm = fulltextFragment.toLowerCase().indexOf(searchTerm.toLowerCase());
-
-                    if (indexOfTerm < fulltextFragment.lastIndexOf(' ')) {
-                        fulltextFragment = fulltextFragment.substring(0, fulltextFragment.lastIndexOf(' '));
-                    }
-
-                    indexOfTerm = fulltextFragment.toLowerCase().indexOf(searchTerm.toLowerCase());
-                    if (indexOfTerm >= 0) {
-                        fulltextFragment = applyHighlightingToPhrase(fulltextFragment, searchTerm);
-                        fulltextFragment = replaceHighlightingPlaceholders(fulltextFragment);
-                    }
-                    if (StringUtils.isNotBlank(fulltextFragment)) {
-                        // Check for unclosed HTML tags
-                        int lastIndexOfLT = fulltextFragment.lastIndexOf('<');
-                        int lastIndexOfGT = fulltextFragment.lastIndexOf('>');
-                        if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
-                            fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
+                if (FuzzySearchTerm.isFuzzyTerm(searchTerm)) {
+                    // Fuzzy search
+                    FuzzySearchTerm fuzzySearchTerm = new FuzzySearchTerm(searchTerm);
+                    Matcher m = Pattern.compile(FuzzySearchTerm.WORD_PATTERN).matcher(fulltext.toLowerCase());
+                    int lastIndex = -1;
+                    while (m.find()) {
+                        String word = m.group();
+                        if (fuzzySearchTerm.matches(word)) {
+                            if (lastIndex != -1 && m.start() <= lastIndex + searchTerm.length()) {
+                                continue;
+                            }
+                            lastIndex = createFulltextFragment(m, fulltext, word, targetFragmentLength, ret);
+                            if (firstMatchOnly) {
+                                break;
+                            }
                         }
-                        // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
-                        // fulltextFragment = fulltextFragment.replace("<br>", " ");
-                        ret.add(fulltextFragment);
                     }
-                    if (firstMatchOnly) {
-                        break;
+                } else if (proximitySearchDistance > 0 && searchTerm.contains(" ")) {
+                    // TODO Proximity search
+                    String regex = buildProximitySearchRegexPattern(searchTerm, proximitySearchDistance);
+                    if (regex != null) {
+                        Matcher m = Pattern.compile(regex).matcher(fulltext.toLowerCase());
+                        int lastIndex = -1;
+                        while (m.find()) {
+                            // Skip match if it follows right after the last match
+                            if (lastIndex != -1 && m.start() <= lastIndex + searchTerm.length()) {
+                                continue;
+                            }
+                            String fragment = fulltext.substring(m.start(), m.end());
+                            logger.trace("fragment: {}", fragment);
+                            lastIndex = createFulltextFragment(m, fulltext, fragment, targetFragmentLength, ret);
+                            if (firstMatchOnly) {
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    Matcher m = Pattern.compile(searchTerm.toLowerCase()).matcher(fulltext.toLowerCase());
+                    int lastIndex = -1;
+                    while (m.find()) {
+                        // Skip match if it follows right after the last match
+                        if (lastIndex != -1 && m.start() <= lastIndex + searchTerm.length()) {
+                            continue;
+                        }
+                        lastIndex = createFulltextFragment(m, fulltext, searchTerm, targetFragmentLength, ret);
+                        if (firstMatchOnly) {
+                            break;
+                        }
                     }
                 }
             }
 
             // If no search term has been found (i.e. when searching for a phrase), make sure no empty string gets delivered
-            if (addFragmentIfNoMatches && StringUtils.isEmpty(fulltextFragment)) {
+            if (addFragmentIfNoMatches && ret.isEmpty()) {
                 if (fulltext.length() > 200) {
                     fulltextFragment = fulltext.substring(0, 200);
                 } else {
@@ -1077,6 +1113,80 @@ public final class SearchHelper {
     }
 
     /**
+     * Builds regex for proximity search full-text snippets.
+     * 
+     * @param searchTerm Search term containing multiple words
+     * @param proximitySearchDistance Maximum distance between word
+     * @return
+     * @should build regex correctly
+     */
+    static String buildProximitySearchRegexPattern(String searchTerm, int proximitySearchDistance) {
+        if (StringUtils.isEmpty(searchTerm)) {
+            return null;
+        }
+        String[] searchTermSplit = searchTerm.toLowerCase().split(" ");
+        StringBuilder sbPattern = new StringBuilder("\\b(?:");
+        for (int i = 0; i < searchTermSplit.length; ++i) {
+            if (i > 0) {
+                sbPattern.append("\\W+(?:\\w+\\W+){0,").append(proximitySearchDistance).append("}?");
+            }
+            sbPattern.append(searchTermSplit[i]);
+        }
+        sbPattern.append(")\\b");
+
+        return sbPattern.toString();
+    }
+
+    /**
+     * 
+     * @param m
+     * @param fulltext
+     * @param searchTerm
+     * @param targetFragmentLength
+     * @param ret
+     * @return
+     */
+    private static int createFulltextFragment(Matcher m, String fulltext, String searchTerm, int targetFragmentLength, List<String> ret) {
+        int indexOfTerm = m.start();
+        int lastIndex = m.start();
+
+        // fulltextFragment = getTextFragmentFromLine(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
+        String fragment = getTextFragmentRandomized(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
+        // fulltextFragment = getTextFragmentStatic(fulltext, targetFragmentLength, fulltextFragment, searchTerm,
+        // indexOfTerm);
+
+        indexOfTerm = fragment.toLowerCase().indexOf(searchTerm.toLowerCase());
+        int indexOfSpace = fragment.indexOf(' ');
+        if (indexOfTerm > indexOfSpace && indexOfSpace >= 0) {
+            fragment = fragment.substring(indexOfSpace, fragment.length());
+        }
+
+        indexOfTerm = fragment.toLowerCase().indexOf(searchTerm.toLowerCase());
+
+        if (indexOfTerm < fragment.lastIndexOf(' ')) {
+            fragment = fragment.substring(0, fragment.lastIndexOf(' '));
+        }
+
+        indexOfTerm = fragment.toLowerCase().indexOf(searchTerm.toLowerCase());
+        if (indexOfTerm >= 0) {
+            fragment = applyHighlightingToPhrase(fragment, searchTerm);
+            fragment = replaceHighlightingPlaceholders(fragment);
+        }
+        if (StringUtils.isNotBlank(fragment)) {
+            // Check for unclosed HTML tags
+            int lastIndexOfLT = fragment.lastIndexOf('<');
+            int lastIndexOfGT = fragment.lastIndexOf('>');
+            if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
+                fragment = fragment.substring(0, lastIndexOfLT).trim();
+            }
+            // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+            // fulltextFragment = fulltextFragment.replace("<br>", " ");
+            ret.add(fragment);
+        }
+        return lastIndex;
+    }
+
+    /**
      * Adds highlighting markup for all given terms to the phrase.
      *
      * @param phrase a {@link java.lang.String} object.
@@ -1095,6 +1205,9 @@ public final class SearchHelper {
 
         String highlightedValue = phrase;
         for (String term : terms) {
+            //remove fuzzy search suffix
+            FuzzySearchTerm fuzzyTerm = new FuzzySearchTerm(term);
+            term = fuzzyTerm.getTerm();
             // Highlighting single-character terms can take a long time, so skip them
             if (term.length() < 2) {
                 continue;
@@ -1102,13 +1215,40 @@ public final class SearchHelper {
             term = SearchHelper.removeTruncation(term);
             String normalizedPhrase = normalizeString(phrase);
             String normalizedTerm = normalizeString(term);
-            if (StringUtils.contains(normalizedPhrase, normalizedTerm)) {
+            if (contains(normalizedPhrase, normalizedTerm, fuzzyTerm.getMaxDistance())) {
                 highlightedValue = SearchHelper.applyHighlightingToPhrase(highlightedValue, term);
                 // logger.trace("highlighted value: {}", highlightedValue);
             }
         }
 
         return highlightedValue;
+    }
+
+    /**
+     * if maxDistance <= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. Otherwise check if the phrase
+     * contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
+     * 
+     * @param normalizedPhrase
+     * @param normalizedTerm
+     * @param maxDistance
+     * @return
+     */
+    public static boolean contains(String phrase, String term, int maxDistance) {
+        if (maxDistance > 0 && StringUtils.isNoneBlank(phrase, term)) {
+            Matcher matcher = Pattern.compile("[\\w-]+").matcher(phrase);
+            while (matcher.find()) {
+                String word = matcher.group();
+                if (Math.abs(word.length() - term.length()) <= maxDistance) {
+                    int distance = new DamerauLevenshtein(word, term).getSimilarity();
+                    if (distance <= maxDistance) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        return StringUtils.contains(phrase, term);
     }
 
     /**
@@ -1654,8 +1794,10 @@ public final class SearchHelper {
      * @should not remove truncation
      * @should throw IllegalArgumentException if query is null
      * @should add title terms field
+     * @should remove proximity search tokens
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
+        logger.trace("extractSearchTermsFromQuery:{}", query);
         if (query == null) {
             throw new IllegalArgumentException("query may not be null");
         }
@@ -1681,10 +1823,13 @@ public final class SearchHelper {
         Map<String, Set<String>> ret = new HashMap<>();
         ret.put(_TITLE_TERMS, new HashSet<>());
 
-        // Extract phrases and add them directly
+        // Drop proximity search tokens
+        query = query.replaceAll(patternProximitySearchToken.pattern(), "");
+
+        // Use a copy of the query because the original query gets shortened after every match, causing an IOOBE eventually
+        String queryCopy = query;
         {
-            // Use a copy of the query because the original query gets shortened after every match, causing an IOOBE eventually
-            String queryCopy = query;
+            // Extract phrases and add them directly
             Matcher mPhrases = patternPhrase.matcher(queryCopy);
             while (mPhrases.find()) {
                 String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
@@ -1704,7 +1849,7 @@ public final class SearchHelper {
                     if (ret.get(field) == null) {
                         ret.put(field, new HashSet<String>());
                     }
-                    logger.trace("phraseWoQuot: {}", phraseWithoutQuotation);
+                    // logger.trace("term: {}:{}", field, phraseWithoutQuotation);
                     ret.get(field).add(phraseWithoutQuotation);
                 }
                 query = query.replace(phrase, "");
@@ -1778,6 +1923,12 @@ public final class SearchHelper {
         return ret;
     }
 
+    /**
+     * Remove '*' at the start or end of the given value
+     * 
+     * @param value
+     * @return
+     */
     public static String removeTruncation(String value) {
         if (StringUtils.isEmpty(value)) {
             return value;
@@ -1997,6 +2148,8 @@ public final class SearchHelper {
      * @param fields a {@link java.util.List} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param phraseSearch If true, quotation marks are added to terms
+     * @param proximitySearchDistance
+     * @return a {@link java.lang.String} object.
      * @should generate query correctly
      * @should return empty string if no fields match
      * @should skip reserved fields
@@ -2004,70 +2157,85 @@ public final class SearchHelper {
      * @should not escape asterisks
      * @should not escape truncation
      * @should add quotation marks if phraseSearch is true
-     * @return a {@link java.lang.String} object.
+     * @should add proximity search token correctly
      */
-    public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms, boolean phraseSearch) {
+    public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms, boolean phraseSearch,
+            int proximitySearchDistance) {
         logger.trace("generateExpandQuery");
-        StringBuilder sbOuter = new StringBuilder();
-        if (!searchTerms.isEmpty()) {
-            logger.trace("fields: {}", fields.toString());
-            logger.trace("searchTerms: {}", searchTerms.toString());
-            boolean moreThanOne = false;
-            for (String field : fields) {
-                // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return
-                // every single doc
-                switch (field) {
-                    case SolrConstants.PI_TOPSTRUCT:
-                    case SolrConstants.PI_ANCHOR:
-                    case SolrConstants.DC:
-                    case SolrConstants.DOCSTRCT:
-                        continue;
-                    default:
-                        if (field.startsWith(SolrConstants.GROUPID_)) {
-                            continue;
-                        }
-                }
-                Set<String> terms = searchTerms.get(field);
-                if (terms == null || terms.isEmpty()) {
-                    continue;
-                }
-                if (sbOuter.length() == 0) {
-                    sbOuter.append(" +(");
-                }
-                if (moreThanOne) {
-                    sbOuter.append(" OR ");
-                }
-                StringBuilder sbInner = new StringBuilder();
-                boolean multipleTerms = false;
-                for (String term : terms) {
-                    if (sbInner.length() > 0) {
-                        sbInner.append(" OR ");
-                        multipleTerms = true;
-                    }
-                    if (!"*".equals(term)) {
-                        term = ClientUtils.escapeQueryChars(term);
-                        term = term.replace("\\*", "*");
-                        if (phraseSearch) {
-                            term = "\"" + term + "\"";
-                        }
-                    }
-                    sbInner.append(term);
-                }
-                sbOuter.append(field).append(":");
-                if (multipleTerms) {
-                    sbOuter.append('(');
-                }
-                sbOuter.append(sbInner.toString());
-                if (multipleTerms) {
-                    sbOuter.append(')');
-                }
-                moreThanOne = true;
-            }
-            if (sbOuter.length() > 0) {
-                sbOuter.append(')');
-            }
+        if (searchTerms.isEmpty()) {
+            return "";
         }
 
+        StringBuilder sbOuter = new StringBuilder();
+        logger.trace("fields: {}", fields.toString());
+        logger.trace("searchTerms: {}", searchTerms.toString());
+        boolean moreThanOne = false;
+        for (String field : fields) {
+            // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
+            switch (field) {
+                case SolrConstants.PI_TOPSTRUCT:
+                case SolrConstants.PI_ANCHOR:
+                case SolrConstants.DC:
+                case SolrConstants.DOCSTRCT:
+                    continue;
+                default:
+                    if (field.startsWith(SolrConstants.GROUPID_)) {
+                        continue;
+                    }
+            }
+            Set<String> terms = searchTerms.get(field);
+            if (terms == null || terms.isEmpty()) {
+                continue;
+            }
+            if (sbOuter.length() == 0) {
+                sbOuter.append(" +(");
+            }
+            if (moreThanOne) {
+                sbOuter.append(" OR ");
+            }
+            StringBuilder sbInner = new StringBuilder();
+            boolean multipleTerms = false;
+            for (String term : terms) {
+                if (sbInner.length() > 0) {
+                    sbInner.append(" OR ");
+                    multipleTerms = true;
+                }
+                if (!"*".equals(term)) {
+                    boolean quotationMarksApplied = false;
+                    if ((term.startsWith("\"") && term.endsWith("\""))) {
+                        quotationMarksApplied = true;
+                    }
+                    term = ClientUtils.escapeQueryChars(term);
+                    term = term.replace("\\*", "*");
+                    //unescape fuzzy search token
+                    term = term.replaceAll("\\\\~(\\d)", "~$1");
+                    // logger.trace("term: {}", term);
+                    if (phraseSearch && !quotationMarksApplied) {
+                        term = '"' + term + '"';
+                    }
+                }
+                if (SolrConstants.FULLTEXT.equals(field) && proximitySearchDistance > 0) {
+                    term = term.replace("\\\"", "\""); // unescape quotation marks
+                    term = SearchHelper.addProximitySearchToken(term, proximitySearchDistance);
+                }
+                // logger.trace("term: {}", term);
+                sbInner.append(term);
+            }
+            sbOuter.append(field).append(":");
+            if (multipleTerms) {
+                sbOuter.append('(');
+            }
+            sbOuter.append(sbInner.toString());
+            if (multipleTerms) {
+                sbOuter.append(')');
+            }
+            moreThanOne = true;
+        }
+        if (sbOuter.length() > 0) {
+            sbOuter.append(')');
+        }
+
+        logger.trace("expand query generated: {}", sbOuter.toString());
         return sbOuter.toString();
     }
 
@@ -2076,11 +2244,12 @@ public final class SearchHelper {
      *
      * @param groups a {@link java.util.List} object.
      * @param advancedSearchGroupOperator a int.
+     * @param allowFuzzySearch
      * @should generate query correctly
      * @should skip reserved fields
      * @return a {@link java.lang.String} object.
      */
-    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator) {
+    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator, boolean allowFuzzySearch) {
         logger.trace("generateAdvancedExpandQuery");
         if (groups == null || groups.isEmpty()) {
             return "";
@@ -2124,7 +2293,7 @@ public final class SearchHelper {
                             continue;
                         }
                 }
-                String itemQuery = item.generateQuery(new HashSet<String>(), false);
+                String itemQuery = item.generateQuery(new HashSet<String>(), false, allowFuzzySearch);
                 if (StringUtils.isNotEmpty(itemQuery)) {
                     if (sbGroup.length() > 0) {
                         if (orMode) {
@@ -2299,7 +2468,17 @@ public final class SearchHelper {
      * @return
      */
     public static String buildTermQuery(Collection<String> searchTerms) {
-        if (searchTerms == null) {
+        return buildTermQuery(searchTerms, true);
+    }
+
+    /**
+     * 
+     * @param searchTerms
+     * @param addOperators
+     * @return
+     */
+    public static String buildTermQuery(Collection<String> searchTerms, boolean addOperators) {
+        if (searchTerms == null || searchTerms.isEmpty()) {
             return "";
         }
 
@@ -2307,7 +2486,11 @@ public final class SearchHelper {
         StringBuilder sbInner = new StringBuilder();
         for (String term : searchTerms) {
             if (sbInner.length() > 0) {
-                sbInner.append(" AND ");
+                if (addOperators) {
+                    sbInner.append(" AND ");
+                } else {
+                    sbInner.append(' ');
+                }
             }
             if (!term.contains(" OR ")) {
                 sbInner.append(term);
@@ -2358,7 +2541,7 @@ public final class SearchHelper {
         }
 
         logger.trace("rawQuery: {}", rawQuery);
-        logger.trace("termQuery: {}", termQuery);
+        // logger.trace("termQuery: {}", termQuery);
         StringBuilder sbQuery = new StringBuilder();
         if (rawQuery.contains(AGGREGATION_QUERY_PREFIX)) {
             rawQuery = rawQuery.replace(AGGREGATION_QUERY_PREFIX, "");
@@ -2381,8 +2564,7 @@ public final class SearchHelper {
         }
 
         // Suffixes
-        String suffixes = getAllSuffixes(request, true,
-                true);
+        String suffixes = getAllSuffixes(request, true, true, null);
         if (StringUtils.isNotBlank(suffixes)) {
             sbQuery.append(suffixes);
         }
@@ -2392,9 +2574,10 @@ public final class SearchHelper {
 
     /**
      * @param request
+     * @param privilege
      * @return Filter query suffix string from the HTTP session
      */
-    static String getFilterQuerySuffix(HttpServletRequest request) {
+    static String getFilterQuerySuffix(HttpServletRequest request, String privilege) {
         if (request == null) {
             request = BeanUtils.getRequest();
         }
@@ -2410,7 +2593,7 @@ public final class SearchHelper {
         // If not suffix generated yet, initiate update
         if (ret == null) {
             try {
-                updateFilterQuerySuffix(request);
+                updateFilterQuerySuffix(request, privilege);
                 ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
             } catch (IndexUnreachableException e) {
                 logger.error(e.getMessage(), e);
@@ -2446,10 +2629,10 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static SXSSFWorkbook exportSearchAsExcel(String finalQuery, String exportQuery, List<StringPair> sortFields, List<String> filterQueries,
-            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, int proximitySearchDistance,
+            HttpServletRequest request) throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         SXSSFWorkbook wb = new SXSSFWorkbook(25);
-        SXSSFSheet currentSheet = wb.createSheet("intranda_viewer_search");
+        SXSSFSheet currentSheet = wb.createSheet("Goobi_viewer_search");
 
         CellStyle styleBold = wb.createCellStyle();
         Font font2 = wb.createFont();
@@ -2473,13 +2656,17 @@ public final class SearchHelper {
 
         // Title row
         SXSSFRow row = currentSheet.createRow(currentRowIndex++);
-        for (String field : DataManager.getInstance().getConfiguration().getSearchExcelExportFields()) {
+        for (ExportFieldConfiguration field : DataManager.getInstance().getConfiguration().getSearchExcelExportFields()) {
             SXSSFCell cell = row.createCell(currentCellIndex++);
             cell.setCellStyle(styleBold);
-            cell.setCellValue(new XSSFRichTextString(ViewerResourceBundle.getTranslation(field, locale)));
+            cell.setCellValue(new XSSFRichTextString(ViewerResourceBundle.getTranslation(field.getField(), locale)));
         }
 
-        List<String> exportFields = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();
+        List<ExportFieldConfiguration> exportFields = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();
+        List<String> exportFieldNames = new ArrayList<>(exportFields.size());
+        for (ExportFieldConfiguration field : exportFields) {
+            exportFieldNames.add(field.getField());
+        }
         long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(finalQuery, filterQueries);
         int batchSize = 100;
         int totalBatches = (int) Math.ceil((double) totalHits / batchSize);
@@ -2492,16 +2679,16 @@ public final class SearchHelper {
             }
             logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
             List<SearchHit> batch =
-                    searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields,
-                            locale);
+                    searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFieldNames,
+                            locale, proximitySearchDistance);
 
             for (SearchHit hit : batch) {
                 // Create row
                 currentCellIndex = 0;
                 row = currentSheet.createRow(currentRowIndex++);
-                for (String field : exportFields) {
+                for (ExportFieldConfiguration field : exportFields) {
                     SXSSFCell cell = row.createCell(currentCellIndex++);
-                    String value = hit.getExportMetadata().get(field);
+                    String value = hit.getExportMetadata().get(field.getField());
                     cell.setCellValue(new XSSFRichTextString(value != null ? value : ""));
                 }
             }
@@ -2631,6 +2818,138 @@ public final class SearchHelper {
         }
         return AGGREGATION_QUERY_PREFIX + "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC)" + " +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition
                 + "\"";
+    }
+
+    /**
+     * Adds a fuzzy search token to the given term. The maximal Damerau-Levenshtein is calculated from term length
+     * 
+     * @param term the search term
+     * @return the given term with a fuzzy search token appended
+     */
+    public static String addFuzzySearchToken(String term, String prefix, String suffix) {
+        int distance = FuzzySearchTerm.calculateOptimalDistance(term);// DataManager.getInstance().getConfiguration().getFuzzySearchDistance();
+        return addFuzzySearchToken(term, distance, prefix, suffix);
+    }
+
+    /**
+     * @param term the search term. Must be a single word
+     * @param distance the maximum Damerau-Levenshtein distance to a matching word. Must be from 0 to 2, where 0 means no fuzzy search
+     * @return
+     */
+    public static String addFuzzySearchToken(String term, int distance, String prefix, String suffix) {
+        if (distance < 0 || distance > 2) {
+            throw new IllegalArgumentException("Edit distance in fuzzy search must be in the range from 0 to 2. The given distance is " + distance);
+        } else if (distance == 0) {
+            return prefix + term + suffix;
+        } else if (StringUtils.isBlank(term) || term.contains(" ")) {
+            throw new IllegalArgumentException(
+                    "For fuzzy search, term must not be empty and must consist only of a single word. The given term is " + term);
+        } else {
+            return FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST
+                    .replace("{t}", term)
+                    .replace("{d}", Integer.toString(distance))
+                    .replace("{p}", StringUtils.isBlank(prefix) ? "" : prefix)
+                    .replace("{s}", StringUtils.isBlank(suffix) ? "" : suffix);
+        }
+    }
+
+    /**
+     * 
+     * @param term
+     * @param distance
+     * @return
+     * @should add token correctly
+     */
+    public static String addProximitySearchToken(String term, int distance) {
+        if (StringUtils.isEmpty(term)) {
+            return term;
+        }
+
+        boolean addQuotationMarks = false;
+        if (!term.startsWith("\"") && !term.endsWith("\"")) {
+            addQuotationMarks = true;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (addQuotationMarks) {
+            sb.append('"');
+        }
+        sb.append(term);
+        if (addQuotationMarks) {
+            sb.append('"');
+        }
+        sb.append('~');
+        sb.append(distance);
+
+        return sb.toString();
+    }
+
+    /**
+     * 
+     * @param term Search term containing proximity search token
+     * @return
+     * @should remove token correctly
+     * @should return unmodified term if no token found
+     */
+    public static String removeProximitySearchToken(String term) {
+        if (StringUtils.isEmpty(term) || !term.contains("\"~")) {
+            return term;
+        }
+
+        Matcher m = SearchHelper.patternProximitySearchToken.matcher(term);
+        if (m.find()) {
+            String num = m.group(1);
+            if (StringUtils.isNotBlank(num)) {
+                return term.replace("~" + num, "");
+            }
+        }
+
+        return term;
+    }
+
+    /**
+     * 
+     * @param query
+     * @return
+     * @should return 0 if query empty
+     * @should return 0 if query does not contain token
+     * @should return 0 if query not phrase search
+     * @should extract distance correctly
+     */
+    public static int extractProximitySearchDistanceFromQuery(String query) {
+        if (StringUtils.isEmpty(query) || !query.contains("\"~")) {
+            return 0;
+        }
+
+        int ret = 0;
+        Matcher m = SearchHelper.patternProximitySearchToken.matcher(query);
+        if (m.find()) {
+            String num = m.group(1);
+            if (StringUtils.isNotBlank(num)) {
+                try {
+                    ret = Integer.valueOf(num);
+                    logger.trace("Extracted proximity search distance: {}", ret);
+                } catch (NumberFormatException e) {
+                    logger.warn(e.getMessage());
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Separate leading and trailing wildcard token ('*') from the actual term and return an array of length 3 with the values [leadingWildCard,
+     * tokenWithoutWildcards, trailingWildcard] If leading/trailing wildcards are missing, the corresponding array entries are empty strings
+     * 
+     * @param term
+     * @return array of prefix, token, suffix
+     */
+    public static String[] getWildcardsTokens(String term) {
+        String prefix = term.startsWith("*") ? "*" : "";
+        String suffix = term.endsWith("*") ? "*" : "";
+        String cleanedTerm = term.substring(prefix.length(), term.length() - suffix.length());
+        return new String[] { prefix, cleanedTerm, suffix };
     }
 
 }

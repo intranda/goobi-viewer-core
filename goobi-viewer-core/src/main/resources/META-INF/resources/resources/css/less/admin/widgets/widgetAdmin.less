@@ -27,7 +27,10 @@
     	padding-right: 15px;
     	padding-left: 15px;
     	&.active {
-    		background-color: @activeblue;
+		&:hover {
+			background-color: @adminBackend-active-state;
+		}
+    		background-color: @adminBackend-active-state;
     		&:after {
     			content: "";
     			position: absolute;
@@ -44,7 +47,8 @@
     		}
     	}
     	&:hover {
-    		background-color: @hoverblue;
+    		background-color: @adminBackend-menu-hover;
+			padding-left: 3rem;
     	}
     	&.spacer {
     		margin-bottom: 10px;
@@ -90,14 +94,6 @@
    
 }
 
-.admin-widget li:hover {
-    background-color: #235396;
-    padding-left: 3rem;
-}
-
-.admin-widget li.active {
-    background-color: #235396;
-}
 
 .admin__sidebar-logout {
 margin-top: 2rem;

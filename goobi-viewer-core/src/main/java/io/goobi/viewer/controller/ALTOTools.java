@@ -20,7 +20,7 @@ import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +53,7 @@ import de.intranda.digiverso.ocr.alto.utils.HyphenationLinker;
 import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
+import io.goobi.viewer.model.search.FuzzySearchTerm;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
 
 /**
@@ -85,7 +86,7 @@ public class ALTOTools {
      */
     public static String getFulltext(Path path, String encoding) throws IOException {
         String altoString = FileTools.getStringFromFile(path.toFile(), encoding);
-        return getFulltext(altoString, false, null);
+        return getFulltext(altoString, encoding, false, null);
     }
 
     /**
@@ -94,14 +95,15 @@ public class ALTOTools {
      * </p>
      *
      * @param alto a {@link java.lang.String} object.
+     * @param charset
      * @param mergeLineBreakWords a boolean.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @should extract fulltext correctly
      * @return a {@link java.lang.String} object.
      */
-    public static String getFulltext(String alto, boolean mergeLineBreakWords, HttpServletRequest request) {
+    public static String getFulltext(String alto, String charset, boolean mergeLineBreakWords, HttpServletRequest request) {
         try {
-            return alto2Txt(alto, mergeLineBreakWords, request);
+            return alto2Txt(alto, charset, mergeLineBreakWords, request);
         } catch (IOException | XMLStreamException | JDOMException e) {
             logger.error(e.getMessage(), e);
         }
@@ -115,24 +117,33 @@ public class ALTOTools {
      * </p>
      *
      * @param alto a {@link java.lang.String} object.
+     * @param charset
      * @param type a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
      * @return a {@link java.util.List} object.
      */
-    public static List<TagCount> getNERTags(String alto, NERTag.Type type) {
-        List<TagCount> tags = new ArrayList<>();
+    public static List<TagCount> getNERTags(String alto, String charset, NERTag.Type type) {
+        // Make sure an empty charset value is changed to null to avoid exceptions
+        if (StringUtils.isBlank(charset)) {
+            charset = null;
+        }
+        List<TagCount> ret = new ArrayList<>();
         try {
-            AltoDocument doc = AltoDocument.getDocumentFromString(alto);
+            AltoDocument doc = AltoDocument.getDocumentFromString(alto, charset);
             for (Tag tag : doc.getTags().getTagsAsList()) {
                 if (type == null) {
-                    addTags(createNERTag(tag), tags);
+                    addTags(createNERTag(tag), ret);
                 } else if (type.matches(tag.getType())) {
-                    addTags(createNERTag(tag), tags);
+                    addTags(createNERTag(tag), ret);
                 }
             }
+        } catch (UnsupportedEncodingException e) {
+            logger.error("{}: {}", e.getMessage(), charset);
         } catch (Throwable e) {
-            logger.trace("Error loading alto from \n\"" + alto + "\"");
+            logger.error(e.getMessage(), e);
+            // logger.trace("Error loading ALTO from XML:\n{}", alto);
         }
-        return tags;
+
+        return ret;
     }
 
     /**
@@ -156,23 +167,28 @@ public class ALTOTools {
      * @param solrDoc
      * @return
      */
+    @SuppressWarnings("rawtypes")
     private static List<TagCount> createNERTag(Tag tag) {
         String value = tag.getLabel();
         value = value.replaceAll(TAG_LABEL_IGNORE_REGEX, "");
-        Type type = Type.getType(tag.getType());
+        Type type = Type.getByLabel(tag.getType());
+        if (type == null) {
+            logger.trace("Unknown tag type: {}, using {}", tag.getType(), Type.misc.name());
+            type = Type.misc;
+        }
         ElementReference element = null;
 
-        List<TagCount> nerTags = new ArrayList<>();
+        List<TagCount> ret = new ArrayList<>(tag.getReferences().size());
         for (GeometricData reference : tag.getReferences()) {
-
             String elementId = reference.getId();
             Rectangle elementCoordinates = reference.getRect().getBounds();
             String elementContent = reference.getContent();
-            element = new ElementReference(elementId, elementCoordinates, elementContent);
+            element = new ElementReference(elementId, elementCoordinates, elementContent, tag.getUri());
             TagCount nerTag = new TagCount(value, type, element);
-            nerTags.add(nerTag);
+            ret.add(nerTag);
         }
-        return nerTags;
+
+        return ret;
     }
 
     /**
@@ -181,6 +197,7 @@ public class ALTOTools {
      * </p>
      *
      * @param alto a {@link java.lang.String} object.
+     * @param charset ALTO charset
      * @param mergeLineBreakWords a boolean.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return a {@link java.lang.String} object.
@@ -190,17 +207,18 @@ public class ALTOTools {
      * @should use extract fulltext correctly
      * @should concatenate word at line break correctly
      */
-    protected static String alto2Txt(String alto, boolean mergeLineBreakWords, HttpServletRequest request)
+    protected static String alto2Txt(String alto, String charset, boolean mergeLineBreakWords, HttpServletRequest request)
             throws IOException, XMLStreamException, JDOMException {
         if (alto == null) {
             throw new IllegalArgumentException("alto may not be null");
         }
 
         String useAlto = alto;
+        String useCharset = charset != null ? charset : StringTools.DEFAULT_ENCODING;
 
         // Link hyphenated words before parsing the document
         if (mergeLineBreakWords) {
-            AltoDocument altoDoc = AltoDocument.getDocumentFromString(alto);
+            AltoDocument altoDoc = AltoDocument.getDocumentFromString(alto, charset);
             new HyphenationLinker().linkWords(altoDoc);
             Document doc = new Document(altoDoc.writeToDom());
             useAlto = new XMLOutputter().outputString(doc);
@@ -212,7 +230,7 @@ public class ALTOTools {
         Set<String> usedTags = new HashSet<>();
         StringBuilder strings = new StringBuilder(500);
         XMLStreamReader parser = null;
-        try (InputStream is = new ByteArrayInputStream(useAlto.getBytes(StandardCharsets.UTF_8))) {
+        try (InputStream is = new ByteArrayInputStream(useAlto.getBytes(useCharset))) {
             XMLInputFactory factory = XMLInputFactory.newInstance();
             // Disable access to external entities
             factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
@@ -377,11 +395,12 @@ public class ALTOTools {
      * </p>
      *
      * @param altoString a {@link java.lang.String} object.
+     * @param charset
      * @param searchTerms a {@link java.util.Set} object.
      * @return a {@link java.util.List} object.
      */
-    public static List<String> getWordCoords(String altoString, Set<String> searchTerms) {
-        return getWordCoords(altoString, searchTerms, 0);
+    public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms) {
+        return getWordCoords(altoString, charset, searchTerms, 0);
     }
 
     /**
@@ -413,6 +432,7 @@ public class ALTOTools {
      * TODO Re-implement using stream
      *
      * @param altoString String containing the ALTO XML document
+     * @param charset
      * @param searchTerms Set of search terms
      * @param rotation Image rotation in degrees
      * @return a {@link java.util.List} object.
@@ -420,14 +440,14 @@ public class ALTOTools {
      * @should match phrases
      * @should match diacritics via base letter
      */
-    public static List<String> getWordCoords(String altoString, Set<String> searchTerms, int rotation) {
+    public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms, int rotation) {
         if (altoString == null) {
             throw new IllegalArgumentException("altoDoc may not be null");
         }
         List<Word> words = new ArrayList<>();
         Dimension pageSize = new Dimension(0, 0);
         try {
-            AltoDocument document = AltoDocument.getDocumentFromString(altoString);
+            AltoDocument document = AltoDocument.getDocumentFromString(altoString, charset);
             HyphenationLinker linker = new HyphenationLinker();
             linker.linkWords(document);
 
@@ -654,38 +674,52 @@ public class ALTOTools {
             }
         }
 
-        if (content.trim().contains(" ")) {
-            // not a word, but a line
-            content = content.trim().replaceAll("\\s+", " ").toLowerCase();
-            int hitCount = words.length;
-            StringBuilder sbMatchString = new StringBuilder();
-            for (String string : words) {
-                if (sbMatchString.length() > 0) {
-                    sbMatchString.append(' ');
-                }
-                sbMatchString.append(string.toLowerCase());
-            }
-            String matchString = sbMatchString.toString();
-            for (; hitCount > 0; hitCount--) {
-                if (content.contains(matchString)) {
-                    break;
-                } else if (!matchString.contains(" ")) {
-                    // last word didn't match, so no match
-                    return 0;
-                } else {
-                    matchString = matchString.substring(0, matchString.lastIndexOf(' '));
+        String[] contents = content.trim().split("\\s+");
+        int hits = 0;
+        for (String altoWord : contents) {
+            for (String searchWord : words) {
+                FuzzySearchTerm fuzzy = new FuzzySearchTerm(searchWord);
+                if (fuzzy.matches(altoWord)) {
+                    hits++;
                 }
             }
-            return hitCount;
         }
-        //for both the search term and the alto string, make lower case, normalize characters, remove diacriticals and remove all non-word characters
-        String word = StringTools.removeDiacriticalMarks(words[0].toLowerCase()).replaceAll("[^\\w-]", "");
-        String contentString = StringTools.removeDiacriticalMarks(content.trim().toLowerCase()).replaceAll("[^\\w-]", "");
-        if (StringUtils.isNoneBlank(word, contentString) && word.equals(contentString)) {
-            return 1;
-        }
+        return hits;
 
-        return 0;
+        //        if (content.trim().contains(" ")) {
+        //            // not a word, but a line
+        //            content = content.trim().replaceAll("\\s+", " ").toLowerCase();
+        //            int hitCount = words.length;
+        //            StringBuilder sbMatchString = new StringBuilder();
+        //            for (String string : words) {
+        //                if (sbMatchString.length() > 0) {
+        //                    sbMatchString.append(' ');
+        //                }
+        //                sbMatchString.append(string.toLowerCase());
+        //            }
+        //            String matchString = sbMatchString.toString();
+        //            for (; hitCount > 0; hitCount--) {
+        //                if (content.contains(matchString)) {
+        //                    break;
+        //                } else if (!matchString.contains(" ")) {
+        //                    // last word didn't match, so no match
+        //                    return 0;
+        //                } else {
+        //                    matchString = matchString.substring(0, matchString.lastIndexOf(' '));
+        //                }
+        //            }
+        //            return hitCount;
+        //        }
+        //for both the search term and the alto string, make lower case, normalize characters, remove diacriticals and remove all non-word characters
+        //        FuzzySearchTerm fuzzy = new FuzzySearchTerm(words[0]);
+        //        return fuzzy.matches(content) ? 1 : 0;
+        //        String word = StringTools.removeDiacriticalMarks(words[0].toLowerCase()).replaceAll("[^\\w-]", "");
+        //        String contentString = StringTools.removeDiacriticalMarks(content.trim().toLowerCase()).replaceAll("[^\\w-]", "");
+        //        if (StringUtils.isNoneBlank(word, contentString) && word.equals(contentString)) {
+        //            return 1;
+        //        }
+        //
+        //        return 0;
     }
 
     /**

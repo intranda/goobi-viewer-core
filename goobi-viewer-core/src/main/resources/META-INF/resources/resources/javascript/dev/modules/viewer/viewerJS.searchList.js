@@ -417,7 +417,7 @@ var viewerJS = ( function( viewer ) {
         var hitSetTitleLink = null;
         
         hitSetTitle = $( '<div class="search-list__struct-title" />' );
-        hitSetTitleH5 = $( '<h5 />' );
+        hitSetTitleH5 = $( '<h4 />' );
         if ( data.labelShort === 'TEI' ) {
         	hitSetTitleLink = $( '<span />' ).html( data.labelShort );
         }

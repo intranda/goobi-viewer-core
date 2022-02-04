@@ -89,4 +89,5 @@ public class UserTest extends AbstractDatabaseEnabledTest {
         user.setSuperuser(false);
         Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<String>(0), IPrivilegeHolder.PRIV_LIST, "PPN123"));
     }
+
 }

@@ -22,7 +22,7 @@
                 <h:form id="csCampaignsForm" prependId="false">
                     <div class="admin__title-bar">
                         <!-- TITLE -->
-                        <h2 class="admin__title">#{msg.admin__crowdsourcing_campaigns}</h2>
+                        <h1 class="admin__title">#{msg.admin__crowdsourcing_campaigns}</h1>
 
                         <!-- ADD CAMPAIGN -->
                         <a href="#{navigationHelper.applicationUrl}admin/crowdsourcing/campaigns/new/"
@@ -136,6 +136,12 @@
                     viewerJS.dataTable.init( dataTableConfig );
                 } );
                         riot.mount("progressBar");
+                        
+                // Create no entries found message
+    			if($('.admin__table-entry').length == 0) {
+    				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+    			}    
+
             </script>
         </h:panelGroup>
         

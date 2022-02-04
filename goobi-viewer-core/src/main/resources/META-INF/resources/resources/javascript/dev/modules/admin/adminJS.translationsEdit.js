@@ -39,9 +39,7 @@ var adminJS = ( function( admin ) {
             }
             
             viewerJS.jsfAjax.success.subscribe(function() {
-            	/* SIDEBAR STICKY */
-           		$('.-sticky').hcSticky('refresh', {});
-           		
+            	
     			/* check if translations area contains zzz on ajax load */
         		$('.admin__translations-textarea').keyup(function() {
             		$('.admin__translations-textarea').each(function(i, obj) {
@@ -139,8 +137,10 @@ var adminJS = ( function( admin ) {
     			});
     			
     			if($('.admin__table-entry').length == 0) {
-    				$('.admin__table-content').append('<br/><p class="">#{msg.hitsZero}</p>');
+    				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+					console.log('javascript changed');
     			}
+
     			
     			$('.admin__translations-search-input').keyup(function() {
         	        if ($('.admin__translations-search-input').val() == ''){
@@ -165,7 +165,7 @@ var adminJS = ( function( admin ) {
     			});
     			
     			if($('.admin__table-entry').length == 0) {
-    				$('.admin__table-content').append('<br/><p class="">#{msg.hitsZero}</p>');
+    				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
     			}
             });
         }

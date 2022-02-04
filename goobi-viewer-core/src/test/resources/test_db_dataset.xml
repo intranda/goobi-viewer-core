@@ -79,6 +79,10 @@
 	<licenses license_id="3" license_type_id="6" ip_range_id="1"
 		description="desc license 3 desc" />
 	<license_privileges license_id="3" privilege_name="LIST" />
+	
+	<licenses license_id="4" license_type_id="3" user_group_id="1"
+		description="desc license 4 desc" />
+	<license_privileges license_id="4" privilege_name="DOWNLOAD_METADATA" />
 
 	<bookshelves bookshelf_id="1" owner_id="1" name="bookmark list 1 name"
 		description="bookmark list 1 desc" public="false"
@@ -195,9 +199,6 @@
     <cms_page_cms_categories page_id="3" category_id="6" />
     
     <cms_content_item_cms_categories content_item_id="4" category_id="4" />
-    
-    <cms_sidebar_elements cms_sidebar_element_id="1" owner_page_id="1" type="browse" widget_mode="STANDARD"
-        inner_html="&lt;h1&gt;Hello Sidebar&lt;/h1&gt;" widget_type="CMSSidebarElement" value="MD_TITLE_UNTOKENIZED" descending_order="false"/>
     
     <cms_navigation_items cms_navigation_item_id="1" item_label="item 1" page_url="url 1" item_order="1" />
     <cms_navigation_items cms_navigation_item_id="2" item_label="item 2" page_url="url 2" item_order="1"

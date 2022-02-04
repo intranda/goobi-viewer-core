@@ -33,7 +33,7 @@ var viewerJS = ( function( viewer ) {
     const _popoverSelectorAttribute = "data-popover-element";
     const _popoverTitleAttribute = "data-popover-title";
     const _popoverPlacementAttribute = "data-popover-placement";
-    const _popoverTemplate = "<div class='popover' role='tooltip'><div class='arrow'></div><h3 class='popover-title-custom'>#{title}</h3><div class='popover-body'></div></div>";    
+    const _popoverTemplate = "<div class='popover' role='tooltip'><div class='arrow'></div><h2 class='popover-title-custom'>#{title}</h2><div class='popover-body'></div></div>";    
     const _popoverTemplateNoTitle = "<div class='popover' role='tooltip'><div class='arrow'></div><div class='popover-body'></div></div>";    
     const _dismissPopoverAttribute = "data-popover-dismiss";
     const _clickOutside = "click-outside";

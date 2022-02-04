@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.search;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +31,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
@@ -67,7 +73,7 @@ public class SearchHitTest extends AbstractSolrEnabledTest {
         doc.addField("MD_2", "bla blup");
         doc.addField("MD_3", "none of the above");
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, 0, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
@@ -100,7 +106,7 @@ public class SearchHitTest extends AbstractSolrEnabledTest {
         doc.addField("MD_SUBTITLE", "FROM FOO TO BAR"); // do not use MD_TITLE because values == label will be skipped
         doc.addField("MD_2", "bla blup");
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, 0, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
@@ -131,7 +137,7 @@ public class SearchHitTest extends AbstractSolrEnabledTest {
         doc.addField("MD_AUTHOR", "Doe, John");
         doc.addField("MD_AUTHOR" + SolrConstants._UNTOKENIZED, "Doe, John");
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, 0, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(1, hit.getFoundMetadata().size());
         Assert.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
@@ -161,7 +167,7 @@ public class SearchHitTest extends AbstractSolrEnabledTest {
         doc.addField("T-1000", "Call to John now.");
 
         SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null,
-                new HashSet<>(Collections.singletonList("T-1000")), null, null, null);
+                new HashSet<>(Collections.singletonList("T-1000")), null, null, 0, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(1, hit.getFoundMetadata().size());
         Assert.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
@@ -190,7 +196,7 @@ public class SearchHitTest extends AbstractSolrEnabledTest {
         doc.addField("MD_TITLE", "FROM FOO TO BAR"); // do not use MD_TITLE because values == label will be skipped
         doc.addField("MD_2", "bla blup");
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, 0, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(1, hit.getFoundMetadata().size());
         Assert.assertEquals("MD_2", hit.getFoundMetadata().get(0).getOne());
@@ -224,7 +230,7 @@ public class SearchHitTest extends AbstractSolrEnabledTest {
 
         String[] translateFields = { SolrConstants.DC, SolrConstants.DOCSTRCT };
         SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null,
-                new HashSet<>(Arrays.asList(translateFields)), null, null);
+                new HashSet<>(Arrays.asList(translateFields)), null, 0, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Structure type", hit.getFoundMetadata().get(0).getOne());
@@ -252,12 +258,36 @@ public class SearchHitTest extends AbstractSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField("MD_TITLE", SearchHelperTest.LOREM_IPSUM);
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, 0, null);
         Assert.assertNotNull(hit);
         hit.addLabelHighlighting();
         Assert.assertTrue("label: " + hit.getBrowseElement().getLabelShort(), hit.getBrowseElement()
                 .getLabelShort()
                 .startsWith(
                         "Lorem <span class=\"search-list--highlight\">ipsum</span> dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore"));
+    }
+
+    @Test
+    public void createSearchHit_findWithUmlaut() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.IDDOC, Long.toString(1l));
+        doc.setField("MD_CREATOR", "Norden");
+        doc.setField("MD_PUBLISHER", "Nørre");
+        Map<String, Set<String>> searchTerms = Collections.singletonMap(SolrConstants.DEFAULT, Collections.singleton("Nörde~1"));
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", searchTerms, Arrays.asList("MD_CREATOR", "MD_PUBLISHER"),
+                Collections.emptyList(), Collections.emptySet(), Collections.emptySet(), null, 0, null);
+        assertEquals(1, hit.getFoundMetadata().size());
+    }
+
+    @Test
+    public void createSearchHit_findUmlaute() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.IDDOC, Long.toString(1l));
+        doc.setField("MD_CREATOR", "Nörden");
+        doc.setField("MD_PUBLISHER", "Nørre");
+        Map<String, Set<String>> searchTerms = Collections.singletonMap(SolrConstants.DEFAULT, Collections.singleton("Norde~1"));
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", searchTerms, Arrays.asList("MD_CREATOR", "MD_PUBLISHER"),
+                Collections.emptyList(), Collections.emptySet(), Collections.emptySet(), null, 0, null);
+        assertEquals(1, hit.getFoundMetadata().size());
     }
 }

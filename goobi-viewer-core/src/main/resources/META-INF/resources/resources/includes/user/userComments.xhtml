@@ -20,7 +20,7 @@
 			<!-- USER NOT LOGGED IN -->
 			<ui:fragment rendered="#{!userBean.loggedIn}">
 				<div class="user-comments__message-login">
-					<h3>#{msg.commentAdd}</h3>
+					<h2 >#{msg.commentAdd}</h2>
 
 					<h:outputText value="#{msg.commentDescription} " escape="false" />
 
@@ -36,17 +36,17 @@
 
 			<h:form id="userCommentsForm" prependId="false">
 				<ui:fragment rendered="#{userBean.loggedIn}">
-					<h3>#{msg.userComments}</h3>
+					<h2 >#{msg.userComments}</h2>
 				</ui:fragment>
 
 				<!-- EXISTING COMMENTS -->
 				<ui:repeat var="comment"  varStatus="status"
 					value="#{commentBean.commentsForCurrentPage}">
 					<div class="user-comments__comment">
-					
+
 					<!-- START BLOCK - AUTHOR IMAGE/COMMENT INFO -->
-					<div class="user-comments__comment-info">	
-					
+					<div class="user-comments__comment-info">
+
 						<!-- USER IMAGE -->
 						<div class="user-comments__comment-image">
 							<img src="#{comment.creator.avatarUrl}" alt="User avatar" />
@@ -57,7 +57,7 @@
 							<span class="user-comments__comment-metadata-creator">#{comment.creator.displayName}</span>
 							<span class="user-comments__comment-metadata-date">#{navigationHelper.getLocalDate(comment.dateCreated)}</span>
 						</div>
-						
+
 					</div>
 
 						<!-- COMMENT CONTENT -->
@@ -69,7 +69,7 @@
 							<ui:fragment
 								rendered="#{userBean.loggedIn or comment.dateModified != null}">
 								<div class="user-comments__comment-content-options">
-								
+
 									<!-- LAST CHANGE -->
 									<h:panelGroup rendered="#{comment.dateModified != null}"
 										styleClass="user-comments__comment-content-options-last-change">
@@ -91,7 +91,7 @@
 											<button class="btn--clean user-comments__edit-comment-button" type="button" data-backdrop="false" data-toggle="modal" data-target="#modalUserCommentEdit-#{comment.id}-modal">
 											  #{msg.edit}
 											</button>
-											
+
 											<!-- DELETE COMMENT -->
 											<ui:fragment
 												rendered="#{userBean.loggedIn and (userBean.user == comment.creator or userBean.user.superuser)}">
@@ -101,9 +101,9 @@
 											</ui:fragment>
 										</div>
 									</ui:fragment>
-								</div>	
+								</div>
 						</div>
-						
+
 					<div id="modalUserCommentEdit-#{comment.id}" modalid="modalUserCommentEdit-#{comment.id}-modal" styleclass="user-comments-modal" title="#{msg.userCommentEdit}">
 						<yield to="body">
 						<div class="row">
@@ -121,23 +121,23 @@
 					<h:commandScript name="editComment" action="#{commentBean.editComment}" render="@form"
 						onevent="e => viewerJS.swaltoasts.onSuccess(e).success(&quot;#{msg.commentEditSuccess}&quot;)"
 						onerror="e => viewerJS.swaltoasts.error(e.responseText)"/>
-					<h:commandScript name="deleteComment" action="#{commentBean.deleteComment}" render="@form" 
+					<h:commandScript name="deleteComment" action="#{commentBean.deleteComment}" render="@form"
 						onevent="e => viewerJS.swaltoasts.onSuccess(e).success(&quot;#{msg.commentDeleteSuccess}&quot;)"
 						onerror="e => viewerJS.swaltoasts.error(e.responseText)"/>
-					
-					<script> 
+
+					<script>
 						riot.mount("#modalUserCommentEdit-#{comment.id}", "modal", {});
 						$("#modalUserCommentEdit-#{comment.id}-ok").on("click", () => {
 						    let val = $("#modalUserCommentEdit-#{comment.id}-text").val();
 						    editComment({id:"#{comment.id}", text:val});
-						})					
+						})
 						$('[data-delete="comment-#{comment.id}"]').on('click', function() {
 							viewerJS.notifications.confirm('', '' ,'', '#{msg.userCommentDeleteText}')
 								.then((result) => deleteComment({id:"#{comment.id}"}))
 								.catch(() => {});
 						});
 					</script>
-						
+
 				</ui:repeat>
 
 				<!-- ADD COMMENT -->
@@ -155,7 +155,7 @@
 							<h:commandButton
 								action="#{commentBean.createComment(commentText, commentRestricted)}"
 								styleClass="btn btn--success" value="#{msg.addNoteText}">
-								<f:ajax execute="userCommentAdd commentLicenseCheckbox" render="@form" 
+								<f:ajax execute="userCommentAdd commentLicenseCheckbox" render="@form"
 								onevent="e => viewerJS.swaltoasts.onSuccess(e).success(&quot;#{msg.commentSaveSuccess}&quot;)"
 								onerror="e => viewerJS.swaltoasts.error(e.responseText)"/>
 							</h:commandButton>
@@ -164,7 +164,7 @@
 				</ui:fragment>
 			</h:form>
 		</div>
-				
+
 		<script type="text/javascript">
 
             $( document ).ready( function() {
@@ -172,7 +172,7 @@
 
                 jsf.ajax.addOnEvent( function( data ) {
                     var ajaxstatus = data.status;
-            
+
                     switch ( ajaxstatus ) {
                     case "success":
                         viewerJS.userComments.init();

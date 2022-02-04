@@ -19,10 +19,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -39,8 +35,9 @@ public class NERTag {
     public static enum Type {
         person("person"),
         location("location", "place"),
-        corporation("corporation", "corporate", "institution"),
-        event("event");
+        corporation("corporation", "corporate", "institution", "organization"),
+        event("event"),
+        misc("miscellaneous");
 
         private List<String> labels;
 
@@ -48,7 +45,7 @@ public class NERTag {
             this.labels = Arrays.asList(labels);
         }
 
-        public static Type getType(String label) {
+        public static Type getByLabel(String label) {
             if (StringUtils.isBlank(label)) {
                 return null;
             }

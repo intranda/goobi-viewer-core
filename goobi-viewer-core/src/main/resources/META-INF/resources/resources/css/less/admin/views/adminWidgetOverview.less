@@ -1,0 +1,141 @@
+/* ==============================================================
+   Admin CMS Widget Management
+   style declarations for adminCmsWidgetsOverview.xhtml
+   ==============================================================*/
+.cms-widgets-overview {
+	.admin__language-tabs {
+		.nav-tabs {
+			display: grid;
+			grid-template-columns: repeat( auto-fit, minmax(10px, 1fr) );
+		}
+	}
+	.admin__boxed-entry {
+		margin-bottom: 0;
+		flex-grow: 1;
+	}
+	.admin__language-tab a {
+		display: block;
+		overflow: hidden;
+		padding: 0.5rem;
+		&:hover {
+			border: 1px solid #ccc;
+		}
+	}
+	.admin__language-tab.active a,
+	.admin__language-tab.active.-already-translated a {
+		padding-bottom: 0.5rem;
+	}
+	
+	.admin__language-tab:first-child a, 
+	.admin__language-tab:first-child.-partly-translated a, 
+	.admin__language-tab:first-child.-already-translated a {
+		margin-right: 0;
+	}
+	.nav-tabs li a {
+		margin-right: 0;
+	}
+	&__single-widget-wrapper {
+		display: flex;
+		flex-direction: column;
+	}
+	&__grid {
+		display: grid; 
+		grid-auto-rows: 1fr; 
+		grid-template-columns: 1fr 1fr 1fr; 
+		grid-template-rows: repeat(1fr);
+		gap: 25px 25px; 
+		grid-template-areas: ". . .";
+	}
+	&__single-widget-title-wrapper {
+		display: flex;
+		justify-content: space-between;
+	}
+	&__single-widget-title {
+	}
+	&__single-widget-title-indicator {
+		flex-shrink: 0;
+		.nav {
+			flex-wrap: wrap;
+		}
+		.nav-tabs {
+			border-bottom: unset;
+		}
+		.nav-tabs li a {
+			display: none;
+		}
+		.admin__translation-indicator {
+			margin-bottom: 0;
+			&:first-child {
+				background: @blue !important;
+			}
+			width: 10px;
+			height: 10px;
+			background: @grayBar;
+			margin-right: 5px;
+			&:last-child {
+				margin-right: 0;
+			}
+			&.-already-translated {
+				background: @greenBar;
+			}
+			&.-partly-translated {
+				background: @yellowBar;
+			}
+		}
+	}
+	&__single-widget-title-name {
+		padding-right: 1rem;
+	}
+	&__single-widget-title-type {
+		font-size: 12px;
+		color: #ddd;
+	}
+	&__single-widget-info-label {
+		flex: 0 0 140px;
+		max-width: 140px;
+		font-weight: 700;
+	}
+	&__single-widget-info-type,
+	&__single-widget-info-used,
+	&__single-widget-info-additional-field {
+		display: flex;
+		margin-bottom: 1rem;
+	}
+}
+
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+	.cms-widgets-overview {
+		&__grid {
+			grid-template-columns: 1fr 1fr 1fr; 
+			grid-template-rows: repeat(1fr);
+			grid-template-areas: ". . .";
+		}
+		&__single-widget-info-label {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
+		&__single-widget-info-type,
+		&__single-widget-info-used,
+		&__single-widget-info-additional-field {
+			flex-wrap: wrap;
+		}
+	}
+} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+	.cms-widgets-overview {
+		&__grid {
+			grid-template-columns: 1fr 1fr; 
+			grid-template-rows: repeat(1fr);
+			grid-template-areas: ". .";
+		}
+	}
+}
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

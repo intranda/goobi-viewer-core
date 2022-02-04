@@ -323,6 +323,9 @@ public class SearchQueryItem implements Serializable {
      */
     public void setValue(String value) {
         this.value = StringTools.stripJS(value);
+        //        if(StringUtils.isNotBlank(this.value) && !this.value.contains(" ")) {            
+        //            this.value = SearchHelper.addFuzzySearchToken(this.value);
+        //        }
     }
 
     /**
@@ -388,14 +391,16 @@ public class SearchQueryItem implements Serializable {
      *
      * @param searchTerms a {@link java.util.Set} object.
      * @param aggregateHits a boolean.
+     * @param allowFuzzySearch If true, search terms will be augmented by fuzzy search tokens
      * @return a {@link java.lang.String} object.
      * @should generate query correctly
      * @should escape reserved characters
      * @should always use OR operator if searching in all fields
      * @should preserve truncation
      * @should generate range query correctly
+     * @should add proximity search token correctly
      */
-    public String generateQuery(Set<String> searchTerms, boolean aggregateHits) {
+    public String generateQuery(Set<String> searchTerms, boolean aggregateHits, boolean allowFuzzySearch) {
         checkAutoOperator();
         StringBuilder sbItem = new StringBuilder();
 
@@ -445,6 +450,7 @@ public class SearchQueryItem implements Serializable {
                     sbItem.append('(');
                 }
                 String useValue = value.trim();
+                int proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
                 boolean additionalField = false;
                 for (String field : fields) {
                     if (additionalField) {
@@ -461,10 +467,15 @@ public class SearchQueryItem implements Serializable {
                         sbItem.append('"');
                     }
                     sbItem.append(useValue);
-                    if (useValue.charAt(useValue.length() - 1) != '"') {
+                    if (useValue.charAt(useValue.length() - 1) != '"' && proximitySearchDistance == 0) {
                         sbItem.append('"');
                     }
                     if (SolrConstants.FULLTEXT.equals(field) || SolrConstants.SUPERFULLTEXT.equals(field)) {
+                        // Add proximity search token
+                        if (proximitySearchDistance > 0) {
+                            //                            sbItem.append('~').append(proximitySearchDistance);
+                        }
+                        // Remove quotation marks to add to search terms
                         String val = useValue.replace("\"", "");
                         if (val.length() > 0) {
                             searchTerms.add(val);
@@ -549,8 +560,16 @@ public class SearchQueryItem implements Serializable {
                         }
 
                         if (value.contains("-")) {
-                            // Hack to enable fuzzy searching for terms that contain hyphens
-                            sbItem.append('"').append(ClientUtils.escapeQueryChars(value)).append('"');
+                            if (allowFuzzySearch) {
+                                //remove wildcards; they don't work with search containing hyphen
+                                String tempValue = SearchHelper.getWildcardsTokens(value)[1];
+                                tempValue = ClientUtils.escapeQueryChars(value);
+                                tempValue = SearchHelper.addFuzzySearchToken(tempValue, "", "");
+                                sbItem.append("(").append(tempValue).append(")");
+                            } else {
+                                // Hack to enable fuzzy searching for terms that contain hyphens
+                                sbItem.append('"').append(ClientUtils.escapeQueryChars(value)).append('"');
+                            }
                         } else {
                             // Preserve truncation before escaping
                             String prefix = "";
@@ -573,7 +592,13 @@ public class SearchQueryItem implements Serializable {
                                         .append("]");
                             } else {
                                 // Regular search
-                                sbItem.append(prefix).append(ClientUtils.escapeQueryChars(useValue)).append(suffix);
+                                String escValue = ClientUtils.escapeQueryChars(useValue);
+                                if (allowFuzzySearch) {
+                                    escValue = SearchHelper.addFuzzySearchToken(escValue, prefix, suffix);
+                                    sbItem.append("(").append(escValue).append(")");
+                                } else {
+                                    sbItem.append(prefix).append(ClientUtils.escapeQueryChars(useValue)).append(suffix);
+                                }
                             }
                         }
                         if (SolrConstants.FULLTEXT.equals(field) || SolrConstants.SUPERFULLTEXT.equals(field)) {
@@ -598,7 +623,10 @@ public class SearchQueryItem implements Serializable {
                 break;
         }
 
-        return sbItem.toString();
+        String item = sbItem.toString();
+        item = item.replace("\\~", "~");
+
+        return item;
     }
 
     /** {@inheritDoc} */

@@ -1,0 +1,62 @@
+/* ==============================================================
+   Admin CMS Widget Management
+   style declarations for adminCmsWidgetsAdd.xhtml
+   ==============================================================*/
+
+.cms-widgets-add {
+	&__pages-selection {
+		max-height: 400px;
+		overflow-y: scroll;
+		display: flex;
+		border: 1px solid #ccc;
+		padding: .8rem;
+		ul {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			padding-left: 0;
+			list-style: none;
+			flex: 0 0 100%;
+		}
+		li {
+			padding: 0 .5rem;
+			display: flex;
+			align-items: center;
+			width: 100%;
+			input {
+				margin-inline-end: 0.5rem;
+				cursor: pointer;
+			}
+			label {
+				flex-grow: 1;
+				display: flex;
+				align-items: center;
+				margin-bottom: 0;
+				min-height: 30px;
+				cursor: pointer;
+			}
+			&:hover {
+				background: #f1f2f3;
+			}
+		}
+	}
+	&__widget-description {
+		p {
+			margin-bottom: 0;
+		}
+	}
+	
+}
+
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

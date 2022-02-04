@@ -27,7 +27,7 @@
 
 	<ui:define name="content">
 		<div id="userAccount" class="user-account">
-			<h2>#{msg.accountSettings}</h2>
+			<h1 >#{msg.accountSettings}</h1>
 			<!-- USER NOT LOGGED IN -->
 			<ui:fragment rendered="#{!userBean.loggedIn}">
 				<div class="alert alert-warning" role="alert">
@@ -57,6 +57,7 @@
 			</ui:fragment>
 		</div>
 	</ui:define>
+
 
 	<ui:define name="sidebar">
 		<facelet:userAvatar user="#{userBean.user.copy}" />

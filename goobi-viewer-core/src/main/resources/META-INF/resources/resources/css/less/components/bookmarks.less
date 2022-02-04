@@ -49,7 +49,7 @@
 				justify-content: space-around;
 			}
 		}
-		h4 {
+		h3 {
 			margin: 0;
 		    padding: 5px;
 		    font-size: @fontMedium;
@@ -119,7 +119,7 @@
 	&__dropdown-list-send,	
 	&__dropdown-list-search,
 	&__dropdown-list-mirador {
-		button, a, span, h4
+		button, a, span, h3
 		{
 			color: @blue;
 			&:hover,
@@ -255,7 +255,7 @@
 		align-items: center;
 		justify-content: space-around;
 		label {
-			vertical-align: super;
+			display: flex;
 		}
 		input {
 			vertical-align:sub;
@@ -275,19 +275,28 @@
 			height: 38px;
 			margin: 1px 0;
 			border: none;
+			background: @white;
+			color: #222;
 		}
 		button {
+			padding: 0;
 			display: block;
 			width: 100%;
 			height: 40px;
-			background-image: url("@{images}/icons/icon-bs-add.svg");
 			background-size: 60%;
 			background-repeat: no-repeat;
 			background-position: center center;	
 			&.added {
 				background-image: url("@{images}/icons/icon-bs-add.svg");
 			}
+			svg {
+				margin-left: 5px;
+				width: 15px;
+				height: 15px;
+				stroke: #222;
+			}
 		}
+		
 	}
 	&__list {}
 }

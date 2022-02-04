@@ -133,11 +133,12 @@ public class IpRange implements ILicensee, Serializable {
      *
      * @param inIp a {@link java.lang.String} object.
      * @return a boolean.
+     * @should match IPv6 localhost to IPv4 mask
      */
     public boolean matchIp(String inIp) {
-        //        if (inIp.equals(Helper.ADDRESS_LOCALHOST_IPV6) || inIp.equals(Helper.ADDRESS_LOCALHOST_IPV4)) {
-        //            return true;
-        //        }
+        if (inIp.equals(NetTools.ADDRESS_LOCALHOST_IPV6)) {
+            inIp = NetTools.ADDRESS_LOCALHOST_IPV4;
+        }
 
         // Workaround for single IP ranges (isInRange() doesn't seem to match these)
         if (subnetMask.endsWith("/32") && subnetMask.substring(0, subnetMask.length() - 3).equals(inIp)) {
@@ -212,6 +213,7 @@ public class IpRange implements ILicensee, Serializable {
             return true;
         }
 
+        logger.trace(privilegeName);
         Map<String, Boolean> permissionMap = new HashMap<>(conditionList.size());
         for (String accessCondition : conditionList) {
             permissionMap.put(accessCondition, false);

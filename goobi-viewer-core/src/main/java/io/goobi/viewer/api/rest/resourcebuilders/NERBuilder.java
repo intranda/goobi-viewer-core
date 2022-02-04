@@ -46,6 +46,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -103,15 +104,13 @@ public class NERBuilder {
         SolrDocumentList solrDocuments = DataManager.getInstance().getSearchIndex().search(query, fieldList);
         Collections.sort(solrDocuments, docOrderComparator);
 
-        NERTag.Type type = NERTag.Type.getType(typeString);
-
         if (solrDocuments != null && !solrDocuments.isEmpty()) {
             String topStructPi = null;
             if (solrDocuments.get(0).containsKey(SolrConstants.PI_TOPSTRUCT)) {
                 topStructPi = SolrTools.getAsString(solrDocuments.get(0).getFieldValue(SolrConstants.PI_TOPSTRUCT));
             }
             DocumentReference doc = new DocumentReference(topStructPi);
-
+            NERTag.Type type = NERTag.Type.getByLabel(typeString);
             for (int index = 0; index < solrDocuments.size(); index += rangeSize) {
                 List<SolrDocument> rangeList = solrDocuments.subList(index, Math.min(index + rangeSize, solrDocuments.size()));
                 TagGroup range = createPageReference(rangeList);
@@ -131,22 +130,26 @@ public class NERBuilder {
                         if (AccessConditionUtils.checkAccess(request, "text", topStructPi, altoFileName, false)) {
 
                             String altoString = "";
+                            String charset = null;
                             try {
-                                altoString = DataFileTools.loadAlto(altoFileName);
+                                StringPair alto = DataFileTools.loadAlto(altoFileName);
+                                altoString = alto.getOne();
+                                charset = alto.getTwo();
                             } catch (FileNotFoundException e) {
                                 continue;
                             }
                             Integer pageOrder = getPageOrder(solrDoc);
-                            List<TagCount> tags = ALTOTools.getNERTags(altoString, type);
+                            List<TagCount> tags = ALTOTools.getNERTags(altoString, charset, type);
                             for (TagCount tagCount : tags) {
                                 for (ElementReference reference : tagCount.getReferences()) {
                                     reference.setPage(pageOrder);
                                 }
                             }
+                            // TODO add URI to reference
                             range.addTags(tags);
                         }
                     } catch (ContentNotFoundException e) {
-                        logger.trace("No alto file " + altoFileName);
+                        logger.trace("No ALTO file: {}", altoFileName);
                     } catch (DAOException e) {
                         logger.error(e.toString());
                     }

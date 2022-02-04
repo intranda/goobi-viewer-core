@@ -137,6 +137,9 @@ public class Search implements Serializable {
     @Column(name = "new_hits_notification")
     private boolean newHitsNotification = false;
 
+    @Column(name = "proximity_search_distance")
+    private int proximitySearchDistance = 0;
+
     /** Solr fields for search result sorting (usually the field from sortString and some backup fields such as ORDER and FILENAME). */
     @Transient
     private List<StringPair> sortFields = new ArrayList<>();
@@ -188,6 +191,7 @@ public class Search implements Serializable {
         this.dateUpdated = blueprint.dateUpdated;
         this.lastHitsCount = blueprint.lastHitsCount;
         this.newHitsNotification = blueprint.newHitsNotification;
+        this.proximitySearchDistance = blueprint.proximitySearchDistance;
 
     }
 
@@ -302,7 +306,7 @@ public class Search implements Serializable {
         // Collect regular and hierarchical facet field names and combine them into one list
         List<String> hierarchicalFacetFields = DataManager.getInstance().getConfiguration().getHierarchicalFacetFields();
         List<String> allFacetFields = SearchHelper.getAllFacetFields(hierarchicalFacetFields);
-        
+
         String termQuery = null;
         if (boostTopLevelDocstructs && searchTerms != null) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
@@ -449,15 +453,6 @@ public class Search implements Serializable {
             if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
                 continue;
             }
-            //                // Skip top element docstrct faceting if sub-element docstrct faceting is active
-            //                if (("FACET_" + SolrConstants.DOCSTRCT).equals(facetField.getName()) && subElementQueryFilterSuffix.contains(facetField.getName())) {
-            //                    continue;
-            //                }
-            //                // Skip language-specific facet fields if they don't match the given language
-            //                if (facetField.getName().contains(SolrConstants._LANG_)
-            //                        && (language == null || !facetField.getName().contains(SolrConstants._LANG_ + language))) {
-            //                    continue;
-            //                }
             Map<String, Long> facetResult = new TreeMap<>();
             for (Count count : facetField.getValues()) {
                 if (StringUtils.isEmpty(count.getName())) {
@@ -495,7 +490,7 @@ public class Search implements Serializable {
         List<StringPair> useSortFields = getAllSortFields();
         List<SearchHit> hits =
                 SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
-                        searchTerms, null, BeanUtils.getLocale(), keepSolrDoc);
+                        searchTerms, null, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
         this.hits.addAll(hits);
     }
 
@@ -945,6 +940,20 @@ public class Search implements Serializable {
      */
     public void setNewHitsNotification(boolean newHitsNotification) {
         this.newHitsNotification = newHitsNotification;
+    }
+
+    /**
+     * @return the proximitySearchDistance
+     */
+    public int getProximitySearchDistance() {
+        return proximitySearchDistance;
+    }
+
+    /**
+     * @param proximitySearchDistance the proximitySearchDistance to set
+     */
+    public void setProximitySearchDistance(int proximitySearchDistance) {
+        this.proximitySearchDistance = proximitySearchDistance;
     }
 
     /**

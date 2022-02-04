@@ -138,7 +138,7 @@
                                     <h:panelGroup rendered="#{userBean.loggedIn}">
                                         <!-- BOOKMARKS -->
                                         <h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
-                                            <h3 class="h4">#{msg.bookmarkList_bookmarkList}</h3>
+                                            <h2 >#{msg.bookmarkList_bookmarkList}</h2>
                                             <h:panelGroup
                                                 rendered="#{bookmarkBean.getNumBookshelvesForUser(userBean.user) gt 0 and cc.attrs.addToBookshelfDisplay}">
                                                 <li>
@@ -176,14 +176,14 @@
 											</script>
                                         </h:panelGroup>
                                         <!-- SEARCHES -->
-                                        <h3 class="h4">#{msg.search}</h3>
+                                        <h2 >#{msg.search}</h2>
                                         <li class="#{navigationHelper.currentPage == 'mysearches'?'menu-active':''}">
                                             <h:outputLink value="#{navigationHelper.applicationUrl}mysearches/">
 	                                            #{msg.user_mySearches}
 	                                        </h:outputLink>
                                         </li>
                                         <!-- USER -->
-                                        <h3 class="h4">#{msg.user}</h3>
+                                        <h2 >#{msg.user}</h2>
                                         <h:panelGroup
                                             rendered="#{userBean.user.maySetRepresentativeImage and activeDocumentBean.viewManager.hasPages}">
                                             <li>

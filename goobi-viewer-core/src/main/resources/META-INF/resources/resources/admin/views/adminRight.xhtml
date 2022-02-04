@@ -21,15 +21,15 @@
                 <h:panelGroup rendered="#{userBean.admin and adminBean.currentLicense != null}">
                     <h:form id="editLicenseForm" styleClass="form-horizontal" prependId="false">
                         <div class="admin__title-bar">
-                            <h2 class="admin__title">
+                            <h1 class="admin__title">
                                 <h:outputText value="#{msg.admin__right_new}" rendered="#{adminBean.currentLicense.id == null}" />
                                 <h:outputText value="#{msg.admin__right_edit}" rendered="#{adminBean.currentLicense.id != null}" />
-                            </h2>
+                            </h1>
                         </div>
 
                         <div id="adminLicenseWrapper" class="admin__content-inner-content">
                             <!-- FIRST BLOCK GENERAL -->
-                            <h3>#{msg.general}</h3>
+                            <h2>#{msg.general}</h2>
                             <div class="admin__default-block">
                                 <div class="form-group form-row">
                                     <div class="col-sm-4">
@@ -138,7 +138,7 @@
                             <!-- SECOND BLOCK INFORMATION -->
                             <h:panelGroup id="infoGroup">
                             <ui:fragment rendered="#{adminBean.currentLicense.licenseType != null}">
-                                <h3>#{msg.information}</h3>
+                                <h2>#{msg.information}</h2>
                                 <div class="admin__default-block">
                                     <dl class="row">
                                         <dt class="col-4">
@@ -193,7 +193,7 @@
                             <!-- THIRD BLOCK FUNCTIONS -->
                             <h:panelGroup id="functionsGroup">
                                 <ui:fragment rendered="#{adminBean.currentLicense.licenseType != null}">
-                                    <h3>#{msg.admin__license_functions}</h3>
+                                    <h2>#{msg.admin__license_functions}</h2>
                                     <div class="admin__default-block">
 
                                         <ui:fragment rendered="#{adminBean.currentLicense.licenseType.name == 'licenseType_setRepresentativeImage' or

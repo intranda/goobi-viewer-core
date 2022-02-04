@@ -37,9 +37,8 @@ var adminJS = ( function() {
             console.log( 'adminJS.init' );
             console.log( '##############################' );
         }
-        
-        // init sticky elements (sidebars)
-        adminJS.stickyElements.init();
+        //Initialize sticky elements for admin pages
+        viewerJS.stickyElements.init({initAdmin:true});
     };
     
     return admin;
@@ -83,7 +82,7 @@ $( document ).ready(function() {
 		if ($(this).find("input:nth-of-type(2)").prop('checked')) {
 			$(this).next('.admin__license-selectable-block').hide();
 		}
-	}); 
+	});
  
 	// check if radio button status changes
 	$("body").one("click", '.blockAfterRadioToggler', function(event) { 

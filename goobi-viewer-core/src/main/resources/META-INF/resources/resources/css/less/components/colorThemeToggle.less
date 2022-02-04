@@ -1,0 +1,34 @@
+/* ==============================================================
+   colorThemeToggle
+   style declarations for 
+   ==============================================================*/
+
+.color-theme-switch {
+	&.active {
+		display: flex;
+	}
+	&.hide {
+		display: none;
+	}
+}
+
+.color-theme-switch-light {
+	display: none;
+}
+.color-theme-switch-dark {
+	display: flex;
+}
+
+
+@media (prefers-color-scheme: dark) { 
+	.color-theme-switch-dark {
+		display: none;
+	}
+	.color-theme-switch-light {
+		display: flex;
+	}
+	.color-theme-switch-dark.hide {
+		display: hide;
+	}
+	
+}

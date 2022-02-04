@@ -66,10 +66,13 @@ import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
-import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -123,6 +126,42 @@ public class JPADAO implements IDAO {
 
     /**
      * <p>
+     * Constructor for JPADAO.
+     * </p>
+     *
+     * @param inPersistenceUnitName a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public JPADAO(String inPersistenceUnitName) throws DAOException {
+        logger.trace("JPADAO({})", inPersistenceUnitName);
+        //        logger.debug(System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML));
+        //        System.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, DataManager.getInstance().getConfiguration().getConfigLocalPath() + "persistence.xml");
+        //        logger.debug(System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML));
+        String persistenceUnitName = inPersistenceUnitName;
+        if (StringUtils.isEmpty(persistenceUnitName)) {
+            persistenceUnitName = DEFAULT_PERSISTENCE_UNIT_NAME;
+        }
+        logger.info("Using persistence unit: {}", persistenceUnitName);
+        try {
+            // Create EntityManagerFactory in a custom class loader
+            final Thread currentThread = Thread.currentThread();
+            final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
+            currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
+            factory = Persistence.createEntityManagerFactory(persistenceUnitName);
+            currentThread.setContextClassLoader(saveClassLoader);
+
+            // threadLocalEm.set(factory.createEntityManager());
+            emGlobal = factory.createEntityManager();
+            // factory.unwrap(java.sql.Connection.class);
+            preQuery();
+        } catch (DatabaseException | PersistenceException e) {
+            logger.error(e.getMessage(), e);
+            throw new DAOException(e.getMessage());
+        }
+    }
+
+    /**
+     * <p>
      * Getter for the field <code>factory</code>.
      * </p>
      *
@@ -151,41 +190,6 @@ public class JPADAO implements IDAO {
         }
 
         return emGlobal;
-    }
-
-    /**
-     * <p>
-     * Constructor for JPADAO.
-     * </p>
-     *
-     * @param inPersistenceUnitName a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public JPADAO(String inPersistenceUnitName) throws DAOException {
-        logger.trace("JPADAO({})", inPersistenceUnitName);
-        //        logger.debug(System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML));
-        //        System.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, DataManager.getInstance().getConfiguration().getConfigLocalPath() + "persistence.xml");
-        //        logger.debug(System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML));
-        String persistenceUnitName = inPersistenceUnitName;
-        if (StringUtils.isEmpty(persistenceUnitName)) {
-            persistenceUnitName = DEFAULT_PERSISTENCE_UNIT_NAME;
-        }
-        logger.info("Using persistence unit: {}", persistenceUnitName);
-        try {
-            // Create EntityManagerFactory in a custom class loader
-            final Thread currentThread = Thread.currentThread();
-            final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
-            currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
-            factory = Persistence.createEntityManagerFactory(persistenceUnitName);
-            currentThread.setContextClassLoader(saveClassLoader);
-
-            // threadLocalEm.set(factory.createEntityManager());
-            emGlobal = factory.createEntityManager();
-            preQuery();
-        } catch (DatabaseException | PersistenceException e) {
-            logger.error(e.getMessage(), e);
-            throw new DAOException(e.getMessage());
-        }
     }
 
     /**
@@ -2968,25 +2972,6 @@ public class JPADAO implements IDAO {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public CMSSidebarElement getCMSSidebarElement(long id) throws DAOException {
-
-        synchronized (cmsRequestLock) {
-            logger.trace("getCMSSidebarElement: {}", id);
-            preQuery();
-            try {
-                CMSSidebarElement o = getEntityManager().getReference(CMSSidebarElement.class, id);
-                getEntityManager().refresh(o);
-                return o;
-            } catch (EntityNotFoundException e) {
-                return null;
-            } finally {
-                logger.trace("getCMSSidebarElement END");
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSNavigationItem> getRelatedNavItem(CMSPage page) throws DAOException {
@@ -3805,9 +3790,9 @@ public class JPADAO implements IDAO {
 
         return false;
     }
-    
+
     public void clear() {
-        if (getEntityManager() != null) { 
+        if (getEntityManager() != null) {
             getEntityManager().clear();
         }
     }
@@ -5022,8 +5007,8 @@ public class JPADAO implements IDAO {
         List<CMSContentItem> itemList = qItems.getResultList();
 
         Query qWidgets = getEntityManager().createQuery(
-                "SELECT ele FROM CMSSidebarElement ele WHERE ele.geoMapId = :mapId");
-        qWidgets.setParameter("mapId", map.getId());
+                "SELECT ele FROM CMSSidebarElementAutomatic ele WHERE ele.map = :map");
+        qWidgets.setParameter("map", map);
         List<CMSSidebarElement> widgetList = qWidgets.getResultList();
 
         Stream<CMSPage> itemPages = itemList.stream()
@@ -5034,6 +5019,23 @@ public class JPADAO implements IDAO {
                 .map(CMSSidebarElement::getOwnerPage);
 
         List<CMSPage> pageList = Stream.concat(itemPages, widgetPages)
+                .distinct()
+                .collect(Collectors.toList());
+        return pageList;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSPage> getPagesUsingMapInSidebar(GeoMap map) throws DAOException {
+        preQuery();
+
+        Query qWidgets = getEntityManager().createQuery(
+                "SELECT ele FROM CMSSidebarElementAutomatic ele WHERE ele.map = :map");
+        qWidgets.setParameter("map", map);
+        List<CMSSidebarElement> widgetList = qWidgets.getResultList();
+
+        List<CMSPage> pageList = widgetList.stream()
+                .map(CMSSidebarElement::getOwnerPage)
                 .distinct()
                 .collect(Collectors.toList());
         return pageList;
@@ -5461,5 +5463,90 @@ public class JPADAO implements IDAO {
         } catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    @Override
+    public List<CustomSidebarWidget> getAllCustomWidgets() throws DAOException {
+        preQuery();
+        Query q = getEntityManager().createQuery("SELECT t FROM CustomSidebarWidget t");
+        return q.getResultList();
+    }
+
+    @Override
+    public CustomSidebarWidget getCustomWidget(Long id) throws DAOException {
+        if (id == null) {
+            return null;
+        }
+        preQuery();
+        try {
+            CustomSidebarWidget o = getEntityManager().getReference(CustomSidebarWidget.class, id);
+            return CustomSidebarWidget.clone(o);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean addCustomWidget(CustomSidebarWidget widget) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            try {
+                getEntityManager().getTransaction().begin();
+                getEntityManager().persist(widget);
+                getEntityManager().getTransaction().commit();
+                return true;
+            } catch (IllegalArgumentException e) {
+                logger.error(e.toString(), e);
+                return false;
+            }
+        }
+    }
+
+    @Override
+    public boolean updateCustomWidget(CustomSidebarWidget widget) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            try {
+                getEntityManager().getTransaction().begin();
+                getEntityManager().merge(widget);
+                getEntityManager().getTransaction().commit();
+                return true;
+            } catch (IllegalArgumentException e) {
+                return false;
+            }
+        }
+    }
+
+    @Override
+    public boolean deleteCustomWidget(Long id) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            try {
+                getEntityManager().getTransaction().begin();
+                CustomSidebarWidget o = getEntityManager().getReference(CustomSidebarWidget.class, id);
+                getEntityManager().remove(o);
+                getEntityManager().getTransaction().commit();
+                return true;
+            } catch (IllegalArgumentException e) {
+                return false;
+            }
+        }
+    }
+
+    @Override
+    public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException {
+        preQuery();
+
+        Query qItems = getEntityManager().createQuery(
+                "SELECT element FROM CMSSidebarElementCustom element WHERE element.widget = :widget");
+        qItems.setParameter("widget", widget);
+        List<CMSSidebarElementCustom> itemList = qItems.getResultList();
+
+        List<CMSPage> pageList = itemList.stream()
+                .map(CMSSidebarElementCustom::getOwnerPage)
+                .distinct()
+                .collect(Collectors.toList());
+
+        return pageList;
     }
 }

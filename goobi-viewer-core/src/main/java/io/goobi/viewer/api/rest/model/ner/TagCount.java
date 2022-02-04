@@ -18,10 +18,6 @@ package io.goobi.viewer.api.rest.model.ner;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -161,8 +157,9 @@ public class TagCount implements Comparable<TagCount> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        if (obj != null && obj.getClass().equals(this.getClass())) {
-            return getValue().equals(((TagCount) obj).getValue()) && getType().equals(((TagCount) obj).getType());
+        if (getValue() != null && getType() != null && obj != null && obj.getClass().equals(this.getClass())) {
+            TagCount other = (TagCount) obj;
+            return getValue().equals(other.getValue()) && getType().equals(other.getType());
         }
         return false;
     }

@@ -122,7 +122,7 @@ public class RssResolver extends HttpServlet {
                 output.output(
                         RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(request),
                                 query + SearchHelper.getAllSuffixes(request, true, true),
-                                Collections.singletonList(filterQuery), language, maxHits),
+                                Collections.singletonList(filterQuery), language, maxHits, null, true),
                         new OutputStreamWriter(response.getOutputStream(), "utf-8"));
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Insufficient parameters");

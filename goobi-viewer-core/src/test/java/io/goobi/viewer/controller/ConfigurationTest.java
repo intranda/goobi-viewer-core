@@ -38,6 +38,7 @@ import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
 import io.goobi.viewer.model.download.DownloadOption;
+import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -1605,7 +1606,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAdvancedSearchFieldHierarchical_shouldReturnCorrectValue() throws Exception {
-
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical(SolrConstants.DC));
     }
 
     /**
@@ -2046,7 +2047,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSearchFilters_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getSearchFilters().size());
+        Assert.assertEquals(6, DataManager.getInstance().getConfiguration().getSearchFilters().size());
     }
 
     /**
@@ -2455,11 +2456,11 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSearchExcelExportFields_shouldReturnAllValues() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();
+        List<ExportFieldConfiguration> result = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
-        Assert.assertEquals(SolrConstants.PI, result.get(0));
-        Assert.assertEquals(SolrConstants.LABEL, result.get(1));
+        Assert.assertEquals(SolrConstants.PI, result.get(0).getField());
+        Assert.assertEquals(SolrConstants.LABEL, result.get(1).getField());
     }
 
     /**
@@ -3149,5 +3150,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isRememberImageZoom_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isRememberImageZoom());
+    }
+
+    /**
+     * @see Configuration#isFuzzySearchEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isFuzzySearchEnabled_shouldReturnCorrectValue() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("search.fuzzy[@enabled]", true);
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled());
     }
 }

@@ -74,10 +74,13 @@ public enum PageType {
     adminUserComments("admin/comments"),
     adminUserTerms("admin/userterms"),
     adminCreateRecord("admin/record/new"),
+    // admin/translations
     adminTranslations("admin/translations"),
+    adminTranslationsNew("admin/translations/new"),
     //admin/cms
     adminCms("admin/cms"),
     adminCmsOverview("admin/cms/pages"),
+    adminCmsWidgetsAdd("admin/cms/widgets/new"),
     adminCmsSelectTemplate("admin/cms/pages/templates"),
     adminCmsNewPage("admin/cms/pages/new"),
     adminCmsCategories("admin/cms/categories"),
@@ -92,6 +95,7 @@ public enum PageType {
     adminCmsGeoMapNew("admin/cms/maps/new"),
     adminCmsRecordNotes("admin/cms/recordnotes", "cms__record_notes__title_plural"),
     adminCmsSliders("admin/cms/slider", "cms__sliders__title"),
+    adminCmsSidebarWidgets("admin/cms/widgets", "cms_widgets__title"),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing

@@ -192,7 +192,7 @@ module.exports = function (grunt) {
 			},
 			riot: {
 				files: [
-					'<%=src.jsDevFolder %>tags/**/*.tag'
+					'<%=src.jsDevFolder %>tags**/*.tag'
 				],
 				tasks: ['riot', 'sync'],
 				options: {

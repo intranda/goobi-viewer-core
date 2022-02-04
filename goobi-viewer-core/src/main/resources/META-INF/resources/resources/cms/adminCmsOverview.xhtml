@@ -22,7 +22,7 @@
 
                     <div class="admin__title-bar">
                         <!-- TITLE -->
-                        <h2 class="admin__title">#{msg.cms_overview}</h2>
+                        <h1 class="admin__title">#{msg.cms_overview}</h1>
                         <!-- CREATE NEW PAGE -->
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
                             <a href="#{navigationHelper.getPageUrl('adminCmsSelectTemplate')}/" class="btn btn--default admin__title-bar-action">
@@ -154,7 +154,7 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h4 class="modal-title">#{msg.cms_deletePage_agree}</h4>
+                                            <h3 class="modal-title">#{msg.cms_deletePage_agree}</h3>
                                             <h:commandLink action="#{cmsBean.setSelectedPage(null)}" styleClass="close">
                                                 <f:passThroughAttribute name="data-dismiss" value="modal" />
                                                 <span aria-hidden="true">
@@ -201,7 +201,14 @@
 
                 viewerJS.dataTable.init( dataTableConfig );
             } );
-        </script>
+            
+            // Create no entries found message
+			if($('.admin__table-entry').length == 0) {
+				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+			}    
+
+            </script>
+        
     </ui:define>
 
 </ui:composition>

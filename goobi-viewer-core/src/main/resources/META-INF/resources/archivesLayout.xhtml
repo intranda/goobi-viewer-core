@@ -31,12 +31,13 @@
 
 				<!-- ARCHIVE TITLE -->
 				<div class="archives__top-title">
-					<a href="#{request.contextPath}/" title="{msg.home}" target="_self" rel="noopener">#{msg.home}</a> › <a href="#{request.contextPath}/archives" target="_self" rel="noopener">#{msg.archives__archiveViewHeading}</a> › <h1><span>#{archiveBean.trueRoot.label}</span></h1>
+					<a href="#{request.contextPath}/" title="{msg.home}" target="_self" rel="noopener">#{msg.home}</a> › <a href="#{request.contextPath}/archives" target="_self" rel="noopener">#{msg.archives__archiveViewHeading}</a> › <h1 ><span>#{archiveBean.trueRoot.label}</span></h1>
 				</div>
 
 				<!-- EXIT -->
 				<div class="archives__header-exit">
 					<h:outputLink value="#{request.contextPath}/" title="#{msg.returnHome}">
+						<ui:include src="/resources/images/icons/icon_fs-exit.svg"/>
 		                <f:passThroughAttribute name="data-toggle" value="tooltip" />
 		                <f:passThroughAttribute name="data-placement" value="bottom" />
 		                <f:passThroughAttribute name="aria-label" value="#{msg.returnHome}" />
@@ -80,7 +81,7 @@
 
 								<!-- MODAL HEADER/TITLE -->
 								<div class="modal-header">
-									<h2 class="modal-title">#{msg.archives__archiveViewHeading}</h2>
+									<h1 class="modal-title">#{msg.archives__archiveViewHeading}</h1>
 								</div>
 
 								<div class="modal-body">

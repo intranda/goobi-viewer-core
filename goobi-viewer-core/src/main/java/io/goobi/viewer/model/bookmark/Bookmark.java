@@ -640,7 +640,7 @@ public class Bookmark implements Serializable {
                 if (doc != null) {
                     Locale locale = BeanUtils.getLocale();
                     SearchHit sh = SearchHit.createSearchHit(doc, null, null, locale, "", null, null, null, null, null,
-                            SearchHit.HitType.DOCSTRCT, BeanUtils.getImageDeliveryBean().getThumbs());
+                            SearchHit.HitType.DOCSTRCT, 0, BeanUtils.getImageDeliveryBean().getThumbs());
                     this.browseElement = sh.getBrowseElement();
                 }
             } catch (PresentationException | DAOException | ViewerConfigurationException e) {
