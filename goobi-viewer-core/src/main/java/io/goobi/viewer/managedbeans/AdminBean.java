@@ -235,7 +235,9 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<User> getAllUsers() throws DAOException {
-        return DataManager.getInstance().getDao().getAllUsers(true);
+        List<User> users = DataManager.getInstance().getDao().getAllUsers(true);
+        Collections.sort(users);
+        return users;
     }
 
     /**

@@ -102,7 +102,7 @@
                                             hideNoSelectionOption="false" styleClass="form-control">
                                             <f:passThroughAttribute name="aria-label" value="add-member-to-group" />
                                             <f:selectItem noSelectionOption="true" itemLabel="#{msg.select}"></f:selectItem>
-                                            <f:selectItems value="#{adminBean.getAllUsersExcept(adminBean.currentUserGroup.membersAndOwner)}" var="user" itemLabel="#{user.backendDisplayNamev}" />
+                                            <f:selectItems value="#{adminBean.getAllUsersExcept(adminBean.currentUserGroup.membersAndOwner)}" var="user" itemLabel="#{user.backendDisplayName}" />
                                         </h:selectOneMenu>
                                     </div>
 
