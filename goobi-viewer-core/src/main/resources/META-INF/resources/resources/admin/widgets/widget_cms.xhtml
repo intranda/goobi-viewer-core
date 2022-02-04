@@ -28,8 +28,8 @@
                         
                         <!-- TO DO: ADAPT THIS -->
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
-                            <li class="#{navigationHelper.currentPage == 'adminCmsWidgetsAdd' ? 'active' : ''}">
-                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsWidgetsOverview')}/">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsSidebarWidgets' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsSidebarWidgets')}/">
                                     <i class="fa fa-square" aria-hidden="true"></i>
                                     <span>#{msg.admin__widgets}</span>
                                 </h:outputLink>

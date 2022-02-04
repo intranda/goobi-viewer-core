@@ -56,6 +56,7 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
     public HtmlSidebarWidget(HtmlSidebarWidget o) {
         super(o);
         this.htmlText = new TranslatedText(o.htmlText);
+        this.htmlText.setSelectedLocale(getSelectedLocale());
     }
     
     /**
@@ -69,6 +70,11 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
     @Override
     public boolean isComplete(Locale locale) {
         return super.isComplete(locale) && htmlText.isComplete(locale);
+    }
+    
+    @Override
+    public boolean isEmpty(Locale locale) {
+        return super.isEmpty(locale) && htmlText.isEmpty(locale);
     }
     
     @Override

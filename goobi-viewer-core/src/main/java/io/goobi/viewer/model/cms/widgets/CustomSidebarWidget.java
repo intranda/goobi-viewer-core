@@ -67,14 +67,14 @@ public class CustomSidebarWidget implements IPolyglott {
 
     @Column(name = "widget_title", columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
-    private TranslatedText title = new TranslatedText(IPolyglott.getLocalesStatic());
+    private TranslatedText title = new TranslatedText(IPolyglott.getLocalesStatic(), IPolyglott.getCurrentLocale());
 
     /**
      * Currently not in use
      */
     @Column(name = "widget_description", columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
-    private TranslatedText description = new TranslatedText(IPolyglott.getLocalesStatic());
+    private TranslatedText description = new TranslatedText(IPolyglott.getLocalesStatic(), IPolyglott.getCurrentLocale());
 
     @Column(name = "style_class", nullable = true)
     private String styleClass = "";
@@ -98,9 +98,12 @@ public class CustomSidebarWidget implements IPolyglott {
     public CustomSidebarWidget(CustomSidebarWidget source) {
         this.id = source.id;
         this.title = new TranslatedText(source.title);
+        this.title.setSelectedLocale(getSelectedLocale());
         this.description = new TranslatedText(source.description);
+        this.description.setSelectedLocale(getSelectedLocale());
         this.collapsed = source.collapsed;
         this.styleClass = source.styleClass;
+        
     }
 
     @Override
