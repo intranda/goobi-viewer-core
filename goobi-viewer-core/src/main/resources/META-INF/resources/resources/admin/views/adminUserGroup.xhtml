@@ -114,12 +114,14 @@
                                         </h:commandLink>
                                     </div>
                                 </div>
-
-                               		<div class="col-11">
-                                        <span class="admin__group-member-name">
-                                            #{adminBean.currentUserGroup.owner.backendDisplayName}
-                                        </span>
-                                    </div>
+                                
+	                            <div class="form-row admin__group-member-entry">
+	                           		<div class="col-11">
+	                                     <div class="admin__group-member-name">
+	                                         #{adminBean.currentUserGroup.owner.backendDisplayName}
+	                                     </div>
+	                                 </div>
+                                </div>
                                 <div id="editUserGroupMembersTable" class="admin__group-member-list">
                                        
                                     <ui:repeat var="membership" value="#{adminBean.currentUserGroup.memberships.stream().filter(role -> role.user != adminBean.currentUserGroup.owner).toList()}">
