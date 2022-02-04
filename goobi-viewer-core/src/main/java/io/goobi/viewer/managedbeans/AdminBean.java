@@ -666,10 +666,12 @@ public class AdminBean implements Serializable {
                         break;
                     case "delete":
                         logger.trace("Deleting UserRole: {}", userRole);
-                        if (DataManager.getInstance().getDao().deleteUserRole(userRole)) {
-                            Messages.info("deletedSuccessfully");
-                        } else {
-                            Messages.error("deleteFailure");
+                        if(userRole.getId() != null) {                            
+                            if (DataManager.getInstance().getDao().deleteUserRole(userRole)) {
+                                Messages.info("deletedSuccessfully");
+                            } else {
+                                Messages.error("deleteFailure");
+                            }
                         }
                         break;
                     default:
