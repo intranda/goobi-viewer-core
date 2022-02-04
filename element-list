@@ -62,10 +62,14 @@ io.goobi.viewer.model.calendar
 io.goobi.viewer.model.citation
 io.goobi.viewer.model.cms
 io.goobi.viewer.model.cms.itemfunctionality
+io.goobi.viewer.model.cms.widgets
+io.goobi.viewer.model.cms.widgets.embed
+io.goobi.viewer.model.cms.widgets.type
 io.goobi.viewer.model.crowdsourcing
 io.goobi.viewer.model.crowdsourcing.campaigns
 io.goobi.viewer.model.crowdsourcing.questions
 io.goobi.viewer.model.download
+io.goobi.viewer.model.export
 io.goobi.viewer.model.glossary
 io.goobi.viewer.model.iiif.discovery
 io.goobi.viewer.model.iiif.presentation.v2.builder
