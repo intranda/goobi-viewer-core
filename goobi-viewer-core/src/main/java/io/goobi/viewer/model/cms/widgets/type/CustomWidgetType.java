@@ -30,7 +30,7 @@ public enum CustomWidgetType implements WidgetContentType {
     /**
      * Display facets for a search field of type 'FACET_'. A filter query for facet results may be configured, as well as the order of facets
      */
-    WIDGET_FIELDFACETS("cms__add_widget__select_facets_title", "cms__add_widget__select_facets_desc", "widget_fieldFacets.xhtml"),
+    WIDGET_FIELDFACETS("cms__add_widget__field_content__title", "cms__add_widget__field_content__desc", "widget_fieldFacets.xhtml"),
     /**
      * Displays links to CMS pages. The linked pages can be selected when creating the widget
      */
