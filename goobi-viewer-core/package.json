@@ -55,7 +55,7 @@
     "q": "~1.5.1",
     "riot": "~3.12.0",
     "swagger-ui-dist": "~3.52.3",
-    "sweetalert2": "~11.1.7",
+    "sweetalert2": "~11.3.10",
     "swiper": "~6.8.4",
     "three": "~0.132.2",
     "tinymce": "~5.10.0"
