@@ -165,17 +165,6 @@ public class FileTools {
         return null;
     }
 
-    public static String getCharset(String input) {
-        CharsetDetector cd = new CharsetDetector();
-        cd.setText(input.getBytes());
-        CharsetMatch cm = cd.detect();
-        if (cm != null) {
-            return cm.getName();
-        }
-
-        return null;
-    }
-
     /**
      * Reads a String from a byte array
      *
@@ -447,7 +436,7 @@ public class FileTools {
                 try (InputStream in = Files.newInputStream(path)) {
                     type = URLConnection.guessContentTypeFromStream(in);
                     if (type == null) {
-                        String content = IOUtils.toString(in);
+                        String content = IOUtils.toString(in, getCharset(in));
                         type = probeContentType(content);
                     }
                 }
@@ -483,7 +472,7 @@ public class FileTools {
      * @return
      */
     public static String probeContentType(String content) {
-        try (InputStream in = IOUtils.toInputStream(content, getCharset(content))) {
+        try (InputStream in = IOUtils.toInputStream(content, StringTools.getCharset(content))) {
             String type = URLConnection.guessContentTypeFromStream(in);
             if (type == null) {
                 type = "text/plain";
