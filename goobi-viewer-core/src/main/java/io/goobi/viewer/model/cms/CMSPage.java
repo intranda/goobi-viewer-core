@@ -150,7 +150,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @Column(name = "related_pi", nullable = true)
     private String relatedPI;
 
-    @Column(name = "use_as_default_record_view", nullable = false)
+    @Column(name = "use_as_default_record_view", nullable = false, columnDefinition = "boolean default false")
     private boolean useAsDefaultRecordView = false;
 
     @Column(name = "subtheme_discriminator", nullable = true)
