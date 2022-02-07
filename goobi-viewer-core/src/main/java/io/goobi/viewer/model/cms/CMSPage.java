@@ -150,6 +150,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @Column(name = "related_pi", nullable = true)
     private String relatedPI;
 
+    @Column(name = "use_as_default_record_view", nullable = false)
+    private boolean useAsDefaultRecordView = false;
+
     @Column(name = "subtheme_discriminator", nullable = true)
     private String subThemeDiscriminatorValue = "";
 
@@ -157,7 +160,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @OrderBy("order")
     @PrivateOwned
     private List<CMSSidebarElement> sidebarElements = new ArrayList<>();
-
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cms_page_cms_categories", joinColumns = @JoinColumn(name = "page_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
@@ -312,7 +314,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
         return id.compareTo(o.getId());
     }
-
 
     /**
      * <p>
@@ -554,7 +555,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     public void moveDownSidebarElement(CMSSidebarElement element) {
         int currentIndex = this.sidebarElements.indexOf(element);
-        if (currentIndex > -1 && currentIndex < this.sidebarElements.size()-1) {
+        if (currentIndex > -1 && currentIndex < this.sidebarElements.size() - 1) {
             int newIndex = currentIndex + 1;
             CMSSidebarElement removed = this.sidebarElements.remove(currentIndex);
             this.sidebarElements.add(newIndex, element);
@@ -1790,6 +1791,20 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * @return the useAsDefaultRecordView
+     */
+    public boolean isUseAsDefaultRecordView() {
+        return useAsDefaultRecordView;
+    }
+
+    /**
+     * @param useAsDefaultRecordView the useAsDefaultRecordView to set
+     */
+    public void setUseAsDefaultRecordView(boolean useAsDefaultRecordView) {
+        this.useAsDefaultRecordView = useAsDefaultRecordView;
+    }
+
+    /**
      * <p>
      * getCollection.
      * </p>
@@ -2186,7 +2201,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             }
         }
     }
-    
+
     public String getAdminBackendUrl() {
         String prettyId = "adminCmsEditPage";
         return PrettyUrlTools.getAbsolutePageUrl(prettyId, this.getId());
