@@ -145,7 +145,8 @@ public class FileTools {
     }
 
     /**
-     * Uses ICU4J to determine the charset of the given InputStream. Clients are responsible for closing the input stream.
+     * Uses ICU4J to determine the charset of the given InputStream. Clients are responsible for closing the input stream. Do not re-use this stream
+     * for any other operations.
      *
      * @param input a {@link java.io.InputStream} object.
      * @return Detected charset name; null if not detected.
@@ -436,7 +437,7 @@ public class FileTools {
                 try (InputStream in = Files.newInputStream(path)) {
                     type = URLConnection.guessContentTypeFromStream(in);
                     if (type == null) {
-                        String content = IOUtils.toString(in, getCharset(in));
+                        String content = new String(in.readAllBytes());
                         type = probeContentType(content);
                     }
                 }
