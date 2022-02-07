@@ -1063,7 +1063,8 @@ public final class SolrSearchIndex {
 
         List<String> list = new ArrayList<>();
         for (String name : fieldInfoMap.keySet()) {
-            if (name.startsWith("SORT_")) {
+            FieldInfo info = fieldInfoMap.get(name);
+            if ((name.startsWith("SORT_") || name.startsWith("SORTNUM_") || name.equals("DATECREATED") ) && !name.contains("_LANG_")) {
                 list.add(name);
             }
         }
