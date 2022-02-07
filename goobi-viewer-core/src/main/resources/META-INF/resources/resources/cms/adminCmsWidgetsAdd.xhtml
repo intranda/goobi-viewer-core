@@ -15,12 +15,12 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin('adminCmswidgets')}" />
+				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsSidebarWidgets')}" />
 		</f:metadata>
 	</ui:define>
 
 	<ui:define name="content">
-		<div id="cmsWidgetsAdd" class="cms-widgets-add">
+		<div id="cmsWidgetsAdd" class="cms-widgets-add -h100">
 			<h:panelGroup rendered="#{userBean.user.cmsAdmin}">
 
 				<div class="admin__title-bar">
@@ -35,11 +35,11 @@
 					</c:choose>
 				</div>
 
-				<h:form prependId="false">
+				<h:form prependId="false" class="-h100">
 
-					<div class="admin__content-inner-content">
+					<div class="admin__content-inner-content -h100">
 
-						<div class="admin__content-wrapper">
+						<div class="admin__content-wrapper -h100">
 
 							<!-- MAIN CONTENT -->
 							<div class="admin__content-main #{customWidgetEditBean.widgetType != null ? '-partial' : '-full'} -sticky -refreshHCsticky">
@@ -210,7 +210,7 @@
 											<viewerForms:singleSelectField label="#{msg.sortBy}"
 												required="true" value="#{widget.sortField}"
 												selectValues="#{cmsBean.getPossibleSortFields()}"
-												var="field" itemValue="#{field}" itemLabel="#{msg[field]}"
+												var="field" itemValue="#{field}" itemLabel="#{msg[field]} (#{field})" 
 												helpText="#{msg.cms_widget__solr_sortfield__help}" />
 
 											<viewerForms:textInputField
@@ -268,7 +268,7 @@
 							
 							<!-- SIDEBAR -->
 							<ui:fragment rendered="#{widget != null}">
-								<div class="admin__content-side">
+								<div class="admin__content-side -refreshHCsticky -sticky">
 									<ui:fragment rendered="#{widget.id != null}">
 										<div class="admin__default-block">
 											<button class="btn d-none" jsf:action="#{customWidgetEditBean.refresh}">

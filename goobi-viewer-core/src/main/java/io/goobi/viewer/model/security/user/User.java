@@ -91,7 +91,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 @Entity
 @Table(name = "users")
-public class User implements ILicensee, HttpSessionBindingListener, Serializable {
+public class User implements ILicensee, HttpSessionBindingListener, Serializable, Comparable<User> {
 
     private static final long serialVersionUID = 549769987121664488L;
 
@@ -1625,7 +1625,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return getDisplayName();
+        return this.email;
     }
 
     /**
@@ -1761,6 +1761,35 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         this.localAvatarUpdated = localAvatarUpdated;
     }
 
+    public String getBackendDisplayName() {
+        if(StringUtils.isAllBlank(this.nickName, this.firstName, this.lastName)) {
+            return this.email;
+        } else {
+            String name = "";
+            if(StringUtils.isNotBlank(nickName)) {
+                name += (nickName + " - ");
+            }
+            if(StringUtils.isNotBlank(firstName)) {
+                name += (firstName + " ");
+            }
+            if(StringUtils.isNotBlank(lastName)) {
+                name += (lastName + " ");
+            }
+            name += "(" + email + ")";
+            return name;
+        }
+    }
 
+    @Override
+    public int compareTo(User other) {
+        if(StringUtils.isNoneBlank(this.email, other.email)) {            
+            return this.email.compareToIgnoreCase(other.email);
+        } else if(StringUtils.isAllBlank(this.email, other.email)) {
+            return 0;
+        } else {
+            return StringUtils.isBlank(this.email) ? -1 : 1;
+        }
+    }
+    
     
 }

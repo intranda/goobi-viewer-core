@@ -3,7 +3,7 @@
 	<div class="timematrix__subarea">
         <!-- LOADER -->
 		<span class="timematrix__loader" ref="loader">
-			<img if="{loading}" src="{opts.contextPath}/resources/images/infinity_loader.gif" class="img-fluid" alt="Timematrix Loader" />
+			<img if="{loading}" src="{opts.contextPath}resources/images/infinity_loader.svg" class="img-fluid" alt="Timematrix Loader" />
 		</span> 
 	</div>
 

@@ -14,7 +14,7 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin('adminCmswidgets')}" />
+				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsSidebarWidgets')}" />
 		</f:metadata>
 	</ui:define>
 
@@ -137,7 +137,7 @@
 													<div class="cms-widgets-overview__single-widget-info-data-wrapper">
 														<ui:repeat var="page" value="#{widget.embeddingPages}">
 															<div class="cms-widgets-overview__single-widget-info-data">
-																<a href="#{page.adminBackendUrl}">#{page.getTitle(navigationHelper.locale)}</a>
+																<a href="#{page.adminBackendUrl}">#{page.getTitle()}</a>
 															</div>
 														</ui:repeat>
 													</div>

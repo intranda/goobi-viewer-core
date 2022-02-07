@@ -146,7 +146,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     
     public HtmlPanelGroup getSidebarGroup() {
         List<CMSSidebarElement> elements = Optional.ofNullable(cmsBean).map(CmsBean::getCurrentPage).map(CMSPage::getSidebarElements).orElse(Collections.emptyList());
-        return getSidebarGroup(elements);
+        return getSidebarGroup(new ArrayList<CMSSidebarElement>(elements));
     }
     
     public void setSidebarGroup(HtmlPanelGroup sidebarGroup) {
