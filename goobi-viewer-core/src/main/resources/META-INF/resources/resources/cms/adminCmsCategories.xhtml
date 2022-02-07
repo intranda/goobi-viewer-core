@@ -2,7 +2,8 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    
+   	xmlns:jsf="http://xmlns.jcp.org/jsf"
+
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -34,31 +35,34 @@
                     </div>
 
                     <!-- LIST -->
-                    <div class="admin__table-content">
-                        <h:form id="adminCategoryListForm" prependId="false">
-                            <div class="row no-gutters admin__table-title">
-                                <div class="col-4 d-flex">#{msg.admin__category_title}</div>
-                                <div class="col-8 d-flex">#{msg.admin__category_description}</div>
+                    <div class="admin__table-content" role="grid" aria-label="#{msg.admin__categories}: #{aria_label__table__actions}">
+                        <h:form id="adminCategoryListForm" prependId="false" role="presentation">
+                            <div class="row no-gutters admin__table-title" role="row">
+                                <div class="col-4 d-flex" role="columnheader">#{msg.admin__category_title}</div>
+                                <div class="col-8 d-flex" role="columnheader">#{msg.admin__category_description}</div>
                             </div>
                             <ui:repeat var="category" value="#{cmsCategoriesBean.allCategories}">
-                                <div class="row no-gutters admin__table-entry">
-                                    <div class="col-4 d-flex">
+                                <div class="row no-gutters admin__table-entry" role="row">
+                                    <div class="col-4 d-flex" role="gridcell">
                                         <div class="admin__table-data">
                                             <span>#{category.name}</span>
                                             <div>
-                                                <!-- EDIT -->
                                                 <a href="#{navigationHelper.applicationUrl}admin/cms/categories/edit/#{category.id}/"
                                                    class="admin__table-action-link"
                                                    aria-label="#{msg.edit}: #{category.name}">#{msg.edit}</a>
-                                                <!-- DELETE -->
-                                                <h:commandLink rendered="#{!category.inUse}" type="button" class="admin__table-action-link -redlink"
-                                                    action="#{cmsCategoriesBean.deleteCategoryAction(category)}">#{msg.button__delete}
+                                                <button
+                                                	type="button"
+                                                	class="admin__table-action-link -redlink"
+                                                	jsf:rendered="#{!category.inUse}"
+                                                    jsf:action="#{cmsCategoriesBean.deleteCategoryAction(category)}">#{msg.button__delete}
                                                     <f:ajax render="@all" />
-                                                </h:commandLink>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-8 d-flex">#{category.description}</div>
+                                    <div class="col-8 d-flex" role="gridcell">
+										#{category.description}
+                                    </div>
                                 </div>
                             </ui:repeat>
                         </h:form>
