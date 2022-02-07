@@ -150,6 +150,27 @@ public class FileToolsTest extends AbstractTest {
         }
     }
 
+    /**
+     * @see FileTools#getCharset(InputStream)
+     * @verifies not close stream
+     */
+    @SuppressWarnings("resource")
+    @Test
+    public void getCharset_shouldNotCloseStream() throws Exception {
+        File file = new File("src/test/resources/stopwords.txt");
+        FileInputStream fis = new FileInputStream(file);
+        try {
+            Assert.assertEquals("UTF-8", FileTools.getCharset(fis));
+            try {
+                fis.available();
+            } catch (IOException e) {
+                Assert.fail("Stream closed");
+            }
+        } finally {
+            fis.close();
+        }
+    }
+
     @Test
     public void testProbeContentType() throws FileNotFoundException, IOException {
         Path resourceFolder = Paths.get("src/test/resources/data/viewer/fulltext");
