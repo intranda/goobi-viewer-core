@@ -375,7 +375,12 @@ public class ALTOTools {
                         break;
 
                 }
-                parser.next();
+                try {
+                    parser.next();
+                } catch (Exception e) {
+                    // Wrong charset can result in an exception being thrown by the underlying parser implementation
+                    logger.warn(e.getMessage());
+                }
             }
         } finally {
             if (parser != null) {
