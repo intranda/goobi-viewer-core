@@ -37,7 +37,7 @@
                                 	</c:otherwise>
                                 </c:choose>
                                 <div class="input-group-addon">
-                               		<button class="btn" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimpleSetFacets()}">
+                               		<button class="btn" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimple()}">
                                             <f:setPropertyActionListener for="actionEvent" target="#{searchBean.activeSearchType}" value="0" />
                                			<i class="fa fa-search"/>
                                		</button>
