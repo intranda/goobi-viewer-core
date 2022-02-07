@@ -17,11 +17,11 @@ package io.goobi.viewer.model.annotation.serialization;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
  * @author florian
@@ -96,10 +95,10 @@ public class SqlAnnotationLister implements AnnotationLister<CrowdsourcingAnnota
                         .filter(a -> motivations.stream().anyMatch(m -> a.getMotivation().equalsIgnoreCase(m)));
             }
             if (generators != null && !generators.isEmpty()) {
-                stream = stream.filter(a -> generators.stream().anyMatch(g -> ObjectUtils.equals(g, a.getGeneratorId())));
+                stream = stream.filter(a -> generators.stream().anyMatch(g -> Objects.equals(g, a.getGeneratorId())));
             }
             if (creators != null && !creators.isEmpty()) {
-                stream = stream.filter(a -> creators.stream().anyMatch(c -> ObjectUtils.equals(c, a.getCreatorId())));
+                stream = stream.filter(a -> creators.stream().anyMatch(c -> Objects.equals(c, a.getCreatorId())));
             }
             if (StringUtils.isNotBlank(targetPi)) {
                 stream = stream.filter(a -> a.getTargetPI().equalsIgnoreCase(targetPi));
