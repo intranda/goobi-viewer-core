@@ -36,7 +36,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     @Column(name = "filter_query", nullable = true, columnDefinition = "MEDIUMTEXT")
     private String filterQuery = "";
     @Column(name = "sort_field", nullable = true, columnDefinition = "TEXT")
-    private String sortField = "SORT_DATECREATED";
+    private String sortField = "DATECREATED";
     @Column(name = "descending_sorting")
     private boolean descendingSorting = true;
     @Column(name = "num_entries")
