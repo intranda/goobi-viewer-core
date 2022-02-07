@@ -1,6 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -130,13 +131,14 @@
 	                                                <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{licenseType.name}">#{msg.edit}</a>
 	
 	                                                <!-- DELETE -->
-	                                                <h:commandLink rendered="#{!adminBean.isLicenseTypeInUse(licenseType)}"
-	                                                    styleClass="admin__boxed-entry-actions-delete -redlink"
-	                                                    onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
-	                                                    action="#{adminBean.deleteLicenseTypeAction(licenseType)}">
-	                                                        <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{licenseType.name}" />
-	                                                        #{msg.delete}
-	                                                </h:commandLink>
+	                                                <button 
+	                                                    class="admin__boxed-entry-actions-delete -redlink"
+	                                                	jsf:rendered="#{!adminBean.isLicenseTypeInUse(licenseType)}"
+	                                                    jsf:onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
+	                                                    jsf:action="#{adminBean.deleteLicenseTypeAction(licenseType)}">
+	                                                	<f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{licenseType.name}" />
+	                                                    #{msg.delete}
+	                                                </button>
 	                                            </div>
 	                                        </div>
 	                                    </div>

@@ -1,6 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
+	              xmlns:jsf="http://xmlns.jcp.org/jsf"
 
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -84,9 +85,16 @@
                                                 <a href="#{navigationHelper.applicationUrl}admin/crowdsourcing/campaigns/edit/#{campaign.id}/"
                                                     class="admin__table-action-link" aria-label="#{msg.edit}: #{campaign.getTitle(navigationHelper.locale, true)}">#{msg.edit}</a>
                                                 <!-- Delete link -->
+                                                <!--
                                                 <h:commandLink styleClass="admin__table-action-link -redlink"
                                                     onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_campaign_deleteConfirmationText}&quot; ) ) { return false };"
                                                     action="#{crowdsourcingBean.deleteCampaignAction(campaign)}" title="#{msg.delete}" alt="#{msg.delete}">#{msg.delete}</h:commandLink>
+                                                -->
+                                                <button class="admin__table-action-link -redlink"
+                                                    jsf:onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_campaign_deleteConfirmationText}&quot; ) ) { return false };"
+                                                    jsf:action="#{crowdsourcingBean.deleteCampaignAction(campaign)}" title="#{msg.delete}" alt="#{msg.delete}">
+                                                    #{msg.delete}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
