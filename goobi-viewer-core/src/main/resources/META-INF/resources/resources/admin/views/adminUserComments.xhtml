@@ -37,32 +37,34 @@
 
 
                         <!-- ALL COMMENTS TABLE -->
-                        <div id="adminUserCommentsTable" class="admin__table-content">
+                        <div id="adminUserCommentsTable" class="admin__table-content" role="grid" aria-label="#{msg.admin__comments}: #{msg.aria_label__table__actions}">
 
                             <!-- TITLE ROW -->
-                            <div class="row no-gutters admin__table-title">
+                            <div class="row no-gutters admin__table-title" role="row">
                                 <!-- COMMENT COL -->
-	                            <div class="col-8 d-flex">                            
+	                            <div class="col-8 d-flex">
 	                                <viewerComponent:sortingArrow filterType="text" colHeading="#{msg.Comment}" list="#{adminBean.lazyModelComments}" />
 	                            </div>
 
                                 <!-- USER COL -->
-	                            <div class="col-2 d-flex">                            
+	                            <div class="col-2 d-flex">
 	                                <viewerComponent:sortingArrow filterType="owner" colHeading="#{msg.user}" list="#{adminBean.lazyModelComments}" />
 	                            </div>
 
                                 <!-- DATE COL -->
-	                            <div class="col-2 d-flex">                            
+	                            <div class="col-2 d-flex">
 	                                <viewerComponent:sortingArrow filterType="dateCreated" colHeading="#{msg.date}" list="#{adminBean.lazyModelComments}" />
 	                            </div>
                             </div>
-                           
+
                             <!-- INDIVIDUAL COMMENTS -->
                             <ui:repeat var="comment" value="#{adminBean.pageComments}">
-                                <div class="row no-gutters admin__table-entry">
+                                <div class="row no-gutters admin__table-entry" role="row">
                                     <div class="col-8 d-flex" style="flex-direction:column;">
                                         <!-- COMMENT -->
-                                        <h:outputText value="#{comment.text}" />
+                                        <div role="gridcell">
+                                            <h:outputText value="#{comment.text}" />
+                                        </div>
 
                                         <!-- ACTIONS -->
                                         <div>
@@ -76,8 +78,8 @@
                                             </h:commandLink>
                                         </div>
                                     </div>
-                                    <div class="col-2 d-flex">#{comment.creator}</div>
-                                    <div class="col-2 d-flex">
+                                    <div class="col-2 d-flex" role="gridcell">#{comment.creator}</div>
+                                    <div class="col-2 d-flex" role="gridcell">
                                         <h:outputText value="#{comment.dateCreated}">
                                             <f:converter converterId="localDateTimeConverter" />
                                             <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />

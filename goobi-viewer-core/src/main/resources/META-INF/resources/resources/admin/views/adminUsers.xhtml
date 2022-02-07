@@ -1,7 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                
+
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -40,9 +40,9 @@
                     </div>
 
                     <!-- All USERS TABLE -->
-                    <div id="new-table-adminallusertable" class="admin__table-content">
+                    <div id="new-table-adminallusertable" class="admin__table-content" role="grid" aria-label="#{msg.admin__users}: #{msg.aria_label__table__actions}">
                         <!-- TITLE ROW -->
-                        <div class="row no-gutters admin__table-title">
+                        <div class="row no-gutters admin__table-title" role="row">
                             <!-- NAME COL -->
                             <div class="col-6 d-flex -sorting-arrow-trigger">
                                 <!-- SORTING -->
@@ -54,19 +54,19 @@
 								<viewerComponent:sortingArrow filterType="lastLogin" colHeading="#{msg.lastLoginDate}" list="#{adminBean.lazyModelUsers}" />
                             </div>
                             <!-- USER GROUPS COL -->
-                            <div class="col-3 d-flex">#{msg.admin__groups}</div>
+                            <div class="col-3 d-flex" role="columnheader">#{msg.admin__groups}</div>
                         </div>
 
 
                         <!-- INDIVIDUAL USER ROWS -->
                         <ui:repeat var="user" value="#{adminBean.pageUsers}">
-                            <div class="row no-gutters admin__table-entry">
+                            <div class="row no-gutters admin__table-entry" role="row">
                                 <div class="col-6 d-flex">
                                     <!-- USER ICON -->
-                                    <div class="admin__table-img">
+                                    <div class="admin__table-img" role="presentation">
                                     	<img src="#{user.getAvatarUrl(80)}" alt="User avatar" />
                                     </div>
-                                    <div class="admin__table-data">
+                                    <div class="admin__table-data" role="gridcell">
                                         <!-- USER NAME -->
                                         <span class="admin__table-name">#{user.nickName}</span>
                                         <!-- USER EMAIL -->
@@ -79,7 +79,7 @@
                                 </div>
 
                                 <!-- LAST LOGIN DATE -->
-                                <div class="col-3 d-flex align-items-center">
+                                <div class="col-3 d-flex align-items-center" role="gridcell">
                                     <span class="admin__table-last-login">
                                         <h:outputText value="#{user.lastLogin}">
                                             <f:converter converterId="localDateTimeConverter" />
@@ -89,7 +89,7 @@
                                 </div>
 
                                 <!-- GROUPS -->
-                                <div class="col-3 d-flex align-items-center align-content-center flex-wrap">
+                                <div class="col-3 d-flex align-items-center align-content-center flex-wrap" role="gridcell">
                                     <h:panelGroup>
                                         <!-- Admin -->
                                         <ui:fragment rendered="#{user.superuser}">
@@ -99,7 +99,7 @@
                                         <!-- TODO This might get expensive -->
                                         <!-- Ownerships -->
                                         <ui:repeat var="group" value="#{user.userGroupOwnerships}">
-                                            <div class="badge badge-info admin__table-badges">#{group.name}</div>
+                                        <div class="badge badge-info admin__table-badges">#{group.name}</div>
                                         </ui:repeat>
 
                                         <!-- Memberships -->
