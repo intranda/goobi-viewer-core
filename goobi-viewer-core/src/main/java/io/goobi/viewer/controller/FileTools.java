@@ -436,7 +436,10 @@ public class FileTools {
                 try (InputStream in = Files.newInputStream(path)) {
                     type = URLConnection.guessContentTypeFromStream(in);
                     if (type == null) {
-                        String content = IOUtils.toString(in, getCharset(in));
+                        String charset = getCharset(in);
+                        logger.error(charset);
+                        String content = IOUtils.toString(in, charset);
+                        logger.error(content);
                         type = probeContentType(content);
                     }
                 }
