@@ -145,21 +145,21 @@ public class FileTools {
     }
 
     /**
-     * Uses ICU4J to determine the charset of the given InputStream.
+     * Uses ICU4J to determine the charset of the given InputStream. Clients are responsible for closing the input stream.
      *
      * @param input a {@link java.io.InputStream} object.
      * @return Detected charset name; null if not detected.
-     * @should detect charset correctly
      * @throws java.io.IOException if any.
+     * @should detect charset correctly
+     * @should not close stream
      */
     public static String getCharset(InputStream input) throws IOException {
         CharsetDetector cd = new CharsetDetector();
-        try (BufferedInputStream bis = new BufferedInputStream(input)) {
-            cd.setText(bis);
-            CharsetMatch cm = cd.detect();
-            if (cm != null) {
-                return cm.getName();
-            }
+        BufferedInputStream bis = new BufferedInputStream(input);
+        cd.setText(bis);
+        CharsetMatch cm = cd.detect();
+        if (cm != null) {
+            return cm.getName();
         }
 
         return null;
