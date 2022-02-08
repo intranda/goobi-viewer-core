@@ -43,6 +43,9 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
+
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
@@ -80,8 +83,6 @@ public class StringTools {
     /** Constant <code>PLUS_REPLACEMENT="U0025"</code> */
     public static final String PLUS_REPLACEMENT = "U002B";
 
-
-    
     /**
      * Escpae url for submitted form data. A space is encoded as '+'.
      * 
@@ -215,12 +216,12 @@ public class StringTools {
         if (s == null) {
             throw new IllegalArgumentException("s may not be null");
         }
-        
+
         return Normalizer.normalize(s, Normalizer.Form.NFD)
                 .replaceAll("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+", "");
-                
+
     }
-    
+
     public static String replaceCharacterVariants(String text) {
         return text.replace("ſ", "s")
                 .replace("ø", "o")
@@ -229,7 +230,7 @@ public class StringTools {
                 .replace("ł", "l")
                 .replace("Ð", "D")
                 .replace("ð", "d");
-                
+
     }
 
     /**
@@ -337,6 +338,22 @@ public class StringTools {
     }
 
     /**
+     * 
+     * @param input
+     * @return
+     */
+    public static String getCharset(String input) {
+        CharsetDetector cd = new CharsetDetector();
+        cd.setText(input.getBytes());
+        CharsetMatch cm = cd.detect();
+        if (cm != null) {
+            return cm.getName();
+        }
+
+        return null;
+    }
+
+    /**
      * Converts a <code>String</code> from one given encoding to the other.
      *
      * @param string The string to convert.
@@ -409,7 +426,7 @@ public class StringTools {
         }
         return value;
     }
-    
+
     /**
      * <p>
      * unescapeCriticalUrlChracters.

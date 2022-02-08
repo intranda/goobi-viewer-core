@@ -210,7 +210,7 @@
 											<viewerForms:singleSelectField label="#{msg.sortBy}"
 												required="true" value="#{widget.sortField}"
 												selectValues="#{cmsBean.getPossibleSortFields()}"
-												var="field" itemValue="#{field}" itemLabel="#{msg[field]}"
+												var="field" itemValue="#{field}" itemLabel="#{msg[field]} (#{field})" 
 												helpText="#{msg.cms_widget__solr_sortfield__help}" />
 
 											<viewerForms:textInputField

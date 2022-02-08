@@ -145,29 +145,19 @@ public class FileTools {
     }
 
     /**
-     * Uses ICU4J to determine the charset of the given InputStream.
+     * Uses ICU4J to determine the charset of the given InputStream. Clients are responsible for closing the input stream. Do not re-use this stream
+     * for any other operations.
      *
      * @param input a {@link java.io.InputStream} object.
      * @return Detected charset name; null if not detected.
-     * @should detect charset correctly
      * @throws java.io.IOException if any.
+     * @should detect charset correctly
+     * @should not close stream
      */
     public static String getCharset(InputStream input) throws IOException {
         CharsetDetector cd = new CharsetDetector();
-        try (BufferedInputStream bis = new BufferedInputStream(input)) {
-            cd.setText(bis);
-            CharsetMatch cm = cd.detect();
-            if (cm != null) {
-                return cm.getName();
-            }
-        }
-
-        return null;
-    }
-
-    public static String getCharset(String input) {
-        CharsetDetector cd = new CharsetDetector();
-        cd.setText(input.getBytes());
+        BufferedInputStream bis = new BufferedInputStream(input);
+        cd.setText(bis);
         CharsetMatch cm = cd.detect();
         if (cm != null) {
             return cm.getName();
@@ -447,7 +437,7 @@ public class FileTools {
                 try (InputStream in = Files.newInputStream(path)) {
                     type = URLConnection.guessContentTypeFromStream(in);
                     if (type == null) {
-                        String content = IOUtils.toString(in);
+                        String content = new String(in.readAllBytes());
                         type = probeContentType(content);
                     }
                 }
@@ -483,7 +473,7 @@ public class FileTools {
      * @return
      */
     public static String probeContentType(String content) {
-        try (InputStream in = IOUtils.toInputStream(content, getCharset(content))) {
+        try (InputStream in = IOUtils.toInputStream(content, StringTools.getCharset(content))) {
             String type = URLConnection.guessContentTypeFromStream(in);
             if (type == null) {
                 type = "text/plain";

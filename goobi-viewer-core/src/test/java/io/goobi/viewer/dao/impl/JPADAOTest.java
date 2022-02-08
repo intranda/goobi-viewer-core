@@ -2354,7 +2354,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         CampaignLogMessage message = campaign.getLogMessages().get(0);
         Assert.assertEquals("Eine Nachricht im Log", message.getMessage());
-        Assert.assertEquals(new Long(1), message.getCreatorId());
+        Assert.assertEquals(Long.valueOf(1), message.getCreatorId());
         Assert.assertEquals("PI_1", message.getPi());
         Assert.assertEquals(campaign, message.getCampaign());
     }
@@ -3109,7 +3109,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void testSynchronization() throws DAOException, InterruptedException {
+    public void testSynchronization() throws DAOException {
         
         ExecutorService executor = Executors.newFixedThreadPool(2);
         IDAO dao = DataManager.getInstance().getDao();
@@ -3152,7 +3152,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
     
-    private void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException {
+    private static void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException {
         dao.startTransaction();
         Thread.sleep(duration);
         dao.createNativeQuery("UPDATE annotations_comments SET body='"+content+"' WHERE annotation_id=" + id).executeUpdate();
