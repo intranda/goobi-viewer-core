@@ -26,7 +26,7 @@
 	<ui:define name="content">
 		<div id="myActivity" class="page-wrapp">
 			<h:panelGroup>
-				<h2>#{msg.annotations}</h2>
+				<h1 class="h2">#{msg.annotations}</h1>
 
 				<div id="campaignAnnotations">
 					<h:form id="campaignAnnotationsSongs" prependId="false">
@@ -50,10 +50,10 @@
 
 
 							<!-- ALL ANNOTATIONS TABLE -->
-							<div id="campaignAnnotationsTable" class="admin__table-content">
+							<div id="campaignAnnotationsTable" class="admin__table-content" role="grid" aria-label="#{msg.annotations}: #{msg.aria_label__table__actions}">
 
 								<!-- TITLE ROW -->
-								<div class="row no-gutters admin__table-title">
+								<div class="row no-gutters admin__table-title" role="row">
 									<!-- ANNOTATION COL -->
 									<div class="col-12 col-lg-6 d-flex">
 										<viewerComponent:sortingArrow filterType="targetPI"
@@ -74,9 +74,9 @@
 											colHeading="#{msg.date}"
 											list="#{annotationBean.lazyModelAnnotations}" />
 									</div>
-									
+
 									<!-- REVIEW STATE COL -->
-		                            <div class="col-1 d-none d-lg-flex" style="justify-content: center;">
+		                            <div class="col-1 d-none d-lg-flex" style="justify-content: center;" role="columnheader">
 									        <span class="admin__sorting-table-heading">#{msg.label__crowdsourcing_review}</span>
 									</div>
 								</div>
@@ -84,9 +84,9 @@
 								<!-- INDIVIDUAL ANNOTATION ROWS -->
 								<ui:repeat var="annotation"
 									value="#{annotationBean.lazyModelAnnotations.paginatorList}">
-									<div class="row no-gutters admin__table-entry">
+									<div class="row no-gutters admin__table-entry" role="row">
 										<!-- ANNOTATION CONTENT -->
-										<div class="col-12 col-lg-6 d-flex" style="flex-direction: column;">
+										<div class="col-12 col-lg-6 d-flex" style="flex-direction: column;" role="gridcell">
 											<div class="annotation__label">
 												#{annotation.targetPI}
 												<h:outputText
@@ -107,14 +107,14 @@
 											</div>
 										</div>
 										<!-- CAMPAIGN -->
-										<div class="col-3 d-none d-lg-flex">
+										<div class="col-3 d-none d-lg-flex" role="gridcell">
 											#{annotation.creator.displayName}
 											<h:outputText rendered="#{annotation.reviewer != null}">
 											    <br />#{annotation.reviewer.displayName}
 											</h:outputText>
 											</div>
 										<!-- DATE -->
-										<div class="col-2 d-none d-lg-flex">
+										<div class="col-2 d-none d-lg-flex" role="gridcell">
 											<h:outputText value="#{annotation.dateCreated}">
 												<f:converter converterId="localDateTimeConverter" />
 												<f:attribute name="pattern"
@@ -122,8 +122,13 @@
 											</h:outputText>
 										</div>
 										<!-- REVIEW STATE -->
-										<div class="col-1 d-none d-lg-flex" style="justify-content: center;">
+										<div class="col-1 d-none d-lg-flex" style="justify-content: center;" role="gridcell">
 									        <ui:fragment rendered="#{annotation.publicationStatus == 'PUBLISHED'}">
+												<span class="sr-only">#{msg.yes}</span>
+										        <i class="fa fa-check" aria-hidden="true"></i>
+									        </ui:fragment>
+									        <ui:fragment rendered="#{annotation.publicationStatus != 'PUBLISHED'}">
+												<span class="sr-only">#{msg.no}</span>
 										        <i class="fa fa-check" aria-hidden="true"></i>
 									        </ui:fragment>
 										</div>
@@ -132,7 +137,7 @@
 							</div>
 						</div>
 						<script>
-						$(document).ready(() => {						    
+						$(document).ready(() => {
                             riot.mount( "annotationBody", {
                                 currentlang: "#{navigationHelper.localeString}",
                                 resturl: "#{configurationBean.restApiUrlV1}",
