@@ -13,7 +13,7 @@
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('annotations', false, true)}" />
 			<f:event type="preRenderView"
 				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.admin__user_profile, request.contextPath.concat('/user/'), 1)}" />
-			
+
 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.annotations,2)}" />
 		</f:metadata>
 	</ui:define>
@@ -49,7 +49,7 @@
 
 
 							<!-- ALL ANNOTATIONS TABLE -->
-							<div id="userAnnotationsTable" class="user-annotations__table" role="grid" aria-label="{msg.annotations}">
+							<div id="userAnnotationsTable" class="user-annotations__table" role="grid" aria-label="#{msg.annotations}: #{aria_label__table__actions}">
 
 								<!-- TITLE ROW -->
 								<div class="user-annotations__table-title" role="row">
@@ -102,14 +102,14 @@
 													class="user-annotations__table-entry-action-link"
 													target="_blank"
 													aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}</a>
-													
+
 										</div>
-										
+
 										<!-- CAMPAIGN -->
 										<div class="user-annotations__table-entry-campaign" role="gridcell">
 											#{annotation.generator.owner.name}
 										</div>
-										
+
 										<!-- DATE -->
 										<div class="user-annotations__table-entry-date" role="gridcell">
 											<h:outputText value="#{annotation.dateCreated}">
