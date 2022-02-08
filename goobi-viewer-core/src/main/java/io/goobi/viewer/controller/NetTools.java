@@ -619,4 +619,18 @@ public class NetTools {
 
         return sbUrl.toString();
     }
+
+    /**
+     * return true if the given string is a whole number between 200 and 399 (inclusive) 
+     * @param string
+     * @return
+     */
+    public static boolean isStatusOk(String string) {
+        try {            
+            int code = Integer.parseInt(string);
+            return 200 <= code && code < 400;
+        } catch(NullPointerException | NumberFormatException e) {
+            return false;
+        }
+    }
 }

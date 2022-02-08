@@ -38,11 +38,11 @@ public class DatabaseUpdater {
             new UserUpdate(),
             new CMSRecordNoteUpdate(), 
             new CMSMediaUpdate(), 
-            new SidebarWidgetTypeUpdate(), 
             new CMSCategoryUpdate(), 
             new LicenseTypeUpdate(), 
             new CMSContentItemUpdate(), 
-            new AnnotationUpdate()
+            new AnnotationUpdate(),
+            new SidebarWidgetUpdate()
          };
 
     private final IDAO dao;

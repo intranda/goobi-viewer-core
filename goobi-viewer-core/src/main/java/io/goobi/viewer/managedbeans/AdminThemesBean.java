@@ -17,6 +17,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,6 +26,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -45,20 +48,42 @@ public class AdminThemesBean implements Serializable {
 
     private static final long serialVersionUID = 837772138767500963L;
 
+    private static final Logger logger = LoggerFactory.getLogger(AdminThemesBean.class);
+
+    
     private final String mainThemeName;
     private final List<String> subThemeNames;
     private List<ThemeConfiguration> configuredThemes;
 
-    public AdminThemesBean() throws PresentationException, IndexUnreachableException, DAOException {
+    public AdminThemesBean() {
         mainThemeName = DataManager.getInstance().getConfiguration().getTheme();
-        subThemeNames = SolrTools.getExistingSubthemes();
-        configuredThemes = DataManager.getInstance()
-                .getDao()
-                .getConfiguredThemes()
-                .stream()
-                .filter(t -> subThemeNames.contains(t.getName()) || t.getName().equals(mainThemeName))
-                .collect(Collectors.toList());
+            subThemeNames = getExistingSubThemes();
+            configuredThemes = getConfiguredThemes();
+        
 
+    }
+
+    private List<ThemeConfiguration> getConfiguredThemes() {
+        try {            
+            return DataManager.getInstance()
+                    .getDao()
+                    .getConfiguredThemes()
+                    .stream()
+                    .filter(t -> subThemeNames.contains(t.getName()) || t.getName().equals(mainThemeName))
+                    .collect(Collectors.toList());
+        } catch(DAOException e) {
+            logger.error("Unable to load configured themes:", e.toString());
+            return Collections.emptyList();
+        }
+    }
+
+    private List<String> getExistingSubThemes() {
+        try {            
+            return SolrTools.getExistingSubthemes();
+        } catch(IndexUnreachableException | PresentationException e) {
+            logger.error("Unable to load subtheme names from Index:", e.toString());
+            return Collections.emptyList();
+        }
     }
 
     public String getMainThemeName() {

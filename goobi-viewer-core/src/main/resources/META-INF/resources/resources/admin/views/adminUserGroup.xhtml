@@ -42,7 +42,7 @@
                                         <div class="col-9 admin__form-input">
                                             <h:inputText value="#{adminBean.currentUserGroup.name}"
                                                 id="userGroupNameGeneral" styleClass="form-control"
-                                                required="true" />
+                                                required="true"></h:inputText>
                                             <span class="admin__form-help-text">#{msg.admin__user_group_name__help}</span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
@@ -76,7 +76,8 @@
                                             <h:selectOneMenu value="#{adminBean.currentUserGroup.owner}"
                                                 id="userGroupOwner" converter="userConverter"
                                                 required="true" styleClass="form-control">
-                                                <f:selectItems value="#{adminBean.allUsers}" var="user" itemLabel="#{user.displayName}" />
+                                                <f:selectItems value="#{adminBean.allUsers}" var="user" itemLabel="#{user.backendDisplayName}" />
+                                            	<f:ajax event="change" render="@this membersGroup"/>
                                             </h:selectOneMenu>
                                             <span class="admin__form-help-text">#{msg.admin__user_group_owner__help}</span>
                                         </div>
@@ -91,7 +92,7 @@
 
                             <!-- TODO changes made here are not reset when canceling! -->
                             <h2>#{msg.admin__user_group_manage_members}</h2>
-                            <div class="admin__default-block">
+                            <h:panelGroup layout="block" id="membersGroup" class="admin__default-block">
                                 <p>#{msg.admin__user_group_manage_members_info_text}</p>
 
                                 <!-- ADD MEMBER TO USER GROUP -->
@@ -102,7 +103,7 @@
                                             hideNoSelectionOption="false" styleClass="form-control">
                                             <f:passThroughAttribute name="aria-label" value="add-member-to-group" />
                                             <f:selectItem noSelectionOption="true" itemLabel="#{msg.select}"></f:selectItem>
-                                            <f:selectItems value="#{adminBean.getAllUsersExcept(adminBean.currentUserGroup.membersAndOwner)}" var="user" itemLabel="#{user.displayName}" />
+                                            <f:selectItems value="#{adminBean.getAllUsersExcept(adminBean.currentUserGroup.membersAndOwner)}" var="user" itemLabel="#{user.backendDisplayName}" />
                                         </h:selectOneMenu>
                                     </div>
 
@@ -113,10 +114,17 @@
                                         </h:commandLink>
                                     </div>
                                 </div>
-
+                                
+	                            <div class="form-row admin__group-member-entry">
+	                           		<div class="col-11">
+	                                     <div class="admin__group-member-name">
+	                                         #{adminBean.currentUserGroup.owner.backendDisplayName}
+	                                     </div>
+	                                 </div>
+                                </div>
                                 <div id="editUserGroupMembersTable" class="admin__group-member-list">
-                                    <ui:repeat var="membership" value="#{adminBean.currentUserGroup.memberships}">
-
+                                       
+                                    <ui:repeat var="membership" value="#{adminBean.currentUserGroup.memberships.stream().filter(role -> role.user != adminBean.currentUserGroup.owner).toList()}">
                                         <!-- DELETE MEMBER -->
                                         <h:commandLink
                                             onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_removeMemberConfirmationText, membership.user.displayName, membership.userGroup.name)}&quot; ) ) { return false };"
@@ -125,7 +133,7 @@
                                             styleClass="form-row admin__group-member-delete admin__group-member-entry">
                                                 <div class="col-11">
                                                     <span class="admin__group-member-name">
-                                                        #{membership.user.displayName} (#{membership.user.email})
+                                                        #{membership.user.backendDisplayName}
                                                     </span>
                                                 </div>
                                                 <div class="col-1 d-flex justify-content-center">
@@ -136,7 +144,7 @@
                                         </h:commandLink>
                                     </ui:repeat>
                                 </div>
-                            </div>
+                            </h:panelGroup>
 
                             <!-- ACTION -->
                             <div class="row no-gutters justify-content-end admin__final-actions">

@@ -10,29 +10,19 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core">
 
     <composite:interface>
-        <composite:attribute name="widget" type="io.goobi.viewer.model.cms.CMSSidebarElement" required="true" />
         <composite:attribute name="autocomplete" type="java.lang.Boolean" required="false" default="false"/>
     </composite:interface>
 
     <composite:implementation>
-        <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetSearchField' or cc.attrs.widget.type == null}">
-            <div id="widgetSearchField" class="widget widget-searchfield #{cc.attrs.widget.cssClass}">
+            <div id="widgetSearchField" class="widget widget-searchfield">
                 <h:form id="widgetSearchFieldForm" styleClass="form-inline" prependId="false">
-                    <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == 'FOLDOUT' or cc.attrs.widget.type == null}">
                         <div class="form-group">
-                        	<c:choose>
-                        		<c:when test="#{cc.attrs.widget.hasWidgetTitle}">
-                        			<label class="sr-only" for="searchField">#{msg[cc.attrs.widget.widgetTitle]}</label>
-                        		</c:when>
-                        		<c:otherwise>
-                        			<label class="sr-only" for="searchField">#{msg.search}</label>
-                        		</c:otherwise>
-                        	</c:choose>
+                        	<label class="sr-only" for="searchField">#{msg.search}</label>
                             <div class="input-group">
                                 <c:choose>
                                 	<c:when test="#{cc.attrs.autocomplete}">
 		                                <viewerComponent:autocomplete value="#{searchBean.searchString}" items="#{searchBean.autocomplete}"
-				                            placeholder="#{cc.attrs.widget.hasWidgetTitle ? msg[cc.attrs.widget.widgetTitle] : msg.search}"
+				                            placeholder="#{msg.search}"
 				                			arialabel="#{msg.searchField}" styleclass="form-control -no-outline">
 			                			</viewerComponent:autocomplete>
                                 	</c:when>
@@ -41,34 +31,20 @@
 		                                	onfocus="this.value=''"
 		                                    styleClass="form-control -no-outline"
 		                                    value="#{searchBean.invisibleSearchString}"> 
-		                                    <f:passThroughAttribute name="placeholder" value="#{cc.attrs.widget.hasWidgetTitle ? msg[cc.attrs.widget.widgetTitle] : msg.search}" />
+		                                    <f:passThroughAttribute name="placeholder" value="#{msg.search}" />
 		                                    <f:passThroughAttribute name="aria-label" value="#{msg.searchField}" />
 		                                </h:inputText>
                                 	</c:otherwise>
                                 </c:choose>
                                 <div class="input-group-addon">
-                                	<c:choose>
-                                		<c:when test="#{cc.attrs.widget.hasLinkedPages}">
-	                                        <button class="btn" aria-label="#{msg.search}" jsf:action="#{cc.attrs.widget.linkedPages.search.searchSimple}">
-	                                            <f:setPropertyActionListener for="actionEvent" target="#{searchBean.activeSearchType}" value="0" />
-	                                            <f:setPropertyActionListener for="actionEvent" target="#{searchBean.facets.currentFacetString}" value="#{cc.attrs.widget.additionalQuery}" />
-                                			<i class="fa fa-search"/>
-                                		</button>
-                                		</c:when>
-                                		<c:otherwise>
-	                                		<button class="btn" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimpleSetFacets(cc.attrs.widget.additionalQuery)}">
-		                                            <f:setPropertyActionListener for="actionEvent" target="#{searchBean.activeSearchType}" value="0" />
-		                                            <f:setPropertyActionListener for="actionEvent" target="#{searchBean.facets.currentFacetString}" value="#{cc.attrs.widget.additionalQuery}" />
-	                                			<i class="fa fa-search"/>
-	                                		</button>
-                                		</c:otherwise>
-                                	</c:choose>
+                               		<button class="btn" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimple()}">
+                                            <f:setPropertyActionListener for="actionEvent" target="#{searchBean.activeSearchType}" value="0" />
+                               			<i class="fa fa-search"/>
+                               		</button>
                                 </div>
                             </div>
                         </div>
-                    </h:panelGroup>
                 </h:form>
             </div>
-        </h:panelGroup>
     </composite:implementation>
 </ui:composition>

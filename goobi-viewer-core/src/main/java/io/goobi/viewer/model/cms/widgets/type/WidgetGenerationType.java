@@ -13,24 +13,34 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.cms;
+package io.goobi.viewer.model.cms.widgets.type;
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import io.goobi.viewer.model.cms.CMSSidebarElementWithQuery;
-
-public class CMSSidebarElementWithQueryTest {
-
+/**
+ * Indicates how data for a sidebar widget is created and stored. 
+ * @author florian
+ *
+ */
+public enum WidgetGenerationType {
     /**
-     * @see CMSSidebarElementWithQuery#getAdditionalQuerySuffix()
-     * @verifies build suffix correctly
+     * Static widgets with no underlying data, just a xhtml component
      */
-    @Test
-    public void getAdditionalQuerySuffix_shouldBuildSuffixCorrectly() throws Exception {
-        CMSSidebarElementWithQuery element = new CMSSidebarElementWithQuery();
-        Assert.assertEquals("", element.getAdditionalQuerySuffix());
-        element.setAdditionalQuery("foo:bar");
-        Assert.assertEquals(" AND (foo:bar)", element.getAdditionalQuerySuffix());
+    DEFAULT(""),
+    /**
+     * Widgets provided automatically by some other kind of user generated data. The widget simply displays the providing data in some form
+     */
+    AUTOMATIC("cms_widgets__type_automatic"),
+    /**
+     * Widgets created manually with individual settings
+     */
+    CUSTOM("cms_widgets__type_custom");
+    
+    private final String label;
+    
+    private WidgetGenerationType(String label) {
+        this.label = label;
+    }
+    
+    public String getLabel() {
+        return label;
     }
 }

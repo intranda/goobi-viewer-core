@@ -6,22 +6,21 @@
 
     <!-- interface options -->
     <composite:interface>
-    	<composite:attribute name="widget" type="io.goobi.viewer.model.cms.CMSSidebarElement" required="true" />
+    	<composite:attribute name="collapse" type="java.lang.Boolean" required="false" default="false"/>
     </composite:interface>
 
     <!-- component content -->
     <composite:implementation>
-    	<h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetWorkCount' or cc.attrs.widget == null}">
 	        <!-- WIDGET WORK COUNT STANDARD -->
-	        <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
-		        <div id="widgetWorkCount" class="widget #{cc.attrs.widget.cssClass}">
-		        	<h2 >#{msg.totalNumberOfVolumes}</h2>
+	        <h:panelGroup rendered="#{cc.attrs.collapse == false}">
+		        <div id="widgetWorkCount" class="widget">
+		        	<h2>#{msg.totalNumberOfVolumes}</h2>
 		        	<p><strong>#{searchBean.totalNumberOfVolumes}</strong></p>
 		        </div>
 	        </h:panelGroup>
 	        
 	        <!-- WIDGET WORK COUNT FOLDOUT -->
-	        <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
+	        <h:panelGroup rendered="#{cc.attrs.collapse == true}">
 	        	<div id="widgetWorkCount" class="widget widget-workcount">
 					<h2 >
 						<a href="#workCountCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="workCountCollapse">
@@ -35,6 +34,5 @@
 					</div>
 		        </div>
 	        </h:panelGroup>
-        </h:panelGroup>
     </composite:implementation>
 </ui:composition>

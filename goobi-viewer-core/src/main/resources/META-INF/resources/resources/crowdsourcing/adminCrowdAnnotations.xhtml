@@ -161,8 +161,12 @@
 	                            resturl: "#{configurationBean.restApiUrlV1}",
 	                        });
 		                }
-		               
-		                
+
+		                // Create no entries found message
+		    			if($('.admin__table-entry').length == 0) {
+		    				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+		    			}    
+
 		            </script>
         
                     

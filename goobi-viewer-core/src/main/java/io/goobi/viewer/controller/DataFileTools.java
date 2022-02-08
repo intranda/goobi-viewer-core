@@ -404,6 +404,7 @@ public class DataFileTools {
                                 return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build();
                             })
                             .map(url -> NetTools.callUrlGET(url))
+                            .filter(array -> NetTools.isStatusOk(array[0]))
                             .map(array -> array[1])
                             .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
                 } catch (ContentNotFoundException e1) {
@@ -466,7 +467,7 @@ public class DataFileTools {
                         // logger.trace(u[1]);
                         return u;
                     })
-                    .filter(array -> Integer.parseInt(array[0]) < 400)
+                    .filter(array -> NetTools.isStatusOk(array[0]))
                     .map(array -> array[1])
                     .orElseThrow(() -> new ContentNotFoundException("Resource not found")), null);
         }

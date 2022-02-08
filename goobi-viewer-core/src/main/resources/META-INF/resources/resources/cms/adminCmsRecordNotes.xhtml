@@ -137,7 +137,13 @@
 
                 viewerJS.dataTable.init( dataTableConfig );
             } );
-        </script>
+
+            // Create no entries found message
+			if($('.admin__table-entry').length == 0) {
+				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+			}    
+
+		</script>
     </ui:define>
 
 </ui:composition>

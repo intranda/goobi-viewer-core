@@ -624,6 +624,13 @@ public class ViewerResourceBundle extends ResourceBundle {
         }
         return allLocales;
     }
+    
+    public static Locale getDefaultLocale(ServletContext servletContext) {
+        if (defaultLocale == null) {
+            defaultLocale = getDefaultLocaleFromFacesConfig(servletContext);
+        }
+        return defaultLocale;
+    }
 
     public static List<Locale> getFacesLocales() {
         List<Locale> locales = new ArrayList<>();
@@ -691,6 +698,24 @@ public class ViewerResourceBundle extends ResourceBundle {
             return getFacesLocales();
         }
     }
+    
+    public static Locale getDefaultLocaleFromFacesConfig(ServletContext servletContext) {
+        if (servletContext == null) {
+            return getDefaultLocale();
+        }
+
+        try {
+            String webContentRoot = servletContext.getRealPath("resources/themes");
+            Path facesConfigPath = Paths.get(webContentRoot).resolve("faces-config.xml");
+            if (Files.exists(facesConfigPath)) {
+                return getDefaultLocaleFromFile(facesConfigPath);
+            }
+            throw new FileNotFoundException("Unable to locate faces-config at " + facesConfigPath);
+        } catch (Throwable e) {
+            logger.error("Error getting locales from faces-config", e);
+            return getDefaultLocale();
+        }
+    }
 
     /**
      * Creates a local messages_xx.properties file for every locale in the Faces context, if not already present.
@@ -745,12 +770,22 @@ public class ViewerResourceBundle extends ResourceBundle {
         List<Element> localeElements = XmlTools.evaluateToElements("//ee:locale-config/ee:supported-locale", doc.getRootElement(), namespaces);
         return localeElements.stream().map(ele -> ele.getText()).map(Locale::forLanguageTag).collect(Collectors.toList());
     }
+    
+    public static Locale getDefaultLocaleFromFile(Path facesConfigPath) throws FileNotFoundException, IOException, JDOMException {
+        Document doc = XmlTools.readXmlFile(facesConfigPath);
+        Namespace xsi = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        Namespace javaee = Namespace.getNamespace("ee", "http://java.sun.com/xml/ns/javaee");
+        List<Namespace> namespaces = Arrays.asList(xsi, javaee);//doc.getNamespacesInScope();
+        List<Element> localeElements = XmlTools.evaluateToElements("//ee:locale-config/ee:default-locale", doc.getRootElement(), namespaces);
+        return localeElements.stream().map(ele -> ele.getText()).map(Locale::forLanguageTag).findFirst().orElse(getDefaultLocale());
+    }
 
     /**
      * @param servletContext
      */
     public static void init(ServletContext servletContext) {
         getAllLocales(servletContext);
+        getDefaultLocale(servletContext);
     }
 
     /**

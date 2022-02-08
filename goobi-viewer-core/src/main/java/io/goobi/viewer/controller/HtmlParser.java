@@ -15,6 +15,11 @@
  */
 package io.goobi.viewer.controller;
 
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,6 +38,10 @@ public class HtmlParser {
     private static final String HTML_TAG_PATTERN_STRING = "<(\"[^\"]*\"|'[^']*'|[^'\">])*>";
     private static final Pattern HTML_TAG_PATTERN = Pattern.compile(HTML_TAG_PATTERN_STRING);
     
+
+    private static final Set<String> DISALLOWED_HTML_TAGS = Set.of("<script>");
+    private static final Map<String, String> HTML_REPLACEMENTS = Map.ofEntries(new SimpleEntry<>("<br\\s?>", "<br />"));
+
     /**
      * Guess if the given text should be interpreted as html based in the existance of html tags
      * 
@@ -57,6 +66,18 @@ public class HtmlParser {
     public static String getPlaintext(String htmlText) {
         Document doc = Jsoup.parse(htmlText);
         return doc.text();
+    }
+    
+    public static Set<String> getDisallowedHtmlTags() {
+        return DISALLOWED_HTML_TAGS;
+    }
+    
+    public static String getDisallowedHtmlTagsForDisplay() {
+        return StringUtils.join(DISALLOWED_HTML_TAGS, ", ");
+    }
+    
+    public static Map<String, String> getHtmlReplacements() {
+        return HTML_REPLACEMENTS;
     }
 
 }

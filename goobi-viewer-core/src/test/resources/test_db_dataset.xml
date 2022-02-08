@@ -200,9 +200,6 @@
     
     <cms_content_item_cms_categories content_item_id="4" category_id="4" />
     
-    <cms_sidebar_elements cms_sidebar_element_id="1" owner_page_id="1" type="browse" widget_mode="STANDARD"
-        inner_html="&lt;h1&gt;Hello Sidebar&lt;/h1&gt;" widget_type="CMSSidebarElement" value="MD_TITLE_UNTOKENIZED" descending_order="false"/>
-    
     <cms_navigation_items cms_navigation_item_id="1" item_label="item 1" page_url="url 1" item_order="1" />
     <cms_navigation_items cms_navigation_item_id="2" item_label="item 2" page_url="url 2" item_order="1"
         parent_item_id="1" cms_page_id="2" />

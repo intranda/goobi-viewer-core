@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -71,6 +72,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -84,7 +86,14 @@ import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
+import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault;
 import io.goobi.viewer.model.glossary.GlossaryManager;
+import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.misc.Harvestable;
 import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.viewer.CollectionView;
@@ -106,7 +115,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     /** Constant <code>CLASSIFICATION_OVERVIEWPAGE="overviewpage"</code> */
     public static final String CLASSIFICATION_OVERVIEWPAGE = "overviewpage";
     public static final String TOPBAR_SLIDER_ID = "topbar_slider";
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -150,8 +158,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @PrivateOwned
     private List<CMSSidebarElement> sidebarElements = new ArrayList<>();
 
-    @Transient
-    private List<CMSSidebarElement> unusedSidebarElements;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cms_page_cms_categories", joinColumns = @JoinColumn(name = "page_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
@@ -307,40 +313,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return id.compareTo(o.getId());
     }
 
-    /**
-     * <p>
-     * saveSidebarElements.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean saveSidebarElements() {
-        logger.trace("selected elements:{}\n", sidebarElementString);
-        if (sidebarElementString != null) {
-            List<CMSSidebarElement> selectedElements = new ArrayList<>();
-            String[] ids = sidebarElementString.split("\\&?item=");
-            for (int i = 0; i < ids.length; ++i) {
-                if (StringUtils.isBlank(ids[i])) {
-                    continue;
-                }
-
-                CMSSidebarElement element = getAvailableSidebarElement(ids[i]);
-                if (element != null) {
-                    // element.setType(ids[i]);
-                    //                    element.setValue("bds");
-                    element.setOrder(i);
-                    //		    element.setId(null);
-                    element.setOwnerPage(this);
-                    element.serialize();
-                    selectedElements.add(element);
-                }
-            }
-            setSidebarElements(selectedElements);
-            return true;
-        }
-
-        return false;
-    }
 
     /**
      * <p>
@@ -357,62 +329,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * @param string
-     * @return
-     */
-    private CMSSidebarElement getAvailableSidebarElement(String id) {
-        for (CMSSidebarElement visibleElement : getSidebarElements()) {
-            if (Integer.toString(visibleElement.getSortingId()).equals(id)) {
-                return visibleElement;
-            }
-        }
-        for (CMSSidebarElement unusedElement : getUnusedSidebarElements()) {
-            if (Integer.toString(unusedElement.getSortingId()).equals(id)) {
-                return unusedElement;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>unusedSidebarElements</code>.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<CMSSidebarElement> getUnusedSidebarElements() {
-        if (unusedSidebarElements == null) {
-            createUnusedSidebarElementList();
-        }
-        return unusedSidebarElements;
-    }
-
-    /**
-     *
-     */
-    private void createUnusedSidebarElementList() {
-        unusedSidebarElements = CMSSidebarManager.getAvailableSidebarElements();
-        Iterator<CMSSidebarElement> unusedIterator = unusedSidebarElements.iterator();
-
-        while (unusedIterator.hasNext()) {
-            CMSSidebarElement unusedElement = unusedIterator.next();
-            for (CMSSidebarElement visibleElement : getSidebarElements()) {
-                if (visibleElement.equals(unusedElement)) {
-                    unusedIterator.remove();
-                    break;
-                }
-            }
-        }
-
-    }
-
-    /**
      * <p>
      * addSidebarElement.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
+     * @param element a {@link io.goobi.viewer.model.cms.widgets.CMSSidebarElement} object.
      */
     public void addSidebarElement(CMSSidebarElement element) {
         if (element != null) {
@@ -589,7 +510,76 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      */
     public void setSidebarElements(List<CMSSidebarElement> sidebarElements) {
         this.sidebarElements = sidebarElements;
-        createUnusedSidebarElementList();
+
+    }
+
+    public void addToSidebar(List<WidgetDisplayElement> widgets) {
+        for (WidgetDisplayElement displayWidget : widgets) {
+            CMSSidebarElement element = null;
+            switch (displayWidget.getGenerationType()) {
+                case DEFAULT:
+                    element = new CMSSidebarElementDefault(displayWidget.getContentType(), this);
+                    break;
+                case AUTOMATIC:
+                    try {
+                        GeoMap map = DataManager.getInstance().getDao().getGeoMap(displayWidget.getId());
+                        element = new CMSSidebarElementAutomatic(map, this);
+                    } catch (DAOException e) {
+                        logger.error("Unable to add widget: Cannot load geomap id=" + displayWidget.getId());
+                    }
+                    break;
+                case CUSTOM:
+                    try {
+                        CustomSidebarWidget widget = DataManager.getInstance().getDao().getCustomWidget(displayWidget.getId());
+                        element = new CMSSidebarElementCustom(widget, this);
+                    } catch (DAOException e) {
+                        logger.error("Unable to add widget: Cannot load geomap id=" + displayWidget.getId());
+                    }
+                    break;
+            }
+            if (element != null) {
+                this.sidebarElements.add(element);
+            }
+        }
+    }
+
+    public void moveUpSidebarElement(CMSSidebarElement element) {
+        int currentIndex = this.sidebarElements.indexOf(element);
+        if (currentIndex > 0) {
+            int newIndex = currentIndex - 1;
+            CMSSidebarElement removed = this.sidebarElements.remove(currentIndex);
+            this.sidebarElements.add(newIndex, element);
+        }
+    }
+
+    public void moveDownSidebarElement(CMSSidebarElement element) {
+        int currentIndex = this.sidebarElements.indexOf(element);
+        if (currentIndex > -1 && currentIndex < this.sidebarElements.size()-1) {
+            int newIndex = currentIndex + 1;
+            CMSSidebarElement removed = this.sidebarElements.remove(currentIndex);
+            this.sidebarElements.add(newIndex, element);
+        }
+    }
+
+    public void removeSidebarElement(CMSSidebarElement element) {
+        this.sidebarElements.remove(element);
+    }
+
+    public boolean containsSidebarElement(WidgetDisplayElement widget) {
+        switch (widget.getGenerationType()) {
+            case DEFAULT:
+                return this.sidebarElements.stream().anyMatch(ele -> ele.getContentType().equals(widget.getContentType()));
+            case AUTOMATIC:
+                return this.sidebarElements.stream()
+                        .anyMatch(ele -> ele.getContentType().equals(widget.getContentType())
+                                && Objects.equals(((CMSSidebarElementAutomatic) ele).getMap().getId(), widget.getId()));
+            case CUSTOM:
+                return this.sidebarElements.stream()
+                        .anyMatch(ele -> ele.getContentType().equals(widget.getContentType())
+                                && Objects.equals(((CMSSidebarElementCustom) ele).getWidget().getId(), widget.getId()));
+            default:
+                return false;
+        }
 
     }
 
@@ -1102,7 +1092,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the given locale, including unfinished versions. Returns the
+     * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the given locale, including unfinished ve)rsions. Returns the
      * LanguageVersion for the given locale if it exists. Otherwise returns the LanguageVersion of the viewer's default language if it exists, or
      * failing that the first available (non-global) language version
      * 
@@ -2124,7 +2114,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
         return selectableCategories;
     }
-    
+
     public void resetSelectableCategories() {
         this.selectableCategories = null;
     }
@@ -2138,14 +2128,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return getRelatedPI();
     }
 
-    /**
-     * @param unusedSidebarElements2
-     */
-    public void setUnusedSidebarElements(List<CMSSidebarElement> unusedSidebarElements2) {
-        this.unusedSidebarElements = unusedSidebarElements2;
-
-    }
-
     public SearchInterface getSearchFunctionality() {
         return (SearchInterface) this.getGlobalContentItems()
                 .stream()
@@ -2155,16 +2137,15 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 .orElse(null);
     }
 
-
     /**
      * @return
      */
     public CMSSlider getTopBarSlider() {
         try {
             CMSPageLanguageVersion lang = getLanguageVersion(GLOBAL_LANGUAGE);
-            if(lang != null)  {
+            if (lang != null) {
                 CMSContentItem item = lang.getContentItem(TOPBAR_SLIDER_ID);
-                if(item != null) {
+                if (item != null) {
                     return item.getSlider();
                 }
             }
@@ -2172,11 +2153,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
         return null;
     }
-    
+
     private Optional<CMSContentItem> getTopBarSliderItem() {
         try {
             CMSPageLanguageVersion lang = getLanguageVersion(GLOBAL_LANGUAGE);
-            if(lang != null)  {
+            if (lang != null) {
                 CMSContentItem item = lang.getContentItem(TOPBAR_SLIDER_ID);
                 return Optional.ofNullable(item);
             }
@@ -2184,7 +2165,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
         return Optional.empty();
     }
-    
+
     public boolean mayHaveTopBarSlider() {
         return getTemplate().isMayHaveTopBarSlider();
     }
@@ -2192,17 +2173,22 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public Long getTopBarSliderId() {
         return Optional.ofNullable(getTopBarSlider()).map(CMSSlider::getId).orElse(null);
     }
-    
+
     public void setTopBarSliderId(Long id) throws DAOException {
-            CMSContentItem sliderItem = getTopBarSliderItem().orElse(new CMSContentItem(CMSContentItemType.SLIDER)); 
-            sliderItem.setItemId(TOPBAR_SLIDER_ID);
-            sliderItem.setSliderId(id);
-            if(!hasContentItem(TOPBAR_SLIDER_ID)) {
-                try {
-                    getLanguageVersion(GLOBAL_LANGUAGE).addContentItem(sliderItem);
-                } catch (CmsElementNotFoundException e) {
-                    logger.error("Unable to set topbar slider: {}", e.toString());
-                }
+        CMSContentItem sliderItem = getTopBarSliderItem().orElse(new CMSContentItem(CMSContentItemType.SLIDER));
+        sliderItem.setItemId(TOPBAR_SLIDER_ID);
+        sliderItem.setSliderId(id);
+        if (!hasContentItem(TOPBAR_SLIDER_ID)) {
+            try {
+                getLanguageVersion(GLOBAL_LANGUAGE).addContentItem(sliderItem);
+            } catch (CmsElementNotFoundException e) {
+                logger.error("Unable to set topbar slider: {}", e.toString());
             }
+        }
+    }
+    
+    public String getAdminBackendUrl() {
+        String prettyId = "adminCmsEditPage";
+        return PrettyUrlTools.getAbsolutePageUrl(prettyId, this.getId());
     }
 }

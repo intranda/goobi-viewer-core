@@ -15,6 +15,9 @@
  */
 package io.goobi.viewer.model.jsf;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author florian
  *
@@ -22,14 +25,16 @@ package io.goobi.viewer.model.jsf;
 public class DynamicContent {
 
     private final DynamicContentType type;
+    private final String componentFilename;
     private String id;
-    private String[] attributes;
+    private Map<String, Object> attributes = new HashMap<>();
     
     /**
      * 
      */
-    public DynamicContent(DynamicContentType type) {
+    public DynamicContent(DynamicContentType type, String componentFilename) {
         this.type = type;
+        this.componentFilename = componentFilename;
     }
 
     /**
@@ -49,14 +54,14 @@ public class DynamicContent {
     /**
      * @return the attributes
      */
-    public String[] getAttributes() {
+    public Map<String, Object> getAttributes() {
         return attributes;
     }
 
     /**
      * @param attributes the attributes to set
      */
-    public void setAttributes(String[] attributes) {
+    public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
 
@@ -66,18 +71,9 @@ public class DynamicContent {
     public DynamicContentType getType() {
         return type;
     }
-
-    /**
-     * @param i
-     * @return
-     */
-    public String getAttribute(int index) {
-        if(attributes == null || index < 0 || index >= attributes.length) {
-            return null;
-        } else {
-            return attributes[index];
-        }
-    }
     
+    public String getComponentFilename() {
+        return componentFilename;
+    }
     
 }

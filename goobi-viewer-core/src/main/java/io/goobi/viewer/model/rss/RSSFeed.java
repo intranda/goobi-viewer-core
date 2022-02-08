@@ -96,7 +96,7 @@ public class RSSFeed {
      */
     public static SyndFeed createRss(String rootPath, String query, int maxItems)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return createRss(rootPath, query, null, null, maxItems);
+        return createRss(rootPath, query, null, null, maxItems, null, true);
     }
 
     /**
@@ -131,7 +131,7 @@ public class RSSFeed {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should produce feed correctly
      */
-    public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language, int maxItems)
+    public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language, int maxItems, String sortField, boolean sortDescending)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
@@ -163,9 +163,12 @@ public class RSSFeed {
 
         List<SyndEntry> entries = new ArrayList<>();
 
+        sortField = sortField == null ? SolrConstants.DATECREATED : sortField;
+        String sortOrder = sortDescending ? "desc" : "asc";
+        
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
-                .search(query, 0, maxItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
+                .search(query, 0, maxItems, Collections.singletonList(new StringPair(sortField, sortOrder)), null,
                         getFieldsWithTranslation(locale), filterQueries, null)
                 .getResults();
         if (docs == null || docs.isEmpty()) {
@@ -408,7 +411,7 @@ public class RSSFeed {
      */
     public static Channel createRssFeed(String rootPath, String query, int rssFeedItems)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
-        return createRssFeed(rootPath, query, null, rssFeedItems, null);
+        return createRssFeed(rootPath, query, null, rssFeedItems, null, null, true);
     }
 
     /**
@@ -427,7 +430,7 @@ public class RSSFeed {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should produce feed correctly
      */
-    public static Channel createRssFeed(String rootPath, String query, List<String> filterQueries, int rssFeedItems, String language)
+    public static Channel createRssFeed(String rootPath, String query, List<String> filterQueries, int rssFeedItems, String language, String sortField, boolean sortDescending)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         // String feedType = "rss_2.0";
 
@@ -449,9 +452,12 @@ public class RSSFeed {
         feed.setCopyright(DataManager.getInstance().getConfiguration().getRssCopyrightText());
         feed.setPubDate(new Date());
 
+       sortField = sortField == null ? SolrConstants.DATECREATED : sortField;
+       String sortOrder = sortDescending ? "desc" : "asc";
+        
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
-                .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
+                .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(sortField, sortOrder)), null,
                         getFieldsWithTranslation(locale), filterQueries, null)
                 .getResults();
         if (docs == null || docs.isEmpty()) {
@@ -752,7 +758,7 @@ public class RSSFeed {
      * @throws ContentLibException
      */
     public static Channel createRssResponse(String language, Integer maxHits, String subtheme, String query, String facets,
-            Integer facetQueryOperator, HttpServletRequest servletRequest)
+            Integer facetQueryOperator, HttpServletRequest servletRequest, String sortField, boolean sortDescending)
             throws ContentLibException {
         try {
             if (maxHits == null) {
@@ -776,7 +782,7 @@ public class RSSFeed {
             }
 
             Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
-                    query, filterQueries, maxHits, language);
+                    query, filterQueries, maxHits, language, sortField, sortDescending);
             return rss;
         } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
             throw new ContentLibException(e.toString());
@@ -784,7 +790,7 @@ public class RSSFeed {
     }
 
     public static String createRssFeed(String language, Integer maxHits, String subtheme, String query, String facets, Integer facetQueryOperator,
-            HttpServletRequest servletRequest)
+            HttpServletRequest servletRequest, String sortField, boolean sortDescending)
             throws ContentLibException {
         try {
             if (maxHits == null) {
@@ -810,7 +816,7 @@ public class RSSFeed {
             SyndFeedOutput output = new SyndFeedOutput();
             return output
                     .outputString(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), query, filterQueries,
-                            language, maxHits));
+                            language, maxHits, sortField, sortDescending));
 
         } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException | FeedException e) {
             throw new ContentLibException(e.toString());

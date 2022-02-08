@@ -82,7 +82,7 @@ $( document ).ready(function() {
 		if ($(this).find("input:nth-of-type(2)").prop('checked')) {
 			$(this).next('.admin__license-selectable-block').hide();
 		}
-	}); 
+	});
  
 	// check if radio button status changes
 	$("body").one("click", '.blockAfterRadioToggler', function(event) { 
