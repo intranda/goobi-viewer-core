@@ -1,7 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -91,7 +91,12 @@
                             <!-- ACTION -->
                             <div
 								class="row no-gutters justify-content-end admin__final-actions">
-                                <h:commandLink action="pretty:adminIpRanges" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
+                                <button
+                                    jsf:action="pretty:adminIpRanges"
+                                    class="btn admin__cancel-button"
+                                    jsf:immediate="true">
+                                    #{msg.cancel}
+                                </button>
                                 <h:commandLink action="#{adminBean.saveIpRangeAction}" value="#{msg.save}" styleClass="btn btn--success" />
                             </div>
                         </h:form>
