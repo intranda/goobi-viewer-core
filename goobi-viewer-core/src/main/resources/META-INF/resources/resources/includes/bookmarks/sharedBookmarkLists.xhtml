@@ -144,7 +144,8 @@
 										<span>#{msg.search}</span>
 									</a>
 
-									<a
+									<button
+										type="button"
 										data-popover-element="#sharePopover_#{status.index}"
 										data-popover-placement="bottom"
 										data-popover-title=""
@@ -152,7 +153,7 @@
 										class="share-bookmarkList">
 										<i class="fa fa-share-alt" aria-hidden="true"></i>
 										<span>#{msg.action__share}</span>
-									</a>
+									</button>
 
 									<div id="sharePopover_#{status.index}" class="viewerPopover">
 										<h:panelGroup id="editBookmarkListPublicWrapper">
