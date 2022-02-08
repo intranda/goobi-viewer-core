@@ -219,7 +219,7 @@ var viewerJS = ( function( viewer ) {
                 }
                 else {
                     // hide paragraph
-                    $( this ).find( '.modal-body h4' ).next( 'p' ).hide();
+                    $( this ).find( '.modal-body h3' ).next( 'p' ).hide();
                     
                     // enable submit button
                     $( '#submitModal' ).removeAttr( 'disabled' ).on( 'click', function() {
@@ -261,14 +261,14 @@ var viewerJS = ( function( viewer ) {
             modalBody += '<div id="modalAlerts"></div>';
             // Title
             if ( type === 'pdf' ) {
-                modalBody += '<h4>';
+                modalBody += '<h3>';
                 modalBody += '<i class="fa fa-file-pdf-o" aria-hidden="true"></i> PDF-Download: ';
-                modalBody += '</h4>';
+                modalBody += '</h3>';
             }
             else {
-                modalBody += '<h4>';
+                modalBody += '<h3>';
                 modalBody += '<i class="fa fa-file-text-o" aria-hidden="true"></i> ePub-Download: ';
-                modalBody += '</h4>';
+                modalBody += '</h3>';
             }
             // Info
             modalBody += '<p>' + _defaults.messages.downloadInfo.text + ':</p>';

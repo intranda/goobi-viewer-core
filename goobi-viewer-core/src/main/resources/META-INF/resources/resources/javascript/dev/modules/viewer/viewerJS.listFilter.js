@@ -55,7 +55,7 @@ var viewerJS = (function (viewer) {
         		$input.val( '' ).trigger( 'input' );
         	}
         } );
-        $( 'body' ).on( 'click', '.widget-search-facets__collection h3', function( event ) {
+        $( 'body' ).on( 'click', '.widget-search-facets__collection h2', function( event ) {
         	event.stopImmediatePropagation();
         	
         	var $input = $( this ).parent().find( '.widget-search-facets__filter-input' );

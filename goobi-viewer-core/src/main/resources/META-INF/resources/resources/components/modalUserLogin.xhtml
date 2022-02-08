@@ -34,8 +34,8 @@
 					<div class="user-login-modal__left">
 						
 						<div class="modal-header">
-							<h2 class="modal-title user-login-modal__header-title">#{msg.login__header_title}</h2>
-							<h2 class="modal-title user-login-modal__header-title-create-account">#{msg.login__create_new_account}</h2>
+							<h1 class="modal-title user-login-modal__header-title">#{msg.login__header_title}</h1>
+							<h1 class="modal-title user-login-modal__header-title-create-account">#{msg.login__create_new_account}</h1>
 						</div>
 						
 						
@@ -166,9 +166,9 @@
 															rendered="#{userBean.userRegistrationEnabled}">
 															<div id="userLoginCreateAccount"
 																class="user-login-modal__new-account">
-<!-- 																<h4> -->
+<!-- 																<h3> -->
 <!-- 																	<span>#{msg.login__new_to_goobi_viewer}</span> -->
-<!-- 																</h4> -->
+<!-- 																</h3> -->
 																<button type="button"
 																	class="btn btn--clean user-login-modal__new-account-submit"
 																	aria-label="#{msg.user_createNewAccount}"
@@ -397,9 +397,9 @@
 									rendered="#{userBean.hasProvidersOfType('openId') or userBean.hasProvidersOfType('saml')}">
 									<div id="userLoginOpenId"
 										class="user-login-modal__body-login-open-id">
-<!-- 										<h4> -->
+<!-- 										<h3> -->
 <!-- 											<span>#{msg.login__login_with_other_provider}</span> -->
-<!-- 										</h4> -->
+<!-- 										</h3> -->
 
 										<h:form id="userLoginOpenIdForm">
 											<ul>

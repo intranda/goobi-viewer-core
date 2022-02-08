@@ -23,7 +23,7 @@
 
                     <div class="admin__title-bar">
                         <!-- TITLE -->
-                        <h2 class="admin__title">#{msg.cms__record_notes__title_plural}</h2>
+                        <h1 class="admin__title">#{msg.cms__record_notes__title_plural}</h1>
                         <!-- CREATE NEW NOTE -->
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
                             <a href="#{navigationHelper.applicationUrl}admin/cms/recordnotes/new/" class="btn btn--default admin__title-bar-action">
@@ -148,7 +148,13 @@
 
                 viewerJS.dataTable.init( dataTableConfig );
             } );
-        </script>
+
+            // Create no entries found message
+			if($('.admin__table-entry').length == 0) {
+				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+			}    
+
+		</script>
     </ui:define>
 
 </ui:composition>

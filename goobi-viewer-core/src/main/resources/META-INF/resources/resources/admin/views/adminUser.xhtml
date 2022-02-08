@@ -28,10 +28,10 @@
 					rendered="#{userBean.admin == true and adminBean.currentUser != null}">
 					<div class="admin__title-bar">
 						<ui:fragment rendered="#{adminBean.currentUser.id == null}">
-							<h2 class="admin__title">#{msg.admin__user_create_new}</h2>
+							<h1 class="admin__title">#{msg.admin__user_create_new}</h1>
 						</ui:fragment>
 						<ui:fragment rendered="#{adminBean.currentUser.id != null}">
-							<h2 class="admin__title">#{msg.admin__user_edit}</h2>
+							<h1 class="admin__title">#{msg.admin__user_edit}</h1>
 						</ui:fragment>
 					</div>
 
@@ -72,7 +72,7 @@
 								
 								<div class="row">
 									<div class="col-12 control-label admin__form-label">
-									<h3>#{msg.admin__user_activation}</h3>
+									<h2>#{msg.admin__user_activation}</h2>
 									</div>
 								</div>
 								<div class="admin__form-help-text in mb-3">
@@ -122,7 +122,7 @@
 								
 								<div class="row">
 									<div class="col-12 control-label admin__form-label">
-									<h3>#{msg.admin__user_superuser}</h3>
+									<h2>#{msg.admin__user_superuser}</h2>
 									</div>
 								</div>
 								<div class="admin__form-help-text in mb-3">

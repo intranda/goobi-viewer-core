@@ -6,7 +6,7 @@
 /* BLOCK */
 .my-searches {
   /* ELEMENT */
-  h2 {
+  h1 {
   }
   &__table {
     border-left: 0 !important;
@@ -103,22 +103,19 @@
 
 /* DEPRECATED SINCE 3.4 */
 #mySearches {
-  h2 {
-  }
-  #my_saved_searches_data_table {
-    thead {
-      tr {
-        th {
-          &:nth-child(1) {
-          }
-          &:nth-child(2) {
-          }
-          &:nth-child(3) {
-            text-align: center;
-          }
+    h1 {}
+    #my_saved_searches_data_table {
+        thead {
+            tr {
+                th {
+                    &:nth-child(1) {}
+                    &:nth-child(2) {}
+                    &:nth-child(3) {
+                    	text-align: center;
+                    }
+                }
+            }
         }
-      }
-    }
     tbody {
       tr {
         td {

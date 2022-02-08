@@ -21,7 +21,7 @@
             <ui:fragment rendered="#{userBean.admin or userBean.user.isHasCmsPrivilege('CMS_PAGES') or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)}">
                 <div id="adminDashboard">
                     <div class="admin__title-bar">
-                        <h2 class="admin__title">#{msg.admin__dashboard}</h2>
+                        <h1 class="admin__title">#{msg.admin__dashboard}</h1>
                     </div>
                     <div class="admin__content-inner-content">
                         <div class="admin__entry-list -w33">
@@ -31,7 +31,7 @@
                             <div class="admin__boxed-entry -no-actions -w33">
                                 <div class="admin__dashboard-user-welcome">
                                 	<div class="admin__dashboard-user-welcome-left">
-	                                    <h3>#{msg.admin__dashboard_hello} #{userBean.user.nickName}</h3>
+	                                    <h2>#{msg.admin__dashboard_hello} #{userBean.user.nickName}</h2>
 	                                    <p>#{msg.admin__dashboard_documentation}:<br/>
 	                                        <a class="-bluelink" href="https://docs.goobi.io" target="_blank" rel="noopener">https://docs.goobi.io</a>
 	                                    </p>
@@ -58,7 +58,7 @@
                             <ui:fragment rendered="#{userBean.admin}">
                             <div class="admin__boxed-entry pb-0 -no-actions -w66">
                                 <div class="row">
-                                    <h3 class="col-9">#{msg.cms_overview}</h3>
+                                    <h2 class="col-9">#{msg.cms_overview}</h2>
                                 </div>
                                 <div id="last-CMS-pages-table" class="admin__table-content -slim" role="grid">
                                     <!-- TITLE ROW -->
@@ -115,7 +115,7 @@
                             <ui:fragment rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty adminBean.notConfiguredAccessConditions}">
                                 <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
                                     <div class="row">
-                                        <h3 class="col-9">#{msg.admin__licenses}</h3>
+                                        <h2 class="col-9">#{msg.admin__licenses}</h2>
                                     </div>
                                     <div class="row">
                                         <div class="col-12">
@@ -146,7 +146,7 @@
                             <!-- COLLECTION DESCRIPTION IMPORT -->
                             <h:panelGroup layout="block" rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}" id="collectionImportWidget" styleClass="admin__boxed-entry -no-actions -w33 -danger" >
                                     <h:form prependId="false">
-                                        <h3>#{msg.admin__cms_collections_import}</h3>
+                                        <h2>#{msg.admin__cms_collections_import}</h2>
                                         <div class="admin__form-help-text in mb-2">
                                             #{msg.admin__cms_collections_import_desc}
                                         </div>
@@ -167,7 +167,7 @@
 									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles()}">
                                 		<h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 #{adminBean.configuredTranslationGroups.stream().anyMatch(g -> g.loadError).get() ? '-danger':'-warning'}">
 		                                    <div class="row">
-		                                        <h3 class="col-9">#{msg.admin__translations}</h3>
+		                                        <h2 class="col-9">#{msg.admin__translations}</h2>
 		                                    </div>
 		                                    <div class="row">
 		                                        <div class="col-12">
@@ -217,7 +217,7 @@
                             		<c:otherwise>
                             			<h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
 			                            	<div class="row">
-		                                        <h3 class="col-9">#{msg.admin__translations}</h3>
+		                                        <h2 class="col-9">#{msg.admin__translations}</h2>
 		                                    </div>
 			                            	<div class="row">
 			                            		<div class="col-12">
@@ -234,7 +234,7 @@
                             <!-- VERSIONS -->
                             <div class="admin__boxed-entry -no-actions -w33">
                                 <div class="row">
-                                    <h3 class="col-9">#{msg.admin__dashboard_versions}</h3>
+                                    <h2 class="col-9">#{msg.admin__dashboard_versions}</h2>
                                 </div>
                                 <dl class="row">
                                     <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_core}:</dt>
@@ -255,7 +255,7 @@
                                 </dl>
                                 <ui:fragment rendered="#{fn:length(configurationBean.modules) > 0}">
                                     <div class="row">
-                                        <h4 class="col-9">#{msg.admin__dashboard_versions_modules}</h4>
+                                        <h3 class="col-9">#{msg.admin__dashboard_versions_modules}</h3>
                                     </div>
                                     <dl class="row">
                                         <ui:repeat var="module" value="#{configurationBean.modules}">
@@ -279,7 +279,7 @@
                             <ui:fragment rendered="#{userBean.admin and configurationBean.piwikTrackingEnabled}">
                                 <div class="admin__boxed-entry -no-actions -w33">
                                     <div class="row">
-                                        <h3 class="col-12">#{msg.admin__dashboard_matomo_title}</h3>
+                                        <h2 class="col-12">#{msg.admin__dashboard_matomo_title}</h2>
                                     </div>
                                     <div class="row">
                                         <div class="col-12">#{msg.admin__dashboard_matomo_text}</div>

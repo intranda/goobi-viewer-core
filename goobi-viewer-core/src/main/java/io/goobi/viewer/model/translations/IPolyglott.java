@@ -59,10 +59,23 @@ public interface IPolyglott {
      */
     public boolean isEmpty(Locale locale);
     
+    /**
+     * 
+     * @return the locale currently set by {@link #setSelectedLocale(Locale)}
+     */
     public Locale getSelectedLocale();
 
+    /**
+     * Set the locale to use for display and editing
+     * @param locale
+     */
     public void setSelectedLocale(Locale locale);
 
+    /**
+     * Convenience method. Calls {@link #setSelectedLocale(Locale)} with the {@link Locale} given by the passed argument
+     * 
+     * @param language
+     */
     public default void setSelectedLocale(String language) {
         Locale locale = Locale.forLanguageTag(language);
         if (locale != null) {
@@ -72,26 +85,52 @@ public interface IPolyglott {
         }
     }
 
+    /**
+     * 
+     * @return true if the currently selected locale is also the default locale
+     */
     public default boolean isDefaultLocaleSelected() {
         return getSelectedLocale() != null && getSelectedLocale().equals(getDefaultLocale());
     }
 
+    /**
+     * 
+     * @param locale
+     * @return return true if the currently selected locale is the given locale
+     */
     public default boolean isSelected(Locale locale) {
         return locale != null && locale.equals(getSelectedLocale());
     }
 
+    /**
+     * Get a list of all locales configured in the faces-configuration file.
+     * 
+     * @return
+     */
     public default Collection<Locale> getLocales() {
         return IPolyglott.getLocalesStatic();
     }
 
+    /**
+     * Get a list of all locales configured in the faces-configuration file
+     * 
+     * @return
+     */
     public static Collection<Locale> getLocalesStatic() {
         return ViewerResourceBundle.getAllLocales();
     }
 
+    /**  
+     * @return the default locale configured in the faces-configuration file
+     */
     public static Locale getDefaultLocale() {
         return ViewerResourceBundle.getDefaultLocale();
     }
     
+    /**
+     * 
+     * @return the locale set in the current faces context
+     */
     public static Locale getCurrentLocale() {
         try {            
             return BeanUtils.getNavigationHelper().getLocale();

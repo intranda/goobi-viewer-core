@@ -52,6 +52,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.HtmlParser;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.RandomComparator;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -82,8 +83,6 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
-import io.goobi.viewer.model.cms.CMSSidebarElement;
-import io.goobi.viewer.model.cms.CMSSidebarManager;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
@@ -92,6 +91,8 @@ import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.SelectableNavigationItem;
 import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.search.Search;
@@ -143,7 +144,6 @@ public class CmsBean implements Serializable {
     private Locale selectedLocale;
     private Locale selectedMediaLocale;
     private CMSMediaItem selectedMediaItem;
-    private CMSSidebarElement selectedSidebarElement;
     private boolean displaySidebarEditor = false;
     private int nestedPagesCount = 0;
     private boolean editMode = false;
@@ -188,9 +188,6 @@ public class CmsBean implements Serializable {
                         pages.forEach(page -> {
                             PageValidityStatus validityStatus = isPageValid(page);
                             page.setValidityStatus(validityStatus);
-                            if (validityStatus.isValid()) {
-                                page.getSidebarElements().forEach(element -> element.deSerialize());
-                            }
                         });
                         return pages;
                     } catch (DAOException e) {
@@ -796,9 +793,6 @@ public class CmsBean implements Serializable {
         pages.forEach(page -> {
             PageValidityStatus validityStatus = isPageValid(page);
             page.setValidityStatus(validityStatus);
-            if (validityStatus.isValid()) {
-                page.getSidebarElements().forEach(element -> element.deSerialize());
-            }
         });
         return pages;
     }
@@ -818,9 +812,6 @@ public class CmsBean implements Serializable {
         if (page.isPresent()) {
             PageValidityStatus validityStatus = isPageValid(page.get());
             page.get().setValidityStatus(validityStatus);
-            if (validityStatus.isValid()) {
-                page.get().getSidebarElements().forEach(element -> element.deSerialize());
-            }
             return page.get();
         }
         return null;
@@ -835,22 +826,8 @@ public class CmsBean implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<CMSSidebarElement> getSidebarElements(boolean isCMSPage) {
-        if (isCMSPage && getCurrentPage() != null && !getCurrentPage().isUseDefaultSidebar()) {
-            return getCurrentPage().getSidebarElements();
-        }
-        return CMSSidebarManager.getDefaultSidebarElements();
-    }
-
-    /**
-     * <p>
-     * getSidebarElement.
-     * </p>
-     *
-     * @param type a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
-     */
-    public CMSSidebarElement getSidebarElement(String type) {
-        return getSidebarElements(true).stream().filter(widget -> widget.getType().equalsIgnoreCase(type)).findFirst().orElse(null);
+        //TODO: refactor sidebar element list
+        return null;
     }
 
     /**
@@ -888,7 +865,6 @@ public class CmsBean implements Serializable {
         // resetImageDisplay();
         // Validate
         logger.trace("save sidebar elements");
-        selectedPage.saveSidebarElements();
         logger.trace("validate page");
         if (!validatePage(selectedPage, getDefaultLocale().getLanguage())) {
             logger.warn("Cannot save invalid page");
@@ -897,6 +873,7 @@ public class CmsBean implements Serializable {
         logger.trace("reset item data");
         selectedPage.resetItemData();
         writeCategoriesToPage();
+        setSidebarElementOrder(selectedPage);
 
         // Save
         boolean success = false;
@@ -937,6 +914,12 @@ public class CmsBean implements Serializable {
         logger.trace("Done saving page");
     }
 
+    private void setSidebarElementOrder(CMSPage page) {
+        for (int i = 0; i < page.getSidebarElements().size(); i++) {
+            page.getSidebarElements().get(i).setOrder(i);
+        }
+    }
+
     /**
      * This is kind of a hack to avoid a ConcurrentModificationException when persisting page after changing categories. The exception is probably
      * caused by the categories taken from License object, since it only occurs if the categories are actually taken from Licenses due to limited
@@ -971,23 +954,6 @@ public class CmsBean implements Serializable {
 
     /**
      * <p>
-     * validateSidebarElement.
-     * </p>
-     *
-     * @param element a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
-     * @return a boolean.
-     */
-    public static boolean validateSidebarElement(CMSSidebarElement element) {
-        if (element != null && !element.isValid()) {
-            String msg = ViewerResourceBundle.getTranslation("cms_validationWarningHtmlInvalid", null);
-            Messages.error(msg.replace("{0}", element.getType()).replace("{1}", CMSSidebarManager.getInstance().getDisallowedHtmlTagsForDisplay()));
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * <p>
      * validatePage.
      * </p>
      *
@@ -996,15 +962,6 @@ public class CmsBean implements Serializable {
      * @return a boolean.
      */
     protected static boolean validatePage(CMSPage page, String defaultLanguage) {
-
-        if (!page.isUseDefaultSidebar()) {
-            for (CMSSidebarElement element : page.getSidebarElements()) {
-                if (!validateSidebarElement(element)) {
-                    page.setPublished(false);
-                    return false;
-                }
-            }
-        }
 
         for (CMSPageLanguageVersion languageVersion : page.getLanguageVersions()) {
             boolean languageIncomplete = false;
@@ -1221,9 +1178,6 @@ public class CmsBean implements Serializable {
             //                }
             PageValidityStatus validityStatus = isPageValid(this.selectedPage);
             this.selectedPage.setValidityStatus(validityStatus);
-            if (validityStatus.isValid()) {
-                this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
-            }
             this.selectedPage.createMissingLanguageVersions(getAllLocales());
             logger.debug("Selected page: {}", currentPage);
         } else {
@@ -1360,10 +1314,6 @@ public class CmsBean implements Serializable {
      * @param selectedLocale a {@link java.util.Locale} object.
      */
     public void setSelectedLocale(Locale selectedLocale) {
-        if (this.selectedLocale == null) {
-            // currently in sidebar view: save before leaving
-            selectedPage.saveSidebarElements();
-        }
         this.selectedLocale = selectedLocale;
 
     }
@@ -1910,61 +1860,6 @@ public class CmsBean implements Serializable {
      */
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>selectedSidebarElement</code>.
-     * </p>
-     *
-     * @return a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
-     */
-    public CMSSidebarElement getSelectedSidebarElement() {
-        if (selectedSidebarElement == null) {
-            createSidebarElement();
-        }
-        return selectedSidebarElement;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>selectedSidebarElement</code>.
-     * </p>
-     *
-     * @param selectedSidebarElement a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
-     */
-    public void setSelectedSidebarElement(CMSSidebarElement selectedSidebarElement) {
-        this.selectedSidebarElement = selectedSidebarElement;
-    }
-
-    /**
-     * <p>
-     * createSidebarElement.
-     * </p>
-     */
-    public void createSidebarElement() {
-        this.selectedSidebarElement = new CMSSidebarElement();
-        this.selectedSidebarElement.setType("");
-        this.selectedSidebarElement.setHtml("");
-        // if(getSelectedPage() != null) {
-        // getSelectedPage().saveSidebarElements();
-        // }
-    }
-
-    /**
-     * <p>
-     * saveSidebarElement.
-     * </p>
-     */
-    public void saveSidebarElement() {
-        getSelectedPage().saveSidebarElements();
-        if (this.selectedSidebarElement == null || this.selectedPage == null) {
-            logger.error("Cannot write sidebar-element " + this.selectedSidebarElement + " to page " + this.selectedPage);
-        } else {
-            validateSidebarElement(this.selectedSidebarElement);
-            this.selectedPage.addSidebarElement(this.selectedSidebarElement);
-            this.selectedSidebarElement = null;
-        }
     }
 
     /**

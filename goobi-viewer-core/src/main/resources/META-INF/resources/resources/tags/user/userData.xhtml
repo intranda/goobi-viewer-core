@@ -8,7 +8,7 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-	    <h3>#{msg.general}</h3>
+	    <h2>#{msg.general}</h2>
 				<div class="user-settings__form-wrapper">
 
 					<!-- prevent autocomplete in IE, Chrome and Firefox -->
@@ -69,7 +69,7 @@
 								</button>
 							</div>
 							<script>
-							
+
 							function confirmEmailChange(e) {
 							    if(#{confirmEmailChange}) {
 							    	if(e.status == 'begin') {
@@ -80,7 +80,7 @@
 								    }
 							    }
 							}
-							
+
 							</script>
 						</h:panelGroup>
 
@@ -125,7 +125,7 @@
 
 				<!-- PASSWORD NEW USER -->
 				<ui:fragment rendered="#{user.id == null}">
-					<h3>#{msg.password}</h3>
+					<h2>#{msg.password}</h2>
 					<div class="user-settings__form-wrapper">
 						<p>#{msg.admin__user_create_password_info_text}</p>
 						<div class="form-horizontal" role="form">
@@ -158,7 +158,7 @@
 				<!-- PASSWORD CHANGE FOR EXISTING USER -->
 				<ui:fragment
 					rendered="#{user.id != null and !user.anonymous}">
-					<h3>#{msg.changePassword}</h3>
+					<h2>#{msg.changePassword}</h2>
 					<div class="user-settings__form-wrapper">
 						<p>#{msg.admin__user_password_info_text}</p>
 						<div class="form-horizontal" role="form">

@@ -67,7 +67,7 @@ public class LoginFilter implements Filter {
 
         if (httpRequest.getSession().getAttribute(SearchHelper.PARAM_NAME_FILTER_QUERY_SUFFIX) == null) {
             try {
-                SearchHelper.updateFilterQuerySuffix(httpRequest);
+                SearchHelper.updateFilterQuerySuffix(httpRequest, null);
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 //                httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());

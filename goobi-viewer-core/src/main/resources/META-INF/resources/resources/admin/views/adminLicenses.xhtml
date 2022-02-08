@@ -22,7 +22,7 @@
                 <h:panelGroup rendered="#{userBean.admin and navigationHelper.solrIndexOnline}">
                     <!-- TITLE -->
                     <div class="admin__title-bar">
-                        <h2 class="admin__title">#{msg.admin__licenses}</h2>
+                        <h1 class="admin__title">#{msg.admin__licenses}</h1>
                     </div>
                     <div class="admin__content-inner-content">
                         <h:form id="adminLicenseTypesForm" prependId="false">
@@ -35,7 +35,7 @@
                             <ui:fragment rendered="#{not empty adminBean.notConfiguredAccessConditions}">
                                 <div class="admin__default-block mb-5 -danger">
                                     <div class="row">
-                                        <h3 class="col-12">#{msg.admin__licenses_not_configured_licenses}</h3>
+                                        <h2 class="col-12">#{msg.admin__licenses_not_configured_licenses}</h2>
                                     </div>
                                     <ui:repeat var="accessCondition" value="#{adminBean.notConfiguredAccessConditions}">
                                         <h:commandLink action="pretty:adminLicenseNew"
@@ -59,7 +59,7 @@
 	                                    <div class="overflow-hidden">
 	                                        <!-- NAME -->
 	                                        <div class="row">
-	                                            <h3 class="col-12">#{msg[licenseType.name]}</h3>
+	                                            <h2 class="col-12">#{msg[licenseType.name]}</h2>
 	                                        </div>
 	                                        <!-- DESCRIPTION + OPEN ACCESS + MOVING WALL + PDF QUOTA AND CONCURRENT VIEW NOTICE -->
                                         	<div class="row admin__boxed-entry-description">

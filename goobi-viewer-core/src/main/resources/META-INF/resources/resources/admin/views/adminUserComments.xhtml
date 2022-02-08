@@ -20,7 +20,7 @@
                 <h:form id="adminUserCommentsForm" prependId="false">
                     <div class="admin__title-bar">
                         <!-- TITLE -->
-                        <h2 class="admin__title">#{msg.admin__comments}</h2>
+                        <h1 class="admin__title">#{msg.admin__comments}</h1>
                     </div>
 
                     <div class="admin__content-inner-content">
@@ -108,6 +108,12 @@
                 viewerJS.dataTable.init( dataTableConfig );
 
             } );
+            
+            // Create no entries found message
+			if($('.admin__table-entry').length == 0) {
+				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+			}    
+
         </script>
 
     </ui:define>

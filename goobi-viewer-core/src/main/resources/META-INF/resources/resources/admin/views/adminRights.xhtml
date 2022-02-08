@@ -23,7 +23,7 @@
                     <h:form id="adminLicensesForm" prependId="false">
                         <div class="admin__title-bar">
                             <!-- TITLE -->
-                            <h2 class="admin__title">#{msg.admin__rights}</h2>
+                            <h1 class="admin__title">#{msg.admin__rights}</h1>
                             <a href="#{navigationHelper.getPageUrl('adminRightsNew')}/" class="btn btn--default admin__title-bar-action">#{msg.add}</a>
                         </div>
 
@@ -40,13 +40,13 @@
 	                                        <!-- NAME -->
 	                                        <div class="row">
 	                                            <ui:fragment rendered="#{license.user != null}">
-	                                                <h3 class="col-12"><i class="fa fa-user" aria-hidden="true"></i> #{license.user.displayName}</h3>
+	                                                <h2 class="col-12"><i class="fa fa-user" aria-hidden="true"></i> #{license.user.displayName}</h2>
 	                                            </ui:fragment>
 	                                            <ui:fragment rendered="#{license.userGroup != null}">
-	                                                <h3 class="col-12"><i class="fa fa-users" aria-hidden="true"></i> #{license.userGroup.name}</h3>
+	                                                <h2 class="col-12"><i class="fa fa-users" aria-hidden="true"></i> #{license.userGroup.name}</h2>
 	                                            </ui:fragment>
 	                                            <ui:fragment rendered="#{license.ipRange != null}">
-	                                                <h3 class="col-12"><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.name} (#{license.ipRange.subnetMask})</h3>
+	                                                <h2 class="col-12"><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.name} (#{license.ipRange.subnetMask})</h2>
 	                                            </ui:fragment>
 	                                        </div>
 	                                        <!-- DATA -->

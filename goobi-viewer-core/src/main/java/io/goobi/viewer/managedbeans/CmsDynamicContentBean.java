@@ -16,6 +16,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.faces.component.html.HtmlPanelGroup;
@@ -77,8 +78,10 @@ public class CmsDynamicContentBean implements Serializable{
             throw new IllegalStateException("CMSPage must be set before loading content");
         } else if(this.cmsPage.getTopBarSlider() != null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
-            DynamicContent slider = builder.createContent("topBarSlider", DynamicContentType.SLIDER, Long.toString(cmsPage.getTopBarSlider().getId()));
-            builder.build(slider, this.topBarGroup);
+            DynamicContent slider = builder.createContent("topBarSlider", DynamicContentType.SLIDER, Map.of("sliderId", cmsPage.getTopBarSlider().getId()));
+            if(builder.build(slider, this.topBarGroup) == null) {
+                logger.error("Error building slider compoenent from slider " + cmsPage.getTopBarSlider().getId());
+            }
         }
         
 

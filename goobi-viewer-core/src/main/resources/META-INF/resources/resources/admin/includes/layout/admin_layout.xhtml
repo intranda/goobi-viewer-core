@@ -115,9 +115,9 @@
         <!-- SIDEBAR -->
         <aside id="adminSidebar" class="admin__sidebar" aria-label="Admin sidebar">
             <div class="admin__sidebar-inner -refreshHCsticky">
-                 <h1>
-                        <a href="#{request.contextPath}/admin/"><span>Goobi viewer</span></a>
-                </h1>
+              <div class="admin__sidebar-inner__title">
+            	  <a href="#{request.contextPath}/admin/">Goobi viewer</a>
+              </div>
 
                 <!-- DASHBOARD -->
                 <ui:fragment
@@ -150,7 +150,7 @@
 
         <!-- CONTENT -->
         <main id="adminContent" class="admin__content">
-            <div class="admin__content-inner">
+            <div class="admin__content-inner -h100">
                 <ui:insert name="content" />
             </div>
         </main>

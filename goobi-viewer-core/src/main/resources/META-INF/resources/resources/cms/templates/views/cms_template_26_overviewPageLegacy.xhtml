@@ -117,7 +117,7 @@
                 <!-- DESCRIPTION -->
                 <div class="tpl-overviewpage-legacy__description">
                     <div class="tpl-overviewpage-legacy__description-title">
-                        <h3>#{msg.viewOverviewDescription}</h3>
+                        <h1 >>#{msg.viewOverviewDescription}</h1>
                     </div>
 
                     <div class="tpl-overviewpage-legacy__description-text">
@@ -128,7 +128,7 @@
                 <!-- LITERATURE -->
                 <div class="tpl-overviewpage-legacy__literature">
                     <div class="tpl-overviewpage-legacy__literature-title">
-                        <h3>#{msg.viewOverviewPublication_publication}</h3>
+                        <h1 >>#{msg.viewOverviewPublication_publication}</h1>
                     </div>
 
                     <div class="tpl-overviewpage-legacy__literature-text">
@@ -139,7 +139,7 @@
                 <!-- HISTORY -->
                 <ui:fragment rendered="#{userBean.admin}">
                     <div class="tpl-overviewpage-legacy__history">
-                        <h3>#{msg.viewOverviewHistory_heading}</h3>
+                        <h1 >>#{msg.viewOverviewHistory_heading}</h1>
                         <h:outputText escape="false" value="#{cmsPage.getContent('history')}"></h:outputText>
                     </div>
                 </ui:fragment>

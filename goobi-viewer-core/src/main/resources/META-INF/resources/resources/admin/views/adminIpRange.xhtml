@@ -18,14 +18,14 @@
             <div id="adminIpRange">
                 <h:panelGroup rendered="#{userBean.admin == true and adminBean.currentIpRange != null}">
                     <div class="admin__title-bar">
-                        <h2 class="admin__title">
+                        <h1 class="admin__title">
                             <h:outputText value="#{msg.admin__ip_range_new}" rendered="#{adminBean.currentIpRange.id == null}" />
                             <h:outputText value="#{msg.admin__ip_range_edit}" rendered="#{adminBean.currentIpRange.id != null}" />
-                        </h2>
+                        </h1>
                     </div>
                     <div class="admin__content-inner-content" role="form">
                         <h:form id="editIpRangeGeneralForm" styleClass="form-horizontal" prependId="false">
-                            <h3>#{msg.general}</h3>
+                            <h2>#{msg.general}</h2>
                             <div class="admin__default-block">
                                 <fieldset>
                                     <div class="form-group form-row">

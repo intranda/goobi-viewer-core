@@ -1,6 +1,6 @@
 <collectionView>
 	<div each="{set, index in collectionSets}">
-		<h3 if="{set[0] != ''}">{translator.translate(set[0])}</h3>
+		<h2 if="{set[0] != ''}">{translator.translate(set[0])}</h2>
 		<collectionList collections="{set[1]}" language="{opts.language}" defaultlanguage="{opts.defaultlanguage}" setindex="{index}"/>
 	</div>
 

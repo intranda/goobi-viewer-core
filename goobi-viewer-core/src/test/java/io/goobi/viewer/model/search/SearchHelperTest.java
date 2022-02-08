@@ -51,6 +51,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
 import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
@@ -204,7 +205,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectly() throws Exception {
-        String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null);
+        String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null, null);
         Assert.assertEquals(
                 " +(ACCESSCONDITION:\"OPENACCESS\""
                         + " ACCESSCONDITION:\"license type 2 name\""
@@ -219,7 +220,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfUserHasLicensePrivilege() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
-        String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null);
+        String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null, null);
         // User has listing privilege for 'license type 1 name'
         Assert.assertTrue(suffix.contains("(+ACCESSCONDITION:\"license type 1 name\" +(-YEAR:[* TO 3000]))"));
     }
@@ -231,7 +232,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfUserHasOverridingLicensePrivilege() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
-        String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null);
+        String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null, null);
         Assert.assertTrue(!suffix.contains("license type 4 name"));
     }
 
@@ -243,12 +244,12 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfIpRangeHasLicensePrivilege() throws Exception {
         {
             // Localhost with full access enabled
-            String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "127.0.0.1");
+            String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "127.0.0.1", null);
             Assert.assertEquals("", suffix);
         }
         {
             // Regular IP address (has listing privilege for 'license type 3 name')
-            String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "1.2.3.4");
+            String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "1.2.3.4", null);
             Assert.assertTrue(suffix.contains(
                     "+ACCESSCONDITION:\"restriction on access\" +(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "]))"));
         }
@@ -260,10 +261,24 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfMovingWallLicense() throws Exception {
-        String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null);
+        String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null, null);
         // Moving wall license with negated filter query
         Assert.assertTrue(suffix.contains(
                 "(+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "]))"));
+    }
+
+    /**
+     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String,String)
+     * @verifies construct suffix correctly for alternate privilege
+     */
+    @Test
+    public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyForAlternatePrivilege() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(2);
+        // User has metadata download privilege for 'license type 3 name', but not listing
+        Assert.assertFalse(SearchHelper.getPersonalFilterQuerySuffix(user, null, null)
+                .contains("ACCESSCONDITION:\"license type 3 name\""));
+        Assert.assertTrue(SearchHelper.getPersonalFilterQuerySuffix(user, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA)
+                .contains("ACCESSCONDITION:\"license type 3 name\""));
     }
 
     /**

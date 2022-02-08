@@ -36,10 +36,10 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
-import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -1381,17 +1381,6 @@ public interface IDAO {
 
     /**
      * <p>
-     * getCMSSidebarElement.
-     * </p>
-     *
-     * @param id a long.
-     * @return a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public CMSSidebarElement getCMSSidebarElement(long id) throws DAOException;
-
-    /**
-     * <p>
      * getAllCMSMediaItems.
      * </p>
      *
@@ -2198,6 +2187,15 @@ public interface IDAO {
      * @throws DAOException
      */
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException;
+    
+    /**
+     * Return a list of CMS-pages embedding the given map in a sidebar widget
+     * 
+     * @param map
+     * @return
+     * @throws DAOException
+     */
+    public List<CMSPage> getPagesUsingMapInSidebar(GeoMap map) throws DAOException;
 
     /**
      * @param subtheme
@@ -2320,7 +2318,7 @@ public interface IDAO {
      * @return
      * @throws DAOException
      */
-    List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, String filterString,
+    public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, String filterString,
             Map<String, Object> filterParams) throws DAOException;
 
     /**
@@ -2328,18 +2326,30 @@ public interface IDAO {
      * @return
      * @throws DAOException 
      */
-    List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String commenting) throws DAOException;
+    public List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String commenting) throws DAOException;
 
     /**
      * @return
      * @throws DAOException
      */
-    List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean sortDescending) throws DAOException;
+    public List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean sortDescending) throws DAOException;
 
     /**
      * @return
      * @throws DAOException
      */
-    long getTotalAnnotationCount() throws DAOException;
+    public long getTotalAnnotationCount() throws DAOException;
+    
+    public List<CustomSidebarWidget> getAllCustomWidgets() throws DAOException;
+    
+    public CustomSidebarWidget getCustomWidget(Long id) throws DAOException;
+    
+    public boolean addCustomWidget(CustomSidebarWidget widget) throws DAOException;
+    
+    public boolean updateCustomWidget(CustomSidebarWidget widget) throws DAOException;
+    
+    public boolean deleteCustomWidget(Long id) throws DAOException;
+    
+    public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException;
 
 }

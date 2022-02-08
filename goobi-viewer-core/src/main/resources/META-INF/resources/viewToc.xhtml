@@ -71,7 +71,7 @@
                                         <ui:repeat var="tocElement" value="#{activeDocumentBean.toc.getTreeViewForGroup(group)}">
                                             <div class="toc__mv-element level-#{tocElement.level}">
                                                 <h:panelGroup rendered="#{tocElement.pageNo == null}">
-                                                    <h4>#{tocElement.label}</h4>
+                                                    <h4 >>#{tocElement.label}</h4>
                                                 </h:panelGroup>
 
                                                 <div class="row">
@@ -116,7 +116,7 @@
     									<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.flatView}">
     										<div class="toc__mv-element level-#{tocElement.level}">
         										<h:panelGroup rendered="#{tocElement.pageNo == null}">
-        											<h4>#{tocElement.label}</h4>
+        											<h4 >>#{tocElement.label}</h4>
         										</h:panelGroup>
 
     											<div class="row">
@@ -393,7 +393,7 @@
                 };
 
                 viewerJS.downloadModal.init( downloadModalConfig );
-                
+
                 var normdataConfig = {
                     path: "#{request.contextPath}",
                     lang: {

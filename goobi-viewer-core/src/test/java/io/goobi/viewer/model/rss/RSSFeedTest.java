@@ -32,7 +32,7 @@ public class RSSFeedTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void createRss_shouldProduceFeedCorrectly() throws Exception {
-        SyndFeed feed = RSSFeed.createRss("https://example.com", "PI:*", null, "en", 10);
+        SyndFeed feed = RSSFeed.createRss("https://example.com", "PI:*", null, "en", 10, null, true);
         Assert.assertNotNull(feed);
         Assert.assertEquals(10, feed.getEntries().size());
         // TODO in-detail assertions
@@ -44,7 +44,7 @@ public class RSSFeedTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void createRssFeed_shouldProduceFeedCorrectly() throws Exception {
-        Channel channel = RSSFeed.createRssFeed("https://example.com", "PI:*", null,10, "en");
+        Channel channel = RSSFeed.createRssFeed("https://example.com", "PI:*", null,10, "en", null, true);
         Assert.assertNotNull(channel);
         Assert.assertEquals(10, channel.getItems().size());
         // TODO in-detail assertions

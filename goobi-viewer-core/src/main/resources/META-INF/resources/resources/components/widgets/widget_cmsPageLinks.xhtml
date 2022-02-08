@@ -5,20 +5,20 @@
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
 	<composite:interface>
-			<composite:attribute name="widget" type="io.goobi.viewer.model.cms.CMSSidebarElement" required="true" />
+    	<composite:attribute name="widget" type="io.goobi.viewer.model.cms.widget.CustomSidebarWidget" required="true" />
 	</composite:interface>
 
     <composite:implementation>
-        <h:panelGroup class="cms-page-links" rendered="#{cc.attrs.widget != null and cc.attrs.widget.type == 'widgetCmsPageLinks'}">
+        <h:panelGroup class="cms-page-links" rendered="#{cc.attrs.widget.type == 'WIDGET_CMSPAGES'}">
     	   <h:form id="customDrillDownForm" prependId="false">
-				<div id="widgetCmsPageLinks-#{cc.attrs.widget.order}" class="widget #{cc.attrs.widget.cssClass}">
-					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD'}">
-						<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
-							<h3>#{msg[cc.attrs.widget.widgetTitle]}</h3>
+				<div id="widgetCmsPageLinks-#{cc.attrs.widget.id}" class="widget #{cc.attrs.widget.styleClass}">
+					<h:panelGroup rendered="#{!cc.attrs.widget.collapsed}">
+						<ui:fragment rendered="#{!cc.attrs.widget.title.isEmpty()}">
+							<h2>#{cc.attrs.widget.title.textOrDefault}</h2>
 						</ui:fragment>
 
 						<ul>
-							<ui:repeat value="#{cc.attrs.widget.linkedPages.pages}" var="pageId">
+							<ui:repeat value="#{cc.attrs.widget.pageList.pages}" var="pageId">
 								<li class="#{cmsBean.currentPage.id != null and cmsBean.currentPage.id.toString().equals(pageId) ? 'active': ''}">
 									<a href="#{cmsBean.getPageUrl(pageId)}">
 										#{cmsBean.getPage(pageId).menuTitle}
@@ -27,31 +27,27 @@
 							</ui:repeat>
 						</ul>
 					</h:panelGroup>
-					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
-						<h3>
-							<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
-								#{msg[cc.attrs.widget.widgetTitle]}
+					<h:panelGroup rendered="#{cc.attrs.widget.collapsed}">
+						<h2>
+							<ui:fragment rendered="#{!cc.attrs.widget.title.isEmpty()}">
+								#{cc.attrs.widget.title.textOrDefault}
 							</ui:fragment>
-							<ui:fragment rendered="#{!cc.attrs.widget.hasWidgetTitle}">						
-								#{msg[cc.attrs.widget.type]}
-							</ui:fragment>
-                            <a href="#customCollapse-#{cc.attrs.widget.order}" data-toggle="collapse" aria-expanded="false" aria-controls="customCollapse">
-                                #{msg[cc.attrs.widget.type]}
+                            <a href="#customCollapse-#{cc.attrs.widget.id}" data-toggle="collapse" aria-expanded="false" aria-controls="customCollapse">
+                                #{cc.attrs.widget.title.textOrDefault}
                                 <i class="fa fa-arrow-down" aria-hidden="true"></i>
                             </a>
-                        </h3>
+                        </h2>
 
-						<ul>
-							<ui:repeat value="#{cc.attrs.widget.linkedPages}" var="pageId">
-								<li class="#{cmsBean.currentPage.id != null and cmsBean.currentPage.id.equals(pageId)}">
-									<a href="">
-										#{msg[pageId]}
-									</a>
-								</li>
-							</ui:repeat>
-						</ul>
-						<div id="customCollapse-#{cc.attrs.widget.order}" class="collapse">
-							<h:outputText escape="false" value="#{cc.attrs.widget.html}"></h:outputText>
+						<div id="customCollapse-#{cc.attrs.widget.id}" class="collapse">
+							<ul>
+								<ui:repeat value="#{cc.attrs.widget.pageList}" var="pageId">
+									<li class="#{cmsBean.currentPage.id != null and cmsBean.currentPage.id.equals(pageId)}">
+										<a href="#{cmsBean.getPageUrl(pageId)}">
+											#{cmsBean.getPage(pageId).menuTitle}
+										</a>
+									</li>
+								</ui:repeat>
+							</ul>
 						</div>
 					</h:panelGroup>
 				</div>
