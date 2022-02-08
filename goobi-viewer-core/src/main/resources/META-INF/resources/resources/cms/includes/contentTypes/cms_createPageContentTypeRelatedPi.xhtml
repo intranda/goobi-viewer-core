@@ -30,7 +30,7 @@
                 <!-- INPUT TEXT -->
                 <h:inputText id="relatedPiInput" value="#{cmsBean.selectedPage.relatedPI}" styleClass="form-control">
                     <f:validator validatorId="relatedPiValidator" for="relatedPiInput" />
-                    <f:ajax event="blur" render="relatedPiInputGroup,useAsDefaultRecordViewGroup" />
+                    <f:ajax event="blur" render="relatedPiInputGroup useAsDefaultRecordViewGroup" />
                 </h:inputText>
             </h:panelGroup>
             
@@ -70,8 +70,7 @@
                 <h:selectBooleanCheckbox 
                     id="useAsDefaultRecordView" 
                     value="#{cmsBean.selectedPage.useAsDefaultRecordView}" 
-                    disabled="#{StringUtils.isBlank(selectedPage.relatedPI)}"
-                    onclick="cmsJS.createPage.disablePreview();" />
+                    disabled="#{empty cmsBean.selectedPage.relatedPI}" />
             </h:panelGroup>
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext inline">#{msg.cms_page_use_as_default_record_view_help}</span>
