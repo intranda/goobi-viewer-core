@@ -68,15 +68,15 @@ var viewerJS = ( function( viewer ) {
         this.$links.hide();
         
         //fullscreen controls
-        let $panels = $(".fullscreen__view-sidebar-accordeon-panel h2");
+        let $panels = $(".fullscreen__view-sidebar-accordeon-panel h3");
         $panels.on("click", (e) => {
-            let $panel = $(e.target).closest(".fullscreen__view-sidebar-accordeon-panel h2");
+            let $panel = $(e.target).closest(".fullscreen__view-sidebar-accordeon-panel h3");
             this.toggleImageShare($panel);
         });
         $(".share-image-area [data-popover='close']").on("click", (e) => {
             this.endFragmentSelect();
-            $(e.target).closest(".fullscreen__view-sidebar-accordeon-panel").find("h2").click();
-            $(e.target).closest(".fullscreen__view-sidebar-accordeon-panel").find("h2").focus();
+            $(e.target).closest(".fullscreen__view-sidebar-accordeon-panel").find("h3").click();
+            $(e.target).closest(".fullscreen__view-sidebar-accordeon-panel").find("h3").focus();
         })
         
         // init area select
@@ -94,7 +94,7 @@ var viewerJS = ( function( viewer ) {
         } catch(error) {
             console.error("Error initializing area select: ", error);
         }
-        this.toggleImageShare($(".share-image-area h2"));
+        this.toggleImageShare($(".share-image-area h3"));
         this.$fragmentSelectButton.on("shown.bs.popover", () => this.startFragmentSelect());
         this.$fragmentSelectButton.on("hidden.bs.popover", () => this.endFragmentSelect());
     }
