@@ -2,6 +2,7 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	template="/resources/themes/#{navigationHelper.theme}/template.html"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
@@ -22,7 +23,7 @@
 	</ui:define>
 
 	<ui:define name="content">
-	    <h1 >#{msg.user_mySearches}</h1>
+	    <h1>#{msg.user_mySearches}</h1>
         <div id="mySearches" class="my-searches">
 
             <!-- WARNING IF NO SEARCHES EXISTS -->
@@ -38,6 +39,7 @@
 	                        styleClass="table my-searches__table user-backend-table"
 	                        value="#{userDataBean.getSearches(userBean.user, null)}"
 	                        var="search">
+
 	                        <!-- NAME -->
 	                        <h:column>
 	                            <f:facet name="header">
@@ -46,26 +48,26 @@
 	                            <div>#{search.name}</div>
 	                            <div class="my-searches__table__actions">
 	                            <h:commandLink
-																action="#{searchBean.executeSavedSearchAction(search)}"
-	                              styleClass="my-searches__action">
+									action="#{searchBean.executeSavedSearchAction(search)}"
+									styleClass="my-searches__action">
 	                                <h:outputText value="#{msg.show}" escape="true" />
 	                            </h:commandLink>
 	                            <!-- NEW HITS NOTIFICATION -->
 	                            <ui:fragment rendered="#{search.newHitsNotification}">
-	                                <h:commandLink
-	                                    action="#{search.toggleNotifications}"
-	                                    styleClass="my-searches__action"
+	                                <button
+	                                    jsf:action="#{search.toggleNotifications}"
+	                                    class="my-searches__action"
 	                                    title="#{msg.user_mySearches_disableNotifications}">
 	                                    <i class="fa fa-envelope" aria-hidden="true"></i>
-	                                </h:commandLink>
+									</button>
 	                            </ui:fragment>
 	                            <ui:fragment rendered="#{!search.newHitsNotification}">
-	                                <h:commandLink
-	                                    action="#{search.toggleNotifications}"
-	                                    styleClass="my-searches__action"
+	                                <button
+	                                    jsf:action="#{search.toggleNotifications}"
+	                                    jsf:styleClass="my-searches__action"
 	                                    title="#{msg.user_mySearches_enableNotifications}">
 										#{msg.email}
-	                                </h:commandLink>
+									</button>
 	                            </ui:fragment>
 	                            <!-- DELETE SEARCH BUTTON -->
 	                            <button

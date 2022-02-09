@@ -1,5 +1,5 @@
 // Buttons
-// 
+//
 // Various button styles.
 //
 // Weight: 1
@@ -19,7 +19,7 @@
 //
 // Styleguide Components.button
 .btn {
-	color: @btnDefault; 
+	color: @btnDefault;
 	border-radius: 0;
 	background-color: transparent;
 	&:hover,
@@ -27,24 +27,28 @@
 	&:focus,
 	&:active:focus,
 	&.active,
-	&.active.focus, 
-	&.active:focus, 
-	&.focus, 
+	&.active.focus,
+	&.active:focus,
+	&.focus,
 	&:active.focus {
 		outline: none;
 		box-shadow: none;
 		.fa {
-			color: inherit; 
+			color: inherit;
 		}
 	}
+}
+.btn--trans {
+	background-color: transparent;
+	border: 0;
 }
 
 /* MODIFICATIONS */
 .btn--default {
 	border-color: @btnDefaultBorder;
 	background-color: @btnDefaultBgc;
-	&:hover, 
-	&:active, 
+	&:hover,
+	&:active,
 	&:focus {
 		background-color: @btnDefaultHoverBgc;
 	}
@@ -54,8 +58,8 @@
 	color: @btnSuccess;
 	border-color: @btnSuccessBorder;
 	background-color: @btnSuccessBgc;
-	&:hover, 
-	&:active, 
+	&:hover,
+	&:active,
 	&:focus {
 		color: @btnSuccess;
 		background-color: @btnSuccessHoverBgc;
@@ -66,8 +70,8 @@
 	color: @btnDanger;
 	border-color: @btnDangerBorder;
 	background-color: @btnDangerBgc;
-	&:hover, 
-	&:active, 
+	&:hover,
+	&:active,
 	&:focus {
 		color: @btnDanger;
 		background-color: @btnDangerHoverBgc;
@@ -78,8 +82,8 @@
 	color: @white;
 	border-color: @blue;
 	background-color: @blue;
-	&:hover, 
-	&:active, 
+	&:hover,
+	&:active,
 	&:focus {
 		color: @white;
 		background-color: @btnFullHoverBgc;
@@ -97,8 +101,8 @@
 	padding: 0;
 	color: @blue;
 	border: none;
-	&:hover, 
-	&:active, 
+	&:hover,
+	&:active,
 	&:focus {
 		text-decoration: underline;
 		color: @btnDefault;
@@ -119,8 +123,8 @@
 	font-size: inherit; // !important removed - check themes for changes
 	color: @black;
 	border: none;
-	&:hover, 
-	&:active, 
+	&:hover,
+	&:active,
 	&:focus {
 		color: @black;
 	}
@@ -131,14 +135,14 @@ a.btn--icon {
 }
 
 // BUTTONS MIN-WIDTH
-.btn--full, 
-.btn--default, 
-.btn--danger, 
+.btn--full,
+.btn--default,
+.btn--danger,
 .btn--success {
 	min-width: 100px;
 }
 
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {}
@@ -146,9 +150,9 @@ a.btn--icon {
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
 	// BUTTONS MIN-WIDTH
-	.btn--full, 
-	.btn--default, 
-	.btn--danger, 
+	.btn--full,
+	.btn--default,
+	.btn--danger,
 	.btn--success {
 		min-width: 60px;
 	}

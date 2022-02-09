@@ -40,12 +40,12 @@
 					<facelet:userData user="#{userBean.user.copy}"
 						confirmEmailChange="true" />
 					<div class="row no-gutters justify-content-end admin__final-actions">
-						<h:commandLink id="cancelNewUserCreationButton"
+						 id="cancelNewUserCreationButton"
 							styleClass="btn admin__cancel-button" value="#{msg.cancel}"
 							action="#{adminBean.resetUserAction(userBean.user, '')}"
 							immediate="true">
 						</h:commandLink>
-						<h:commandLink id="saveNewUserCreationButton"
+						 id="saveNewUserCreationButton"
 							styleClass="btn btn--success" value="TESTESTT#{msg.save}"
 							action="#{adminBean.saveUserAction(userBean.user.copy, '')}">
 						</h:commandLink>

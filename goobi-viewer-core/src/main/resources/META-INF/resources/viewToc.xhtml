@@ -1,6 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -169,22 +170,28 @@
 								<div class="toc__list-expandable-all clearfix">
 									<ul>
 										<li>
-											<h:commandLink action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
+											<button 
+												type="button"
+												class="btn btn--link"
+												jsf:action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
 												<i class="fa fa-minus-square-o" aria-hidden="true"></i>
 												<f:passThroughAttribute name="data-toggle" value="tooltip" />
 												<f:passThroughAttribute name="data-placement" value="top" />
 												<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
 												<f:ajax render="tocForm" />
-											</h:commandLink>
+											</button>
 										</li>
 										<li>
-											<h:commandLink action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
+											<button 
+												type="button"
+												class="btn btn--link"
+												jsf:action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
 												<i class="fa fa-plus-square-o" aria-hidden="true"></i>
 												<f:passThroughAttribute name="data-toggle" value="tooltip" />
 												<f:passThroughAttribute name="data-placement" value="top" />
 												<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
 												<f:ajax render="tocForm" />
-											</h:commandLink>
+											</button>
 										</li>
 									</ul>
 								</div>
@@ -199,16 +206,22 @@
 															<h:panelGroup rendered="#{tocElement.hasChild}">
 																<!-- EXPAND -->
 																<div class="toc__list-expandable-expand">
-																	<h:commandLink action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{!tocElement.expanded}">
+																	<button 
+																		type="button"
+																		class="btn btn--link"
+																		jsf:action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{!tocElement.expanded}">
 																		<i class="fa fa-plus-square-o" aria-hidden="true"></i>
 																		<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
 																		<f:ajax render="@form" />
-																	</h:commandLink>
-																	<h:commandLink action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.expanded}">
+																	</button>
+																	<button 
+																		type="button"
+																		class="btn btn--link"
+																		jsf:action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.expanded}">
 																		<i class="fa fa-minus-square-o" aria-hidden="true"></i>
 																		<f:passThroughAttribute name="aria-label" value="#{msg.all}" />
 																		<f:ajax render="@form" />
-																	</h:commandLink>
+																	</button>
 																</div>
 															</h:panelGroup>
 														</div>

@@ -49,11 +49,13 @@
 											immediate="true">
 											<f:ajax render="@all"></f:ajax>
 										</h:commandLink>
-										<h:commandLink id="saveNewUserCreationButton"
-											styleClass="btn btn--success" value="#{msg.save}"
-											action="#{adminBean.saveUserAction(adminBean.currentUser.copy, 'pretty:adminUsers')}">
+										<button 
+											id="saveNewUserCreationButton"
+											class="btn btn--success"
+											jsf:action="#{adminBean.saveUserAction(adminBean.currentUser.copy, 'pretty:adminUsers')}">
 											<f:ajax execute="@all" render="@all"></f:ajax>
-										</h:commandLink>
+											#{msg.save}
+										</button>
 									</div>
 								</h:form>
 								<h:form id="deleteUser" styleClass="form-horizontal form-group" role="form" prependId="false">
