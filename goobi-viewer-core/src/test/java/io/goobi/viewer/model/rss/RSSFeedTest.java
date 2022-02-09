@@ -18,14 +18,20 @@ package io.goobi.viewer.model.rss;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.rometools.rome.feed.synd.SyndFeed;
 
-import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 
-public class RSSFeedTest extends AbstractSolrEnabledTest {
-    
+public class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        AbstractDatabaseAndSolrEnabledTest.setUpClass();
+    }
+
     /**
      * @see RSSFeed#createRss(String,String,List,String,int)
      * @verifies produce feed correctly
@@ -44,7 +50,7 @@ public class RSSFeedTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void createRssFeed_shouldProduceFeedCorrectly() throws Exception {
-        Channel channel = RSSFeed.createRssFeed("https://example.com", "PI:*", null,10, "en", null, true);
+        Channel channel = RSSFeed.createRssFeed("https://example.com", "PI:*", null, 10, "en", null, true);
         Assert.assertNotNull(channel);
         Assert.assertEquals(10, channel.getItems().size());
         // TODO in-detail assertions

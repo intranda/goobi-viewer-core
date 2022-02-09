@@ -83,13 +83,15 @@ public class DefaultURLBuilder implements IURLBuilder {
         StringBuilder sb = new StringBuilder();
         String view = pageType.getName();
         // TODO
-        try {
-            CMSPage cmsPage = DataManager.getInstance().getDao().getCMSPageDefaultViewForRecord(pi);
-            if (cmsPage != null) {
-                view = cmsPage.getPageUrl();
+        if (StringUtils.isNotEmpty(pi)) {
+            try {
+                CMSPage cmsPage = DataManager.getInstance().getDao().getCMSPageDefaultViewForRecord(pi);
+                if (cmsPage != null) {
+                    view = cmsPage.getPageUrl();
+                }
+            } catch (DAOException e) {
+                logger.error(e.getMessage());
             }
-        } catch (DAOException e) {
-            logger.error(e.getMessage());
         }
         sb.append(view)
                 .append('/')

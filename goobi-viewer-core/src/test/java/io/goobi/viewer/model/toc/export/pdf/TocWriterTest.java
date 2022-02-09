@@ -23,19 +23,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.model.toc.TOCElement;
 
-public class TocWriterTest extends AbstractTest {
+public class TocWriterTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static final String LOREM =
             "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer";
     private static final Random random = new Random();
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        AbstractDatabaseAndSolrEnabledTest.setUpClass();
+    }
 
     /**
      * @throws java.lang.Exception
@@ -43,13 +48,6 @@ public class TocWriterTest extends AbstractTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test
@@ -77,5 +75,4 @@ public class TocWriterTest extends AbstractTest {
         return new TOCElement(new SimpleMetadataValue(label), pageNo, pageNo, "1234", "LOG_0003", level, "PPNq234", "", true, false, true, "", null,
                 null);
     }
-
 }
