@@ -25,6 +25,8 @@
       button {
         opacity: 0;
         transition: opacity 0.2s ease;
+		background: transparent;
+		border: 0;
         &:focus,
         &:hover,
         &:active {
@@ -133,6 +135,14 @@
       }
     }
   }
+}
+
+// Show actions when using keyboard navigation
+.using-keyboard .my-searches__table__actions {
+	  a,
+	  button {
+		opacity: 1;
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
