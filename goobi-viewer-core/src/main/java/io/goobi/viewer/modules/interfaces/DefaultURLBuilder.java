@@ -85,7 +85,9 @@ public class DefaultURLBuilder implements IURLBuilder {
         // TODO
         try {
             CMSPage cmsPage = DataManager.getInstance().getDao().getCMSPageDefaultViewForRecord(pi);
-            view = cmsPage.getPageUrl();
+            if (cmsPage != null) {
+                view = cmsPage.getPageUrl();
+            }
         } catch (DAOException e) {
             logger.error(e.getMessage());
         }
