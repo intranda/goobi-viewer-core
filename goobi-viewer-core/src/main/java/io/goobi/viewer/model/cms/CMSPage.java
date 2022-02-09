@@ -2078,7 +2078,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
         switch (item.getType()) {
             case MEDIA:
-                return Collections.singletonList(item.getMediaItem().getFilePath().toFile());
+                if (item.getMediaItem() != null) {
+                    return Collections.singletonList(item.getMediaItem().getFilePath().toFile());
+                }
+                logger.warn("No media item attached, cannot export.");
+                return Collections.emptyList();
             case HTML:
             case TEXT:
                 return item.exportHtmlFragment(cmsPageId, outputFolderPath, namingScheme);
