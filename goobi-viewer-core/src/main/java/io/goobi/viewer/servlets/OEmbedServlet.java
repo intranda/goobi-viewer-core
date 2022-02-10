@@ -28,13 +28,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -162,11 +162,15 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
             ret = mapper.writeValueAsString(oembedResponse);
             response.getWriter().write(ret);
             
-        } catch (ClientAbortException | SocketException e) {
-            logger.warn("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
+        } catch (SocketException e) {
+            logger.trace("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            if(GetAction.isClientAbort(e)) {
+                logger.trace("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
+            } else {                
+                logger.error(e.getMessage(), e);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            }
         } catch (ViewerConfigurationException e) {
             logger.error(e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
