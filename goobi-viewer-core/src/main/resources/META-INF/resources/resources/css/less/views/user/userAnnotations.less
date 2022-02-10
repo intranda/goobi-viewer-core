@@ -51,6 +51,12 @@
 			}
 		}
 	}
+	&__table-entry-label {
+		overflow: hidden;
+		.annotation__label {
+			word-wrap: break-word;
+		}
+	}
 	&__table-entry-label-record {
 		display: block;
 		font-weight: bold;
@@ -59,6 +65,18 @@
 	&__table-entry-action-link {
 		opacity: 0;
 		transition: opacity .2s ease;
+	}
+}
+
+// SHOULD BE REWORKED - TEMPORARY SOLUTION
+#myActivity {
+	.user-annotations__table-entry-label {
+ 		.annotation__body__authority dd {
+			padding: 0;
+		}
+		.annotation__body__authority__normdata_list {
+			flex-wrap: wrap;
+		}
 	}
 }
 
