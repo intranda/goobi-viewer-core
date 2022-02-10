@@ -639,12 +639,6 @@
 			<version>${solr.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>tomcat-catalina</artifactId>
-			<version>${tomcat.version}</version>
-            <scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.jboss.weld.servlet</groupId>
 			<artifactId>weld-servlet-shaded</artifactId>
 			<version>${weld-servlet-shaded.version}</version>
