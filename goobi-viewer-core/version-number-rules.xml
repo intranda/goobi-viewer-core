@@ -18,6 +18,7 @@
                 <ignoreVersion>3.0.1</ignoreVersion>
                 <ignoreVersion>3.0.2</ignoreVersion>
                 <ignoreVersion>3.0.3</ignoreVersion>
+                <ignoreVersion>3.0.4</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.glassfish.jaxb">
