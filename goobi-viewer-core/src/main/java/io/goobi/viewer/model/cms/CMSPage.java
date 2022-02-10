@@ -242,6 +242,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         this.parentPageId = original.parentPageId;
         this.mayContainUrlParameters = original.mayContainUrlParameters;
         this.wrapperElementClass = original.wrapperElementClass;
+        this.useAsDefaultRecordView = original.useAsDefaultRecordView;
 
         if (original.properties != null) {
             this.properties = new ArrayList<>(original.properties.size());
@@ -1794,6 +1795,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @return the useAsDefaultRecordView
      */
     public boolean isUseAsDefaultRecordView() {
+        logger.trace("isUseAsDefaultRecordView: {}", useAsDefaultRecordView);
         return useAsDefaultRecordView;
     }
 

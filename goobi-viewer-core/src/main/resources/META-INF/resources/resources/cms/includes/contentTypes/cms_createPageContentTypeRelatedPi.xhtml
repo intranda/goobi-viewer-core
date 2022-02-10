@@ -70,7 +70,8 @@
                 <h:selectBooleanCheckbox 
                     id="useAsDefaultRecordView" 
                     value="#{cmsBean.selectedPage.useAsDefaultRecordView}" 
-                    disabled="#{empty cmsBean.selectedPage.relatedPI}" />
+                    disabled="#{empty cmsBean.selectedPage.relatedPI}"
+                    onclick="cmsJS.createPage.disablePreview();" />
             </h:panelGroup>
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext inline">#{msg.cms_page_use_as_default_record_view_help}</span>
