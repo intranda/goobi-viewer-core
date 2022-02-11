@@ -15,14 +15,13 @@
  */
 package io.goobi.viewer.model.bookmark;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.metadata.MetadataElement;
@@ -31,12 +30,17 @@ import io.goobi.viewer.model.metadata.MetadataElement;
  * @author florian
  *
  */
-public class BookmarkTest extends AbstractSolrEnabledTest{
-    
+public class BookmarkTest extends AbstractDatabaseAndSolrEnabledTest {
+
     private final String TITLE = "Nobiltà pisana osservata";
     private final String PI = "74241";
     private final String LOGID = "LOG_0003";
     private final Integer PAGE = 10;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        AbstractDatabaseAndSolrEnabledTest.setUpClass();
+    }
 
     /**
      * @throws java.lang.Exception
@@ -59,13 +63,13 @@ public class BookmarkTest extends AbstractSolrEnabledTest{
         Bookmark bookmarkWork = new Bookmark(PI, null, TITLE);
         Bookmark bookmarkChapter = new Bookmark(PI, LOGID, TITLE);
         Bookmark bookmarkPage = new Bookmark(PI, null, PAGE);
-        
+
         MetadataElement mdWork = bookmarkWork.getMetadataElement();
         Assert.assertNotNull(mdWork);
-        
+
         MetadataElement mdChapter = bookmarkChapter.getMetadataElement();
         Assert.assertNotNull(mdChapter);
-        
+
         MetadataElement mdPage = bookmarkPage.getMetadataElement();
         Assert.assertNotNull(mdPage);
     }

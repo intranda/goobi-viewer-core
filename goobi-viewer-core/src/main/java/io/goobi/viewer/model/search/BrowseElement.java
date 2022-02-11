@@ -256,7 +256,7 @@ public class BrowseElement implements Serializable {
 
         pi = structElement.getPi();
         if (pi == null) {
-            logger.error("Index document {} has no PI_TOPSTRUCT field. Please re-index.", structElement.getLuceneId());
+            logger.warn("Index document {} has no PI_TOPSTRUCT field. Please re-index.", structElement.getLuceneId());
             return;
         }
         pi = StringTools.intern(pi);

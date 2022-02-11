@@ -72,7 +72,6 @@ import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
-import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -2943,6 +2942,26 @@ public class JPADAO implements IDAO {
         return (long) o;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct result
+     */
+    @Override
+    public CMSPage getCMSPageDefaultViewForRecord(String pi) throws DAOException {
+        if (pi == null) {
+            throw new IllegalArgumentException("pi may not be null");
+        }
+
+        preQuery();
+        Query q = getEntityManager()
+                .createQuery("SELECT o FROM CMSPage o WHERE o.relatedPI = :pi AND o.useAsDefaultRecordView = true and o.published = true")
+                .setParameter("pi", pi)
+                .setMaxResults(1);
+
+        return (CMSPage) getSingleResult(q).orElse(null);
+    }
+
     /** {@inheritDoc} */
     @Override
     public CMSPage getCMSPage(long id) throws DAOException {
@@ -4070,23 +4089,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /**
-     * Helper method to get the first result of the given query if any results are returned, or an empty Optional otherwise
-     * 
-     * @throws ClassCastException if the first result cannot be cast to the expected type
-     * @param q the query to perform
-     * @return an Optional containing the first query result, or an empty Optional if no results are present
-     */
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    private static <T> Optional<T> getFirstResult(Query q) throws ClassCastException {
-        List<Object> results = q.getResultList();
-        if (results == null || results.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable((T) results.get(0));
-    }
-
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getCMSCollections(java.lang.String)
      */
@@ -4493,7 +4495,7 @@ public class JPADAO implements IDAO {
      * 
      * @should return correct rows
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unused" })
     @Override
     public List<CrowdsourcingAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException {
         preQuery();
@@ -4668,7 +4670,7 @@ public class JPADAO implements IDAO {
      * 
      * @should return correct rows
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unused" })
     @Override
     public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException {
         preQuery();
@@ -4695,9 +4697,9 @@ public class JPADAO implements IDAO {
 
         }
         q.setParameter("pi", pi);
-        for (Question question : campaign.getQuestions()) {
-
-        }
+        //        for (Question question : campaign.getQuestions()) {
+        //
+        //        }
 
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -4708,7 +4710,7 @@ public class JPADAO implements IDAO {
      * 
      * @should return correct rows
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unused" })
     @Override
     public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException {
         preQuery();
@@ -5388,6 +5390,7 @@ public class JPADAO implements IDAO {
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getConfiguredThemes()
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<ThemeConfiguration> getConfiguredThemes() throws DAOException {
         preQuery();
@@ -5465,6 +5468,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<CustomSidebarWidget> getAllCustomWidgets() throws DAOException {
         preQuery();
@@ -5533,6 +5537,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException {
         preQuery();
