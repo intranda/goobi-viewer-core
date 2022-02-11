@@ -1132,6 +1132,22 @@ public final class SearchHelper {
                 sbPattern.append("\\W+(?:\\w+\\W+){0,").append(proximitySearchDistance).append("}?");
             }
             for (int j = 0; j < searchTermSplit[i].length(); ++j) {
+                // Allow space within term (remnant of line breaks)
+                if (j > 0) {
+                    sbPattern.append("(| )");
+                }
+                sbPattern.append(searchTermSplit[i].charAt(j));
+
+            }
+        }
+        sbPattern.append('|');
+
+        // Reverser order
+        for (int i = searchTermSplit.length - 1; i >= 0; --i) {
+            if (i < searchTermSplit.length - 1) {
+                sbPattern.append("\\W+(?:\\w+\\W+){0,").append(proximitySearchDistance).append("}?");
+            }
+            for (int j = 0; j < searchTermSplit[i].length(); ++j) {
                 if (j > 0) {
                     sbPattern.append("(| )");
                 }
