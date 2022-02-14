@@ -1714,6 +1714,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getCMSPageDefaultViewForRecord(String)
+     * @verifies return correct result
+     */
+    @Test
+    public void getCMSPageDefaultViewForRecord_shouldReturnCorrectResult() throws Exception {
+        CMSPage page = DataManager.getInstance().getDao().getCMSPageDefaultViewForRecord("PI_1");
+        Assert.assertNotNull(page);
+        Assert.assertEquals(Long.valueOf(3), page.getId());
+    }
+
+    /**
      * @see JPADAO#getCMSPage(long)
      * @verifies return correct page
      */
@@ -2905,7 +2916,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
 
     }
-    
+
     @Test
     public void testGenerateNullMotivationFilterQuery() {
         {
@@ -3100,19 +3111,19 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             assertEquals(Long.valueOf(4), comments.get(0).getId());
         }
     }
-    
+
     @Test
     public void testSynchronization() throws DAOException {
-        
+
         ExecutorService executor = Executors.newFixedThreadPool(2);
         IDAO dao = DataManager.getInstance().getDao();
-        
+
         Comment comment = new Comment();
         comment.setBody("Init");
         dao.addComment(comment);
         assertNotNull(comment.getId());
         assertEquals("Init", dao.getComment(comment.getId()).getBody());
-        
+
         FutureTask<Boolean> updateResult = new FutureTask<Boolean>(() -> {
             try {
                 updateComment(dao, comment.getId(), "Changed", 200);
@@ -3120,7 +3131,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
                 fail("Updating interrupted");
             }
         }, true);
-        
+
         FutureTask<Boolean> updateResultFast = new FutureTask<Boolean>(() -> {
             try {
                 updateComment(dao, comment.getId(), "ChangedAgain", 0);
@@ -3128,14 +3139,13 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
                 fail("Updating interrupted");
             }
         }, true);
-        
-        
+
         try {
             executor.execute(updateResult);
             assertEquals("Init", dao.getComment(comment.getId()).getBody());
-//            executor.execute(updateResultFast);
-//            updateResultFast.get(100, TimeUnit.MILLISECONDS);
-//            assertEquals("ChangedAgain", dao.getComment(comment.getId()).getBody());
+            //            executor.execute(updateResultFast);
+            //            updateResultFast.get(100, TimeUnit.MILLISECONDS);
+            //            assertEquals("ChangedAgain", dao.getComment(comment.getId()).getBody());
             updateResult.get(300, TimeUnit.MILLISECONDS);
             assertEquals("Changed", dao.getComment(comment.getId()).getBody());
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -3144,12 +3154,11 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
 
     }
-    
+
     private static void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException {
         dao.startTransaction();
         Thread.sleep(duration);
-        dao.createNativeQuery("UPDATE annotations_comments SET body='"+content+"' WHERE annotation_id=" + id).executeUpdate();
+        dao.createNativeQuery("UPDATE annotations_comments SET body='" + content + "' WHERE annotation_id=" + id).executeUpdate();
         dao.commitTransaction();
     }
-
 }

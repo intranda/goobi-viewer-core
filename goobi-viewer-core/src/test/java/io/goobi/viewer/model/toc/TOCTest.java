@@ -26,16 +26,22 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 
-public class TOCTest extends AbstractTest {
+public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        AbstractDatabaseAndSolrEnabledTest.setUpClass();
+    }
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();    
+        super.setUp();
     }
 
     /**
@@ -104,22 +110,22 @@ public class TOCTest extends AbstractTest {
         toc.setCurrentPage(40);
         Assert.assertEquals(7, toc.getCurrentPage());
     }
-    
+
     @Test
     public void expandToCurrentStruct() {
         TOC toc = new TOC();
-        Map<String, List<TOCElement>> tocElementMap = new HashMap();
-        TOCElement top = new TOCElement(null, "1", null , "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
-        TOCElement child = new TOCElement(null, "1", null , "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
-        TOCElement grandchild = new TOCElement(null, "1", null , "3", "LOG_0003", 2, null, null, false, false, false, null, null, null);
-        TOCElement otherChild = new TOCElement(null, "2", null , "4", "LOG_0004", 1, null, null, false, false, false, null, null, null);
-        TOCElement otherGrandchild = new TOCElement(null, "2", null , "5", "LOG_0005", 2, null, null, false, false, false, null, null, null);
+        Map<String, List<TOCElement>> tocElementMap = new HashMap<>();
+        TOCElement top = new TOCElement(null, "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        TOCElement child = new TOCElement(null, "1", null, "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        TOCElement grandchild = new TOCElement(null, "1", null, "3", "LOG_0003", 2, null, null, false, false, false, null, null, null);
+        TOCElement otherChild = new TOCElement(null, "2", null, "4", "LOG_0004", 1, null, null, false, false, false, null, null, null);
+        TOCElement otherGrandchild = new TOCElement(null, "2", null, "5", "LOG_0005", 2, null, null, false, false, false, null, null, null);
 
         List<TOCElement> list = Arrays.asList(top, child, grandchild, otherChild, otherGrandchild);
         tocElementMap.put(TOC.DEFAULT_GROUP, list);
-        
+
         toc.setTocElementMap(tocElementMap);
-        
+
         toc.buildTree(TOC.DEFAULT_GROUP, 1, 5, 0, null);
         assertTrue(top.isVisible());
         assertTrue(top.isExpanded());
@@ -129,7 +135,7 @@ public class TOCTest extends AbstractTest {
         assertTrue(otherChild.isVisible());
         assertFalse(otherChild.isExpanded());
         assertFalse(otherGrandchild.isVisible());
-        
+
         toc.buildTree(TOC.DEFAULT_GROUP, 1, 5, 0, Long.parseLong(grandchild.getIddoc()));
         assertTrue(top.isVisible());
         assertTrue(top.isExpanded());

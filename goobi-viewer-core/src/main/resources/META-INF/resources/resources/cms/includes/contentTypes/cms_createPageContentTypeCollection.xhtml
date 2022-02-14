@@ -88,7 +88,7 @@
                         id="baseCollection"
                         styleClass="form-control" 
                         value="#{contentItem.baseCollection}"
-                        disabled="#{StringUtils.isBlank(contentItem.collectionField)}">
+                        disabled="#{empty contentItem.collectionField}">
                         <f:selectItems 
                             value="#{contentItem.possibleBaseCollectionList}" 
                             var="field" 
@@ -141,7 +141,7 @@
                         id="ignoreCollection" 
                         styleClass="form-control" 
                         value="#{contentItem.ignoreCollectionsAsList}"
-                        disabled="#{StringUtils.isBlank(contentItem.collectionField)}">
+                        disabled="#{empty contentItem.collectionField}">
                         <f:selectItem  
                             itemLabel="#{msg.cms_itemIgnoreNoCollection}" />
                         <f:selectItems 

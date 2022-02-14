@@ -150,6 +150,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @Column(name = "related_pi", nullable = true)
     private String relatedPI;
 
+    @Column(name = "use_as_default_record_view", nullable = false, columnDefinition = "boolean default false")
+    private boolean useAsDefaultRecordView = false;
+
     @Column(name = "subtheme_discriminator", nullable = true)
     private String subThemeDiscriminatorValue = "";
 
@@ -157,7 +160,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @OrderBy("order")
     @PrivateOwned
     private List<CMSSidebarElement> sidebarElements = new ArrayList<>();
-
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cms_page_cms_categories", joinColumns = @JoinColumn(name = "page_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
@@ -240,6 +242,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         this.parentPageId = original.parentPageId;
         this.mayContainUrlParameters = original.mayContainUrlParameters;
         this.wrapperElementClass = original.wrapperElementClass;
+        this.useAsDefaultRecordView = original.useAsDefaultRecordView;
 
         if (original.properties != null) {
             this.properties = new ArrayList<>(original.properties.size());
@@ -312,7 +315,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
         return id.compareTo(o.getId());
     }
-
 
     /**
      * <p>
@@ -554,7 +556,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     public void moveDownSidebarElement(CMSSidebarElement element) {
         int currentIndex = this.sidebarElements.indexOf(element);
-        if (currentIndex > -1 && currentIndex < this.sidebarElements.size()-1) {
+        if (currentIndex > -1 && currentIndex < this.sidebarElements.size() - 1) {
             int newIndex = currentIndex + 1;
             CMSSidebarElement removed = this.sidebarElements.remove(currentIndex);
             this.sidebarElements.add(newIndex, element);
@@ -1790,6 +1792,21 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * @return the useAsDefaultRecordView
+     */
+    public boolean isUseAsDefaultRecordView() {
+        logger.trace("isUseAsDefaultRecordView: {}", useAsDefaultRecordView);
+        return useAsDefaultRecordView;
+    }
+
+    /**
+     * @param useAsDefaultRecordView the useAsDefaultRecordView to set
+     */
+    public void setUseAsDefaultRecordView(boolean useAsDefaultRecordView) {
+        this.useAsDefaultRecordView = useAsDefaultRecordView;
+    }
+
+    /**
      * <p>
      * getCollection.
      * </p>
@@ -2063,7 +2080,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
         switch (item.getType()) {
             case MEDIA:
-                return Collections.singletonList(item.getMediaItem().getFilePath().toFile());
+                if (item.getMediaItem() != null) {
+                    return Collections.singletonList(item.getMediaItem().getFilePath().toFile());
+                }
+                logger.warn("No media item attached, cannot export.");
+                return Collections.emptyList();
             case HTML:
             case TEXT:
                 return item.exportHtmlFragment(cmsPageId, outputFolderPath, namingScheme);
@@ -2186,7 +2207,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             }
         }
     }
-    
+
     public String getAdminBackendUrl() {
         String prettyId = "adminCmsEditPage";
         return PrettyUrlTools.getAbsolutePageUrl(prettyId, this.getId());
