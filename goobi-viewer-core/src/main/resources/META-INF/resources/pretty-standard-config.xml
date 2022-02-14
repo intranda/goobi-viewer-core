@@ -859,7 +859,7 @@
         <action onPostback="false">#{adminBean.lockTranslation}</action>
     </url-mapping>
 
-		<!-- THEME CONFIGS -->
+	<!-- THEME CONFIGS -->
     <url-mapping id="adminThemes">
         <pattern value="/admin/themes/" />
 		<view-id value="/resources/admin/views/adminThemes.xhtml" />
