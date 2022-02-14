@@ -326,7 +326,7 @@ public class RSSFeed {
                 placeAndTime = new StringBuilder(placeAndTime).append("<br />").toString();
             }
 
-            String recordUrl = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, pageNo, null, pageType);
+            String recordUrl = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, pageNo, null, pageType, true);
 
             String imageUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight);
 
@@ -681,7 +681,7 @@ public class RSSFeed {
     public static String createLink(String rootPath, String pi, int pageNo, PageType pageType) {
         return new StringBuilder().append(rootPath)
                 .append('/')
-                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, pageNo, null, pageType))
+                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, pageNo, null, pageType, true))
                 .toString();
     }
 

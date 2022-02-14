@@ -295,7 +295,7 @@ public class JsonTools {
 
         String url = new StringBuilder().append(rootUrl)
                 .append('/')
-                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, 1, "LOG_0000", pageType))
+                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, 1, "LOG_0000", pageType, true))
                 .toString();
         jsonObj.put("url", url);
 
