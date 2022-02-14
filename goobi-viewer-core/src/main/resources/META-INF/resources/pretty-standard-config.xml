@@ -824,8 +824,16 @@
         <view-id value="/resources/admin/views/adminRight.xhtml" />
         <action onPostback="false">#{adminBean.newCurrentLicenseAction}</action>
     </url-mapping>
-    <url-mapping id="adminUserComments">
+    <url-mapping id="adminUserCommentGroups">
         <pattern value="/admin/comments/" />
+        <view-id value="/resources/admin/views/adminUserCommentGroups.xhtml" />
+    </url-mapping>
+    <url-mapping id="adminUserCommentGroupAll">
+        <pattern value="/admin/comments/all/" />
+        <view-id value="/resources/admin/views/adminUserComments.xhtml" />
+    </url-mapping>
+    <url-mapping id="adminUserCommentGroupNew">
+        <pattern value="/admin/comments/new/" />
         <view-id value="/resources/admin/views/adminUserComments.xhtml" />
     </url-mapping>
     <url-mapping id="adminUserTerms">
