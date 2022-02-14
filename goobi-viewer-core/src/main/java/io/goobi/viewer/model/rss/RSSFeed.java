@@ -131,7 +131,8 @@ public class RSSFeed {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should produce feed correctly
      */
-    public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language, int maxItems, String sortField, boolean sortDescending)
+    public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language, int maxItems, String sortField,
+            boolean sortDescending)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
@@ -165,7 +166,7 @@ public class RSSFeed {
 
         sortField = sortField == null ? SolrConstants.DATECREATED : sortField;
         String sortOrder = sortDescending ? "desc" : "asc";
-        
+
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, 0, maxItems, Collections.singletonList(new StringPair(sortField, sortOrder)), null,
@@ -430,7 +431,8 @@ public class RSSFeed {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should produce feed correctly
      */
-    public static Channel createRssFeed(String rootPath, String query, List<String> filterQueries, int rssFeedItems, String language, String sortField, boolean sortDescending)
+    public static Channel createRssFeed(String rootPath, String query, List<String> filterQueries, int rssFeedItems, String language,
+            String sortField, boolean sortDescending)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         // String feedType = "rss_2.0";
 
@@ -452,9 +454,9 @@ public class RSSFeed {
         feed.setCopyright(DataManager.getInstance().getConfiguration().getRssCopyrightText());
         feed.setPubDate(new Date());
 
-       sortField = sortField == null ? SolrConstants.DATECREATED : sortField;
-       String sortOrder = sortDescending ? "desc" : "asc";
-        
+        sortField = sortField == null ? SolrConstants.DATECREATED : sortField;
+        String sortOrder = sortDescending ? "desc" : "asc";
+
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(sortField, sortOrder)), null,
@@ -677,9 +679,10 @@ public class RSSFeed {
      * @return a {@link java.lang.String} object.
      */
     public static String createLink(String rootPath, String pi, int pageNo, PageType pageType) {
-        StringBuilder link = new StringBuilder();
-        link.append(rootPath).append('/').append(pageType.getName()).append('/').append(pi).append('/').append(pageNo).append('/');
-        return link.toString();
+        return new StringBuilder().append(rootPath)
+                .append('/')
+                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, pageNo, null, pageType))
+                .toString();
     }
 
     /**
