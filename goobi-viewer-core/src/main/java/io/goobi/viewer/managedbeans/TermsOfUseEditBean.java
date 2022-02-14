@@ -39,16 +39,19 @@ import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.Translation;
 
 /**
+ * 
+ * Used to edit terms of use in admin backend. Creates a local copy of the global terms of use object and overwrites the global object on save
+ * 
  * @author florian
  *
  */
-@Named
+@Named("termsOfUseEditBean")
 @ViewScoped
-public class TermsOfUseBean implements Serializable, IPolyglott {
+public class TermsOfUseEditBean implements Serializable, IPolyglott {
 
     private static final long serialVersionUID = -3105025774455196485L;
 
-    private static final Logger logger = LoggerFactory.getLogger(TermsOfUseBean.class);
+    private static final Logger logger = LoggerFactory.getLogger(TermsOfUseEditBean.class);
 
     private TermsOfUse termsOfUse;
     private Locale selectedLocale = BeanUtils.getDefaultLocale();
@@ -158,21 +161,6 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
         Translation desc = termsOfUse.getDescription(locale.getLanguage());
         return (title == null || title.isEmpty()) && (desc == null || desc.isEmpty());
     }
-    
-
-    public String getTitleForDisplay() {
-        return this.termsOfUse.getTitleIfExists(BeanUtils.getLocale().getLanguage())
-                .orElse(this.termsOfUse.getTitleIfExists(BeanUtils.getDefaultLocale().getLanguage())
-                        .orElse(""));
-    }
-
-    public String getDescriptionForDisplay() {
-        return this.termsOfUse.getDescriptionIfExists(BeanUtils.getLocale().getLanguage())
-                .orElse(this.termsOfUse.getDescriptionIfExists(BeanUtils.getDefaultLocale().getLanguage())
-                        .orElse(""));
-    }
-
-
 
 
 }
