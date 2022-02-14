@@ -77,14 +77,13 @@ public class BeanUtils {
      * @return a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public static HttpServletRequest getRequest() {
-
         SessionBean sb = getSessionBean();
         try {
             if (sb != null) {
                 return sb.getRequest();
             }
-        } catch (ContextNotActiveException e) {
-
+        } catch (ContextNotActiveException | IllegalStateException e) {
+            // logger.trace(e.getMessage());
         }
 
         FacesContext context = FacesContext.getCurrentInstance();
@@ -269,6 +268,7 @@ public class BeanUtils {
                 return ret;
             }
         } catch (IllegalStateException e) {
+            //
         }
         // Via FacesContext
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext().getContext() != null) {
@@ -439,9 +439,9 @@ public class BeanUtils {
         Object bean = getBeanByName("sessionBean", SessionBean.class);
         if (bean != null) {
             return (SessionBean) bean;
-        } else {
-            return new SessionBean();
         }
+        
+        return new SessionBean();
     }
 
     /**
@@ -504,10 +504,9 @@ public class BeanUtils {
             Object bean = request.getSession().getAttribute("userBean");
             if (bean != null) {
                 return (UserBean) bean;
-            } else {
-                return (UserBean) findInstanceInSessionAttributes(request, UserBean.class)
-                        .orElse(null);
             }
+            return findInstanceInSessionAttributes(request, UserBean.class)
+                    .orElse(null);
         }
 
         return null;
@@ -519,9 +518,8 @@ public class BeanUtils {
             Object bean = request.getSession().getAttribute(beanName);
             if (bean != null && bean.getClass().equals(clazz)) {
                 return Optional.of(bean).map(o -> (T) o);
-            } else {
-                return findInstanceInSessionAttributes(request, clazz);
             }
+            return findInstanceInSessionAttributes(request, clazz);
         }
 
         return Optional.empty();
