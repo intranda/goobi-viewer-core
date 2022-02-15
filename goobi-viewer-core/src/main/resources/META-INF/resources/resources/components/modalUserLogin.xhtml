@@ -317,17 +317,17 @@
 													</div>
 												</ui:fragment>
 
-												<ui:fragment rendered="#{termsOfUseBean.activated}">
+												<ui:fragment rendered="#{termsOfUseBean.isTermsOfUseActive()}">
 													<div class="form-group form-row no-gutters user-login-modal__terms">
 														<div class="col-12 mb-2 user-login-modal__terms-title">
-															<b>#{termsOfUseBean.getTitleForDisplay()}</b>
+															<b>#{termsOfUseBean.getTitle()}</b>
 														</div>
 														<div class="col-12 mb-1 pr-0">
 														
 														<!-- FAKE TEXTBOX SO HTML CAN BE USED -->
 														
 														<div class="user-login-modal__terms-text">
-															<h:outputText value="#{termsOfUseBean.getDescriptionForDisplay()}" escape="false" />
+															<h:outputText value="#{termsOfUseBean.getDescription()}" escape="false" />
 														</div>
 														
 																

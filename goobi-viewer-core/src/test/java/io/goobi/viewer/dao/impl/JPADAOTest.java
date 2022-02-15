@@ -2790,19 +2790,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(tou);
     }
 
-    @Test
-    public void testIsTermsOfUseActive() throws DAOException {
-        boolean active = DataManager.getInstance().getDao().isTermsOfUseActive();
-        Assert.assertFalse(active);
-    }
 
     @Test
     public void testSaveTermsOfUse() throws DAOException {
-        Assert.assertFalse(DataManager.getInstance().getDao().isTermsOfUseActive());
         TermsOfUse tou = new TermsOfUse();
         tou.setActive(true);
         DataManager.getInstance().getDao().saveTermsOfUse(tou);
-        Assert.assertTrue(DataManager.getInstance().getDao().isTermsOfUseActive());
 
         tou = DataManager.getInstance().getDao().getTermsOfUse();
         Assert.assertTrue(tou.isActive());

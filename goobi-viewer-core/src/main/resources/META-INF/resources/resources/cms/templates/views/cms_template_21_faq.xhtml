@@ -53,7 +53,7 @@
     						<c:forEach var="faqItem" items="#{cmsPage.getContentItem('faqList').nestedPages}" varStatus="status">
                                 <div class="card" id="card-#{faqItem.id}">
     								<div class="card-header" role="tab" id="heading-#{faqItem.id}">
-    									<h1 class="card-title">
+    									<h2 class="card-title">
     										<a 
                                                 href="#collapse-#{faqItem.id}"
                                                 role="button" 
@@ -71,7 +71,7 @@
 												data-collapse-show="#collapse-#{faqItem.id}"
 												aria-label="#{msg.aria__label_faq_direct_link}">
                                             </a>
-    									</h1>
+    									</h2>
     								</div>
     								<div 
                                         role="region"

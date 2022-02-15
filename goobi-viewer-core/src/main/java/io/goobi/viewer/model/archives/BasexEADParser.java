@@ -50,13 +50,12 @@ import org.jdom2.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.monitoring.timer.Time;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -88,20 +87,23 @@ public class BasexEADParser {
      * @throws PresentationException
      * @throws ConfigurationException
      */
-    public BasexEADParser(String basexUrl) throws PresentationException, IndexUnreachableException {
+    public BasexEADParser(String basexUrl, SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
         this.basexUrl = basexUrl;
-        this.associatedRecordMap = getAssociatedRecordPis();
+        this.associatedRecordMap = getAssociatedRecordPis(searchIndex);
     }
 
-    private static Map<String, Entry<String, Boolean>> getAssociatedRecordPis() throws PresentationException, IndexUnreachableException {
-        return DataManager.getInstance()
-                .getSearchIndex()
+    private static Map<String, Entry<String, Boolean>> getAssociatedRecordPis(SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
+        if(searchIndex != null) {
+        return searchIndex
                 .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*",
                         Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI, SolrConstants.BOOL_IMAGEAVAILABLE))
                 .stream()
                 .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)),
                         doc -> new SimpleEntry<String, Boolean>(SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI)),
                                 SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE)))));
+        } else {
+            return Collections.emptyMap();
+        }
     }
 
     /**
@@ -236,7 +238,6 @@ public class BasexEADParser {
      */
     private static ArchiveEntry parseElement(int order, int hierarchy, Element element, List<ArchiveMetadataField> configuredFields,
             Map<String, Entry<String, Boolean>> associatedPIs) {
-        try(Time time = DataManager.getInstance().getTiming().takeTime("parseElement")) {
         if (element == null) {
             throw new IllegalArgumentException("element may not be null");
         }
@@ -343,7 +344,6 @@ public class BasexEADParser {
         }
 
         return entry;
-        }
     }
 
     /**

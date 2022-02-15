@@ -523,7 +523,7 @@ public class IdentifierResolver extends HttpServlet {
         StringBuilder sb = new StringBuilder("/");
         sb.append(DataManager.getInstance()
                 .getUrlBuilder()
-                .buildPageUrl(topstructPi, order, (String) targetDoc.getFieldValue(SolrConstants.LOGID), pageType));
+                .buildPageUrl(topstructPi, order, (String) targetDoc.getFieldValue(SolrConstants.LOGID), pageType, true));
 
         // logger.trace("Resolved to: {}", sb.toString());
         return sb.toString();

@@ -5087,22 +5087,6 @@ public class JPADAO implements IDAO {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#isTermsOfUseActive()
-     */
-    @Override
-    public boolean isTermsOfUseActive() throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT u.active FROM TermsOfUse u");
-        @SuppressWarnings("unchecked")
-        List<Boolean> results = q.getResultList();
-        if (results.isEmpty()) {
-            //If no terms of use object exists, it is inactive
-            return false;
-        }
-        return results.get(0);
-    }
-
-    /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#resetUserAgreementsToTermsOfUse()
      */
     @Override
@@ -5554,4 +5538,5 @@ public class JPADAO implements IDAO {
 
         return pageList;
     }
+
 }

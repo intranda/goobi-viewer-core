@@ -2288,9 +2288,7 @@ public interface IDAO {
     public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException;
 
     public TermsOfUse getTermsOfUse() throws DAOException;
-
-    public boolean isTermsOfUseActive() throws DAOException;
-
+    
     public boolean resetUserAgreementsToTermsOfUse() throws DAOException;
 
     public List<CMSSlider> getAllSliders() throws DAOException;
@@ -2358,5 +2356,6 @@ public interface IDAO {
     public boolean deleteCustomWidget(Long id) throws DAOException;
 
     public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException;
+
 
 }

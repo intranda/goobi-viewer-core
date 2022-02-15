@@ -39,7 +39,7 @@
 							<div class="admin__form-input">
 								<viewerComponent:toggleSwitch
 									name="activateUserTerms"
-									value="#{termsOfUseBean.activated}"
+									value="#{termsOfUseEditBean.activated}"
 									toggleTarget=".admin__user-terms-box-editable"
 								/>
 							</div>
@@ -54,17 +54,17 @@
 
 							<!-- TERMS OF USE LANGUAGE TABS -->
 							<div class="admin__language-tabs">
-								<viewerComponent:localeSelector object="#{termsOfUseBean}"/>
+								<viewerComponent:localeSelector object="#{termsOfUseEditBean}"/>
 							</div>
 
 							<div class="admin__default-block">
 								<div class="tab-content">
 									<!-- LOCALIZE TABS -->
-									<h:panelGroup rendered="#{termsOfUseBean.selectedLocale != null}">
+									<h:panelGroup rendered="#{termsOfUseEditBean.selectedLocale != null}">
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
 												<label for="userTermsTitle">#{msg.title}:
-													<ui:fragment rendered="#{termsOfUseBean.isDefaultLocaleSelected()}">
+													<ui:fragment rendered="#{termsOfUseEditBean.isDefaultLocaleSelected()}">
 														<span class="admin__label-required-field">(#{msg.form__required_field})</span>
 													</ui:fragment>
 												</label>
@@ -78,9 +78,9 @@
                                                      <i class="fa fa-exclamation" aria-hidden="true"></i>
                                                  </div>
 												<h:inputText id="userTermsTitle" styleClass="form-control -validation-input"
-												required="#{termsOfUseBean.isDefaultLocaleSelected()}"
+												required="#{termsOfUseEditBean.isDefaultLocaleSelected()}"
 												requiredMessage="#{msg.info__input_required}"
-													value="#{termsOfUseBean.title}" >
+													value="#{termsOfUseEditBean.title}" >
 												</h:inputText>
 												<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
 											</div>
@@ -91,7 +91,7 @@
 											
 											<div class="col-2 control-label admin__form-label">
 												<label for="userTermsText">#{msg.text}:
-													<ui:fragment rendered="#{termsOfUseBean.isDefaultLocaleSelected()}">
+													<ui:fragment rendered="#{termsOfUseEditBean.isDefaultLocaleSelected()}">
 														<span class="admin__label-required-field">(#{msg.form__required_field})</span>
 													</ui:fragment>
 												</label>
@@ -105,9 +105,9 @@
 								                    </div>
 												<h:inputTextarea id="userTermsText"
 													styleClass="form-control tinyMCE -validation-input"
-													required="#{termsOfUseBean.isDefaultLocaleSelected()}"
+													required="#{termsOfUseEditBean.isDefaultLocaleSelected()}"
 												    requiredMessage="#{msg.info__input_required}"
-													value="#{termsOfUseBean.description}" />
+													value="#{termsOfUseEditBean.description}" />
 												<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
 											</div>
 										</div>
@@ -119,7 +119,7 @@
 							<div
 								class="row no-gutters justify-content-end admin__final-actions">
 								<h:commandButton class="btn btn--success" value="#{msg.save}"
-									action="#{termsOfUseBean.save()}">
+									action="#{termsOfUseEditBean.save()}">
 									<f:ajax render="@form :messages" execute="@form"></f:ajax>
 								</h:commandButton>
 							</div>
@@ -135,7 +135,7 @@
 											<h:commandButton class="btn btn--danger"
 												value="#{msg.admin__terms_of_use__reset__button}"
 												onclick="if ( !confirm( &quot;#{msg.admin__terms_of_use__reset__confirm}&quot; ) ) { return false };"
-												action="#{termsOfUseBean.resetUserAcceptance()}">
+												action="#{termsOfUseEditBean.resetUserAcceptance()}">
 												<f:ajax render="@form :messages"></f:ajax>
 											</h:commandButton>
 										</div>

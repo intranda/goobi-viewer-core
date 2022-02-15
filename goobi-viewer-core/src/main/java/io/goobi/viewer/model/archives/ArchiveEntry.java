@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
@@ -104,6 +105,35 @@ public class ArchiveEntry {
     public ArchiveEntry(Integer order, Integer hierarchy) {
         this.orderNumber = order;
         this.hierarchyLevel = hierarchy;
+    }
+
+    public ArchiveEntry(ArchiveEntry orig, ArchiveEntry parent) {
+        this.parentNode = parent;
+        
+        this.id = orig.id;
+        this.associatedRecordPi = orig.associatedRecordPi;
+        this.containsImage = orig.containsImage;
+        this.valid = orig.valid;
+        this.label = orig.label;
+        this.nodeType = orig.nodeType;
+        this.orderNumber = orig.orderNumber;
+        this.hierarchyLevel = orig.hierarchyLevel;
+        this.descriptionLevel = orig.descriptionLevel;
+        
+        this.subEntryList = orig.subEntryList.stream().map(e -> new ArchiveEntry(e, this)).collect(Collectors.toList());
+        this.accessAndUseAreaList = orig.accessAndUseAreaList; //flat copy, because effectively final
+        this.alliedMaterialsAreaList = orig.alliedMaterialsAreaList; //flat copy, because effectively final
+        this.contentAndStructureAreaAreaList = orig.contentAndStructureAreaAreaList; //flat copy, because effectively final
+        this.contextAreaList = orig.contextAreaList; //flat copy, because effectively final
+        this.descriptionControlAreaList = orig.descriptionControlAreaList; //flat copy, because effectively final
+        this.identityStatementAreaList = orig.identityStatementAreaList; //flat copy, because effectively final
+        this.notesAreaList = orig.notesAreaList; //flat copy, because effectively final
+
+        this.visible = orig.visible;
+        this.expanded = orig.expanded;
+        this.searchHit = orig.searchHit;
+        this.displayChildren = orig.displayChildren;
+        this.displaySearch = orig.displaySearch;
     }
 
     public void addSubEntry(ArchiveEntry other) {
