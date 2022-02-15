@@ -20,12 +20,15 @@ import java.util.Objects;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.modules.interfaces.IURLBuilder;
 
 /**
  * A location on a map. Contains a long/lat points, a label and a link
@@ -35,19 +38,42 @@ import io.goobi.viewer.model.viewer.PageType;
  */
 public class Location {
 
+    private static final Logger logger = LoggerFactory.getLogger(Location.class);
+
     private final IArea area;
     private final String label;
     private final URI uri;
-    
+
+    /**
+     * 
+     * @param area
+     * @param label
+     * @param uri
+     */
     public Location(IArea area, String label, URI uri) {
         this.area = area;
         this.label = label;
         this.uri = uri;
     }
-    
-    public static URI getRecordURI(String pi, PageType pageType) {
+
+    /**
+     * 
+     * @param pi
+     * @param pageType
+     * @param urlBuilder If not null, the URL will be build using the URL builder, otherwise manually
+     * @return
+     */
+    public static URI getRecordURI(String pi, PageType pageType, IURLBuilder urlBuilder) {
+        if (urlBuilder != null) {
+            try {
+                return URI.create(urlBuilder.buildPageUrl(pi, 1, null, pageType, true));
+            } catch (IllegalArgumentException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
         String prettyId = "";
-        switch(pageType) {
+        switch (pageType) {
             case viewMetadata:
                 prettyId = "metadata1";
                 break;
@@ -59,33 +85,33 @@ public class Location {
             default:
                 prettyId = "image1";
         }
-        
+
         URL mappedUrl =
                 PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getMappedURL(pi);
         return URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString());
     }
-    
+
     /**
      * @return the area
      */
     public IArea getArea() {
         return area;
     }
-    
+
     /**
      * @return the label
      */
     public String getLabel() {
         return label;
     }
-    
+
     /**
      * @return the uri
      */
     public URI getLink() {
         return uri;
     }
-    
+
     public String getGeoJson() {
         JSONObject feature = new JSONObject();
         JSONObject geometry = new JSONObject(area.getGeoJson());
@@ -97,22 +123,22 @@ public class Location {
         feature.put("type", "Feature");
         return feature.toString();
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            Location other = (Location)obj;
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            Location other = (Location) obj;
             return StringUtils.equals(this.label, other.label) &&
-                   Objects.equals(this.uri, other.uri) && 
-                   Objects.equals(this.area, other.area);
-        } else {
-            return false;
+                    Objects.equals(this.uri, other.uri) &&
+                    Objects.equals(this.area, other.area);
         }
+
+        return false;
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
