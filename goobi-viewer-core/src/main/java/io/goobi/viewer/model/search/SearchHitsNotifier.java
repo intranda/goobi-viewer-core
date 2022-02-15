@@ -74,9 +74,10 @@ public class SearchHitsNotifier {
 
     /**
      * @param newHits
-     * @param owner
+     * @param searchName
+     * @param address
      */
-    private void sendEmailNotification(List<SearchHit> newHits, String searchName, String address) {
+    private static void sendEmailNotification(List<SearchHit> newHits, String searchName, String address) {
         StringBuilder sb = new StringBuilder();
         sb.append("<table>");
         int count = 0;

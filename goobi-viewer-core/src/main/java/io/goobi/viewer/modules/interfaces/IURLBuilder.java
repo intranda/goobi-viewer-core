@@ -50,6 +50,6 @@ public interface IURLBuilder {
     public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType, boolean topStruct);
     
     public default String buildPageUrl(String pi, int imageNo, String logId, PageType pageType) {
-        return buildPageUrl(pi, imageNo, logId, pageType, true);
+        return buildPageUrl(pi, imageNo, logId, pageType, false);
     }
 }

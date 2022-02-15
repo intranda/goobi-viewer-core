@@ -428,7 +428,7 @@ public class BreadcrumbBean implements Serializable {
                 }
             }
             PageType pageType = PageType.determinePageType(anchorDocument.getDocStructType(), null, true, false, false);
-            String anchorUrl = '/' + DataManager.getInstance().getUrlBuilder().buildPageUrl(anchorDocument.getPi(), 1, null, pageType);
+            String anchorUrl = '/' + DataManager.getInstance().getUrlBuilder().buildPageUrl(anchorDocument.getPi(), 1, null, pageType, true);
             updateBreadcrumbs(new LabeledLink(anchorName, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + anchorUrl, weight++));
         }
         // If volume name is the same as anchor name, add the volume number, otherwise the volume breadcrumb will be rejected as a duplicate

@@ -1399,7 +1399,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      */
     public String getFullscreenImageUrl() throws IndexUnreachableException, DAOException {
-        if (viewManager.isDoublePageMode() && !viewManager.getCurrentPage().isDoubleImage()) {
+        if (viewManager != null && viewManager.isDoublePageMode() && !viewManager.getCurrentPage().isDoubleImage()) {
             Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
             Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
             if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
