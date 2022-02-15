@@ -50,7 +50,7 @@ public class ArchiveManager {
 
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 
-    private Map<ArchiveResource, ArchiveTree> archives = new HashMap<>();
+    private final Map<ArchiveResource, ArchiveTree> archives = new HashMap<>();
 
     private final List<NodeType> nodeTypes;
 
@@ -104,6 +104,23 @@ public class ArchiveManager {
                 this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
             }
         }
+        this.eadParser = eadParser;
+        this.nodeTypes = loadNodeTypes(archiveNodeTypes);
+    }
+    
+    public ArchiveManager(BasexEADParser eadParser, Map<String, String> archiveNodeTypes) {
+            try {
+                //initialize archives with 'null' archive tree values
+                List<ArchiveResource> databases = eadParser.getPossibleDatabases();
+                for (ArchiveResource db : databases) {
+                    this.archives.put(db, null);
+                }
+                //this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
+                this.databaseState = DatabaseState.ARCHIVES_LOADED;
+            } catch (IOException | HTTPException e) {
+                logger.error("Failed to retrieve database names from '{}': {}", eadParser.getBasexUrl(), e.toString());
+                this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
+            }
         this.eadParser = eadParser;
         this.nodeTypes = loadNodeTypes(archiveNodeTypes);
     }
@@ -322,6 +339,10 @@ public class ArchiveManager {
     }
     
     private List<NodeType> loadNodeTypes(Map<String, String> archiveNodeTypes) {
-        return archiveNodeTypes.entrySet().stream().map(entry -> new NodeType(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+        if(archiveNodeTypes != null) {            
+            return archiveNodeTypes.entrySet().stream().map(entry -> new NodeType(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 }
