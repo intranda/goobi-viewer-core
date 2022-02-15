@@ -66,7 +66,7 @@ public class Location {
     public static URI getRecordURI(String pi, PageType pageType, IURLBuilder urlBuilder) {
         if (urlBuilder != null) {
             try {
-                return URI.create(urlBuilder.buildPageUrl(pi, 1, null, pageType, true));
+                return URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + '/' + urlBuilder.buildPageUrl(pi, 1, null, pageType, true));
             } catch (IllegalArgumentException e) {
                 logger.error(e.getMessage());
             }
