@@ -830,11 +830,12 @@
     </url-mapping>
     <url-mapping id="adminUserCommentGroupAll">
         <pattern value="/admin/comments/all/" />
-        <view-id value="/resources/admin/views/adminUserComments.xhtml" />
+        <view-id value="/resources/admin/views/adminUserCommentGroups.xhtml" />
     </url-mapping>
     <url-mapping id="adminUserCommentGroupNew">
         <pattern value="/admin/comments/new/" />
-        <view-id value="/resources/admin/views/adminUserComments.xhtml" />
+        <view-id value="/resources/admin/views/adminUserCommentGroup.xhtml" />
+        <action onPostback="false">#{adminCommentBean.newCurrentCommentViewAction}</action>
     </url-mapping>
     <url-mapping id="adminUserTerms">
         <pattern value="/admin/userterms/" />

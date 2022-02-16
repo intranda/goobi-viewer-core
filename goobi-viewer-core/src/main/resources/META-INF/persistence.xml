@@ -10,6 +10,7 @@
 		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
         <class>io.goobi.viewer.model.annotation.CrowdsourcingAnnotation</class>
 		<class>io.goobi.viewer.model.annotation.comments.Comment</class>
+        <class>io.goobi.viewer.model.annotation.comments.CommentView</class>
 		<class>io.goobi.viewer.model.bookmark.BookmarkList</class>
 		<class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
@@ -99,6 +100,7 @@
 		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
         <class>io.goobi.viewer.model.annotation.CrowdsourcingAnnotation</class>
 		<class>io.goobi.viewer.model.annotation.comments.Comment</class>
+        <class>io.goobi.viewer.model.annotation.comments.CommentView</class>
         <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
         <class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>

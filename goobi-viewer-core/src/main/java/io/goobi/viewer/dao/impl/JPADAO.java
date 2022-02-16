@@ -54,6 +54,7 @@ import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
+import io.goobi.viewer.model.annotation.comments.CommentView;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
@@ -1690,6 +1691,67 @@ public class JPADAO implements IDAO {
             em.close();
         }
     }
+    
+    // CommentView
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getAllCommentViews()
+     * @should return all rows
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CommentView> getAllCommentViews() throws DAOException {
+        preQuery();
+        Query q = getEntityManager().createQuery("SELECT o FROM CommentView o");
+        q.setFlushMode(FlushModeType.COMMIT);
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.getResultList();
+    }
+    
+
+    @Override
+    public CommentView getCommentView(long id) throws DAOException {
+        preQuery();
+        try {
+            CommentView o = getEntityManager().getReference(CommentView.class, id);
+            if (o != null) {
+                getEntityManager().refresh(o);
+            }
+            return o;
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean addCommentView(CommentView commentView) throws DAOException {
+        preQuery();
+        getEntityManager().getTransaction().begin();
+        getEntityManager().persist(commentView);
+        getEntityManager().getTransaction().commit();
+        return true;
+    }
+
+    @Override
+    public boolean updateCommentView(CommentView commentView) throws DAOException {
+        preQuery();
+        getEntityManager().getTransaction().begin();
+        getEntityManager().merge(commentView);
+        getEntityManager().getTransaction().commit();
+        return true;
+    }
+
+    @Override
+    public boolean deleteCommentView(CommentView commentView) throws DAOException {
+        preQuery();
+        getEntityManager().getTransaction().begin();
+        CommentView o = getEntityManager().getReference(CommentView.class, commentView.getId());
+        getEntityManager().remove(o);
+        getEntityManager().getTransaction().commit();
+        return true;
+    }
+    
+    // Comment
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getAllComments()
@@ -5538,5 +5600,4 @@ public class JPADAO implements IDAO {
 
         return pageList;
     }
-
 }

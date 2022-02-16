@@ -1,0 +1,262 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	xmlns:facelet="http://goobi.io/facelets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminUserCommentGroupNew')}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+		<f:view contentType="text/html" encoding="utf-8">
+			<div id="adminUser">
+				<h:panelGroup id="adminCommmentView"
+					rendered="#{userBean.admin == true and adminCommentBean.currentCommentView != null}">
+					<div class="admin__title-bar">
+						<ui:fragment
+							rendered="#{adminCommentBean.currentCommentView.id == null}">
+							<h1 class="admin__title">#{msg.admin__user_create_new}</h1>
+						</ui:fragment>
+						<ui:fragment
+							rendered="#{adminCommentBean.currentCommentView.id != null}">
+							<h1 class="admin__title">#{msg.admin__user_edit}</h1>
+						</ui:fragment>
+					</div>
+
+					<div class="admin__content-inner-content">
+
+						<div class="admin__content-wrapper">
+							<div class="admin__content-main -refreshHCsticky">
+								<h:form id="editCommentView"
+									styleClass="form-horizontal form-group" role="form"
+									prependId="false">
+									<h2>#{msg.general}</h2>
+									<div class="user-settings__form-wrapper">
+
+										<fieldset>
+											<!-- TITLE -->
+											<div class="form-group form-row">
+												<div class="col-12 col-lg-2 control-label admin__form-label">
+													<label for="title">#{msg.admin__collection_view_title}:</label>
+												</div>
+												<div class="col-11 col-lg-9 admin__form-input">
+													<h:inputText value="#{adminCommentBean.currentCommentView.title}"
+														id="title" label="title"
+														styleClass="form-control" required="true"
+														requiredMessage="#{msg.admin_collection_view_title__required}" />
+													<span class="admin__form-help-text">#{msg.admin__collection_view_title__help}</span>
+												</div>
+												<div class="col-1 admin__form-help-icon">
+													<button type="button" class="btn btn--clean"
+														data-toggle="helptext" aria-label="inline help icon">
+														<i class="fa fa-question-circle" aria-hidden="true"></i>
+													</button>
+												</div>
+											</div>
+
+											<!-- SOLR QUERY -->
+                                            <div class="form-group form-row">
+                                                <div class="col-12 col-lg-2 control-label admin__form-label">
+                                                    <label for="solrQuery">#{msg.admin__collection_view_solr_query}:</label>
+                                                </div>
+                                                <div class="col-11 col-lg-9 admin__form-input">
+                                                    <h:inputText value="#{adminCommentBean.currentCommentView.solrQuery}"
+                                                        id="solrQuery" label="solrQuery"
+                                                        styleClass="form-control" required="true"
+                                                        requiredMessage="#{msg.admin_collection_view_solr_query__required}" />
+                                                    <span class="admin__form-help-text">#{msg.admin__collection_view_solr_query__help}</span>
+                                                </div>
+                                                <div class="col-1 admin__form-help-icon">
+                                                    <button type="button" class="btn btn--clean"
+                                                        data-toggle="helptext" aria-label="inline help icon">
+                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+
+											<!-- DESCRIPTION -->
+                                            <div class="form-group form-row">
+                                                <div class="col-12 col-lg-2 control-label admin__form-label">
+                                                    <label for="description">#{msg.admin__collection_view_description}:</label>
+                                                </div>
+                                                <div class="col-11 col-lg-9 admin__form-input">
+                                                    <h:inputText value="#{adminCommentBean.currentCommentView.description}"
+                                                        id="description" label="description"
+                                                        styleClass="form-control" required="true"
+                                                        requiredMessage="#{msg.admin_collection_view_description__required}" />
+                                                    <span class="admin__form-help-text">#{msg.admin__collection_view_description__help}</span>
+                                                </div>
+                                                <div class="col-1 admin__form-help-icon">
+                                                    <button type="button" class="btn btn--clean"
+                                                        data-toggle="helptext" aria-label="inline help icon">
+                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+										</fieldset>
+										
+									</div>
+
+								</h:form>
+								
+							</div>
+
+
+							<!-- SIDEBAR -->
+							<div class="admin__content-side -sticky">
+							
+                                <!-- USER GROUP -->
+                                <div class="admin__default-block">
+                                    <div class="row">
+                                        <div class="col-12 control-label admin__form-label">
+                                            <h2>#{msg.admin__comment_view_user_group}</h2>
+                                        </div>
+                                    </div>
+                                    <div class="admin__form-help-text in mb-3">
+                                        #{msg.admin__comment_view_user_group__help}</div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            #{msg.admin__comment_view_user_group__label}:</div>
+                                        <div class="col-6 admin__form-input">
+                                            <h:form id="sidebarForm0">
+                                                <div class="admin__radio-switch openAccessToggle">
+                                                    <h:selectOneRadio group="sendEmailNotificationsToggle"
+                                                        value="#{adminCommentBean.currentCommentView.sendEmailNotifications}"
+                                                        immediate="true" checked="true">
+                                                        <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                        <f:ajax execute="@this" render="@none"></f:ajax>
+                                                    </h:selectOneRadio>
+                                                    <h:selectOneRadio group="sendEmailNotificationsToggle"
+                                                        value="#{adminCommentBean.currentCommentView.sendEmailNotifications}"
+                                                        immediate="true" checked="null">
+                                                        <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                        <f:ajax execute="@this" render="@none"></f:ajax>
+                                                    </h:selectOneRadio>
+                                                    <span class="toggle-outside">
+                                                        <span class="toggle-inside"></span>
+                                                    </span>
+                                                </div>
+                                            </h:form>
+                                        </div>
+                                    </div>
+                                </div>
+
+								<!-- E-MAIL NOTIFICATIONS -->
+								<div class="admin__default-block">
+									<div class="row">
+										<div class="col-12 control-label admin__form-label">
+											<h2>#{msg.admin__comment_view_send_email_notifications}</h2>
+										</div>
+									</div>
+									<div class="admin__form-help-text in mb-3">
+										#{msg.admin__comment_view_send_email_notifications__help}</div>
+									<div class="row">
+										<div class="col-6">
+											#{msg.admin__comment_view_send_email_notifications__label}:</div>
+										<div class="col-6 admin__form-input">
+											<h:form id="sidebarForm1">
+												<div class="admin__radio-switch openAccessToggle">
+													<h:selectOneRadio group="sendEmailNotificationsToggle"
+														value="#{adminCommentBean.currentCommentView.sendEmailNotifications}"
+														immediate="true" checked="true">
+														<f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+														<f:ajax execute="@this" render="@none"></f:ajax>
+													</h:selectOneRadio>
+													<h:selectOneRadio group="sendEmailNotificationsToggle"
+														value="#{adminCommentBean.currentCommentView.sendEmailNotifications}"
+														immediate="true" checked="null">
+														<f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+														<f:ajax execute="@this" render="@none"></f:ajax>
+													</h:selectOneRadio>
+													<span class="toggle-outside">
+													    <span class="toggle-inside"></span>
+													</span>
+												</div>
+											</h:form>
+										</div>
+									</div>
+								</div>
+
+                                <!-- MEMBERS MAY EDIT COMMENTS -->
+                                <div class="admin__default-block">
+                                    <div class="row">
+                                        <div class="col-12 control-label admin__form-label">
+                                            <h2>#{msg.admin__comment_view_members_may_edit_comments}</h2>
+                                        </div>
+                                    </div>
+                                    <div class="admin__form-help-text in mb-3">
+                                        #{msg.admin__comment_view_members_may_edit_comments__help}</div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            #{msg.admin__comment_view_members_may_edit_comments__label}:</div>
+                                        <div class="col-6 admin__form-input">
+                                            <h:form id="sidebarForm2">
+                                                <div>
+                                            <h:selectOneMenu value="#{adminCommentBean.currentCommentView.userGroup}"
+                                                id="userGroupOwner" converter="userGroupConverter"
+                                                required="true" styleClass="form-control">
+                                                <f:selectItems value="#{adminBean.allUserGroups}" var="userGroup" itemLabel="#{userGroup.name}" />
+                                            </h:selectOneMenu>
+                                                </div>
+                                            </h:form>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- MEMBERS MAY DELETE COMMENTS -->
+                                <div class="admin__default-block">
+                                    <div class="row">
+                                        <div class="col-12 control-label admin__form-label">
+                                            <h2>#{msg.admin__comment_view_members_may_delete_comments}</h2>
+                                        </div>
+                                    </div>
+                                    <div class="admin__form-help-text in mb-3">
+                                        #{msg.admin__comment_view_members_may_delete_comments__help}</div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            #{msg.admin__comment_view_members_may_delete_comments__label}:</div>
+                                        <div class="col-6 admin__form-input">
+                                            <h:form id="sidebarForm3">
+                                                <div class="admin__radio-switch openAccessToggle">
+                                                    <h:selectOneRadio group="membersMayDeleteCommentsToggle"
+                                                        value="#{adminCommentBean.currentCommentView.membersMayDeleteComments}"
+                                                        immediate="true" checked="true">
+                                                        <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                        <f:ajax execute="@this" render="@none"></f:ajax>
+                                                    </h:selectOneRadio>
+                                                    <h:selectOneRadio group="membersMayDeleteCommentsToggle"
+                                                        value="#{adminCommentBean.currentCommentView.membersMayDeleteComments}"
+                                                        immediate="true" checked="null">
+                                                        <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                        <f:ajax execute="@this" render="@none"></f:ajax>
+                                                    </h:selectOneRadio>
+                                                    <span class="toggle-outside">
+                                                        <span class="toggle-inside"></span>
+                                                    </span>
+                                                </div>
+                                            </h:form>
+                                        </div>
+                                    </div>
+                                </div>
+							
+							</div>
+
+						</div>
+					</div>
+				</h:panelGroup>
+			</div>
+		</f:view>
+	</ui:define>
+
+</ui:composition>

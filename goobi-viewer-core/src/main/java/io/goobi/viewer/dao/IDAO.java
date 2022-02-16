@@ -26,6 +26,7 @@ import javax.persistence.Query;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
+import io.goobi.viewer.model.annotation.comments.CommentView;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
@@ -892,6 +893,59 @@ public interface IDAO {
      */
     public boolean deleteIpRange(IpRange ipRange) throws DAOException;
 
+    // CommentView
+    
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<CommentView> getAllCommentViews() throws DAOException;
+    
+    /**
+     * <p>
+     * getCommentView.
+     * </p>
+     *
+     * @param id a long.
+     * @return a {@link io.goobi.viewer.model.annotation.comments.CommentView} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public CommentView getCommentView(long id) throws DAOException;
+
+    /**
+     * <p>
+     * addCommentView.
+     * </p>
+     *
+     * @param commentView a {@link io.goobi.viewer.model.annotation.comments.CommentView} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean addCommentView(CommentView commentView) throws DAOException;
+
+    /**
+     * <p>
+     * updateCommentView.
+     * </p>
+     *
+     * @param commentView a {@link io.goobi.viewer.model.annotation.comments.CommentView} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean updateCommentView(CommentView commentView) throws DAOException;
+
+    /**
+     * <p>
+     * deleteCommentView.
+     * </p>
+     *
+     * @param commentView a {@link io.goobi.viewer.model.annotation.comments.CommentView} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean deleteCommentView(CommentView commentView) throws DAOException;
+    
     // Comment
 
     /**
