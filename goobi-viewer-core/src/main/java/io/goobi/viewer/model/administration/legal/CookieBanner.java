@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.administration.legal;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +54,9 @@ public class CookieBanner {
     
     @Column(name = "active")
     private boolean active = false;
+    
+    @Column(name = "date_created", nullable = false)
+    private LocalDateTime requiresConsentAfter = LocalDateTime.now();
     
     /**
      * IDs of CMS Pages on which the cookie banner should not be displayed
@@ -106,5 +110,11 @@ public class CookieBanner {
         this.ignoreList = ignoreList;
     }
 
-
+    public LocalDateTime getRequiresConsentAfter() {
+        return requiresConsentAfter;
+    }
+    
+    public void setRequiresConsentAfter(LocalDateTime requiresConsentAfter) {
+        this.requiresConsentAfter = requiresConsentAfter;
+    }
 }

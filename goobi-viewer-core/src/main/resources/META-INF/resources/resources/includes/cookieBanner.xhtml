@@ -1,0 +1,46 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" 
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/mnha/components">
+
+    <!-- COOKIE BANNER -->
+    <div id="cookieBanner" class="cookie-banner #{userBean.admin ? '-adminActive':''}">
+        <!-- TOP -->
+        <div class="cookie-banner__top"></div>
+        
+        <!-- INFO -->
+        <div class="cookie-banner__info">
+            <div class="layout-container">
+                <p>
+                    <h:outputText value="#{msg.cookieBanner_text}" escape="false" />
+                </p>
+
+                <div class="cookie-banner__info-accept">
+                    <button type="button" class="btn btn--full" data-set="cookie-banner">#{msg.cookieBanner_accept}</button>
+                </div>                    
+            </div>
+        </div>
+        
+        <!-- OVERLAY -->
+        <div class="cookie-banner__overlay"></div>
+    </div>
+    
+    <script>
+    	var cookieBannerConfig = {
+    		whiteList: [ 'terms-of-use', 'privacy', 'cookies' ],
+    		lastEditedHash: '#{cmsBean.getLastEditedTimestamp('47')}' + '#{cmsBean.getLastEditedTimestamp('48')}' + '#{cmsBean.getLastEditedTimestamp('49')}'
+    	};
+    	
+    	$( document ).ready( function() {
+        	viewerJS.cookieBanner.init( cookieBannerConfig );    		
+    	} );
+    </script>
+</ui:composition>

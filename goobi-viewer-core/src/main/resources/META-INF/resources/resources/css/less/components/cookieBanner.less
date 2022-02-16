@@ -1,0 +1,69 @@
+/* ==============================================================
+   Cookie Banner
+   style declarations for cookieBanner.xhtml
+   ==============================================================*/
+/* COOKIE BANNER */
+.cookie-banner {
+	display: none;
+	position: fixed;
+	top: 75px;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	transition: all 0.2s linear;
+	z-index: 2010;
+	&.-adminActive {
+		top: 105px;
+	}
+	&__top,
+	&__info {
+		position: relative;
+		z-index: 2030;
+	}
+	&__top {}
+	&__info {
+		padding: 60px 120px;
+		font-family: @RobotoCondensedRegular;
+		color: @white;
+		background-color: @bggray;
+		p {
+			margin: 0;
+		}
+	}
+	&__info-accept {
+		text-align: right;
+		padding-top: 30px;
+	}
+	&__overlay {
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(255,255,255,0.85);
+		z-index: 2020;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+	.cookie-banner {
+		&__info {
+			padding: 15px;
+		}
+	}
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+	.cookie-banner {
+		&__info {
+			padding: 10px;
+		}
+	}
+}

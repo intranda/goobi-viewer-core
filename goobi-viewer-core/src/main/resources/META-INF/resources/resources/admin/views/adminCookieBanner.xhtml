@@ -8,6 +8,7 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
 	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
 	<ui:define name="metadata">
@@ -42,105 +43,69 @@
 								<div class="control-label mr-3 admin__form-label">#{msg.admin__legal__cookie_banner_active}:</div>
 								<div class="admin__form-input">
 									<viewerComponent:toggleSwitch name="activateCookieBanner"
-										value="#{banner.active}" />
+										value="#{banner.active}" render="@form"/>
 								</div>
 							</div>
 						</div>
 
-
+						<ui:fragment rendered="#{banner.active}">
 						<div class="admin__user-terms-box-editable">
 							<div class="form-horizontal form-group">
 
-								<h2>#{msg.title__manage}</h2>
-
-								<!-- TERMS OF USE LANGUAGE TABS -->
-								<div class="admin__language-tabs">
-									<viewerComponent:localeSelector object="#{banner.text}" />
-								</div>
-
-								<div class="admin__default-block">
-									<div class="tab-content">
-										<!-- LOCALIZE TABS -->
-										<h:panelGroup rendered="#{banner.selectedLocale != null}">
-
-											<!-- EDIT TERMS OF USE TEXT -->
-											<div class="form-group form-row">
-
-												<div class="col-2 control-label admin__form-label">
-													<label for="userTermsText">#{msg.text}: <ui:fragment
-															rendered="#{banner.isDefaultLocaleSelected()}">
-															<span class="admin__label-required-field">(#{msg.form__required_field})</span>
-														</ui:fragment>
-													</label>
-												</div>
-
-												<div
-													class="col-10 admin__form-input input_form__option_control">
-													<h:message for="bannerText"
-														errorClass="-validation-message -danger" />
-													<div class="-validation-mark">
-														<i class="fa fa-check" aria-hidden="true"></i> <i
-															class="fa fa-exclamation" aria-hidden="true"></i>
-													</div>
-													<h:inputTextarea id="bannerText"
-														styleClass="form-control tinyMCE -validation-input"
-														required="#{termsOfUseEditBean.isDefaultLocaleSelected()}"
-														requiredMessage="#{msg.info__input_required}"
-														value="#{banner.text.text}" />
-													<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
-												</div>
-											</div>
-											
-											<!-- IGNORED PAGES -->
-											<div class="form-group form-row">
-
-												<div class="col-2 control-label admin__form-label">
-													<label for="bannerIgnore">#{msg.admin__legal__ignore_cookie_banner_on_pages__label}:
-													</label>
-												</div>
-
-												<div
-													class="col-10 admin__form-input input_form__option_control">
-													<h:message for="bannerIgnore"
-														errorClass="-validation-message -danger" />
-													<div class="-validation-mark">
-														<i class="fa fa-check" aria-hidden="true"></i> <i
-															class="fa fa-exclamation" aria-hidden="true"></i>
-													</div>
-													<h:inputTextarea id="bannerText"
-														styleClass="form-control tinyMCE -validation-input"
-														required="#{termsOfUseEditBean.isDefaultLocaleSelected()}"
-														requiredMessage="#{msg.info__input_required}"
-														value="#{banner.text.text}" />
-													<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
-												</div>
-											</div>
-											
-										</h:panelGroup>
-									</div>
-								</div>
+								<viewerForms:inputFormBlock title="#{msg.title__manage}" languageSelector="#{banner.text}">
+								
+									<viewerForms:htmlInputField 
+										label="#{msg.text}"
+										value="#{banner.text.text}"
+										required="#{banner.text.isDefaultLocaleSelected()}">
+									</viewerForms:htmlInputField>
+									
+									<viewerForms:inputFormField label="#{msg.admin__legal__ignore_cookie_banner_on_pages__label}">
+										<div class="cms-widgets-add__pages-selection cms-module__option-control admin__form-input">
+											<ul>
+												<ui:repeat var="var"
+													value="#{cookieBannerBean.cmsPageMap.keySet().stream().sorted().toList()}">
+													<li>
+														<label> 
+															<h:selectBooleanCheckbox
+																type="checkbox"
+																value="#{cookieBannerBean.cmsPageMap[var]}">
+																<f:ajax event="change" execute="@this" />
+															</h:selectBooleanCheckbox> 
+															<h:outputFormat value="#{var.title}" escape="false"/>
+															<ui:fragment rendered="#{not empty var.subThemeDiscriminatorValue}">
+			                                                    <small>(#{var.subThemeDiscriminatorValue})</small>
+			                                                </ui:fragment>
+														</label>
+													</li>
+												</ui:repeat>
+											</ul>
+										</div>
+									</viewerForms:inputFormField>
+								
+								</viewerForms:inputFormBlock>
 
 								<!-- SAVE TERMS OF USE TEXT -->
 								<div
 									class="row no-gutters justify-content-end admin__final-actions">
 									<h:commandButton class="btn btn--success" value="#{msg.save}"
-										action="#{termsOfUseEditBean.save()}">
+										action="#{cookieBannerBean.save()}">
 										<f:ajax render="@form :messages" execute="@form"></f:ajax>
 									</h:commandButton>
 								</div>
 
 								<!-- DEACTIVATE TERMS OF USE + RESET STATUS ACCEPTED FOR USERS -->
-								<h2>#{msg.admin__terms_of_use__reset__consent}</h2>
+								<h2>#{msg.admin__legal__reset_cookie_banner_consent__title}</h2>
 								<div class="admin__default-block -danger">
 
 									<div class="row">
 										<div class="col-12">
-											<p>#{msg.admin__terms_of_use__reset__description}</p>
+											<p>#{msg.admin__legal__reset_cookie_banner_consent__info}</p>
 											<div class="text-right">
 												<h:commandButton class="btn btn--danger"
-													value="#{msg.admin__terms_of_use__reset__button}"
-													onclick="if ( !confirm( &quot;#{msg.admin__terms_of_use__reset__confirm}&quot; ) ) { return false };"
-													action="#{termsOfUseEditBean.resetUserAcceptance()}">
+													value="#{msg.admin__legal__reset_cookie_banner_consent__action}"
+													onclick="if ( !confirm( &quot;#{msg.admin__legal__reset_cookie_banner_consent__confirm}&quot; ) ) { return false };"
+													action="#{cookieBannerBean.resetUserConsent()}">
 													<f:ajax render="@form :messages"></f:ajax>
 												</h:commandButton>
 											</div>
@@ -149,6 +114,7 @@
 								</div>
 							</div>
 						</div>
+						</ui:fragment>
 					</div>
 				</h:form>
 			</h:panelGroup>
