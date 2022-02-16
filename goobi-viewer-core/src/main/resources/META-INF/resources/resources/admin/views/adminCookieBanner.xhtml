@@ -27,13 +27,13 @@
 
 			<h:panelGroup layout="block" id="adminCookieBanner"
 				rendered="#{userBean.admin}">
-				<h:form id="cookieBannerEditForm" prependId="false">
-					<!-- TITLE -->
-					<div class="admin__title-bar">
-						<h1 class="admin__title">#{msg.label__cookie_banner}</h1>
-					</div>
+				<!-- TITLE -->
+				<div class="admin__title-bar">
+					<h1 class="admin__title">#{msg.label__cookie_banner}</h1>
+				</div>
 
-					<div class="admin__content-inner-content">
+				<div class="admin__content-inner-content">
+					<h:form id="cookieBannerActivateForm" prependId="false">
 						<div class="admin__info-text">
 							<h:outputText value="#{msg.admin__legal__cookie_banner_info}"
 								escape="false" />
@@ -43,12 +43,13 @@
 								<div class="control-label mr-3 admin__form-label">#{msg.admin__legal__cookie_banner_active}:</div>
 								<div class="admin__form-input">
 									<viewerComponent:toggleSwitch name="activateCookieBanner"
-										value="#{banner.active}" render="@form"/>
+										value="#{cookieBannerBean.bannerActive}" render="adminCookieBanner"/>
 								</div>
 							</div>
 						</div>
+					</h:form>
 
-						<ui:fragment rendered="#{banner.active}">
+					<h:form id="cookieBannerEditForm" prependId="false" rendered="#{banner.active}">
 						<div class="admin__user-terms-box-editable">
 							<div class="form-horizontal form-group">
 
@@ -114,9 +115,8 @@
 								</div>
 							</div>
 						</div>
-						</ui:fragment>
-					</div>
-				</h:form>
+					</h:form>
+				</div>
 			</h:panelGroup>
 		</f:view>
 	</ui:define>

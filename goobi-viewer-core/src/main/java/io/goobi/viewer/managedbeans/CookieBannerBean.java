@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.cms.CMSPage;
 
@@ -95,9 +97,10 @@ public class CookieBannerBean implements Serializable {
                 //save a clone of the editCookieBanner, so the editCookieBanner itself is never managed
                 //and changes to it will not be reflected in the persistence context until save is called again
                 this.dao.saveCookieBanner(new CookieBanner(editCookieBanner));
+                Messages.info(null, "button__save__success", ViewerResourceBundle.getTranslation("label__cookie_banner", null));
             } catch (DAOException e) {
                 logger.error("Error saving cookie banner", e);
-
+                Messages.error("errSave");
             }
         }
     }
@@ -151,6 +154,21 @@ public class CookieBannerBean implements Serializable {
                 });
             });
         }
+    }
+    
+    public void setBannerActive(boolean active) throws DAOException {
+        if (this.dao != null) {
+            CookieBanner banner = dao.getCookieBanner();
+            banner.setActive(active);
+            dao.saveCookieBanner(banner);
+            if (this.editCookieBanner != null) {
+                this.editCookieBanner.setActive(active);
+            }
+        }
+    }
+    
+    public boolean isBannerActive() {
+        return this.editCookieBanner.isActive();
     }
     
 }
