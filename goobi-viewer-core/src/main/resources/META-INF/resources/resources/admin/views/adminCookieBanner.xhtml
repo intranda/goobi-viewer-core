@@ -61,42 +61,14 @@
 								<div class="admin__default-block">
 									<div class="tab-content">
 										<!-- LOCALIZE TABS -->
-										<h:panelGroup
-											rendered="#{banner.selectedLocale != null}">
-											<div class="form-group form-row">
-												<div class="col-2 control-label admin__form-label">
-													<label for="userTermsTitle">#{msg.title}: <ui:fragment
-															rendered="#{termsOfUseEditBean.isDefaultLocaleSelected()}">
-															<span class="admin__label-required-field">(#{msg.form__required_field})</span>
-														</ui:fragment>
-													</label>
-												</div>
-
-												<div
-													class="col-10 admin__form-input cms-module__option-control">
-
-													<h:message for="userTermsTitle"
-														errorClass="-validation-message -danger"></h:message>
-													<div class="-validation-mark">
-														<i class="fa fa-check" aria-hidden="true"></i> <i
-															class="fa fa-exclamation" aria-hidden="true"></i>
-													</div>
-													<h:inputText id="userTermsTitle"
-														styleClass="form-control -validation-input"
-														required="#{termsOfUseEditBean.isDefaultLocaleSelected()}"
-														requiredMessage="#{msg.info__input_required}"
-														value="#{termsOfUseEditBean.title}">
-													</h:inputText>
-													<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
-												</div>
-											</div>
+										<h:panelGroup rendered="#{banner.selectedLocale != null}">
 
 											<!-- EDIT TERMS OF USE TEXT -->
 											<div class="form-group form-row">
 
 												<div class="col-2 control-label admin__form-label">
 													<label for="userTermsText">#{msg.text}: <ui:fragment
-															rendered="#{termsOfUseEditBean.isDefaultLocaleSelected()}">
+															rendered="#{banner.isDefaultLocaleSelected()}">
 															<span class="admin__label-required-field">(#{msg.form__required_field})</span>
 														</ui:fragment>
 													</label>
@@ -104,20 +76,46 @@
 
 												<div
 													class="col-10 admin__form-input input_form__option_control">
-													<h:message for="userTermsText"
+													<h:message for="bannerText"
 														errorClass="-validation-message -danger" />
 													<div class="-validation-mark">
 														<i class="fa fa-check" aria-hidden="true"></i> <i
 															class="fa fa-exclamation" aria-hidden="true"></i>
 													</div>
-													<h:inputTextarea id="userTermsText"
+													<h:inputTextarea id="bannerText"
 														styleClass="form-control tinyMCE -validation-input"
 														required="#{termsOfUseEditBean.isDefaultLocaleSelected()}"
 														requiredMessage="#{msg.info__input_required}"
-														value="#{termsOfUseEditBean.description}" />
+														value="#{banner.text.text}" />
 													<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
 												</div>
 											</div>
+											
+											<!-- IGNORED PAGES -->
+											<div class="form-group form-row">
+
+												<div class="col-2 control-label admin__form-label">
+													<label for="bannerIgnore">#{msg.admin__legal__ignore_cookie_banner_on_pages__label}:
+													</label>
+												</div>
+
+												<div
+													class="col-10 admin__form-input input_form__option_control">
+													<h:message for="bannerIgnore"
+														errorClass="-validation-message -danger" />
+													<div class="-validation-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
+													<h:inputTextarea id="bannerText"
+														styleClass="form-control tinyMCE -validation-input"
+														required="#{termsOfUseEditBean.isDefaultLocaleSelected()}"
+														requiredMessage="#{msg.info__input_required}"
+														value="#{banner.text.text}" />
+													<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
+												</div>
+											</div>
+											
 										</h:panelGroup>
 									</div>
 								</div>
