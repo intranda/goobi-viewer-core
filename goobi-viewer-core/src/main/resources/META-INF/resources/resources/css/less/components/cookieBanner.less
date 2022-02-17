@@ -2,11 +2,12 @@
    Cookie Banner
    style declarations for cookieBanner.xhtml
    ==============================================================*/
+
 /* COOKIE BANNER */
 .cookie-banner {
 	display: none;
 	position: fixed;
-	top: 75px;
+	top: 0;
 	right: 0;
 	bottom: 0;
 	left: 0;
@@ -18,27 +19,81 @@
 	&__top,
 	&__info {
 		position: relative;
-		z-index: 2040; 
+		z-index: 2040;
+	}
+	&__icon-wrapper {
+		position: relative;
+		width: 200px;
+		&.-jumpAnimation {
+			animation: bounceCookie 500ms linear 2;
+		}
+	}
+	
+	&__icon {
+		display: block;
+		width: 100px;
+		height: 100px;
+		/* Animation to spinCookie and move the sphere */
+		animation: spinCookie 1200ms ease-out 1, moveLeftToRightCookie 1200ms ease-out 1, fadeInCookie 400ms ease-out 1;
+		animation-fill-mode: forwards;
+		transition: all 1s ease;
+		position: relative;
+		left: 0;
+	}
+	@keyframes fadeInCookie {
+	  from { opacity: 0%; }
+	  to { opacity: 100%; }
+	}
+	@keyframes spinCookie {
+	  from { transform: rotate(90deg); }
+	  to { transform: rotate(360deg); }
+	}
+	@keyframes moveLeftToRightCookie {
+	  0%   { left: -100px;}
+	  100% { left: calc(100% - 100px); }
+	}
+	@keyframes bounceCookie {
+	  0% {
+	    top: 0;
+	  }
+	  50% {
+	    top: -10px;
+	  }
+	  100% {
+	    top: 0px;
+	  }
+	}
+	&__info-inserted-content {
+		margin-inline-end: 3.5rem;
+		margin-inline-start: 3.5rem;
 	}
 	&__top {}
 	&__info {
-		padding: 60px 120px;
-		color: @white;
-		background-color: @gray;
+		position: absolute;
+		display: flex;
+		justify-content: center;
+		width: 100%;
+		bottom: 0%;
+		padding: 4rem 4rem;
+		color: #222;
+		background-color: #f1f2f8;
 		p {
 			margin: 0;
 		}
 	}
+	&__info-inner {
+		display: flex;
+		max-width: 1200px;
+	}
 	&__info-accept {
-		text-align: right;
-		padding-top: 30px;
 	}
 	&__overlay {
 		position: absolute;
 		bottom: 0;
 		width: 100%;
 		height: 100%;
-		background-color: rgba(255,255,255,0.85);
+		background-color: #000;
+		opacity: 0.6;
 		z-index: 2030;
 	}
 }
@@ -52,17 +107,19 @@
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
 	.cookie-banner {
-		&__info {
-			padding: 15px;
+		&__info-inserted-content {
+			margin-inline-end: 0rem;
+			margin-inline-start: 0rem;
+		}
+		&__info-inner {
+			flex-direction: column;
+			align-items: center;
+		}
+		&__icon-wrapper {
+			margin-inline-end: auto;
+			margin-bottom: 3.5rem;
 		}
 	}
 }
-
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {
-	.cookie-banner {
-		&__info {
-			padding: 10px;
-		}
-	}
-}
+@media screen and (max-width: @xSmallBreakpoint) {}

@@ -12,20 +12,28 @@
     xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/mnha/components">
 
     <!-- COOKIE BANNER -->
-    <div id="cookieBanner" class="cookie-banner #{userBean.admin ? '-adminActive':''}">
+    <div id="cookieBanner" class="cookie-banner">
+<!--     <div id="cookieBanner" class="cookie-banner #{userBean.admin ? '-adminActive':''}"> -->
         <!-- TOP -->
-        <div class="cookie-banner__top"></div>
+<!--         <div class="cookie-banner__top"></div> -->
         
         <!-- INFO -->
         <div class="cookie-banner__info">
-            <div class="layout-container">
-                <p>
-                    <h:outputText value="#{cookieBannerBean.cookieBanner.text.textOrDefault}" escape="false" />
-                </p>
-
+            <div class="cookie-banner__info-inner">
+            
+            	<div class="cookie-banner__icon-wrapper">
+            		<div class="cookie-banner__icon">
+            		<ui:include src="/resources/images/icons/icon-cookie.svg" />
+            		</div>
+				</div>
+				
+				<div class="cookie-banner__info-inserted-content">
+                	<h:outputText value="#{cookieBannerBean.cookieBanner.text.textOrDefault}" escape="false" />
+				</div>
+				
                 <div class="cookie-banner__info-accept">
-<!--                     <button type="button" class="btn btn--full" data-set="cookie-banner">#{msg.cookieBanner_decline}</button> -->
-                    <button type="button" class="btn btn--full" data-set="cookie-banner">#{msg.cookieBanner_accept}</button>
+                    <button type="button" class="btn btn--full cookie-banner__accept-button" data-set="cookie-banner">#{msg.cookieBanner_accept}</button>
+					<button type="button" class="btn btn--full cookie-banner__decline-button" data-set="cookie-banner">#{msg.cookieBanner_decline}</button>
                 </div>                    
             </div>
         </div>

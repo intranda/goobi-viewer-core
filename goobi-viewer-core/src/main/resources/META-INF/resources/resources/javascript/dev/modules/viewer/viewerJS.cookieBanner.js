@@ -95,6 +95,11 @@ var viewerJS = ( function( viewer ) {
             	$( '#cookieBanner' ).hide();
             	startPiwikTracking();
             }
+
+			// Only for style
+			$(".cookie-banner__accept-button").hover(function() {
+				$(".cookie-banner__icon-wrapper").addClass("-jumpAnimation");
+			});
         },
         getStoredLastEditedHash() {
         	let string = localStorage.getItem( 'cookieBannerHash' );
