@@ -53,21 +53,27 @@
 						<div class="admin__user-terms-box-editable">
 							<div class="form-horizontal form-group">
 
-								<viewerForms:inputFormBlock title="#{msg.title__manage}" languageSelector="#{banner.text}">
+								<viewerForms:inputFormBlock title="#{msg.admin__terms_of_use__manage_text}" languageSelector="#{banner.text}">
 								
 									<viewerForms:htmlInputField 
 										label="#{msg.text}"
 										value="#{banner.text.text}"
 										required="#{banner.text.isDefaultLocaleSelected()}">
 									</viewerForms:htmlInputField>
+								
+								</viewerForms:inputFormBlock>
+								
+								<viewerForms:inputFormBlock title="#{msg.admin__legal__ignore_cookie_banner_exceptions}">
 									
-									<viewerForms:inputFormField label="#{msg.admin__legal__ignore_cookie_banner_on_pages__label}">
+									<p>#{msg.admin__legal__ignore_cookie_banner_on_pages__label}</p>
+									
+									<viewerForms:inputFormField label="#{msg.pages}">
 										<div class="cms-widgets-add__pages-selection cms-module__option-control admin__form-input">
 											<ul>
 												<ui:repeat var="var"
 													value="#{cookieBannerBean.cmsPageMap.keySet().stream().sorted().toList()}">
 													<li>
-														<label> 
+														<label class="cms-menu__available-item-page-label pl-0"> 
 															<h:selectBooleanCheckbox
 																type="checkbox"
 																value="#{cookieBannerBean.cmsPageMap[var]}">

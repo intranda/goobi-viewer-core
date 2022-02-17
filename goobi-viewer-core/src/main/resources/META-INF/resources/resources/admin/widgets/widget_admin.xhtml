@@ -78,6 +78,7 @@
                     </ul>
                     
                     <div class="admin-widget__header">#{msg.admin__legal__title}</div>
+                    <ul>
                     	<li class="#{navigationHelper.currentPage == 'adminUserTerms' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminUserTerms')}/">
                                 <i class="fa fa-check-square-o" aria-hidden="true"></i>
@@ -90,6 +91,7 @@
                                 <span>#{msg.label__cookie_banner}</span>
                             </h:outputLink>
                         </li>
+                    </ul>
                 </h:form>
             </div>
         </h:panelGroup>
