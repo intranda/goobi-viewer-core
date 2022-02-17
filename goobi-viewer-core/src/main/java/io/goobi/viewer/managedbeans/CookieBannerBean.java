@@ -1,3 +1,18 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
@@ -27,6 +42,10 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.cms.CMSPage;
 
+/**
+ * This this the java backend class for enabling and configuring the cookie banner feature. 
+ * This bean is view scoped, i.e. created fresh for each new page loaded
+**/
 @Named
 @ViewScoped
 public class CookieBannerBean implements Serializable {
@@ -46,6 +65,9 @@ public class CookieBannerBean implements Serializable {
         INITIALIZED
     }
 
+    /**
+     * Default constructor using the IDAO from the {@link DataManager} class
+     */
     public CookieBannerBean() {
         dao = retrieveDAO();
         editCookieBanner = new CookieBanner(getCookieBanner());
@@ -56,7 +78,10 @@ public class CookieBannerBean implements Serializable {
         }
     }
 
-
+    /**
+     * Constructor for testing purposes
+     * @param dao   the IDAO implementation to use
+     */
     public CookieBannerBean(IDAO dao) {
         this.dao = dao;
         editCookieBanner = new CookieBanner(getCookieBanner());
@@ -68,6 +93,10 @@ public class CookieBannerBean implements Serializable {
         }
     }
 
+    /**
+     * Get the stored cookie banner to display on a viewer web-page. Do not use for modifications
+     * @return the cookie banner stored in the DAO
+     */
     public CookieBanner getCookieBanner() {
         if (dao != null) {
             try {
@@ -82,18 +111,35 @@ public class CookieBannerBean implements Serializable {
         }
     }
 
+    /**
+     * Get the initialization status of the bean. Useful for detecting problems with DAO communication
+     * @return  the status of the current bean
+     */
     public BeanStatus getStatus() {
         return status;
     }
 
+    /**
+     * Get the copy of the stored cookie banner for editing. 
+     * Changes are persisted to the object stored in the database by calling {@link #save()}
+     * @return  the cookie banner for editing
+     */
     public CookieBanner getCookieBannerForEdit() {
         return this.editCookieBanner;
     }
 
+    /**
+     * To use when selecting CMS-Pages on which to ignore the cookie-banner.
+     * Pages mapped to "true" are stored in {@link CookieBanner#getIgnoreList()} when calling {@link #save()}
+     * @return
+     */
     public Map<CMSPage, Boolean> getCmsPageMap() {
         return cmsPageMap;
     }
 
+    /**
+     * Save the current {@link #getCookieBannerForEdit()} to the DAO. Set the banners ignore list from {@link #getCmsPageMap()} before
+     */
     public void save() {
         if (this.editCookieBanner != null) {
             this.editCookieBanner.setIgnoreList(getCmsPageIdsToIgnore());
@@ -109,6 +155,10 @@ public class CookieBannerBean implements Serializable {
         }
     }
 
+    /**
+     * Set the {@link CookieBanner#getRequiresConsentAfter()} to the current time. Applies directly to the persisted object
+     * @throws DAOException
+     */
     public void resetUserConsent() throws DAOException {
         //save the current date both to the banner managed by the persistence context and to the copy we are editing
         //this way, saving the current banner is not required, but is a save is performed, the date is not overwritten
@@ -122,6 +172,57 @@ public class CookieBannerBean implements Serializable {
         }
     }
 
+    /**
+     * Activate/deactivate the cookie banner. Applies directly to the persisted object
+     * @param active
+     * @throws DAOException
+     */
+    public void setBannerActive(boolean active) throws DAOException {
+        if (this.dao != null) {
+            CookieBanner banner = dao.getCookieBanner();
+            banner.setActive(active);
+            dao.saveCookieBanner(banner);
+            if (this.editCookieBanner != null) {
+                this.editCookieBanner.setActive(active);
+            }
+        }
+    }
+    
+    /**
+     * Check if the banner is active, i.e. should be displayed at all
+     * @return true if the banner should be shown if appropriate
+     */
+    public boolean isBannerActive() {
+        return this.editCookieBanner.isActive();
+    }
+    
+    /**
+     * Return a json object to use a configuration object to the viewerJS.cookieBanner.js javascript 
+     * @return a json config object
+     */
+    public String getCookieBannerConfig() {
+        if(dao != null) {            
+            try {
+                CookieBanner banner = dao.getCookieBanner();
+                JSONObject json = new JSONObject();
+                boolean active = banner.isActive();
+                if(active && BeanUtils.getNavigationHelper().isCmsPage()) {
+                    Long pageId = BeanUtils.getCmsBean().getCurrentPage().getId();
+                    if(banner.getIgnoreList().contains(pageId)) {
+                        active = false;
+                    }
+                }
+                json.put("active", active);
+                json.put("lastEditedHash", banner.getRequiresConsentAfter().atZone(ZoneId.systemDefault()).toEpochSecond());
+                return json.toString();
+            } catch (DAOException e) {
+                return "{}";
+            }
+        } else {
+            return "{}";
+        }
+    }
+    
     private List<Long> getCmsPageIdsToIgnore() {
         return this.cmsPageMap.keySet().stream().filter(p -> this.cmsPageMap.get(p)).map(CMSPage::getId).sorted().collect(Collectors.toList());
     }
@@ -159,44 +260,7 @@ public class CookieBannerBean implements Serializable {
             });
         }
     }
-    
-    public void setBannerActive(boolean active) throws DAOException {
-        if (this.dao != null) {
-            CookieBanner banner = dao.getCookieBanner();
-            banner.setActive(active);
-            dao.saveCookieBanner(banner);
-            if (this.editCookieBanner != null) {
-                this.editCookieBanner.setActive(active);
-            }
-        }
-    }
-    
-    public boolean isBannerActive() {
-        return this.editCookieBanner.isActive();
-    }
-    
-    public String getCookieBannerConfig() {
-        if(dao != null) {            
-            try {
-                CookieBanner banner = dao.getCookieBanner();
-                JSONObject json = new JSONObject();
-                boolean active = banner.isActive();
-                if(active && BeanUtils.getNavigationHelper().isCmsPage()) {
-                    Long pageId = BeanUtils.getCmsBean().getCurrentPage().getId();
-                    if(banner.getIgnoreList().contains(pageId)) {
-                        active = false;
-                    }
-                }
-                json.put("active", active);
-                json.put("lastEditedHash", banner.getRequiresConsentAfter().atZone(ZoneId.systemDefault()).toEpochSecond());
-                return json.toString();
-            } catch (DAOException e) {
-                return "{}";
-            }
-        } else {
-            return "{}";
-        }
-    }
+
     
     
 }

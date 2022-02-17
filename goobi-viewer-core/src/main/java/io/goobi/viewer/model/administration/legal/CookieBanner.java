@@ -27,11 +27,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.sun.mail.handlers.text_html;
+
 import io.goobi.viewer.dao.converter.NumberListConverter;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
+ * Class to persist settings for the cookie banner.
+ * Only one instance of this class should be persisted in the database
+ * 
  * @author florian
  *
  */
@@ -45,14 +50,23 @@ public class CookieBanner {
     @Column(name = "cookie_banner_id")
     protected Long id;
     
+    /**
+     * The text shown on the banner. Must be pure text or valid (x)html
+     */
     @Column(name = "text", nullable = true, columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText text = new TranslatedText();
     
+    /**
+     * set if the banner should be shown at all
+     */
     @Column(name = "active")
     private boolean active = false;
     
-    @Column(name = "date_created", nullable = false)
+    /**
+     * The time after which a user must have agreed to the banner. If the browser's local storage contains a different value, the cookie banner must be accepted again
+     */
+    @Column(name = "requires_consent_after", nullable = false)
     private LocalDateTime requiresConsentAfter = LocalDateTime.now();
     
     /**
@@ -62,10 +76,16 @@ public class CookieBanner {
     @Convert(converter = NumberListConverter.class)
     private List<Long> ignoreList = new ArrayList<>();
     
+    /**
+     * empty default constructor
+     */
     public CookieBanner() {
         
     }
     
+    /**
+     * Cloning constructor 
+     */
     public CookieBanner(CookieBanner orig) {
         this.id = orig.id;
         this.text = new TranslatedText(orig.text);
@@ -75,43 +95,69 @@ public class CookieBanner {
     }
     
     /**
-     * @param active the active to set
+     * @param active set the {@link #active} property
      */
     public void setActive(boolean active) {
         this.active = active;
     }
     
     /**
-     * @return the active
+     * @return the {@link #active} property
      */
     public boolean isActive() {
         return active;
     }
     
+    /**
+     * @return the {@link #text} property
+     */
     public TranslatedText getText() {
         return this.text;
     }
     
+    /**
+     * @return the database id
+     */
     public Long getId() {
         return id;
     }
     
+    /**
+     * set the database id
+     * @param id
+     */
     public void setId(Long id) {
         this.id = id;
     }
     
+    /**
+     * 
+     * @return the {@link CookieBanner#ignoreList}
+     */
     public List<Long> getIgnoreList() {
         return ignoreList;
     }
     
+    /**
+     * set the {@link CookieBanner#ignoreList}
+     * @param ignoreList
+     */
     public void setIgnoreList(List<Long> ignoreList) {
         this.ignoreList = ignoreList;
     }
 
+    /**
+     * 
+     * @return the {@link #requiresConsentAfter}
+     */
     public LocalDateTime getRequiresConsentAfter() {
         return requiresConsentAfter;
     }
     
+    /**
+     * set the {@link #requiresConsentAfter}
+     * @param requiresConsentAfter
+     */
     public void setRequiresConsentAfter(LocalDateTime requiresConsentAfter) {
         this.requiresConsentAfter = requiresConsentAfter;
     }
