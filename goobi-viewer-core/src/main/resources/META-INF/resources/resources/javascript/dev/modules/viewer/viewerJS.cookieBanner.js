@@ -80,7 +80,8 @@ var viewerJS = ( function( viewer ) {
             				this.hideBanner();
             			}
             			else {
-            				$( '#cookieBanner' ).hide();            	
+            				$( '#cookieBanner' ).hide();  
+            				startPiwikTracking();          	
             			}            			
             		}
             		else {
@@ -92,6 +93,7 @@ var viewerJS = ( function( viewer ) {
             	}            	
             } else {
             	$( '#cookieBanner' ).hide();
+            	startPiwikTracking();
             }
         },
         getStoredLastEditedHash() {
@@ -128,6 +130,7 @@ var viewerJS = ( function( viewer ) {
 					localStorage.setItem( 'cookieBannerHash', this.config.lastEditedHash );
 					this.config.bannerStatus = this.getStoredBannerStatus();
 					this.config.bannerHash = this.getStoredLastEditedHash();
+					startPiwikTracking();
 					if(_debug)console.log("accepted cookie banner. Set banner status to ", this.config.bannerStatus, ", hash to ", this.config.bannerHash);
 				}.bind(this) );            			
 			}.bind(this) );
