@@ -26,7 +26,7 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // variables
-    var _debug = true;
+    var _debug = false;
     var _defaults = {
     	lastEditedHash: '',
     	active : true,
@@ -69,7 +69,7 @@ var viewerJS = ( function( viewer ) {
             		this.storeBannerStatus( true );
             		this.bannerStatus = this.getStoredBannerStatus();
             		$( '#cookieBanner' ).show();
-            		this.hideBanner();
+            		this.initHideBanner();
             	} else {
             		// check last edited hash
             		if ( this.config.lastEditedHash === this.bannerHash ) {
@@ -77,7 +77,7 @@ var viewerJS = ( function( viewer ) {
             			// check banner status
             			if ( this.bannerStatus ) {
             				$( '#cookieBanner' ).show();
-            				this.hideBanner();
+            				this.initHideBanner();
             			}
             			else {
             				$( '#cookieBanner' ).hide();  
@@ -87,7 +87,7 @@ var viewerJS = ( function( viewer ) {
             		else {
             			this.storeBannerStatus( true );
             			$( '#cookieBanner' ).show();
-        				this.hideBanner();
+        				this.initHideBanner();
             		}
             		
             	}            	
@@ -117,29 +117,47 @@ var viewerJS = ( function( viewer ) {
         		return string.toLowerCase() == "true";
 			}        	
         },
+        getStoredCookiesAccepted() {
+        	let string = localStorage.getItem( 'cookiesAccepted' );
+        	if(!string) {
+        		return undefined;
+        	} else {
+        		return string.toLowerCase() == "true";
+			}        	
+        },
         storeLastEditedHash(hash) {
         	localStorage.setItem( 'cookieBannerHash', String(hash) );
         },
         storeBannerStatus(status) {
         	localStorage.setItem( 'cookieBannerStatus', String(status) );
         },
-	    hideBanner() {
+        storeCookiesAccepted(accepted) {
+        	localStorage.setItem( 'cookiesAccepted', String(accepted) );
+        },
+	    initHideBanner() {
 	    	if ( _debug ) {
-	    		console.log( 'EXECUTE: _hideBanner' );
+	    		console.log( 'EXECUTE: _initHideBanner' );
 	    	}
 	    	
-	    	$( '[data-set="cookie-banner"]' ).off().on( 'click', function() {
-				$( '.cookie-banner__info' ).slideUp( function() {
-					$( '#cookieBanner' ).fadeOut( 'fast' );
-					localStorage.setItem( 'cookieBannerStatus', false );
-					localStorage.setItem( 'cookieBannerHash', this.config.lastEditedHash );
-					this.config.bannerStatus = this.getStoredBannerStatus();
-					this.config.bannerHash = this.getStoredLastEditedHash();
-					startPiwikTracking();
-					if(_debug)console.log("accepted cookie banner. Set banner status to ", this.config.bannerStatus, ", hash to ", this.config.bannerHash);
-				}.bind(this) );            			
-			}.bind(this) );
+	    	$( '[data-set="cookie-banner-accept"]' ).off().on( 'click', () => this.hideBanner(true) );
+	    	$( '[data-set="cookie-banner-decline"]' ).off().on( 'click', () => this.hideBanner(false) );
+	    },
+	    hideBanner(acceptCookies) {
+	   	 	if ( _debug ) {
+	    		console.log( 'EXECUTE: _hideBanner', acceptCookies );
+	    	}
+	    	$( '.cookie-banner__info' ).slideUp( function() {
+				$( '#cookieBanner' ).fadeOut( 'fast' );
+				this.storeBannerStatus(false);
+				this.storeLastEditedHash(this.config.lastEditedHash);
+				this.storeCookiesAccepted(acceptCookies);
+				this.config.bannerStatus = this.getStoredBannerStatus();
+				this.config.bannerHash = this.getStoredLastEditedHash();
+				startPiwikTracking();
+				if(_debug)console.log("accepted cookie banner ",acceptCookies,". Set banner status to ", this.config.bannerStatus, ", hash to ", this.config.bannerHash);
+			}.bind(this) ); 
 	    }
+	    
     };
     
 
