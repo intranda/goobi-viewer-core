@@ -34,13 +34,6 @@
     </div>
     
     <script>
-    	var cookieBannerConfig = {
-    		whiteList: [ 'terms-of-use', 'privacy', 'cookies' ],
-    		lastEditedHash: '#{cmsBean.getLastEditedTimestamp('47')}' + '#{cmsBean.getLastEditedTimestamp('48')}' + '#{cmsBean.getLastEditedTimestamp('49')}'
-    	};
-    	
-    	$( document ).ready( function() {
-        	viewerJS.cookieBanner.init( cookieBannerConfig );    		
-    	} );
+    	viewerJS.cookieBanner.init(#{cookieBannerBean.cookieBannerConfig});
     </script>
 </ui:composition>

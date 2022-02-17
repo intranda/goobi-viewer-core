@@ -2,6 +2,8 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -12,12 +14,14 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
@@ -169,6 +173,29 @@ public class CookieBannerBean implements Serializable {
     
     public boolean isBannerActive() {
         return this.editCookieBanner.isActive();
+    }
+    
+    public String getCookieBannerConfig() {
+        if(dao != null) {            
+            try {
+                CookieBanner banner = dao.getCookieBanner();
+                JSONObject json = new JSONObject();
+                boolean active = banner.isActive();
+                if(active && BeanUtils.getNavigationHelper().isCmsPage()) {
+                    Long pageId = BeanUtils.getCmsBean().getCurrentPage().getId();
+                    if(banner.getIgnoreList().contains(pageId)) {
+                        active = false;
+                    }
+                }
+                json.put("active", active);
+                json.put("lastEditedHash", banner.getRequiresConsentAfter().atZone(ZoneId.systemDefault()).toEpochSecond());
+                return json.toString();
+            } catch (DAOException e) {
+                return "{}";
+            }
+        } else {
+            return "{}";
+        }
     }
     
 }

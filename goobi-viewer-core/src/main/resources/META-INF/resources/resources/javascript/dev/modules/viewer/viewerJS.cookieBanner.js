@@ -26,16 +26,15 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // variables
-    var _debug = false;
-    var _bannerStatus = true;
-    var _bannerHash = '';
-    var _isWhitelisted = false;
+    var _debug = true;
     var _defaults = {
-    	whiteList: [],
     	lastEditedHash: '',
+    	active : true,
     };
     
     viewer.cookieBanner = {
+        bannerStatus : true,
+   		bannerHash : '',
         /**
          * Method to initialize the cookie banner.
          * 
@@ -49,79 +48,93 @@ var viewerJS = ( function( viewer ) {
                 console.log( 'viewer.cookieBanner.init: config - ', config );
             }
             
-            $.extend( true, _defaults, config );
+            this.config = $.extend(true, {}, _defaults, config );
+            if(_debug)console.log("init cookie banner with config", this.config);
+            if(this.config.active) {
             
-            // set global variables
-            _bannerStatus = localStorage.getItem( 'cookieBannerStatus' );
-            _bannerHash = localStorage.getItem( 'cookieBannerHash' );
-            
-            // set last edit hash
-            if ( _bannerHash == undefined || _bannerHash == '' ) {
-            	localStorage.setItem( 'cookieBannerHash', _defaults.lastEditedHash );
-            	_bannerHash = localStorage.getItem( 'cookieBannerHash' );
-            }
-            
-            // hide banner if page is on whitelist
-            for ( var i = 0; i < _defaults.whiteList.length; i++ ) {            	
-            	if ( $( '.' + _defaults.whiteList[i] ).length > 0 ) {
-            		_isWhitelisted = true;
-            		$( '#cookieBanner' ).hide();
-            		
-            		break;
-            	}
-            }
-            
-            // check if page is whitelisted
-            if ( !_isWhitelisted ) {
+		        // set global variables
+		        this.bannerStatus = this.getStoredBannerStatus();
+		        this.bannerHash = this.getStoredLastEditedHash();
+		        if(_debug)console.log("banner status: ", this.bannerStatus, "; hash: ", this.bannerHash);
+		        // set last edit hash
+		        if ( this.bannerHash === undefined) {
+		        	this.storeLastEditedHash(this.config.lastEditedHash );
+		        	this.bannerHash = this.getStoredLastEditedHash();
+		        }
+				if(_debug)console.log("banner status: ", this.bannerStatus, "; hash: ", this.bannerHash);
+				
             	// get/set banner status
-            	if ( _bannerStatus == undefined || _bannerStatus == '' ) {
-            		localStorage.setItem( 'cookieBannerStatus', true );
-            		_bannerStatus = localStorage.getItem( 'cookieBannerStatus' );
+            	if ( this.bannerStatus === undefined ) {
+            		if(_debug)console.log("banner status unset");
+            		this.storeBannerStatus( true );
+            		this.bannerStatus = this.getStoredBannerStatus();
             		$( '#cookieBanner' ).show();
-            		_hideBanner();
-            	}
-            	else {
+            		this.hideBanner();
+            	} else {
             		// check last edited hash
-            		if ( _defaults.lastEditedHash === _bannerHash ) {
+            		if ( this.config.lastEditedHash === this.bannerHash ) {
+            		if(_debug)console.log("last edited hash equals stored value. Banner status = ", this.bannerStatus);
             			// check banner status
-            			if ( _bannerStatus === 'true' ) {
+            			if ( this.bannerStatus ) {
             				$( '#cookieBanner' ).show();
-            				_hideBanner();
+            				this.hideBanner();
             			}
             			else {
             				$( '#cookieBanner' ).hide();            	
             			}            			
             		}
             		else {
-            			localStorage.setItem( 'cookieBannerStatus', true );
+            			this.storeBannerStatus( true );
             			$( '#cookieBanner' ).show();
-        				_hideBanner();
+        				this.hideBanner();
             		}
             		
             	}            	
+            } else {
+            	$( '#cookieBanner' ).hide();
             }
-        }
+        },
+        getStoredLastEditedHash() {
+        	let string = localStorage.getItem( 'cookieBannerHash' );
+        	if(string) {
+        		return parseInt(string);
+        	} else {
+        		return undefined;
+        	}
+        },
+        getStoredBannerStatus() {
+        	let string = localStorage.getItem( 'cookieBannerStatus' );
+        	if(!string) {
+        		return undefined;
+        	} else {
+        		return string.toLowerCase() == "true";
+			}        	
+        },
+        storeLastEditedHash(hash) {
+        	localStorage.setItem( 'cookieBannerHash', String(hash) );
+        },
+        storeBannerStatus(status) {
+        	localStorage.setItem( 'cookieBannerStatus', String(status) );
+        },
+	    hideBanner() {
+	    	if ( _debug ) {
+	    		console.log( 'EXECUTE: _hideBanner' );
+	    	}
+	    	
+	    	$( '[data-set="cookie-banner"]' ).off().on( 'click', function() {
+				$( '.cookie-banner__info' ).slideUp( function() {
+					$( '#cookieBanner' ).fadeOut( 'fast' );
+					localStorage.setItem( 'cookieBannerStatus', false );
+					localStorage.setItem( 'cookieBannerHash', this.config.lastEditedHash );
+					this.config.bannerStatus = this.getStoredBannerStatus();
+					this.config.bannerHash = this.getStoredLastEditedHash();
+					if(_debug)console.log("accepted cookie banner. Set banner status to ", this.config.bannerStatus, ", hash to ", this.config.bannerHash);
+				}.bind(this) );            			
+			}.bind(this) );
+	    }
     };
     
-    /**
-     * @description Method to hide the banner.
-     * @method _hideBanner
-     * */
-    function _hideBanner() {
-    	if ( _debug ) {
-    		console.log( 'EXECUTE: _hideBanner' );
-    	}
-    	
-    	$( '[data-set="cookie-banner"]' ).off().on( 'click', function() {
-			$( '.cookie-banner__info' ).slideUp( function() {
-				$( '#cookieBanner' ).fadeOut( 'fast' );
-				localStorage.setItem( 'cookieBannerStatus', false );
-				localStorage.setItem( 'cookieBannerHash', _defaults.lastEditedHash );
-				_bannerStatus = localStorage.getItem( 'cookieBannerStatus' );
-				_bannerHash = localStorage.getItem( 'cookieBannerHash' );
-			} );            			
-		} );
-    }
+
     
     return viewer;
     
