@@ -107,6 +107,14 @@
 										</fieldset>
 										
 									</div>
+									
+                                    <!-- ACTION -->
+                                    <div class="row no-gutters justify-content-end admin__final-actions">
+                                        <h:commandLink action="pretty:adminUserCommentViews" value="#{msg.cancel}"
+                                            styleClass="btn admin__cancel-button" immediate="true" />
+                                        <h:commandLink action="#{adminCommentBean.saveCommentViewAction(adminCommentBean.currentCommentView)}"
+                                            value="#{msg.save}" styleClass="btn btn--success" />
+                                    </div>
 
 								</h:form>
 								
@@ -115,119 +123,127 @@
 
 							<!-- SIDEBAR -->
 							<div class="admin__content-side -sticky">
-							
-                                <!-- USER GROUP -->
-                                <div class="admin__default-block">
-                                    <div class="row">
-                                        <div class="col-12 control-label admin__form-label">
-                                            <h2>#{msg.admin__comment_view_user_group}</h2>
-                                        </div>
-                                    </div>
-                                    <div class="admin__form-help-text in mb-3">
-                                        #{msg.admin__comment_view_user_group__help}</div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            #{msg.admin__comment_view_user_group__label}:</div>
-                                        <div class="col-6 admin__form-input">
-                                            <h:form id="sidebarForm0">
-                                                <div class="admin__radio-switch openAccessToggle">
-                                                    <h:selectOneRadio group="sendEmailNotificationsToggle"
-                                                        value="#{adminCommentBean.currentCommentView.sendEmailNotifications}"
-                                                        immediate="true" checked="true">
-                                                        <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                        <f:ajax execute="@this" render="@none"></f:ajax>
-                                                    </h:selectOneRadio>
-                                                    <h:selectOneRadio group="sendEmailNotificationsToggle"
-                                                        value="#{adminCommentBean.currentCommentView.sendEmailNotifications}"
-                                                        immediate="true" checked="null">
-                                                        <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                        <f:ajax execute="@this" render="@none"></f:ajax>
-                                                    </h:selectOneRadio>
-                                                    <span class="toggle-outside">
-                                                        <span class="toggle-inside"></span>
-                                                    </span>
-                                                </div>
-                                            </h:form>
-                                        </div>
-                                    </div>
-                                </div>
-
-								<!-- E-MAIL NOTIFICATIONS -->
-								<div class="admin__default-block">
-									<div class="row">
-										<div class="col-12 control-label admin__form-label">
-											<h2>#{msg.admin__comment_view_send_email_notifications}</h2>
-										</div>
-									</div>
-									<div class="admin__form-help-text in mb-3">
-										#{msg.admin__comment_view_send_email_notifications__help}</div>
-									<div class="row">
-										<div class="col-6">
-											#{msg.admin__comment_view_send_email_notifications__label}:</div>
-										<div class="col-6 admin__form-input">
-											<h:form id="sidebarForm1">
-												<div class="admin__radio-switch openAccessToggle">
-													<h:selectOneRadio group="sendEmailNotificationsToggle"
-														value="#{adminCommentBean.currentCommentView.sendEmailNotifications}"
-														immediate="true" checked="true">
-														<f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-														<f:ajax execute="@this" render="@none"></f:ajax>
-													</h:selectOneRadio>
-													<h:selectOneRadio group="sendEmailNotificationsToggle"
-														value="#{adminCommentBean.currentCommentView.sendEmailNotifications}"
-														immediate="true" checked="null">
-														<f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-														<f:ajax execute="@this" render="@none"></f:ajax>
-													</h:selectOneRadio>
-													<span class="toggle-outside">
-													    <span class="toggle-inside"></span>
-													</span>
-												</div>
-											</h:form>
-										</div>
-									</div>
-								</div>
-
-                                <!-- MEMBERS MAY EDIT COMMENTS -->
-                                <div class="admin__default-block">
-                                    <div class="row">
-                                        <div class="col-12 control-label admin__form-label">
-                                            <h2>#{msg.admin__comment_view_members_may_edit_comments}</h2>
-                                        </div>
-                                    </div>
-                                    <div class="admin__form-help-text in mb-3">
-                                        #{msg.admin__comment_view_members_may_edit_comments__help}</div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            #{msg.admin__comment_view_members_may_edit_comments__label}:</div>
-                                        <div class="col-6 admin__form-input">
-                                            <h:form id="sidebarForm2">
-                                                <div>
-                                            <h:selectOneMenu value="#{adminCommentBean.currentCommentView.userGroup}"
-                                                id="userGroupOwner" converter="userGroupConverter"
-                                                required="true" styleClass="form-control">
-                                                <f:selectItems value="#{adminBean.allUserGroups}" var="userGroup" itemLabel="#{userGroup.name}" />
-                                            </h:selectOneMenu>
-                                                </div>
-                                            </h:form>
-                                        </div>
-                                    </div>
-                                </div>
                                 
-                                <!-- MEMBERS MAY DELETE COMMENTS -->
                                 <div class="admin__default-block">
                                     <div class="row">
                                         <div class="col-12 control-label admin__form-label">
-                                            <h2>#{msg.admin__comment_view_members_may_delete_comments}</h2>
+                                            <h2>#{msg.admin__settings}</h2>
                                         </div>
                                     </div>
-                                    <div class="admin__form-help-text in mb-3">
-                                        #{msg.admin__comment_view_members_may_delete_comments__help}</div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            #{msg.admin__comment_view_members_may_delete_comments__label}:</div>
-                                        <div class="col-6 admin__form-input">
-                                            <h:form id="sidebarForm3">
+                                    
+                                    <!-- USER GROUP SELECTION -->
+                                    <h:form id="sidebarForm0">
+                                        <div class="row">
+                                            <div class="col-11">
+                                                <h3>#{msg.admin__comment_view_user_group}:</h3>
+                                            </div>
+                                            <div class="col-1 admin__form-help-icon">
+                                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 admin__form-input">
+                                                <div>
+                                                    <h:selectOneMenu value="#{adminCommentBean.currentCommentView.userGroup}"
+                                                        id="userGroupOwner" converter="userGroupConverter"
+                                                        immediate="true" required="false" styleClass="form-control">
+                                                        <f:selectItems value="#{adminBean.allUserGroups}" />
+                                                    </h:selectOneMenu>
+                                                    
+                                                    <span class="admin__form-help-text">#{msg.admin__comment_view_user_group__help}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:form>
+                                    
+                                    <!-- E-MAIL NOTIFICATIONS -->
+                                    <h:form id="sidebarForm1">
+                                        <div class="row">
+                                            <div class="col-11">
+                                                <h3>#{msg.admin__comment_view_send_email_notifications}:</h3>
+                                            </div>
+                                            <div class="col-1 admin__form-help-icon">
+                                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 admin__form-input">
+                                                <div class="admin__radio-switch openAccessToggle">
+                                                    <h:selectOneRadio group="sendEmailNotificationsToggle"
+                                                        value="#{adminCommentBean.currentCommentView.sendEmailNotifications}"
+                                                        immediate="true" checked="true">
+                                                        <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                        <f:ajax execute="@this" render="@none"></f:ajax>
+                                                    </h:selectOneRadio>
+                                                    <h:selectOneRadio group="sendEmailNotificationsToggle"
+                                                        value="#{adminCommentBean.currentCommentView.sendEmailNotifications}"
+                                                        immediate="true" checked="null">
+                                                        <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                        <f:ajax execute="@this" render="@none"></f:ajax>
+                                                    </h:selectOneRadio>
+                                                    <span class="toggle-outside">
+                                                        <span class="toggle-inside"></span>
+                                                    </span>
+                                                    <span class="admin__form-help-text">#{msg.admin__comment_view_send_email_notifications__help}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:form>
+                                    
+                                    <!-- MEMBERS MAY EDIT COMMENTS -->
+                                    <h:form id="sidebarForm2">
+                                        <div class="row">
+                                            <div class="col-11">
+                                                <h3>#{msg.admin__comment_view_members_may_edit_comments}:</h3>
+                                            </div>
+                                            <div class="col-1 admin__form-help-icon">
+                                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 admin__form-input">
+                                                <div class="admin__radio-switch openAccessToggle">
+                                                    <h:selectOneRadio group="membersMayEditCommentsToggle"
+                                                        value="#{adminCommentBean.currentCommentView.membersMayEditComments}"
+                                                        immediate="true" checked="true">
+                                                        <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                        <f:ajax execute="@this" render="@none"></f:ajax>
+                                                    </h:selectOneRadio>
+                                                    <h:selectOneRadio group="membersMayEditCommentsToggle"
+                                                        value="#{adminCommentBean.currentCommentView.membersMayEditComments}"
+                                                        immediate="true" checked="null">
+                                                        <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                        <f:ajax execute="@this" render="@none"></f:ajax>
+                                                    </h:selectOneRadio>
+                                                    <span class="toggle-outside">
+                                                        <span class="toggle-inside"></span>
+                                                    </span>
+                                                    <span class="admin__form-help-text">#{msg.admin__comment_view_members_may_edit_comments__help}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:form>
+                                    
+                                    <!-- MEMBERS MAY DELETE COMMENTS -->
+                                    <h:form id="sidebarForm3">
+                                        <div class="row">
+                                            <div class="col-11">
+                                                <h3>#{msg.admin__comment_view_members_may_delete_comments}:</h3>
+                                            </div>
+                                            <div class="col-1 admin__form-help-icon">
+                                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 admin__form-input">
                                                 <div class="admin__radio-switch openAccessToggle">
                                                     <h:selectOneRadio group="membersMayDeleteCommentsToggle"
                                                         value="#{adminCommentBean.currentCommentView.membersMayDeleteComments}"
@@ -244,10 +260,12 @@
                                                     <span class="toggle-outside">
                                                         <span class="toggle-inside"></span>
                                                     </span>
+                                                    <span class="admin__form-help-text">#{msg.admin__comment_view_members_may_delete_comments__help}</span>
                                                 </div>
-                                            </h:form>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </h:form>   
+                                    
                                 </div>
 							
 							</div>

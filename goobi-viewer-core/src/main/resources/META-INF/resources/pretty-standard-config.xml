@@ -824,18 +824,22 @@
         <view-id value="/resources/admin/views/adminRight.xhtml" />
         <action onPostback="false">#{adminBean.newCurrentLicenseAction}</action>
     </url-mapping>
-    <url-mapping id="adminUserCommentGroups">
+    <url-mapping id="adminUserCommentViews">
         <pattern value="/admin/comments/" />
-        <view-id value="/resources/admin/views/adminUserCommentGroups.xhtml" />
+        <view-id value="/resources/admin/views/adminUserCommentViews.xhtml" />
     </url-mapping>
-    <url-mapping id="adminUserCommentGroupAll">
+    <url-mapping id="adminUserCommentViewAll">
         <pattern value="/admin/comments/all/" />
-        <view-id value="/resources/admin/views/adminUserCommentGroups.xhtml" />
+        <view-id value="/resources/admin/views/adminUserCommentViews.xhtml" />
     </url-mapping>
-    <url-mapping id="adminUserCommentGroupNew">
+    <url-mapping id="adminUserCommentViewNew">
         <pattern value="/admin/comments/new/" />
-        <view-id value="/resources/admin/views/adminUserCommentGroup.xhtml" />
+        <view-id value="/resources/admin/views/adminUserCommentView.xhtml" />
         <action onPostback="false">#{adminCommentBean.newCurrentCommentViewAction}</action>
+    </url-mapping>
+    <url-mapping id="adminUserCommentViewEdit">
+        <pattern value="/admin/comments/edit/#{commentViewId:adminCommentBean.currentCommentViewId}/" />
+        <view-id value="/resources/admin/views/adminUserCommentView.xhtml" />
     </url-mapping>
     <url-mapping id="adminUserTerms">
         <pattern value="/admin/userterms/" />

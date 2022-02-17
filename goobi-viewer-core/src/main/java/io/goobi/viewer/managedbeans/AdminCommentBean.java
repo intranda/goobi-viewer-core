@@ -77,7 +77,7 @@ public class AdminCommentBean implements Serializable {
             lazyModelComments.setFilters("body_targetPI");
         }
     }
-    
+
     /**
      * 
      * @return
@@ -86,14 +86,14 @@ public class AdminCommentBean implements Serializable {
     public List<CommentView> getAllCommentViews() throws DAOException {
         return DataManager.getInstance().getDao().getAllCommentViews();
     }
-    
+
     /**
      * 
      */
     public void newCurrentCommentViewAction() {
         currentCommentView = new CommentView();
     }
-    
+
     /**
      * <p>
      * saveCommentViewAction.
@@ -107,24 +107,22 @@ public class AdminCommentBean implements Serializable {
         if (commentView.getId() != null) {
             if (DataManager.getInstance().getDao().updateCommentView(commentView)) {
                 Messages.info("updatedSuccessfully");
-                currentCommentView = null;    
-                return "pretty:adminUserCommentGroups";
+                currentCommentView = null;
+                return "pretty:adminUserCommentViews";
             }
             Messages.info("errSave");
         } else {
             if (DataManager.getInstance().getDao().addCommentView(commentView)) {
                 Messages.info("addedSuccessfully");
-                currentCommentView = null;    
-                return "pretty:adminUserCommentGroups";
+                currentCommentView = null;
+                return "pretty:adminUserCommentViews";
             }
             Messages.info("errSave");
-        } 
-       return "";
+        }
+        return "";
     }
 
-
     // Comments
-    
 
     /**
      * 
@@ -132,7 +130,6 @@ public class AdminCommentBean implements Serializable {
     public void resetCurrentCommentAction() {
         currentComment = null;
     }
-
 
     /**
      * <p>
@@ -205,19 +202,42 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * @return the selectedCommentView
+     * @return the currentCommentView
      */
-    public CommentView getSelectedCommentView() {
+    public CommentView getCurrentCommentView() {
         return currentCommentView;
     }
 
     /**
-     * @param selectedCommentView the selectedCommentView to set
+     * @param currentCommentView the currentCommentView to set
      */
-    public void setSelectedCommentView(CommentView selectedCommentView) {
-        this.currentCommentView = selectedCommentView;
+    public void setCurrentCommentView(CommentView currentCommentView) {
+        this.currentCommentView = currentCommentView;
     }
 
+    /**
+     * Returns the ID of <code>currentCommentView</code>.
+     * @return currentCommentView.id
+     */
+    public Long getCurrentCommentViewId() {
+        if (currentCommentView != null) {
+            return currentCommentView.getId();
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets <code>currentCommentView</code> by loading it from the DB via the given ID.
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setCurrentCommentViewId(Long id) throws DAOException {
+        if (id != null) {
+            this.currentCommentView = DataManager.getInstance().getDao().getCommentView(id);
+        }
+    }
 
     /**
      * <p>
