@@ -16,10 +16,6 @@
 	&.-adminActive {
 		top: 105px;
 	}
-	&__info {
-		position: relative;
-		z-index: 2040;
-	}
 	&__icon-wrapper {
 		position: relative;
 		flex: 0 0 200px;
@@ -32,23 +28,20 @@
 		width: 100px;
 		height: 100px;
 		/* Animation to spinCookie and move the sphere */
-		animation: spinCookie 800ms ease-out 1, moveLeftToRightCookie 800ms ease-out 1, fadeInCookie 400ms ease-out 1;
+		animation: spinCookieIn 800ms ease-out 1, fadeInCookie 400ms ease-out 1;
 		animation-fill-mode: forwards;
 		transition: all 1s ease;
 		position: relative;
 		left: 0;
 	}
+	--roll-in-x: 100px;
 	@keyframes fadeInCookie {
 	  from { opacity: 0%; }
 	  to { opacity: 100%; }
 	}
-	@keyframes spinCookie {
-	  from { transform: rotate(90deg); }
-	  to { transform: rotate(360deg); }
-	}
-	@keyframes moveLeftToRightCookie {
-	  0%   { left: -100px;}
-	  100% { left: calc(100% - 100px); }
+	@keyframes spinCookieIn {
+	  from { transform: translateX(-100px) rotate(90deg); }
+	  to { transform: translateX(var(--roll-in-x)) rotate(360deg); }
 	}
 	@keyframes bounceCookie {
 	  0% {
@@ -75,6 +68,9 @@
 		padding: 4rem 4rem;
 		color: #222;
 		background-color: #f1f2f8;
+		max-height: 100vh;
+		overflow-y: auto;
+		z-index: 2040;
 		p {
 			margin: 0;
 		}
@@ -133,6 +129,7 @@
 		&__info-actions {
 			width: 100%;
 		}
+		--roll-in-x: 0px;
 	}
 }
 /* BREAKPOINT FOR SMARTPHONES */
