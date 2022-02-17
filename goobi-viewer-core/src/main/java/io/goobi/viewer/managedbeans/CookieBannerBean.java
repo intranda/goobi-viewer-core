@@ -198,4 +198,5 @@ public class CookieBannerBean implements Serializable {
         }
     }
     
+    
 }

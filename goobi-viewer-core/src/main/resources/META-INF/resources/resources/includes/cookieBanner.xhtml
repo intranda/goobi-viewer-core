@@ -20,10 +20,11 @@
         <div class="cookie-banner__info">
             <div class="layout-container">
                 <p>
-                    <h:outputText value="#{msg.cookieBanner_text}" escape="false" />
+                    <h:outputText value="#{cookieBannerBean.cookieBanner.text.textOrDefault}" escape="false" />
                 </p>
 
                 <div class="cookie-banner__info-accept">
+<!--                     <button type="button" class="btn btn--full" data-set="cookie-banner">#{msg.cookieBanner_decline}</button> -->
                     <button type="button" class="btn btn--full" data-set="cookie-banner">#{msg.cookieBanner_accept}</button>
                 </div>                    
             </div>
