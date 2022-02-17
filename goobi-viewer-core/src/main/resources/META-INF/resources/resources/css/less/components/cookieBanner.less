@@ -16,25 +16,23 @@
 	&.-adminActive {
 		top: 105px;
 	}
-	&__top,
 	&__info {
 		position: relative;
 		z-index: 2040;
 	}
 	&__icon-wrapper {
 		position: relative;
-		width: 200px;
+		flex: 0 0 200px;
 		&.-jumpAnimation {
-			animation: bounceCookie 500ms linear 2;
+			animation: bounceCookie 400ms linear 2;
 		}
 	}
-	
 	&__icon {
 		display: block;
 		width: 100px;
 		height: 100px;
 		/* Animation to spinCookie and move the sphere */
-		animation: spinCookie 1200ms ease-out 1, moveLeftToRightCookie 1200ms ease-out 1, fadeInCookie 400ms ease-out 1;
+		animation: spinCookie 800ms ease-out 1, moveLeftToRightCookie 800ms ease-out 1, fadeInCookie 400ms ease-out 1;
 		animation-fill-mode: forwards;
 		transition: all 1s ease;
 		position: relative;
@@ -66,8 +64,8 @@
 	&__info-inserted-content {
 		margin-inline-end: 3.5rem;
 		margin-inline-start: 3.5rem;
+		flex-grow: 1;
 	}
-	&__top {}
 	&__info {
 		position: absolute;
 		display: flex;
@@ -84,9 +82,20 @@
 	&__info-inner {
 		display: flex;
 		max-width: 1200px;
+		min-width: calc(~"100% - 8rem");
 	}
-	&__info-accept {
+	&__info-actions {
+		display: flex;
+		flex-direction: column;
 	}
+	&__accept-button,
+	&__decline-button {
+		min-width: 150px;
+	}
+	&__accept-button {
+		margin-bottom: 1.5rem;
+	}
+	&__decline-button {}
 	&__overlay {
 		position: absolute;
 		bottom: 0;
@@ -110,14 +119,19 @@
 		&__info-inserted-content {
 			margin-inline-end: 0rem;
 			margin-inline-start: 0rem;
+			margin-bottom: 2.5rem;
 		}
 		&__info-inner {
 			flex-direction: column;
-			align-items: center;
 		}
 		&__icon-wrapper {
 			margin-inline-end: auto;
 			margin-bottom: 3.5rem;
+			width: 100px;
+			flex: 0 0 auto;
+		}
+		&__info-actions {
+			width: 100%;
 		}
 	}
 }
