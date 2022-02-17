@@ -27,11 +27,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.eclipse.jdt.internal.compiler.ast.IPolyExpression;
-
 import io.goobi.viewer.dao.converter.NumberListConverter;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
-import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
