@@ -42,15 +42,15 @@
 							<div class="row no-gutters mb-3 align-items-center">
 								<div class="control-label mr-3 admin__form-label">#{msg.admin__legal__cookie_banner_active}:</div>
 								<div class="admin__form-input">
-									<viewerComponent:toggleSwitch name="activateCookieBanner" toggleTarget="#cookieBannerEditForm"
+									<viewerComponent:toggleSwitch name="activateCookieBanner" toggleTarget="#cookieBannerEditWrapper"
 										value="#{cookieBannerBean.bannerActive}"/>
 								</div>
 							</div>
 						</div>
 					</h:form>
 
-					<h:form id="cookieBannerEditForm" prependId="false">
-						<div class="admin__user-terms-box-editable">
+					<div id="cookieBannerEditWrapper" class="admin__user-terms-box-editable hide">
+						<h:form id="cookieBannerEditForm" prependId="false" >
 							<div class="form-horizontal form-group">
 
 								<viewerForms:inputFormBlock title="#{msg.admin__terms_of_use__manage_text}" languageSelector="#{banner.text}">
@@ -97,7 +97,6 @@
 									class="row no-gutters justify-content-end admin__final-actions">
 									<h:commandButton class="btn btn--success" value="#{msg.save}"
 										action="#{cookieBannerBean.save()}">
-										<f:ajax render="@form :messages" execute="@form"></f:ajax>
 									</h:commandButton>
 								</div>
 
@@ -120,8 +119,8 @@
 									</div>
 								</div>
 							</div>
-						</div>
-					</h:form>
+						</h:form>
+					</div>
 				</div>
 			</h:panelGroup>
 		</f:view>
