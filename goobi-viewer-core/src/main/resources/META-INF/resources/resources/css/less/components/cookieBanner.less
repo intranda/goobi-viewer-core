@@ -34,14 +34,17 @@
 		position: relative;
 		left: 0;
 	}
-	--roll-in-x: 100px;
+	--roll-in-x1: 100px;
+	--roll-in-x2: -100px;
+	--rotate1: 90deg;
+	--rotate2: 360deg;
 	@keyframes fadeInCookie {
 	  from { opacity: 0%; }
 	  to { opacity: 100%; }
 	}
 	@keyframes spinCookieIn {
-	  from { transform: translateX(-100px) rotate(90deg); }
-	  to { transform: translateX(var(--roll-in-x)) rotate(360deg); }
+	  from { transform: translateX(var(--roll-in-x2)) rotate(var(--rotate1)); }
+	  to { transform: translateX(var(--roll-in-x1)) rotate(var(--rotate2)); }
 	}
 	@keyframes bounceCookie {
 	  0% {
@@ -57,7 +60,7 @@
 	&__info-inserted-content {
 		margin-inline-end: 3.5rem;
 		margin-inline-start: 3.5rem;
-		flex-grow: 1;
+		min-width: 300px;
 	}
 	&__info {
 		position: absolute;
@@ -78,6 +81,7 @@
 	&__info-inner {
 		display: flex;
 		max-width: 1200px;
+		flex-grow: 1;
 	}
 	&__info-actions {
 		display: flex;
@@ -101,6 +105,16 @@
 		opacity: 0.6;
 		z-index: 2030;
 	}
+}
+
+@{RTL} {
+	.cookie-banner {
+		--roll-in-x1: -100px;
+		--roll-in-x2: 100px;
+		--rotate1: -90deg;
+		--rotate2: -360deg;
+	}
+
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
