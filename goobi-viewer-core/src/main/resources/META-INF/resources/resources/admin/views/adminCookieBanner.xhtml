@@ -1,0 +1,129 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminCookieBanner')}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+		<f:view contentType="text/html" encoding="utf-8">
+
+			<!-- No scope, so getter in value is called on every call of var -->
+			<c:set var="banner"
+				value="#{cookieBannerBean.getCookieBannerForEdit()}" />
+
+			<h:panelGroup layout="block" id="adminCookieBanner"
+				rendered="#{userBean.admin}">
+				<!-- TITLE -->
+				<div class="admin__title-bar">
+					<h1 class="admin__title">#{msg.label__cookie_banner}</h1>
+				</div>
+
+				<div class="admin__content-inner-content">
+					<h:form id="cookieBannerActivateForm" prependId="false">
+						<div class="admin__info-text">
+							<h:outputText value="#{msg.admin__legal__cookie_banner_info}"
+								escape="false" />
+						</div>
+						<div class="form-horizontal form-group">
+							<div class="row no-gutters mb-3 align-items-center">
+								<div class="control-label mr-3 admin__form-label">#{msg.admin__legal__cookie_banner_active}:</div>
+								<div class="admin__form-input">
+									<viewerComponent:toggleSwitch name="activateCookieBanner" toggleTarget="#cookieBannerEditWrapper"
+										value="#{cookieBannerBean.bannerActive}"/>
+								</div>
+							</div>
+						</div>
+					</h:form>
+
+					<div id="cookieBannerEditWrapper" class="admin__user-terms-box-editable hide">
+						<h:form id="cookieBannerEditForm" prependId="false" >
+							<div class="form-horizontal form-group">
+
+								<viewerForms:inputFormBlock title="#{msg.admin__terms_of_use__manage_text}" languageSelector="#{banner.text}">
+								
+									<viewerForms:htmlInputField 
+										label="#{msg.text}"
+										value="#{banner.text.text}"
+										required="#{banner.text.isDefaultLocaleSelected()}">
+									</viewerForms:htmlInputField>
+								
+								</viewerForms:inputFormBlock>
+								
+								<viewerForms:inputFormBlock title="#{msg.admin__legal__ignore_cookie_banner_exceptions}">
+									
+									<p>#{msg.admin__legal__ignore_cookie_banner_on_pages__label}</p>
+									
+									<viewerForms:inputFormField label="#{msg.pages}">
+										<div class="cms-widgets-add__pages-selection cms-module__option-control admin__form-input">
+											<ul>
+												<ui:repeat var="var"
+													value="#{cookieBannerBean.cmsPageMap.keySet().stream().sorted().toList()}">
+													<li>
+														<label class="cms-menu__available-item-page-label pl-0"> 
+															<h:selectBooleanCheckbox
+																type="checkbox"
+																value="#{cookieBannerBean.cmsPageMap[var]}">
+																<f:ajax event="change" execute="@this" />
+															</h:selectBooleanCheckbox> 
+															<h:outputFormat value="#{var.title}" escape="false"/>
+															<ui:fragment rendered="#{not empty var.subThemeDiscriminatorValue}">
+			                                                    <small>(#{var.subThemeDiscriminatorValue})</small>
+			                                                </ui:fragment>
+														</label>
+													</li>
+												</ui:repeat>
+											</ul>
+										</div>
+									</viewerForms:inputFormField>
+								
+								</viewerForms:inputFormBlock>
+
+								<!-- SAVE TERMS OF USE TEXT -->
+								<div
+									class="row no-gutters justify-content-end admin__final-actions">
+									<h:commandButton class="btn btn--success" value="#{msg.save}"
+										action="#{cookieBannerBean.save()}">
+									</h:commandButton>
+								</div>
+
+								<!-- DEACTIVATE TERMS OF USE + RESET STATUS ACCEPTED FOR USERS -->
+								<h2>#{msg.admin__legal__reset_cookie_banner_consent__title}</h2>
+								<div class="admin__default-block -danger">
+
+									<div class="row">
+										<div class="col-12">
+											<p>#{msg.admin__legal__reset_cookie_banner_consent__info}</p>
+											<div class="text-right">
+												<h:commandButton class="btn btn--danger"
+													value="#{msg.admin__legal__reset_cookie_banner_consent__action}"
+													onclick="if ( !confirm( &quot;#{msg.admin__legal__reset_cookie_banner_consent__confirm}&quot; ) ) { return false };"
+													action="#{cookieBannerBean.resetUserConsent()}">
+													<f:ajax render="@form :messages"></f:ajax>
+												</h:commandButton>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</h:form>
+					</div>
+				</div>
+			</h:panelGroup>
+		</f:view>
+	</ui:define>
+</ui:composition>
+

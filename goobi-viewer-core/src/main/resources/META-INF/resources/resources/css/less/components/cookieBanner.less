@@ -1,0 +1,150 @@
+/* ==============================================================
+   Cookie Banner
+   style declarations for cookieBanner.xhtml
+   ==============================================================*/
+
+/* COOKIE BANNER */
+.cookie-banner {
+	display: none;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	transition: all 0.2s linear;
+	z-index: 2040;
+	&.-adminActive {
+		top: 105px;
+	}
+	&__icon-wrapper {
+		position: relative;
+		flex: 0 0 200px;
+		&.-jumpAnimation {
+			animation: bounceCookie 400ms linear 2;
+		}
+	}
+	&__icon {
+		display: block;
+		width: 100px;
+		height: 100px;
+		/* Animation to spinCookie and move the sphere */
+		animation: spinCookieIn 800ms ease-out 1, fadeInCookie 400ms ease-out 1;
+		animation-fill-mode: forwards;
+		transition: all 1s ease;
+		position: relative;
+		left: 0;
+	}
+	--roll-in-x1: 100px;
+	--roll-in-x2: -100px;
+	--rotate1: 90deg;
+	--rotate2: 360deg;
+	@keyframes fadeInCookie {
+	  from { opacity: 0%; }
+	  to { opacity: 100%; }
+	}
+	@keyframes spinCookieIn {
+	  from { transform: translateX(var(--roll-in-x2)) rotate(var(--rotate1)); }
+	  to { transform: translateX(var(--roll-in-x1)) rotate(var(--rotate2)); }
+	}
+	@keyframes bounceCookie {
+	  0% {
+	    top: 0;
+	  }
+	  50% {
+	    top: -10px;
+	  }
+	  100% {
+	    top: 0px;
+	  }
+	}
+	&__info-inserted-content {
+		margin-inline-end: 3.5rem;
+		margin-inline-start: 3.5rem;
+		min-width: 300px;
+	}
+	&__info {
+		position: absolute;
+		display: flex;
+		justify-content: center;
+		width: 100%;
+		bottom: 0%;
+		padding: 4rem 4rem;
+		color: #222;
+		background-color: #f1f2f8;
+		max-height: 100vh;
+		overflow-y: auto;
+		z-index: 2040;
+		p {
+			margin: 0;
+		}
+	}
+	&__info-inner {
+		display: flex;
+		max-width: 1200px;
+		flex-grow: 1;
+	}
+	&__info-actions {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+	&__accept-button,
+	&__decline-button {
+		min-width: 150px;
+	}
+	&__accept-button {
+		margin-bottom: 1.5rem;
+	}
+	&__decline-button {}
+	&__overlay {
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		height: 100%;
+		background-color: #000;
+		opacity: 0.6;
+		z-index: 2030;
+	}
+}
+
+@{RTL} {
+	.cookie-banner {
+		--roll-in-x1: -100px;
+		--roll-in-x2: 100px;
+		--rotate1: -90deg;
+		--rotate2: -360deg;
+	}
+
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+	.cookie-banner {
+		&__info-inserted-content {
+			margin-inline-end: 0rem;
+			margin-inline-start: 0rem;
+			margin-bottom: 2.5rem;
+		}
+		&__info-inner {
+			flex-direction: column;
+		}
+		&__icon-wrapper {
+			margin-inline-end: auto;
+			margin-bottom: 3.5rem;
+			width: 100px;
+			flex: 0 0 auto;
+		}
+		&__info-actions {
+			width: 100%;
+		}
+		--roll-in-x: 0px;
+	}
+}
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}
