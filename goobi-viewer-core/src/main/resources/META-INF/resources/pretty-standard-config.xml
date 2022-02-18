@@ -830,7 +830,11 @@
     </url-mapping>
     <url-mapping id="adminUserCommentViewAll">
         <pattern value="/admin/comments/all/" />
-        <view-id value="/resources/admin/views/adminUserCommentViews.xhtml" />
+        <view-id value="/resources/admin/views/adminUserComments.xhtml" />
+    </url-mapping>
+    <url-mapping id="adminUserCommentView">
+        <pattern value="/admin/comments/#{commentViewId:adminCommentBean.currentCommentViewId}/" />
+        <view-id value="/resources/admin/views/adminUserComments.xhtml" />
     </url-mapping>
     <url-mapping id="adminUserCommentViewNew">
         <pattern value="/admin/comments/new/" />

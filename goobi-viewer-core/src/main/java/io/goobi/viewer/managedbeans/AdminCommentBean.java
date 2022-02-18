@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +93,15 @@ public class AdminCommentBean implements Serializable {
      */
     public void newCurrentCommentViewAction() {
         currentCommentView = new CommentView();
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public String saveCurentCommentViewAction() throws DAOException {
+        return saveCommentViewAction(currentCommentView);
     }
 
     /**
@@ -213,10 +223,12 @@ public class AdminCommentBean implements Serializable {
      */
     public void setCurrentCommentView(CommentView currentCommentView) {
         this.currentCommentView = currentCommentView;
+        init();
     }
 
     /**
      * Returns the ID of <code>currentCommentView</code>.
+     * 
      * @return currentCommentView.id
      */
     public Long getCurrentCommentViewId() {
@@ -234,8 +246,13 @@ public class AdminCommentBean implements Serializable {
      * @throws DAOException
      */
     public void setCurrentCommentViewId(Long id) throws DAOException {
-        if (id != null) {
-            this.currentCommentView = DataManager.getInstance().getDao().getCommentView(id);
+        logger.trace("setCurrentCommentViewId: {}", id);
+        if (ObjectUtils.notEqual(getCurrentCommentViewId(), id)) {
+            if (id != null) {
+                setCurrentCommentView(DataManager.getInstance().getDao().getCommentView(id));
+            } else {
+                setCurrentCommentView(null);
+            }
         }
     }
 

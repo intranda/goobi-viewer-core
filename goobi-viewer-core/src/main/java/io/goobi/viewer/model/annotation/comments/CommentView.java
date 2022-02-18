@@ -9,6 +9,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
@@ -17,6 +20,8 @@ import io.goobi.viewer.model.security.user.UserGroup;
 @Entity
 @Table(name = "annotations_comment_views")
 public class CommentView {
+
+    private static final Logger logger = LoggerFactory.getLogger(CommentView.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -112,6 +117,7 @@ public class CommentView {
      * @param userGroup the userGroup to set
      */
     public void setUserGroup(UserGroup userGroup) {
+        logger.trace("setUserGroup: {}", userGroup);
         this.userGroup = userGroup;
     }
 
@@ -126,6 +132,7 @@ public class CommentView {
      * @param sendEmailNotifications the sendEmailNotifications to set
      */
     public void setSendEmailNotifications(boolean sendEmailNotifications) {
+        logger.trace("setSendEmailNotifications: {}", sendEmailNotifications);
         this.sendEmailNotifications = sendEmailNotifications;
     }
 
@@ -140,6 +147,7 @@ public class CommentView {
      * @param membersMayEditComments the membersMayEditComments to set
      */
     public void setMembersMayEditComments(boolean membersMayEditComments) {
+        logger.trace("setMembersMayEditComments: {}", membersMayEditComments);
         this.membersMayEditComments = membersMayEditComments;
     }
 
@@ -154,6 +162,7 @@ public class CommentView {
      * @param membersMayDeleteComments the membersMayDeleteComments to set
      */
     public void setMembersMayDeleteComments(boolean membersMayDeleteComments) {
+        logger.trace("setMembersMayDeleteComments: {}", membersMayDeleteComments);
         this.membersMayDeleteComments = membersMayDeleteComments;
     }
 }

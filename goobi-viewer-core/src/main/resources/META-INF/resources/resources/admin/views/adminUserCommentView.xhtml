@@ -150,8 +150,8 @@
                                                         id="userGroupOwner" converter="userGroupConverter"
                                                         immediate="true" required="false" styleClass="form-control">
                                                         <f:selectItems value="#{adminBean.allUserGroups}" />
+                                                        <f:ajax execute="@this" render="@none"></f:ajax>
                                                     </h:selectOneMenu>
-                                                    
                                                     <span class="admin__form-help-text">#{msg.admin__comment_view_user_group__help}</span>
                                                 </div>
                                             </div>
