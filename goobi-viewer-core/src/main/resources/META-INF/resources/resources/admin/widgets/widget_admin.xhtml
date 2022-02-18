@@ -4,6 +4,7 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <composite:interface />
@@ -41,7 +42,10 @@
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminLicenseTypes')}/">
                                 <i class="fa fa-key" aria-hidden="true"></i>
                                 <span>#{msg.admin__licenses}</span>
+                            	<span class="admin-widget__counter">#{fn:length(adminBean.notConfiguredAccessConditions)}</span>
                             </h:outputLink>
+                            <div >
+                            </div>
                         </li>
                         <li class="#{navigationHelper.currentPage == 'adminRights' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminRole' ? 'active' : ''}">
@@ -72,6 +76,7 @@
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminTranslations')}/">
                                 <i class="fa fa-exchange" aria-hidden="true"></i>
                                 <span>#{msg.admin__translations__link}</span>
+                            	<span class="admin-widget__counter">#{adminBean.configuredTranslationGroups.stream().filter(group -> !group.loadError).filter(group -> group.entryCount - group.fullyTranslatedEntryCount > 0).count()}</span>
                             </h:outputLink>
                         </li>
                         <li class="#{navigationHelper.currentPage == 'adminThemes' ? 'active' : ''}">
