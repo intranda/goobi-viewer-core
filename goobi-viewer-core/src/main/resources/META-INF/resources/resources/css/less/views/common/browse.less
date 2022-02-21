@@ -28,7 +28,8 @@
 	&__title,
 	&__description-toggle,
 	&__rss {
-		a {
+		a, button {
+			color: inherit;
 			display: block;
 			padding: 10px 0;
 			text-overflow: ellipsis;
@@ -43,7 +44,10 @@
 			text-align: center;
 		}
 	}
-	&__structure {}
+	&__structure {
+		display: flex;
+		justify-content: center;
+	}
 	&__title {}
 	&__top-element {
 		font-weight: bold;
