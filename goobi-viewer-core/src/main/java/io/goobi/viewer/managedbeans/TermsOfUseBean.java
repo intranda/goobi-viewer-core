@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.security.TermsOfUse;
+import io.goobi.viewer.model.administration.legal.TermsOfUse;
 
 /**
  * 

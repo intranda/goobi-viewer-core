@@ -52,6 +52,8 @@ import io.goobi.viewer.controller.AlphabetIterator;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.administration.legal.CookieBanner;
+import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.bookmark.BookmarkList;
@@ -83,7 +85,6 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.TermsOfUse;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -5537,6 +5538,35 @@ public class JPADAO implements IDAO {
                 .collect(Collectors.toList());
 
         return pageList;
+    }
+
+    @Override
+    public CookieBanner getCookieBanner() throws DAOException {
+        preQuery();
+        Query q = getEntityManager().createQuery("SELECT u FROM CookieBanner u");
+        //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+        @SuppressWarnings("unchecked")
+        List<CookieBanner> results = q.getResultList();
+        if (results.isEmpty()) {
+            //No results. Just return a new object which may be saved later
+            return new CookieBanner();
+        }
+        return results.get(0);
+    }
+
+    @Override
+    public boolean saveCookieBanner(CookieBanner banner) throws DAOException {
+        preQuery();
+        getEntityManager().getTransaction().begin();
+        if (banner.getId() == null) {
+            //create initial tou
+            getEntityManager().persist(banner);
+        } else {
+            getEntityManager().merge(banner);
+        }
+        getEntityManager().getTransaction().commit();
+        return true;
     }
 
 }

@@ -24,6 +24,8 @@ import java.util.Optional;
 import javax.persistence.Query;
 
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.administration.legal.CookieBanner;
+import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.bookmark.BookmarkList;
@@ -51,7 +53,6 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.TermsOfUse;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -2357,5 +2358,9 @@ public interface IDAO {
 
     public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException;
 
+    public CookieBanner getCookieBanner() throws DAOException;
+    
+    public boolean saveCookieBanner(CookieBanner banner) throws DAOException;
+    
 
 }

@@ -48,8 +48,6 @@ var viewerJS = (function () {
     viewer.initialized = new rxjs.Subject();
     viewer.toggledCollapseable = new rxjs.Subject();
     
-    
-
     viewer.init = function (config) {
         if (_debug) {
             console.log('Initializing: viewerJS.init');
@@ -68,6 +66,7 @@ var viewerJS = (function () {
         console.info('Current Browser = ', _defaults.browser);
         console.info('Current Theme = ', _defaults.theme);
         console.info('Current Page = ', _defaults.currentPage);
+
 
         //init websocket
         viewer.webSocket = new viewerJS.WebSocket(window.location.host, currentPath, viewerJS.WebSocket.PATH_SESSION_SOCKET);

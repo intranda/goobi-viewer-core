@@ -96,6 +96,7 @@ public enum PageType {
     adminCmsRecordNotes("admin/cms/recordnotes", "cms__record_notes__title_plural"),
     adminCmsSliders("admin/cms/slider", "cms__sliders__title"),
     adminCmsSidebarWidgets("admin/cms/widgets", "cms_widgets__title"),
+    adminCookieBanner("admin/legal/cookies", "label__cookie_banner"),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing

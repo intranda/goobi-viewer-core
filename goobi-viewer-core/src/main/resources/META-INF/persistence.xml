@@ -48,8 +48,8 @@
 		<class>io.goobi.viewer.model.security.user.UserGroup</class>
 		<class>io.goobi.viewer.model.security.user.UserRole</class>
 		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
-		<class>io.goobi.viewer.model.security.TermsOfUse</class>
-		<class>io.goobi.viewer.model.security.TermsOfUseTranslation</class>
+		<class>io.goobi.viewer.model.administration.legal.TermsOfUse</class>
+		<class>io.goobi.viewer.model.administration.legal.TermsOfUseTranslation</class>
 		<class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
 		<class>io.goobi.viewer.model.log.LogMessage</class>
 		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
@@ -68,6 +68,7 @@
 		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
 		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
 		<class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
+		<class>io.goobi.viewer.model.administration.legal.CookieBanner</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -141,8 +142,9 @@
 		<class>io.goobi.viewer.model.security.user.UserGroup</class>
 		<class>io.goobi.viewer.model.security.user.UserRole</class>
 		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
-		<class>io.goobi.viewer.model.security.TermsOfUse</class>
-		<class>io.goobi.viewer.model.security.TermsOfUseTranslation</class>
+		<class>io.goobi.viewer.model.administration.legal.TermsOfUse</class>
+		<class>io.goobi.viewer.model.administration.legal.TermsOfUseTranslation</class>
+		<class>io.goobi.viewer.model.administration.legal.CookieBanner</class>
 		<class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
 		<class>io.goobi.viewer.model.log.LogMessage</class>
 		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>

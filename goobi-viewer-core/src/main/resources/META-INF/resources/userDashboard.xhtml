@@ -166,7 +166,7 @@
 										<ui:repeat value="#{userDataBean.getLatestComments(userBean.user, 3)}" var="comment">
 											<div class="user-dashboard__comments-item">
 												<div class="user-dashboard__comments-text">#{comment.text}</div>
-												<a href="#{request.contextPath}#{comment.targetLink}" class="user-dashboard__comments-open-record">#{msg.action__open_record}</a>
+												<a href="#{navigationHelper.objectUrl}#{comment.targetLink}" class="user-dashboard__comments-open-record">#{msg.action__open_record}</a>
 											</div>
 										</ui:repeat>
 									</div>

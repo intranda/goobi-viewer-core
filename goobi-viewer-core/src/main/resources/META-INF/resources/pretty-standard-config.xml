@@ -858,6 +858,10 @@
         <action onPostback="false">#{adminBean.triggerNewMessageEntryMode}</action>
         <action onPostback="false">#{adminBean.lockTranslation}</action>
     </url-mapping>
+    <url-mapping id="adminCookieBanner">
+        <pattern value="/admin/legal/cookies/" />
+        <view-id value="/resources/admin/views/adminCookieBanner.xhtml" />
+    </url-mapping>
 
 	<!-- THEME CONFIGS -->
     <url-mapping id="adminThemes">
