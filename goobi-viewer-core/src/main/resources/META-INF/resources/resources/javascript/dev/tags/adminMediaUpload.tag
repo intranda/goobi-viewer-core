@@ -43,7 +43,6 @@
         this.isDragover = false;
     
         this.on('mount', function () {
-            
             if(this.opts.showFiles) {
                 this.initUploadedFiles();
             }
@@ -107,22 +106,6 @@
 			this.getUploadedFiles();
             
             var filesZone = (this.refs.filesZone);
-//             var deleteOverlay = (this.refs.deleteOverlay);
-            
-//             filesZone.addEventListener('mouseenter', function (e) {
-//                 deleteOverlay.classList.add("in");
-//             });
-
-//             filesZone.addEventListener('mouseleave', function (e) {
-//                 deleteOverlay.classList.remove("in");
-//             });
-            
-//             deleteOverlay.addEventListener('click', function (e) {
-//                 if(confirm(this.opts.msg.bulkDeleteConfirm)) {
-//                     this.deleteUploadedFiles()
-//                     .then( () => this.getUploadedFiles())
-//                 }
-//             }.bind(this));
         }
         
         buttonFilesSelected(e) {
@@ -155,7 +138,6 @@
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').addClass('in-progress');
             
             for (i = 0; i < this.files.length; i++) {
-                console.log("upload file ", i, this.files[i])
                 uploads.push(Q(this.uploadFile(i)));
             }
             
@@ -212,7 +194,6 @@
        		})
        		.then(response => response.json())
        		.then(json => {
-       		    console.log("uploaded files ", json);
        		    this.uploadedFiles = json;
        		    this.update();
        		})
@@ -225,14 +206,12 @@
         }
         
         deleteUploadedFile(file) {
-            console.log("delete file ", file, this.getFilename(file));
             return fetch(this.opts.postUrl + this.getFilename(file), {
                 method: "DELETE",
        		})
         }
         
         deleteFile(data) {
-            console.log("delete ", this.getFilename(data.item.file));
             this.deleteUploadedFile(data.item.file)
             .then( () => {
                 this.getUploadedFiles();
@@ -258,7 +237,6 @@
                 redirect: 'follow'
             })
             .then( response => { 
-                console.log("HEAD respnse ", response);
                 return response.status == 200;
             })
             .then(exists => {
@@ -281,37 +259,35 @@
                 
        		})
        		.then( result => {
-       		    var defer = Q.defer();
-       		    if(result.ok) {
-       		    	defer.resolve(result);    		        
-       		    } else if(result.body && !result.responseText){
-                   result.body.getReader().read()
-					.then(({ done, value }) => {
-						defer.reject({
-						  responseText:   new TextDecoder("utf-8").decode(value)
-						})
-					});
-       		    } else {
-       		        defer.reject(result);
-       		    }
-       		    return defer.promise;
+       		    
+       		    return new Promise((resolve, reject) => {
+	       		    if(result.ok) {
+	       		    	resolve(result);    		        
+	       		    } else if(result.body && !result.responseText){
+	                   result.body.getReader().read()
+						.then(({ done, value }) => {
+							reject({
+							  responseText:   new TextDecoder("utf-8").decode(value)
+							})
+						});
+	       		    } else {
+	       		        reject(result);
+	       		    }
+       		        
+       		    });
+       		    
        		}));
         }
         
         getFilename(url) {
-            console.log("url" + url);
-            console.log("base url " + this.opts.postUrl);
             let filename = url.replace(this.opts.postUrl, "");
-            console.log("filename " + filename);
             if(filename.startsWith("/")) {
                 filename = filename.slice(1);
             }
-            console.log("filename " + filename);
             let filenameEnd = filename.indexOf("/");
             if(filenameEnd > 0) {
                 filename = filename.slice(0,filenameEnd);
             }
-            console.log("filename " + filename);
             return filename;
         }
     </script> 
