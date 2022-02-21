@@ -29,19 +29,17 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractSolrEnabledTest;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class BrowseElementTest extends AbstractSolrEnabledTest {
+public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        AbstractSolrEnabledTest.setUpClass();
+        AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
 
     /**

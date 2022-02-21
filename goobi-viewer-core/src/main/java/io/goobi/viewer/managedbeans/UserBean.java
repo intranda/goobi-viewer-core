@@ -1382,18 +1382,10 @@ public class UserBean implements Serializable {
     /**
      * Check if the current user is required to agree to the terms of use
      * 
-     * @return true if termsOfUse is active, a user is logged in and {@link User#isAgreedToTermsOfUse()} returns false for this user
+     * @return true if a user is logged in and {@link User#isAgreedToTermsOfUse()} returns false for this user
      */
     public boolean mustAgreeToTermsOfUse() {
-        if (this.user != null && !this.user.isAgreedToTermsOfUse()) {
-            try {
-                boolean active = DataManager.getInstance().getDao().isTermsOfUseActive();
-                return active;
-            } catch (DAOException e) {
-                logger.error("Unable to query terms of use active state", e);
-            }
-        }
-        return false;
+        return this.user != null && !this.user.isAgreedToTermsOfUse();
     }
 
     public void agreeToTermsOfUse() throws DAOException {

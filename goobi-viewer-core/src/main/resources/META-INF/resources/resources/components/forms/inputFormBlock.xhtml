@@ -19,7 +19,7 @@
 		<!-- LANGUAGE TABS -->
 		<ui:fragment rendered="#{cc.attrs.languageSelector != null}">
 			<div class="admin__language-tabs">
-				<viewerComponent:localeSelector object="#{widget}"/>
+				<viewerComponent:localeSelector object="#{cc.attrs.languageSelector}"/>
 			</div>
 		</ui:fragment>
 		<div class="admin__default-block">

@@ -7,18 +7,18 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class JsonToolsTest extends AbstractSolrEnabledTest {
+public class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static final String PI = PI_KLEIUNIV;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        AbstractSolrEnabledTest.setUpClass();
+        AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
 
     /**

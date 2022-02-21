@@ -15,11 +15,14 @@
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group}">
             <div id="widgetUsage" class="widget widget-usage">
-                <!-- WIDGET TITLE -->
-				<h2 class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
-                    <span>#{msg.widgetUsage}</span>
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                </h2>
+
+	            <div class="widget-usage__topbar">
+	                <!-- WIDGET TITLE -->
+					<h2 class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
+	                    <span>#{msg.widgetUsage}</span>
+	                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+	                </h2>
+				</div>
 
                 <!-- WIDGET BODY -->
 				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">

@@ -27,11 +27,11 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 
-import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.DownloadException;
@@ -167,10 +167,13 @@ public class DownloadBean implements Serializable {
                 while ((bytesRead = fis.read(buffer)) != -1) {
                     os.write(buffer, 0, bytesRead);
                 }
-            } catch (ClientAbortException e) {
-                logger.warn("Download of '{}' aborted: {}", fileName, e.getMessage());
-                Messages.error("downloadError");
-                return;
+            } catch (IOException e) {
+                if(GetAction.isClientAbort(e)) {                    
+                    logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage());
+                    return;
+                } else {
+                    throw e;
+                }
             }
             // os.flush();
             fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.

@@ -1799,6 +1799,18 @@ public class ConfigurationTest extends AbstractTest {
     public void getLabelFieldForFacetField_shouldReturnNullIfNoValueFound() throws Exception {
         Assert.assertNull(DataManager.getInstance().getConfiguration().getLabelFieldForFacetField("MD_PLACEPUBLISH"));
     }
+    
+
+    /**
+     * @see Configuration#isTranslateFacetFieldLabels(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void isTranslateFacetFieldLabels_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels("YEAR"));
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels("MD_CREATOR"));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels("MD_PLACEPUBLISH"));
+    }
 
     @Test
     public void getSortOrderTest() {

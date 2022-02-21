@@ -11,6 +11,7 @@
 
     <composite:interface>
         <composite:attribute name="autocomplete" type="java.lang.Boolean" required="false" default="false"/>
+        <composite:attribute name="onlySearchIcon" required="false" default="true" />
     </composite:interface>
 
     <composite:implementation>
@@ -36,12 +37,25 @@
 		                                </h:inputText>
                                 	</c:otherwise>
                                 </c:choose>
-                                <div class="input-group-addon">
-                               		<button class="btn" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimple()}">
-                                            <f:setPropertyActionListener for="actionEvent" target="#{searchBean.activeSearchType}" value="0" />
-                               			<i class="fa fa-search"/>
-                               		</button>
-                                </div>
+                                
+								<ui:fragment rendered="#{cc.attrs.onlySearchIcon == true}">
+			                        <div class="input-group-addon">
+				                        <button class="btn" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimple()}">
+					                        <f:setPropertyActionListener for="actionEvent" target="#{searchBean.activeSearchType}" value="0" />
+												<i class="fa fa-search"/>
+				                        </button>
+			                        </div>
+								</ui:fragment>
+                                
+								<ui:fragment rendered="#{cc.attrs.onlySearchIcon == false}">
+			                        <div class="input-group-addon">
+				                        <button class="btn btn--full" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimple()}">
+					                        <f:setPropertyActionListener for="actionEvent" target="#{searchBean.activeSearchType}" value="0" />
+											#{msg.search}
+				                        </button>
+			                        </div>
+								</ui:fragment>
+                                
                             </div>
                         </div>
                 </h:form>

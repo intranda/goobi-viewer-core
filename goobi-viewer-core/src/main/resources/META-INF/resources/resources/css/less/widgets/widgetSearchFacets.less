@@ -4,10 +4,14 @@
    ==============================================================*/
 /* BLOCK */
 .widget-search-facets {
-	h2 {
-		span {
-			display: inline-block;
-			max-width: calc(~"100% - 36px");			
+	&__topbar {
+		overflow: hidden;
+		h2 {
+			span {
+				display: inline-block;
+				max-width: calc(~"100% - 36px");
+				word-wrap: anywhere;
+			}
 		}
 	}
 	.widget {

@@ -54,14 +54,38 @@
     		margin-bottom: 10px;
     	}
     }
+	&__counter {
+		background: @yellowBar;
+		border-radius: 10px;
+		width: 20px;
+		height: 20px;
+		padding: 0px 5px;
+		position: absolute;
+		right: 0px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		font-size: 13px;
+		top: 0.6rem;
+	}
     a {
     	display: block;
     	padding: 5px 0;
     	font-size: 1.4rem;
+		position: relative;
     	.fa {
     		width: 30px;
     	}
     }
+	&__translations-link,
+	&__licences-link {}
+	&__translations-link {}	
+	&__licences-link {
+		.admin-widget__counter {
+			background: @redBar;	
+		}
+	}
     &__roles-link {
     	padding: 2.5rem 0;
     }

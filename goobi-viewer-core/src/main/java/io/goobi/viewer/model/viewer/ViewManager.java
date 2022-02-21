@@ -47,6 +47,7 @@ import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.common.SolrDocument;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.jdom2.JDOMException;
@@ -79,6 +80,8 @@ import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.model.archives.ArchiveEntry;
+import io.goobi.viewer.model.archives.ArchiveResource;
 import io.goobi.viewer.model.calendar.CalendarView;
 import io.goobi.viewer.model.citation.Citation;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
@@ -162,7 +165,8 @@ public class ViewManager implements Serializable {
     private List<String> downloadFilenames = null;
     private String citationStyle = null;
     private CitationProcessorWrapper citationProcessorWrapper;
-    private String archiveEntryUri;
+    private ArchiveResource archiveResource = null;
+    private Pair<Optional<String>, Optional<String>> archiveTreeNeighbours = Pair.of(Optional.empty(), Optional.empty());
 
     /**
      * <p>
@@ -217,11 +221,25 @@ public class ViewManager implements Serializable {
 
         String archiveId = getArchiveEntryIdentifier();
         if (StringUtils.isNotBlank(archiveId)) {
-            ArchiveBean archiveBean = (ArchiveBean) BeanUtils.getBeanByName("archiveBean", ArchiveBean.class);
-            this.archiveEntryUri = archiveBean.loadArchiveForId(archiveId);
+            this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
+            this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
+        } 
+    }
+    
+    public Pair<Optional<String>, Optional<String>> getArchiveTreeNeighbours() {
+        return archiveTreeNeighbours;
+    }
+    
+    public List<ArchiveEntry> getArchiveHierarchyForIdentifier(String identifier) {
+        if(this.archiveResource != null) {            
+            return DataManager.getInstance().getArchiveManager().getArchiveHierarchyForIdentifier(this.archiveResource, identifier);
         } else {
-            this.archiveEntryUri = null;
+            return Collections.emptyList();
         }
+    }
+    
+    public String getArchiveUrlForIdentifier(String identifier) {
+        return DataManager.getInstance().getArchiveManager().getArchiveUrl(this.archiveResource, identifier);
     }
     
     private void setDoublePageModeForDropDown(boolean doublePages) {
@@ -3916,13 +3934,6 @@ public class ViewManager implements Serializable {
 
         // logger.trace("getArchiveEntryIdentifier: {}", topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID));
         return topStructElement.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID);
-    }
-
-    /**
-     * @return the archiveEntryUri
-     */
-    public String getArchiveEntryUri() {
-        return archiveEntryUri;
     }
 
     /**
