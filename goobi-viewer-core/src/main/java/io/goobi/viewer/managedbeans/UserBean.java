@@ -1059,18 +1059,6 @@ public class UserBean implements Serializable {
 
     /**
      * <p>
-     * loginTest.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String loginTest() {
-        user = new User();
-        return null;
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>passwordOne</code>.
      * </p>
      *
