@@ -1045,10 +1045,11 @@ public final class SearchHelper {
                         }
                     }
                 } else if (proximitySearchDistance > 0 && searchTerm.contains(" ")) {
-                    // TODO Proximity search
+                    // Proximity search
                     String regex = buildProximitySearchRegexPattern(searchTerm, proximitySearchDistance);
                     if (regex != null) {
                         Matcher m = Pattern.compile(regex).matcher(fulltext.toLowerCase());
+                        // logger.trace(fulltext.toLowerCase());
                         int lastIndex = -1;
                         while (m.find()) {
                             // Skip match if it follows right after the last match
@@ -1130,7 +1131,29 @@ public final class SearchHelper {
             if (i > 0) {
                 sbPattern.append("\\W+(?:\\w+\\W+){0,").append(proximitySearchDistance).append("}?");
             }
-            sbPattern.append(searchTermSplit[i]);
+            for (int j = 0; j < searchTermSplit[i].length(); ++j) {
+                // Allow space within term (remnant of line breaks)
+                if (j > 0) {
+                    sbPattern.append("(| )");
+                }
+                sbPattern.append(searchTermSplit[i].charAt(j));
+
+            }
+        }
+        sbPattern.append('|');
+
+        // Reverser order
+        for (int i = searchTermSplit.length - 1; i >= 0; --i) {
+            if (i < searchTermSplit.length - 1) {
+                sbPattern.append("\\W+(?:\\w+\\W+){0,").append(proximitySearchDistance).append("}?");
+            }
+            for (int j = 0; j < searchTermSplit[i].length(); ++j) {
+                if (j > 0) {
+                    sbPattern.append("(| )");
+                }
+                sbPattern.append(searchTermSplit[i].charAt(j));
+
+            }
         }
         sbPattern.append(")\\b");
 

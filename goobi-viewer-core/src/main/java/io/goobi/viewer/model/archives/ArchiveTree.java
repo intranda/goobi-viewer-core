@@ -27,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 
 /**
@@ -42,7 +41,7 @@ public class ArchiveTree implements Serializable {
     /** Constant <code>DEFAULT_GROUP="_DEFAULT"</code> */
     public static final String DEFAULT_GROUP = "_DEFAULT";
 
-    public static int defaultCollapseLevel = 1;
+    public static final int DEFAULT_COLLAPSE_LEVEL = 1;
 
     /** Actual root of the document (even if it's not part of the displayed tree) */
     private ArchiveEntry trueRootElement = null;
@@ -67,6 +66,11 @@ public class ArchiveTree implements Serializable {
         logger.trace("new EADTree()");
     }
 
+    public ArchiveTree(ArchiveTree orig) {
+        this.generate(new ArchiveEntry(orig.getRootElement(), null));
+        this.getTreeViewForGroup(DEFAULT_GROUP);
+    }
+    
     public void generate(ArchiveEntry root) {
         if (root == null) {
             throw new IllegalArgumentException("root may not be null");
@@ -105,7 +109,7 @@ public class ArchiveTree implements Serializable {
      */
     public List<ArchiveEntry> getTreeViewForGroup(String group) {
         if (!treeBuilt) {
-            buildTree(group, defaultCollapseLevel);
+            buildTree(group, DEFAULT_COLLAPSE_LEVEL);
         }
         return getViewForGroup(group);
     }
@@ -168,7 +172,6 @@ public class ArchiveTree implements Serializable {
             List<ArchiveEntry> entries = entryMap.get(group);
             for(int index = 0; index < entries.size(); index++) {
                 // Current element index
-                try (Time time = DataManager.getInstance().getTiming().takeTime("buildEntry")) {
                     ArchiveEntry entry = entries.get(index);
                     if (lastLevel < entry.getHierarchyLevel() && index > 0) {
                         if (entry.getHierarchyLevel() > collapseLevel) {
@@ -182,7 +185,6 @@ public class ArchiveTree implements Serializable {
                     }
                     lastParent = index;
                     lastLevel = entry.getHierarchyLevel();
-                }
             }
             treeBuilt = true;
             resetCollapseLevel(getRootElement(), collapseLevel);

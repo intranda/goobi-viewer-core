@@ -105,6 +105,11 @@ var viewerJS = ( function( viewer ) {
 				// sticky sidebar
 			 	$('[data-target="sticky-sidebar"]').hcSticky({
 			    	top: 100,
+				    responsive: {
+				      768: {
+				        disable: true
+				      }
+				    }
 			 	});	
 			}
 		},

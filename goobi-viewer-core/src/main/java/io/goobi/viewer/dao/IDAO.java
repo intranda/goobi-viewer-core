@@ -24,6 +24,8 @@ import java.util.Optional;
 import javax.persistence.Query;
 
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.administration.legal.CookieBanner;
+import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.bookmark.BookmarkList;
@@ -51,7 +53,6 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.TermsOfUse;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -379,14 +380,15 @@ public interface IDAO {
      */
     public List<BookmarkList> getBookmarkLists(User user) throws DAOException;
 
-    /** Get number of bookmark lists owned by the given user
-    * 
-    * @param user
-    * @return number of owned bookmark lists
-    * @throws DAOException
-    */
-   long getBookmarkListCount(User user) throws DAOException;
-    
+    /**
+     * Get number of bookmark lists owned by the given user
+     * 
+     * @param user
+     * @return number of owned bookmark lists
+     * @throws DAOException
+     */
+    long getBookmarkListCount(User user) throws DAOException;
+
     /**
      * <p>
      * getBookmarkList.
@@ -932,16 +934,15 @@ public interface IDAO {
     /**
      * Get Comments created by a specific user
      * 
-     * @param user          the creator/owner of the comment
-     * @param maxResults    maximum number of results to return
-     * @param sortField     class field to sort results by
-     * @param descending    set to "true" to sort descending
-     * @return              A list of at most maxResults comments.
+     * @param user the creator/owner of the comment
+     * @param maxResults maximum number of results to return
+     * @param sortField class field to sort results by
+     * @param descending set to "true" to sort descending
+     * @return A list of at most maxResults comments.
      * @throws DAOException
      */
     List<Comment> getCommentsOfUser(User user, int maxResults, String sortField, boolean descending) throws DAOException;
 
-    
     /**
      * <p>
      * getCommentsForPage.
@@ -1336,6 +1337,14 @@ public interface IDAO {
     public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException;
 
     /**
+     * 
+     * @param pi Record identifier
+     * @return {@link CMSPage}
+     * @throws DAOException
+     */
+    public CMSPage getCMSPageDefaultViewForRecord(String pi) throws DAOException;
+
+    /**
      * <p>
      * getCMSPage.
      * </p>
@@ -1469,12 +1478,11 @@ public interface IDAO {
      * Get a list of all {@link CMSMediaItem}s which contain the given category
      * 
      * @param category
-     * @return  all containing cmsPages
+     * @return all containing cmsPages
      * @throws DAOException
      */
     List<CMSMediaItem> getCMSMediaItemsByCategory(CMSCategory category) throws DAOException;
 
-    
     /**
      * <p>
      * getAllTopCMSNavigationItems.
@@ -1878,7 +1886,7 @@ public interface IDAO {
     public int changeCampaignStatisticContributors(User fromUser, User toUser) throws DAOException;
 
     // Misc
-    
+
     /**
      * 
      * @return true if accessible; false otherwise
@@ -1899,8 +1907,7 @@ public interface IDAO {
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
-     * @throws io.goobi.view@Override
-    er.exceptions.DAOException if any.
+     * @throws io.goobi.view@Override er.exceptions.DAOException if any.
      */
     public CMSPage getCMSPageForEditing(long id) throws DAOException;
 
@@ -2028,11 +2035,12 @@ public interface IDAO {
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a {@link java.lang.Integer} object.
-     * @param commenting 
+     * @param commenting
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException;
+
     public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page, String motivation) throws DAOException;
 
     /**
@@ -2041,7 +2049,8 @@ public interface IDAO {
      * @return
      * @throws DAOException
      */
-    public List<CrowdsourcingAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending) throws DAOException;
+    public List<CrowdsourcingAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending)
+            throws DAOException;
 
     /**
      * <p>
@@ -2187,7 +2196,7 @@ public interface IDAO {
      * @throws DAOException
      */
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException;
-    
+
     /**
      * Return a list of CMS-pages embedding the given map in a sidebar widget
      * 
@@ -2203,7 +2212,7 @@ public interface IDAO {
      * @throws DAOException
      */
     List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException;
-    
+
     /**
      * Get a paginated list of {@link CMSRecordNote}s
      * 
@@ -2217,11 +2226,11 @@ public interface IDAO {
      */
     public List<CMSRecordNote> getRecordNotes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException;
-   
+
     /**
      * Get all {@link CMSRecordNote}s for the given pi
      * 
-     * @param pi    The pi of the record.
+     * @param pi The pi of the record.
      * @param displayedNotesOnly set to true to only return notes with {@link CMSRecordNote#isDisplayŃote()} set to true
      * @return
      * @throws DAOException
@@ -2237,15 +2246,14 @@ public interface IDAO {
      */
     public List<CMSMultiRecordNote> getAllMultiRecordNotes(boolean displayedNotesOnly) throws DAOException;
 
-    
     /**
      * Get all persisted {@link CMSRecordNote}s
      * 
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public List<CMSRecordNote> getAllRecordNotes() throws DAOException;
-    
+
     /**
      * Get a {@link CMSRecordNote} by its id property
      * 
@@ -2253,7 +2261,7 @@ public interface IDAO {
      * @return
      */
     public CMSRecordNote getRecordNote(Long id) throws DAOException;
-    
+
     /**
      * Persist a new {@link CMSRecordNote}.
      * 
@@ -2261,7 +2269,7 @@ public interface IDAO {
      * @return
      */
     public boolean addRecordNote(CMSRecordNote note) throws DAOException;
-    
+
     /**
      * Updates an existing {@link CMSRecordNote}
      * 
@@ -2269,7 +2277,7 @@ public interface IDAO {
      * @return
      */
     public boolean updateRecordNote(CMSRecordNote note) throws DAOException;
-    
+
     /**
      * Deletes an existing {@link CMSRecordNote}
      * 
@@ -2281,33 +2289,31 @@ public interface IDAO {
     public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException;
 
     public TermsOfUse getTermsOfUse() throws DAOException;
-
-    public boolean isTermsOfUseActive() throws DAOException;
-
+    
     public boolean resetUserAgreementsToTermsOfUse() throws DAOException;
 
     public List<CMSSlider> getAllSliders() throws DAOException;
-    
-    public CMSSlider getSlider(Long id) throws DAOException; 
-    
+
+    public CMSSlider getSlider(Long id) throws DAOException;
+
     public boolean addSlider(CMSSlider slider) throws DAOException;
-    
+
     public boolean updateSlider(CMSSlider slider) throws DAOException;
-    
+
     public boolean deleteSlider(CMSSlider slider) throws DAOException;
 
     List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException;
 
     public List<ThemeConfiguration> getConfiguredThemes() throws DAOException;
-    
+
     public ThemeConfiguration getTheme(String name) throws DAOException;
-    
+
     public boolean addTheme(ThemeConfiguration theme) throws DAOException;
-    
+
     public boolean updateTheme(ThemeConfiguration theme) throws DAOException;
-    
+
     public boolean deleteTheme(ThemeConfiguration theme) throws DAOException;
-    
+
     /**
      * @param first
      * @param pageSize
@@ -2324,7 +2330,7 @@ public interface IDAO {
     /**
      * @param commenting
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String commenting) throws DAOException;
 
@@ -2339,17 +2345,22 @@ public interface IDAO {
      * @throws DAOException
      */
     public long getTotalAnnotationCount() throws DAOException;
-    
+
     public List<CustomSidebarWidget> getAllCustomWidgets() throws DAOException;
-    
+
     public CustomSidebarWidget getCustomWidget(Long id) throws DAOException;
-    
+
     public boolean addCustomWidget(CustomSidebarWidget widget) throws DAOException;
-    
+
     public boolean updateCustomWidget(CustomSidebarWidget widget) throws DAOException;
-    
+
     public boolean deleteCustomWidget(Long id) throws DAOException;
-    
+
     public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException;
+
+    public CookieBanner getCookieBanner() throws DAOException;
+    
+    public boolean saveCookieBanner(CookieBanner banner) throws DAOException;
+    
 
 }

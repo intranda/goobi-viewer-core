@@ -36,6 +36,7 @@ import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.dao.update.DatabaseUpdater;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ModuleMissingException;
+import io.goobi.viewer.model.archives.ArchiveManager;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
@@ -92,8 +93,10 @@ public final class DataManager {
 
     private FileResourceManager fileResourceManager = null;
 
-    private final TaskManager restApiJobManager = new TaskManager(Duration.of(7, ChronoUnit.DAYS));
+    private final TaskManager restApiJobManager;
 
+    private ArchiveManager archiveManager = null;
+    
     /**
      * <p>
      * Getter for the field <code>instance</code>.
@@ -117,7 +120,8 @@ public final class DataManager {
         return dm;
     }
 
-    private DataManager() {
+    private DataManager() {             
+        restApiJobManager = new TaskManager(Duration.of(7, ChronoUnit.DAYS));
     }
 
     /**
@@ -512,5 +516,16 @@ public final class DataManager {
      */
     public TaskManager getRestApiJobManager() {
         return restApiJobManager;
+    }
+    
+    public ArchiveManager getArchiveManager() {
+        if(archiveManager == null) {
+            synchronized (lock) {
+                archiveManager =  new ArchiveManager(getConfiguration().isArchivesEnabled() ? getConfiguration().getBaseXUrl() : "", 
+                        getConfiguration().getArchiveNodeTypes(),
+                        getSearchIndex());
+            }
+        }
+        return archiveManager;
     }
 }
