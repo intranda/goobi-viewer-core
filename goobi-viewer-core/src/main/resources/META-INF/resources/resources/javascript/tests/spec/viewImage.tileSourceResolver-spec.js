@@ -19,11 +19,11 @@ describe( "ImageView.TileSourceResolver Tests ", function() {
     
     function checkJson( json ) {
         expect( json[ "@id" ].replace("https", "http") ).toEqual( iiifInfoObject[ "@id" ].replace("https", "http") );
-        return Q.resolve( json );
+        return Promise.resolve( json );
     }
     function checkError( error ) {
         expect( error ).toEqual( jasmine.any( String ) );
-        return Q.reject( error );
+        return Promise.reject( error );
     }
 
     describe( "Test loadIfJsonURL ", function() {

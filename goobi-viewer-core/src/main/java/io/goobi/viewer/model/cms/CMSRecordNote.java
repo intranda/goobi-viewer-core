@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.model.cms;
 
-import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.DiscriminatorColumn;
@@ -28,7 +27,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.internal.jpa.parsing.GenerationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
