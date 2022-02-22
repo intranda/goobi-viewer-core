@@ -163,16 +163,16 @@
 	                                </div>
 	                            </li>
                             </ui:fragment>
-                            
+
                             <script>
-                            
+
                             $("##{cc.clientId}\\:pageDropdown").on("change", e => {
                                 let urlBase = "#{activeDocumentBean.getPageUrlByType(navigationHelper.currentView)}"
                                 let pageNo = $(e.target).val();
                                 console.log("change ", urlBase, pageNo);
                                 location.href = urlBase + pageNo + "/";
                             })
-                            
+
                             </script>
 
                             <!-- NEXT PAGE -->
@@ -320,23 +320,44 @@
                         <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext'}">
                             <!-- ROTATE -->
                             <li class="image-controls__action rotate-left">
-                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.rotateLeft}" role="button" tabindex="0" aria-label="#{msg.rotateLeft}">
+                                <button
+									class="btn btn--clear"
+									data-toggle="tooltip"
+									data-placement="#{cc.attrs.tooltipPlacement}"
+									title="#{msg.rotateLeft}"
+									role="button"
+									tabindex="0"
+									aria-label="#{msg.rotateLeft}">
                                     <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-rotate-left.svg')}" />
                                     <span class="labeltext">#{msg.rotateLeft}</span>
-                                </a>
+                                </button>
                             </li>
                             <li class="image-controls__action rotate-right">
-                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.rotateRight}" role="button" tabindex="0" aria-label="#{msg.rotateRight}">
+                                <button
+									class="btn btn--clear"
+									data-toggle="tooltip"
+									data-placement="#{cc.attrs.tooltipPlacement}"
+									title="#{msg.rotateRight}"
+									role="button"
+									tabindex="0"
+									aria-label="#{msg.rotateRight}">
                                     <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-rotate-right.svg')}" />
                                     <span class="labeltext">#{msg.rotateRight}</span>
-                                </a>
+                                </button>
                             </li>
                             <!-- RESET -->
                             <li class="image-controls__action reset">
-                                <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.resetImage}" role="button" tabindex="0" aria-label="#{msg.resetImage}">
+                                <button
+									class="btn btn--clear"
+									data-toggle="tooltip"
+									data-placement="#{cc.attrs.tooltipPlacement}"
+									title="#{msg.resetImage}"
+									role="button"
+									tabindex="0"
+									aria-label="#{msg.resetImage}">
                                     <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-reset.svg')}" />
                                     <span class="labeltext">#{msg.resetImage}</span>
-                                </a>
+                                </button>
                             </li>
                             <!-- FULLSCREEN -->
                             <ui:fragment rendered="#{navigationHelper.currentPage != 'fullscreen'}">

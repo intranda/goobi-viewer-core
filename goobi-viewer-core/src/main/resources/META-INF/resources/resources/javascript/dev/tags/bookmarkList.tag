@@ -1,6 +1,5 @@
 <bookmarkList>
 
-
 <ul class="{mainClass} list">
 
 	<li each="{bookmarkList in getBookmarkLists()}">
