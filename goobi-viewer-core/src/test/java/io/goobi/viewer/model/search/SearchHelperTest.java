@@ -1422,7 +1422,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getQueryForAccessCondition_shouldBuildEscapedQueryCorrectly() throws Exception {
-        Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX +
+        Assert.assertEquals(
                 "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo" + StringTools.SLASH_REPLACEMENT + "bar\"",
                 SearchHelper.getQueryForAccessCondition("foo/bar", true));
     }
@@ -1433,8 +1433,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getQueryForAccessCondition_shouldBuildNotEscapedQueryCorrectly() throws Exception {
-        Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX +
-                "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo/bar\"",
+        Assert.assertEquals("+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo/bar\"",
                 SearchHelper.getQueryForAccessCondition("foo/bar", false));
     }
 

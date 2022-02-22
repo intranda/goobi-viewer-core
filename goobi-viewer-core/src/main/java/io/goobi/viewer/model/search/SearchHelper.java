@@ -2839,8 +2839,7 @@ public final class SearchHelper {
         if (escapeAccessCondition) {
             accessCondition = BeanUtils.escapeCriticalUrlChracters(accessCondition);
         }
-        return AGGREGATION_QUERY_PREFIX + "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC)" + " +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition
-                + "\"";
+        return "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"";
     }
 
     /**
