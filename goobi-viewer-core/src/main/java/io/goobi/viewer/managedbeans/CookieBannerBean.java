@@ -168,6 +168,7 @@ public class CookieBannerBean implements Serializable {
             dao.saveCookieBanner(banner);
             if (this.editCookieBanner != null) {
                 this.editCookieBanner.setRequiresConsentAfter(LocalDateTime.now());
+                this.editCookieBanner.setId(banner.getId());
             }
         }
     }
@@ -184,6 +185,7 @@ public class CookieBannerBean implements Serializable {
             dao.saveCookieBanner(banner);
             if (this.editCookieBanner != null) {
                 this.editCookieBanner.setActive(active);
+                this.editCookieBanner.setId(banner.getId());
             }
         }
     }
