@@ -1769,8 +1769,6 @@ public class JPADAO implements IDAO {
         Query q = getEntityManager().createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setParameter("page", page);
-        q.setFlushMode(FlushModeType.COMMIT);
-        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
 
@@ -3674,7 +3672,6 @@ public class JPADAO implements IDAO {
             preQuery();
             try {
                 getEntityManager().getTransaction().begin();
-                getEntityManager().setFlushMode(FlushModeType.COMMIT);
                 Campaign c = getEntityManager().merge(campaign);
                 getEntityManager().getTransaction().commit();
                 //solrQueryResults remains unchanged in managed campaign even after merge. Manually reset results to account for changed solrquery
