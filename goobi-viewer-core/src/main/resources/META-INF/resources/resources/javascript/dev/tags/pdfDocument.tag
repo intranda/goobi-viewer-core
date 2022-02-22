@@ -15,19 +15,19 @@
 	        var pageLoadingTasks = [];
 	        for(var pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
    		        var page = pdf.getPage(pageNo);
-   		        pageLoadingTasks.push(Q(page));
+   		        pageLoadingTasks.push(page);
    		    }
-   		    return Q.allSettled(pageLoadingTasks);
+   		    return Promise.allSettled(pageLoadingTasks);
 	    }.bind(this))
 	    .then(function(results) {
-			results.forEach(function (result) {
-			    if (result.state === "fulfilled") {
+			results.forEach(result => {
+			    if (result.status === "fulfilled") {
                 	var page = result.value;
                 	this.pages.push(page);
                 } else {
-                    logger.error("Error loading page: ", result.reason);
+                    console.log("Error loading page: ", result);
                 }
-			}.bind(this));
+			});
 			this.update();
         }.bind(this))
 	    .then( function() {
