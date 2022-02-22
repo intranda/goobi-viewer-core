@@ -1,12 +1,13 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:c="http://java.sun.com/jsp/jstl/core" 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components" 
+    xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:facelets="http://io.goobi.viewer"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
@@ -23,30 +24,30 @@
                             <h:panelGroup id="collectionFacetsPanelGroup_#{status.index}"
                                 rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and field.key != 'YEAR' and field.key != 'WKT_COORDS' and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getCurrentFacetsForField(field.key)) > 0)}">
                                 <div class="widget widget-search-facets__collection">
-                                
+
                                 <div class="widget-search-facets__topbar">
                                     <h2><span>#{msg[field.key.concat('_DD')]}</span></h2>
-                                    
+
                                 </div>
 
                                     <!-- FILTER FACETS -->
                                     <div class="widget-search-facets__filter">
-                                        <input 
-                                          type="text" 
-                                          id="collectionFacetsFilter_#{status.index}" 
-                                          tabindex="-1" 
-                                          class="widget-search-facets__filter-input -no-outline" 
-                                          placeholder="#{msg.placeholder__filter_search_results}" 
+                                        <input
+                                          type="text"
+                                          id="collectionFacetsFilter_#{status.index}"
+                                          tabindex="-1"
+                                          class="widget-search-facets__filter-input -no-outline"
+                                          placeholder="#{msg.placeholder__filter_search_results}"
                                           aria-label="#{msg.placeholder__filter_search_results}"/>
-                                        <button 
-                                          type="button" 
-                                          class="btn btn--clean" 
-                                          data-toggle="filter-input" 
+                                        <button
+                                          type="button"
+                                          class="btn btn--clean"
+                                          data-toggle="filter-input"
                                           aria-label="#{msg.placeholder__filter_search_results}">
                                         	<i class="fa fa-search" aria-hidden="true"></i>
                                         </button>
                                     </div>
-                                        
+
                                     <ul>
                                         <!-- ACTIVE FACETS -->
                                         <ui:repeat value="#{searchBean.facets.getCurrentFacetsForField(field.key)}" var="facet">
@@ -74,7 +75,7 @@
                                                 </h:commandLink>
                                             </li>
                                         </ui:repeat>
-                                        
+
                                         <!-- AVAILABLE FACETS -->
                                         <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
                                             <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
@@ -97,24 +98,27 @@
                                     <!-- EXPAND/COLLAPSE FACET -->
                                     <ui:fragment rendered="#{searchBean.facets.isDisplayFacetExpandLink(field.key)}">
                                         <div class="widget-search-facets__collapse">
-                                            <h:commandLink
-                                                action="#{searchBean.facets.expandFacet(field.key)}" title="#{msg.slideDown}">
+                                            <button
+												class="btn btn--clean"
+                                                jsf:action="#{searchBean.facets.expandFacet(field.key)}"
+												title="#{msg.slideDown}">
                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
                                                 <f:ajax render="collectionFacetsPanelGroup_#{status.index}" />
-                                            </h:commandLink>
+                                            </button>
                                         </div>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{searchBean.facets.isDisplayFacetCollapseLink(field.key)}">
                                         <div class="widget-search-facets__collapse">
-                                            <h:commandLink
-                                                action="#{searchBean.facets.collapseFacet(field.key)}" title="#{msg.slideUp}">
+                                            <button
+												class="btn btn--clean"
+                                                jsf:action="#{searchBean.facets.collapseFacet(field.key)}" title="#{msg.slideUp}">
                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
                                                 <f:ajax render="collectionFacetsPanelGroup_#{status.index}" />
-                                            </h:commandLink>
+                                            </button>
                                         </div>
-                                    </ui:fragment> 
+                                    </ui:fragment>
                                 </div>
                             </h:panelGroup>
                         </c:forEach>

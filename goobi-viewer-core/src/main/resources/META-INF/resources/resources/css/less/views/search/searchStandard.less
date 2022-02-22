@@ -1,6 +1,6 @@
 /* ==============================================================
    Search Standard
-   style declarations for search.xhtml 
+   style declarations for search.xhtml
    ==============================================================*/
 /* SEARCH STANDARD */
 /* BLOCK */
@@ -62,6 +62,13 @@
         a {}
     }
     &__action {
+		// swap buttons visually
+		// "Search" has to be first in the html
+		// First submit is always the default
+		// We want the search submit to be triggered when pressing the enter key
+		display: flex;
+		flex-flow: row-reverse;
+
         padding-top: 15px;
         text-align: right;
         .btn {
@@ -70,7 +77,7 @@
     }
     /* MODIFICATION */
 }
-       
+
 .ui-autocomplete.ui-menu {
 	border: 1px solid #eee;
     background-color: @white;
@@ -128,9 +135,9 @@
 	&__title {}
 	&__help {}
 }
-        
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {}
