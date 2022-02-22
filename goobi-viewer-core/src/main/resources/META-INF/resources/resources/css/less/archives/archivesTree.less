@@ -2,7 +2,7 @@
    View archives tree
    style declarations for archivestree.xhtml
    ==============================================================*/
-   
+
 /* EAD TREE */
 .archives-tree {
 		font-size: 1.5rem;
@@ -18,10 +18,15 @@
 		justify-content: flex-end;
 		position: absolute;
 		right: 0;
-		a {
-			color: @black;
+		a, button {
+			color: inherit;
 			&:last-child {
 				margin-left: 0.7rem;
+			}
+			&:focus,
+			&:hover,
+			&:active {
+				color: inherit;
 			}
 		}
 	}
@@ -54,8 +59,8 @@
 			}
 			.fa-file-o {
 				color: green;
-			}					
-		}	
+			}
+		}
 		&.-archives-selected {
 			.archives-tree__inactive-title {
 			font-weight: 700;
@@ -65,7 +70,7 @@
 			}
 			.fa-file-o {
 				color: green;
-			}	
+			}
 		}
 		position: relative;
 		flex: 0 0 calc(~"100% - 25px");
@@ -125,12 +130,12 @@
 	}
 	&__expandable-icon {
 		width: 25px;
-		a {
-			color: #212529;
+		a, button {
+			color: inherit;
 			&:hover,
 			&:active,
 			&:focus {
-				color: #212529;
+				color: inherit;
 			}
 		}
 		.fa {
@@ -189,7 +194,7 @@
 			&.child {
 				padding-left: 28px !important;
 			}
-			
+
 		}
 		&__metadata-box {
 			grid-template-columns: 1fr;

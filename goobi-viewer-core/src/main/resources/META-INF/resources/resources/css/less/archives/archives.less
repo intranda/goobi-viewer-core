@@ -424,6 +424,8 @@
     font-size: 1.6rem;
   }
   &__tree-heading {
+	display: flex;
+	align-items: center;
     position: relative;
     padding: 1rem 2rem;
     background: @middlegray;
@@ -432,7 +434,14 @@
     #archivesSearchTrigger {
       position: absolute;
       cursor: pointer;
-      right: 2rem;
+      right: 1rem;
+		font-size: 1.6rem;
+		color: inherit;
+		&:focus,
+		&:hover,
+		&:active {
+			color: inherit;
+		}
       &.-active {
         .fa {
           &:before {

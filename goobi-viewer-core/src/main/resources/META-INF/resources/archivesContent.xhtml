@@ -27,11 +27,11 @@
 
         		<!-- LEFT SIDE -->
 				<div class="archives__left-side">
-	
+
 					<ui:fragment rendered="#{archiveBean.getNumArchives() > 1}">
 						<div class="archives__select-database-dropdown-wrapper">
 							<div class="archives__select-database-dropdown-label">#{msg.archives__current_collection}:</div>
-							
+
 							<div class="archives__select-database-dropdown-element">
 			                    <h:form>
 			                    <div class="custom-control custom-control--select archives__select-database-dropdown-element-select">
@@ -47,7 +47,11 @@
 
                     <div class="archives__tree-heading">
                         #{msg.archives__archive_tree_heading}
-                    	<span id="archivesSearchTrigger" class="#{not empty archiveBean.searchString ? '-active' : ''}"><i class="fa fa-search"></i></span>
+                    	<button
+							id="archivesSearchTrigger"
+							class="#{not empty archiveBean.searchString ? '-active' : ''} btn">
+							<i class="fa fa-search"></i>
+						</button>
                     </div>
                     <h:panelGroup layout="block" id="treeGroup" styleClass="archives__graphic-tree">
 	                    <div class="archives__search-input-wrapper #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
