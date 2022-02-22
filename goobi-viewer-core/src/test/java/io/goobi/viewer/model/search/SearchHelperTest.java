@@ -577,6 +577,28 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies remove plus characters
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldRemovePlusCharacters() throws Exception {
+        Map<String, Set<String>> result =
+                SearchHelper.extractSearchTermsFromQuery("+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +ACCESSCONDITION:\"foo\"", null);
+        {
+            Set<String> terms = result.get(SolrConstants.DOCTYPE);
+            Assert.assertNotNull(terms);
+            Assert.assertEquals(1, terms.size());
+            Assert.assertTrue(terms.contains("UGC"));
+        }
+        {
+            Set<String> terms = result.get(SearchHelper._TITLE_TERMS);
+            Assert.assertNotNull(terms);
+            Assert.assertEquals(1, terms.size());
+            Assert.assertTrue(terms.contains("\"foo\""));
+        }
+    }
+
+    /**
      * @see SearchHelper#generateCollectionBlacklistFilterSuffix()
      * @verifies construct suffix correctly
      */
