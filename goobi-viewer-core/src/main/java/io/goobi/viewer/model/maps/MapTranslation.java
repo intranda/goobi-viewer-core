@@ -20,8 +20,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
-
 import io.goobi.viewer.model.translations.Translation;
 
 /**
@@ -32,7 +30,7 @@ import io.goobi.viewer.model.translations.Translation;
 @Table(name = "cms_geomap_translation")
 public class MapTranslation extends Translation {
 
-    /** Reference to the owning {@link PersistenceEntity}. */
+    /** Reference to the owning Object. */
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private GeoMap owner;

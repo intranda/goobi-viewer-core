@@ -76,8 +76,9 @@ public class ALTOTools {
     private final static String URI = "URI";
     private final static String LABEL = "LABEL";
 
-    /** Constant <code>TAG_LABEL_IGNORE_REGEX="^\\W+|\\W+$"</code> */
-    public static final String TAG_LABEL_IGNORE_REGEX = "(^\\W+)|(\\W+$)";
+    /** Constant <code>TAG_LABEL_IGNORE_REGEX</code> */
+    // public static final String TAG_LABEL_IGNORE_REGEX = "(^\\W+)|(\\W+$)";
+    public static final String TAG_LABEL_IGNORE_REGEX= "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)";
 
     /**
      * Read the plain fulltext from an alto file. Don't merge linebreaks

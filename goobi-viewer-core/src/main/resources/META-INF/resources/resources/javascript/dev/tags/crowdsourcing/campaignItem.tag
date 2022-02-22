@@ -106,16 +106,7 @@
 		.then( () => this.item.statusMapUpdates.subscribe( statusMap => this.update()))
 
 	}
-	
-	resolveCanvas(source) {
-	    if(Crowdsourcing.isString(source)) {
-	        return fetch(source)
-	        .then( response => response.json() );
-	    } else {
-	        return Q.fcall(() => source);
-	    }
-	}
-	
+
 	
 	resetQuestions() {
 	    this.item.questions.forEach(question => {
