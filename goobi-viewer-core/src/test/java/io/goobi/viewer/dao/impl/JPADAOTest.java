@@ -739,8 +739,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(comment.getTargetPI(), comment2.getTargetPI());
         Assert.assertEquals(comment.getTargetPageOrder(), comment2.getTargetPageOrder());
         Assert.assertEquals(comment.getText(), comment2.getText());
-        Assert.assertEquals(comment.getCreator(), comment2.getCreator());
         Assert.assertEquals(now, comment2.getDateModified());
+        Assert.assertEquals(comment.getCreator(), comment2.getCreator());
     }
 
     @Test
@@ -1972,31 +1972,37 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(2));
         Assert.assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(3));
     }
-
-    /**
-     * @see JPADAO#updateUserGroup(UserGroup)
-     * @verifies set id on new license
-     */
-    @Test
-    public void updateUserGroup_shouldSetIdOnNewLicense() throws Exception {
-        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
-        Assert.assertNotNull(userGroup);
-        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
-        Assert.assertNotNull(licenseType);
-        License license = new License();
-        license.setDescription("xxx");
-        license.setLicenseType(licenseType);
-        userGroup.addLicense(license);
-        Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
-        boolean licenseFound = false;
-        for (License l : userGroup.getLicenses()) {
-            if ("xxx".equals(l.getDescription())) {
-                licenseFound = true;
-                Assert.assertNotNull(l.getId());
-            }
-        }
-        Assert.assertTrue(licenseFound);
-    }
+    
+    
+/*
+ * Unused since the tested behaviour (licence entity ids being bein immediately visible in owning user group)
+ * Is no longer supported because of transaction-scoped EntityManagers; and the purpose of this behaviour is unclear
+ */
+//
+//    /**
+//     * @see JPADAO#updateUserGroup(UserGroup)
+//     * @verifies set id on new license
+//     */
+//    @Test
+//    public void updateUserGroup_shouldSetIdOnNewLicense() throws Exception {
+//        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
+//        Assert.assertNotNull(userGroup);
+//        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
+//        Assert.assertNotNull(licenseType);
+//        License license = new License();
+//        license.setDescription("xxx");
+//        license.setLicenseType(licenseType);
+//        userGroup.addLicense(license);
+//        Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
+//        boolean licenseFound = false;
+//        for (License l : userGroup.getLicenses()) {
+//            if ("xxx".equals(l.getDescription())) {
+//                licenseFound = true;
+//                Assert.assertNotNull(l.getId());
+//            }
+//        }
+//        Assert.assertTrue(licenseFound);
+//    }
 
     /**
      * @see JPADAO#getUserCount()

@@ -2000,7 +2000,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            getEntityManager().merge(comment);
+            em.merge(comment);
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
@@ -4971,7 +4971,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            getEntityManager().merge(annotation);
+            em.merge(annotation);
             commitTransaction(em);
             return true;
         } catch (IllegalArgumentException e) {
@@ -5730,7 +5730,7 @@ public class JPADAO implements IDAO {
             EntityManager em = getEntityManager();
             try {
                 startTransaction(em);
-                getEntityManager().merge(widget);
+                em.merge(widget);
                 commitTransaction(em);
                 return true;
             } catch (IllegalArgumentException e) {
