@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -716,5 +717,32 @@ public abstract class PersistentAnnotation {
      */
     public void setPublicationStatus(PublicationStatus publicationStatus) {
         this.publicationStatus = publicationStatus;
+    }
+    
+    @Override
+    public int hashCode() {
+        if(id == null) {
+            return 0;
+        } else {
+            return id.hashCode();
+        }
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(this.getClass())) {
+            PersistentAnnotation other = (PersistentAnnotation)obj;
+            return Objects.equals(this.body, other.body)
+                    && Objects.equals(this.creatorId, other.creatorId)
+                    && Objects.equals(this.generatorId, other.generatorId)
+                    && Objects.equals(this.motivation, other.motivation)
+                    && Objects.equals(this.accessCondition, other.accessCondition)
+                    && Objects.equals(this.dateModified, other.dateModified)
+                    && Objects.equals(this.target, other.target)
+                    && Objects.equals(this.targetPageOrder, other.targetPageOrder)
+                    && Objects.equals(this.targetPI, other.targetPI);
+        } else {
+            return false;
+        }
     }
 }

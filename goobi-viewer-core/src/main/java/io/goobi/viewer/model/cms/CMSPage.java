@@ -216,6 +216,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * </p>
      */
     public CMSPage() {
+        this.dateCreated = LocalDateTime.now();
     }
 
     /**

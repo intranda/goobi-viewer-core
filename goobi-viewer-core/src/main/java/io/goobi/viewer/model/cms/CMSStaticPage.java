@@ -205,7 +205,7 @@ public class CMSStaticPage {
     public void setCmsPageId(Long cmsPageId) {
         this.cmsPageId = cmsPageId;
         Optional<CMSPage> cmsPage = getCmsPageOptional();
-        if (!cmsPage.isPresent() || !cmsPage.get().getId().equals(cmsPageId)) {
+        if (!cmsPage.isPresent() || cmsPage.map(page -> page.getId()).map(id ->  !id.equals(cmsPageId)).orElse(true)) {
             updateCmsPage();
         }
     }
