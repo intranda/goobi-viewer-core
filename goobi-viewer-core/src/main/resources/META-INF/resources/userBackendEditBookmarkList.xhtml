@@ -79,7 +79,7 @@
 	                         <h:commandLink id="cancelUserButton" styleClass="btn" value="#{msg.bookmarkList_cancel}" action="userBackendBookmarkLists" immediate="true">
 	                             <f:setPropertyActionListener target="#{bookmarkBean.currentBookmarkList}" value="#{null}" />
 	                         </h:commandLink>
-							 <h:commandLink value="#{msg.save}" action="#{bookmarkBean.saveCurrentBookmarkListAction}" styleClass="btn btn--success" />
+							 <h:commandButton value="#{msg.save}" action="#{bookmarkBean.saveCurrentBookmarkListAction}" styleClass="btn btn--success" />
 						</div>
 					</h:form>
 

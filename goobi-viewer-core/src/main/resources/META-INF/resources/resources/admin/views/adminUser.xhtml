@@ -49,13 +49,13 @@
 											immediate="true">
 											<f:ajax render="@all"></f:ajax>
 										</h:commandLink>
-										<button 
+										<h:commandButton
 											id="saveNewUserCreationButton"
-											class="btn btn--success"
-											jsf:action="#{adminBean.saveUserAction(adminBean.currentUser.copy, 'pretty:adminUsers')}">
+											styleClass="btn btn--success"
+											value="#{msg.save}"
+											action="#{adminBean.saveUserAction(adminBean.currentUser.copy, 'pretty:adminUsers')}">
 											<f:ajax execute="@all" render="@all"></f:ajax>
-											#{msg.save}
-										</button>
+										</h:commandButton>
 									</div>
 								</h:form>
 								<h:form id="deleteUser" styleClass="form-horizontal form-group" role="form" prependId="false">
@@ -65,13 +65,13 @@
 
 
 							<div class="admin__content-side -sticky">
-							
-							
+
+
 							<ui:fragment rendered="#{!adminBean.currentUser.copy.active and !adminBean.currentUser.copy.anonymous}">
-							
+
 			 				<!-- ACCOUNT ACTIVATION -->
 							<div class="admin__default-block -warning">
-								
+
 								<div class="row">
 									<div class="col-12 control-label admin__form-label">
 									<h2>#{msg.admin__user_activation}</h2>
@@ -80,9 +80,9 @@
 								<div class="admin__form-help-text in mb-3">
 									#{msg.admin__user_activation_description}
 								</div>
-								
-									<div class="row">	
-									
+
+									<div class="row">
+
 									<div class="col-6">
 										#{msg.admin__user_activation_label}:
 									</div>
@@ -108,20 +108,20 @@
 										</div>
 									</div>
 								</div>
-			                
+
 			                </ui:fragment>
-			                
-			                
-							
-							
+
+
+
+
 								<!-- USER PROFILE PICTURE -->
 								<ui:fragment rendered="#{not empty adminBean.currentUser.id}">
 									<facelet:userAvatar user="#{adminBean.currentUser.copy}" />
 								</ui:fragment>
-								
+
 								<!-- USER ADMIN RIGHTS -->
 								<div class="admin__default-block">
-								
+
 								<div class="row">
 									<div class="col-12 control-label admin__form-label">
 									<h2>#{msg.admin__user_superuser}</h2>
@@ -130,9 +130,9 @@
 								<div class="admin__form-help-text in mb-3">
 									#{msg.admin__admin_rights_info}
 								</div>
-								
-									<div class="row">	
-									
+
+									<div class="row">
+
 									<div class="col-6">
 										#{msg.admin__user_superuser}:
 									</div>
@@ -158,8 +158,8 @@
 										</div>
 									</div>
 								</div>
-								
-								
+
+
 							</div>
 
 						</div>

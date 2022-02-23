@@ -234,7 +234,9 @@
 										<span>#{msg.search}</span>
 									</a>
 
-									<a
+									<button
+										type="button"
+										class="btn btn--link"
 										title="#{msg.copyUrl}"
 										data-copy="bookmarklist-share-collection"
 										data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
@@ -242,15 +244,18 @@
 										aria-label="#{bookmarkList.name}: #{msg.bookmarkList_shareCollection}">
 										<i class="fa fa-share" aria-hidden="true"></i>
 										<span>#{msg.bookmarkList_shareCollection}</span>
-									</a>
-									<a title="#{msg.copyUrl}"
+									</button>
+									<button
+										type="button"
+										class="btn btn--link"
+										title="#{msg.copyUrl}"
 										data-copy="bookmarklist-share-link"
 										data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
 										data-copy-done="#{msg.copyUrlDone}"
 										aria-label="#{bookmarkList.name}: #{msg.action__copy_bookmarklist_sharelink}">
 										<i class="fa fa-share-alt" aria-hidden="true"></i>
 										<span>#{msg.action__copy_bookmarklist_sharelink}</span>
-									</a>
+									</button>
 
 								</ui:fragment>
 
