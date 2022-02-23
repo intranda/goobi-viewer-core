@@ -61,7 +61,7 @@
 									<h:panelGroup rendered="#{group != '_DEFAULT'}">
 										<div class="toc__mv-group">
 											<h4>
-                                                <button type="button" class="btn btn--clean" data-toggle="mv-element">
+                                                <button type="button" class="btn btn--link" data-toggle="mv-element">
                                                     <span></span>
                                                 </button>
                                                 #{msg[group]}
@@ -170,7 +170,7 @@
 								<div class="toc__list-expandable-all clearfix">
 									<ul>
 										<li>
-											<button 
+											<button
 												type="button"
 												class="btn btn--link"
 												jsf:action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
@@ -182,7 +182,7 @@
 											</button>
 										</li>
 										<li>
-											<button 
+											<button
 												type="button"
 												class="btn btn--link"
 												jsf:action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
@@ -206,7 +206,7 @@
 															<h:panelGroup rendered="#{tocElement.hasChild}">
 																<!-- EXPAND -->
 																<div class="toc__list-expandable-expand">
-																	<button 
+																	<button
 																		type="button"
 																		class="btn btn--link"
 																		jsf:action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{!tocElement.expanded}">
@@ -214,7 +214,7 @@
 																		<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
 																		<f:ajax render="@form" />
 																	</button>
-																	<button 
+																	<button
 																		type="button"
 																		class="btn btn--link"
 																		jsf:action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.expanded}">
