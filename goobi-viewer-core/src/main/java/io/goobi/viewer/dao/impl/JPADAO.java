@@ -163,7 +163,8 @@ public class JPADAO implements IDAO {
      *
      * @return a {@link javax.persistence.EntityManagerFactory} object.
      */
-    private EntityManagerFactory getFactory() {
+    @Override
+    public EntityManagerFactory getFactory() {
         return this.factory;
     }
 
@@ -175,7 +176,8 @@ public class JPADAO implements IDAO {
      *
      * @return {@link javax.persistence.EntityManager} for the current thread
      */
-    private EntityManager getEntityManager() {
+    @Override
+    public EntityManager getEntityManager() {
         return getFactory().createEntityManager();
     }
 
@@ -185,7 +187,8 @@ public class JPADAO implements IDAO {
      * @param em
      * @throws DAOException
      */
-    private void close(EntityManager em) throws DAOException {
+    @Override
+    public void close(EntityManager em) throws DAOException {
         if (em != null && em.isOpen()) {
             em.close();
         } else if (em != null) {
@@ -199,7 +202,8 @@ public class JPADAO implements IDAO {
      *
      * @return the transaction gotten from the entity manager
      */
-    private EntityTransaction startTransaction(EntityManager em) {
+    @Override
+    public EntityTransaction startTransaction(EntityManager em) {
         EntityTransaction et = em.getTransaction();
         if (!et.isActive()) {
             et.begin();
@@ -214,7 +218,8 @@ public class JPADAO implements IDAO {
      *
      * Commits a persistence context transaction Only to be used following a {@link #startTransaction()} call
      */
-    private void commitTransaction(EntityTransaction et) throws PersistenceException {
+    @Override
+    public void commitTransaction(EntityTransaction et) throws PersistenceException {
         if (et.isActive()) {
             et.commit();
         } else {
@@ -222,19 +227,22 @@ public class JPADAO implements IDAO {
         }
     }
 
-    private void commitTransaction(EntityManager em) throws PersistenceException {
+    @Override
+    public void commitTransaction(EntityManager em) throws PersistenceException {
         commitTransaction(em.getTransaction());
     }
 
-    private void handleException(EntityTransaction et) throws PersistenceException {
+    @Override
+    public void handleException(EntityTransaction et) throws PersistenceException {
         if (et.isActive()) {
             et.rollback();
         } else {
             logger.warn("Attempring to roll back an inactive transaction");
         }
     }
-
-    private void handleException(EntityManager em) {
+    
+    @Override
+    public void handleException(EntityManager em) {
         handleException(em.getTransaction());
     }
 
