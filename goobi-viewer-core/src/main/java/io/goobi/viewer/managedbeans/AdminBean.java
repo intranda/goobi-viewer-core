@@ -346,6 +346,13 @@ public class AdminBean implements Serializable {
                 return false;
             }
         }
+        
+        //update changes to current user in userBean
+        if(user != null && activeUser != null && activeUser.getId().equals(user.getId())) {
+            User newUser = DataManager.getInstance().getDao().getUser(activeUser.getId());
+            newUser.backupFields();
+            BeanUtils.getUserBean().setUser(newUser);
+        }
 
         return true;
     }

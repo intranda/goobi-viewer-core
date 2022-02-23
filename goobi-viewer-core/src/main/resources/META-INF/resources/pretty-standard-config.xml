@@ -758,8 +758,9 @@
 		<action onPostback="false">#{adminBean.setCurrentUser(null)}</action>
 	</url-mapping>
     <url-mapping id="adminUserEdit">
-        <pattern value="/admin/users/edit/#{userId:adminBean.currentUserId}/" />
+        <pattern value="/admin/users/edit/#{userId}/" />
         <view-id value="/resources/admin/views/adminUser.xhtml" />
+        <action onPostback="false">#{adminBean.setCurrentUserId(userId)}</action>
     </url-mapping>
     <url-mapping id="adminUserNew">
         <pattern value="/admin/users/new/" />
