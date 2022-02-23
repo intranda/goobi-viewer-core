@@ -49,7 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.AlphabetIterator;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -150,6 +149,9 @@ public class JPADAO implements IDAO {
             currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
             factory = Persistence.createEntityManagerFactory(persistenceUnitName);
             currentThread.setContextClassLoader(saveClassLoader);
+            //Needs to be called for unit tests
+            factory.createEntityManager();
+            preQuery();
         } catch (DatabaseException | PersistenceException e) {
             logger.error(e.getMessage(), e);
             throw new DAOException(e.getMessage());
@@ -178,7 +180,8 @@ public class JPADAO implements IDAO {
      */
     @Override
     public EntityManager getEntityManager() {
-        return getFactory().createEntityManager();
+        EntityManager em = getFactory().createEntityManager();
+        return em;
     }
 
     /**
