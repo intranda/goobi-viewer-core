@@ -930,7 +930,8 @@ public final class SearchHelper {
             if (licenseType.isMovingWall() && StringUtils.isNotBlank(licenseType.getProcessedConditions())) {
                 logger.trace("License type '{}' is a moving wall", licenseType.getName());
                 query.append(licenseType.getFilterQueryPart(true));
-                // Do not continue with the next license type here because the user may have full access to the moving wall license, in which case it should also be added with a non-negated filter query
+                // Do not continue; with the next license type here because the user may have full access to the moving wall license,
+                // in which case it should also be added with a non-negated filter query
             }
 
             // License type contains listing privilege
