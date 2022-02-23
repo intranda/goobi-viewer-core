@@ -49,16 +49,14 @@ public class LicenseTypeUpdate implements IModelUpdate {
         // Remove obsolete core license type for crowdsourcing campaigns
         LicenseType ltCampaigns = dao.getLicenseType(LICENSE_TYPE_CAMPAIGNS);
         if (ltCampaigns != null) {
-            dao.startTransaction();
-            int count = dao.createNativeQuery("DELETE FROM licenses WHERE license_type_id=" + ltCampaigns.getId()).executeUpdate();
+            int count = dao.executeUpdate("DELETE FROM licenses WHERE license_type_id=" + ltCampaigns.getId());
             if (count > 0) {
                 logger.info("{} licenses using license type '{}' deleted.", count, LICENSE_TYPE_CAMPAIGNS);
             }
-            count = dao.createNativeQuery("DELETE FROM license_types WHERE name='" + LICENSE_TYPE_CAMPAIGNS + "'").executeUpdate();
+            count = dao.executeUpdate("DELETE FROM license_types WHERE name='" + LICENSE_TYPE_CAMPAIGNS + "'");
             if (count > 0) {
                 logger.info("License type '{}' deleted.", LICENSE_TYPE_CAMPAIGNS);
             }
-            dao.commitTransaction();
         }
 
     }

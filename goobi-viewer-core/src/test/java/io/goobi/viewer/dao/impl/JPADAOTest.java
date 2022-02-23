@@ -3127,7 +3127,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         FutureTask<Boolean> updateResult = new FutureTask<Boolean>(() -> {
             try {
                 updateComment(dao, comment.getId(), "Changed", 200);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | DAOException e) {
                 fail("Updating interrupted");
             }
         }, true);
@@ -3135,7 +3135,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         FutureTask<Boolean> updateResultFast = new FutureTask<Boolean>(() -> {
             try {
                 updateComment(dao, comment.getId(), "ChangedAgain", 0);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | DAOException e) {
                 fail("Updating interrupted");
             }
         }, true);
@@ -3155,10 +3155,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
-    private static void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException {
-        dao.startTransaction();
+    private static void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException, DAOException {
         Thread.sleep(duration);
-        dao.createNativeQuery("UPDATE annotations_comments SET body='" + content + "' WHERE annotation_id=" + id).executeUpdate();
-        dao.commitTransaction();
+        dao.executeUpdate("UPDATE annotations_comments SET body='" + content + "' WHERE annotation_id=" + id);
     }
 }

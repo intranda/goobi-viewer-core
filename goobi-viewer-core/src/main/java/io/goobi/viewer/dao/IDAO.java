@@ -77,8 +77,9 @@ public interface IDAO {
      * @param tableName a {@link java.lang.String} object.
      * @return a boolean.
      * @throws java.sql.SQLException if any.
+     * @throws DAOException 
      */
-    boolean tableExists(String tableName) throws SQLException;
+    boolean tableExists(String tableName) throws DAOException, SQLException;
 
     /**
      * <p>
@@ -90,41 +91,7 @@ public interface IDAO {
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
-    boolean columnsExists(String tableName, String columnName) throws SQLException;
-
-    /**
-     * <p>
-     * startTransaction.
-     * </p>
-     */
-    void startTransaction();
-
-    /**
-     * <p>
-     * commitTransaction.
-     * </p>
-     */
-    void commitTransaction();
-
-    /**
-     * <p>
-     * createNativeQuery.
-     * </p>
-     *
-     * @param string a {@link java.lang.String} object.
-     * @return a {@link javax.persistence.Query} object.
-     */
-    Query createNativeQuery(String string);
-
-    /**
-     * <p>
-     * createQuery.
-     * </p>
-     *
-     * @param string a {@link java.lang.String} object.
-     * @return a {@link javax.persistence.Query} object.
-     */
-    Query createQuery(String string);
+    boolean columnsExists(String tableName, String columnName) throws DAOException, SQLException;
 
     // User
 
@@ -1564,9 +1531,10 @@ public interface IDAO {
      * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
+     * @return 
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void addStaticPage(CMSStaticPage page) throws DAOException;
+    public boolean addStaticPage(CMSStaticPage page) throws DAOException;
 
     /**
      * <p>
@@ -1574,9 +1542,10 @@ public interface IDAO {
      * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
+     * @return 
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void updateStaticPage(CMSStaticPage page) throws DAOException;
+    public boolean updateStaticPage(CMSStaticPage page) throws DAOException;
 
     /**
      * <p>
@@ -1643,9 +1612,10 @@ public interface IDAO {
      * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @return 
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void addCategory(CMSCategory category) throws DAOException;
+    public boolean addCategory(CMSCategory category) throws DAOException;
 
     /**
      * <p>
@@ -1653,9 +1623,10 @@ public interface IDAO {
      * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @return 
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void updateCategory(CMSCategory category) throws DAOException;
+    public boolean updateCategory(CMSCategory category) throws DAOException;
 
     /**
      * <p>
@@ -2137,13 +2108,6 @@ public interface IDAO {
      */
     public boolean deleteAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
 
-    /**
-     * Update the given collection from the database
-     *
-     * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    void refreshCMSCollection(CMSCollection collection) throws DAOException;
 
     /**
      * Get the {@link GeoMap} of the given mapId
@@ -2361,6 +2325,12 @@ public interface IDAO {
     public CookieBanner getCookieBanner() throws DAOException;
     
     public boolean saveCookieBanner(CookieBanner banner) throws DAOException;
+
+    public Long getNumRecordsWithComments(User user) throws DAOException;
+
+    public List getNativeQueryResults(String query) throws DAOException;
+
+    public int executeUpdate(String string) throws DAOException;
     
 
 }
