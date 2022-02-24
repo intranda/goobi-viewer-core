@@ -243,7 +243,7 @@ public class JPADAO implements IDAO {
             logger.warn("Attempring to roll back an inactive transaction");
         }
     }
-    
+
     @Override
     public void handleException(EntityManager em) {
         handleException(em.getTransaction());
@@ -2381,6 +2381,24 @@ public class JPADAO implements IDAO {
             Query q = em.createQuery("SELECT o FROM DownloadJob o");
             // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<DownloadJob> getDownloadJobsForPi(String pi) throws DAOException {
+        if (pi == null) {
+            throw new IllegalArgumentException("pi may not be null");
+        }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT o FROM DownloadJob o WHERE o.pi = :pi").setParameter("pi", pi).getResultList();
         } finally {
             close(em);
         }
@@ -6231,5 +6249,4 @@ public class JPADAO implements IDAO {
         String filterString = join.append(where).toString();
         return filterString;
     }
-
 }

@@ -25,7 +25,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
-import javax.persistence.Query;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
@@ -81,7 +80,7 @@ public interface IDAO {
      * @param tableName a {@link java.lang.String} object.
      * @return a boolean.
      * @throws java.sql.SQLException if any.
-     * @throws DAOException 
+     * @throws DAOException
      */
     boolean tableExists(String tableName) throws DAOException, SQLException;
 
@@ -1110,6 +1109,17 @@ public interface IDAO {
 
     /**
      * <p>
+     * getDownloadJobsForPi.
+     * </p>
+     * 
+     * @param pi Record identifier
+     * @return List of {@link DownloadJob}s for given record identfier
+     * @throws DAOException
+     */
+    public List<DownloadJob> getDownloadJobsForPi(String pi) throws DAOException;
+
+    /**
+     * <p>
      * getDownloadJob.
      * </p>
      *
@@ -1535,7 +1545,7 @@ public interface IDAO {
      * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
-     * @return 
+     * @return
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean addStaticPage(CMSStaticPage page) throws DAOException;
@@ -1546,7 +1556,7 @@ public interface IDAO {
      * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
-     * @return 
+     * @return
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean updateStaticPage(CMSStaticPage page) throws DAOException;
@@ -1616,7 +1626,7 @@ public interface IDAO {
      * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
-     * @return 
+     * @return
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean addCategory(CMSCategory category) throws DAOException;
@@ -1627,7 +1637,7 @@ public interface IDAO {
      * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
-     * @return 
+     * @return
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean updateCategory(CMSCategory category) throws DAOException;
@@ -2112,7 +2122,6 @@ public interface IDAO {
      */
     public boolean deleteAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
 
-
     /**
      * Get the {@link GeoMap} of the given mapId
      * 
@@ -2257,7 +2266,7 @@ public interface IDAO {
     public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException;
 
     public TermsOfUse getTermsOfUse() throws DAOException;
-    
+
     public boolean resetUserAgreementsToTermsOfUse() throws DAOException;
 
     public List<CMSSlider> getAllSliders() throws DAOException;
@@ -2327,7 +2336,7 @@ public interface IDAO {
     public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException;
 
     public CookieBanner getCookieBanner() throws DAOException;
-    
+
     public boolean saveCookieBanner(CookieBanner banner) throws DAOException;
 
     public Long getNumRecordsWithComments(User user) throws DAOException;
@@ -2337,23 +2346,23 @@ public interface IDAO {
     public int executeUpdate(String string) throws DAOException;
 
     /**
-     * Get the EntityManagerFactory created when initializing the class. Can be used to  explicitly 
-     * create new EntityManagers. 
+     * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
+     * 
      * @return the EntityManagerFactory
      */
     EntityManagerFactory getFactory();
 
     /**
-     * Get an EntityManager for a query or transaction. Must always be followed by
-     * {@link #close(EntityManager) close(EntityManager) Method} after the query/transaction
+     * Get an EntityManager for a query or transaction. Must always be followed by {@link #close(EntityManager) close(EntityManager) Method} after the
+     * query/transaction
+     * 
      * @return a new EntityManager
      */
     EntityManager getEntityManager();
 
     /**
-     * Either close the given EntityManager or do some other
-     * post query/transaction handling for the given EntityManager. 
-     * Must be called after each query/transaction.
+     * Either close the given EntityManager or do some other post query/transaction handling for the given EntityManager. Must be called after each
+     * query/transaction.
      * 
      * @param EntityManager em
      * @throws DAOException
@@ -2377,7 +2386,7 @@ public interface IDAO {
     void commitTransaction(EntityTransaction et) throws PersistenceException;
 
     /**
-     * Call {@link EntityTransaction#commit()} on the  current transaction of the given EntityManager
+     * Call {@link EntityTransaction#commit()} on the current transaction of the given EntityManager
      * 
      * @param EntityManager em
      * @throws PersistenceException
@@ -2385,21 +2394,20 @@ public interface IDAO {
     void commitTransaction(EntityManager em) throws PersistenceException;
 
     /**
-     * Handling of exceptions occured during {@link #commitTransaction(EntityTransaction)}. 
-     * Usually calls {@link EntityTransaction#rollback()}
+     * Handling of exceptions occured during {@link #commitTransaction(EntityTransaction)}. Usually calls {@link EntityTransaction#rollback()}
+     * 
      * @param EntityTransaction et
      * @throws PersistenceException
      */
     void handleException(EntityTransaction et) throws PersistenceException;
 
     /**
-     * Handling of exceptions occured during {@link #commitTransaction(EntityManager)}
-     * Usually calls {@link EntityTransaction#rollback()} on the current transaction of the given
-     * EntityManager
+     * Handling of exceptions occured during {@link #commitTransaction(EntityManager)} Usually calls {@link EntityTransaction#rollback()} on the
+     * current transaction of the given EntityManager
+     * 
      * @param EntityManager et
      * @throws PersistenceException
      */
     void handleException(EntityManager em);
-    
 
 }

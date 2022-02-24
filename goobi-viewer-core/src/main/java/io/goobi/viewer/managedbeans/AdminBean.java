@@ -70,6 +70,7 @@ import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.Selectable;
+import io.goobi.viewer.model.download.DownloadJobTools;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
@@ -346,9 +347,9 @@ public class AdminBean implements Serializable {
                 return false;
             }
         }
-        
+
         //update changes to current user in userBean
-        if(user != null && activeUser != null && activeUser.getId().equals(user.getId())) {
+        if (user != null && activeUser != null && activeUser.getId().equals(user.getId())) {
             User newUser = DataManager.getInstance().getDao().getUser(activeUser.getId());
             newUser.backupFields();
             BeanUtils.getUserBean().setUser(newUser);
@@ -673,7 +674,7 @@ public class AdminBean implements Serializable {
                         break;
                     case "delete":
                         logger.trace("Deleting UserRole: {}", userRole);
-                        if(userRole.getId() != null) {                            
+                        if (userRole.getId() != null) {
                             if (DataManager.getInstance().getDao().deleteUserRole(userRole)) {
                                 Messages.info("deletedSuccessfully");
                             } else {
@@ -1686,8 +1687,16 @@ public class AdminBean implements Serializable {
      * @param fromThumbnailCache a boolean.
      * @param fromPdfCache a boolean.
      * @return a int.
+     * @throws DAOException
      */
-    public int deleteFromCache(List<String> identifiers, boolean fromContentCache, boolean fromThumbnailCache, boolean fromPdfCache) {
+    public int deleteFromCache(List<String> identifiers, boolean fromContentCache, boolean fromThumbnailCache, boolean fromPdfCache)
+            throws DAOException {
+        // Delete download jobs/files
+        if (fromPdfCache) {
+            for (String identifier : identifiers) {
+                DownloadJobTools.removeJobsForRecord(identifier);
+            }
+        }
         return CacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache, fromPdfCache);
     }
 
