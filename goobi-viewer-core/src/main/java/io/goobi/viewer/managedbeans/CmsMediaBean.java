@@ -442,8 +442,8 @@ public class CmsMediaBean implements Serializable {
             default:
                 return BeanUtils.getImageDeliveryBean()
                 .getThumbs()
-                .getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0,
-                        StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
+                .getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : DataManager.getInstance().getConfiguration().getViewerMaxImageWidth(),
+                        StringUtils.isNotBlank(height) ? Integer.parseInt(height) : DataManager.getInstance().getConfiguration().getViewerMaxImageWidth());
                 
         }
     }
