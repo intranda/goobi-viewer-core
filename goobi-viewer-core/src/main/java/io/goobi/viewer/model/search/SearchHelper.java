@@ -930,7 +930,8 @@ public final class SearchHelper {
             if (licenseType.isMovingWall() && StringUtils.isNotBlank(licenseType.getProcessedConditions())) {
                 logger.trace("License type '{}' is a moving wall", licenseType.getName());
                 query.append(licenseType.getFilterQueryPart(true));
-                // Do not continue with the next license type here because the user may have full access to the moving wall license, in which case it should also be added with a non-negated filter query
+                // Do not continue; with the next license type here because the user may have full access to the moving wall license,
+                // in which case it should also be added with a non-negated filter query
             }
 
             // License type contains listing privilege
@@ -1818,6 +1819,7 @@ public final class SearchHelper {
      * @should throw IllegalArgumentException if query is null
      * @should add title terms field
      * @should remove proximity search tokens
+     * @should remove plus characters
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
         logger.trace("extractSearchTermsFromQuery:{}", query);
@@ -1893,6 +1895,9 @@ public final class SearchHelper {
                 String field = s.substring(0, split);
                 String value = s.length() > split ? s.substring(split + 1) : null;
                 if (StringUtils.isNotBlank(value)) {
+                    if (value.trim().equals("+")) {
+                        continue;
+                    }
                     currentField = field;
                     if (SolrConstants.SUPERDEFAULT.equals(currentField)) {
                         currentField = SolrConstants.DEFAULT;
@@ -1917,19 +1922,30 @@ public final class SearchHelper {
                         ret.get(currentField).add(value);
                         switch (currentField) {
                             // Do not add values to title terms for certain fields (expand as necessary)
+                            case SolrConstants.ACCESSCONDITION:
                             case SolrConstants.DC:
                             case SolrConstants.DOCSTRCT:
                             case SolrConstants.DOCTYPE:
                             case SolrConstants.IDDOC:
                                 break;
                             default:
-                                ret.get(_TITLE_TERMS).add("(" + value + ")");
+                                switch (value.trim()) {
+                                    case "true":
+                                        break;
+                                    default:
+                                        ret.get(_TITLE_TERMS).add("(" + value + ")");
+                                        break;
+                                }
+
                                 break;
                         }
                     }
                 }
             } else if (s.length() > 0 && !stopwords.contains(s)) {
                 // single values w/o a field
+                if (s.trim().equals("+")) {
+                    continue;
+                }
                 if (currentField == null) {
                     currentField = SolrConstants.DEFAULT;
                 } else if (currentField.endsWith(SolrConstants._UNTOKENIZED)) {
