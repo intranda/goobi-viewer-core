@@ -81,7 +81,7 @@ var viewerJS = ( function( viewer ) {
             			}
             			else {
             				$( '#cookieBanner' ).hide();  
-            				startPiwikTracking();          	
+            				this.startPiwikTracking();          	
             			}            			
             		}
             		else {
@@ -93,13 +93,18 @@ var viewerJS = ( function( viewer ) {
             	}            	
             } else {
             	$( '#cookieBanner' ).hide();
-            	startPiwikTracking();
+            	this.startPiwikTracking();
             }
 
 			// Only for style
 			$(".cookie-banner__accept-button").hover(function() {
 				$(".cookie-banner__icon-wrapper").addClass("-jumpAnimation");
 			});
+        },
+        startPiwikTracking() {
+        	if(typeof startPiwikTracking !== "undefined") {
+        		startPiwikTracking();
+        	}
         },
         getStoredLastEditedHash() {
         	let string = localStorage.getItem( 'cookieBannerHash' );
@@ -153,7 +158,7 @@ var viewerJS = ( function( viewer ) {
 				this.storeCookiesAccepted(acceptCookies);
 				this.config.bannerStatus = this.getStoredBannerStatus();
 				this.config.bannerHash = this.getStoredLastEditedHash();
-				startPiwikTracking();
+				this.startPiwikTracking();
 				if(_debug)console.log("accepted cookie banner ",acceptCookies,". Set banner status to ", this.config.bannerStatus, ", hash to ", this.config.bannerHash);
 			}.bind(this) ); 
 	    }
