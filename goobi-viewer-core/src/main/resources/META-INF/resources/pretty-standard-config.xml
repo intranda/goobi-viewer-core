@@ -805,8 +805,9 @@
 		<view-id value="/resources/admin/views/adminLicenses.xhtml" />
 	</url-mapping>
 	<url-mapping id="adminLicenseEdit">
-		<pattern value="/admin/licenses/edit/#{licenseTypeId:adminBean.currentLicenseTypeId}/" />
+		<pattern value="/admin/licenses/edit/#{licenseTypeId}/" />
 		<view-id value="/resources/admin/views/adminLicense.xhtml" />
+		<action onPostback="false">#{adminBean.setCurrentLicenseTypeId(licenseTypeId)}</action>
 	</url-mapping>
     <url-mapping id="adminLicenseNew">
         <pattern value="/admin/licenses/new/" />
