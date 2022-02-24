@@ -165,8 +165,8 @@ public class RestApiManager {
      * @return the url to the content api to use for IIIF resources
      */
     public String getIIIFContentApiUrl(Version version) {
-        return getDataApiManager(version).map(AbstractApiUrlManager::getApiUrl)
-                .orElse(getDataApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(null));
+        return getContentApiManager(version).map(AbstractApiUrlManager::getApiUrl)
+                .orElse(getContentApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(null));
     }
     
     public AbstractApiUrlManager getIIIFDataApiManager() {
