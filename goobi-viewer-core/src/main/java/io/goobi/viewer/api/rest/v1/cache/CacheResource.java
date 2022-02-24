@@ -30,7 +30,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.solr.common.StringUtils;
 import org.json.JSONObject;
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +40,6 @@ import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.model.IResponseMessage;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.download.DownloadJobTools;
 import io.swagger.v3.oas.annotations.Operation;
