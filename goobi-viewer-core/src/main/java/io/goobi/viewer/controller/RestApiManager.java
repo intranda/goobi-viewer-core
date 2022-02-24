@@ -143,7 +143,7 @@ public class RestApiManager {
      * @return
      */
     public static boolean isLegacyUrl(String restApiUrl) {
-        return !restApiUrl.matches(".*/api/v1/?");
+        return !restApiUrl.matches(".*/api/v[12]/?");
     }
 
     /**
@@ -151,6 +151,21 @@ public class RestApiManager {
      */
     public String getIIIFDataApiUrl() {
         return getDataApiManager(getVersionToUseForIIIF()).map(AbstractApiUrlManager::getApiUrl)
+                .orElse(getDataApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(null));
+    }
+    
+    /**
+     * @return the url to the content api to use for IIIF resources
+     */
+    public String getIIIFContentApiUrl() {
+        return getIIIFContentApiUrl(getVersionToUseForIIIF());
+    }
+    
+    /**
+     * @return the url to the content api to use for IIIF resources
+     */
+    public String getIIIFContentApiUrl(Version version) {
+        return getDataApiManager(version).map(AbstractApiUrlManager::getApiUrl)
                 .orElse(getDataApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(null));
     }
     
