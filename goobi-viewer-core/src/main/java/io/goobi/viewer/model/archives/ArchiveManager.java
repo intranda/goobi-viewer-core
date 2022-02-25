@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;

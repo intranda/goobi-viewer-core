@@ -239,7 +239,8 @@ public class ViewManager implements Serializable {
     }
     
     public String getArchiveUrlForIdentifier(String identifier) {
-        return DataManager.getInstance().getArchiveManager().getArchiveUrl(this.archiveResource, identifier);
+        String url = DataManager.getInstance().getArchiveManager().getArchiveUrl(this.archiveResource, identifier);
+        return url.replaceAll("\\s", "+");
     }
     
     private void setDoublePageModeForDropDown(boolean doublePages) {
