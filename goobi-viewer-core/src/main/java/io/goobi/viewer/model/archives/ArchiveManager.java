@@ -3,6 +3,7 @@ package io.goobi.viewer.model.archives;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -255,8 +257,7 @@ public class ArchiveManager {
         } else {
             return null;
         }
-    }
-    
+    }    
     
     private ArchiveResource getArchiveForEntry(String identifier) {
         URI archiveUri = URI.create(DataManager.getInstance().getConfiguration().getBaseXUrl());
@@ -297,7 +298,7 @@ public class ArchiveManager {
 
         if (resource != null) {
             try {
-                if (this.archives.get(resource) == null) {
+                if (this.archives.get(resource) == null || isOutdated(resource)) {
                     ArchiveTree archiveTree = loadDatabase(eadParser, resource);
                     if (archiveTree != null) {
                         this.archives.put(resource, archiveTree);
@@ -309,17 +310,40 @@ public class ArchiveManager {
             } catch (JDOMException | ConfigurationException e) {
                 logger.error("Error reading database {} from {}", resource.getCombinedName(), eadParser.getBasexUrl());
                 this.databaseState = DatabaseState.ERROR_INVALID_FORMAT;
+            } catch (BaseXException e) {
+                logger.error("Error reading database {} from {}", resource.getCombinedName(), eadParser.getBasexUrl());
+                this.databaseState = DatabaseState.ERROR_INVALID_FORMAT;
             }
         }
 
     }
 
-    private ArchiveTree loadDatabase(BasexEADParser eadParser, ArchiveResource archive)
+    /**
+     * Check if the given resource is outdated compared to the last updated date from the basex server
+     * 
+     * @param resource
+     * @return  true if the resource in basex is newer than the given one
+     * @throws IOException  if the basex server is not reachable
+     */
+    private boolean isOutdated(ArchiveResource resource) throws BaseXException, IOException {
+        try {
+            List<ArchiveResource> resources = this.eadParser.getPossibleDatabases();
+            ArchiveResource externalResource = resources.stream().filter(extResource -> extResource.getCombinedId().equals(resource.getCombinedId())).findAny().orElse(null);
+            if(externalResource != null) {
+                return externalResource.getModifiedDate().isAfter(resource.getModifiedDate());
+            } else {
+                throw new BaseXException("Resource " + resource.getCombinedName() + " not found on basex server " + this.eadParser.getBasexUrl());
+            }
+        } catch ( HTTPException e) {
+            throw new IOException("BaseX server cannot be reached: " + e.toString());
+        }
+    }
+
+    ArchiveTree loadDatabase(BasexEADParser eadParser, ArchiveResource archive)
             throws ConfigurationException, IllegalStateException, IOException, HTTPException, JDOMException {
         HierarchicalConfiguration<ImmutableNode> baseXMetadataConfig = DataManager.getInstance().getConfiguration().getArchiveMetadataConfig();
         eadParser.readConfiguration(baseXMetadataConfig);
-        Document databaseDoc = eadParser.retrieveDatabaseDocument(archive);
-        ArchiveEntry rootElement = eadParser.loadDatabase(archive, databaseDoc);
+        ArchiveEntry rootElement = eadParser.loadDatabase(archive);
         logger.info("Loaded EAD database: {}", archive.getCombinedName());
         return loadTree(rootElement);
     }
