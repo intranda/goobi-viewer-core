@@ -872,8 +872,13 @@ this.fetchCollections = function() {
     if(this.opts.baseCollection) {
         url += this.opts.baseCollection + "/";
     }
+    let separator = "?";
     if(this.opts.grouping) {
-        url += "?grouping=" + this.opts.grouping;
+        url += (separator + "grouping=" + this.opts.grouping);
+        separator = "&";
+    }
+    if(this.opts.blacklist) {
+        url += (separator + "ignore=" + this.opts.blacklist);
     }
     return fetch(url)
     .then( result => result.json())
