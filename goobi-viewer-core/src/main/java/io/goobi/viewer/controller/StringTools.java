@@ -580,6 +580,7 @@ public class StringTools {
 
         return ret;
     }
+    
 
     /**
      * <p>
@@ -703,6 +704,24 @@ public class StringTools {
         }
 
         return ret;
+    }
+    
+    /**
+     * Try to parse the given string as integer.
+     * @param s the string to parse
+     * @return An Optional containing the parsed int. If the string is blank or cannot be parsed to an integer, an empty Optional is returned
+     */
+    public static Optional<Integer> parseInt(String s) {
+        if(StringUtils.isBlank(s)) {
+            return Optional.empty();
+        } else {
+            try {                
+                int i = Integer.parseInt(s);
+                return Optional.of(i);
+            } catch(NumberFormatException e) {
+                return Optional.empty();
+            }
+        }
     }
 
 }
