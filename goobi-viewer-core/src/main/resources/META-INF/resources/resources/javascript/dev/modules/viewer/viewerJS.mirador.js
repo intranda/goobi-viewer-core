@@ -244,7 +244,7 @@ var viewerJS = ( function( viewer ) {
             	    filteredMotivations: ['oa:commenting', 'oa:tagging','oa:describing', 'commenting', 'tagging', 'describing'],
                 }
         }
-        return Q(Promise.resolve(miradorConfig));
+        return Promise.resolve(miradorConfig);
     }
     
     return viewer;

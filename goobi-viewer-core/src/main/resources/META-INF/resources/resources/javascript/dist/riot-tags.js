@@ -104,7 +104,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').addClass('in-progress');
 
             for (i = 0; i < this.files.length; i++) {
-                uploads.push(Q(this.uploadFile(i)));
+                uploads.push(this.uploadFile(i));
             }
 
             return Promise.allSettled(uploads).then(function(results) {
@@ -188,7 +188,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         this.uploadFile = function(i) {
             if (this.files.length <= i) {
                 new Modal(this.refs.doneModal).show();
-                return;
+                return new Promise.resolve();
             }
 
             var displayFile = this.displayFiles[i];

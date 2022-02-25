@@ -85,12 +85,12 @@ var viewerJS = ( function( viewer ) {
             .then(resp => resp.json());*/
             
             
-            var promise = Q( $.ajax( {
+            var promise = $.ajax( {
                 url: decodeURI( url ),
                 type: "GET",
                 dataType: "JSON",
                 async: true
-            } ) );
+            } );
             
             return promise;
         },
