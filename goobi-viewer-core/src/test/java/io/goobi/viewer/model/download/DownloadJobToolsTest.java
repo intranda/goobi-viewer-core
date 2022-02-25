@@ -29,15 +29,15 @@ public class DownloadJobToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see DownloadJobTools#removeJobsForRecord(String)
-     * @verifies delete all jobs for record
+     * @verifies delete all finished jobs for record
      */
     @Test
-    public void removeJobsForRecord_shouldDeleteAllJobsForRecord() throws Exception {
-        DataManager.getInstance().getConfiguration().overrideValue("pdf.downloadFolder", "target");
-        
+    public void removeJobsForRecord_shouldDeleteAllFinishedJobsForRecord() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("epub.downloadFolder", "target");
+
         Assert.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
 
-        DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(1);
+        DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(2);
         Assert.assertNotNull(job);
         Path path = DownloadJobTools.getDownloadFileStatic(job.getIdentifier(), job.getType(), job.getFileExtension()).toPath();
         if (!Files.exists(path)) {
@@ -45,11 +45,11 @@ public class DownloadJobToolsTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         Assert.assertTrue(Files.isRegularFile(path));
 
-        Assert.assertEquals(2, DownloadJobTools.removeJobsForRecord("PI_1"));
+        Assert.assertEquals(1, DownloadJobTools.removeJobsForRecord("PI_1"));
         Assert.assertFalse(Files.exists(path));
-        Assert.assertEquals(0, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        Assert.assertNull(DataManager.getInstance().getDao().getDownloadJob(2));
     }
-
 
     /**
      * @see DownloadJobTools#cleanupExpiredDownloads()

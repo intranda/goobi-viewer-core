@@ -21,7 +21,7 @@ public class DownloadJobTools {
      * @param pi Record identifier
      * @return
      * @throws DAOException
-     * @should delete all jobs for record
+     * @should delete all finished jobs for record
      */
     public static int removeJobsForRecord(String pi) throws DAOException {
         List<DownloadJob> jobs = DataManager.getInstance().getDao().getDownloadJobsForPi(pi);
@@ -31,10 +31,19 @@ public class DownloadJobTools {
 
         int count = 0;
         for (DownloadJob job : jobs) {
-            if (DataManager.getInstance().getDao().deleteDownloadJob(job)) {
-                job.deleteFile();
-                count++;
+            switch (job.getStatus()) {
+                case READY:
+                case DELETED:
+                case ERROR:
+                    if (DataManager.getInstance().getDao().deleteDownloadJob(job)) {
+                        job.deleteFile();
+                        count++;
+                    }
+                    break;
+                default:
+                    break;
             }
+
         }
 
         return count;
