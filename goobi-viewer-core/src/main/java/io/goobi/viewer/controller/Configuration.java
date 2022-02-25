@@ -4477,12 +4477,13 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * <p>
      * getCmsMediaDisplayHeight.
+     * If not configured, return 100.000. In this case the actual image size always depends on the requested width
      * </p>
      *
      * @return a int.
      */
     public int getCmsMediaDisplayHeight() {
-        return getLocalInt("cms.mediaDisplayHeight", 0);
+        return getLocalInt("cms.mediaDisplayHeight", 100000);
     }
 
     /**
