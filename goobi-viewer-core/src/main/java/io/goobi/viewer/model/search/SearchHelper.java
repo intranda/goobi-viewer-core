@@ -155,6 +155,8 @@ public final class SearchHelper {
     public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
     /** Constant <code>patternProximitySearchToken</code> */
     public static Pattern patternProximitySearchToken = Pattern.compile("~([0-9]+)");
+    /** Constant <code>patternYearRange</code> */
+    public static Pattern patternYearRange = Pattern.compile("\\[[0-9]+ TO [0-9]+\\]");
 
     /**
      * Main search method for aggregated search.
@@ -1820,6 +1822,7 @@ public final class SearchHelper {
      * @should add title terms field
      * @should remove proximity search tokens
      * @should remove plus characters
+     * @should remove range values
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
         logger.trace("extractSearchTermsFromQuery:{}", query);
@@ -1850,6 +1853,9 @@ public final class SearchHelper {
 
         // Drop proximity search tokens
         query = query.replaceAll(patternProximitySearchToken.pattern(), "");
+        
+        // Drop year ranges
+        query = query.replaceAll(patternYearRange.pattern(), "");
 
         // Use a copy of the query because the original query gets shortened after every match, causing an IOOBE eventually
         String queryCopy = query;

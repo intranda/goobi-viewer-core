@@ -597,6 +597,21 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertTrue(terms.contains("\"foo\""));
         }
     }
+    
+
+    /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies remove range values
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldRemoveRangeValues() throws Exception {
+        Map<String, Set<String>> result =
+                SearchHelper.extractSearchTermsFromQuery("+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +MD_YEARPUBLISH:[2020 TO 2022]", null);
+        {
+            Set<String> terms = result.get("MD_YEARPUBLISH");
+            Assert.assertNull(terms);
+        }
+    }
 
     /**
      * @see SearchHelper#generateCollectionBlacklistFilterSuffix()
