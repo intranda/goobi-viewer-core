@@ -204,18 +204,22 @@
 	                        </h3>
 
 	                        <!-- neighbours is a pair of optionals holding the ids of the previous and succeeding archives entry. This format is used to avoid querying solr more than once -->
-	    	<c:set scope="view" var="neighbours" value="#{activeDocumentBean.viewManager.getArchiveTreeNeighbours()}"/>
-            <div id="widgetArchives" class="widget widget-archives">
-                <ul>
-	                <ui:repeat var="entry" value="#{activeDocumentBean.viewManager.getArchiveHierarchyForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">
-					    <li class="widget-archives__entry">#{entry.label}</li>
-					</ui:repeat>
-					<li class="widget-archives__archives-link">
-					    <h:outputLink
-					        value="#{navigationHelper.applicationUrl}#{activeDocumentBean.viewManager.getArchiveUrlForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">#{msg.openArchiveView}</h:outputLink>
-					</li>
-				</ul>
-            </div>
+					    	<c:set scope="view" var="neighbours" value="#{activeDocumentBean.viewManager.getArchiveTreeNeighbours()}"/>
+				            
+				            <div class="fullscreen__view-sidebar-accordeon-panel-body">
+				            	<div id="widgetArchives" class="widget widget-archives">
+
+					                <ul>
+						                <ui:repeat var="entry" value="#{activeDocumentBean.viewManager.getArchiveHierarchyForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">
+										    <li class="widget-archives__entry">#{entry.label}</li>
+										</ui:repeat>
+										<li class="widget-archives__archives-link">
+										    <h:outputLink
+										        value="#{navigationHelper.applicationUrl}#{activeDocumentBean.viewManager.getArchiveUrlForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">#{msg.openArchiveView}</h:outputLink>
+										</li>
+									</ul>
+								</div>
+				            </div>
 	                    </div>
 					</c:if>
 					
