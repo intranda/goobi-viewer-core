@@ -105,7 +105,7 @@ var viewerJS = ( function( viewer ) {
 	  position: 'top-end',
 	  showConfirmButton: false,
 	  timer: 4000,
-	  timerProgressBar: false,
+	  timerProgressBar: true,
 	  didOpen: (toast) => {
 	    toast.addEventListener('mouseenter', Swal.stopTimer)
 	    toast.addEventListener('mouseleave', Swal.resumeTimer)
