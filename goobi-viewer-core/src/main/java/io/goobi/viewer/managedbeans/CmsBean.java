@@ -56,6 +56,7 @@ import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.RandomComparator;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -1887,10 +1888,12 @@ public class CmsBean implements Serializable {
         String myId = page.getId() + "_" + id;
         CollectionView collection = collections.get(myId);
         if (collection == null) {
-            CMSContentItem contentItem = page.getContentItem(id);
-            if (contentItem != null) {
+            try {
+                CMSContentItem contentItem = page.getContentItemOrThrowException(id);
                 collection = contentItem.initializeCollection(page.getSubThemeDiscriminatorValue());
                 collections.put(myId, collection);
+            } catch(CmsElementNotFoundException e) {
+                logger.debug("Not matching collection element for id {} on page {}", id, page.getId());
             }
         }
         return collection;
