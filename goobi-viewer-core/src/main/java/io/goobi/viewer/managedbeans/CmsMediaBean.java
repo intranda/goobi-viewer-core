@@ -15,20 +15,18 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -440,12 +438,34 @@ public class CmsMediaBean implements Serializable {
             case CMSMediaItem.CONTENT_TYPE_GIF:
                 return ThumbnailHandler.getCMSMediaImageApiUrl(item.getFileName()) + "/full.gif";
             default:
+                Dimension imageSize = getRequestImageSize(width, height);
                 return BeanUtils.getImageDeliveryBean()
                 .getThumbs()
-                .getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0,
-                        StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
+                .getThumbnailUrl(Optional.ofNullable(item), imageSize.width, imageSize.height);
                 
         }
+    }
+
+    /**
+     * If both with and height are blank, return a size of 0x0, which will be interpreted as 'max' size for IIIF
+     * If one dimension is blank and the other not, fill the blank dimension with the configured maximal image size 
+     * Otherwise return a size matching both arguments
+     * @param width
+     * @param height
+     * @return
+     */
+    private static Dimension getRequestImageSize(String width, String height) {
+        Dimension imageSize;
+        if(StringUtils.isAllBlank(width, height)) {
+            imageSize = new Dimension(0,0);
+        } else if(StringUtils.isBlank(height)) {
+            imageSize = new Dimension(Integer.parseInt(width), DataManager.getInstance().getConfiguration().getViewerMaxImageHeight());
+        } else if(StringUtils.isBlank(width)) {
+            imageSize = new Dimension(DataManager.getInstance().getConfiguration().getViewerMaxImageWidth(), Integer.parseInt(height));
+        } else {
+            imageSize = new Dimension(Integer.parseInt(width), Integer.parseInt(height));
+        }
+        return imageSize;
     }
 
     /**

@@ -239,7 +239,8 @@ public class ViewManager implements Serializable {
     }
     
     public String getArchiveUrlForIdentifier(String identifier) {
-        return DataManager.getInstance().getArchiveManager().getArchiveUrl(this.archiveResource, identifier);
+        String url = DataManager.getInstance().getArchiveManager().getArchiveUrl(this.archiveResource, identifier);
+        return url.replaceAll("\\s", "+");
     }
     
     private void setDoublePageModeForDropDown(boolean doublePages) {
@@ -1343,26 +1344,22 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * Main method for setting the current page(s) in this ViewManager.
+     * Main method for setting the current page(s) in this ViewManager. If the given String cannot be parsed to an integer
+     * the current image order is set to 1
      * 
      * @param currentImageOrderString A string containing a single page number or a range of two pages
-     * @throws NumberFormatException
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws IDDOCNotFoundException
      */
     public void setCurrentImageOrderString(String currentImageOrderString)
-            throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException {
-        if (StringUtils.isEmpty(currentImageOrderString)) {
-            return;
-        }
-
+            throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         int newImageOrder = 1;
-        if (currentImageOrderString.contains("-")) {
+        if (currentImageOrderString != null && currentImageOrderString.contains("-")) {
             String[] orderSplit = currentImageOrderString.split("[-]");
-            newImageOrder = Integer.valueOf(orderSplit[0]);
+            newImageOrder = StringTools.parseInt(orderSplit[0]).orElse(1);
         } else {
-            newImageOrder = Integer.valueOf(currentImageOrderString);
+            newImageOrder = StringTools.parseInt(currentImageOrderString).orElse(1);
         }
 
         setCurrentImageOrder(newImageOrder);

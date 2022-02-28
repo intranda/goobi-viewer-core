@@ -37,14 +37,12 @@ public class CMSRecordNoteUpdate implements IModelUpdate {
      */
     @Override
     public boolean update(IDAO dao) throws DAOException, SQLException {
-        dao.startTransaction();
-        dao.createNativeQuery("UPDATE cms_record_notes SET note_type='SINGLE' WHERE note_type IS NULL").executeUpdate();
-        dao.createNativeQuery("ALTER TABLE cms_record_notes MODIFY record_title varchar(4096)").executeUpdate();
-        dao.createNativeQuery("ALTER TABLE cms_record_notes ALTER record_title SET DEFAULT ''").executeUpdate();
-        dao.createNativeQuery("ALTER TABLE cms_record_notes MODIFY query varchar(4096)").executeUpdate();
-        dao.createNativeQuery("ALTER TABLE cms_record_notes ALTER query SET DEFAULT ''").executeUpdate();
-        dao.createNativeQuery("ALTER TABLE cms_record_notes ALTER record_pi SET DEFAULT ''").executeUpdate();
-        dao.commitTransaction();
+        dao.executeUpdate("UPDATE cms_record_notes SET note_type='SINGLE' WHERE note_type IS NULL");
+        dao.executeUpdate("ALTER TABLE cms_record_notes MODIFY record_title varchar(4096)");
+        dao.executeUpdate("ALTER TABLE cms_record_notes ALTER record_title SET DEFAULT ''");
+        dao.executeUpdate("ALTER TABLE cms_record_notes MODIFY query varchar(4096)");
+        dao.executeUpdate("ALTER TABLE cms_record_notes ALTER query SET DEFAULT ''");
+        dao.executeUpdate("ALTER TABLE cms_record_notes ALTER record_pi SET DEFAULT ''");
         return true;
     }
 

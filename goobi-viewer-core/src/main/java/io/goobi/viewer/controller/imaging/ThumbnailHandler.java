@@ -960,9 +960,9 @@ public class ThumbnailHandler {
      */
     public static String getCMSMediaImageApiUrl(String filename) {
         if (DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
-            return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getContentApiUrl());
+            return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getIIIFContentApiUrl());
         }
-        return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getDataApiUrl());
+        return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getIIIFDataApiUrl());
     }
 
     public static String getCMSMediaImageApiUrl(String filename, String restApiUrl) {

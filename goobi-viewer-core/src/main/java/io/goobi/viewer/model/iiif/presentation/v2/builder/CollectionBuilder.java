@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -112,10 +113,11 @@ public class CollectionBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws IllegalRequestException if the top element is not empty and is not a collection
      */
-    public Collection2 generateCollection(String collectionField, final String topElement, final String facetField, final String splittingChar)
+    public Collection2 generateCollection(String collectionField, final String topElement, final String facetField, final String splittingChar, final List<String> ignoreCollections)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
         
         CollectionView collectionView = getCollectionView(collectionField, facetField, splittingChar);
+        collectionView.setIgnore(ignoreCollections);
 //        CollectionView collectionView = createCollectionView(collectionField, facetField, splittingChar);
         if (StringUtils.isNotBlank(topElement) && !"-".equals(topElement)) {
             collectionView.setTopVisibleElement(topElement);

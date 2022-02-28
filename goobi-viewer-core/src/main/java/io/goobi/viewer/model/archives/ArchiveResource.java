@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter;
 public class ArchiveResource {
 
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     private final String databaseName;
     private final String resourceName;
@@ -97,6 +97,11 @@ public class ArchiveResource {
 //        } catch (UnsupportedEncodingException e) {
 //            throw new IllegalStateException("'utf-8' is unsupported encoding");
 //        }
+    }
+    
+    @Override
+    public String toString() {
+        return getCombinedName();
     }
 
 }

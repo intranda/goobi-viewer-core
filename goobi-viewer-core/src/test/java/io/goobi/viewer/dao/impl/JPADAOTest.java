@@ -739,8 +739,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(comment.getTargetPI(), comment2.getTargetPI());
         Assert.assertEquals(comment.getTargetPageOrder(), comment2.getTargetPageOrder());
         Assert.assertEquals(comment.getText(), comment2.getText());
-        Assert.assertEquals(comment.getCreator(), comment2.getCreator());
         Assert.assertEquals(now, comment2.getDateModified());
+        Assert.assertEquals(comment.getCreator(), comment2.getCreator());
     }
 
     @Test
@@ -1972,31 +1972,37 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(2));
         Assert.assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(3));
     }
-
-    /**
-     * @see JPADAO#updateUserGroup(UserGroup)
-     * @verifies set id on new license
-     */
-    @Test
-    public void updateUserGroup_shouldSetIdOnNewLicense() throws Exception {
-        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
-        Assert.assertNotNull(userGroup);
-        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
-        Assert.assertNotNull(licenseType);
-        License license = new License();
-        license.setDescription("xxx");
-        license.setLicenseType(licenseType);
-        userGroup.addLicense(license);
-        Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
-        boolean licenseFound = false;
-        for (License l : userGroup.getLicenses()) {
-            if ("xxx".equals(l.getDescription())) {
-                licenseFound = true;
-                Assert.assertNotNull(l.getId());
-            }
-        }
-        Assert.assertTrue(licenseFound);
-    }
+    
+    
+/*
+ * Unused since the tested behaviour (licence entity ids being bein immediately visible in owning user group)
+ * Is no longer supported because of transaction-scoped EntityManagers; and the purpose of this behaviour is unclear
+ */
+//
+//    /**
+//     * @see JPADAO#updateUserGroup(UserGroup)
+//     * @verifies set id on new license
+//     */
+//    @Test
+//    public void updateUserGroup_shouldSetIdOnNewLicense() throws Exception {
+//        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
+//        Assert.assertNotNull(userGroup);
+//        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
+//        Assert.assertNotNull(licenseType);
+//        License license = new License();
+//        license.setDescription("xxx");
+//        license.setLicenseType(licenseType);
+//        userGroup.addLicense(license);
+//        Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
+//        boolean licenseFound = false;
+//        for (License l : userGroup.getLicenses()) {
+//            if ("xxx".equals(l.getDescription())) {
+//                licenseFound = true;
+//                Assert.assertNotNull(l.getId());
+//            }
+//        }
+//        Assert.assertTrue(licenseFound);
+//    }
 
     /**
      * @see JPADAO#getUserCount()
@@ -3127,7 +3133,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         FutureTask<Boolean> updateResult = new FutureTask<Boolean>(() -> {
             try {
                 updateComment(dao, comment.getId(), "Changed", 200);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | DAOException e) {
                 fail("Updating interrupted");
             }
         }, true);
@@ -3135,7 +3141,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         FutureTask<Boolean> updateResultFast = new FutureTask<Boolean>(() -> {
             try {
                 updateComment(dao, comment.getId(), "ChangedAgain", 0);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | DAOException e) {
                 fail("Updating interrupted");
             }
         }, true);
@@ -3155,10 +3161,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
-    private static void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException {
-        dao.startTransaction();
+    private static void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException, DAOException {
         Thread.sleep(duration);
-        dao.createNativeQuery("UPDATE annotations_comments SET body='" + content + "' WHERE annotation_id=" + id).executeUpdate();
-        dao.commitTransaction();
+        dao.executeUpdate("UPDATE annotations_comments SET body='" + content + "' WHERE annotation_id=" + id);
     }
 }

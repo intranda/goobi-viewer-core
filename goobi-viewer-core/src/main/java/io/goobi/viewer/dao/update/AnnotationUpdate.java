@@ -60,14 +60,13 @@ public class AnnotationUpdate implements IModelUpdate {
     @Override
     public boolean update(IDAO dao) throws DAOException, SQLException {
         
-        List<String> tables = dao.createNativeQuery("show tables").getResultList();
         int updates = 0;
         
-        if(tables.contains("annotations")) {            
+        if(dao.tableExists("annotations")) {            
             updateCrowdsourcingAnnotations(dao);
             updates++;
         }
-        if(tables.contains("comments")) {            
+        if(dao.tableExists("comments")) {            
             updateComments(dao);
             updates++;
         }
@@ -82,9 +81,9 @@ public class AnnotationUpdate implements IModelUpdate {
     private void updateCrowdsourcingAnnotations(IDAO dao) throws DAOException {
         AnnotationSaver saver = new SqlAnnotationSaver(dao);
         
-        List<Object[]> info = dao.createNativeQuery("desc annotations").getResultList();
+        List<Object[]> info = dao.getNativeQueryResults("desc annotations");
         
-        List<Object[]> annotations = dao.createNativeQuery("SELECT * FROM annotations").getResultList();
+        List<Object[]> annotations = dao.getNativeQueryResults("SELECT * FROM annotations");
         
         List<String> columnNames = info.stream().map(o -> (String)o[0]).collect(Collectors.toList());
         
@@ -137,9 +136,8 @@ public class AnnotationUpdate implements IModelUpdate {
             }
             
         }
-        dao.startTransaction();
-        dao.createNativeQuery("DROP TABLE annotations").executeUpdate();
-        dao.commitTransaction();
+        dao.executeUpdate("DROP TABLE annotations");
+        
     }
 
     /**
@@ -148,8 +146,8 @@ public class AnnotationUpdate implements IModelUpdate {
      */
     private void updateComments(IDAO dao) throws DAOException {
         AnnotationSaver saver = new SqlAnnotationSaver(dao);
-        List<Object[]> comments = dao.createNativeQuery("SELECT * FROM comments").getResultList();
-        List<Object[]> info = dao.createNativeQuery("desc comments").getResultList();
+        List<Object[]> comments = dao.getNativeQueryResults("SELECT * FROM comments");
+        List<Object[]> info = dao.getNativeQueryResults("desc comments");
         List<String> columnNames = info.stream().map(o -> (String)o[0]).collect(Collectors.toList());
         for (Object[] comment : comments) {
             Map<String, Object> columns = IntStream.range(0, columnNames.size()).boxed().filter(i -> comment[i] != null).collect(Collectors.toMap(i -> columnNames.get(i), i -> comment[i]));
@@ -178,9 +176,7 @@ public class AnnotationUpdate implements IModelUpdate {
                 throw new DAOException(e.toString());
             }
         }
-        dao.startTransaction();
-        dao.createNativeQuery("DROP TABLE comments").executeUpdate();
-        dao.commitTransaction();
+        dao.executeUpdate("DROP TABLE comments");
 
     }
 

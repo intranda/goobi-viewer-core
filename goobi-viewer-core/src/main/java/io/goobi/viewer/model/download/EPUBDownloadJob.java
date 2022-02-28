@@ -128,7 +128,7 @@ public class EPUBDownloadJob extends DownloadJob {
     /** {@inheritDoc} */
     @Override
     public long getSize() {
-        File downloadFile = getDownloadFileStatic(identifier, type, getFileExtension());
+        File downloadFile = DownloadJobTools.getDownloadFileStatic(identifier, type, getFileExtension());
         if (downloadFile.isFile()) {
             return downloadFile.length();
         }
@@ -242,7 +242,7 @@ public class EPUBDownloadJob extends DownloadJob {
         requestObject.goobiId = downloadIdentifier;
         requestObject.sourceDir = metsPath.toString();
         requestObject.language = CmsBean.getCurrentLocale().getLanguage();
-        
+
         try {
             Response response = postJobRequest(taskManagerUrl, requestObject);
             String entity = response.readEntity(String.class);

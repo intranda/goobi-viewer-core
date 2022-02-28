@@ -106,10 +106,10 @@ public class JPADAO implements IDAO {
     private static final String DEFAULT_PERSISTENCE_UNIT_NAME = "intranda_viewer_tomcat";
     static final String MULTIKEY_SEPARATOR = "_";
     static final String KEY_FIELD_SEPARATOR = "-";
-
+    /**
+     * EntityManagerFactory for the persistence context. Only build once at application startup
+     */
     private final EntityManagerFactory factory;
-    // private ThreadLocal<EntityManager> threadLocalEm = new ThreadLocal<>();
-    private EntityManager emGlobal;
     private Object cmsRequestLock = new Object();
     private Object crowdsourcingRequestLock = new Object();
 
@@ -149,10 +149,8 @@ public class JPADAO implements IDAO {
             currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
             factory = Persistence.createEntityManagerFactory(persistenceUnitName);
             currentThread.setContextClassLoader(saveClassLoader);
-
-            // threadLocalEm.set(factory.createEntityManager());
-            emGlobal = factory.createEntityManager();
-            // factory.unwrap(java.sql.Connection.class);
+            //Needs to be called for unit tests
+            factory.createEntityManager();
             preQuery();
         } catch (DatabaseException | PersistenceException e) {
             logger.error(e.getMessage(), e);
@@ -167,39 +165,55 @@ public class JPADAO implements IDAO {
      *
      * @return a {@link javax.persistence.EntityManagerFactory} object.
      */
+    @Override
     public EntityManagerFactory getFactory() {
         return this.factory;
     }
 
     /**
      * <p>
-     * getEntityManager.
+     * Get a new {@link EntityManager} from the {@link JPADAO#factory}
+     * 
      * </p>
      *
      * @return {@link javax.persistence.EntityManager} for the current thread
      */
-    EntityManager getEntityManager() {
-        //        if (threadLocalEm.get() == null) {
-        //            threadLocalEm.set(factory.createEntityManager());
-        //        }
-        //
-        //        return threadLocalEm.get();
-
-        if (emGlobal == null) {
-            emGlobal = factory.createEntityManager();
-        }
-
-        return emGlobal;
+    @Override
+    public EntityManager getEntityManager() {
+        EntityManager em = getFactory().createEntityManager();
+        return em;
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * Start a persistence context transaction. Always needs to be succeeded with {@link #commitTransaction()} after the transaction is complete
+     * Operation to call after a query or other kind of transaction is complete
+     * 
+     * @param em
+     * @throws DAOException
      */
     @Override
-    public void startTransaction() {
-        getEntityManager().getTransaction().begin();
+    public void close(EntityManager em) throws DAOException {
+        if (em != null && em.isOpen()) {
+            em.close();
+        } else if (em != null) {
+            logger.warn("Attempting to close a closed entityManager");
+        }
+    }
+
+    /**
+     * Call {@link EntityManager#getTransaction() getTransaction()} on the given EntityManager and then {@link EntityTransaction#begin() begin()} on
+     * the transaction
+     *
+     * @return the transaction gotten from the entity manager
+     */
+    @Override
+    public EntityTransaction startTransaction(EntityManager em) {
+        EntityTransaction et = em.getTransaction();
+        if (!et.isActive()) {
+            et.begin();
+        } else {
+            logger.warn("Attempring to start an already ongoing transaction");
+        }
+        return et;
     }
 
     /**
@@ -208,30 +222,31 @@ public class JPADAO implements IDAO {
      * Commits a persistence context transaction Only to be used following a {@link #startTransaction()} call
      */
     @Override
-    public void commitTransaction() {
-        getEntityManager().getTransaction().commit();
+    public void commitTransaction(EntityTransaction et) throws PersistenceException {
+        if (et.isActive()) {
+            et.commit();
+        } else {
+            logger.warn("Attempring to commit an inactive transaction");
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Create a query in native sql syntax in the persistence context. Does not provide its own transaction. Use {@link #startTransaction()} and
-     * {@link #commitTransaction()} for this
-     */
     @Override
-    public Query createNativeQuery(String string) {
-        return getEntityManager().createNativeQuery(string);
+    public void commitTransaction(EntityManager em) throws PersistenceException {
+        commitTransaction(em.getTransaction());
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Create a query in jpa query syntax in the persistence context. Does not provide its own transaction. Use {@link #startTransaction()} and
-     * {@link #commitTransaction()} for this
-     */
     @Override
-    public Query createQuery(String string) {
-        return getEntityManager().createQuery(string);
+    public void handleException(EntityTransaction et) throws PersistenceException {
+        if (et.isActive()) {
+            et.rollback();
+        } else {
+            logger.warn("Attempring to roll back an inactive transaction");
+        }
+    }
+
+    @Override
+    public void handleException(EntityManager em) {
+        handleException(em.getTransaction());
     }
 
     /*
@@ -244,11 +259,14 @@ public class JPADAO implements IDAO {
     @Override
     public List<User> getAllUsers(boolean refresh) throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT u FROM User u");
-        if (refresh) {
-            q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT u FROM User u");
+            return q.getResultList();
+        } finally {
+            close(em);
         }
-        return q.getResultList();
+
     }
 
     /** {@inheritDoc} */
@@ -271,35 +289,40 @@ public class JPADAO implements IDAO {
     @Override
     public List<User> getUsers(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT a FROM User a");
-        Map<String, String> params = new HashMap<>();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM User a");
+            Map<String, String> params = new HashMap<>();
 
-        if (filters != null) {
-            String filterValue = filters.values().stream().findFirst().orElse("");
-            if (StringUtils.isNotBlank(filterValue)) {
-                String filterQuery = getUsersFilterQuery("value");
-                params.put("value", sanitizeQueryParam(filterValue, true));
-                sbQuery.append(filterQuery);
+            if (filters != null) {
+                String filterValue = filters.values().stream().findFirst().orElse("");
+                if (StringUtils.isNotBlank(filterValue)) {
+                    String filterQuery = getUsersFilterQuery("value");
+                    params.put("value", sanitizeQueryParam(filterValue, true));
+                    sbQuery.append(filterQuery);
+                }
             }
-        }
 
-        if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY a.").append(sortField);
-            if (descending) {
-                sbQuery.append(" DESC");
+            if (StringUtils.isNotEmpty(sortField)) {
+                sbQuery.append(" ORDER BY a.").append(sortField);
+                if (descending) {
+                    sbQuery.append(" DESC");
+                }
             }
-        }
-        logger.trace(sbQuery.toString());
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        for (String param : params.keySet()) {
-            q.setParameter(param, params.get(param));
-        }
+            logger.trace(sbQuery.toString());
+            Query q = em.createQuery(sbQuery.toString());
+            for (String param : params.keySet()) {
+                q.setParameter(param, params.get(param));
+            }
 
-        q.setFirstResult(first);
-        q.setMaxResults(pageSize);
-        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
+            q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
-        return q.getResultList();
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /**
@@ -342,14 +365,14 @@ public class JPADAO implements IDAO {
     @Override
     public User getUser(long id) throws DAOException {
         preQuery();
+        EntityManager em = getEntityManager();
         try {
-            User o = getEntityManager().getReference(User.class, id);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
+            User o = em.getReference(User.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -362,21 +385,23 @@ public class JPADAO implements IDAO {
     @Override
     public User getUserByEmail(String email) throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT u FROM User u WHERE UPPER(u.email) = :email");
-        if (email != null) {
-            q.setParameter("email", email.toUpperCase());
-        }
+        EntityManager em = getEntityManager();
         try {
-            User o = (User) q.getSingleResult();
-            if (o != null) {
-                getEntityManager().refresh(o);
+            Query q = em.createQuery("SELECT u FROM User u WHERE UPPER(u.email) = :email");
+            if (email != null) {
+                q.setParameter("email", email.toUpperCase());
             }
-            return o;
+            try {
+                User o = (User) q.getSingleResult();
+                return o;
+            } catch (NonUniqueResultException e) {
+                logger.warn(e.getMessage());
+                return (User) q.getResultList().get(0);
+            }
         } catch (NoResultException e) {
             return null;
-        } catch (NonUniqueResultException e) {
-            logger.warn(e.getMessage());
-            return (User) q.getResultList().get(0);
+        } finally {
+            close(em);
         }
     }
 
@@ -389,17 +414,17 @@ public class JPADAO implements IDAO {
     @Override
     public User getUserByOpenId(String identifier) throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT u FROM User u WHERE :claimed_identifier MEMBER OF u.openIdAccounts");
-        q.setParameter("claimed_identifier", identifier);
-        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        EntityManager em = getEntityManager();
         try {
+            Query q = em.createQuery("SELECT u FROM User u WHERE :claimed_identifier MEMBER OF u.openIdAccounts");
+            q.setParameter("claimed_identifier", identifier);
+            q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             User o = (User) q.getSingleResult();
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
             return o;
         } catch (NoResultException e) {
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -415,20 +440,19 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT u FROM User u WHERE UPPER(u.nickName) = :nickname");
-        q.setParameter("nickname", nickname.trim().toUpperCase());
-        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        EntityManager em = getEntityManager();
         try {
+            Query q = em.createQuery("SELECT u FROM User u WHERE UPPER(u.nickName) = :nickname");
+            q.setParameter("nickname", nickname.trim().toUpperCase());
             User o = (User) q.getSingleResult();
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
             return o;
         } catch (NoResultException e) {
             return null;
         } catch (Exception e) {
             logger.error(e.getMessage());
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -440,14 +464,17 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addUser(User user) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.persist(user);
-            em.getTransaction().commit();
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -460,14 +487,18 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateUser(User user) throws DAOException {
         preQuery();
-        getEntityManager().getTransaction().begin();
-        getEntityManager().merge(user);
-        getEntityManager().getTransaction().commit();
-        // Refresh the object from the DB so that any new licenses etc. have IDs
-        if (this.getEntityManager().contains(user)) {
-            this.getEntityManager().refresh(user);
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(user);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
         }
-        return true;
     }
 
     /*
@@ -479,15 +510,18 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteUser(User user) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             User u = em.getReference(User.class, user.getId());
             em.remove(u);
-            em.getTransaction().commit();
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -503,9 +537,14 @@ public class JPADAO implements IDAO {
     @Override
     public List<UserGroup> getAllUserGroups() throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT ug FROM UserGroup ug");
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT ug FROM UserGroup ug");
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /** {@inheritDoc} */
@@ -514,38 +553,42 @@ public class JPADAO implements IDAO {
     public List<UserGroup> getUserGroups(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM UserGroup o");
-        List<String> filterKeys = new ArrayList<>();
-        if (filters != null && !filters.isEmpty()) {
-            sbQuery.append(" WHERE ");
-            filterKeys.addAll(filters.keySet());
-            Collections.sort(filterKeys);
-            int count = 0;
-            for (String key : filterKeys) {
-                if (count > 0) {
-                    sbQuery.append(" AND ");
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT o FROM UserGroup o");
+            List<String> filterKeys = new ArrayList<>();
+            if (filters != null && !filters.isEmpty()) {
+                sbQuery.append(" WHERE ");
+                filterKeys.addAll(filters.keySet());
+                Collections.sort(filterKeys);
+                int count = 0;
+                for (String key : filterKeys) {
+                    if (count > 0) {
+                        sbQuery.append(" AND ");
+                    }
+                    sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
+                    count++;
                 }
-                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
-                count++;
             }
-        }
-        if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.").append(sortField);
-            if (descending) {
-                sbQuery.append(" DESC");
+            if (StringUtils.isNotEmpty(sortField)) {
+                sbQuery.append(" ORDER BY o.").append(sortField);
+                if (descending) {
+                    sbQuery.append(" DESC");
+                }
             }
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        if (filters != null) {
-            for (String key : filterKeys) {
-                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            Query q = em.createQuery(sbQuery.toString());
+            if (filters != null) {
+                for (String key : filterKeys) {
+                    q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+                }
             }
-        }
-        q.setFirstResult(first);
-        q.setMaxResults(pageSize);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
 
-        return q.getResultList();
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /*
@@ -558,10 +601,14 @@ public class JPADAO implements IDAO {
     @Override
     public List<UserGroup> getUserGroups(User owner) throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT ug FROM UserGroup ug WHERE ug.owner = :owner");
-        q.setParameter("owner", owner);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT ug FROM UserGroup ug WHERE ug.owner = :owner");
+            q.setParameter("owner", owner);
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /*
@@ -573,14 +620,14 @@ public class JPADAO implements IDAO {
     @Override
     public UserGroup getUserGroup(long id) throws DAOException {
         preQuery();
+        EntityManager em = getEntityManager();
         try {
-            UserGroup o = getEntityManager().getReference(UserGroup.class, id);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
+            UserGroup o = em.getReference(UserGroup.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -593,19 +640,19 @@ public class JPADAO implements IDAO {
     @Override
     public UserGroup getUserGroup(String name) throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT ug FROM UserGroup ug WHERE ug.name = :name");
-        q.setParameter("name", name);
+        EntityManager em = getEntityManager();
         try {
+            Query q = em.createQuery("SELECT ug FROM UserGroup ug WHERE ug.name = :name");
+            q.setParameter("name", name);
             UserGroup o = (UserGroup) q.getSingleResult();
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
             return o;
         } catch (NoResultException e) {
             return null;
         } catch (NonUniqueResultException e) {
             logger.error(e.getMessage());
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -618,13 +665,16 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addUserGroup(UserGroup userGroup) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.persist(userGroup);
-            em.getTransaction().commit();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
         return true;
     }
@@ -640,18 +690,17 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateUserGroup(UserGroup userGroup) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.merge(userGroup);
-            em.getTransaction().commit();
-            // Refresh the object from the DB so that any new licenses etc. have IDs
-            if (this.getEntityManager().contains(userGroup)) {
-                this.getEntityManager().refresh(userGroup);
-            }
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -664,19 +713,18 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteUserGroup(UserGroup userGroup) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             UserGroup o = em.getReference(UserGroup.class, userGroup.getId());
             em.remove(o);
-            try {
-                em.getTransaction().commit();
-                return true;
-            } catch (RollbackException e) {
-                return false;
-            }
+            commitTransaction(em);
+            return true;
+        } catch (RollbackException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -690,9 +738,14 @@ public class JPADAO implements IDAO {
     @Override
     public List<BookmarkList> getAllBookmarkLists() throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT o FROM BookmarkList o");
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM BookmarkList o");
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /* (non-Javadoc)
@@ -703,9 +756,14 @@ public class JPADAO implements IDAO {
     @Override
     public List<BookmarkList> getPublicBookmarkLists() throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT o FROM BookmarkList o WHERE o.isPublic=true");
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.isPublic=true");
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /*
@@ -718,18 +776,28 @@ public class JPADAO implements IDAO {
     @Override
     public List<BookmarkList> getBookmarkLists(User user) throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT o FROM BookmarkList o WHERE o.owner = :user ORDER BY o.dateUpdated DESC");
-        q.setParameter("user", user);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.owner = :user ORDER BY o.dateUpdated DESC");
+            q.setParameter("user", user);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     @Override
     public long getBookmarkListCount(User user) throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT COUNT(o) FROM BookmarkList o WHERE o.owner = :user");
-        q.setParameter("user", user);
-        return (long) q.getSingleResult();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT COUNT(o) FROM BookmarkList o WHERE o.owner = :user");
+            q.setParameter("user", user);
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
     }
 
     /*
@@ -741,14 +809,14 @@ public class JPADAO implements IDAO {
     @Override
     public BookmarkList getBookmarkList(long id) throws DAOException {
         preQuery();
+        EntityManager em = getEntityManager();
         try {
-            BookmarkList o = getEntityManager().getReference(BookmarkList.class, id);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
+            BookmarkList o = em.getReference(BookmarkList.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -761,29 +829,28 @@ public class JPADAO implements IDAO {
     @Override
     public BookmarkList getBookmarkList(String name, User user) throws DAOException {
         preQuery();
-        Query q;
-        if (user != null) {
-            q = getEntityManager().createQuery("SELECT o FROM BookmarkList o WHERE o.name = :name AND o.owner = :user");
-            q.setParameter("name", name);
-            q.setParameter("user", user);
-        } else {
-            q = getEntityManager().createQuery("SELECT o FROM BookmarkList o WHERE o.name = :name");
-            q.setParameter("name", name);
-        }
+        EntityManager em = getEntityManager();
         try {
-            BookmarkList o = (BookmarkList) q.getSingleResult();
-            if (o != null) {
-                getEntityManager().refresh(o);
+            Query q;
+            if (user != null) {
+                q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.name = :name AND o.owner = :user");
+                q.setParameter("name", name);
+                q.setParameter("user", user);
+            } else {
+                q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.name = :name");
+                q.setParameter("name", name);
             }
-            return o;
+            try {
+                BookmarkList o = (BookmarkList) q.getSingleResult();
+                return o;
+            } catch (NonUniqueResultException e) {
+                BookmarkList o = (BookmarkList) q.getResultList().get(0);
+                return o;
+            }
         } catch (NoResultException e) {
             return null;
-        } catch (NonUniqueResultException e) {
-            BookmarkList o = (BookmarkList) q.getResultList().get(0);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
-            return o;
+        } finally {
+            close(em);
         }
     }
 
@@ -791,19 +858,19 @@ public class JPADAO implements IDAO {
     @Override
     public BookmarkList getBookmarkListByShareKey(String shareKey) throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT o FROM BookmarkList o WHERE o.shareKey = :shareKey");
-        q.setParameter("shareKey", shareKey);
+        EntityManager em = getEntityManager();
         try {
+            Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.shareKey = :shareKey");
+            q.setParameter("shareKey", shareKey);
             BookmarkList o = (BookmarkList) q.getSingleResult();
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
             return o;
         } catch (NoResultException e) {
             return null;
         } catch (NonUniqueResultException e) {
             logger.error(e.getMessage());
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -816,13 +883,16 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addBookmarkList(BookmarkList bookmarkList) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.persist(bookmarkList);
-            em.getTransaction().commit();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
         return true;
     }
@@ -836,18 +906,17 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateBookmarkList(BookmarkList bookmarkList) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.merge(bookmarkList);
-            em.getTransaction().commit();
-            // Refresh the object from the DB so that any new items have IDs
-            if (this.getEntityManager().contains(bookmarkList)) {
-                this.getEntityManager().refresh(bookmarkList);
-            }
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -860,17 +929,17 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteBookmarkList(BookmarkList bookmarkList) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             BookmarkList o = em.getReference(BookmarkList.class, bookmarkList.getId());
             em.remove(o);
-            em.getTransaction().commit();
+            commitTransaction(em);
             return true;
         } catch (RollbackException e) {
             return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -884,10 +953,13 @@ public class JPADAO implements IDAO {
     @Override
     public List<Role> getAllRoles() throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT r FROM Role r");
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT r FROM Role r");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /** {@inheritDoc} */
@@ -895,39 +967,42 @@ public class JPADAO implements IDAO {
     @Override
     public List<Role> getRoles(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM Role o");
-        List<String> filterKeys = new ArrayList<>();
-        if (filters != null && !filters.isEmpty()) {
-            sbQuery.append(" WHERE ");
-            filterKeys.addAll(filters.keySet());
-            Collections.sort(filterKeys);
-            int count = 0;
-            for (String key : filterKeys) {
-                if (count > 0) {
-                    sbQuery.append(" AND ");
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT o FROM Role o");
+            List<String> filterKeys = new ArrayList<>();
+            if (filters != null && !filters.isEmpty()) {
+                sbQuery.append(" WHERE ");
+                filterKeys.addAll(filters.keySet());
+                Collections.sort(filterKeys);
+                int count = 0;
+                for (String key : filterKeys) {
+                    if (count > 0) {
+                        sbQuery.append(" AND ");
+                    }
+                    sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
+                    count++;
                 }
-                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
-                count++;
             }
-        }
-        if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.").append(sortField);
-            if (descending) {
-                sbQuery.append(" DESC");
+            if (StringUtils.isNotEmpty(sortField)) {
+                sbQuery.append(" ORDER BY o.").append(sortField);
+                if (descending) {
+                    sbQuery.append(" DESC");
+                }
             }
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        if (filters != null) {
-            for (String key : filterKeys) {
-                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            Query q = em.createQuery(sbQuery.toString());
+            if (filters != null) {
+                for (String key : filterKeys) {
+                    q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+                }
             }
-        }
-        q.setFirstResult(first);
-        q.setMaxResults(pageSize);
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
 
-        return q.getResultList();
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /*
@@ -939,14 +1014,14 @@ public class JPADAO implements IDAO {
     @Override
     public Role getRole(long id) throws DAOException {
         preQuery();
+        EntityManager em = getEntityManager();
         try {
-            Role o = getEntityManager().getReference(Role.class, id);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
+            Role o = em.getReference(Role.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -959,19 +1034,19 @@ public class JPADAO implements IDAO {
     @Override
     public Role getRole(String name) throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT r FROM Role r WHERE r.name = :name");
-        q.setParameter("name", name);
+        EntityManager em = getEntityManager();
         try {
+            Query q = em.createQuery("SELECT r FROM Role r WHERE r.name = :name");
+            q.setParameter("name", name);
             Role o = (Role) q.getSingleResult();
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
             return o;
         } catch (NoResultException e) {
             return null;
         } catch (NonUniqueResultException e) {
             logger.error(e.getMessage());
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -984,13 +1059,16 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addRole(Role role) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.persist(role);
-            em.getTransaction().commit();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
         return true;
     }
@@ -1004,14 +1082,17 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateRole(Role role) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.merge(role);
-            em.getTransaction().commit();
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -1024,15 +1105,18 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteRole(Role role) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             Role o = em.getReference(Role.class, role.getId());
             em.remove(o);
-            em.getTransaction().commit();
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -1046,10 +1130,13 @@ public class JPADAO implements IDAO {
     @Override
     public List<UserRole> getAllUserRoles() throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT ur FROM UserRole ur");
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT ur FROM UserRole ur");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /**
@@ -1060,43 +1147,47 @@ public class JPADAO implements IDAO {
     @Override
     public long getUserRoleCount(UserGroup userGroup, User user, Role role) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT COUNT(ur) FROM UserRole ur");
-        if (userGroup != null || user != null || role != null) {
-            sbQuery.append(" WHERE ");
-            int args = 0;
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT COUNT(ur) FROM UserRole ur");
+            if (userGroup != null || user != null || role != null) {
+                sbQuery.append(" WHERE ");
+                int args = 0;
+                if (userGroup != null) {
+                    sbQuery.append("ur.userGroup = :userGroup");
+                    args++;
+                }
+                if (user != null) {
+                    if (args > 0) {
+                        sbQuery.append(" AND ");
+                    }
+                    sbQuery.append("ur.user = :user");
+                    args++;
+                }
+                if (role != null) {
+                    if (args > 0) {
+                        sbQuery.append(" AND ");
+                    }
+                    sbQuery.append("ur.role = :role");
+                    args++;
+                }
+            }
+            Query q = em.createQuery(sbQuery.toString());
+            // logger.debug(sbQuery.toString());
             if (userGroup != null) {
-                sbQuery.append("ur.userGroup = :userGroup");
-                args++;
+                q.setParameter("userGroup", userGroup);
             }
             if (user != null) {
-                if (args > 0) {
-                    sbQuery.append(" AND ");
-                }
-                sbQuery.append("ur.user = :user");
-                args++;
+                q.setParameter("user", user);
             }
             if (role != null) {
-                if (args > 0) {
-                    sbQuery.append(" AND ");
-                }
-                sbQuery.append("ur.role = :role");
-                args++;
+                q.setParameter("role", role);
             }
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        // logger.debug(sbQuery.toString());
-        if (userGroup != null) {
-            q.setParameter("userGroup", userGroup);
-        }
-        if (user != null) {
-            q.setParameter("user", user);
-        }
-        if (role != null) {
-            q.setParameter("role", role);
-        }
-        q.setFlushMode(FlushModeType.COMMIT);
 
-        return (long) q.getSingleResult();
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
     }
 
     /*
@@ -1110,44 +1201,47 @@ public class JPADAO implements IDAO {
     @Override
     public List<UserRole> getUserRoles(UserGroup userGroup, User user, Role role) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT ur FROM UserRole ur");
-        if (userGroup != null || user != null || role != null) {
-            sbQuery.append(" WHERE ");
-            int args = 0;
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT ur FROM UserRole ur");
+            if (userGroup != null || user != null || role != null) {
+                sbQuery.append(" WHERE ");
+                int args = 0;
+                if (userGroup != null) {
+                    sbQuery.append("ur.userGroup = :userGroup");
+                    args++;
+                }
+                if (user != null) {
+                    if (args > 0) {
+                        sbQuery.append(" AND ");
+                    }
+                    sbQuery.append("ur.user = :user");
+                    args++;
+                }
+                if (role != null) {
+                    if (args > 0) {
+                        sbQuery.append(" AND ");
+                    }
+                    sbQuery.append("ur.role = :role");
+                    args++;
+                }
+            }
+            Query q = em.createQuery(sbQuery.toString());
+            // logger.debug(sbQuery.toString());
             if (userGroup != null) {
-                sbQuery.append("ur.userGroup = :userGroup");
-                args++;
+                q.setParameter("userGroup", userGroup);
             }
             if (user != null) {
-                if (args > 0) {
-                    sbQuery.append(" AND ");
-                }
-                sbQuery.append("ur.user = :user");
-                args++;
+                q.setParameter("user", user);
             }
             if (role != null) {
-                if (args > 0) {
-                    sbQuery.append(" AND ");
-                }
-                sbQuery.append("ur.role = :role");
-                args++;
+                q.setParameter("role", role);
             }
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        // logger.debug(sbQuery.toString());
-        if (userGroup != null) {
-            q.setParameter("userGroup", userGroup);
-        }
-        if (user != null) {
-            q.setParameter("user", user);
-        }
-        if (role != null) {
-            q.setParameter("role", role);
-        }
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
-        return q.getResultList();
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /*
@@ -1160,13 +1254,16 @@ public class JPADAO implements IDAO {
     public boolean addUserRole(UserRole userRole) throws DAOException {
         logger.trace("addUserRole: {}", userRole);
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.persist(userRole);
-            em.getTransaction().commit();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
         return true;
     }
@@ -1180,14 +1277,17 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateUserRole(UserRole userRole) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.merge(userRole);
-            em.getTransaction().commit();
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -1200,15 +1300,18 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteUserRole(UserRole userRole) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             UserRole o = em.getReference(UserRole.class, userRole.getId());
             em.remove(o);
-            em.getTransaction().commit();
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -1222,10 +1325,15 @@ public class JPADAO implements IDAO {
     @Override
     public List<LicenseType> getAllLicenseTypes() throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT lt FROM LicenseType lt");
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT lt FROM LicenseType lt");
+            q.setFlushMode(FlushModeType.COMMIT);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /**
@@ -1235,14 +1343,12 @@ public class JPADAO implements IDAO {
     @Override
     public List<LicenseType> getRecordLicenseTypes() throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
             Query q = em.createQuery("SELECT lt FROM LicenseType lt WHERE lt.core = false");
-            q.setFlushMode(FlushModeType.COMMIT);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -1252,34 +1358,37 @@ public class JPADAO implements IDAO {
     public List<LicenseType> getLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM LicenseType o WHERE o.core=false");
-        List<String> filterKeys = new ArrayList<>();
-        if (filters != null && !filters.isEmpty()) {
-            filterKeys.addAll(filters.keySet());
-            Collections.sort(filterKeys);
-            for (String key : filterKeys) {
-                sbQuery.append(" AND ");
-                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT o FROM LicenseType o WHERE o.core=false");
+            List<String> filterKeys = new ArrayList<>();
+            if (filters != null && !filters.isEmpty()) {
+                filterKeys.addAll(filters.keySet());
+                Collections.sort(filterKeys);
+                for (String key : filterKeys) {
+                    sbQuery.append(" AND ");
+                    sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
+                }
             }
-        }
-        if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.").append(sortField);
-            if (descending) {
-                sbQuery.append(" DESC");
+            if (StringUtils.isNotEmpty(sortField)) {
+                sbQuery.append(" ORDER BY o.").append(sortField);
+                if (descending) {
+                    sbQuery.append(" DESC");
+                }
             }
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        if (filters != null) {
-            for (String key : filterKeys) {
-                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            Query q = em.createQuery(sbQuery.toString());
+            if (filters != null) {
+                for (String key : filterKeys) {
+                    q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+                }
             }
-        }
-        q.setFirstResult(first);
-        q.setMaxResults(pageSize);
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
 
-        return q.getResultList();
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /** {@inheritDoc} */
@@ -1288,34 +1397,39 @@ public class JPADAO implements IDAO {
     public List<LicenseType> getCoreLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM LicenseType o WHERE o.core=true");
-        List<String> filterKeys = new ArrayList<>();
-        if (filters != null && !filters.isEmpty()) {
-            filterKeys.addAll(filters.keySet());
-            Collections.sort(filterKeys);
-            for (String key : filterKeys) {
-                sbQuery.append(" AND ");
-                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT o FROM LicenseType o WHERE o.core=true");
+            List<String> filterKeys = new ArrayList<>();
+            if (filters != null && !filters.isEmpty()) {
+                filterKeys.addAll(filters.keySet());
+                Collections.sort(filterKeys);
+                for (String key : filterKeys) {
+                    sbQuery.append(" AND ");
+                    sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
+                }
             }
-        }
-        if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.").append(sortField);
-            if (descending) {
-                sbQuery.append(" DESC");
+            if (StringUtils.isNotEmpty(sortField)) {
+                sbQuery.append(" ORDER BY o.").append(sortField);
+                if (descending) {
+                    sbQuery.append(" DESC");
+                }
             }
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        if (filters != null) {
-            for (String key : filterKeys) {
-                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            Query q = em.createQuery(sbQuery.toString());
+            if (filters != null) {
+                for (String key : filterKeys) {
+                    q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+                }
             }
-        }
-        q.setFirstResult(first);
-        q.setMaxResults(pageSize);
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
+            q.setFlushMode(FlushModeType.COMMIT);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
-        return q.getResultList();
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /*
@@ -1327,14 +1441,14 @@ public class JPADAO implements IDAO {
     @Override
     public LicenseType getLicenseType(long id) throws DAOException {
         preQuery();
+        EntityManager em = getEntityManager();
         try {
-            LicenseType o = getEntityManager().getReference(LicenseType.class, id);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
+            LicenseType o = em.getReference(LicenseType.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -1347,20 +1461,19 @@ public class JPADAO implements IDAO {
     @Override
     public LicenseType getLicenseType(String name) throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT lt FROM LicenseType lt WHERE lt.name = :name");
-        q.setParameter("name", name);
-        q.setFlushMode(FlushModeType.COMMIT);
+        EntityManager em = getEntityManager();
         try {
+            Query q = em.createQuery("SELECT lt FROM LicenseType lt WHERE lt.name = :name");
+            q.setParameter("name", name);
             LicenseType o = (LicenseType) q.getSingleResult();
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
             return o;
         } catch (NoResultException e) {
             return null;
         } catch (NonUniqueResultException e) {
             logger.error(e.getMessage());
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -1376,16 +1489,18 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT a FROM LicenseType a WHERE a.name IN :names");
-        q.setParameter("names", names);
-        q.setFlushMode(FlushModeType.COMMIT);
+        EntityManager em = getEntityManager();
         try {
+            Query q = em.createQuery("SELECT a FROM LicenseType a WHERE a.name IN :names");
+            q.setParameter("names", names);
             return q.getResultList();
         } catch (NoResultException e) {
             return Collections.emptyList();
         } catch (NonUniqueResultException e) {
             logger.error(e.getMessage());
             return Collections.emptyList();
+        } finally {
+            close(em);
         }
     }
 
@@ -1398,13 +1513,16 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.persist(licenseType);
-            em.getTransaction().commit();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
         return true;
     }
@@ -1418,14 +1536,17 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.merge(licenseType);
-            em.getTransaction().commit();
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -1438,19 +1559,18 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             LicenseType o = em.getReference(LicenseType.class, licenseType.getId());
             em.remove(o);
-            try {
-                em.getTransaction().commit();
-                return true;
-            } catch (RollbackException e) {
-                return false;
-            }
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -1461,10 +1581,15 @@ public class JPADAO implements IDAO {
     @Override
     public List<License> getAllLicenses() throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT o FROM License o");
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM License o");
+            q.setFlushMode(FlushModeType.COMMIT);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /* (non-Javadoc)
@@ -1473,14 +1598,14 @@ public class JPADAO implements IDAO {
     @Override
     public License getLicense(Long id) throws DAOException {
         preQuery();
+        EntityManager em = getEntityManager();
         try {
-            License o = getEntityManager().find(License.class, id);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
+            License o = em.find(License.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -1496,10 +1621,15 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-        String query = "SELECT a FROM License a WHERE a.licenseType = :licenseType";
-        Query q = getEntityManager().createQuery(query);
-        q.setParameter("licenseType", licenseType);
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT a FROM License a WHERE a.licenseType = :licenseType";
+            Query q = em.createQuery(query);
+            q.setParameter("licenseType", licenseType);
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /**
@@ -1513,17 +1643,22 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-        String query = "SELECT COUNT(a) FROM License a WHERE a.licenseType = :licenseType";
-        Query q = getEntityManager().createQuery(query);
-        q.setParameter("licenseType", licenseType);
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT COUNT(a) FROM License a WHERE a.licenseType = :licenseType";
+            Query q = em.createQuery(query);
+            q.setParameter("licenseType", licenseType);
 
-        Object o = q.getResultList().get(0);
-        // MySQL
-        if (o instanceof BigInteger) {
-            return ((BigInteger) q.getResultList().get(0)).longValue();
+            Object o = q.getResultList().get(0);
+            // MySQL
+            if (o instanceof BigInteger) {
+                return ((BigInteger) q.getResultList().get(0)).longValue();
+            }
+            // H2
+            return (long) q.getResultList().get(0);
+        } finally {
+            close(em);
         }
-        // H2
-        return (long) q.getResultList().get(0);
     }
 
     /*
@@ -1536,10 +1671,13 @@ public class JPADAO implements IDAO {
     @Override
     public List<IpRange> getAllIpRanges() throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT ipr FROM IpRange ipr");
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT ipr FROM IpRange ipr");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /** {@inheritDoc} */
@@ -1547,39 +1685,42 @@ public class JPADAO implements IDAO {
     @Override
     public List<IpRange> getIpRanges(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM IpRange o");
-        List<String> filterKeys = new ArrayList<>();
-        if (filters != null && !filters.isEmpty()) {
-            sbQuery.append(" WHERE ");
-            filterKeys.addAll(filters.keySet());
-            Collections.sort(filterKeys);
-            int count = 0;
-            for (String key : filterKeys) {
-                if (count > 0) {
-                    sbQuery.append(" AND ");
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT o FROM IpRange o");
+            List<String> filterKeys = new ArrayList<>();
+            if (filters != null && !filters.isEmpty()) {
+                sbQuery.append(" WHERE ");
+                filterKeys.addAll(filters.keySet());
+                Collections.sort(filterKeys);
+                int count = 0;
+                for (String key : filterKeys) {
+                    if (count > 0) {
+                        sbQuery.append(" AND ");
+                    }
+                    sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
+                    count++;
                 }
-                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
-                count++;
             }
-        }
-        if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.").append(sortField);
-            if (descending) {
-                sbQuery.append(" DESC");
+            if (StringUtils.isNotEmpty(sortField)) {
+                sbQuery.append(" ORDER BY o.").append(sortField);
+                if (descending) {
+                    sbQuery.append(" DESC");
+                }
             }
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        if (filters != null) {
-            for (String key : filterKeys) {
-                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            Query q = em.createQuery(sbQuery.toString());
+            if (filters != null) {
+                for (String key : filterKeys) {
+                    q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+                }
             }
-        }
-        q.setFirstResult(first);
-        q.setMaxResults(pageSize);
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
 
-        return q.getResultList();
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /*
@@ -1591,14 +1732,14 @@ public class JPADAO implements IDAO {
     @Override
     public IpRange getIpRange(long id) throws DAOException {
         preQuery();
+        EntityManager em = getEntityManager();
         try {
-            IpRange o = getEntityManager().find(IpRange.class, id);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
+            IpRange o = em.find(IpRange.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -1611,19 +1752,19 @@ public class JPADAO implements IDAO {
     @Override
     public IpRange getIpRange(String name) throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT ipr FROM IpRange ipr WHERE ipr.name = :name");
-        q.setParameter("name", name);
+        EntityManager em = getEntityManager();
         try {
+            Query q = em.createQuery("SELECT ipr FROM IpRange ipr WHERE ipr.name = :name");
+            q.setParameter("name", name);
             IpRange o = (IpRange) q.getSingleResult();
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
             return o;
         } catch (NoResultException e) {
             return null;
         } catch (NonUniqueResultException e) {
             logger.error(e.getMessage());
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -1636,13 +1777,16 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addIpRange(IpRange ipRange) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.persist(ipRange);
-            em.getTransaction().commit();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
         return true;
     }
@@ -1656,18 +1800,17 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateIpRange(IpRange ipRange) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.merge(ipRange);
-            em.getTransaction().commit();
-            // Refresh the object from the DB so that any new licenses etc. have IDs
-            if (this.getEntityManager().contains(ipRange)) {
-                this.getEntityManager().refresh(ipRange);
-            }
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -1680,15 +1823,18 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteIpRange(IpRange ipRange) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             IpRange o = em.getReference(IpRange.class, ipRange.getId());
             em.remove(o);
-            em.getTransaction().commit();
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -1700,10 +1846,13 @@ public class JPADAO implements IDAO {
     @Override
     public List<Comment> getAllComments() throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT o FROM Comment o");
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM Comment o");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /** {@inheritDoc} */
@@ -1711,26 +1860,31 @@ public class JPADAO implements IDAO {
     @Override
     public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT a FROM Comment a");
-        Map<String, String> params = new HashMap<>();
-        sbQuery.append(createFilterQuery(null, filters, params));
-        if (StringUtils.isNotBlank(sortField)) {
-            String[] sortFields = sortField.split("_");
-            sbQuery.append(" ORDER BY ");
-            for (String sf : sortFields) {
-                sbQuery.append("a.").append(sf);
-                if (descending) {
-                    sbQuery.append(" DESC");
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM Comment a");
+            Map<String, String> params = new HashMap<>();
+            sbQuery.append(createFilterQuery(null, filters, params));
+            if (StringUtils.isNotBlank(sortField)) {
+                String[] sortFields = sortField.split("_");
+                sbQuery.append(" ORDER BY ");
+                for (String sf : sortFields) {
+                    sbQuery.append("a.").append(sf);
+                    if (descending) {
+                        sbQuery.append(" DESC");
+                    }
+                    sbQuery.append(",");
                 }
-                sbQuery.append(",");
+                sbQuery.deleteCharAt(sbQuery.length() - 1);
             }
-            sbQuery.deleteCharAt(sbQuery.length() - 1);
-        }
 
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /**
@@ -1742,18 +1896,22 @@ public class JPADAO implements IDAO {
     @Override
     public List<Comment> getCommentsOfUser(User user, int maxResults, String sortField, boolean descending) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder(80);
-        sbQuery.append("SELECT o FROM Comment o WHERE o.creatorId = :owner");
-        if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.").append(sortField);
-            if (descending) {
-                sbQuery.append(" DESC");
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder(80);
+            sbQuery.append("SELECT o FROM Comment o WHERE o.creatorId = :owner");
+            if (StringUtils.isNotEmpty(sortField)) {
+                sbQuery.append(" ORDER BY o.").append(sortField);
+                if (descending) {
+                    sbQuery.append(" DESC");
+                }
             }
+            Query q = em.createQuery(sbQuery.toString());
+            q.setParameter("owner", user.getId());
+            return q.setMaxResults(maxResults).getResultList();
+        } finally {
+            close(em);
         }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        q.setParameter("owner", user.getId());
-        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.setMaxResults(maxResults).setFlushMode(FlushModeType.COMMIT).getResultList();
     }
 
     /* (non-Javadoc)
@@ -1764,12 +1922,17 @@ public class JPADAO implements IDAO {
     @Override
     public List<Comment> getCommentsForPage(String pi, int page) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder(80);
-        sbQuery.append("SELECT o FROM Comment o WHERE o.targetPI = :pi AND o.targetPageOrder = :page");
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        q.setParameter("pi", pi);
-        q.setParameter("page", page);
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder(80);
+            sbQuery.append("SELECT o FROM Comment o WHERE o.targetPI = :pi AND o.targetPageOrder = :page");
+            Query q = em.createQuery(sbQuery.toString());
+            q.setParameter("pi", pi);
+            q.setParameter("page", page);
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /** {@inheritDoc} */
@@ -1777,13 +1940,16 @@ public class JPADAO implements IDAO {
     @Override
     public List<Comment> getCommentsForWork(String pi) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder(80);
-        sbQuery.append("SELECT o FROM Comment o WHERE o.targetPI = :pi");
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        q.setParameter("pi", pi);
-        q.setFlushMode(FlushModeType.COMMIT);
-        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder(80);
+            sbQuery.append("SELECT o FROM Comment o WHERE o.targetPI = :pi");
+            Query q = em.createQuery(sbQuery.toString());
+            q.setParameter("pi", pi);
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /* (non-Javadoc)
@@ -1793,11 +1959,9 @@ public class JPADAO implements IDAO {
     @Override
     public Comment getComment(long id) throws DAOException {
         preQuery();
+        EntityManager em = getEntityManager();
         try {
-            Comment o = getEntityManager().getReference(Comment.class, id);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
+            Comment o = em.getReference(Comment.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
@@ -1811,10 +1975,19 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addComment(Comment comment) throws DAOException {
         preQuery();
-        getEntityManager().getTransaction().begin();
-        getEntityManager().persist(comment);
-        getEntityManager().getTransaction().commit();
-        return true;
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(comment);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error(e.toString(), e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
     }
 
     /* (non-Javadoc)
@@ -1824,10 +1997,18 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateComment(Comment comment) throws DAOException {
         preQuery();
-        getEntityManager().getTransaction().begin();
-        getEntityManager().merge(comment);
-        getEntityManager().getTransaction().commit();
-        return true;
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(comment);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
     }
 
     /* (non-Javadoc)
@@ -1837,11 +2018,19 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteComment(Comment comment) throws DAOException {
         preQuery();
-        getEntityManager().getTransaction().begin();
-        Comment o = getEntityManager().getReference(Comment.class, comment.getId());
-        getEntityManager().remove(o);
-        getEntityManager().getTransaction().commit();
-        return true;
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            Comment o = em.getReference(Comment.class, comment.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
     }
 
     /**
@@ -1858,24 +2047,21 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-        EntityManager emLocal = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            emLocal.getTransaction().begin();
-            int rows = emLocal.createQuery("UPDATE Comment o set o.creatorId = :newOwner WHERE o.creatorId = :oldOwner")
+            startTransaction(em);
+            int rows = em.createQuery("UPDATE Comment o set o.creatorId = :newOwner WHERE o.creatorId = :oldOwner")
                     .setParameter("oldOwner", fromUser.getId())
                     .setParameter("newOwner", toUser.getId())
                     .executeUpdate();
-            emLocal.getTransaction().commit();
-
-            // Refresh objects in context
-            getEntityManager().createQuery("SELECT o FROM Comment o WHERE o.creatorId = :owner")
-                    .setParameter("owner", toUser.getId())
-                    .setHint("javax.persistence.cache.storeMode", "REFRESH")
-                    .getResultList();
+            commitTransaction(em);
 
             return rows;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return 0;
         } finally {
-            emLocal.close();
+            close(em);
         }
     }
 
@@ -1893,35 +2079,35 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-
-        // Fetch relevant IDs
-        StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append("DELETE FROM Comment o WHERE ");
-        if (StringUtils.isNotEmpty(pi)) {
-            sbQuery.append("o.targetPI = :pi");
-        }
-        if (owner != null) {
-            if (StringUtils.isNotEmpty(pi)) {
-                sbQuery.append(" AND ");
-            }
-            sbQuery.append("o.creatorId = :creatorId");
-        }
-
-        EntityManager emLocal = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            Query q = emLocal.createQuery(sbQuery.toString());
+
+            // Fetch relevant IDs
+            StringBuilder sbQuery = new StringBuilder();
+            sbQuery.append("DELETE FROM Comment o WHERE ");
+            if (StringUtils.isNotEmpty(pi)) {
+                sbQuery.append("o.targetPI = :pi");
+            }
+            if (owner != null) {
+                if (StringUtils.isNotEmpty(pi)) {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append("o.creatorId = :creatorId");
+            }
+
+            Query q = em.createQuery(sbQuery.toString());
             if (StringUtils.isNotEmpty(pi)) {
                 q.setParameter("pi", pi);
             }
             if (owner != null) {
                 q.setParameter("creatorId", owner.getId());
             }
-            emLocal.getTransaction().begin();
+            startTransaction(em);
             int rows = q.executeUpdate();
-            emLocal.getTransaction().commit();
+            commitTransaction(em);
             return rows;
         } finally {
-            emLocal.close();
+            close(em);
         }
     }
 
@@ -1934,14 +2120,19 @@ public class JPADAO implements IDAO {
     @Override
     public List<Integer> getPagesWithComments(String pi) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder(80);
-        sbQuery.append("SELECT o.targetPageOrder FROM Comment o WHERE o.targetPI = :pi");
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        q.setParameter("pi", pi);
-        q.setFlushMode(FlushModeType.COMMIT);
-        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        List<Integer> results = q.getResultList();
-        return results.stream().distinct().sorted().collect(Collectors.toList());
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder(80);
+            sbQuery.append("SELECT o.targetPageOrder FROM Comment o WHERE o.targetPI = :pi");
+            Query q = em.createQuery(sbQuery.toString());
+            q.setParameter("pi", pi);
+            q.setFlushMode(FlushModeType.COMMIT);
+            q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            List<Integer> results = q.getResultList();
+            return results.stream().distinct().sorted().collect(Collectors.toList());
+        } finally {
+            close(em);
+        }
     }
 
     /* (non-Javadoc)
@@ -1952,57 +2143,67 @@ public class JPADAO implements IDAO {
     @Override
     public List<Search> getAllSearches() throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT o FROM Search o");
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM Search o");
+            q.setFlushMode(FlushModeType.COMMIT);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public long getSearchCount(User owner, Map<String, String> filters) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder(50);
-        sbQuery.append("SELECT COUNT(o) FROM Search o");
-        if (owner != null) {
-            sbQuery.append(" WHERE o.owner = :owner");
-        }
-        List<String> filterKeys = new ArrayList<>();
-        if (filters != null && !filters.isEmpty()) {
-            if (owner == null) {
-                sbQuery.append(" WHERE ");
-            } else {
-                sbQuery.append(" AND ");
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder(50);
+            sbQuery.append("SELECT COUNT(o) FROM Search o");
+            if (owner != null) {
+                sbQuery.append(" WHERE o.owner = :owner");
             }
-            filterKeys.addAll(filters.keySet());
-            Collections.sort(filterKeys);
-            int count = 0;
-            for (String key : filterKeys) {
-                if (count > 0) {
+            List<String> filterKeys = new ArrayList<>();
+            if (filters != null && !filters.isEmpty()) {
+                if (owner == null) {
+                    sbQuery.append(" WHERE ");
+                } else {
                     sbQuery.append(" AND ");
                 }
-                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
-                count++;
+                filterKeys.addAll(filters.keySet());
+                Collections.sort(filterKeys);
+                int count = 0;
+                for (String key : filterKeys) {
+                    if (count > 0) {
+                        sbQuery.append(" AND ");
+                    }
+                    sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
+                    count++;
+                }
             }
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        if (owner != null) {
-            q.setParameter("owner", owner);
-        }
-        if (filters != null) {
-            for (String key : filterKeys) {
-                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            Query q = em.createQuery(sbQuery.toString());
+            if (owner != null) {
+                q.setParameter("owner", owner);
             }
-        }
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            if (filters != null) {
+                for (String key : filterKeys) {
+                    q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+                }
+            }
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
-        Object o = q.getResultList().get(0);
-        // MySQL
-        if (o instanceof BigInteger) {
-            return ((BigInteger) q.getResultList().get(0)).longValue();
+            Object o = q.getResultList().get(0);
+            // MySQL
+            if (o instanceof BigInteger) {
+                return ((BigInteger) q.getResultList().get(0)).longValue();
+            }
+            // H2
+            return (long) q.getResultList().get(0);
+        } finally {
+            close(em);
         }
-        // H2
-        return (long) q.getResultList().get(0);
     }
 
     /** {@inheritDoc} */
@@ -2011,49 +2212,54 @@ public class JPADAO implements IDAO {
     public List<Search> getSearches(User owner, int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder(50);
-        sbQuery.append("SELECT o FROM Search o");
-        if (owner != null) {
-            sbQuery.append(" WHERE o.owner = :owner");
-        }
-        List<String> filterKeys = new ArrayList<>();
-        if (filters != null && !filters.isEmpty()) {
-            if (owner == null) {
-                sbQuery.append(" WHERE ");
-            } else {
-                sbQuery.append(" AND ");
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder(50);
+            sbQuery.append("SELECT o FROM Search o");
+            if (owner != null) {
+                sbQuery.append(" WHERE o.owner = :owner");
             }
-            filterKeys.addAll(filters.keySet());
-            Collections.sort(filterKeys);
-            int count = 0;
-            for (String key : filterKeys) {
-                if (count > 0) {
+            List<String> filterKeys = new ArrayList<>();
+            if (filters != null && !filters.isEmpty()) {
+                if (owner == null) {
+                    sbQuery.append(" WHERE ");
+                } else {
                     sbQuery.append(" AND ");
                 }
-                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
-                count++;
+                filterKeys.addAll(filters.keySet());
+                Collections.sort(filterKeys);
+                int count = 0;
+                for (String key : filterKeys) {
+                    if (count > 0) {
+                        sbQuery.append(" AND ");
+                    }
+                    sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
+                    count++;
+                }
             }
-        }
-        if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.").append(sortField);
-            if (descending) {
-                sbQuery.append(" DESC");
+            if (StringUtils.isNotEmpty(sortField)) {
+                sbQuery.append(" ORDER BY o.").append(sortField);
+                if (descending) {
+                    sbQuery.append(" DESC");
+                }
             }
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        if (owner != null) {
-            q.setParameter("owner", owner);
-        }
-        if (filters != null) {
-            for (String key : filterKeys) {
-                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            Query q = em.createQuery(sbQuery.toString());
+            if (owner != null) {
+                q.setParameter("owner", owner);
             }
-        }
-        q.setFirstResult(first);
-        q.setMaxResults(pageSize);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            if (filters != null) {
+                for (String key : filterKeys) {
+                    q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+                }
+            }
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
-        return q.getResultList();
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /* (non-Javadoc)
@@ -2064,11 +2270,16 @@ public class JPADAO implements IDAO {
     @Override
     public List<Search> getSearches(User owner) throws DAOException {
         preQuery();
-        String query = "SELECT o FROM Search o WHERE o.owner = :owner";
-        Query q = getEntityManager().createQuery(query);
-        q.setParameter("owner", owner);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT o FROM Search o WHERE o.owner = :owner";
+            Query q = em.createQuery(query);
+            q.setParameter("owner", owner);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /* (non-Javadoc)
@@ -2078,14 +2289,14 @@ public class JPADAO implements IDAO {
     @Override
     public Search getSearch(long id) throws DAOException {
         preQuery();
+        EntityManager em = getEntityManager();
         try {
-            Search o = getEntityManager().find(Search.class, id);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
+            Search o = em.find(Search.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -2097,13 +2308,16 @@ public class JPADAO implements IDAO {
     public boolean addSearch(Search search) throws DAOException {
         logger.debug("addSearch: {}", search.getQuery());
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.persist(search);
-            em.getTransaction().commit();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
         return true;
     }
@@ -2115,14 +2329,17 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateSearch(Search search) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.merge(search);
-            em.getTransaction().commit();
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -2133,15 +2350,18 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteSearch(Search search) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             Search o = em.getReference(Search.class, search.getId());
             em.remove(o);
-            em.getTransaction().commit();
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -2156,9 +2376,32 @@ public class JPADAO implements IDAO {
     @Override
     public List<DownloadJob> getAllDownloadJobs() throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT o FROM DownloadJob o");
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM DownloadJob o");
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<DownloadJob> getDownloadJobsForPi(String pi) throws DAOException {
+        if (pi == null) {
+            throw new IllegalArgumentException("pi may not be null");
+        }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT o FROM DownloadJob o WHERE o.pi = :pi").setParameter("pi", pi).getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /**
@@ -2169,14 +2412,14 @@ public class JPADAO implements IDAO {
     @Override
     public DownloadJob getDownloadJob(long id) throws DAOException {
         preQuery();
+        EntityManager em = getEntityManager();
         try {
-            DownloadJob o = getEntityManager().getReference(DownloadJob.class, id);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
+            DownloadJob o = em.getReference(DownloadJob.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -2192,19 +2435,19 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-        StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append("SELECT o FROM DownloadJob o WHERE o.identifier = :identifier");
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        q.setParameter("identifier", identifier);
-        q.setMaxResults(1);
+        EntityManager em = getEntityManager();
         try {
+            StringBuilder sbQuery = new StringBuilder();
+            sbQuery.append("SELECT o FROM DownloadJob o WHERE o.identifier = :identifier");
+            Query q = em.createQuery(sbQuery.toString());
+            q.setParameter("identifier", identifier);
+            q.setMaxResults(1);
             DownloadJob o = (DownloadJob) q.getSingleResult();
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
             return o;
         } catch (NoResultException e) {
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -2223,26 +2466,26 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-        StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append("SELECT o FROM DownloadJob o WHERE o.type = :type AND o.pi = :pi");
-        if (logId != null) {
-            sbQuery.append(" AND o.logId = :logId");
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        q.setParameter("type", type);
-        q.setParameter("pi", pi);
-        if (logId != null) {
-            q.setParameter("logId", logId);
-        }
-        q.setMaxResults(1);
+        EntityManager em = getEntityManager();
         try {
-            DownloadJob o = (DownloadJob) q.getSingleResult();
-            if (o != null) {
-                getEntityManager().refresh(o);
+            StringBuilder sbQuery = new StringBuilder();
+            sbQuery.append("SELECT o FROM DownloadJob o WHERE o.type = :type AND o.pi = :pi");
+            if (logId != null) {
+                sbQuery.append(" AND o.logId = :logId");
             }
+            Query q = em.createQuery(sbQuery.toString());
+            q.setParameter("type", type);
+            q.setParameter("pi", pi);
+            if (logId != null) {
+                q.setParameter("logId", logId);
+            }
+            q.setMaxResults(1);
+            DownloadJob o = (DownloadJob) q.getSingleResult();
             return o;
         } catch (NoResultException e) {
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -2250,13 +2493,16 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addDownloadJob(DownloadJob downloadJob) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.persist(downloadJob);
-            em.getTransaction().commit();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
         return true;
     }
@@ -2266,19 +2512,17 @@ public class JPADAO implements IDAO {
     public boolean updateDownloadJob(DownloadJob downloadJob) throws DAOException {
         logger.trace("updateDownloadJob: {}", downloadJob.getId());
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.merge(downloadJob);
-            em.getTransaction().commit();
-
-            if (this.getEntityManager().contains(downloadJob)) {
-                this.getEntityManager().refresh(downloadJob);
-            }
-
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -2286,15 +2530,18 @@ public class JPADAO implements IDAO {
     @Override
     public boolean deleteDownloadJob(DownloadJob downloadJob) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             DownloadJob o = em.getReference(DownloadJob.class, downloadJob.getId());
             em.remove(o);
-            em.getTransaction().commit();
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -2305,20 +2552,19 @@ public class JPADAO implements IDAO {
     @Override
     public CMSPageTemplateEnabled getCMSPageTemplateEnabled(String templateId) throws DAOException {
         preQuery();
-        Query q = getEntityManager().createQuery("SELECT o FROM CMSPageTemplateEnabled o where o.templateId = :templateId");
-        q.setParameter("templateId", templateId);
-        q.setFlushMode(FlushModeType.COMMIT);
+        EntityManager em = getEntityManager();
         try {
+            Query q = em.createQuery("SELECT o FROM CMSPageTemplateEnabled o where o.templateId = :templateId");
+            q.setParameter("templateId", templateId);
             CMSPageTemplateEnabled o = (CMSPageTemplateEnabled) q.getSingleResult();
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
             return o;
         } catch (NoResultException e) {
             return null;
         } catch (NonUniqueResultException e) {
             logger.error(e.getMessage());
             return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -2328,13 +2574,16 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.persist(o);
-            em.getTransaction().commit();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
 
         return true;
@@ -2346,18 +2595,17 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
+            startTransaction(em);
             em.merge(o);
-            em.getTransaction().commit();
-            // Refresh the object from the DB
-            if (this.getEntityManager().contains(o)) {
-                this.getEntityManager().refresh(o);
-            }
+            commitTransaction(em);
             return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
-            em.close();
+            close(em);
         }
     }
 
@@ -2389,17 +2637,18 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getAllCMSPages() throws DAOException {
-        try {
-            synchronized (cmsRequestLock) {
-                preQuery();
-                Query q = getEntityManager().createQuery("SELECT o FROM CMSPage o");
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                Query q = em.createQuery("SELECT o FROM CMSPage o");
                 return q.getResultList();
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
+                return new ArrayList<>();
+            } finally {
+                close(em);
             }
-        } catch (PersistenceException e) {
-            logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
-            return new ArrayList<>();
         }
     }
 
@@ -2411,14 +2660,19 @@ public class JPADAO implements IDAO {
     public CMSPage getCmsPageForStaticPage(String pageName) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
-            Query q = getEntityManager().createQuery("SELECT o FROM CMSPage o WHERE o.staticPageName = :pageName");
-            q.setParameter("pageName", pageName);
-            q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-            if (!q.getResultList().isEmpty()) {
-                return (CMSPage) q.getSingleResult();
+            EntityManager em = getEntityManager();
+            try {
+                Query q = em.createQuery("SELECT o FROM CMSPage o WHERE o.staticPageName = :pageName");
+                q.setParameter("pageName", pageName);
+                q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                if (!q.getResultList().isEmpty()) {
+                    return (CMSPage) q.getSingleResult();
+                }
+            } finally {
+                close(em);
             }
+            return null;
         }
-        return null;
     }
 
     /* (non-Javadoc)
@@ -2430,8 +2684,9 @@ public class JPADAO implements IDAO {
     public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters,
             List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException {
         synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
             try {
-                preQuery();
                 StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSPage a");
                 StringBuilder order = new StringBuilder();
 
@@ -2458,7 +2713,7 @@ public class JPADAO implements IDAO {
                 sbQuery.append(filterString).append(rightsFilterString).append(order);
 
                 logger.trace("CMS page query: {}", sbQuery.toString());
-                Query q = getEntityManager().createQuery(sbQuery.toString());
+                Query q = em.createQuery(sbQuery.toString());
                 params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
                 q.setFirstResult(first);
                 q.setMaxResults(pageSize);
@@ -2469,7 +2724,3171 @@ public class JPADAO implements IDAO {
             } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
                 return new ArrayList<>();
+            } finally {
+                close(em);
             }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds)
+            throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT o FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
+            if (fromDate != null) {
+                sbQuery.append(" AND o.dateUpdated >= :fromDate");
+            }
+            if (toDate != null) {
+                sbQuery.append(" AND o.dateUpdated <= :toDate");
+            }
+            if (templateIds != null && !templateIds.isEmpty()) {
+                sbQuery.append(" AND (");
+                int count = 0;
+                for (String templateId : templateIds) {
+                    if (count != 0) {
+                        sbQuery.append(" OR ");
+                    }
+                    sbQuery.append("o.templateId = '").append(templateId).append("'");
+                    count++;
+                }
+                sbQuery.append(')');
+            }
+            sbQuery.append(" GROUP BY o.relatedPI ORDER BY o.dateUpdated DESC");
+            Query q = em.createQuery(sbQuery.toString());
+            if (fromDate != null) {
+                q.setParameter("fromDate", fromDate);
+            }
+            if (toDate != null) {
+                q.setParameter("toDate", toDate);
+            }
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isCMSPagesForRecordHaveUpdates(String pi, CMSCategory category, LocalDateTime fromDate, LocalDateTime toDate) throws DAOException {
+        if (pi == null) {
+            throw new IllegalArgumentException("pi may not be null");
+        }
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT COUNT(o) FROM CMSPage o WHERE o.relatedPI = :pi");
+            if (fromDate != null) {
+                sbQuery.append(" AND o.dateUpdated >= :fromDate");
+            }
+            if (toDate != null) {
+                sbQuery.append(" AND o.dateUpdated <= :toDate");
+            }
+            Query q = em.createQuery(sbQuery.toString());
+            q.setParameter("pi", pi);
+            if (fromDate != null) {
+                q.setParameter("fromDate", fromDate);
+            }
+            if (toDate != null) {
+                q.setParameter("toDate", toDate);
+            }
+            q.setMaxResults(1);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+            return (long) q.getSingleResult() != 0;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery =
+                    new StringBuilder("SELECT COUNT(DISTINCT o.relatedPI) FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
+            if (fromDate != null) {
+                sbQuery.append(" AND o.dateUpdated >= :fromDate");
+            }
+            if (toDate != null) {
+                sbQuery.append(" AND o.dateUpdated <= :toDate");
+            }
+            if (templateIds != null && !templateIds.isEmpty()) {
+                sbQuery.append(" AND (");
+                int count = 0;
+                for (String templateId : templateIds) {
+                    if (count != 0) {
+                        sbQuery.append(" OR ");
+                    }
+                    sbQuery.append("o.templateId = '").append(templateId).append("'");
+                    count++;
+                }
+                sbQuery.append(')');
+            }
+            Query q = em.createQuery(sbQuery.toString());
+            if (fromDate != null) {
+                q.setParameter("fromDate", fromDate);
+            }
+            if (toDate != null) {
+                q.setParameter("toDate", toDate);
+            }
+
+            Object o = q.getResultList().get(0);
+            // MySQL
+            if (o instanceof BigInteger) {
+                return ((BigInteger) o).longValue();
+            }
+            // H2
+            return (long) o;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct result
+     */
+    @Override
+    public CMSPage getCMSPageDefaultViewForRecord(String pi) throws DAOException {
+        if (pi == null) {
+            throw new IllegalArgumentException("pi may not be null");
+        }
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em
+                    .createQuery("SELECT o FROM CMSPage o WHERE o.relatedPI = :pi AND o.useAsDefaultRecordView = true and o.published = true")
+                    .setParameter("pi", pi)
+                    .setMaxResults(1);
+
+            return (CMSPage) getSingleResult(q).orElse(null);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CMSPage getCMSPage(long id) throws DAOException {
+        synchronized (cmsRequestLock) {
+            logger.trace("getCMSPage: {}", id);
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                CMSPage o = em.getReference(CMSPage.class, id);
+                return o;
+            } catch (EntityNotFoundException e) {
+                return null;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CMSPage getCMSPageForEditing(long id) throws DAOException {
+        CMSPage original = getCMSPage(id);
+        CMSPage copy = new CMSPage(original);
+        return copy;
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSNavigationItem> getRelatedNavItem(CMSPage page) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.cmsPage = :page");
+                q.setParameter("page", page);
+                return q.getResultList();
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addCMSPage(CMSPage page) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.persist(page);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateCMSPage(CMSPage page) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.merge(page);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteCMSPage(CMSPage page) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                CMSPage o = em.getReference(CMSPage.class, page.getId());
+                em.remove(o);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSMediaItem> getAllCMSMediaItems() throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                Query q = em.createQuery("SELECT o FROM CMSMediaItem o");
+                q.setFlushMode(FlushModeType.COMMIT);
+                q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                return q.getResultList();
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
+                return new ArrayList<>();
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSMediaItem> getAllCMSCollectionItems() throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.collection = true");
+                return q.getResultList();
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
+                return new ArrayList<>();
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CMSMediaItem getCMSMediaItemByFilename(String filename) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.fileName = :fileName");
+                q.setParameter("fileName", filename);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                return (CMSMediaItem) q.getSingleResult();
+            } catch (NoResultException e) {
+                //nothing found; no biggie
+                return null;
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms media item with filename '" + filename + "'");
+                return null;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CMSMediaItem getCMSMediaItem(long id) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                CMSMediaItem o = em.getReference(CMSMediaItem.class, id);
+                return o;
+            } catch (EntityNotFoundException e) {
+                return null;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addCMSMediaItem(CMSMediaItem item) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.persist(item);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateCMSMediaItem(CMSMediaItem item) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.merge(item);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteCMSMediaItem(CMSMediaItem item) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                CMSMediaItem o = em.getReference(CMSMediaItem.class, item.getId());
+                em.remove(o);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<CMSPage> getMediaOwners(CMSMediaItem item) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            List<CMSPage> ownerList = new ArrayList<>();
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                Query q = em.createQuery("SELECT o FROM CMSContentItem o WHERE o.mediaItem = :media");
+                q.setParameter("media", item);
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                for (Object o : q.getResultList()) {
+                    if (o instanceof CMSContentItem) {
+                        try {
+                            CMSPage page = ((CMSContentItem) o).getOwnerPageLanguageVersion().getOwnerPage();
+                            if (!ownerList.contains(page)) {
+                                ownerList.add(page);
+                            }
+                        } catch (NullPointerException e) {
+                            //
+                        }
+                    }
+                }
+                return ownerList;
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
+                return new ArrayList<>();
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getCMSPagesByCategory(io.goobi.viewer.model.cms.Category)
+     */
+    /** {@inheritDoc} */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSMediaItem> getCMSMediaItemsByCategory(CMSCategory category) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em
+                    .createQuery("SELECT DISTINCT media FROM CMSMediaItem media JOIN media.categories category WHERE category.id = :id");
+            q.setParameter("id", category.getId());
+            List<CMSMediaItem> pageList = q.getResultList();
+            return pageList;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSNavigationItem> getAllTopCMSNavigationItems() throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
+                q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                q.setFlushMode(FlushModeType.COMMIT);
+                List<CMSNavigationItem> list = q.getResultList();
+                Collections.sort(list);
+                return list;
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
+                return new ArrayList<>();
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CMSNavigationItem getCMSNavigationItem(long id) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                CMSNavigationItem o = em.find(CMSNavigationItem.class, id);
+                return o;
+            } catch (EntityNotFoundException e) {
+                return null;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addCMSNavigationItem(CMSNavigationItem item) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.persist(item);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateCMSNavigationItem(CMSNavigationItem item) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.merge(item);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteCMSNavigationItem(CMSNavigationItem item) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                CMSNavigationItem o = em.getReference(CMSNavigationItem.class, item.getId());
+                em.remove(o);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    // Transkribus
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<TranskribusJob> getAllTranskribusJobs() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM TranskribusJob o");
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getTranskribusJobs(java.lang.String, java.lang.String, io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus)
+     */
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<TranskribusJob> getTranskribusJobs(String pi, String transkribusUserId, JobStatus status) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder(80);
+            sbQuery.append("SELECT o FROM TranskribusJob o");
+            int filterCount = 0;
+            if (pi != null) {
+                sbQuery.append(" WHERE o.pi = :pi");
+                filterCount++;
+            }
+            if (transkribusUserId != null) {
+                if (filterCount == 0) {
+                    sbQuery.append(" WHERE ");
+                } else {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append("o.ownerId = :ownerId");
+                filterCount++;
+            }
+            if (status != null) {
+                if (filterCount == 0) {
+                    sbQuery.append(" WHERE ");
+                } else {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append("o.status = :status");
+                filterCount++;
+            }
+            Query q = em.createQuery(sbQuery.toString());
+            if (pi != null) {
+                q.setParameter("pi", pi);
+            }
+            if (transkribusUserId != null) {
+                q.setParameter("ownerId", transkribusUserId);
+            }
+            if (status != null) {
+                q.setParameter("status", status);
+            }
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addTranskribusJob(TranskribusJob job) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(job);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateTranskribusJob(TranskribusJob job) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(job);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteTranskribusJob(TranskribusJob job) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            TranskribusJob o = em.getReference(TranskribusJob.class, job.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Campaign> getAllCampaigns() throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                Query q = em.createQuery("SELECT o FROM Campaign o");
+                return q.getResultList();
+            } catch (PersistenceException e) {
+                logger.error(e.toString());
+                return Collections.emptyList();
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getCampaignCount(Map<String, String> filters) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Campaign a");
+            Map<String, Object> params = new HashMap<>();
+            Query q = em.createQuery(sbQuery.append(createCampaignsFilterQuery(null, filters, params)).toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Campaign> getCampaigns(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM Campaign a");
+                StringBuilder order = new StringBuilder();
+                Map<String, Object> params = new HashMap<>();
+
+                String filterString = createCampaignsFilterQuery(null, filters, params);
+                if (StringUtils.isNotEmpty(sortField)) {
+                    order.append(" ORDER BY a.").append(sortField);
+                    if (descending) {
+                        order.append(" DESC");
+                    }
+                }
+                sbQuery.append(filterString).append(order);
+
+                logger.trace(sbQuery.toString());
+                Query q = em.createQuery(sbQuery.toString());
+                params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+                //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
+                q.setFirstResult(first);
+                q.setMaxResults(pageSize);
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+                return q.getResultList();
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
+                return Collections.emptyList();
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Campaign getCampaign(Long id) throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                Campaign o = em.getReference(Campaign.class, id);
+                return o;
+            } catch (EntityNotFoundException e) {
+                return null;
+            } finally {
+                close(em);
+            }
+        }
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Question getQuestion(Long id) throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                Question o = em.getReference(Question.class, id);
+                return o;
+            } catch (EntityNotFoundException e) {
+                return null;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CampaignRecordStatistic> getCampaignStatisticsForRecord(String pi, CrowdsourcingStatus status) throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                String query = "SELECT a FROM CampaignRecordStatistic a WHERE a.pi = :pi";
+                if (status != null) {
+                    query += " AND a.status = :status";
+                }
+                Query q = em.createQuery(query);
+                q.setParameter("pi", pi);
+                if (status != null) {
+                    q.setParameter("status", status);
+                }
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+                List<CampaignRecordStatistic> list = q.getResultList();
+                return list;
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
+                return Collections.emptyList();
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CampaignRecordPageStatistic> getCampaignPageStatisticsForRecord(String pi, CrowdsourcingStatus status) throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                String query = "SELECT a FROM CampaignRecordPageStatistic a WHERE a.pi = :pi";
+                if (status != null) {
+                    query += " AND a.status = :status";
+                }
+                Query q = em.createQuery(query);
+                q.setParameter("pi", pi);
+                if (status != null) {
+                    q.setParameter("status", status);
+                }
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+                List<CampaignRecordPageStatistic> list = q.getResultList();
+                return list;
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
+                return Collections.emptyList();
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean addCampaign(Campaign campaign) throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.persist(campaign);
+                commitTransaction(em);
+                return true;
+            } catch (RollbackException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateCampaign(Campaign campaign) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                Campaign c = em.merge(campaign);
+                commitTransaction(em);
+                //solrQueryResults remains unchanged in managed campaign even after merge. Manually reset results to account for changed solrquery
+                c.resetSolrQueryResults();
+                return true;
+            } catch (RollbackException e) {
+                handleException(em);
+                throw new PersistenceException("Failed to persist campaign " + campaign, e);
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteCampaign(Campaign campaign) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                Campaign o = em.getReference(Campaign.class, campaign.getId());
+                em.remove(o);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /**
+     * @throws DAOException
+     * @see io.goobi.viewer.dao.IDAO#deleteCampaignStatisticsForUser(io.goobi.viewer.model.security.user.User)
+     * @should remove user from creators and reviewers lists correctly
+     */
+    @Override
+    public int deleteCampaignStatisticsForUser(User user) throws DAOException {
+        if (user == null) {
+            return 0;
+        }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            int rows = em
+                    .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_statistic_annotators WHERE user_id=?")
+                    .setParameter(1, user.getId())
+                    .executeUpdate();
+            rows += em
+                    .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_page_statistic_annotators WHERE user_id=?")
+                    .setParameter(1, user.getId())
+                    .executeUpdate();
+            rows += em
+                    .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_statistic_reviewers WHERE user_id=?")
+                    .setParameter(1, user.getId())
+                    .executeUpdate();
+            rows += em
+                    .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_page_statistic_reviewers WHERE user_id=?")
+                    .setParameter(1, user.getId())
+                    .executeUpdate();
+            commitTransaction(em);
+            return rows;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return 0;
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#changeCampaignStatisticContributors(io.goobi.viewer.model.security.user.User,
+     *      io.goobi.viewer.model.security.user.User)
+     * @should replace user in creators and reviewers lists correctly
+     */
+    @Override
+    public int changeCampaignStatisticContributors(User fromUser, User toUser) throws DAOException {
+        if (fromUser == null || toUser == null) {
+            return 0;
+        }
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            int rows = em
+                    .createNativeQuery(
+                            "UPDATE cs_campaign_record_statistic_annotators SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
+                    .executeUpdate();
+            rows += em
+                    .createNativeQuery(
+                            "UPDATE cs_campaign_record_page_statistic_annotators SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
+                    .executeUpdate();
+            rows += em
+                    .createNativeQuery(
+                            "UPDATE cs_campaign_record_statistic_reviewers SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
+                    .executeUpdate();
+            rows += em
+                    .createNativeQuery(
+                            "UPDATE cs_campaign_record_page_statistic_reviewers SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
+                    .executeUpdate();
+            commitTransaction(em);
+            return rows;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return 0;
+        } finally {
+            close(em);
+        }
+
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#checkAvailability()
+     */
+    @Override
+    public boolean checkAvailability() {
+        try {
+            getRole(1);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
+        return false;
+    }
+
+    /**
+     * currently noop since no persistence entity manager is kept
+     */
+    public void clear() {
+        //noop
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see io.goobi.viewer.dao.IDAO#shutdown()
+     */
+    /** {@inheritDoc} */
+    @Override
+    public void shutdown() {
+
+        if (factory != null && factory.isOpen()) {
+            factory.close();
+        }
+    }
+
+    /**
+     * <p>
+     * Operation to call before getting an entity manager. currently noop
+     * </p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public void preQuery() throws DAOException {
+        //NOOP
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getUserGroupCount(Map<String, String> filters) throws DAOException {
+        return getRowCount("UserGroup", null, filters);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getRoleCount(Map<String, String> filters) throws DAOException {
+        return getRowCount("Role", null, filters);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getLicenseTypeCount(Map<String, String> filters) throws DAOException {
+        return getRowCount("LicenseType", " WHERE a.core=false", filters);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getCoreLicenseTypeCount(Map<String, String> filters) throws DAOException {
+        return getRowCount("LicenseType", " WHERE a.core=true", filters);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getIpRangeCount(Map<String, String> filters) throws DAOException {
+        return getRowCount("IpRange", null, filters);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getCommentCount(Map<String, String> filters, User owner) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Comment a");
+            Map<String, String> params = new HashMap<>();
+            if (owner != null) {
+                sbQuery.append(" WHERE a.creatorId = :owner");
+            }
+            Query q = em.createQuery(sbQuery.append(createFilterQuery(null, filters, params)).toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+            if (owner != null) {
+                q.setParameter("owner", owner.getId());
+            }
+
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes,
+            List<String> allowedCategories) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM CMSPage").append(" a");
+            Map<String, String> params = new HashMap<>();
+            sbQuery.append(createFilterQuery2(null, filters, params));
+            try {
+                String rightsFilter = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
+                if (!rightsFilter.isEmpty()) {
+                    if (filters.values().stream().anyMatch(v -> StringUtils.isNotBlank(v))) {
+                        sbQuery.append(" AND ");
+                    } else {
+                        sbQuery.append(" WHERE ");
+                    }
+                    sbQuery.append("(").append(createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories)).append(")");
+                }
+            } catch (AccessDeniedException e) {
+                return 0;
+            }
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * Universal method for returning the row count for the given class and filter string.
+     * 
+     * @param className
+     * @param filter Filter query string
+     * @return
+     * @throws DAOException
+     */
+    private long getFilteredRowCount(String className, String filter, Map<String, String> params) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM ").append(className).append(" a").append(" ").append(filter);
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * Universal method for returning the row count for the given class and filters.
+     * 
+     * @param className
+     * @param staticFilterQuery Optional filter query in case the fuzzy filters aren't sufficient
+     * @param filters
+     * @return
+     * @throws DAOException
+     */
+    private long getRowCount(String className, String staticFilterQuery, Map<String, String> filters) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM ").append(className).append(" a");
+            Map<String, String> params = new HashMap<>();
+            Query q = em.createQuery(sbQuery.append(createFilterQuery(staticFilterQuery, filters, params)).toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllStaticPages()
+     */
+    /** {@inheritDoc} */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSStaticPage> getAllStaticPages() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM CMSStaticPage o");
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addStaticPage(io.goobi.viewer.model.cms.StaticPage)
+     */
+    /**
+     * {@inheritDoc}
+     * 
+     * @return
+     */
+    @Override
+    public boolean addStaticPage(CMSStaticPage page) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(page);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateStaticPage(io.goobi.viewer.model.cms.StaticPage)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateStaticPage(CMSStaticPage page) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(page);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteStaticPage(io.goobi.viewer.model.cms.StaticPage)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteStaticPage(CMSStaticPage page) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            CMSStaticPage o = em.getReference(CMSStaticPage.class, page.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (RollbackException | EntityNotFoundException e) {
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException, NonUniqueResultException {
+        if (page == null || page.getId() == null) {
+            return Collections.emptyList();
+        }
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.cmsPageId = :id");
+            q.setParameter("id", page.getId());
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getStaticPageForTypeType(io.goobi.viewer.dao.PageType)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.pageName = :name");
+            q.setParameter("name", pageType.getName());
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return getSingleResult(q);
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * Helper method to get the only result of a query. In contrast to {@link javax.persistence.Query#getSingleResult()} this does not throw an
+     * exception if no results are found. Instead, it returns an empty Optional
+     * 
+     * @throws ClassCastException if the first result cannot be cast to the expected type
+     * @throws NonUniqueResultException if the query matches more than one result
+     * @param q the query to perform
+     * @return an Optional containing the query result, or an empty Optional if no results are present
+     */
+    @SuppressWarnings("unchecked")
+    private static <T> Optional<T> getSingleResult(Query q) throws ClassCastException, NonUniqueResultException {
+        List<Object> results = q.getResultList();
+        if (results == null || results.isEmpty()) {
+            return Optional.empty();
+        } else if (results.size() > 1) {
+            throw new NonUniqueResultException("Query found " + results.size() + " results instead of only one");
+        } else {
+            return Optional.ofNullable((T) results.get(0));
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getCMSCollections(java.lang.String)
+     */
+    /** {@inheritDoc} */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSCollection> getCMSCollections(String solrField) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                Query q = em.createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field");
+                q.setParameter("field", solrField);
+                return q.getResultList();
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addCMSCollection(io.goobi.viewer.model.cms.CMSCollection)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean addCMSCollection(CMSCollection collection) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(collection);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateCMSCollection(io.goobi.viewer.model.cms.CMSCollection)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateCMSCollection(CMSCollection collection) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(collection);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getCMSCollection(java.lang.String, java.lang.String)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field AND c.solrFieldValue = :value");
+            q.setParameter("field", solrField);
+            q.setParameter("value", solrFieldValue);
+            return (CMSCollection) getSingleResult(q).orElse(null);
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteCMSCollection(io.goobi.viewer.model.cms.CMSCollection)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteCMSCollection(CMSCollection collection) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            CMSCollection u = em.getReference(CMSCollection.class, collection.getId());
+            em.remove(u);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getCMSPagesByCategory(io.goobi.viewer.model.cms.Category)
+     */
+    /** {@inheritDoc} */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSPage> getCMSPagesByCategory(CMSCategory category) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id");
+            q.setParameter("id", category.getId());
+            List<CMSPage> pageList = q.getResultList();
+            return pageList;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.subThemeDiscriminatorValue = :subtheme");
+            q.setParameter("subtheme", subtheme);
+            List<CMSPage> pageList = q.getResultList();
+            return pageList;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getCMSPagesForRecord(java.lang.String, io.goobi.viewer.model.cms.Category)
+     */
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSPage> getCMSPagesForRecord(String pi, CMSCategory category) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q;
+            if (category != null) {
+                q = em.createQuery(
+                        "SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id AND page.relatedPI = :pi");
+                q.setParameter("id", category.getId());
+            } else {
+                StringBuilder sbQuery = new StringBuilder(70);
+                sbQuery.append("SELECT o from CMSPage o WHERE o.relatedPI='").append(pi).append("'");
+
+                q = em.createQuery("SELECT page FROM CMSPage page WHERE page.relatedPI = :pi");
+            }
+            q.setParameter("pi", pi);
+            List<CMSPage> pageList = q.getResultList();
+            return pageList;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * <p>
+     * createCMSPageFilter.
+     * </p>
+     *
+     * @param params a {@link java.util.Map} object.
+     * @param pageParameter a {@link java.lang.String} object.
+     * @param allowedTemplateIds a {@link java.util.List} object.
+     * @param allowedSubthemes a {@link java.util.List} object.
+     * @param allowedCategoryIds a {@link java.util.List} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
+     */
+    public static String createCMSPageFilter(Map<String, String> params, String pageParameter, List<String> allowedTemplateIds,
+            List<String> allowedSubthemes, List<String> allowedCategoryIds) throws AccessDeniedException {
+
+        String query = "";
+
+        int index = 0;
+        if (allowedTemplateIds != null && !allowedTemplateIds.isEmpty()) {
+            query += "(";
+            for (String template : allowedTemplateIds) {
+                String templateParameter = "tpl" + ++index;
+                query += (":" + templateParameter + " = " + pageParameter + ".templateId");
+                query += " OR ";
+                params.put(templateParameter, template);
+            }
+            if (query.endsWith(" OR ")) {
+                query = query.substring(0, query.length() - 4);
+            }
+            query += ") AND";
+        } else if (allowedTemplateIds != null) {
+            throw new AccessDeniedException("User may not view pages with any templates");
+        }
+
+        index = 0;
+        if (allowedSubthemes != null && !allowedSubthemes.isEmpty()) {
+            query += " (";
+            for (String subtheme : allowedSubthemes) {
+                String templateParameter = "thm" + ++index;
+                query += (":" + templateParameter + " = " + pageParameter + ".subThemeDiscriminatorValue");
+                query += " OR ";
+                params.put(templateParameter, subtheme);
+            }
+            if (query.endsWith(" OR ")) {
+                query = query.substring(0, query.length() - 4);
+            }
+            query += ") AND";
+        } else if (allowedSubthemes != null) {
+            query += " (" + pageParameter + ".subThemeDiscriminatorValue = \"\") AND";
+        }
+
+        index = 0;
+        if (allowedCategoryIds != null && !allowedCategoryIds.isEmpty()) {
+            query += " (";
+            for (String category : allowedCategoryIds) {
+                String templateParameter = "cat" + ++index;
+                query += (":" + templateParameter + " IN (SELECT c.id FROM " + pageParameter + ".categories c)");
+                query += " OR ";
+                params.put(templateParameter, category);
+            }
+            if (query.endsWith(" OR ")) {
+                query = query.substring(0, query.length() - 4);
+            }
+            query += ")";
+        } else if (allowedCategoryIds != null) {
+            query += " (SELECT COUNT(c) FROM " + pageParameter + ".categories c = 0)";
+        }
+        if (query.endsWith(" AND")) {
+            query = query.substring(0, query.length() - 4);
+        }
+
+        return query.trim();
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSCategory> getAllCategories() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT c FROM CMSCategory c ORDER BY c.name");
+            q.setFlushMode(FlushModeType.COMMIT);
+            List<CMSCategory> list = q.getResultList();
+            return list;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getCountPagesUsingCategory(io.goobi.viewer.model.cms.CMSCategory)
+     * @should return correct value
+     */
+    @Override
+    public long getCountPagesUsingCategory(CMSCategory category) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT COUNT(o) FROM CMSPage o WHERE :category MEMBER OF o.categories");
+            q.setParameter("category", category);
+
+            Object o = q.getResultList().get(0);
+            // MySQL
+            if (o instanceof BigInteger) {
+                return ((BigInteger) q.getResultList().get(0)).longValue();
+            }
+            // H2
+            return (long) q.getResultList().get(0);
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getCountMediaItemsUsingCategory(io.goobi.viewer.model.cms.CMSCategory)
+     * @should return correct value
+     */
+    @Override
+    public long getCountMediaItemsUsingCategory(CMSCategory category) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT COUNT(o) FROM CMSMediaItem o WHERE :category MEMBER OF o.categories");
+            q.setParameter("category", category);
+
+            Object o = q.getResultList().get(0);
+            // MySQL
+            if (o instanceof BigInteger) {
+                return ((BigInteger) q.getResultList().get(0)).longValue();
+            }
+            // H2
+            return (long) q.getResultList().get(0);
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Persist a new {@link CMSCategory} object
+     */
+    @Override
+    public boolean addCategory(CMSCategory category) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(category);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Update an existing {@link CMSCategory} object in the persistence context
+     */
+    @Override
+    public boolean updateCategory(CMSCategory category) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(category);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Delete a {@link CMSCategory} object from the persistence context
+     */
+    @Override
+    public boolean deleteCategory(CMSCategory category) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            CMSCategory o = em.getReference(CMSCategory.class, category.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Search the persistence context for a {@link CMSCategory} with the given name.
+     */
+    @Override
+    public CMSCategory getCategoryByName(String name) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT c FROM CMSCategory c WHERE c.name = :name");
+            q.setParameter("name", name);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            CMSCategory category = (CMSCategory) getSingleResult(q).orElse(null);
+            return category;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Search the persistence context for a {@link CMSCategory} with the given unique id.
+     */
+    @Override
+    public CMSCategory getCategory(Long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT c FROM CMSCategory c WHERE c.id = :id");
+            q.setParameter("id", id);
+            CMSCategory category = (CMSCategory) getSingleResult(q).orElse(null);
+            return category;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Check if the database contains a table of the given name. Used by backward-compatibility routines
+     * 
+     * @throws SQLException
+     */
+    @Override
+    public boolean tableExists(String tableName) throws DAOException, SQLException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            Connection connection = em.unwrap(Connection.class);
+            DatabaseMetaData metaData = connection.getMetaData();
+            try (ResultSet tables = metaData.getTables(null, null, tableName, null)) {
+                return tables.next();
+            } finally {
+                commitTransaction(em);
+            }
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Check if the database contains a column in a table with the given names. Used by backward-compatibility routines
+     */
+    @Override
+    public boolean columnsExists(String tableName, String columnName) throws SQLException, DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            Connection connection = em.unwrap(Connection.class);
+            DatabaseMetaData metaData = connection.getMetaData();
+            try (ResultSet columns = metaData.getColumns(null, null, tableName, columnName)) {
+                return columns.next();
+            } finally {
+                commitTransaction(em);
+            }
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CrowdsourcingAnnotation getAnnotation(Long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT a FROM CrowdsourcingAnnotation a WHERE a.id = :id");
+            q.setParameter("id", id);
+            CrowdsourcingAnnotation annotation = (CrowdsourcingAnnotation) getSingleResult(q).orElse(null);
+            return annotation;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct rows
+     */
+    @SuppressWarnings({ "unchecked", "unused" })
+    @Override
+    public List<CrowdsourcingAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM CrowdsourcingAnnotation a");
+            if (!campaign.getQuestions().isEmpty()) {
+                sbQuery.append(" WHERE (");
+                int count = 1;
+                for (Question question : campaign.getQuestions()) {
+                    if (count > 1) {
+                        sbQuery.append(" OR ");
+                    }
+                    sbQuery.append("a.generatorId = :questionId_").append(count);
+                    count++;
+                }
+                sbQuery.append(")");
+            }
+            Query q = em.createQuery(sbQuery.toString());
+            int count = 1;
+            for (Question question : campaign.getQuestions()) {
+                q.setParameter("questionId_" + count, question.getId());
+                count++;
+            }
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Get all annotations associated with the work of the given pi
+     * 
+     * @should return correct rows
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CrowdsourcingAnnotation> getAnnotationsForWork(String pi) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
+            Query q = em.createQuery(query);
+            q.setParameter("pi", pi);
+
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean descending) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT a FROM CrowdsourcingAnnotation a";
+
+            if (StringUtils.isNotEmpty(sortField)) {
+                StringBuilder sbOrder = new StringBuilder();
+                sbOrder.append(" ORDER BY a.").append(sortField);
+                if (descending) {
+                    sbOrder.append(" DESC");
+                }
+                query += sbOrder.toString();
+            }
+
+            Query q = em.createQuery(query);
+
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public long getTotalAnnotationCount() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT COUNT(a) FROM CrowdsourcingAnnotation a";
+            Query q = em.createQuery(query);
+
+            Object o = q.getResultList().get(0);
+            // MySQL
+            if (o instanceof BigInteger) {
+                return ((BigInteger) q.getResultList().get(0)).longValue();
+            }
+            // H2
+            return (long) q.getResultList().get(0);
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllAnnotationsByMotivation(java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String motivation) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.motivation = :motivation";
+            Query q = em.createQuery(query);
+            q.setParameter("motivation", motivation);
+
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getAnnotationCountForWork(String pi) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT COUNT(a) FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
+            Query q = em.createQuery(query);
+            q.setParameter("pi", pi);
+
+            Object o = q.getResultList().get(0);
+            // MySQL
+            if (o instanceof BigInteger) {
+                return ((BigInteger) q.getResultList().get(0)).longValue();
+            }
+            // H2
+            return (long) q.getResultList().get(0);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException {
+        return getAnnotationsForTarget(pi, page, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page, String motivation) throws DAOException {
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
+            if (page != null) {
+                query += " AND a.targetPageOrder = :page";
+            } else {
+                query += " AND a.targetPageOrder IS NULL";
+            }
+            if (StringUtils.isNotBlank(motivation)) {
+                query += " AND a.motivation =  + :motivation";
+            }
+            Query q = em.createQuery(query);
+            q.setParameter("pi", pi);
+            if (page != null) {
+                q.setParameter("page", page);
+            }
+            if (StringUtils.isNotBlank(motivation)) {
+                q.setParameter("motivation", motivation);
+            }
+
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getAnnotationCountForTarget(String pi, Integer page) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT COUNT(a) FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
+            if (page != null) {
+                query += " AND a.targetPageOrder = :page";
+            } else {
+                query += " AND a.targetPageOrder IS NULL";
+            }
+            Query q = em.createQuery(query);
+            q.setParameter("pi", pi);
+            if (page != null) {
+                q.setParameter("page", page);
+            }
+
+            Object o = q.getResultList().get(0);
+            // MySQL
+            if (o instanceof BigInteger) {
+                return ((BigInteger) q.getResultList().get(0)).longValue();
+            }
+            // H2
+            return (long) q.getResultList().get(0);
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct rows
+     */
+    @SuppressWarnings({ "unchecked", "unused" })
+    @Override
+    public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi");
+            if (!campaign.getQuestions().isEmpty()) {
+                sbQuery.append(" AND (");
+                int count = 1;
+                for (Question question : campaign.getQuestions()) {
+                    if (count > 1) {
+                        sbQuery.append(" OR ");
+                    }
+                    sbQuery.append("a.generatorId = :questionId_").append(count);
+                    count++;
+                }
+                sbQuery.append(")");
+            }
+            Query q = em.createQuery(sbQuery.toString());
+            if (!campaign.getQuestions().isEmpty()) {
+                int count = 1;
+                for (Question question : campaign.getQuestions()) {
+                    q.setParameter("questionId_" + count, question.getId());
+                    count++;
+                }
+
+            }
+            q.setParameter("pi", pi);
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct rows
+     */
+    @SuppressWarnings({ "unchecked", "unused" })
+    @Override
+    public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi");
+            if (page != null) {
+                sbQuery.append(" AND a.targetPageOrder = :page");
+            } else {
+                sbQuery.append(" AND a.targetPageOrder IS NULL");
+            }
+            if (!campaign.getQuestions().isEmpty()) {
+                sbQuery.append(" AND (");
+                int count = 1;
+                for (Question question : campaign.getQuestions()) {
+                    if (count > 1) {
+                        sbQuery.append(" OR ");
+                    }
+                    sbQuery.append(" a.generatorId = :questionId_").append(count);
+                    count++;
+                }
+                sbQuery.append(" )");
+            }
+            Query q = em.createQuery(sbQuery.toString());
+            int count = 1;
+            for (Question question : campaign.getQuestions()) {
+                q.setParameter("questionId_" + count, question.getId());
+                count++;
+            }
+            q.setParameter("pi", pi);
+            if (page != null) {
+                q.setParameter("page", page);
+            }
+
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForUser(java.lang.Long)
+     * @should return correct rows
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CrowdsourcingAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending)
+            throws DAOException {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String queryString = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
+            if (StringUtils.isNotEmpty(sortField)) {
+                StringBuilder sbOrder = new StringBuilder();
+                sbOrder.append(" ORDER BY a.").append(sortField);
+                if (descending) {
+                    sbOrder.append(" DESC");
+                }
+                queryString += sbOrder.toString();
+            }
+
+            Query query = em.createQuery(queryString).setParameter("userId", userId);
+            if (maxResults != null) {
+                query.setMaxResults(maxResults);
+            }
+            return query.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct rows
+     * @should filter by campaign name correctly
+     */
+    @Override
+    public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
+            Map<String, String> filters) throws DAOException {
+        Map<String, Object> params = new HashMap<>();
+        String filterString = createAnnotationsFilterQuery(null, filters, params);
+        return getAnnotations(first, pageSize, sortField, descending, filterString, params);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
+            String filterString, Map<String, Object> params) throws DAOException {
+        params = params == null ? new HashMap<>() : params;
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CrowdsourcingAnnotation a");
+                StringBuilder order = new StringBuilder();
+                if (StringUtils.isNotEmpty(sortField)) {
+                    order.append(" ORDER BY a.").append(sortField);
+                    if (descending) {
+                        order.append(" DESC");
+                    }
+                }
+                sbQuery.append(filterString).append(order);
+
+                logger.trace(sbQuery.toString());
+                Query q = em.createQuery(sbQuery.toString());
+                params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+                //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
+                q.setFirstResult(first);
+                q.setMaxResults(pageSize);
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                return q.getResultList();
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
+                return Collections.emptyList();
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getAnnotationCount(Map<String, String> filters) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM CrowdsourcingAnnotation a");
+            Map<String, Object> params = new HashMap<>();
+            Query q = em.createQuery(sbQuery.append(createAnnotationsFilterQuery(null, filters, params)).toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
+        if (getAnnotation(annotation.getId()) != null) {
+            return false;
+        }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(annotation);
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateAnnotation(io.goobi.viewer.model.annotation.CrowdsourcingAnnotation)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(annotation);
+            commitTransaction(em);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteAnnotation(io.goobi.viewer.model.annotation.CrowdsourcingAnnotation)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            CrowdsourcingAnnotation o = em.getReference(CrowdsourcingAnnotation.class, annotation.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getGeoMap(java.lang.Long)
+     */
+    @Override
+    public GeoMap getGeoMap(Long mapId) throws DAOException {
+        if (mapId == null) {
+            return null;
+        }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            GeoMap o = em.find(GeoMap.class, mapId);
+            return o;
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllGeoMaps()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<GeoMap> getAllGeoMaps() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT u FROM GeoMap u");
+            List<GeoMap> list = q.getResultList();
+            return list;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addGeoMap(io.goobi.viewer.model.maps.GeoMap)
+     */
+    @Override
+    public boolean addGeoMap(GeoMap map) throws DAOException {
+        if (getGeoMap(map.getId()) != null) {
+            return false;
+        }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(map);
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateGeoMap(io.goobi.viewer.model.maps.GeoMap)
+     */
+    @Override
+    public boolean updateGeoMap(GeoMap map) throws DAOException {
+        if (map.getId() == null) {
+            return false;
+        }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(map);
+            commitTransaction(em);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteGeoMap(io.goobi.viewer.model.maps.GeoMap)
+     */
+    @Override
+    public boolean deleteGeoMap(GeoMap map) throws DAOException {
+        if (map.getId() == null) {
+            return false;
+        }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            GeoMap o = em.getReference(GeoMap.class, map.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getPagesUsingMap(io.goobi.viewer.model.maps.GeoMap)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+
+            Query qItems = em.createQuery(
+                    "SELECT item FROM CMSContentItem item WHERE item.geoMap = :map");
+            qItems.setParameter("map", map);
+            List<CMSContentItem> itemList = qItems.getResultList();
+
+            Query qWidgets = em.createQuery(
+                    "SELECT ele FROM CMSSidebarElementAutomatic ele WHERE ele.map = :map");
+            qWidgets.setParameter("map", map);
+            List<CMSSidebarElement> widgetList = qWidgets.getResultList();
+
+            Stream<CMSPage> itemPages = itemList.stream()
+                    .map(CMSContentItem::getOwnerPageLanguageVersion)
+                    .map(CMSPageLanguageVersion::getOwnerPage);
+
+            Stream<CMSPage> widgetPages = widgetList.stream()
+                    .map(CMSSidebarElement::getOwnerPage);
+
+            List<CMSPage> pageList = Stream.concat(itemPages, widgetPages)
+                    .distinct()
+                    .collect(Collectors.toList());
+            return pageList;
+        } finally {
+            close(em);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSPage> getPagesUsingMapInSidebar(GeoMap map) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+
+            Query qWidgets = em.createQuery(
+                    "SELECT ele FROM CMSSidebarElementAutomatic ele WHERE ele.map = :map");
+            qWidgets.setParameter("map", map);
+            List<CMSSidebarElement> widgetList = qWidgets.getResultList();
+
+            List<CMSPage> pageList = widgetList.stream()
+                    .map(CMSSidebarElement::getOwnerPage)
+                    .distinct()
+                    .collect(Collectors.toList());
+            return pageList;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#saveTermsOfUse(io.goobi.viewer.model.security.TermsOfUse)
+     */
+    @Override
+    public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            if (tou.getId() == null) {
+                //create initial tou
+                em.persist(tou);
+            } else {
+                em.merge(tou);
+            }
+            commitTransaction(em);
+        } finally {
+            close(em);
+        }
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getTermsOfUse()
+     */
+    @Override
+    public TermsOfUse getTermsOfUse() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT u FROM TermsOfUse u");
+            //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+            @SuppressWarnings("unchecked")
+            List<TermsOfUse> results = q.getResultList();
+            if (results.isEmpty()) {
+                //No results. Just return a new object which may be saved later
+                return new TermsOfUse();
+            }
+            return results.get(0);
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#resetUserAgreementsToTermsOfUse()
+     */
+    @Override
+    public boolean resetUserAgreementsToTermsOfUse() throws DAOException {
+        List<User> users = getAllUsers(true);
+        users.forEach(u -> u.setAgreedToTermsOfUse(false));
+        users.forEach(u -> {
+            try {
+                updateUser(u);
+            } catch (DAOException e) {
+                logger.error("Error resetting user agreement for user " + u, e);
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Implements filtering with java methods because filtering single-table inheritance objects does not work as expected
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSRecordNote> getRecordNotes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+
+            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
+            Query q = em.createQuery(sbQuery.toString());
+            q.setFlushMode(FlushModeType.COMMIT);
+            List<CMSRecordNote> notes = q.getResultList();
+            notes = notes.stream()
+                    .filter(n -> filters == null || n.matchesFilter(filters.values().stream().findAny().orElse(null)))
+                    .skip(first)
+                    .limit(pageSize)
+                    .collect(Collectors.toList());
+
+            return notes;
+        } catch (PersistenceException e) {
+            logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
+            return Collections.emptyList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllRecordNotes()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSRecordNote> getAllRecordNotes() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
+            logger.trace(sbQuery.toString());
+            Query q = em.createQuery(sbQuery.toString());
+            q.setFlushMode(FlushModeType.COMMIT);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
+            return Collections.emptyList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getRecordNotesForPi(java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSSingleRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT a FROM CMSSingleRecordNote a WHERE a.recordPi = :pi";
+            if (displayedNotesOnly) {
+                query += " AND a.displayNote = :display";
+            }
+            // logger.trace(query);
+            Query q = em.createQuery(query.toString());
+            q.setParameter("pi", pi);
+            if (displayedNotesOnly) {
+                q.setParameter("display", true);
+            }
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSMultiRecordNote> getAllMultiRecordNotes(boolean displayedNotesOnly) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT a FROM CMSMultiRecordNote a";
+            if (displayedNotesOnly) {
+                query += " WHERE a.displayNote = :display";
+            }
+            // logger.trace(query);
+            Query q = em.createQuery(query.toString());
+            if (displayedNotesOnly) {
+                q.setParameter("display", true);
+            }
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getRecordNote(java.lang.Long)
+     */
+    @Override
+    public CMSRecordNote getRecordNote(Long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CMSRecordNote o = em.getReference(CMSRecordNote.class, id);
+            if (o != null) {
+                if (o instanceof CMSMultiRecordNote) {
+                    return new CMSMultiRecordNote(o);
+                }
+                return new CMSSingleRecordNote(o);
+            }
+            return null;
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
+     */
+    @Override
+    public boolean addRecordNote(CMSRecordNote note) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(note);
+            commitTransaction(em);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
+     */
+    @Override
+    public boolean updateRecordNote(CMSRecordNote note) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(note);
+            commitTransaction(em);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
+     */
+    @Override
+    public boolean deleteRecordNote(CMSRecordNote note) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            CMSRecordNote o = em.getReference(CMSRecordNote.class, note.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllSliders()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSSlider> getAllSliders() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSSlider a");
+            logger.trace(sbQuery.toString());
+            Query q = em.createQuery(sbQuery.toString());
+            q.setFlushMode(FlushModeType.COMMIT);
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"" + e.toString() + "\" when trying to get CMSSliders. Returning empty list");
+            return Collections.emptyList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getSlider(java.lang.Long)
+     */
+    @Override
+    public CMSSlider getSlider(Long id) throws DAOException {
+        if (id == null) {
+            return null;
+        }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CMSSlider o = em.getReference(CMSSlider.class, id);
+            return new CMSSlider(o);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addSlider(io.goobi.viewer.model.cms.CMSSlider)
+     */
+    @Override
+    public boolean addSlider(CMSSlider slider) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(slider);
+            commitTransaction(em);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateSlider(io.goobi.viewer.model.cms.CMSSlider)
+     */
+    @Override
+    public boolean updateSlider(CMSSlider slider) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(slider);
+            commitTransaction(em);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteSlider(io.goobi.viewer.model.cms.CMSSlider)
+     */
+    @Override
+    public boolean deleteSlider(CMSSlider slider) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            CMSSlider o = em.getReference(CMSSlider.class, slider.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getPagesUsingSlider(io.goobi.viewer.model.cms.CMSSlider)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+
+            Query qItems = em.createQuery(
+                    "SELECT item FROM CMSContentItem item WHERE item.slider = :slider");
+            qItems.setParameter("slider", slider);
+            List<CMSContentItem> itemList = qItems.getResultList();
+
+            List<CMSPage> pageList = itemList.stream()
+                    .map(CMSContentItem::getOwnerPageLanguageVersion)
+                    .map(CMSPageLanguageVersion::getOwnerPage)
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            return pageList;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getConfiguredThemes()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ThemeConfiguration> getConfiguredThemes() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT t FROM ThemeConfiguration t");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getTheme(java.lang.String)
+     */
+    @Override
+    public ThemeConfiguration getTheme(String name) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT t FROM ThemeConfiguration t WHERE UPPER(t.name) = :name");
+            if (name != null) {
+                q.setParameter("name", name.toUpperCase());
+            }
+            try {
+                ThemeConfiguration t = (ThemeConfiguration) q.getSingleResult();
+                return t;
+            } catch (NoResultException e) {
+                return null;
+            } catch (NonUniqueResultException e) {
+                logger.warn(e.getMessage());
+                return (ThemeConfiguration) q.getResultList().get(0);
+            }
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addTheme(io.goobi.viewer.model.viewer.themes.Theme)
+     */
+    @Override
+    public boolean addTheme(ThemeConfiguration theme) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(theme);
+            commitTransaction(em);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateTheme(io.goobi.viewer.model.viewer.themes.Theme)
+     */
+    @Override
+    public boolean updateTheme(ThemeConfiguration theme) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(theme);
+            commitTransaction(em);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteTheme(io.goobi.viewer.model.viewer.themes.Theme)
+     */
+    @Override
+    public boolean deleteTheme(ThemeConfiguration theme) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            ThemeConfiguration o = em.getReference(ThemeConfiguration.class, theme.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CustomSidebarWidget> getAllCustomWidgets() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT t FROM CustomSidebarWidget t");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public CustomSidebarWidget getCustomWidget(Long id) throws DAOException {
+        if (id == null) {
+            return null;
+        }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CustomSidebarWidget o = em.getReference(CustomSidebarWidget.class, id);
+            return CustomSidebarWidget.clone(o);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean addCustomWidget(CustomSidebarWidget widget) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.persist(widget);
+                commitTransaction(em);
+                return true;
+            } catch (IllegalArgumentException | PersistenceException e) {
+                logger.error(e.toString(), e);
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    @Override
+    public boolean updateCustomWidget(CustomSidebarWidget widget) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.merge(widget);
+                commitTransaction(em);
+                return true;
+            } catch (IllegalArgumentException e) {
+                return false;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    @Override
+    public boolean deleteCustomWidget(Long id) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                CustomSidebarWidget o = em.getReference(CustomSidebarWidget.class, id);
+                em.remove(o);
+                commitTransaction(em);
+                return true;
+            } catch (IllegalArgumentException e) {
+                handleException(em);
+                return false;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+
+            Query qItems = em.createQuery(
+                    "SELECT element FROM CMSSidebarElementCustom element WHERE element.widget = :widget");
+            qItems.setParameter("widget", widget);
+            List<CMSSidebarElementCustom> itemList = qItems.getResultList();
+
+            List<CMSPage> pageList = itemList.stream()
+                    .map(CMSSidebarElementCustom::getOwnerPage)
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            return pageList;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public CookieBanner getCookieBanner() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT u FROM CookieBanner u");
+            //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+            @SuppressWarnings("unchecked")
+            List<CookieBanner> results = q.getResultList();
+            if (results.isEmpty()) {
+                //No results. Just return a new object which may be saved later
+                return new CookieBanner();
+            }
+            return results.get(0);
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean saveCookieBanner(CookieBanner banner) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            if (banner.getId() == null) {
+                //create initial tou
+                em.persist(banner);
+            } else {
+                em.merge(banner);
+            }
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public Long getNumRecordsWithComments(User user) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query query =
+                    em.createNativeQuery(
+                            "SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id=" + user.getId());
+            return (Long) query.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public List getNativeQueryResults(String query) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createNativeQuery(query).getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public int executeUpdate(String query) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            int numUpdates = em.createNativeQuery(query).executeUpdate();
+            commitTransaction(em);
+            return numUpdates;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return 0;
+        } finally {
+            close(em);
         }
     }
 
@@ -2830,2740 +6249,4 @@ public class JPADAO implements IDAO {
         String filterString = join.append(where).toString();
         return filterString;
     }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds)
-            throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
-        if (fromDate != null) {
-            sbQuery.append(" AND o.dateUpdated >= :fromDate");
-        }
-        if (toDate != null) {
-            sbQuery.append(" AND o.dateUpdated <= :toDate");
-        }
-        if (templateIds != null && !templateIds.isEmpty()) {
-            sbQuery.append(" AND (");
-            int count = 0;
-            for (String templateId : templateIds) {
-                if (count != 0) {
-                    sbQuery.append(" OR ");
-                }
-                sbQuery.append("o.templateId = '").append(templateId).append("'");
-                count++;
-            }
-            sbQuery.append(')');
-        }
-        sbQuery.append(" GROUP BY o.relatedPI ORDER BY o.dateUpdated DESC");
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        if (fromDate != null) {
-            q.setParameter("fromDate", fromDate);
-        }
-        if (toDate != null) {
-            q.setParameter("toDate", toDate);
-        }
-        q.setFirstResult(first);
-        q.setMaxResults(pageSize);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
-        return q.getResultList();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isCMSPagesForRecordHaveUpdates(String pi, CMSCategory category, LocalDateTime fromDate, LocalDateTime toDate) throws DAOException {
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT COUNT(o) FROM CMSPage o WHERE o.relatedPI = :pi");
-        if (fromDate != null) {
-            sbQuery.append(" AND o.dateUpdated >= :fromDate");
-        }
-        if (toDate != null) {
-            sbQuery.append(" AND o.dateUpdated <= :toDate");
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        q.setParameter("pi", pi);
-        if (fromDate != null) {
-            q.setParameter("fromDate", fromDate);
-        }
-        if (toDate != null) {
-            q.setParameter("toDate", toDate);
-        }
-        q.setMaxResults(1);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
-        return (long) q.getSingleResult() != 0;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery =
-                new StringBuilder("SELECT COUNT(DISTINCT o.relatedPI) FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
-        if (fromDate != null) {
-            sbQuery.append(" AND o.dateUpdated >= :fromDate");
-        }
-        if (toDate != null) {
-            sbQuery.append(" AND o.dateUpdated <= :toDate");
-        }
-        if (templateIds != null && !templateIds.isEmpty()) {
-            sbQuery.append(" AND (");
-            int count = 0;
-            for (String templateId : templateIds) {
-                if (count != 0) {
-                    sbQuery.append(" OR ");
-                }
-                sbQuery.append("o.templateId = '").append(templateId).append("'");
-                count++;
-            }
-            sbQuery.append(')');
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        if (fromDate != null) {
-            q.setParameter("fromDate", fromDate);
-        }
-        if (toDate != null) {
-            q.setParameter("toDate", toDate);
-        }
-
-        Object o = q.getResultList().get(0);
-        // MySQL
-        if (o instanceof BigInteger) {
-            return ((BigInteger) o).longValue();
-        }
-        // H2
-        return (long) o;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @should return correct result
-     */
-    @Override
-    public CMSPage getCMSPageDefaultViewForRecord(String pi) throws DAOException {
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-
-        preQuery();
-        Query q = getEntityManager()
-                .createQuery("SELECT o FROM CMSPage o WHERE o.relatedPI = :pi AND o.useAsDefaultRecordView = true and o.published = true")
-                .setParameter("pi", pi)
-                .setMaxResults(1);
-
-        return (CMSPage) getSingleResult(q).orElse(null);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CMSPage getCMSPage(long id) throws DAOException {
-        synchronized (cmsRequestLock) {
-            logger.trace("getCMSPage: {}", id);
-            preQuery();
-            try {
-                CMSPage o = getEntityManager().getReference(CMSPage.class, id);
-                if (o != null) {
-                    updateCMSPageFromDatabase(o.getId());
-                }
-                return o;
-            } catch (EntityNotFoundException e) {
-                return null;
-            } finally {
-                logger.trace("getCMSPage END");
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CMSPage getCMSPageForEditing(long id) throws DAOException {
-        CMSPage original = getCMSPage(id);
-        CMSPage copy = new CMSPage(original);
-        return copy;
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSNavigationItem> getRelatedNavItem(CMSPage page) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            Query q = getEntityManager().createQuery("SELECT o FROM CMSNavigationItem o WHERE o.cmsPage = :page");
-            q.setParameter("page", page);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-            return q.getResultList();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean addCMSPage(CMSPage page) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            preQuery();
-            EntityManager em = factory.createEntityManager();
-            try {
-                em.getTransaction().begin();
-                em.persist(page);
-                em.getTransaction().commit();
-                return updateCMSPageFromDatabase(page.getId());
-            } finally {
-                em.close();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean updateCMSPage(CMSPage page) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            EntityManager em = factory.createEntityManager();
-            try {
-                em.getTransaction().begin();
-                em.merge(page);
-                em.getTransaction().commit();
-                return updateCMSPageFromDatabase(page.getId());
-            } finally {
-                em.close();
-            }
-        }
-    }
-
-    /**
-     * Refresh the CMSPage with the given id from the database. If the page is not found or if the refresh fails, false is returned
-     * 
-     * @param id
-     * @return
-     */
-    private boolean updateCMSPageFromDatabase(Long id) {
-        CMSPage o = null;
-        try {
-            o = this.getEntityManager().getReference(CMSPage.class, id);
-            this.getEntityManager().refresh(o);
-            return true;
-        } catch (IllegalArgumentException e) {
-            logger.error("CMSPage with ID '{}' has an invalid type, or is not persisted: {}", id, e.getMessage());
-            return false;
-        } catch (EntityNotFoundException e) {
-            logger.debug("CMSPage with ID '{}' not found in database.", id);
-            //remove from em as well
-            if (o != null) {
-                getEntityManager().remove(o);
-            }
-            return false;
-        }
-    }
-
-    private void updateCampaignsFromDatabase() throws DAOException {
-        List<Campaign> campaigns = this.getAllCampaigns();
-        for (Campaign campaign : campaigns) {
-            updateFromDatabase(campaign.getId(), Campaign.class);
-        }
-
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private boolean updateFromDatabase(Long id, Class clazz) {
-        Object o = null;
-        try {
-            o = this.getEntityManager().getReference(clazz, id);
-            this.getEntityManager().refresh(o);
-            return true;
-        } catch (IllegalArgumentException e) {
-            logger.error("CMSPage with ID '{}' has an invalid type, or is not persisted: {}", id, e.getMessage());
-            return false;
-        } catch (EntityNotFoundException e) {
-            logger.debug("CMSPage with ID '{}' not found in database.", id);
-            //remove from em as well
-            if (o != null) {
-                getEntityManager().remove(o);
-            }
-            return false;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean deleteCMSPage(CMSPage page) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            preQuery();
-            EntityManager em = factory.createEntityManager();
-            try {
-                em.getTransaction().begin();
-                CMSPage o = em.getReference(CMSPage.class, page.getId());
-                em.remove(o);
-                em.getTransaction().commit();
-                return !updateCMSPageFromDatabase(o.getId());
-            } catch (RollbackException e) {
-                return false;
-            } finally {
-                em.close();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSMediaItem> getAllCMSMediaItems() throws DAOException {
-        synchronized (cmsRequestLock) {
-            try {
-                preQuery();
-                Query q = getEntityManager().createQuery("SELECT o FROM CMSMediaItem o");
-                q.setFlushMode(FlushModeType.COMMIT);
-                q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
-                return new ArrayList<>();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSMediaItem> getAllCMSCollectionItems() throws DAOException {
-        synchronized (cmsRequestLock) {
-            try {
-                preQuery();
-                Query q = getEntityManager().createQuery("SELECT o FROM CMSMediaItem o WHERE o.collection = true");
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
-                return new ArrayList<>();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CMSMediaItem getCMSMediaItemByFilename(String filename) throws DAOException {
-        synchronized (cmsRequestLock) {
-            try {
-                preQuery();
-                Query q = getEntityManager().createQuery("SELECT o FROM CMSMediaItem o WHERE o.fileName = :fileName");
-                q.setFlushMode(FlushModeType.COMMIT);
-                q.setParameter("fileName", filename);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                return (CMSMediaItem) q.getSingleResult();
-            } catch (NoResultException e) {
-                //nothing found; no biggie
-                return null;
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get cms media item with filename '" + filename + "'");
-                return null;
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CMSMediaItem getCMSMediaItem(long id) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            preQuery();
-            try {
-                CMSMediaItem o = getEntityManager().getReference(CMSMediaItem.class, id);
-                getEntityManager().refresh(o);
-                return o;
-            } catch (EntityNotFoundException e) {
-                return null;
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean addCMSMediaItem(CMSMediaItem item) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            preQuery();
-            EntityManager em = factory.createEntityManager();
-            try {
-                em.getTransaction().begin();
-                em.persist(item);
-                em.getTransaction().commit();
-                return true;
-            } finally {
-                em.close();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean updateCMSMediaItem(CMSMediaItem item) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            preQuery();
-            EntityManager em = factory.createEntityManager();
-            try {
-                em.getTransaction().begin();
-                em.merge(item);
-                em.getTransaction().commit();
-                return updateFromDatabase(item.getId(), item.getClass());
-            } finally {
-                em.close();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean deleteCMSMediaItem(CMSMediaItem item) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            preQuery();
-            EntityManager em = factory.createEntityManager();
-            try {
-                em.getTransaction().begin();
-                CMSMediaItem o = em.getReference(CMSMediaItem.class, item.getId());
-                em.remove(o);
-                em.getTransaction().commit();
-                return true;
-            } catch (RollbackException e) {
-                return false;
-            } finally {
-                em.close();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<CMSPage> getMediaOwners(CMSMediaItem item) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            List<CMSPage> ownerList = new ArrayList<>();
-            try {
-                preQuery();
-                Query q = getEntityManager().createQuery("SELECT o FROM CMSContentItem o WHERE o.mediaItem = :media");
-                q.setParameter("media", item);
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                for (Object o : q.getResultList()) {
-                    if (o instanceof CMSContentItem) {
-                        try {
-                            CMSPage page = ((CMSContentItem) o).getOwnerPageLanguageVersion().getOwnerPage();
-                            if (!ownerList.contains(page)) {
-                                ownerList.add(page);
-                            }
-                        } catch (NullPointerException e) {
-                            //
-                        }
-                    }
-                }
-                return ownerList;
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
-                return new ArrayList<>();
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCMSPagesByCategory(io.goobi.viewer.model.cms.Category)
-     */
-    /** {@inheritDoc} */
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<CMSMediaItem> getCMSMediaItemsByCategory(CMSCategory category) throws DAOException {
-        preQuery();
-        Query q = getEntityManager()
-                .createQuery("SELECT DISTINCT media FROM CMSMediaItem media JOIN media.categories category WHERE category.id = :id");
-        q.setParameter("id", category.getId());
-        List<CMSMediaItem> pageList = q.getResultList();
-        return pageList;
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSNavigationItem> getAllTopCMSNavigationItems() throws DAOException {
-        preQuery();
-        synchronized (cmsRequestLock) {
-            try {
-                Query q = getEntityManager().createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
-                q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                q.setFlushMode(FlushModeType.COMMIT);
-                List<CMSNavigationItem> list = q.getResultList();
-                Collections.sort(list);
-                return list;
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
-                return new ArrayList<>();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CMSNavigationItem getCMSNavigationItem(long id) throws DAOException {
-        preQuery();
-        synchronized (cmsRequestLock) {
-            try {
-                CMSNavigationItem o = getEntityManager().find(CMSNavigationItem.class, id);
-                getEntityManager().refresh(o);
-                return o;
-            } catch (EntityNotFoundException e) {
-                return null;
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean addCMSNavigationItem(CMSNavigationItem item) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            preQuery();
-            EntityManager em = factory.createEntityManager();
-            try {
-                em.getTransaction().begin();
-                em.persist(item);
-                em.getTransaction().commit();
-                return true;
-            } finally {
-                em.close();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean updateCMSNavigationItem(CMSNavigationItem item) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            preQuery();
-            EntityManager em = factory.createEntityManager();
-            try {
-                em.getTransaction().begin();
-                em.merge(item);
-                em.getTransaction().commit();
-                return true;
-            } finally {
-                em.close();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean deleteCMSNavigationItem(CMSNavigationItem item) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            preQuery();
-            EntityManager em = factory.createEntityManager();
-            try {
-                em.getTransaction().begin();
-                CMSNavigationItem o = em.getReference(CMSNavigationItem.class, item.getId());
-                em.remove(o);
-                em.getTransaction().commit();
-                return true;
-            } catch (RollbackException e) {
-                return false;
-            } finally {
-                em.close();
-            }
-        }
-    }
-
-    // Transkribus
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<TranskribusJob> getAllTranskribusJobs() throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT o FROM TranskribusJob o");
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getTranskribusJobs(java.lang.String, java.lang.String, io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus)
-     */
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<TranskribusJob> getTranskribusJobs(String pi, String transkribusUserId, JobStatus status) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder(80);
-        sbQuery.append("SELECT o FROM TranskribusJob o");
-        int filterCount = 0;
-        if (pi != null) {
-            sbQuery.append(" WHERE o.pi = :pi");
-            filterCount++;
-        }
-        if (transkribusUserId != null) {
-            if (filterCount == 0) {
-                sbQuery.append(" WHERE ");
-            } else {
-                sbQuery.append(" AND ");
-            }
-            sbQuery.append("o.ownerId = :ownerId");
-            filterCount++;
-        }
-        if (status != null) {
-            if (filterCount == 0) {
-                sbQuery.append(" WHERE ");
-            } else {
-                sbQuery.append(" AND ");
-            }
-            sbQuery.append("o.status = :status");
-            filterCount++;
-        }
-
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        if (pi != null) {
-            q.setParameter("pi", pi);
-        }
-        if (transkribusUserId != null) {
-            q.setParameter("ownerId", transkribusUserId);
-        }
-        if (status != null) {
-            q.setParameter("status", status);
-        }
-        q.setFlushMode(FlushModeType.COMMIT);
-        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean addTranskribusJob(TranskribusJob job) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(job);
-            em.getTransaction().commit();
-            return true;
-        } finally {
-            em.close();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean updateTranskribusJob(TranskribusJob job) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(job);
-            em.getTransaction().commit();
-            return true;
-        } finally {
-            em.close();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean deleteTranskribusJob(TranskribusJob job) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            TranskribusJob o = em.getReference(TranskribusJob.class, job.getId());
-            em.remove(o);
-            em.getTransaction().commit();
-            return true;
-        } catch (RollbackException e) {
-            return false;
-        } finally {
-            em.close();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Campaign> getAllCampaigns() throws DAOException {
-        try {
-            synchronized (crowdsourcingRequestLock) {
-                preQuery();
-                Query q = getEntityManager().createQuery("SELECT o FROM Campaign o");
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                return q.getResultList();
-            }
-        } catch (PersistenceException e) {
-            logger.error(e.toString());
-            return Collections.emptyList();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getCampaignCount(Map<String, String> filters) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Campaign a");
-        Map<String, Object> params = new HashMap<>();
-        Query q = getEntityManager().createQuery(sbQuery.append(createCampaignsFilterQuery(null, filters, params)).toString());
-        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-
-        return (long) q.getSingleResult();
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Campaign> getCampaigns(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
-            throws DAOException {
-        synchronized (crowdsourcingRequestLock) {
-            preQuery();
-            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM Campaign a");
-            StringBuilder order = new StringBuilder();
-            try {
-                Map<String, Object> params = new HashMap<>();
-
-                String filterString = createCampaignsFilterQuery(null, filters, params);
-                if (StringUtils.isNotEmpty(sortField)) {
-                    order.append(" ORDER BY a.").append(sortField);
-                    if (descending) {
-                        order.append(" DESC");
-                    }
-                }
-                sbQuery.append(filterString).append(order);
-
-                logger.trace(sbQuery.toString());
-                Query q = getEntityManager().createQuery(sbQuery.toString());
-                params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-                //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
-                q.setFirstResult(first);
-                q.setMaxResults(pageSize);
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
-                return Collections.emptyList();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Campaign getCampaign(Long id) throws DAOException {
-        synchronized (crowdsourcingRequestLock) {
-            preQuery();
-            try {
-                Campaign o = getEntityManager().getReference(Campaign.class, id);
-                if (o != null) {
-                    //                    getEntityManager().refresh(o);
-                }
-                return o;
-            } catch (EntityNotFoundException e) {
-                return null;
-            }
-        }
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Question getQuestion(Long id) throws DAOException {
-        synchronized (crowdsourcingRequestLock) {
-            preQuery();
-            try {
-                Question o = getEntityManager().getReference(Question.class, id);
-                return o;
-            } catch (EntityNotFoundException e) {
-                return null;
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CampaignRecordStatistic> getCampaignStatisticsForRecord(String pi, CrowdsourcingStatus status) throws DAOException {
-        synchronized (crowdsourcingRequestLock) {
-            preQuery();
-            try {
-                String query = "SELECT a FROM CampaignRecordStatistic a WHERE a.pi = :pi";
-                if (status != null) {
-                    query += " AND a.status = :status";
-                }
-                Query q = getEntityManager().createQuery(query);
-                q.setParameter("pi", pi);
-                if (status != null) {
-                    q.setParameter("status", status);
-                }
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
-                List<CampaignRecordStatistic> list = q.getResultList();
-                return list;
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
-                return Collections.emptyList();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CampaignRecordPageStatistic> getCampaignPageStatisticsForRecord(String pi, CrowdsourcingStatus status) throws DAOException {
-        synchronized (crowdsourcingRequestLock) {
-            preQuery();
-            try {
-                String query = "SELECT a FROM CampaignRecordPageStatistic a WHERE a.pi = :pi";
-                if (status != null) {
-                    query += " AND a.status = :status";
-                }
-                Query q = getEntityManager().createQuery(query);
-                q.setParameter("pi", pi);
-                if (status != null) {
-                    q.setParameter("status", status);
-                }
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
-                List<CampaignRecordPageStatistic> list = q.getResultList();
-                return list;
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
-                return Collections.emptyList();
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean addCampaign(Campaign campaign) throws DAOException {
-        synchronized (crowdsourcingRequestLock) {
-            preQuery();
-            try {
-                getEntityManager().getTransaction().begin();
-                getEntityManager().persist(campaign);
-                getEntityManager().getTransaction().commit();
-                return true;
-            } catch (RollbackException e) {
-                return false;
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean updateCampaign(Campaign campaign) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            try {
-                getEntityManager().getTransaction().begin();
-                Campaign c = getEntityManager().merge(campaign);
-                getEntityManager().getTransaction().commit();
-                //solrQueryResults remains unchanged in managed campaign even after merge. Manually reset results to account for changed solrquery
-                c.resetSolrQueryResults();
-                return true;
-            } catch (RollbackException e) {
-                throw new PersistenceException("Failed to persist campaign " + campaign, e);
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean deleteCampaign(Campaign campaign) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            preQuery();
-            try {
-                getEntityManager().getTransaction().begin();
-                Campaign o = getEntityManager().getReference(Campaign.class, campaign.getId());
-                getEntityManager().remove(o);
-                getEntityManager().getTransaction().commit();
-                return true;
-            } catch (RollbackException e) {
-                return false;
-            }
-        }
-    }
-
-    /**
-     * @throws DAOException
-     * @see io.goobi.viewer.dao.IDAO#deleteCampaignStatisticsForUser(io.goobi.viewer.model.security.user.User)
-     * @should remove user from creators and reviewers lists correctly
-     */
-    @Override
-    public int deleteCampaignStatisticsForUser(User user) throws DAOException {
-        if (user == null) {
-            return 0;
-        }
-
-        EntityManager emLocal = factory.createEntityManager();
-        try {
-            emLocal.getTransaction().begin();
-            int rows = emLocal
-                    .createNativeQuery(
-                            "DELETE FROM cs_campaign_record_statistic_annotators WHERE user_id=?")
-                    .setParameter(1, user.getId())
-                    .executeUpdate();
-            rows += emLocal
-                    .createNativeQuery(
-                            "DELETE FROM cs_campaign_record_page_statistic_annotators WHERE user_id=?")
-                    .setParameter(1, user.getId())
-                    .executeUpdate();
-            rows += emLocal
-                    .createNativeQuery(
-                            "DELETE FROM cs_campaign_record_statistic_reviewers WHERE user_id=?")
-                    .setParameter(1, user.getId())
-                    .executeUpdate();
-            rows += emLocal
-                    .createNativeQuery(
-                            "DELETE FROM cs_campaign_record_page_statistic_reviewers WHERE user_id=?")
-                    .setParameter(1, user.getId())
-                    .executeUpdate();
-            emLocal.getTransaction().commit();
-            updateCampaignsFromDatabase();
-            return rows;
-        } finally {
-            emLocal.close();
-        }
-    }
-
-    /**
-     * @see io.goobi.viewer.dao.IDAO#changeCampaignStatisticContributors(io.goobi.viewer.model.security.user.User,
-     *      io.goobi.viewer.model.security.user.User)
-     * @should replace user in creators and reviewers lists correctly
-     */
-    @Override
-    public int changeCampaignStatisticContributors(User fromUser, User toUser) throws DAOException {
-        if (fromUser == null || toUser == null) {
-            return 0;
-        }
-
-        EntityManager emLocal = factory.createEntityManager();
-        try {
-            emLocal.getTransaction().begin();
-            int rows = emLocal
-                    .createNativeQuery(
-                            "UPDATE cs_campaign_record_statistic_annotators SET user_id=? WHERE user_id=?")
-                    .setParameter(1, toUser.getId())
-                    .setParameter(2, fromUser.getId())
-                    .executeUpdate();
-            rows += emLocal
-                    .createNativeQuery(
-                            "UPDATE cs_campaign_record_page_statistic_annotators SET user_id=? WHERE user_id=?")
-                    .setParameter(1, toUser.getId())
-                    .setParameter(2, fromUser.getId())
-                    .executeUpdate();
-            rows += emLocal
-                    .createNativeQuery(
-                            "UPDATE cs_campaign_record_statistic_reviewers SET user_id=? WHERE user_id=?")
-                    .setParameter(1, toUser.getId())
-                    .setParameter(2, fromUser.getId())
-                    .executeUpdate();
-            rows += emLocal
-                    .createNativeQuery(
-                            "UPDATE cs_campaign_record_page_statistic_reviewers SET user_id=? WHERE user_id=?")
-                    .setParameter(1, toUser.getId())
-                    .setParameter(2, fromUser.getId())
-                    .executeUpdate();
-            emLocal.getTransaction().commit();
-            updateCampaignsFromDatabase();
-            return rows;
-        } finally {
-            emLocal.close();
-        }
-
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#checkAvailability()
-     */
-    @Override
-    public boolean checkAvailability() {
-        try {
-            getRole(1);
-            return true;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-
-        return false;
-    }
-
-    public void clear() {
-        if (getEntityManager() != null) {
-            getEntityManager().clear();
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#shutdown()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void shutdown() {
-        // logger.error("shutdown()");
-        if (getEntityManager() != null && getEntityManager().isOpen()) {
-            getEntityManager().close();
-        }
-        if (factory != null && factory.isOpen()) {
-            factory.close();
-        }
-        //        if (threadLocalEm.get() != null) {
-        //            threadLocalEm.remove();
-        //        }
-
-        // This is MySQL specific, but needed to prevent OOMs when redeploying
-        //        try {
-        //            AbandonedConnectionCleanupThread.shutdown();
-        //        } catch (InterruptedException e) {
-        //            logger.error(e.getMessage(), e);
-        //        }
-    }
-
-    /**
-     * <p>
-     * preQuery.
-     * </p>
-     *
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public void preQuery() throws DAOException {
-        if (getEntityManager() == null) {
-            throw new DAOException("EntityManager is not initialized");
-        }
-        if (!getEntityManager().isOpen()) {
-            // threadLocalEm.set(factory.createEntityManager());
-            emGlobal = factory.createEntityManager();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getUserGroupCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("UserGroup", null, filters);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getRoleCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("Role", null, filters);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getLicenseTypeCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("LicenseType", " WHERE a.core=false", filters);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getCoreLicenseTypeCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("LicenseType", " WHERE a.core=true", filters);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getIpRangeCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("IpRange", null, filters);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getCommentCount(Map<String, String> filters, User owner) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Comment a");
-        Map<String, String> params = new HashMap<>();
-        if (owner != null) {
-            sbQuery.append(" WHERE a.creatorId = :owner");
-        }
-        Query q = getEntityManager().createQuery(sbQuery.append(createFilterQuery(null, filters, params)).toString());
-        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-        if (owner != null) {
-            q.setParameter("owner", owner.getId());
-        }
-
-        return (long) q.getSingleResult();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes,
-            List<String> allowedCategories) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM CMSPage").append(" a");
-        Map<String, String> params = new HashMap<>();
-        sbQuery.append(createFilterQuery2(null, filters, params));
-        try {
-            String rightsFilter = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
-            if (!rightsFilter.isEmpty()) {
-                if (filters.values().stream().anyMatch(v -> StringUtils.isNotBlank(v))) {
-                    sbQuery.append(" AND ");
-                } else {
-                    sbQuery.append(" WHERE ");
-                }
-                sbQuery.append("(").append(createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories)).append(")");
-            }
-        } catch (AccessDeniedException e) {
-            return 0;
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-
-        return (long) q.getSingleResult();
-    }
-
-    /**
-     * Universal method for returning the row count for the given class and filter string.
-     * 
-     * @param className
-     * @param filter Filter query string
-     * @return
-     * @throws DAOException
-     */
-    private long getFilteredRowCount(String className, String filter, Map<String, String> params) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM ").append(className).append(" a").append(" ").append(filter);
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-
-        return (long) q.getSingleResult();
-    }
-
-    /**
-     * Universal method for returning the row count for the given class and filters.
-     * 
-     * @param className
-     * @param staticFilterQuery Optional filter query in case the fuzzy filters aren't sufficient
-     * @param filters
-     * @return
-     * @throws DAOException
-     */
-    private long getRowCount(String className, String staticFilterQuery, Map<String, String> filters) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM ").append(className).append(" a");
-        Map<String, String> params = new HashMap<>();
-        Query q = getEntityManager().createQuery(sbQuery.append(createFilterQuery(staticFilterQuery, filters, params)).toString());
-        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-
-        return (long) q.getSingleResult();
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllStaticPages()
-     */
-    /** {@inheritDoc} */
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<CMSStaticPage> getAllStaticPages() throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT o FROM CMSStaticPage o");
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addStaticPage(io.goobi.viewer.model.cms.StaticPage)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void addStaticPage(CMSStaticPage page) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(page);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateStaticPage(io.goobi.viewer.model.cms.StaticPage)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void updateStaticPage(CMSStaticPage page) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(page);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteStaticPage(io.goobi.viewer.model.cms.StaticPage)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean deleteStaticPage(CMSStaticPage page) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            CMSStaticPage o = em.getReference(CMSStaticPage.class, page.getId());
-            em.remove(o);
-            em.getTransaction().commit();
-            return true;
-        } catch (RollbackException | EntityNotFoundException e) {
-            return false;
-        } finally {
-            em.close();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException, NonUniqueResultException {
-        if (page == null || page.getId() == null) {
-            return Collections.emptyList();
-        }
-
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.cmsPageId = :id");
-        q.setParameter("id", page.getId());
-        return q.getResultList();
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        //        return getSingleResult(q);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getStaticPageForTypeType(io.goobi.viewer.dao.PageType)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.pageName = :name");
-        q.setParameter("name", pageType.getName());
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return getSingleResult(q);
-    }
-
-    /**
-     * Helper method to get the only result of a query. In contrast to {@link javax.persistence.Query#getSingleResult()} this does not throw an
-     * exception if no results are found. Instead, it returns an empty Optional
-     * 
-     * @throws ClassCastException if the first result cannot be cast to the expected type
-     * @throws NonUniqueResultException if the query matches more than one result
-     * @param q the query to perform
-     * @return an Optional containing the query result, or an empty Optional if no results are present
-     */
-    @SuppressWarnings("unchecked")
-    private static <T> Optional<T> getSingleResult(Query q) throws ClassCastException, NonUniqueResultException {
-        List<Object> results = q.getResultList();
-        if (results == null || results.isEmpty()) {
-            return Optional.empty();
-        } else if (results.size() > 1) {
-            throw new NonUniqueResultException("Query found " + results.size() + " results instead of only one");
-        } else {
-            return Optional.ofNullable((T) results.get(0));
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCMSCollections(java.lang.String)
-     */
-    /** {@inheritDoc} */
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<CMSCollection> getCMSCollections(String solrField) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            Query q = getEntityManager().createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field");
-            q.setParameter("field", solrField);
-            return q.getResultList();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addCMSCollection(io.goobi.viewer.model.cms.CMSCollection)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean addCMSCollection(CMSCollection collection) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(collection);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateCMSCollection(io.goobi.viewer.model.cms.CMSCollection)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean updateCMSCollection(CMSCollection collection) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(collection);
-            getEntityManager().getTransaction().commit();
-            // Refresh the object from the DB so that any new licenses etc. have IDs
-            //            if (this.getEntityManager().contains(collection)) {
-            //                this.getEntityManager().refresh(collection);
-            //            }
-            return true;
-        } finally {
-            //            emGlobal.close();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCMSCollection(java.lang.String, java.lang.String)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field AND c.solrFieldValue = :value");
-        q.setParameter("field", solrField);
-        q.setParameter("value", solrFieldValue);
-        return (CMSCollection) getSingleResult(q).orElse(null);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void refreshCMSCollection(CMSCollection collection) throws DAOException {
-        preQuery();
-        this.getEntityManager().refresh(collection);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteCMSCollection(io.goobi.viewer.model.cms.CMSCollection)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean deleteCMSCollection(CMSCollection collection) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            CMSCollection u = em.getReference(CMSCollection.class, collection.getId());
-            em.remove(u);
-            em.getTransaction().commit();
-            return true;
-        } finally {
-            em.close();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCMSPagesByCategory(io.goobi.viewer.model.cms.Category)
-     */
-    /** {@inheritDoc} */
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<CMSPage> getCMSPagesByCategory(CMSCategory category) throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id");
-        q.setParameter("id", category.getId());
-        List<CMSPage> pageList = q.getResultList();
-        return pageList;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.subThemeDiscriminatorValue = :subtheme");
-        q.setParameter("subtheme", subtheme);
-        List<CMSPage> pageList = q.getResultList();
-        return pageList;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCMSPagesForRecord(java.lang.String, io.goobi.viewer.model.cms.Category)
-     */
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSPage> getCMSPagesForRecord(String pi, CMSCategory category) throws DAOException {
-        preQuery();
-        Query q;
-        if (category != null) {
-            q = getEntityManager().createQuery(
-                    "SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id AND page.relatedPI = :pi");
-            q.setParameter("id", category.getId());
-        } else {
-            StringBuilder sbQuery = new StringBuilder(70);
-            sbQuery.append("SELECT o from CMSPage o WHERE o.relatedPI='").append(pi).append("'");
-
-            q = getEntityManager().createQuery("SELECT page FROM CMSPage page WHERE page.relatedPI = :pi");
-        }
-        q.setParameter("pi", pi);
-        List<CMSPage> pageList = q.getResultList();
-        return pageList;
-    }
-
-    /**
-     * <p>
-     * createCMSPageFilter.
-     * </p>
-     *
-     * @param params a {@link java.util.Map} object.
-     * @param pageParameter a {@link java.lang.String} object.
-     * @param allowedTemplateIds a {@link java.util.List} object.
-     * @param allowedSubthemes a {@link java.util.List} object.
-     * @param allowedCategoryIds a {@link java.util.List} object.
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
-     */
-    public static String createCMSPageFilter(Map<String, String> params, String pageParameter, List<String> allowedTemplateIds,
-            List<String> allowedSubthemes, List<String> allowedCategoryIds) throws AccessDeniedException {
-
-        String query = "";
-
-        int index = 0;
-        if (allowedTemplateIds != null && !allowedTemplateIds.isEmpty()) {
-            query += "(";
-            for (String template : allowedTemplateIds) {
-                String templateParameter = "tpl" + ++index;
-                query += (":" + templateParameter + " = " + pageParameter + ".templateId");
-                query += " OR ";
-                params.put(templateParameter, template);
-            }
-            if (query.endsWith(" OR ")) {
-                query = query.substring(0, query.length() - 4);
-            }
-            query += ") AND";
-        } else if (allowedTemplateIds != null) {
-            throw new AccessDeniedException("User may not view pages with any templates");
-        }
-
-        index = 0;
-        if (allowedSubthemes != null && !allowedSubthemes.isEmpty()) {
-            query += " (";
-            for (String subtheme : allowedSubthemes) {
-                String templateParameter = "thm" + ++index;
-                query += (":" + templateParameter + " = " + pageParameter + ".subThemeDiscriminatorValue");
-                query += " OR ";
-                params.put(templateParameter, subtheme);
-            }
-            if (query.endsWith(" OR ")) {
-                query = query.substring(0, query.length() - 4);
-            }
-            query += ") AND";
-        } else if (allowedSubthemes != null) {
-            query += " (" + pageParameter + ".subThemeDiscriminatorValue = \"\") AND";
-        }
-
-        index = 0;
-        if (allowedCategoryIds != null && !allowedCategoryIds.isEmpty()) {
-            query += " (";
-            for (String category : allowedCategoryIds) {
-                String templateParameter = "cat" + ++index;
-                query += (":" + templateParameter + " IN (SELECT c.id FROM " + pageParameter + ".categories c)");
-                query += " OR ";
-                params.put(templateParameter, category);
-            }
-            if (query.endsWith(" OR ")) {
-                query = query.substring(0, query.length() - 4);
-            }
-            query += ")";
-        } else if (allowedCategoryIds != null) {
-            query += " (SELECT COUNT(c) FROM " + pageParameter + ".categories c = 0)";
-        }
-        if (query.endsWith(" AND")) {
-            query = query.substring(0, query.length() - 4);
-        }
-
-        return query.trim();
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSCategory> getAllCategories() throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT c FROM CMSCategory c ORDER BY c.name");
-        q.setFlushMode(FlushModeType.COMMIT);
-        List<CMSCategory> list = q.getResultList();
-        return list;
-    }
-
-    /**
-     * @see io.goobi.viewer.dao.IDAO#getCountPagesUsingCategory(io.goobi.viewer.model.cms.CMSCategory)
-     * @should return correct value
-     */
-    @Override
-    public long getCountPagesUsingCategory(CMSCategory category) throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT COUNT(o) FROM CMSPage o WHERE :category MEMBER OF o.categories");
-        q.setParameter("category", category);
-
-        Object o = q.getResultList().get(0);
-        // MySQL
-        if (o instanceof BigInteger) {
-            return ((BigInteger) q.getResultList().get(0)).longValue();
-        }
-        // H2
-        return (long) q.getResultList().get(0);
-    }
-
-    /**
-     * @see io.goobi.viewer.dao.IDAO#getCountMediaItemsUsingCategory(io.goobi.viewer.model.cms.CMSCategory)
-     * @should return correct value
-     */
-    @Override
-    public long getCountMediaItemsUsingCategory(CMSCategory category) throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT COUNT(o) FROM CMSMediaItem o WHERE :category MEMBER OF o.categories");
-        q.setParameter("category", category);
-
-        Object o = q.getResultList().get(0);
-        // MySQL
-        if (o instanceof BigInteger) {
-            return ((BigInteger) q.getResultList().get(0)).longValue();
-        }
-        // H2
-        return (long) q.getResultList().get(0);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Persist a new {@link CMSCategory} object
-     */
-    @Override
-    public void addCategory(CMSCategory category) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(category);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Update an existing {@link CMSCategory} object in the persistence context
-     */
-    @Override
-    public void updateCategory(CMSCategory category) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(category);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Delete a {@link CMSCategory} object from the persistence context
-     */
-    @Override
-    public boolean deleteCategory(CMSCategory category) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            CMSCategory o = em.getReference(CMSCategory.class, category.getId());
-            em.remove(o);
-            em.getTransaction().commit();
-            return true;
-        } finally {
-            em.close();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Search the persistence context for a {@link CMSCategory} with the given name.
-     */
-    @Override
-    public CMSCategory getCategoryByName(String name) throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT c FROM CMSCategory c WHERE c.name = :name");
-        q.setParameter("name", name);
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        CMSCategory category = (CMSCategory) getSingleResult(q).orElse(null);
-        return category;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Search the persistence context for a {@link CMSCategory} with the given unique id.
-     */
-    @Override
-    public CMSCategory getCategory(Long id) throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT c FROM CMSCategory c WHERE c.id = :id");
-        q.setParameter("id", id);
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        CMSCategory category = (CMSCategory) getSingleResult(q).orElse(null);
-        return category;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Check if the database contains a table of the given name. Used by backward-compatibility routines
-     */
-    @Override
-    public boolean tableExists(String tableName) throws SQLException {
-        EntityTransaction transaction = getEntityManager().getTransaction();
-        transaction.begin();
-        Connection connection = getEntityManager().unwrap(Connection.class);
-        DatabaseMetaData metaData = connection.getMetaData();
-        try (ResultSet tables = metaData.getTables(null, null, tableName, null)) {
-            return tables.next();
-        } finally {
-            transaction.commit();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Check if the database contains a column in a table with the given names. Used by backward-compatibility routines
-     */
-    @Override
-    public boolean columnsExists(String tableName, String columnName) throws SQLException {
-        EntityTransaction transaction = getEntityManager().getTransaction();
-        transaction.begin();
-        Connection connection = getEntityManager().unwrap(Connection.class);
-        DatabaseMetaData metaData = connection.getMetaData();
-        try (ResultSet columns = metaData.getColumns(null, null, tableName, columnName)) {
-            return columns.next();
-        } finally {
-            transaction.commit();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CrowdsourcingAnnotation getAnnotation(Long id) throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT a FROM CrowdsourcingAnnotation a WHERE a.id = :id");
-        q.setParameter("id", id);
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        CrowdsourcingAnnotation annotation = (CrowdsourcingAnnotation) getSingleResult(q).orElse(null);
-        return annotation;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @should return correct rows
-     */
-    @SuppressWarnings({ "unchecked", "unused" })
-    @Override
-    public List<CrowdsourcingAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT a FROM CrowdsourcingAnnotation a");
-        if (!campaign.getQuestions().isEmpty()) {
-            sbQuery.append(" WHERE (");
-            int count = 1;
-            for (Question question : campaign.getQuestions()) {
-                if (count > 1) {
-                    sbQuery.append(" OR ");
-                }
-                sbQuery.append("a.generatorId = :questionId_").append(count);
-                count++;
-            }
-            sbQuery.append(")");
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        int count = 1;
-        for (Question question : campaign.getQuestions()) {
-            q.setParameter("questionId_" + count, question.getId());
-            count++;
-        }
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Get all annotations associated with the work of the given pi
-     * 
-     * @should return correct rows
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CrowdsourcingAnnotation> getAnnotationsForWork(String pi) throws DAOException {
-        preQuery();
-        String query = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
-        Query q = getEntityManager().createQuery(query);
-        q.setParameter("pi", pi);
-
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean descending) throws DAOException {
-        preQuery();
-        String query = "SELECT a FROM CrowdsourcingAnnotation a";
-
-        if (StringUtils.isNotEmpty(sortField)) {
-            StringBuilder sbOrder = new StringBuilder();
-            sbOrder.append(" ORDER BY a.").append(sortField);
-            if (descending) {
-                sbOrder.append(" DESC");
-            }
-            query += sbOrder.toString();
-        }
-
-        Query q = getEntityManager().createQuery(query);
-
-        return q.getResultList();
-    }
-
-    @Override
-    public long getTotalAnnotationCount() throws DAOException {
-        preQuery();
-        String query = "SELECT COUNT(a) FROM CrowdsourcingAnnotation a";
-        Query q = getEntityManager().createQuery(query);
-
-        Object o = q.getResultList().get(0);
-        // MySQL
-        if (o instanceof BigInteger) {
-            return ((BigInteger) q.getResultList().get(0)).longValue();
-        }
-        // H2
-        return (long) q.getResultList().get(0);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllAnnotationsByMotivation(java.lang.String)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String motivation) throws DAOException {
-        preQuery();
-        String query = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.motivation = :motivation";
-        Query q = getEntityManager().createQuery(query);
-        q.setParameter("motivation", motivation);
-
-        return q.getResultList();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getAnnotationCountForWork(String pi) throws DAOException {
-        preQuery();
-        String query = "SELECT COUNT(a) FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
-        Query q = getEntityManager().createQuery(query);
-        q.setParameter("pi", pi);
-
-        Object o = q.getResultList().get(0);
-        // MySQL
-        if (o instanceof BigInteger) {
-            return ((BigInteger) q.getResultList().get(0)).longValue();
-        }
-        // H2
-        return (long) q.getResultList().get(0);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException {
-        return getAnnotationsForTarget(pi, page, null);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page, String motivation) throws DAOException {
-
-        preQuery();
-        String query = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
-        if (page != null) {
-            query += " AND a.targetPageOrder = :page";
-        } else {
-            query += " AND a.targetPageOrder IS NULL";
-        }
-        if (StringUtils.isNotBlank(motivation)) {
-            query += " AND a.motivation =  + :motivation";
-        }
-        Query q = getEntityManager().createQuery(query);
-        q.setParameter("pi", pi);
-        if (page != null) {
-            q.setParameter("page", page);
-        }
-        if (StringUtils.isNotBlank(motivation)) {
-            q.setParameter("motivation", motivation);
-        }
-
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getAnnotationCountForTarget(String pi, Integer page) throws DAOException {
-        preQuery();
-        String query = "SELECT COUNT(a) FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
-        if (page != null) {
-            query += " AND a.targetPageOrder = :page";
-        } else {
-            query += " AND a.targetPageOrder IS NULL";
-        }
-        Query q = getEntityManager().createQuery(query);
-        q.setParameter("pi", pi);
-        if (page != null) {
-            q.setParameter("page", page);
-        }
-
-        Object o = q.getResultList().get(0);
-        // MySQL
-        if (o instanceof BigInteger) {
-            return ((BigInteger) q.getResultList().get(0)).longValue();
-        }
-        // H2
-        return (long) q.getResultList().get(0);
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @should return correct rows
-     */
-    @SuppressWarnings({ "unchecked", "unused" })
-    @Override
-    public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi");
-        if (!campaign.getQuestions().isEmpty()) {
-            sbQuery.append(" AND (");
-            int count = 1;
-            for (Question question : campaign.getQuestions()) {
-                if (count > 1) {
-                    sbQuery.append(" OR ");
-                }
-                sbQuery.append("a.generatorId = :questionId_").append(count);
-                count++;
-            }
-            sbQuery.append(")");
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        if (!campaign.getQuestions().isEmpty()) {
-            int count = 1;
-            for (Question question : campaign.getQuestions()) {
-                q.setParameter("questionId_" + count, question.getId());
-                count++;
-            }
-
-        }
-        q.setParameter("pi", pi);
-        //        for (Question question : campaign.getQuestions()) {
-        //
-        //        }
-
-        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @should return correct rows
-     */
-    @SuppressWarnings({ "unchecked", "unused" })
-    @Override
-    public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi");
-        if (page != null) {
-            sbQuery.append(" AND a.targetPageOrder = :page");
-        } else {
-            sbQuery.append(" AND a.targetPageOrder IS NULL");
-        }
-        if (!campaign.getQuestions().isEmpty()) {
-            sbQuery.append(" AND (");
-            int count = 1;
-            for (Question question : campaign.getQuestions()) {
-                if (count > 1) {
-                    sbQuery.append(" OR ");
-                }
-                sbQuery.append(" a.generatorId = :questionId_").append(count);
-                count++;
-            }
-            sbQuery.append(" )");
-        }
-        Query q = getEntityManager().createQuery(sbQuery.toString());
-        int count = 1;
-        for (Question question : campaign.getQuestions()) {
-            q.setParameter("questionId_" + count, question.getId());
-            count++;
-        }
-        q.setParameter("pi", pi);
-        if (page != null) {
-            q.setParameter("page", page);
-        }
-
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
-    }
-
-    /**
-     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForUser(java.lang.Long)
-     * @should return correct rows
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CrowdsourcingAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending)
-            throws DAOException {
-        if (userId == null) {
-            return Collections.emptyList();
-        }
-
-        preQuery();
-        String queryString = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
-        if (StringUtils.isNotEmpty(sortField)) {
-            StringBuilder sbOrder = new StringBuilder();
-            sbOrder.append(" ORDER BY a.").append(sortField);
-            if (descending) {
-                sbOrder.append(" DESC");
-            }
-            queryString += sbOrder.toString();
-        }
-
-        Query query = getEntityManager().createQuery(queryString).setParameter("userId", userId);
-        if (maxResults != null) {
-            query.setMaxResults(maxResults);
-        }
-        return query.getResultList();
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @should return correct rows
-     * @should filter by campaign name correctly
-     */
-    @Override
-    public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
-            Map<String, String> filters) throws DAOException {
-        Map<String, Object> params = new HashMap<>();
-        String filterString = createAnnotationsFilterQuery(null, filters, params);
-        return getAnnotations(first, pageSize, sortField, descending, filterString, params);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CrowdsourcingAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
-            String filterString, Map<String, Object> params) throws DAOException {
-        params = params == null ? new HashMap<>() : params;
-        synchronized (crowdsourcingRequestLock) {
-            preQuery();
-            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CrowdsourcingAnnotation a");
-            StringBuilder order = new StringBuilder();
-            try {
-                if (StringUtils.isNotEmpty(sortField)) {
-                    order.append(" ORDER BY a.").append(sortField);
-                    if (descending) {
-                        order.append(" DESC");
-                    }
-                }
-                sbQuery.append(filterString).append(order);
-
-                logger.trace(sbQuery.toString());
-                Query q = getEntityManager().createQuery(sbQuery.toString());
-                params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-                //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
-                q.setFirstResult(first);
-                q.setMaxResults(pageSize);
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
-                return Collections.emptyList();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getAnnotationCount(Map<String, String> filters) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM CrowdsourcingAnnotation a");
-        Map<String, Object> params = new HashMap<>();
-        Query q = getEntityManager().createQuery(sbQuery.append(createAnnotationsFilterQuery(null, filters, params)).toString());
-        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-
-        return (long) q.getSingleResult();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean addAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
-        if (getAnnotation(annotation.getId()) != null) {
-            return false;
-        }
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(annotation);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateAnnotation(io.goobi.viewer.model.annotation.CrowdsourcingAnnotation)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean updateAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(annotation);
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteAnnotation(io.goobi.viewer.model.annotation.CrowdsourcingAnnotation)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean deleteAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            CrowdsourcingAnnotation o = getEntityManager().getReference(CrowdsourcingAnnotation.class, annotation.getId());
-            getEntityManager().remove(o);
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getGeoMap(java.lang.Long)
-     */
-    @Override
-    public GeoMap getGeoMap(Long mapId) throws DAOException {
-        if (mapId == null) {
-            return null;
-        }
-        preQuery();
-        try {
-            GeoMap o = getEntityManager().find(GeoMap.class, mapId);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
-            return o;
-        } catch (EntityNotFoundException e) {
-            return null;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllGeoMaps()
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<GeoMap> getAllGeoMaps() throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT u FROM GeoMap u");
-        q.setFlushMode(FlushModeType.COMMIT);
-        List<GeoMap> list = q.getResultList();
-        list.forEach(map -> {
-            updateFromDatabase(map.getId(), GeoMap.class);
-        });
-        return list;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addGeoMap(io.goobi.viewer.model.maps.GeoMap)
-     */
-    @Override
-    public boolean addGeoMap(GeoMap map) throws DAOException {
-        if (getGeoMap(map.getId()) != null) {
-            return false;
-        }
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(map);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateGeoMap(io.goobi.viewer.model.maps.GeoMap)
-     */
-    @Override
-    public boolean updateGeoMap(GeoMap map) throws DAOException {
-        if (map.getId() == null) {
-            return false;
-        }
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(map);
-            em.getTransaction().commit();
-            //Update the map in the persistent entity manager, removing the feature cache string
-            GeoMap o = this.getEntityManager().getReference(GeoMap.class, map.getId());
-            o.updateFeatures();
-            this.getEntityManager().refresh(o);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        } finally {
-            em.close();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteGeoMap(io.goobi.viewer.model.maps.GeoMap)
-     */
-    @Override
-    public boolean deleteGeoMap(GeoMap map) throws DAOException {
-        if (map.getId() == null) {
-            return false;
-        }
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            GeoMap o = em.getReference(GeoMap.class, map.getId());
-            em.remove(o);
-            em.getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        } finally {
-            em.close();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getPagesUsingMap(io.goobi.viewer.model.maps.GeoMap)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException {
-        preQuery();
-
-        Query qItems = getEntityManager().createQuery(
-                "SELECT item FROM CMSContentItem item WHERE item.geoMap = :map");
-        qItems.setParameter("map", map);
-        List<CMSContentItem> itemList = qItems.getResultList();
-
-        Query qWidgets = getEntityManager().createQuery(
-                "SELECT ele FROM CMSSidebarElementAutomatic ele WHERE ele.map = :map");
-        qWidgets.setParameter("map", map);
-        List<CMSSidebarElement> widgetList = qWidgets.getResultList();
-
-        Stream<CMSPage> itemPages = itemList.stream()
-                .map(CMSContentItem::getOwnerPageLanguageVersion)
-                .map(CMSPageLanguageVersion::getOwnerPage);
-
-        Stream<CMSPage> widgetPages = widgetList.stream()
-                .map(CMSSidebarElement::getOwnerPage);
-
-        List<CMSPage> pageList = Stream.concat(itemPages, widgetPages)
-                .distinct()
-                .collect(Collectors.toList());
-        return pageList;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSPage> getPagesUsingMapInSidebar(GeoMap map) throws DAOException {
-        preQuery();
-
-        Query qWidgets = getEntityManager().createQuery(
-                "SELECT ele FROM CMSSidebarElementAutomatic ele WHERE ele.map = :map");
-        qWidgets.setParameter("map", map);
-        List<CMSSidebarElement> widgetList = qWidgets.getResultList();
-
-        List<CMSPage> pageList = widgetList.stream()
-                .map(CMSSidebarElement::getOwnerPage)
-                .distinct()
-                .collect(Collectors.toList());
-        return pageList;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#saveTermsOfUse(io.goobi.viewer.model.security.TermsOfUse)
-     */
-    @Override
-    public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            if (tou.getId() == null) {
-                //create initial tou
-                em.persist(tou);
-            } else {
-                em.merge(tou);
-            }
-            em.getTransaction().commit();
-
-            tou = this.getEntityManager().getReference(TermsOfUse.class, tou.getId());
-            this.getEntityManager().refresh(tou);
-        } finally {
-            em.close();
-        }
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getTermsOfUse()
-     */
-    @Override
-    public TermsOfUse getTermsOfUse() throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT u FROM TermsOfUse u");
-        //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
-        @SuppressWarnings("unchecked")
-        List<TermsOfUse> results = q.getResultList();
-        if (results.isEmpty()) {
-            //No results. Just return a new object which may be saved later
-            return new TermsOfUse();
-        }
-        return results.get(0);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#resetUserAgreementsToTermsOfUse()
-     */
-    @Override
-    public boolean resetUserAgreementsToTermsOfUse() throws DAOException {
-        List<User> users = getAllUsers(true);
-        users.forEach(u -> u.setAgreedToTermsOfUse(false));
-        users.forEach(u -> {
-            try {
-                updateUser(u);
-            } catch (DAOException e) {
-                logger.error("Error resetting user agreement for user " + u, e);
-            }
-        });
-        return true;
-    }
-
-    /**
-     * Implements filtering with java methods because filtering single-table inheritance objects does not work as expected
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSRecordNote> getRecordNotes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
-            throws DAOException {
-        preQuery();
-
-        try {
-            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
-            Query q = getEntityManager().createQuery(sbQuery.toString());
-            q.setFlushMode(FlushModeType.COMMIT);
-            List<CMSRecordNote> notes = q.getResultList();
-            notes = notes.stream()
-                    .filter(n -> filters == null || n.matchesFilter(filters.values().stream().findAny().orElse(null)))
-                    .skip(first)
-                    .limit(pageSize)
-                    .collect(Collectors.toList());
-
-            return notes;
-        } catch (PersistenceException e) {
-            logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
-            return Collections.emptyList();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllRecordNotes()
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSRecordNote> getAllRecordNotes() throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
-        try {
-            logger.trace(sbQuery.toString());
-            Query q = getEntityManager().createQuery(sbQuery.toString());
-            q.setFlushMode(FlushModeType.COMMIT);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-            return q.getResultList();
-        } catch (PersistenceException e) {
-            logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
-            return Collections.emptyList();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getRecordNotesForPi(java.lang.String)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSSingleRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException {
-        preQuery();
-        String query = "SELECT a FROM CMSSingleRecordNote a WHERE a.recordPi = :pi";
-        if (displayedNotesOnly) {
-            query += " AND a.displayNote = :display";
-        }
-        // logger.trace(query);
-        Query q = getEntityManager().createQuery(query.toString());
-        q.setParameter("pi", pi);
-        if (displayedNotesOnly) {
-            q.setParameter("display", true);
-        }
-        q.setFlushMode(FlushModeType.COMMIT);
-        return q.getResultList();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSMultiRecordNote> getAllMultiRecordNotes(boolean displayedNotesOnly) throws DAOException {
-        preQuery();
-        String query = "SELECT a FROM CMSMultiRecordNote a";
-        if (displayedNotesOnly) {
-            query += " WHERE a.displayNote = :display";
-        }
-        // logger.trace(query);
-        Query q = getEntityManager().createQuery(query.toString());
-        if (displayedNotesOnly) {
-            q.setParameter("display", true);
-        }
-        q.setFlushMode(FlushModeType.COMMIT);
-        return q.getResultList();
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getRecordNote(java.lang.Long)
-     */
-    @Override
-    public CMSRecordNote getRecordNote(Long id) throws DAOException {
-        preQuery();
-        try {
-            CMSRecordNote o = getEntityManager().getReference(CMSRecordNote.class, id);
-            if (o != null) {
-                getEntityManager().refresh(o);
-                if (o instanceof CMSMultiRecordNote) {
-                    return new CMSMultiRecordNote(o);
-                }
-                return new CMSSingleRecordNote(o);
-            }
-            return null;
-        } catch (EntityNotFoundException e) {
-            return null;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
-     */
-    @Override
-    public boolean addRecordNote(CMSRecordNote note) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(note);
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
-     */
-    @Override
-    public boolean updateRecordNote(CMSRecordNote note) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(note);
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
-     */
-    @Override
-    public boolean deleteRecordNote(CMSRecordNote note) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            CMSRecordNote o = em.getReference(CMSRecordNote.class, note.getId());
-            em.remove(o);
-            em.getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        } finally {
-            em.close();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllSliders()
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSSlider> getAllSliders() throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSSlider a");
-        try {
-            logger.trace(sbQuery.toString());
-            Query q = getEntityManager().createQuery(sbQuery.toString());
-            q.setFlushMode(FlushModeType.COMMIT);
-            return q.getResultList();
-        } catch (PersistenceException e) {
-            logger.error("Exception \"" + e.toString() + "\" when trying to get CMSSliders. Returning empty list");
-            return Collections.emptyList();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getSlider(java.lang.Long)
-     */
-    @Override
-    public CMSSlider getSlider(Long id) throws DAOException {
-        if (id == null) {
-            return null;
-        }
-        preQuery();
-        try {
-            CMSSlider o = getEntityManager().getReference(CMSSlider.class, id);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
-            return new CMSSlider(o);
-        } catch (EntityNotFoundException e) {
-            return null;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addSlider(io.goobi.viewer.model.cms.CMSSlider)
-     */
-    @Override
-    public boolean addSlider(CMSSlider slider) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(slider);
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateSlider(io.goobi.viewer.model.cms.CMSSlider)
-     */
-    @Override
-    public boolean updateSlider(CMSSlider slider) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(slider);
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteSlider(io.goobi.viewer.model.cms.CMSSlider)
-     */
-    @Override
-    public boolean deleteSlider(CMSSlider slider) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            CMSSlider o = getEntityManager().getReference(CMSSlider.class, slider.getId());
-            getEntityManager().remove(o);
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getPagesUsingSlider(io.goobi.viewer.model.cms.CMSSlider)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException {
-        preQuery();
-
-        Query qItems = getEntityManager().createQuery(
-                "SELECT item FROM CMSContentItem item WHERE item.slider = :slider");
-        qItems.setParameter("slider", slider);
-        List<CMSContentItem> itemList = qItems.getResultList();
-
-        List<CMSPage> pageList = itemList.stream()
-                .map(CMSContentItem::getOwnerPageLanguageVersion)
-                .map(CMSPageLanguageVersion::getOwnerPage)
-                .distinct()
-                .collect(Collectors.toList());
-
-        return pageList;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getConfiguredThemes()
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<ThemeConfiguration> getConfiguredThemes() throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT t FROM ThemeConfiguration t");
-        return q.getResultList();
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getTheme(java.lang.String)
-     */
-    @Override
-    public ThemeConfiguration getTheme(String name) throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT t FROM ThemeConfiguration t WHERE UPPER(t.name) = :name");
-        if (name != null) {
-            q.setParameter("name", name.toUpperCase());
-        }
-        try {
-            ThemeConfiguration t = (ThemeConfiguration) q.getSingleResult();
-            return t;
-        } catch (NoResultException e) {
-            return null;
-        } catch (NonUniqueResultException e) {
-            logger.warn(e.getMessage());
-            return (ThemeConfiguration) q.getResultList().get(0);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addTheme(io.goobi.viewer.model.viewer.themes.Theme)
-     */
-    @Override
-    public boolean addTheme(ThemeConfiguration theme) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(theme);
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateTheme(io.goobi.viewer.model.viewer.themes.Theme)
-     */
-    @Override
-    public boolean updateTheme(ThemeConfiguration theme) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(theme);
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteTheme(io.goobi.viewer.model.viewer.themes.Theme)
-     */
-    @Override
-    public boolean deleteTheme(ThemeConfiguration theme) throws DAOException {
-        preQuery();
-        try {
-            getEntityManager().getTransaction().begin();
-            ThemeConfiguration o = getEntityManager().getReference(ThemeConfiguration.class, theme.getId());
-            getEntityManager().remove(o);
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CustomSidebarWidget> getAllCustomWidgets() throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT t FROM CustomSidebarWidget t");
-        return q.getResultList();
-    }
-
-    @Override
-    public CustomSidebarWidget getCustomWidget(Long id) throws DAOException {
-        if (id == null) {
-            return null;
-        }
-        preQuery();
-        try {
-            CustomSidebarWidget o = getEntityManager().getReference(CustomSidebarWidget.class, id);
-            return CustomSidebarWidget.clone(o);
-        } catch (EntityNotFoundException e) {
-            return null;
-        }
-    }
-
-    @Override
-    public boolean addCustomWidget(CustomSidebarWidget widget) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            try {
-                getEntityManager().getTransaction().begin();
-                getEntityManager().persist(widget);
-                getEntityManager().getTransaction().commit();
-                return true;
-            } catch (IllegalArgumentException e) {
-                logger.error(e.toString(), e);
-                return false;
-            }
-        }
-    }
-
-    @Override
-    public boolean updateCustomWidget(CustomSidebarWidget widget) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            try {
-                getEntityManager().getTransaction().begin();
-                getEntityManager().merge(widget);
-                getEntityManager().getTransaction().commit();
-                return true;
-            } catch (IllegalArgumentException e) {
-                return false;
-            }
-        }
-    }
-
-    @Override
-    public boolean deleteCustomWidget(Long id) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            try {
-                getEntityManager().getTransaction().begin();
-                CustomSidebarWidget o = getEntityManager().getReference(CustomSidebarWidget.class, id);
-                getEntityManager().remove(o);
-                getEntityManager().getTransaction().commit();
-                return true;
-            } catch (IllegalArgumentException e) {
-                return false;
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException {
-        preQuery();
-
-        Query qItems = getEntityManager().createQuery(
-                "SELECT element FROM CMSSidebarElementCustom element WHERE element.widget = :widget");
-        qItems.setParameter("widget", widget);
-        List<CMSSidebarElementCustom> itemList = qItems.getResultList();
-
-        List<CMSPage> pageList = itemList.stream()
-                .map(CMSSidebarElementCustom::getOwnerPage)
-                .distinct()
-                .collect(Collectors.toList());
-
-        return pageList;
-    }
-
-    @Override
-    public CookieBanner getCookieBanner() throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT u FROM CookieBanner u");
-        //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
-        @SuppressWarnings("unchecked")
-        List<CookieBanner> results = q.getResultList();
-        if (results.isEmpty()) {
-            //No results. Just return a new object which may be saved later
-            return new CookieBanner();
-        }
-        return results.get(0);
-    }
-
-    @Override
-    public boolean saveCookieBanner(CookieBanner banner) throws DAOException {
-        preQuery();
-        getEntityManager().getTransaction().begin();
-        if (banner.getId() == null) {
-            //create initial tou
-            getEntityManager().persist(banner);
-        } else {
-            getEntityManager().merge(banner);
-        }
-        getEntityManager().getTransaction().commit();
-        return true;
-    }
-
 }

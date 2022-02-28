@@ -34,15 +34,11 @@ public class UserUpdate implements IModelUpdate {
     @Override
     public boolean update(IDAO dao) throws DAOException, SQLException {
         if (dao.columnsExists("users", "use_gravatar")) {
-            List<Long> userIds = dao.createNativeQuery("SELECT user_id FROM users WHERE use_gravatar=1").getResultList();
+            List<Long> userIds = dao.getNativeQueryResults("SELECT user_id FROM users WHERE use_gravatar=1");
             for (Long userId : userIds) {
-                dao.startTransaction();
-                dao.createNativeQuery("UPDATE users SET avatar_type='GRAVATAR' WHERE users.user_id=" + userId).executeUpdate();
-                dao.commitTransaction();
+                dao.executeUpdate("UPDATE users SET avatar_type='GRAVATAR' WHERE users.user_id=" + userId);
             }
-            dao.startTransaction();
-            dao.createNativeQuery("ALTER TABLE users DROP COLUMN use_gravatar").executeUpdate();
-            dao.commitTransaction();
+            dao.executeUpdate("ALTER TABLE users DROP COLUMN use_gravatar");
         }
         return true;
 

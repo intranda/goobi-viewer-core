@@ -51,12 +51,12 @@ public class CMSMediaUpdate implements IModelUpdate {
     @Override
     public boolean update(IDAO dao) throws DAOException, SQLException {
         logger.debug("Checking database for deprecated cms_media_items.link_url datatype");
-        List<String> types = dao.createNativeQuery("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME = 'cms_media_items' AND COLUMN_NAME = 'link_url' ").getResultList();
+        List<String> types = dao.getNativeQueryResults("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME = 'cms_media_items' AND COLUMN_NAME = 'link_url' ");
         if (types.contains(DATATYPE_OLD)) {
             logger.debug("Updating cms_media_items.link_url datatype from " + DATATYPE_OLD + " to " + DATATYPE_NEW);
 
             List<Object[]> results =
-                    dao.createNativeQuery("SELECT cms_media_item_id, link_url FROM cms_media_items WHERE link_url IS NOT NULL").getResultList();
+                    dao.getNativeQueryResults("SELECT cms_media_item_id, link_url FROM cms_media_items WHERE link_url IS NOT NULL");
             Map<Long, String> linkUrlMap = new HashMap();
             for (Object[] res : results) {
                 if (res[0] instanceof Long && res[1] instanceof byte[]) {
@@ -67,21 +67,14 @@ public class CMSMediaUpdate implements IModelUpdate {
                         logger.warn("Encountered link url in cms_media_items which could not be parsed at cms_media_item_id = {}", res[0]);
                     }
                     //must delete row anyway because otherwise changing type will fail
-                    dao.startTransaction();
-                    dao.createNativeQuery("UPDATE cms_media_items SET link_url = NULL WHERE cms_media_item_id = " + res[0]).executeUpdate();
-                    dao.commitTransaction();
+                    dao.executeUpdate("UPDATE cms_media_items SET link_url = NULL WHERE cms_media_item_id = " + res[0]);
                 }
             }
-            dao.startTransaction();
-            dao.createNativeQuery("ALTER TABLE cms_media_items MODIFY COLUMN link_url " + DATATYPE_NEW).executeUpdate();
-            dao.commitTransaction();
+            dao.executeUpdate("ALTER TABLE cms_media_items MODIFY COLUMN link_url " + DATATYPE_NEW);
 
             for (Long id : linkUrlMap.keySet()) {
                 try {
-                dao.startTransaction();
-                dao.createNativeQuery("UPDATE cms_media_items SET link_url = '" + linkUrlMap.get(id) + "' WHERE cms_media_item_id = " + id)
-                        .executeUpdate();
-                dao.commitTransaction();
+                dao.executeUpdate("UPDATE cms_media_items SET link_url = '" + linkUrlMap.get(id) + "' WHERE cms_media_item_id = " + id);
                 logger.trace("Updated cms_media_items value at cms_media_item_id = '{}' to '{}'", id, linkUrlMap.get(id));
                 } catch(Throwable e) {
                     logger.error("Error attempting to update cms_media_items value at cms_media_item_id = '{}' to '{}'",  id, linkUrlMap.get(id));

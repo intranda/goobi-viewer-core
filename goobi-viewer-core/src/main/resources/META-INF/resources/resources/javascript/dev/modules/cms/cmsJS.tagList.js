@@ -411,11 +411,11 @@ var cmsJS = ( function( cms ) {
         // autocomplete
         $input.autocomplete( {
             source: function( request, response ) {
-                Q( $.ajax( {
+                $.ajax( {
                     url: cms.tagList.autoSuggestUrl + request.term + '/',
                     type: 'GET',
                     datatype: 'json',
-                } ) ).then( function( data ) {
+                } ).then( function( data ) {
                     response( data );
                 } )
             },

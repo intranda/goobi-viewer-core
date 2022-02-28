@@ -221,10 +221,7 @@ public class UserDataBean implements Serializable {
     }
 
     public Long getNumRecordsWithComments(User user) throws DAOException {
-        Query query = DataManager.getInstance()
-                .getDao()
-                .createNativeQuery("SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id=" + user.getId());
-        return (Long) query.getSingleResult();
+        return DataManager.getInstance().getDao().getNumRecordsWithComments(user);
     }
 
     public long getAnnotationCount() throws DAOException {

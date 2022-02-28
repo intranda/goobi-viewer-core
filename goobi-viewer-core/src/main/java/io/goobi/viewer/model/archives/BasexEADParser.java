@@ -147,28 +147,7 @@ public class BasexEADParser {
         }
     }
 
-    /**
-     * 
-     * @param database
-     * @return
-     * @throws IOException
-     * @throws IllegalStateException
-     * @throws HTTPException
-     * @throws JDOMException
-     */
-    public Document retrieveDatabaseDocument(ArchiveResource archive) throws IOException, IllegalStateException, HTTPException, JDOMException {
-        if (archive != null) {
-            String response;
-                String url = UriBuilder.fromPath(basexUrl).path("db").path(archive.getDatabaseName()).path(archive.getResourceName()).build().toString();
-                logger.trace("URL: {}", url);
-                response = NetTools.getWebContentGET(url);
 
-            // get xml root element
-                Document document = openDocument(response);
-                return document;
-        }
-        throw new IllegalStateException("Must provide database name before loading database");
-    }
 
     /**
      * Loads the given database and parses the EAD document.
@@ -182,12 +161,10 @@ public class BasexEADParser {
      * @throws JDOMException
      * @throws ConfigurationException
      */
-    public ArchiveEntry loadDatabase(ArchiveResource database, Document document)
+    public ArchiveEntry loadDatabase(ArchiveResource database)
             throws IllegalStateException, IOException, HTTPException, JDOMException, ConfigurationException {
 
-        if (document == null) {
-            document = retrieveDatabaseDocument(database);
-        }
+        Document document = retrieveDatabaseDocument(database);
 
         // parse ead file
         return parseEadFile(document);
@@ -224,6 +201,29 @@ public class BasexEADParser {
         rootElement.setDisplayChildren(true);
 
         return rootElement;
+    }
+    
+    /**
+     * 
+     * @param database
+     * @return
+     * @throws IOException
+     * @throws IllegalStateException
+     * @throws HTTPException
+     * @throws JDOMException
+     */
+    private Document retrieveDatabaseDocument(ArchiveResource archive) throws IOException, IllegalStateException, HTTPException, JDOMException {
+        if (archive != null) {
+            String response;
+                String url = UriBuilder.fromPath(basexUrl).path("db").path(archive.getDatabaseName()).path(archive.getResourceName()).build().toString();
+                logger.trace("URL: {}", url);
+                response = NetTools.getWebContentGET(url);
+
+            // get xml root element
+                Document document = openDocument(response);
+                return document;
+        }
+        throw new IllegalStateException("Must provide database name before loading database");
     }
 
     /**
