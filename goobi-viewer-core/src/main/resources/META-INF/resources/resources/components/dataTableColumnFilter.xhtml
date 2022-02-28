@@ -1,6 +1,7 @@
-<ui:composition 
+<ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
@@ -27,10 +28,12 @@
                     <div class="input-group-append admin__search-action">
                         <!-- MESSAGE KEY GIVEN -->
                         <ui:fragment rendered="#{cc.attrs.key != 'empty'}">
-                            <h:commandLink id="#{cc.attrs.filter.column}BtnText" styleClass="btn btn--icon btn-filter">
+                            <button
+								id="#{cc.attrs.filter.column}BtnText"
+								jsf:styleClass="btn btn--icon btn-filter">
                                 #{msg[cc.attrs.key]}
                                 <f:ajax execute="@form" render="@form" />
-                            </h:commandLink>
+                            </button>
                         </ui:fragment>
                         <!-- NO MESSAGE KEY, USE ICON INSTEAD -->
                         <ui:fragment rendered="#{cc.attrs.key == 'empty'}">
