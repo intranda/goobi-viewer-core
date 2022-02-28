@@ -91,6 +91,9 @@ public class GeoMap {
         MANUAL
     }
 
+    @Transient
+    private final Object lockTranslations = new Object();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "geomap_id")
@@ -271,29 +274,33 @@ public class GeoMap {
     }
 
     public MapTranslation getTitle(String language) {
-        MapTranslation title = translations.stream()
-                .filter(t -> METADATA_TAG_TITLE.equals(t.getTag()))
-                .filter(t -> language.equals(t.getLanguage()))
-                .findFirst()
-                .orElse(null);
-        if (title == null) {
-            title = new MapTranslation(language, METADATA_TAG_TITLE, this);
-            translations.add(title);
+        synchronized (lockTranslations) {
+            MapTranslation title = translations.stream()
+                    .filter(t -> METADATA_TAG_TITLE.equals(t.getTag()))
+                    .filter(t -> language.equals(t.getLanguage()))
+                    .findFirst()
+                    .orElse(null);
+            if (title == null) {
+                title = new MapTranslation(language, METADATA_TAG_TITLE, this);
+                translations.add(title);
+            }
+            return title;
         }
-        return title;
     }
 
     public MapTranslation getDescription(String language) {
-        MapTranslation title = translations.stream()
-                .filter(t -> METADATA_TAG_DESCRIPTION.equals(t.getTag()))
-                .filter(t -> language.equals(t.getLanguage()))
-                .findFirst()
-                .orElse(null);
-        if (title == null) {
-            title = new MapTranslation(language, METADATA_TAG_DESCRIPTION, this);
-            translations.add(title);
+        synchronized (lockTranslations) {
+            MapTranslation title = translations.stream()
+                    .filter(t -> METADATA_TAG_DESCRIPTION.equals(t.getTag()))
+                    .filter(t -> language.equals(t.getLanguage()))
+                    .findFirst()
+                    .orElse(null);
+            if (title == null) {
+                title = new MapTranslation(language, METADATA_TAG_DESCRIPTION, this);
+                translations.add(title);
+            }
+            return title;
         }
-        return title;
     }
 
     /**
@@ -547,17 +554,23 @@ public class GeoMap {
     }
 
     public IMetadataValue getTitles() {
-        Map<String, String> titles = translations.stream().filter(t -> METADATA_TAG_TITLE.equals(t.getTag()))
-        .filter(t -> !t.isEmpty())
-        .collect(Collectors.toMap(MapTranslation::getLanguage, MapTranslation::getValue));
-        return new MultiLanguageMetadataValue(titles);
+        synchronized (lockTranslations) {
+            Map<String, String> titles = translations.stream()
+                    .filter(t -> METADATA_TAG_TITLE.equals(t.getTag()))
+                    .filter(t -> !t.isEmpty())
+                    .collect(Collectors.toMap(MapTranslation::getLanguage, MapTranslation::getValue));
+            return new MultiLanguageMetadataValue(titles);
+        }
     }
-    
+
     public IMetadataValue getDescriptions() {
-        Map<String, String> titles = translations.stream().filter(t -> METADATA_TAG_DESCRIPTION.equals(t.getTag()))
-        .filter(t -> !t.isEmpty())
-        .collect(Collectors.toMap(MapTranslation::getLanguage, MapTranslation::getValue));
-        return new MultiLanguageMetadataValue(titles);
+        synchronized (lockTranslations) {
+            Map<String, String> titles = translations.stream()
+                    .filter(t -> METADATA_TAG_DESCRIPTION.equals(t.getTag()))
+                    .filter(t -> !t.isEmpty())
+                    .collect(Collectors.toMap(MapTranslation::getLanguage, MapTranslation::getValue));
+            return new MultiLanguageMetadataValue(titles);
+        }
     }
 
 }
