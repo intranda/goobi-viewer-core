@@ -1970,7 +1970,7 @@ public class ViewManager implements Serializable {
         String filename;
         try {
             filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | NullPointerException e) {
             return "";
         }
         String pi = getPi();
