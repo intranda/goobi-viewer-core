@@ -127,7 +127,7 @@ public class PDFDownloadJob extends DownloadJob {
     /** {@inheritDoc} */
     @Override
     public long getSize() {
-        File downloadFile = getDownloadFileStatic(identifier, type, getFileExtension());
+        File downloadFile = DownloadJobTools.getDownloadFileStatic(identifier, type, getFileExtension());
         if (downloadFile.isFile()) {
             return downloadFile.length();
         }

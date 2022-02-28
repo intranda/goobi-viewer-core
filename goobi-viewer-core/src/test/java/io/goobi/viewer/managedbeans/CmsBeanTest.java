@@ -16,6 +16,7 @@
 package io.goobi.viewer.managedbeans;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -110,21 +111,21 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @Test
     public void testSaveCMSPages() throws DAOException {
-        Long pageId = 24l;
         CmsBean bean = new CmsBean();
 
         CMSPage page = new CMSPage();
-        page.setId(pageId);
+        page.setTemplateId("new");
+        assertTrue(DataManager.getInstance().getDao().addCMSPage(page));
+   
         List<CMSStaticPage> staticPages = bean.getStaticPages();
         CMSStaticPage staticPage = staticPages.get(0);
-
         //    	Assert.assertNull(staticPage.getCmsPage());
         staticPage.setCmsPage(page);
         bean.saveStaticPages();
 
         staticPages = bean.getStaticPages();
         staticPage = staticPages.get(0);
-        Assert.assertEquals(pageId, staticPage.getCmsPageOptional().map(p -> p.getId()).orElse(-1l));
+        Assert.assertEquals(page.getId(), staticPage.getCmsPageOptional().map(p -> p.getId()).orElse(-1l));
 
         staticPage.setCmsPage(null);
         bean.saveStaticPages();

@@ -52,6 +52,7 @@ import javax.persistence.Transient;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1446,6 +1447,19 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         }
 
         return new ArrayList<>();
+    }
+    
+    public String getIgnoreCollectionsAsJsonArray() {
+        if (StringUtils.isNotBlank(ignoreCollections)) {
+            String[] collections = ignoreCollections.split(",");
+            JSONArray array = new JSONArray();
+            for (String string : collections) {
+                array.put(string);
+            }
+            return array.toString();
+        } else {
+            return "[]";
+        }
     }
 
     /**

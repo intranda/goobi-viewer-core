@@ -50,32 +50,25 @@ public class CMSContentItemUpdate implements IModelUpdate {
     @Override
     public boolean update(IDAO dao) throws DAOException, SQLException {
         logger.debug("Checking database for deprecated cms_content_items.ignore_collections datatype");
-        List<String> types = dao.createNativeQuery("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME = 'cms_content_items' AND COLUMN_NAME = 'ignore_collections' ").getResultList();
+        List<String> types = dao.getNativeQueryResults("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME = 'cms_content_items' AND COLUMN_NAME = 'ignore_collections' ");
         if (types.contains(DATATYPE_OLD)) {
             logger.debug("Updating cms_content_items.ignore_collections datatype from " + DATATYPE_OLD + " to " + DATATYPE_NEW);
 
             //Delete existing data and store in temporary map
             List<Object[]> results =
-                    dao.createNativeQuery("SELECT cms_content_item_id, ignore_collections FROM cms_content_items WHERE ignore_collections IS NOT NULL").getResultList();
+                    dao.getNativeQueryResults("SELECT cms_content_item_id, ignore_collections FROM cms_content_items WHERE ignore_collections IS NOT NULL");
             Map<Long, String> valueMap = new HashMap();
             for (Object[] res : results) {
                 if (res[0] instanceof Long && res[1] instanceof String) {
                     valueMap.put((Long) res[0], (String) res[1]);
-                    dao.startTransaction();
-                    dao.createNativeQuery("UPDATE cms_content_items SET ignore_collections = NULL WHERE cms_content_item_id = " + res[0]).executeUpdate();
-                    dao.commitTransaction();
+                    dao.executeUpdate("UPDATE cms_content_items SET ignore_collections = NULL WHERE cms_content_item_id = " + res[0]);
                 }
             }
-            dao.startTransaction();
-            dao.createNativeQuery("ALTER TABLE cms_content_items MODIFY COLUMN ignore_collections " + DATATYPE_NEW).executeUpdate();
-            dao.commitTransaction();
+            dao.executeUpdate("ALTER TABLE cms_content_items MODIFY COLUMN ignore_collections " + DATATYPE_NEW);
 
             for (Long id : valueMap.keySet()) {
                 try {
-                dao.startTransaction();
-                dao.createNativeQuery("UPDATE cms_content_items SET ignore_collections = '" + valueMap.get(id) + "' WHERE cms_content_item_id = " + id)
-                        .executeUpdate();
-                dao.commitTransaction();
+                dao.executeUpdate("UPDATE cms_content_items SET ignore_collections = '" + valueMap.get(id) + "' WHERE cms_content_item_id = " + id);
                 logger.trace("Updated ignore_collections value at cms_content_item_id = '{}' to '{}'", id, valueMap.get(id));
                 } catch(Throwable e) {
                     logger.error("Error attempting to update cms_content_items value at cms_content_item_id = '{}' to '{}'",  id, valueMap.get(id));

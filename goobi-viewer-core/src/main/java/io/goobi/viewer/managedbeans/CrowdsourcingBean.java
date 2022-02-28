@@ -596,7 +596,7 @@ public class CrowdsourcingBean implements Serializable {
      * @param targetCampaign the targetCampaign to set
      */
     public void setTargetCampaign(Campaign targetCampaign) {
-        if (this.targetCampaign != targetCampaign) {
+        if (this.targetCampaign != null &&  !this.targetCampaign.equals(targetCampaign)) {
             resetTarget();
         }
         this.targetCampaign = targetCampaign;

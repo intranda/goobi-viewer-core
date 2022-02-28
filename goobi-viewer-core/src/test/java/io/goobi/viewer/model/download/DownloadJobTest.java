@@ -17,7 +17,6 @@ package io.goobi.viewer.model.download;
 
 import static org.junit.Assert.assertEquals;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +30,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -43,26 +40,6 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-    }
-
-    /**
-     * @see DownloadJob#cleanupExpiredDownloads()
-     * @verifies delete expired jobs correctly
-     */
-    @Test
-    public void cleanupExpiredDownloads_shouldDeleteExpiredJobsCorrectly() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
-
-        DownloadJob job = new PDFDownloadJob("PI_3", null, LocalDateTime.now(), 3000000);
-        Assert.assertTrue(DataManager.getInstance().getDao().addDownloadJob(job));
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllDownloadJobs().size());
-        Long id = job.getId();
-        Assert.assertNotNull(id);
-
-        // The two jobs in the static DB should be removed while the new one should remain
-        Assert.assertEquals(2, DownloadJob.cleanupExpiredDownloads());
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllDownloadJobs().size());
-        Assert.assertNotNull(DataManager.getInstance().getDao().getDownloadJob(id));
     }
 
     /**

@@ -83,7 +83,7 @@ public class CollectionsResource {
             @Parameter(description="Name of the collection. Must be a value of the SOLR field the collection is based on")@PathParam("collection")String collectionName
             )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
-
+ 
         Collection3 collection = new CollectionBuilder(urls).build(this.solrField, collectionName);
         
         return collection;

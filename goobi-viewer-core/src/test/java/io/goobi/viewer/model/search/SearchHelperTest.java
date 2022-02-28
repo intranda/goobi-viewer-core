@@ -577,6 +577,43 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies remove plus characters
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldRemovePlusCharacters() throws Exception {
+        Map<String, Set<String>> result =
+                SearchHelper.extractSearchTermsFromQuery("+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +ACCESSCONDITION:\"foo\"", null);
+        {
+            Set<String> terms = result.get(SolrConstants.DOCTYPE);
+            Assert.assertNotNull(terms);
+            Assert.assertEquals(1, terms.size());
+            Assert.assertTrue(terms.contains("UGC"));
+        }
+        {
+            Set<String> terms = result.get(SearchHelper._TITLE_TERMS);
+            Assert.assertNotNull(terms);
+            Assert.assertEquals(1, terms.size());
+            Assert.assertTrue(terms.contains("\"foo\""));
+        }
+    }
+    
+
+    /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies remove range values
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldRemoveRangeValues() throws Exception {
+        Map<String, Set<String>> result =
+                SearchHelper.extractSearchTermsFromQuery("+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +MD_YEARPUBLISH:[2020 TO 2022]", null);
+        {
+            Set<String> terms = result.get("MD_YEARPUBLISH");
+            Assert.assertNull(terms);
+        }
+    }
+
+    /**
      * @see SearchHelper#generateCollectionBlacklistFilterSuffix()
      * @verifies construct suffix correctly
      */
@@ -1422,7 +1459,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getQueryForAccessCondition_shouldBuildEscapedQueryCorrectly() throws Exception {
-        Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX +
+        Assert.assertEquals(
                 "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo" + StringTools.SLASH_REPLACEMENT + "bar\"",
                 SearchHelper.getQueryForAccessCondition("foo/bar", true));
     }
@@ -1433,8 +1470,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getQueryForAccessCondition_shouldBuildNotEscapedQueryCorrectly() throws Exception {
-        Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX +
-                "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo/bar\"",
+        Assert.assertEquals("+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo/bar\"",
                 SearchHelper.getQueryForAccessCondition("foo/bar", false));
     }
 

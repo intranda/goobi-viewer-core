@@ -23,9 +23,7 @@ public class CookieBannerTest extends AbstractDatabaseEnabledTest {
 
         DataManager.getInstance().getDao().saveCookieBanner(banner);
         CookieBanner loaded = DataManager.getInstance().getDao().getCookieBanner();
-        
-        assertTrue(banner == loaded);
-        
+                
         CookieBanner copy = new CookieBanner(loaded);
         
         assertEquals(loaded.getId(), copy.getId());

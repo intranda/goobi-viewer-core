@@ -352,6 +352,45 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(new Dimension(1000 * 600 / 2000, 600), thumbOption.getBoxSizeInPixel());
 
     }
+    
+    @Test
+    public void test_setCurrentImageOrderString() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException, DAOException, ViewerConfigurationException {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
+        {
+            viewManager.setCurrentImageOrderString(null);
+            assertEquals(1,viewManager.getCurrentImageOrder());
+        }
+        {
+            viewManager.setCurrentImageOrderString("");
+            assertEquals(1,viewManager.getCurrentImageOrder());
+        }
+        {
+            viewManager.setCurrentImageOrderString("\"\"");
+            assertEquals(1,viewManager.getCurrentImageOrder());
+        }
+        {
+            viewManager.setCurrentImageOrderString("fgsdfgdf");
+            assertEquals(1,viewManager.getCurrentImageOrder());
+        }
+        {
+            viewManager.setCurrentImageOrderString("12");
+            assertEquals(12,viewManager.getCurrentImageOrder());
+        }
+        {
+            viewManager.setCurrentImageOrderString("5-8");
+            assertEquals(5,viewManager.getCurrentImageOrder());
+        }
+        {
+            viewManager.setCurrentImageOrderString("235674");
+            assertEquals(viewManager.getPageLoader().getLastPageOrder(),viewManager.getCurrentImageOrder());
+        }
+        {
+            viewManager.setCurrentImageOrderString("-8");
+            assertEquals(viewManager.getPageLoader().getFirstPageOrder(),viewManager.getCurrentImageOrder());
+        }
+    }
 
     private static ViewManager createViewManager(String pi, String docstructType, String pageFilename)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
@@ -368,4 +407,5 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
         return new ViewManager(se, pageLoader, se.getLuceneId(), null, null, new ImageDeliveryBean());
     }
+
 }

@@ -138,17 +138,18 @@
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').addClass('in-progress');
             
             for (i = 0; i < this.files.length; i++) {
-                uploads.push(Q(this.uploadFile(i)));
+                uploads.push(this.uploadFile(i));
             }
             
-            return Q.allSettled(uploads).then(function(results) {
+            return Promise.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
-                     if (result.state === "fulfilled") {
+                     
+                     if (result.status === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
                      } else {
-                         var responseText = result.reason.responseText ? result.reason.responseText : result.reason;
+                         var responseText = result.reason.message ? result.reason.message : result.reason;
                          errorMsg += (responseText + "</br>");
                      }
                  }.bind(this));
@@ -221,7 +222,7 @@
         uploadFile(i) {
             if (this.files.length <= i) {
                 new Modal(this.refs.doneModal).show();
-                return;
+                return new Promise.resolve();
             }
     
             var displayFile = this.displayFiles[i];
