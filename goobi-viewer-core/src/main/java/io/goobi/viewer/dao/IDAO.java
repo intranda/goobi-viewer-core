@@ -21,9 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.persistence.Query;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceException;
 
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.administration.legal.CookieBanner;
+import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentView;
@@ -52,7 +57,6 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.TermsOfUse;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -77,8 +81,9 @@ public interface IDAO {
      * @param tableName a {@link java.lang.String} object.
      * @return a boolean.
      * @throws java.sql.SQLException if any.
+     * @throws DAOException
      */
-    boolean tableExists(String tableName) throws SQLException;
+    boolean tableExists(String tableName) throws DAOException, SQLException;
 
     /**
      * <p>
@@ -90,41 +95,7 @@ public interface IDAO {
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
-    boolean columnsExists(String tableName, String columnName) throws SQLException;
-
-    /**
-     * <p>
-     * startTransaction.
-     * </p>
-     */
-    void startTransaction();
-
-    /**
-     * <p>
-     * commitTransaction.
-     * </p>
-     */
-    void commitTransaction();
-
-    /**
-     * <p>
-     * createNativeQuery.
-     * </p>
-     *
-     * @param string a {@link java.lang.String} object.
-     * @return a {@link javax.persistence.Query} object.
-     */
-    Query createNativeQuery(String string);
-
-    /**
-     * <p>
-     * createQuery.
-     * </p>
-     *
-     * @param string a {@link java.lang.String} object.
-     * @return a {@link javax.persistence.Query} object.
-     */
-    Query createQuery(String string);
+    boolean columnsExists(String tableName, String columnName) throws DAOException, SQLException;
 
     // User
 
@@ -1192,6 +1163,17 @@ public interface IDAO {
 
     /**
      * <p>
+     * getDownloadJobsForPi.
+     * </p>
+     * 
+     * @param pi Record identifier
+     * @return List of {@link DownloadJob}s for given record identfier
+     * @throws DAOException
+     */
+    public List<DownloadJob> getDownloadJobsForPi(String pi) throws DAOException;
+
+    /**
+     * <p>
      * getDownloadJob.
      * </p>
      *
@@ -1617,9 +1599,10 @@ public interface IDAO {
      * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
+     * @return
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void addStaticPage(CMSStaticPage page) throws DAOException;
+    public boolean addStaticPage(CMSStaticPage page) throws DAOException;
 
     /**
      * <p>
@@ -1627,9 +1610,10 @@ public interface IDAO {
      * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
+     * @return
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void updateStaticPage(CMSStaticPage page) throws DAOException;
+    public boolean updateStaticPage(CMSStaticPage page) throws DAOException;
 
     /**
      * <p>
@@ -1696,9 +1680,10 @@ public interface IDAO {
      * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @return
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void addCategory(CMSCategory category) throws DAOException;
+    public boolean addCategory(CMSCategory category) throws DAOException;
 
     /**
      * <p>
@@ -1706,9 +1691,10 @@ public interface IDAO {
      * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @return
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void updateCategory(CMSCategory category) throws DAOException;
+    public boolean updateCategory(CMSCategory category) throws DAOException;
 
     /**
      * <p>
@@ -2191,14 +2177,6 @@ public interface IDAO {
     public boolean deleteAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
 
     /**
-     * Update the given collection from the database
-     *
-     * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    void refreshCMSCollection(CMSCollection collection) throws DAOException;
-
-    /**
      * Get the {@link GeoMap} of the given mapId
      * 
      * @param mapId
@@ -2342,7 +2320,7 @@ public interface IDAO {
     public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException;
 
     public TermsOfUse getTermsOfUse() throws DAOException;
-    
+
     public boolean resetUserAgreementsToTermsOfUse() throws DAOException;
 
     public List<CMSSlider> getAllSliders() throws DAOException;
@@ -2411,5 +2389,79 @@ public interface IDAO {
 
     public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException;
 
+    public CookieBanner getCookieBanner() throws DAOException;
+
+    public boolean saveCookieBanner(CookieBanner banner) throws DAOException;
+
+    public Long getNumRecordsWithComments(User user) throws DAOException;
+
+    public List getNativeQueryResults(String query) throws DAOException;
+
+    public int executeUpdate(String string) throws DAOException;
+
+    /**
+     * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
+     * 
+     * @return the EntityManagerFactory
+     */
+    EntityManagerFactory getFactory();
+
+    /**
+     * Get an EntityManager for a query or transaction. Must always be followed by {@link #close(EntityManager) close(EntityManager) Method} after the
+     * query/transaction
+     * 
+     * @return a new EntityManager
+     */
+    EntityManager getEntityManager();
+
+    /**
+     * Either close the given EntityManager or do some other post query/transaction handling for the given EntityManager. Must be called after each
+     * query/transaction.
+     * 
+     * @param EntityManager em
+     * @throws DAOException
+     */
+    void close(EntityManager em) throws DAOException;
+
+    /**
+     * Call {@link EntityManager#getTransaction() getTransaction()} on the given EntityManager and then {@link EntityTransaction#begin() begin()} on
+     * the transaction
+     *
+     * @return the transaction gotten from the entity manager
+     */
+    EntityTransaction startTransaction(EntityManager em);
+
+    /**
+     * Call {@link EntityTransaction#commit()} on the given transaction
+     * 
+     * @param EntityTransaction et
+     * @throws PersistenceException
+     */
+    void commitTransaction(EntityTransaction et) throws PersistenceException;
+
+    /**
+     * Call {@link EntityTransaction#commit()} on the current transaction of the given EntityManager
+     * 
+     * @param EntityManager em
+     * @throws PersistenceException
+     */
+    void commitTransaction(EntityManager em) throws PersistenceException;
+
+    /**
+     * Handling of exceptions occured during {@link #commitTransaction(EntityTransaction)}. Usually calls {@link EntityTransaction#rollback()}
+     * 
+     * @param EntityTransaction et
+     * @throws PersistenceException
+     */
+    void handleException(EntityTransaction et) throws PersistenceException;
+
+    /**
+     * Handling of exceptions occured during {@link #commitTransaction(EntityManager)} Usually calls {@link EntityTransaction#rollback()} on the
+     * current transaction of the given EntityManager
+     * 
+     * @param EntityManager et
+     * @throws PersistenceException
+     */
+    void handleException(EntityManager em);
 
 }

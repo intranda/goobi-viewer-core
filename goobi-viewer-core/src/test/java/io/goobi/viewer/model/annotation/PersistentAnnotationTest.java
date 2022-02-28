@@ -51,6 +51,7 @@ import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -157,42 +158,29 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
         JPADAO dao = (JPADAO) DataManager.getInstance().getDao();
 
-        EntityManager em = dao.getFactory().createEntityManager();
+      
 
-        long existingAnnotations = getAnnotations(em).size();
+        long existingAnnotations = getAnnotations(dao).size();
 
-        try {
-            em.getTransaction().begin();
-            em.persist(this.daoAnno);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
+            dao.addAnnotation(daoAnno);
 
-        em = dao.getFactory().createEntityManager();
-        try {
-            List<CrowdsourcingAnnotation> list = getAnnotations(em);
+            List<CrowdsourcingAnnotation> list = getAnnotations(dao);
             Assert.assertEquals(existingAnnotations + 1, list.size());
 
             CrowdsourcingAnnotation retrieved = list.get(list.size() - 1);
             Assert.assertEquals(body, converter.getBodyAsResource(retrieved));
             Assert.assertEquals(target, converter.getTargetAsResource(retrieved));
 
-        } finally {
-            em.close();
-        }
     }
 
     /**
      * @param em
      * @return
+     * @throws DAOException 
      */
     @SuppressWarnings("unchecked")
-    private static List<CrowdsourcingAnnotation> getAnnotations(EntityManager em) {
-        Query q = em.createQuery("SELECT c FROM PersistentAnnotation c");
-        q.setFlushMode(FlushModeType.COMMIT);
-        List<CrowdsourcingAnnotation> list = q.getResultList();
-        return list;
+    private static List<CrowdsourcingAnnotation> getAnnotations(IDAO dao) throws DAOException {
+        return dao.getAllAnnotations(null, false);
     }
 
     @Test

@@ -55,17 +55,8 @@ public class MultiSelectDropdown extends UINamingContainer {
         super.encodeBegin(context);
         List<Object> values = (List<Object>)getValueExpression("value").getValue(context.getELContext());
         List<Object> options = (List<Object>)getValueExpression("items").getValue(context.getELContext());
-        String var = (String)getValueExpression("var").getValue(context.getELContext());
         Map<Object, Boolean> valueMap = options.stream().collect(Collectors.toMap(Function.identity(), o -> values.contains(getValue(o))));
         this.setValueMap(valueMap);
-    }
-    
-    @Override
-    public void encodeEnd(FacesContext context) throws IOException {
-        super.encodeEnd(context);
-//        visitTree(context);
-
-        
     }
 
 
@@ -80,13 +71,11 @@ public class MultiSelectDropdown extends UINamingContainer {
     }
     
     public String getLabel(Object item) {
-        ContextualCompositeMethodExpression label = (ContextualCompositeMethodExpression) getAttributes().get("itemLabel");
-        return (String) label.invoke(getFacesContext().getELContext(), new Object[]{item});
+        return item.toString();
     }
     
-    public String getValue(Object item) {
-        ContextualCompositeMethodExpression value = (ContextualCompositeMethodExpression) getAttributes().get("itemValue");
-        return (String) value.invoke(getFacesContext().getELContext(), new Object[]{item});
+    public Object getValue(Object item) {
+        return item;
     }
 
 

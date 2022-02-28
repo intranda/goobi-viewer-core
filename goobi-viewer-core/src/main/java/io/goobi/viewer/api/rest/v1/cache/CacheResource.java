@@ -40,6 +40,8 @@ import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.model.IResponseMessage;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.download.DownloadJobTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -60,26 +62,26 @@ public class CacheResource {
         ContentServerCache content = ContentServerCache.getContentCache();
         ContentServerCache pdf = ContentServerCache.getPdfCache();
         ContentServerCache thumbs = ContentServerCache.getThumbnailCache();
-        
+
         JSONObject jCaches = new JSONObject();
-        if(content != null) {
+        if (content != null) {
             JSONObject jContent = new JSONObject();
             jContent.append("objects", content.getElementsInCache());
             jCaches.append("content", jContent);
         }
-        if(pdf != null) {
+        if (pdf != null) {
             JSONObject jPdf = new JSONObject();
             jPdf.append("objects", pdf.getElementsInCache());
             jCaches.append("pdf", jPdf);
         }
-        if(thumbs != null) {
+        if (thumbs != null) {
             JSONObject jThumbs = new JSONObject();
             jThumbs.append("objects", thumbs.getElementsInCache());
             jCaches.append("thumbnails", jThumbs);
         }
         return jCaches.toString();
     }
-    
+
     /**
      * 
      * @param content
@@ -97,6 +99,7 @@ public class CacheResource {
             @Parameter(description = "If true, PDF cache will be cleared for all records") @QueryParam("pdf") boolean pdf) {
         logger.trace("clearCache: {}/{}/{}", content, thumbs, pdf);
 
+        // TODO delete all download jobs for all records here?
         CacheUtils.emptyCache(content, thumbs, pdf);
 
         return new SuccessMessage(true, "Cache emptied successfully");
@@ -128,6 +131,16 @@ public class CacheResource {
         }
 
         int deleted = CacheUtils.deleteFromCache(pi, content, thumbs, pdf);
+        
+        // Delete download jobs/files
+        if (pdf) {
+            try {
+                int count = DownloadJobTools.removeJobsForRecord(pi);
+                logger.debug("Removed {} download jobs for '{}'", count, pi);
+            } catch (DAOException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
 
         return new SuccessMessage(true, deleted + " items deleted successfully");
     }

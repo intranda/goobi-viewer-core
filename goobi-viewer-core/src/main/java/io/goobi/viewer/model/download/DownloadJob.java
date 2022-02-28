@@ -300,7 +300,7 @@ public abstract class DownloadJob implements Serializable {
             return null;
         } finally {
             // Clean up expired jobs AFTER updating the one in use
-            cleanupExpiredDownloads();
+            DownloadJobTools.cleanupExpiredDownloads();
         }
     }
 
@@ -333,41 +333,6 @@ public abstract class DownloadJob implements Serializable {
 
     /**
      * <p>
-     * cleanupExpiredDownloads.
-     * </p>
-     *
-     * @should delete expired jobs correctly
-     * @return a int.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public static int cleanupExpiredDownloads() throws DAOException {
-        List<DownloadJob> jobs = DataManager.getInstance().getDao().getAllDownloadJobs();
-        int count = 0;
-        if (!jobs.isEmpty()) {
-            for (DownloadJob job : jobs) {
-                if (job.isExpired()) {
-                    if (DataManager.getInstance().getDao().deleteDownloadJob(job)) {
-                        // Delete file
-                        Path path = getDownloadFileStatic(job.getIdentifier(), job.getType(), job.getFileExtension()).toPath();
-                        if (Files.isRegularFile(path)) {
-                            try {
-                                Files.delete(path);
-                            } catch (IOException e) {
-                                logger.error(e.getMessage());
-                            }
-                        }
-                        count++;
-                    }
-                }
-            }
-        }
-
-        logger.info("Deleted {} expired download jobs.", count);
-        return count;
-    }
-
-    /**
-     * <p>
      * isExpired.
      * </p>
      *
@@ -380,6 +345,25 @@ public abstract class DownloadJob implements Serializable {
         }
 
         return System.currentTimeMillis() > DateTools.getMillisFromLocalDateTime(lastRequested, false) + ttl;
+    }
+
+    /**
+     * Deletes the file associated with this job.
+     * 
+     * @return true if file successfully deleted; false otherwise
+     */
+    public boolean deleteFile() {
+        Path path = DownloadJobTools.getDownloadFileStatic(getIdentifier(), getType(), getFileExtension()).toPath();
+        if (Files.isRegularFile(path)) {
+            try {
+                Files.delete(path);
+                return true;
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -439,7 +423,7 @@ public abstract class DownloadJob implements Serializable {
      */
     @JsonIgnore
     public Path getFile() {
-        Path path = getDownloadFileStatic(identifier, type, getFileExtension()).toPath();//Paths.get(sb.toString());
+        Path path = DownloadJobTools.getDownloadFileStatic(identifier, type, getFileExtension()).toPath();//Paths.get(sb.toString());
         logger.trace(path.toString());
         if (Files.isRegularFile(path)) {
             return path;
@@ -520,29 +504,7 @@ public abstract class DownloadJob implements Serializable {
             useLogId = "";
         }
         String hash = DownloadJob.generateDownloadJobId(type, pi, useLogId);
-        return getDownloadFileStatic(hash, type, getFileExtension());
-    }
-
-    /**
-     * <p>
-     * getDownloadFileStatic.
-     * </p>
-     *
-     * @param identifier the identifier of the download
-     * @param type either "pdf" or "epub"
-     * @param extension a {@link java.lang.String} object.
-     * @return The Download location file, ending with ".pdf" or ".epub" depending on type
-     * @throws java.lang.IllegalArgumentException If the hash is null, empty or blank, or if the type is not "epub" or "pdf"
-     */
-    protected static File getDownloadFileStatic(String identifier, String type, String extension) {
-        if (StringUtils.isBlank(identifier)) {
-            throw new IllegalArgumentException("Cannot determine download path for empty identifier");
-        }
-        if (!(EPUBDownloadJob.TYPE.equals(type) || PDFDownloadJob.TYPE.equals(type))) {
-            throw new IllegalArgumentException("Unknown download type: " + type);
-        }
-        File folder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(type));
-        return new File(folder, identifier + extension);
+        return DownloadJobTools.getDownloadFileStatic(hash, type, getFileExtension());
     }
 
     /**

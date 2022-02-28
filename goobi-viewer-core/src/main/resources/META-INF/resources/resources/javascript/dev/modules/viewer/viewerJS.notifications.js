@@ -100,17 +100,17 @@ var viewerJS = ( function( viewer ) {
     }
 
 	// DEFINE SWEETALERT TOAST (SMALL BOX NOTIFICATION) BEHAVIOUR
-	const swalToast = Swal.mixin({
+	const swalToast = (typeof Swal !== 'undefined') ?  Swal.mixin({
 	  toast: true,
 	  position: 'top-end',
 	  showConfirmButton: false,
 	  timer: 4000,
-	  timerProgressBar: false,
+	  timerProgressBar: true,
 	  didOpen: (toast) => {
 	    toast.addEventListener('mouseenter', Swal.stopTimer)
 	    toast.addEventListener('mouseleave', Swal.resumeTimer)
 	  }
-	})
+	}) : {};
 
     viewer.swaltoasts = {
 		success : (titleAlert, message) => viewer.swaltoasts.toast(titleAlert, message, "success"),

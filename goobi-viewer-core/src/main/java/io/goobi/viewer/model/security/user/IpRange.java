@@ -142,7 +142,7 @@ public class IpRange implements ILicensee, Serializable {
 
         // Workaround for single IP ranges (isInRange() doesn't seem to match these)
         if (subnetMask.endsWith("/32") && subnetMask.substring(0, subnetMask.length() - 3).equals(inIp)) {
-            logger.debug("Exact IP match: {}", inIp);
+            // logger.trace("Exact IP match: {}", inIp);
             return true;
         }
 

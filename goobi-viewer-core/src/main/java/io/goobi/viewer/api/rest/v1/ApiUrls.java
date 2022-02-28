@@ -202,9 +202,9 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String CMS_MEDIA_FILES = "/files";
     public static final String CMS_MEDIA_FILES_FILE = "/files/{filename}";
     public static final String CMS_MEDIA_FILES_FILE_PDF = "/files/{filename: (?i)[^\\/]*\\.(pdf)}";
+    public static final String CMS_MEDIA_FILES_FILE_HTML = "/files/{filename: (?i)[^\\/]*\\.(html)}";
     public static final String CMS_MEDIA_FILES_FILE_SVG = "/files/{filename: (?i)[^\\/]*\\.(svg)}";
     public static final String CMS_MEDIA_FILES_FILE_ICO = "/files/{filename: (?i)[^\\/]*\\.(ico)}";
-    public static final String CMS_MEDIA_FILES_FILE_HTML = "/files/{filename: (?i)[^\\/]*\\.(html)}";
     public static final String CMS_MEDIA_FILES_FILE_AUDIO = "/files/{filename: (?i).*\\.(mp3|mpeg|wav|ogg|wma)}";
     public static final String CMS_MEDIA_FILES_FILE_VIDEO = "/files/{filename: (?i).*\\.(mp4|mpeg4|avi|mov|wmv)}";
     public static final String CMS_MEDIA_FILES_FILE_IMAGE = "/cms/media/files/{filename: (?i)[^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";

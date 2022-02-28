@@ -66,8 +66,7 @@ public class SidebarWidgetUpdate implements IModelUpdate {
 
     @Override
     public boolean update(IDAO dao) throws DAOException, SQLException {
-        List<String> tables = dao.createNativeQuery("show tables").getResultList();
-        if(tables.contains("cms_sidebar_elements")) {               
+        if(dao.tableExists("cms_sidebar_elements")) {               
             migrateWidgetTables(dao);
             return true;
         } else {
@@ -77,9 +76,9 @@ public class SidebarWidgetUpdate implements IModelUpdate {
     }
 
     private void migrateWidgetTables(IDAO dao) throws DAOException {
-        List<Object[]> info = dao.createNativeQuery("desc cms_sidebar_elements").getResultList();
+        List<Object[]> info = dao.getNativeQueryResults("desc cms_sidebar_elements");
 
-        List<Object[]> legacyWidgets = dao.createNativeQuery("SELECT * FROM cms_sidebar_elements").getResultList();
+        List<Object[]> legacyWidgets = dao.getNativeQueryResults("SELECT * FROM cms_sidebar_elements");
 
         List<String> columnNames = info.stream().map(o -> (String) o[0]).collect(Collectors.toList());
 
@@ -144,9 +143,7 @@ public class SidebarWidgetUpdate implements IModelUpdate {
             }
         }
 
-        dao.startTransaction();
-        dao.createNativeQuery("DROP TABLE cms_sidebar_elements").executeUpdate();
-        dao.commitTransaction();
+        dao.executeUpdate("DROP TABLE cms_sidebar_elements");
     }
 
     private CustomSidebarWidget createCustomWidget(String inner_html, String linked_pages, String widget_title, String additional_query,

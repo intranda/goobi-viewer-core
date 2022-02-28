@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>22.02-SNAPSHOT</version>
+	<version>22.03-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -90,7 +90,7 @@
 
         <!-- other libraries -->
         <cdi.version>2.0.SP1</cdi.version>
-        <citationstyles.version>22.1</citationstyles.version>
+        <citationstyles.version>22.2.1</citationstyles.version>
         <citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
         <commons-codec.version>1.15</commons-codec.version>
         <commons-collections4.version>4.4</commons-collections4.version>
@@ -140,12 +140,12 @@
         <prettyfaces.version>3.5.1.Final</prettyfaces.version>
         <rome.version>1.18.0</rome.version>
         <slf4j.version>1.7.36</slf4j.version>
-        <log4j.version>2.17.1</log4j.version>
+        <log4j.version>2.17.2</log4j.version>
         <solr.version>8.11.1</solr.version>
         <saml-client.version>4.0.0</saml-client.version>
         <swagger.version>2.1.13</swagger.version>
         <tomcat.version>9.0.58</tomcat.version>
-        <weld-servlet-shaded.version>3.1.8.Final</weld-servlet-shaded.version>
+        <weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
         <xerces.version>2.12.2</xerces.version>
         <xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
         <xml-apis.version>1.4.01</xml-apis.version>

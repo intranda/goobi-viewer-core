@@ -99,18 +99,16 @@ public class CMSCategoryUpdate implements IModelUpdate {
             dao.updateCMSPage(cmsPage);
         }
 
-        dao.startTransaction();
         if (this.entityMap.containsKey("media")) {
-            dao.createNativeQuery("DROP TABLE cms_media_item_tags").executeUpdate();
+            dao.executeUpdate("DROP TABLE cms_media_item_tags");
         }
         if (this.entityMap.containsKey("page")) {
-            dao.createNativeQuery("DROP TABLE cms_page_classifications").executeUpdate();
+            dao.executeUpdate("DROP TABLE cms_page_classifications");
         }
         if (this.entityMap.containsKey("content")) {
-            dao.createNativeQuery("ALTER TABLE cms_content_items DROP COLUMN allowed_tags").executeUpdate();
-            dao.createNativeQuery("ALTER TABLE cms_content_items DROP COLUMN page_classification").executeUpdate();
+            dao.executeUpdate("ALTER TABLE cms_content_items DROP COLUMN allowed_tags");
+            dao.executeUpdate("ALTER TABLE cms_content_items DROP COLUMN page_classification");
         }
-        dao.commitTransaction();
     }
 
     /**
@@ -163,15 +161,14 @@ public class CMSCategoryUpdate implements IModelUpdate {
     /**
      * @param dao
      * @throws SQLException
+     * @throws DAOException 
      */
     @SuppressWarnings("unchecked")
-    private static Map<String, Map<String, List<Long>>> createEntityMap(IDAO dao) throws SQLException {
+    private static Map<String, Map<String, List<Long>>> createEntityMap(IDAO dao) throws SQLException, DAOException {
         Map<String, Map<String, List<Long>>> entityMap = new HashMap<>();
         if (dao.tableExists("cms_page_classifications")) {
-            dao.startTransaction();
             String query = "SELECT * FROM cms_page_classifications";
-            Query qClassifications = dao.createNativeQuery(query);
-            List<Object[]> classificationResults = qClassifications.getResultList();
+            List<Object[]> classificationResults = dao.getNativeQueryResults(query);
             Map<String, List<Long>> classifications = classificationResults.stream()
                     .collect(
                             Collectors.toMap(array -> (String) array[1], array -> new ArrayList<>(Arrays.asList((Long) array[0])), (list1, list2) -> {
@@ -179,14 +176,11 @@ public class CMSCategoryUpdate implements IModelUpdate {
                                 return list1;
                             }));
             entityMap.put("page", classifications);
-            dao.commitTransaction();
         }
 
         if (dao.tableExists("cms_media_item_tags")) {
-            dao.startTransaction();
             String query = "SELECT * FROM cms_media_item_tags";
-            Query qTags = dao.createNativeQuery(query);
-            List<Object[]> tagResults = qTags.getResultList();
+            List<Object[]> tagResults = dao.getNativeQueryResults(query);
             Map<String, List<Long>> tags = tagResults.stream()
                     .collect(
                             Collectors.toMap(array -> (String) array[1], array -> new ArrayList<>(Arrays.asList((Long) array[0])), (list1, list2) -> {
@@ -194,14 +188,11 @@ public class CMSCategoryUpdate implements IModelUpdate {
                                 return list1;
                             }));
             entityMap.put("media", tags);
-            dao.commitTransaction();
         }
 
         if (dao.columnsExists("cms_content_items", "allowed_tags") && dao.columnsExists("cms_content_items", "page_classification")) {
-            dao.startTransaction();
             String query = "SELECT cms_content_item_id, allowed_tags, page_classification FROM cms_content_items";
-            Query qClassifications = dao.createNativeQuery(query);
-            List<Object[]> classificationsResults = qClassifications.getResultList();
+            List<Object[]> classificationsResults = dao.getNativeQueryResults(query);
             Map<String, List<Long>> classifications = classificationsResults.stream()
                     .map(array -> new Object[] { array[0], (String) array[1] + "$" + (String) array[2] })
                     .flatMap(array -> Arrays.stream(((String) array[1]).split(CLASSIFICATION_SEPARATOR_REGEX))
@@ -214,7 +205,6 @@ public class CMSCategoryUpdate implements IModelUpdate {
                             }));
 
             entityMap.put("content", classifications);
-            dao.commitTransaction();
         }
         return entityMap;
     }

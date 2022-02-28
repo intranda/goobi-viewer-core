@@ -580,6 +580,7 @@ public class StringTools {
 
         return ret;
     }
+    
 
     /**
      * <p>
@@ -703,6 +704,60 @@ public class StringTools {
         }
 
         return ret;
+    }
+    
+    /**
+     * Try to parse the given string as integer.
+     * @param s the string to parse
+     * @return An Optional containing the parsed int. If the string is blank or cannot be parsed to an integer, an empty Optional is returned
+     */
+    public static Optional<Integer> parseInt(String s) {
+        if(StringUtils.isBlank(s)) {
+            return Optional.empty();
+        } else {
+            try {                
+                int i = Integer.parseInt(s);
+                return Optional.of(i);
+            } catch(NumberFormatException e) {
+                return Optional.empty();
+            }
+        }
+    }
+    
+    public static int[] getIntegerRange(String range) {
+        int page;
+        int page2 = Integer.MAX_VALUE;
+        if (range.contains("-")) {
+            boolean firstMinus = false;
+            boolean secondMinus = false;
+            if (range.startsWith("-")) {
+                firstMinus = true;
+                range = range.substring(1);
+            }
+            if (range.contains("-")) {
+                if (range.contains("--")) {
+                    secondMinus = true;
+                    range = range.replace("--", "-");
+                }
+                String[] split = range.split("[-]");
+                page = Integer.valueOf(split[0]);
+                page2 = Integer.valueOf(split[1]);
+                if (firstMinus) {
+                    page *= -1;
+                }
+                if (secondMinus) {
+                    page2 *= -1;
+                }
+            } else {
+                page = Integer.valueOf(range);
+                if (firstMinus) {
+                    page *= -1;
+                }
+            }
+        } else {
+            page = Integer.valueOf(range);
+        }
+        return new int[]{page, page2};
     }
 
 }
