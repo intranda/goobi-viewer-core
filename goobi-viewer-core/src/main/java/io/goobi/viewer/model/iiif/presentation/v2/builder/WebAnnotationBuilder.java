@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +30,6 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONException;
@@ -51,7 +51,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -238,7 +237,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
         List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly, request).entrySet()
                 .stream()
                 // TODO Use Objects.equals()
-                .filter(entry -> ObjectUtils.equals(pageNo, entry.getKey()))
+                .filter(entry -> Objects.equals(pageNo, entry.getKey()))
                 .map(Entry::getValue)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());

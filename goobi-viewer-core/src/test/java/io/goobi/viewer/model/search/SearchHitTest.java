@@ -30,7 +30,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -38,11 +38,11 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
-public class SearchHitTest extends AbstractSolrEnabledTest {
+public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        AbstractSolrEnabledTest.setUpClass();
+        AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
 
     /**

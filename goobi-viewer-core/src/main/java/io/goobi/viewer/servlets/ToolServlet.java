@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.Version;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.download.DownloadJobTools;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -88,7 +90,19 @@ public class ToolServlet extends HttpServlet implements Serializable {
         if (action != null) {
             switch (action) {
                 case "emptyCache":
+                    // TODO this might be obsolete (superceded by REST endpoint)
                     int deleted = CacheUtils.deleteFromCache(identifier, fromContentCache, fromThumbnailCache, fromPdfCache);
+
+                    // Delete download jobs/files
+                    if (fromPdfCache) {
+                        try {
+                            int count = DownloadJobTools.removeJobsForRecord(identifier);
+                            logger.debug("Removed {} download jobs for '{}'", count, identifier);
+                        } catch (DAOException e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    }
+
                     response.getWriter().write(deleted + " cache elements belonging to '" + StringEscapeUtils.escapeHtml4(identifier) + "' deleted.");
                     break;
                 case "fillCache":

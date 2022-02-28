@@ -10,7 +10,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         this.isDragover = false;
 
         this.on('mount', function () {
-
             if(this.opts.showFiles) {
                 this.initUploadedFiles();
             }
@@ -73,7 +72,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
 			this.getUploadedFiles();
 
             var filesZone = (this.refs.filesZone);
-
         }.bind(this)
 
         this.buttonFilesSelected = function(e) {
@@ -106,18 +104,18 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').addClass('in-progress');
 
             for (i = 0; i < this.files.length; i++) {
-                console.log("upload file ", i, this.files[i])
-                uploads.push(Q(this.uploadFile(i)));
+                uploads.push(this.uploadFile(i));
             }
 
-            return Q.allSettled(uploads).then(function(results) {
+            return Promise.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
-                     if (result.state === "fulfilled") {
+
+                     if (result.status === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
                      } else {
-                         var responseText = result.reason.responseText ? result.reason.responseText : result.reason;
+                         var responseText = result.reason.message ? result.reason.message : result.reason;
                          errorMsg += (responseText + "</br>");
                      }
                  }.bind(this));
@@ -163,7 +161,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
        		})
        		.then(response => response.json())
        		.then(json => {
-       		    console.log("uploaded files ", json);
        		    this.uploadedFiles = json;
        		    this.update();
        		})
@@ -176,14 +173,12 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         }.bind(this)
 
         this.deleteUploadedFile = function(file) {
-            console.log("delete file ", file, this.getFilename(file));
             return fetch(this.opts.postUrl + this.getFilename(file), {
                 method: "DELETE",
        		})
         }.bind(this)
 
         this.deleteFile = function(data) {
-            console.log("delete ", this.getFilename(data.item.file));
             this.deleteUploadedFile(data.item.file)
             .then( () => {
                 this.getUploadedFiles();
@@ -193,7 +188,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         this.uploadFile = function(i) {
             if (this.files.length <= i) {
                 new Modal(this.refs.doneModal).show();
-                return;
+                return new Promise.resolve();
             }
 
             var displayFile = this.displayFiles[i];
@@ -209,7 +204,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
                 redirect: 'follow'
             })
             .then( response => {
-                console.log("HEAD respnse ", response);
                 return response.status == 200;
             })
             .then(exists => {
@@ -232,37 +226,35 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
 
        		})
        		.then( result => {
-       		    var defer = Q.defer();
-       		    if(result.ok) {
-       		    	defer.resolve(result);
-       		    } else if(result.body && !result.responseText){
-                   result.body.getReader().read()
-					.then(({ done, value }) => {
-						defer.reject({
-						  responseText:   new TextDecoder("utf-8").decode(value)
-						})
-					});
-       		    } else {
-       		        defer.reject(result);
-       		    }
-       		    return defer.promise;
+
+       		    return new Promise((resolve, reject) => {
+	       		    if(result.ok) {
+	       		    	resolve(result);
+	       		    } else if(result.body && !result.responseText){
+	                   result.body.getReader().read()
+						.then(({ done, value }) => {
+							reject({
+							  responseText:   new TextDecoder("utf-8").decode(value)
+							})
+						});
+	       		    } else {
+	       		        reject(result);
+	       		    }
+
+       		    });
+
        		}));
         }.bind(this)
 
         this.getFilename = function(url) {
-            console.log("url" + url);
-            console.log("base url " + this.opts.postUrl);
             let filename = url.replace(this.opts.postUrl, "");
-            console.log("filename " + filename);
             if(filename.startsWith("/")) {
                 filename = filename.slice(1);
             }
-            console.log("filename " + filename);
             let filenameEnd = filename.indexOf("/");
             if(filenameEnd > 0) {
                 filename = filename.slice(0,filenameEnd);
             }
-            console.log("filename " + filename);
             return filename;
         }.bind(this)
 });
@@ -881,8 +873,13 @@ this.fetchCollections = function() {
     if(this.opts.baseCollection) {
         url += this.opts.baseCollection + "/";
     }
+    let separator = "?";
     if(this.opts.grouping) {
-        url += "?grouping=" + this.opts.grouping;
+        url += (separator + "grouping=" + this.opts.grouping);
+        separator = "&";
+    }
+    if(this.opts.blacklist) {
+        url += (separator + "ignore=" + this.opts.blacklist);
     }
     return fetch(url)
     .then( result => result.json())
@@ -1053,15 +1050,6 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 		.then( () => this.item.onImageOpen( () => {this.loading = false; this.update()}))
 		.then( () => this.item.statusMapUpdates.subscribe( statusMap => this.update()))
 
-	}.bind(this)
-
-	this.resolveCanvas = function(source) {
-	    if(Crowdsourcing.isString(source)) {
-	        return fetch(source)
-	        .then( response => response.json() );
-	    } else {
-	        return Q.fcall(() => source);
-	    }
 	}.bind(this)
 
 	this.resetQuestions = function() {
@@ -2963,19 +2951,19 @@ riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index
 	        var pageLoadingTasks = [];
 	        for(var pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
    		        var page = pdf.getPage(pageNo);
-   		        pageLoadingTasks.push(Q(page));
+   		        pageLoadingTasks.push(page);
    		    }
-   		    return Q.allSettled(pageLoadingTasks);
+   		    return Promise.allSettled(pageLoadingTasks);
 	    }.bind(this))
 	    .then(function(results) {
-			results.forEach(function (result) {
-			    if (result.state === "fulfilled") {
+			results.forEach(result => {
+			    if (result.status === "fulfilled") {
                 	var page = result.value;
                 	this.pages.push(page);
                 } else {
-                    logger.error("Error loading page: ", result.reason);
+                    console.log("Error loading page: ", result);
                 }
-			}.bind(this));
+			});
 			this.update();
         }.bind(this))
 	    .then( function() {

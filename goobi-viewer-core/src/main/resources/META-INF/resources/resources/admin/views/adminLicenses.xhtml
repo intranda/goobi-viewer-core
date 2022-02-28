@@ -86,9 +86,7 @@
 	                                            <!-- NUMBER OF RECORDS -->
 	                                            <dt class="col-sm-4">#{msg.admin__licenses_record_number}:</dt>
 	                                            <dd class="col-sm-8">
-                                                <a href="#{navigationHelper.searchUrl}/-/#{adminBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/" class="-textlink" target="_blank" rel="noopener" aria-label="Show records for #{msg[licenseType.name]}">
-	                                                   #{adminBean.getNumRecordsWithAccessCondition(licenseType.name)}
-                                                   </a>
+	                                            	#{adminBean.getNumRecordsWithAccessCondition(licenseType.name)}
 	                                            </dd>
 	                                            
                                                 <ui:fragment rendered="#{adminBean.isLicenseTypeInUse(licenseType)}">
@@ -128,6 +126,8 @@
 	                                            <div class="col-3 d-flex justify-content-end">
 	                                                <!-- EDIT -->
 	                                                <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{licenseType.name}">#{msg.edit}</a>
+
+													<a href="#{navigationHelper.searchUrl}/-/#{adminBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/" target="_blank" class="admin__boxed-entry-actions-edit" aria-label="#{msg.show}">#{msg.show}</a>
 	
 	                                                <!-- DELETE -->
 	                                                <h:commandLink rendered="#{!adminBean.isLicenseTypeInUse(licenseType)}"

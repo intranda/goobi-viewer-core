@@ -36,7 +36,7 @@ public class BasexEADParserTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertNotNull(doc);
         Assert.assertNotNull(doc.getRootElement());
         ArchiveEntry root =
-                new BasexEADParser(null)
+                new BasexEADParser(null, null)
                         .readConfiguration(DataManager.getInstance().getConfiguration().getArchiveMetadataConfig())
                         .parseEadFile(doc);
         Assert.assertNotNull(root);

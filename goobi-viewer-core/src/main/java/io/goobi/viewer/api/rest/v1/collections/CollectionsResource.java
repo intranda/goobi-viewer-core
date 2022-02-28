@@ -20,6 +20,8 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_COLLECTION;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_CONTENTASSIST;
 
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -75,15 +77,17 @@ public class CollectionsResource {
     @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 2.1.1 collection")
     @ApiResponse(responseCode="400", description="No collections available for field")
     public Collection2 getAllCollections(
-            @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping
+            @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping,
+            @Parameter(description ="comma separated list of collections to ignore in response")@QueryParam("ignore")String ignoreString
                     )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
         Collection2 collection;
+        List<String> ignore = StringUtils.isNotBlank(ignoreString) ? Arrays.asList(ignoreString.split(",")) : Collections.emptyList();
         if(StringUtils.isBlank(grouping)) {            
-            collection = builder.getCollections(solrField);
+            collection = builder.getCollections(solrField, ignore);
         } else {
-            collection = builder.getCollectionsWithGrouping(solrField, grouping);
+            collection = builder.getCollectionsWithGrouping(solrField, ignore, grouping);
         }
         if(collection.getMembers() == null || collection.getMembers().isEmpty()) {
             //can't be a collection
@@ -99,16 +103,18 @@ public class CollectionsResource {
     @ApiResponse(responseCode="400", description="Invalid collection name or field")
     public Collection2 getCollection(
             @Parameter(description="Name of the collection. Must be a value of the SOLR field the collection is based on")@PathParam("collection")String collectionName,
-            @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping
+            @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping,
+            @Parameter(description ="comma separated list of subcollections to ignore in response")@QueryParam("ignore")String ignoreString
             )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
         collectionName = StringTools.decodeUrl(collectionName);
         Collection2 collection;
+        List<String> ignore = StringUtils.isNotBlank(ignoreString) ? Arrays.asList(ignoreString.split(",")) : Collections.emptyList();
         if(StringUtils.isBlank(grouping)) {                   
-            collection = builder.getCollection(solrField, collectionName);
+            collection = builder.getCollection(solrField, collectionName, ignore);
         } else {
-          collection = builder.getCollectionWithGrouping(solrField, collectionName, grouping);
+          collection = builder.getCollectionWithGrouping(solrField, collectionName, grouping, ignore);
         }
         if(collection.getMembers() == null || collection.getMembers().isEmpty()) {
             //can't be a collection

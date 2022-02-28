@@ -49,6 +49,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.bookmark.Bookmark;
@@ -91,7 +92,6 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.TermsOfUse;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -739,8 +739,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(comment.getTargetPI(), comment2.getTargetPI());
         Assert.assertEquals(comment.getTargetPageOrder(), comment2.getTargetPageOrder());
         Assert.assertEquals(comment.getText(), comment2.getText());
-        Assert.assertEquals(comment.getCreator(), comment2.getCreator());
         Assert.assertEquals(now, comment2.getDateModified());
+        Assert.assertEquals(comment.getCreator(), comment2.getCreator());
     }
 
     @Test
@@ -1714,6 +1714,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getCMSPageDefaultViewForRecord(String)
+     * @verifies return correct result
+     */
+    @Test
+    public void getCMSPageDefaultViewForRecord_shouldReturnCorrectResult() throws Exception {
+        CMSPage page = DataManager.getInstance().getDao().getCMSPageDefaultViewForRecord("PI_1");
+        Assert.assertNotNull(page);
+        Assert.assertEquals(Long.valueOf(3), page.getId());
+    }
+
+    /**
      * @see JPADAO#getCMSPage(long)
      * @verifies return correct page
      */
@@ -1961,31 +1972,37 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(2));
         Assert.assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(3));
     }
-
-    /**
-     * @see JPADAO#updateUserGroup(UserGroup)
-     * @verifies set id on new license
-     */
-    @Test
-    public void updateUserGroup_shouldSetIdOnNewLicense() throws Exception {
-        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
-        Assert.assertNotNull(userGroup);
-        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
-        Assert.assertNotNull(licenseType);
-        License license = new License();
-        license.setDescription("xxx");
-        license.setLicenseType(licenseType);
-        userGroup.addLicense(license);
-        Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
-        boolean licenseFound = false;
-        for (License l : userGroup.getLicenses()) {
-            if ("xxx".equals(l.getDescription())) {
-                licenseFound = true;
-                Assert.assertNotNull(l.getId());
-            }
-        }
-        Assert.assertTrue(licenseFound);
-    }
+    
+    
+/*
+ * Unused since the tested behaviour (licence entity ids being bein immediately visible in owning user group)
+ * Is no longer supported because of transaction-scoped EntityManagers; and the purpose of this behaviour is unclear
+ */
+//
+//    /**
+//     * @see JPADAO#updateUserGroup(UserGroup)
+//     * @verifies set id on new license
+//     */
+//    @Test
+//    public void updateUserGroup_shouldSetIdOnNewLicense() throws Exception {
+//        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
+//        Assert.assertNotNull(userGroup);
+//        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
+//        Assert.assertNotNull(licenseType);
+//        License license = new License();
+//        license.setDescription("xxx");
+//        license.setLicenseType(licenseType);
+//        userGroup.addLicense(license);
+//        Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
+//        boolean licenseFound = false;
+//        for (License l : userGroup.getLicenses()) {
+//            if ("xxx".equals(l.getDescription())) {
+//                licenseFound = true;
+//                Assert.assertNotNull(l.getId());
+//            }
+//        }
+//        Assert.assertTrue(licenseFound);
+//    }
 
     /**
      * @see JPADAO#getUserCount()
@@ -2354,7 +2371,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         CampaignLogMessage message = campaign.getLogMessages().get(0);
         Assert.assertEquals("Eine Nachricht im Log", message.getMessage());
-        Assert.assertEquals(new Long(1), message.getCreatorId());
+        Assert.assertEquals(Long.valueOf(1), message.getCreatorId());
         Assert.assertEquals("PI_1", message.getPi());
         Assert.assertEquals(campaign, message.getCampaign());
     }
@@ -2779,19 +2796,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(tou);
     }
 
-    @Test
-    public void testIsTermsOfUseActive() throws DAOException {
-        boolean active = DataManager.getInstance().getDao().isTermsOfUseActive();
-        Assert.assertFalse(active);
-    }
 
     @Test
     public void testSaveTermsOfUse() throws DAOException {
-        Assert.assertFalse(DataManager.getInstance().getDao().isTermsOfUseActive());
         TermsOfUse tou = new TermsOfUse();
         tou.setActive(true);
         DataManager.getInstance().getDao().saveTermsOfUse(tou);
-        Assert.assertTrue(DataManager.getInstance().getDao().isTermsOfUseActive());
 
         tou = DataManager.getInstance().getDao().getTermsOfUse();
         Assert.assertTrue(tou.isActive());
@@ -2912,7 +2922,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
 
     }
-    
+
     @Test
     public void testGenerateNullMotivationFilterQuery() {
         {
@@ -3107,42 +3117,41 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             assertEquals(Long.valueOf(4), comments.get(0).getId());
         }
     }
-    
+
     @Test
-    public void testSynchronization() throws DAOException, InterruptedException {
-        
+    public void testSynchronization() throws DAOException {
+
         ExecutorService executor = Executors.newFixedThreadPool(2);
         IDAO dao = DataManager.getInstance().getDao();
-        
+
         Comment comment = new Comment();
         comment.setBody("Init");
         dao.addComment(comment);
         assertNotNull(comment.getId());
         assertEquals("Init", dao.getComment(comment.getId()).getBody());
-        
+
         FutureTask<Boolean> updateResult = new FutureTask<Boolean>(() -> {
             try {
                 updateComment(dao, comment.getId(), "Changed", 200);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | DAOException e) {
                 fail("Updating interrupted");
             }
         }, true);
-        
+
         FutureTask<Boolean> updateResultFast = new FutureTask<Boolean>(() -> {
             try {
                 updateComment(dao, comment.getId(), "ChangedAgain", 0);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | DAOException e) {
                 fail("Updating interrupted");
             }
         }, true);
-        
-        
+
         try {
             executor.execute(updateResult);
             assertEquals("Init", dao.getComment(comment.getId()).getBody());
-//            executor.execute(updateResultFast);
-//            updateResultFast.get(100, TimeUnit.MILLISECONDS);
-//            assertEquals("ChangedAgain", dao.getComment(comment.getId()).getBody());
+            //            executor.execute(updateResultFast);
+            //            updateResultFast.get(100, TimeUnit.MILLISECONDS);
+            //            assertEquals("ChangedAgain", dao.getComment(comment.getId()).getBody());
             updateResult.get(300, TimeUnit.MILLISECONDS);
             assertEquals("Changed", dao.getComment(comment.getId()).getBody());
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -3151,12 +3160,9 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
 
     }
-    
-    private void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException {
-        dao.startTransaction();
-        Thread.sleep(duration);
-        dao.createNativeQuery("UPDATE annotations_comments SET body='"+content+"' WHERE annotation_id=" + id).executeUpdate();
-        dao.commitTransaction();
-    }
 
+    private static void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException, DAOException {
+        Thread.sleep(duration);
+        dao.executeUpdate("UPDATE annotations_comments SET body='" + content + "' WHERE annotation_id=" + id);
+    }
 }

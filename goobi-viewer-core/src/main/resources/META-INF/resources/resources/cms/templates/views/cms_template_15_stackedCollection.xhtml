@@ -39,7 +39,7 @@
 				<div class="tpl-stacked-collection__text">
                     <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
                 </div>
-				
+
 				<div class="tpl-stacked-collection__collections">
 					<collectionView 
 					url='#{request.contextPath}/api/v1/collections/#{cmsPage.getContentItem("collection").collectionField}/'
@@ -48,6 +48,7 @@
 					grouping="#{cmsPage.getContentItem('collection').groupBy}"
 					language="#{navigationHelper.localeString}"
 					defaultlanguage="#{navigationHelper.defaultLocale.language}"
+					blacklist="#{cmsPage.getContentItem('collection').ignoreCollections}"
 					></collectionView>
 				</div>
 				

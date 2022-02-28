@@ -284,17 +284,18 @@ public class IIIFPresentation2ResourceBuilder {
      * to set the language for all metadata values
      *
      * @param collectionField a {@link java.lang.String} object.
+     * @param ignore 
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Collection2 getCollections(String collectionField)
+    public Collection2 getCollections(String collectionField, List<String> ignore)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, IllegalRequestException {
 
         Collection2 collection = getCollectionBuilder().generateCollection(collectionField, null, null,
-                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField), ignore);
 
         return collection;
 
@@ -306,17 +307,18 @@ public class IIIFPresentation2ResourceBuilder {
      * to set the language for all metadata values
      *
      * @param collectionField a {@link java.lang.String} object.
+     * @param ignore 
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Collection2 getCollectionsWithGrouping(String collectionField, String groupingField)
+    public Collection2 getCollectionsWithGrouping(String collectionField, List<String> ignore, String groupingField)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, IllegalRequestException {
 
         Collection2 collection = getCollectionBuilder().generateCollection(collectionField, null, groupingField,
-                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField), ignore);
 
         getCollectionBuilder().addTagListService(collection, collectionField, groupingField, "grouping");
 
@@ -338,11 +340,11 @@ public class IIIFPresentation2ResourceBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws IllegalRequestException If the topElement is not a collection
      */
-    public Collection2 getCollection(String collectionField, String topElement)
+    public Collection2 getCollection(String collectionField, String topElement, List<String> ignore)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
 
         Collection2 collection = getCollectionBuilder().generateCollection(collectionField, topElement, null,
-                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField), ignore);
 
         return collection;
 
@@ -400,11 +402,11 @@ public class IIIFPresentation2ResourceBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws IllegalRequestException if the topElement is not a collection
      */
-    public Collection2 getCollectionWithGrouping(String collectionField, String topElement, String facetField)
+    public Collection2 getCollectionWithGrouping(String collectionField, String topElement, String facetField, List<String> ignore)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
 
         Collection2 collection = getCollectionBuilder().generateCollection(collectionField, topElement, facetField,
-                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField), ignore);
 
         getCollectionBuilder().addTagListService(collection, collectionField, facetField, "grouping");
 

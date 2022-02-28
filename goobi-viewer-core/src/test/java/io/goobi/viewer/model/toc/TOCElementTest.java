@@ -17,23 +17,27 @@ package io.goobi.viewer.model.toc;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.toc.TOCElement;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.model.viewer.PageType;
 
-public class TOCElementTest extends AbstractTest {
+public class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        AbstractDatabaseAndSolrEnabledTest.setUpClass();
+    }
 
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
-        super.setUp();    }
+        super.setUp();
+    }
 
     /**
      * @see TOCElement#TOCElement(String,String,String,String,String,int,String,String,boolean,boolean,String,String)

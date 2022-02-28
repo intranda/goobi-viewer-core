@@ -507,7 +507,8 @@ public class Search implements Serializable {
                 locations.addAll(getLocations(doc.getFieldValue(solrField))
                         .stream()
                         .map(p -> new Location(p, label,
-                                Location.getRecordURI(pi, PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false))))
+                                Location.getRecordURI(pi, PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false),
+                                        DataManager.getInstance().getUrlBuilder())))
                         .collect(Collectors.toList()));
             } catch (IllegalArgumentException e) {
                 System.out.println("\"" + doc.getFieldValue(solrField) + "\"");

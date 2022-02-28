@@ -2802,6 +2802,17 @@ public final class Configuration extends AbstractConfiguration {
     public String getLabelFieldForFacetField(String facetField) {
         return getPropertyForFacetField(facetField, "[@labelField]", null);
     }
+    
+    /**
+     * 
+     * @param facetField
+     * @return
+     * @should return correct value
+     */
+    public boolean isTranslateFacetFieldLabels(String facetField) {
+        String value= getPropertyForFacetField(facetField, "[@translateLabels]", "true");
+        return Boolean.valueOf(value);
+    }
 
     /**
      * Boilerplate code for retrieving values from regular and hierarchical facet field configurations.
@@ -4466,12 +4477,13 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * <p>
      * getCmsMediaDisplayHeight.
+     * If not configured, return 100.000. In this case the actual image size always depends on the requested width
      * </p>
      *
      * @return a int.
      */
     public int getCmsMediaDisplayHeight() {
-        return getLocalInt("cms.mediaDisplayHeight", 0);
+        return getLocalInt("cms.mediaDisplayHeight", 100000);
     }
 
     /**

@@ -21,9 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.persistence.Query;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceException;
 
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.administration.legal.CookieBanner;
+import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.bookmark.BookmarkList;
@@ -51,7 +56,6 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.TermsOfUse;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -76,8 +80,9 @@ public interface IDAO {
      * @param tableName a {@link java.lang.String} object.
      * @return a boolean.
      * @throws java.sql.SQLException if any.
+     * @throws DAOException
      */
-    boolean tableExists(String tableName) throws SQLException;
+    boolean tableExists(String tableName) throws DAOException, SQLException;
 
     /**
      * <p>
@@ -89,41 +94,7 @@ public interface IDAO {
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
-    boolean columnsExists(String tableName, String columnName) throws SQLException;
-
-    /**
-     * <p>
-     * startTransaction.
-     * </p>
-     */
-    void startTransaction();
-
-    /**
-     * <p>
-     * commitTransaction.
-     * </p>
-     */
-    void commitTransaction();
-
-    /**
-     * <p>
-     * createNativeQuery.
-     * </p>
-     *
-     * @param string a {@link java.lang.String} object.
-     * @return a {@link javax.persistence.Query} object.
-     */
-    Query createNativeQuery(String string);
-
-    /**
-     * <p>
-     * createQuery.
-     * </p>
-     *
-     * @param string a {@link java.lang.String} object.
-     * @return a {@link javax.persistence.Query} object.
-     */
-    Query createQuery(String string);
+    boolean columnsExists(String tableName, String columnName) throws DAOException, SQLException;
 
     // User
 
@@ -379,14 +350,15 @@ public interface IDAO {
      */
     public List<BookmarkList> getBookmarkLists(User user) throws DAOException;
 
-    /** Get number of bookmark lists owned by the given user
-    * 
-    * @param user
-    * @return number of owned bookmark lists
-    * @throws DAOException
-    */
-   long getBookmarkListCount(User user) throws DAOException;
-    
+    /**
+     * Get number of bookmark lists owned by the given user
+     * 
+     * @param user
+     * @return number of owned bookmark lists
+     * @throws DAOException
+     */
+    long getBookmarkListCount(User user) throws DAOException;
+
     /**
      * <p>
      * getBookmarkList.
@@ -932,16 +904,15 @@ public interface IDAO {
     /**
      * Get Comments created by a specific user
      * 
-     * @param user          the creator/owner of the comment
-     * @param maxResults    maximum number of results to return
-     * @param sortField     class field to sort results by
-     * @param descending    set to "true" to sort descending
-     * @return              A list of at most maxResults comments.
+     * @param user the creator/owner of the comment
+     * @param maxResults maximum number of results to return
+     * @param sortField class field to sort results by
+     * @param descending set to "true" to sort descending
+     * @return A list of at most maxResults comments.
      * @throws DAOException
      */
     List<Comment> getCommentsOfUser(User user, int maxResults, String sortField, boolean descending) throws DAOException;
 
-    
     /**
      * <p>
      * getCommentsForPage.
@@ -1135,6 +1106,17 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<DownloadJob> getAllDownloadJobs() throws DAOException;
+
+    /**
+     * <p>
+     * getDownloadJobsForPi.
+     * </p>
+     * 
+     * @param pi Record identifier
+     * @return List of {@link DownloadJob}s for given record identfier
+     * @throws DAOException
+     */
+    public List<DownloadJob> getDownloadJobsForPi(String pi) throws DAOException;
 
     /**
      * <p>
@@ -1336,6 +1318,14 @@ public interface IDAO {
     public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException;
 
     /**
+     * 
+     * @param pi Record identifier
+     * @return {@link CMSPage}
+     * @throws DAOException
+     */
+    public CMSPage getCMSPageDefaultViewForRecord(String pi) throws DAOException;
+
+    /**
      * <p>
      * getCMSPage.
      * </p>
@@ -1469,12 +1459,11 @@ public interface IDAO {
      * Get a list of all {@link CMSMediaItem}s which contain the given category
      * 
      * @param category
-     * @return  all containing cmsPages
+     * @return all containing cmsPages
      * @throws DAOException
      */
     List<CMSMediaItem> getCMSMediaItemsByCategory(CMSCategory category) throws DAOException;
 
-    
     /**
      * <p>
      * getAllTopCMSNavigationItems.
@@ -1556,9 +1545,10 @@ public interface IDAO {
      * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
+     * @return
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void addStaticPage(CMSStaticPage page) throws DAOException;
+    public boolean addStaticPage(CMSStaticPage page) throws DAOException;
 
     /**
      * <p>
@@ -1566,9 +1556,10 @@ public interface IDAO {
      * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
+     * @return
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void updateStaticPage(CMSStaticPage page) throws DAOException;
+    public boolean updateStaticPage(CMSStaticPage page) throws DAOException;
 
     /**
      * <p>
@@ -1635,9 +1626,10 @@ public interface IDAO {
      * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @return
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void addCategory(CMSCategory category) throws DAOException;
+    public boolean addCategory(CMSCategory category) throws DAOException;
 
     /**
      * <p>
@@ -1645,9 +1637,10 @@ public interface IDAO {
      * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @return
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void updateCategory(CMSCategory category) throws DAOException;
+    public boolean updateCategory(CMSCategory category) throws DAOException;
 
     /**
      * <p>
@@ -1878,7 +1871,7 @@ public interface IDAO {
     public int changeCampaignStatisticContributors(User fromUser, User toUser) throws DAOException;
 
     // Misc
-    
+
     /**
      * 
      * @return true if accessible; false otherwise
@@ -1899,8 +1892,7 @@ public interface IDAO {
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
-     * @throws io.goobi.view@Override
-    er.exceptions.DAOException if any.
+     * @throws io.goobi.view@Override er.exceptions.DAOException if any.
      */
     public CMSPage getCMSPageForEditing(long id) throws DAOException;
 
@@ -2028,11 +2020,12 @@ public interface IDAO {
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a {@link java.lang.Integer} object.
-     * @param commenting 
+     * @param commenting
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException;
+
     public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page, String motivation) throws DAOException;
 
     /**
@@ -2041,7 +2034,8 @@ public interface IDAO {
      * @return
      * @throws DAOException
      */
-    public List<CrowdsourcingAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending) throws DAOException;
+    public List<CrowdsourcingAnnotation> getAnnotationsForUserId(Long userId, Integer maxResults, String sortField, boolean descending)
+            throws DAOException;
 
     /**
      * <p>
@@ -2129,14 +2123,6 @@ public interface IDAO {
     public boolean deleteAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
 
     /**
-     * Update the given collection from the database
-     *
-     * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    void refreshCMSCollection(CMSCollection collection) throws DAOException;
-
-    /**
      * Get the {@link GeoMap} of the given mapId
      * 
      * @param mapId
@@ -2187,7 +2173,7 @@ public interface IDAO {
      * @throws DAOException
      */
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException;
-    
+
     /**
      * Return a list of CMS-pages embedding the given map in a sidebar widget
      * 
@@ -2203,7 +2189,7 @@ public interface IDAO {
      * @throws DAOException
      */
     List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException;
-    
+
     /**
      * Get a paginated list of {@link CMSRecordNote}s
      * 
@@ -2217,11 +2203,11 @@ public interface IDAO {
      */
     public List<CMSRecordNote> getRecordNotes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException;
-   
+
     /**
      * Get all {@link CMSRecordNote}s for the given pi
      * 
-     * @param pi    The pi of the record.
+     * @param pi The pi of the record.
      * @param displayedNotesOnly set to true to only return notes with {@link CMSRecordNote#isDisplayŃote()} set to true
      * @return
      * @throws DAOException
@@ -2237,15 +2223,14 @@ public interface IDAO {
      */
     public List<CMSMultiRecordNote> getAllMultiRecordNotes(boolean displayedNotesOnly) throws DAOException;
 
-    
     /**
      * Get all persisted {@link CMSRecordNote}s
      * 
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public List<CMSRecordNote> getAllRecordNotes() throws DAOException;
-    
+
     /**
      * Get a {@link CMSRecordNote} by its id property
      * 
@@ -2253,7 +2238,7 @@ public interface IDAO {
      * @return
      */
     public CMSRecordNote getRecordNote(Long id) throws DAOException;
-    
+
     /**
      * Persist a new {@link CMSRecordNote}.
      * 
@@ -2261,7 +2246,7 @@ public interface IDAO {
      * @return
      */
     public boolean addRecordNote(CMSRecordNote note) throws DAOException;
-    
+
     /**
      * Updates an existing {@link CMSRecordNote}
      * 
@@ -2269,7 +2254,7 @@ public interface IDAO {
      * @return
      */
     public boolean updateRecordNote(CMSRecordNote note) throws DAOException;
-    
+
     /**
      * Deletes an existing {@link CMSRecordNote}
      * 
@@ -2282,32 +2267,30 @@ public interface IDAO {
 
     public TermsOfUse getTermsOfUse() throws DAOException;
 
-    public boolean isTermsOfUseActive() throws DAOException;
-
     public boolean resetUserAgreementsToTermsOfUse() throws DAOException;
 
     public List<CMSSlider> getAllSliders() throws DAOException;
-    
-    public CMSSlider getSlider(Long id) throws DAOException; 
-    
+
+    public CMSSlider getSlider(Long id) throws DAOException;
+
     public boolean addSlider(CMSSlider slider) throws DAOException;
-    
+
     public boolean updateSlider(CMSSlider slider) throws DAOException;
-    
+
     public boolean deleteSlider(CMSSlider slider) throws DAOException;
 
     List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException;
 
     public List<ThemeConfiguration> getConfiguredThemes() throws DAOException;
-    
+
     public ThemeConfiguration getTheme(String name) throws DAOException;
-    
+
     public boolean addTheme(ThemeConfiguration theme) throws DAOException;
-    
+
     public boolean updateTheme(ThemeConfiguration theme) throws DAOException;
-    
+
     public boolean deleteTheme(ThemeConfiguration theme) throws DAOException;
-    
+
     /**
      * @param first
      * @param pageSize
@@ -2324,7 +2307,7 @@ public interface IDAO {
     /**
      * @param commenting
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String commenting) throws DAOException;
 
@@ -2339,17 +2322,92 @@ public interface IDAO {
      * @throws DAOException
      */
     public long getTotalAnnotationCount() throws DAOException;
-    
+
     public List<CustomSidebarWidget> getAllCustomWidgets() throws DAOException;
-    
+
     public CustomSidebarWidget getCustomWidget(Long id) throws DAOException;
-    
+
     public boolean addCustomWidget(CustomSidebarWidget widget) throws DAOException;
-    
+
     public boolean updateCustomWidget(CustomSidebarWidget widget) throws DAOException;
-    
+
     public boolean deleteCustomWidget(Long id) throws DAOException;
-    
+
     public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException;
+
+    public CookieBanner getCookieBanner() throws DAOException;
+
+    public boolean saveCookieBanner(CookieBanner banner) throws DAOException;
+
+    public Long getNumRecordsWithComments(User user) throws DAOException;
+
+    public List getNativeQueryResults(String query) throws DAOException;
+
+    public int executeUpdate(String string) throws DAOException;
+
+    /**
+     * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
+     * 
+     * @return the EntityManagerFactory
+     */
+    EntityManagerFactory getFactory();
+
+    /**
+     * Get an EntityManager for a query or transaction. Must always be followed by {@link #close(EntityManager) close(EntityManager) Method} after the
+     * query/transaction
+     * 
+     * @return a new EntityManager
+     */
+    EntityManager getEntityManager();
+
+    /**
+     * Either close the given EntityManager or do some other post query/transaction handling for the given EntityManager. Must be called after each
+     * query/transaction.
+     * 
+     * @param EntityManager em
+     * @throws DAOException
+     */
+    void close(EntityManager em) throws DAOException;
+
+    /**
+     * Call {@link EntityManager#getTransaction() getTransaction()} on the given EntityManager and then {@link EntityTransaction#begin() begin()} on
+     * the transaction
+     *
+     * @return the transaction gotten from the entity manager
+     */
+    EntityTransaction startTransaction(EntityManager em);
+
+    /**
+     * Call {@link EntityTransaction#commit()} on the given transaction
+     * 
+     * @param EntityTransaction et
+     * @throws PersistenceException
+     */
+    void commitTransaction(EntityTransaction et) throws PersistenceException;
+
+    /**
+     * Call {@link EntityTransaction#commit()} on the current transaction of the given EntityManager
+     * 
+     * @param EntityManager em
+     * @throws PersistenceException
+     */
+    void commitTransaction(EntityManager em) throws PersistenceException;
+
+    /**
+     * Handling of exceptions occured during {@link #commitTransaction(EntityTransaction)}. Usually calls {@link EntityTransaction#rollback()}
+     * 
+     * @param EntityTransaction et
+     * @throws PersistenceException
+     */
+    void handleException(EntityTransaction et) throws PersistenceException;
+
+    /**
+     * Handling of exceptions occured during {@link #commitTransaction(EntityManager)} Usually calls {@link EntityTransaction#rollback()} on the
+     * current transaction of the given EntityManager
+     * 
+     * @param EntityManager et
+     * @throws PersistenceException
+     */
+    void handleException(EntityManager em);
 
 }

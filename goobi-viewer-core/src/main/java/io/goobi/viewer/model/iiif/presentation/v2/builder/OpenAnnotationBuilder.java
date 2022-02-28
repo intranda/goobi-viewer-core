@@ -22,13 +22,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONException;
@@ -172,9 +172,8 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
             FragmentSelector selector = new FragmentSelector(coordString);
             if (urlOnlyTarget) {
                 return new SpecificResourceURI(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
-            } else {
-                return new SpecificResource(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
             }
+            return new SpecificResource(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
         } catch (IllegalArgumentException e) {
             //old UGC coords format
             String regex = "([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+)";
@@ -237,7 +236,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
         getCrowdsourcingAnnotations(pi, urlsOnly, request).entrySet()
                 .stream()
                 // TODO use Objects.equals(Object, Object)
-                .filter(entry -> ObjectUtils.equals(page, entry.getKey()))
+                .filter(entry -> Objects.equals(page, entry.getKey()))
                 .map(Entry::getValue)
                 .flatMap(List::stream)
                 .forEach(anno -> list.addResource(anno));

@@ -1504,4 +1504,13 @@ public class ConfigurationBean implements Serializable {
     public String getSearchSortingDescendingKey(String field) {
         return DataManager.getInstance().getConfiguration().getSearchSortingKeyDescending(field).orElse("searchSortingDropdown_descending");
     }
+
+    /**
+     * 
+     * @param facetField
+     * @return
+     */
+    public boolean isTranslateFacetFieldLabels(String facetField) {
+        return DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels(facetField);
+    }
 }

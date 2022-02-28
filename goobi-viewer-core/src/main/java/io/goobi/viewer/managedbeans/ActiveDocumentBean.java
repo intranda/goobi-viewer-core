@@ -56,6 +56,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
@@ -984,39 +985,9 @@ public class ActiveDocumentBean implements Serializable {
             // logger.trace("current view: {}", pageType);
         }
 
-        int page;
-        int page2 = Integer.MAX_VALUE;
-        // logger.trace("given range: {}", pageOrderRange);
-        if (pageOrderRange.contains("-")) {
-            boolean firstMinus = false;
-            boolean secondMinus = false;
-            if (pageOrderRange.startsWith("-")) {
-                firstMinus = true;
-                pageOrderRange = pageOrderRange.substring(1);
-            }
-            if (pageOrderRange.contains("-")) {
-                if (pageOrderRange.contains("--")) {
-                    secondMinus = true;
-                    pageOrderRange = pageOrderRange.replace("--", "-");
-                }
-                String[] split = pageOrderRange.split("[-]");
-                page = Integer.valueOf(split[0]);
-                page2 = Integer.valueOf(split[1]);
-                if (firstMinus) {
-                    page *= -1;
-                }
-                if (secondMinus) {
-                    page2 *= -1;
-                }
-            } else {
-                page = Integer.valueOf(pageOrderRange);
-                if (firstMinus) {
-                    page *= -1;
-                }
-            }
-        } else {
-            page = Integer.valueOf(pageOrderRange);
-        }
+        int[] pages = StringTools.getIntegerRange(pageOrderRange);
+        int page = pages[0];
+        int page2 = pages[1];
 
         if (viewManager != null) {
             page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
@@ -1399,7 +1370,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      */
     public String getFullscreenImageUrl() throws IndexUnreachableException, DAOException {
-        if (viewManager.isDoublePageMode() && !viewManager.getCurrentPage().isDoubleImage()) {
+        if (viewManager != null && viewManager.isDoublePageMode() && !viewManager.getCurrentPage().isDoubleImage()) {
             Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
             Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
             if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
@@ -1558,9 +1529,9 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a int.
      */
-    public int getTocCurrentPage() {
+    public String getTocCurrentPage() {
         synchronized (this) {
-            return tocCurrentPage;
+            return Integer.toString(tocCurrentPage);
         }
     }
 
@@ -1576,10 +1547,11 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void setTocCurrentPage(int tocCurrentPage)
+    public void setTocCurrentPage(String tocCurrentPage)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         synchronized (this) {
-            this.tocCurrentPage = tocCurrentPage;
+            int[] pages = StringTools.getIntegerRange(tocCurrentPage);
+            this.tocCurrentPage = pages[0];
             if (this.tocCurrentPage < 1) {
                 this.tocCurrentPage = 1;
             }

@@ -15,7 +15,10 @@
 	        <h:panelGroup rendered="#{cc.attrs.collapse == false}">
 		        <div id="widgetWorkCount" class="widget">
 		        	<h2>#{msg.totalNumberOfVolumes}</h2>
-		        	<p><strong>#{searchBean.totalNumberOfVolumes}</strong></p>
+		        	<div class="widget__body">
+		        		<span><strong>#{searchBean.totalNumberOfVolumes}</strong></span>
+		        	</div>
+
 		        </div>
 	        </h:panelGroup>
 	        

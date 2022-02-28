@@ -238,11 +238,16 @@ public class IndexerTools {
         List<IndexAugmenter> augmenters = new ArrayList<>();
         augmenters.addAll(DataManager.getInstance().getModules());
         List annos = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
-        List comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page);
         IndexAugmenter annoAugmenter = new AnnotationIndexAugmenter(annos);
-        IndexAugmenter commentAugmenter = new AnnotationIndexAugmenter(comments);
         augmenters.add(annoAugmenter);
-        augmenters.add(commentAugmenter);
+        
+        if (page != null) {
+            // Only add comments if a page number is given, or else NPE
+            List comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page);
+            IndexAugmenter commentAugmenter = new AnnotationIndexAugmenter(comments);
+            augmenters.add(commentAugmenter);
+        }
+
         return augmenters;
     }
 

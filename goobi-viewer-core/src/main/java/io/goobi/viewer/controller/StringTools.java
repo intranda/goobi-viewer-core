@@ -43,6 +43,9 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
+
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
@@ -80,8 +83,6 @@ public class StringTools {
     /** Constant <code>PLUS_REPLACEMENT="U0025"</code> */
     public static final String PLUS_REPLACEMENT = "U002B";
 
-
-    
     /**
      * Escpae url for submitted form data. A space is encoded as '+'.
      * 
@@ -215,12 +216,12 @@ public class StringTools {
         if (s == null) {
             throw new IllegalArgumentException("s may not be null");
         }
-        
+
         return Normalizer.normalize(s, Normalizer.Form.NFD)
                 .replaceAll("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+", "");
-                
+
     }
-    
+
     public static String replaceCharacterVariants(String text) {
         return text.replace("ſ", "s")
                 .replace("ø", "o")
@@ -229,7 +230,7 @@ public class StringTools {
                 .replace("ł", "l")
                 .replace("Ð", "D")
                 .replace("ð", "d");
-                
+
     }
 
     /**
@@ -337,6 +338,22 @@ public class StringTools {
     }
 
     /**
+     * 
+     * @param input
+     * @return
+     */
+    public static String getCharset(String input) {
+        CharsetDetector cd = new CharsetDetector();
+        cd.setText(input.getBytes());
+        CharsetMatch cm = cd.detect();
+        if (cm != null) {
+            return cm.getName();
+        }
+
+        return null;
+    }
+
+    /**
      * Converts a <code>String</code> from one given encoding to the other.
      *
      * @param string The string to convert.
@@ -409,7 +426,7 @@ public class StringTools {
         }
         return value;
     }
-    
+
     /**
      * <p>
      * unescapeCriticalUrlChracters.
@@ -563,6 +580,7 @@ public class StringTools {
 
         return ret;
     }
+    
 
     /**
      * <p>
@@ -686,6 +704,60 @@ public class StringTools {
         }
 
         return ret;
+    }
+    
+    /**
+     * Try to parse the given string as integer.
+     * @param s the string to parse
+     * @return An Optional containing the parsed int. If the string is blank or cannot be parsed to an integer, an empty Optional is returned
+     */
+    public static Optional<Integer> parseInt(String s) {
+        if(StringUtils.isBlank(s)) {
+            return Optional.empty();
+        } else {
+            try {                
+                int i = Integer.parseInt(s);
+                return Optional.of(i);
+            } catch(NumberFormatException e) {
+                return Optional.empty();
+            }
+        }
+    }
+    
+    public static int[] getIntegerRange(String range) {
+        int page;
+        int page2 = Integer.MAX_VALUE;
+        if (range.contains("-")) {
+            boolean firstMinus = false;
+            boolean secondMinus = false;
+            if (range.startsWith("-")) {
+                firstMinus = true;
+                range = range.substring(1);
+            }
+            if (range.contains("-")) {
+                if (range.contains("--")) {
+                    secondMinus = true;
+                    range = range.replace("--", "-");
+                }
+                String[] split = range.split("[-]");
+                page = Integer.valueOf(split[0]);
+                page2 = Integer.valueOf(split[1]);
+                if (firstMinus) {
+                    page *= -1;
+                }
+                if (secondMinus) {
+                    page2 *= -1;
+                }
+            } else {
+                page = Integer.valueOf(range);
+                if (firstMinus) {
+                    page *= -1;
+                }
+            }
+        } else {
+            page = Integer.valueOf(range);
+        }
+        return new int[]{page, page2};
     }
 
 }

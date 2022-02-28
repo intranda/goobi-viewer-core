@@ -758,8 +758,9 @@
 		<action onPostback="false">#{adminBean.setCurrentUser(null)}</action>
 	</url-mapping>
     <url-mapping id="adminUserEdit">
-        <pattern value="/admin/users/edit/#{userId:adminBean.currentUserId}/" />
+        <pattern value="/admin/users/edit/#{userId}/" />
         <view-id value="/resources/admin/views/adminUser.xhtml" />
+        <action onPostback="false">#{adminBean.setCurrentUserId(userId)}</action>
     </url-mapping>
     <url-mapping id="adminUserNew">
         <pattern value="/admin/users/new/" />
@@ -804,8 +805,9 @@
 		<view-id value="/resources/admin/views/adminLicenses.xhtml" />
 	</url-mapping>
 	<url-mapping id="adminLicenseEdit">
-		<pattern value="/admin/licenses/edit/#{licenseTypeId:adminBean.currentLicenseTypeId}/" />
+		<pattern value="/admin/licenses/edit/#{licenseTypeId}/" />
 		<view-id value="/resources/admin/views/adminLicense.xhtml" />
+		<action onPostback="false">#{adminBean.setCurrentLicenseTypeId(licenseTypeId)}</action>
 	</url-mapping>
     <url-mapping id="adminLicenseNew">
         <pattern value="/admin/licenses/new/" />
@@ -858,8 +860,12 @@
         <action onPostback="false">#{adminBean.triggerNewMessageEntryMode}</action>
         <action onPostback="false">#{adminBean.lockTranslation}</action>
     </url-mapping>
+    <url-mapping id="adminCookieBanner">
+        <pattern value="/admin/legal/cookies/" />
+        <view-id value="/resources/admin/views/adminCookieBanner.xhtml" />
+    </url-mapping>
 
-		<!-- THEME CONFIGS -->
+	<!-- THEME CONFIGS -->
     <url-mapping id="adminThemes">
         <pattern value="/admin/themes/" />
 		<view-id value="/resources/admin/views/adminThemes.xhtml" />

@@ -286,7 +286,6 @@
 	        	if(clickToLeave) {
 	        	    $(imageView.viewer.canvas).css("cursor", "pointer");
 	        	     imageView.viewer.addHandler("canvas-release", () => {
-	        	        console.log("canvas-release");
 	        	        if(!imageView.dragging) {		        	            
 		        	        let $target = $(event.target);
 		        	        if($target.filter($area).length == 0) {

@@ -15,18 +15,18 @@
 
     <composite:implementation>
     
-    <ui:fragment rendered="#{userBean.mustAgreeToTermsOfUse()}">
+    <ui:fragment rendered="#{termsOfUseBean.isTermsOfUseActive() and userBean.mustAgreeToTermsOfUse()}">
 
 			<!-- MODAL -->
-			<div class="modal modal__user-terms" id="#{cc.attrs.id}" tabindex="-1" role="dialog" aria-labelledby="#{termsOfUseBean.getTitleForDisplay()}" aria-hidden="true">
+			<div class="modal modal__user-terms" id="#{cc.attrs.id}" tabindex="-1" role="dialog" aria-labelledby="#{termsOfUseBean.getTitle()}" aria-hidden="true">
 			  <div class="modal-dialog modal-dialog-centered" role="document">
 			    <div class="modal-content">
 			      <div class="modal-header">
-			        <h1 class="modal-title">#{termsOfUseBean.getTitleForDisplay()}</h1>
+			        <h1 class="modal-title">#{termsOfUseBean.getTitle()}</h1>
 			      </div>
 			      <div class="modal-body">
 					<div class="modal__user-terms-text mb-3">
-	                    <h:outputText value="#{termsOfUseBean.getDescriptionForDisplay()}" escape="false" />
+	                    <h:outputText value="#{termsOfUseBean.getDescription()}" escape="false" />
 	                </div>
 			  <h:form id="termsForm" styleClass="form-horizontal" prependId="false">
 			  <div id="terms" class="terms-modal">              

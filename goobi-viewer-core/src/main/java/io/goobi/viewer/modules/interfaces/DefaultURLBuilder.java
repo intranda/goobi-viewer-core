@@ -22,7 +22,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -78,7 +81,22 @@ public class DefaultURLBuilder implements IURLBuilder {
     @Override
     public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType, boolean topStruct) {
         StringBuilder sb = new StringBuilder();
-        sb.append(pageType.getName())
+        String view = pageType.getName();
+        
+        // Check for CMS page as the default view for this record; do not override page-specific URLs
+        if (topStruct && StringUtils.isNotEmpty(pi)) {
+            try {
+                CMSPage cmsPage = DataManager.getInstance().getDao().getCMSPageDefaultViewForRecord(pi);
+                if (cmsPage != null) {
+                    logger.trace("CMS default view page found: {}", cmsPage.getId());
+                    return cmsPage.getRelativeUrlPath();
+                }
+            } catch (DAOException e) {
+                logger.error(e.getMessage());
+            }
+        }
+        
+        sb.append(view)
                 .append('/')
                 .append(pi)
                 .append('/')

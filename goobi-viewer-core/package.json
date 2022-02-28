@@ -47,7 +47,7 @@
     "leaflet-extra-markers": "~1.2.1",
     "leaflet.markercluster": "~1.5.1",
     "mapbox-gl": "~2.4.1",
-    "masonry-layout": "~4.1.1",
+    "masonry-layout": "~4.2.2",
     "mirador": "~3.3.0",
     "openseadragon": "~2.2.1",
     "pdfjs-dist": "~2.10.377",
@@ -55,7 +55,7 @@
     "q": "~1.5.1",
     "riot": "~3.12.0",
     "swagger-ui-dist": "~3.52.3",
-    "sweetalert2": "~11.1.7",
+    "sweetalert2": "~11.3.10",
     "swiper": "~6.8.4",
     "three": "~0.132.2",
     "tinymce": "~5.10.0"

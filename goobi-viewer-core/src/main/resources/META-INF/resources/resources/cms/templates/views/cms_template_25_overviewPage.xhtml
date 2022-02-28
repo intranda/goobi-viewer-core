@@ -140,9 +140,6 @@
 					<h:outputText id="literature" escape="false" />
 					
 					<pdfDocument data="#{cmsPage.getContent('literature')}"/>
-					
-					<!--                     <iframe id="pdfView" class="pdf_view" onload="resizeIframe(this)"></iframe> -->
-<!-- 					<div id="pdfView" class="pdf_view"></div> -->
 				</div>
 			</div>
 
@@ -154,11 +151,7 @@
                     if ( url.toLowerCase().endsWith( ".pdf" ) ) {
                         
                         riot.mount( 'pdfDocument' );
-                        
-//                         renderPDF(url);
-//                         	resizePDF(url);
 
-                        
                     }
                     else {
                         $.ajax( {
@@ -174,143 +167,7 @@
                 else {
                     $( '#literatureLoader' ).hide();
                 }
-                
-                function resizePDF(url) {
-                    var loadingTask = pdfjsLib.getDocument( url );
-               		loadingTask.promise.then( function( pdf ) {
-               		    console.log("pdf ", pdf, pdf.numPages);
-               		    var pages = [];
-               		    for(var pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
-               		        var page = pdf.getPage(pageNo);
-               		        pages.push(Q(page));
-               		    }
-                   		 Q.allSettled(pages).then(function(results) {
-                         	var errorMsg = "";
-                         	
-               		 		var totalHeight = 0;
-                            results.forEach(function (result) {
-                                 if (result.state === "fulfilled") {
-                                 	var page = result.value;
-               		    			console.log("page ", page);
-	                   		     	var viewport = page.getViewport( 1 );
-	                   		     	var viewportHeight = viewport.height;
-	                   		     	console.log("page height ", viewportHeight);
-	                   		     	totalHeight += viewportHeight;
-                                 }
-               		    	});
-                            totalHeight += 32;
-                            console.log("total height ", totalHeight);
-                            console.log("load url ", url);
-                            $("#pdfView").height(totalHeight);
-                            $("#pdfView").show();
-        					$("#pdfView").attr("src", url);    
-                            $("#pdfView").on("load", function() {
-                            	$('#literatureLoader').hide();
-                            });
-                            
-               			});
-               		});
-                }
-                
-                function resizeIframe( iframe ) {
-                    console.log( "resize object ", $( iframe ) );
-                    $( iframe ).iframeAutoHeight()
-                    //                 let pages = $("#pdfView").children();
-                    //                 console.log("pdf pages ", iframe.getSVGDocument());
-                    console.log( "resize iframe ", iframe, " to ", iframe.contentWindow.document.body );
-                    iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
-                }
-                
-                function renderPDF(url) {
-                    var loadingTask = pdfjsLib.getDocument( url );
-                    loadingTask.promise.then( function( pdf ) {
-                        pdf.getPage( 1 ).then( function( page ) {
-                            var scale = 1.4;
-                            var viewport = page.getViewport( scale );
-                            
-                            // Apply page dimensions to the <canvas> element.
-                            var container = document.getElementById( "pdfView" );
-                            
-                            var canvas = document.createElement("canvas");
-                            canvas.setAttribute("class" , "pdf-canvas");
-                            container.appendChild(canvas);
-                            var canvasOffset = $(canvas).offset();
-                            
-                            var context = canvas.getContext( "2d" );
-                            canvas.height = viewport.height;
-                            canvas.width = viewport.width;
-                            console.log("canvas ", canvas);
-                            
-                            // Render the page into the <canvas> element.
-                            var renderContext = {
-                                canvasContext: context,
-                                viewport: viewport
-                            };
-                            page.render( renderContext )
-                              .then(function() {
-							    // Get text-fragments
-							    return page.getTextContent();
-							  })
-							  .then(function(textContent) {
-							      console.log("text content ", textContent);
-							    
-							    // Create div which will hold text-fragments
-							    var textLayerDiv = document.createElement("div");
-							    textLayerDiv.setAttribute("class", "text-layer");
-							    container.appendChild(textLayerDiv);
-							    $('.text-layer').css({
-						            height : viewport.height+'px',
-						            width : viewport.width+'px',
-						            top : canvasOffset.top,
-						            left : canvasOffset.left
-						        });
 
-							
-							    // Create new instance of TextLayerBuilder class
-							    pdfjsLib.renderTextLayer({
-							        textContent: textContent,
-							        container: $(".text-layer").get(0),
-							        viewport: viewport,
-							        textDivs: []
-							    });
-							    
-							    return page.getAnnotations();
-							  })
-							  .then(function(annotationData) {
-								    
-								    
-								    // Create div which will hold text-fragments
-								    var annotationLayerDiv = document.createElement("div");
-								    annotationLayerDiv.setAttribute("class", "annotation-layer");
-								    container.appendChild(annotationLayerDiv);
-								    $('.annotation-layer').css({
-							            height : viewport.height+'px',
-							            width : viewport.width+'px',
-							            top : canvasOffset.top,
-							            left : canvasOffset.left
-							        });
-							      
-								    
-								    pdfjsLib.AnnotationLayer.render({
-								        viewport: viewport.clone({ dontFlip: true }),
-								        div: $(".annotation-layer").get(0),
-								        annotations: annotationData,
-								        page: page,
-								        linkService : new SimpleLinkService()
-								    });
-							  })
-                            
-                            .then( function() {
-                                console.log( "Page rendered!" );
-                                $(container).show();
-                                $( '#literatureLoader' ).hide();
-                            } );
-                        } );
-                    } );
-                }
-                
-
-                
               //]]>
             </script>
 		</f:view>
@@ -324,11 +181,10 @@
                     showNormdata: "#{msg.normdataExpand}"
                 },
                 elemWrapper: $( "#metadataElementWrapper" )
-            };
+            }; 
             
             viewerJS.normdata.init( normdataConfig );
         </script>
-		
 	</ui:define>
 
 	<!-- SIDEBAR -->

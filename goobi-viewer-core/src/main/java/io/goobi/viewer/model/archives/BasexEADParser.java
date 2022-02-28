@@ -50,13 +50,12 @@ import org.jdom2.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.monitoring.timer.Time;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -88,20 +87,23 @@ public class BasexEADParser {
      * @throws PresentationException
      * @throws ConfigurationException
      */
-    public BasexEADParser(String basexUrl) throws PresentationException, IndexUnreachableException {
+    public BasexEADParser(String basexUrl, SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
         this.basexUrl = basexUrl;
-        this.associatedRecordMap = getAssociatedRecordPis();
+        this.associatedRecordMap = getAssociatedRecordPis(searchIndex);
     }
 
-    private static Map<String, Entry<String, Boolean>> getAssociatedRecordPis() throws PresentationException, IndexUnreachableException {
-        return DataManager.getInstance()
-                .getSearchIndex()
+    private static Map<String, Entry<String, Boolean>> getAssociatedRecordPis(SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
+        if(searchIndex != null) {
+        return searchIndex
                 .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*",
                         Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI, SolrConstants.BOOL_IMAGEAVAILABLE))
                 .stream()
                 .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)),
                         doc -> new SimpleEntry<String, Boolean>(SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI)),
                                 SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE)))));
+        } else {
+            return Collections.emptyMap();
+        }
     }
 
     /**
@@ -145,28 +147,7 @@ public class BasexEADParser {
         }
     }
 
-    /**
-     * 
-     * @param database
-     * @return
-     * @throws IOException
-     * @throws IllegalStateException
-     * @throws HTTPException
-     * @throws JDOMException
-     */
-    public Document retrieveDatabaseDocument(ArchiveResource archive) throws IOException, IllegalStateException, HTTPException, JDOMException {
-        if (archive != null) {
-            String response;
-                String url = UriBuilder.fromPath(basexUrl).path("db").path(archive.getDatabaseName()).path(archive.getResourceName()).build().toString();
-                logger.trace("URL: {}", url);
-                response = NetTools.getWebContentGET(url);
 
-            // get xml root element
-                Document document = openDocument(response);
-                return document;
-        }
-        throw new IllegalStateException("Must provide database name before loading database");
-    }
 
     /**
      * Loads the given database and parses the EAD document.
@@ -180,12 +161,10 @@ public class BasexEADParser {
      * @throws JDOMException
      * @throws ConfigurationException
      */
-    public ArchiveEntry loadDatabase(ArchiveResource database, Document document)
+    public ArchiveEntry loadDatabase(ArchiveResource database)
             throws IllegalStateException, IOException, HTTPException, JDOMException, ConfigurationException {
 
-        if (document == null) {
-            document = retrieveDatabaseDocument(database);
-        }
+        Document document = retrieveDatabaseDocument(database);
 
         // parse ead file
         return parseEadFile(document);
@@ -223,6 +202,29 @@ public class BasexEADParser {
 
         return rootElement;
     }
+    
+    /**
+     * 
+     * @param database
+     * @return
+     * @throws IOException
+     * @throws IllegalStateException
+     * @throws HTTPException
+     * @throws JDOMException
+     */
+    private Document retrieveDatabaseDocument(ArchiveResource archive) throws IOException, IllegalStateException, HTTPException, JDOMException {
+        if (archive != null) {
+            String response;
+                String url = UriBuilder.fromPath(basexUrl).path("db").path(archive.getDatabaseName()).path(archive.getResourceName()).build().toString();
+                logger.trace("URL: {}", url);
+                response = NetTools.getWebContentGET(url);
+
+            // get xml root element
+                Document document = openDocument(response);
+                return document;
+        }
+        throw new IllegalStateException("Must provide database name before loading database");
+    }
 
     /**
      * read the metadata for the current xml node. - create an {@link ArchiveEntry} - execute the configured xpaths on the current node - add the
@@ -236,7 +238,6 @@ public class BasexEADParser {
      */
     private static ArchiveEntry parseElement(int order, int hierarchy, Element element, List<ArchiveMetadataField> configuredFields,
             Map<String, Entry<String, Boolean>> associatedPIs) {
-        try(Time time = DataManager.getInstance().getTiming().takeTime("parseElement")) {
         if (element == null) {
             throw new IllegalArgumentException("element may not be null");
         }
@@ -343,7 +344,6 @@ public class BasexEADParser {
         }
 
         return entry;
-        }
     }
 
     /**

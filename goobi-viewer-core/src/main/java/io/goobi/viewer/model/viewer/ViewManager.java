@@ -47,6 +47,7 @@ import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.common.SolrDocument;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.jdom2.JDOMException;
@@ -79,6 +80,8 @@ import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.model.archives.ArchiveEntry;
+import io.goobi.viewer.model.archives.ArchiveResource;
 import io.goobi.viewer.model.calendar.CalendarView;
 import io.goobi.viewer.model.citation.Citation;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
@@ -162,7 +165,8 @@ public class ViewManager implements Serializable {
     private List<String> downloadFilenames = null;
     private String citationStyle = null;
     private CitationProcessorWrapper citationProcessorWrapper;
-    private String archiveEntryUri;
+    private ArchiveResource archiveResource = null;
+    private Pair<Optional<String>, Optional<String>> archiveTreeNeighbours = Pair.of(Optional.empty(), Optional.empty());
 
     /**
      * <p>
@@ -217,11 +221,26 @@ public class ViewManager implements Serializable {
 
         String archiveId = getArchiveEntryIdentifier();
         if (StringUtils.isNotBlank(archiveId)) {
-            ArchiveBean archiveBean = (ArchiveBean) BeanUtils.getBeanByName("archiveBean", ArchiveBean.class);
-            this.archiveEntryUri = archiveBean.loadArchiveForId(archiveId);
+            this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
+            this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
+        } 
+    }
+    
+    public Pair<Optional<String>, Optional<String>> getArchiveTreeNeighbours() {
+        return archiveTreeNeighbours;
+    }
+    
+    public List<ArchiveEntry> getArchiveHierarchyForIdentifier(String identifier) {
+        if(this.archiveResource != null) {            
+            return DataManager.getInstance().getArchiveManager().getArchiveHierarchyForIdentifier(this.archiveResource, identifier);
         } else {
-            this.archiveEntryUri = null;
+            return Collections.emptyList();
         }
+    }
+    
+    public String getArchiveUrlForIdentifier(String identifier) {
+        String url = DataManager.getInstance().getArchiveManager().getArchiveUrl(this.archiveResource, identifier);
+        return url.replaceAll("\\s", "+");
     }
     
     private void setDoublePageModeForDropDown(boolean doublePages) {
@@ -1325,26 +1344,22 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * Main method for setting the current page(s) in this ViewManager.
+     * Main method for setting the current page(s) in this ViewManager. If the given String cannot be parsed to an integer
+     * the current image order is set to 1
      * 
      * @param currentImageOrderString A string containing a single page number or a range of two pages
-     * @throws NumberFormatException
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws IDDOCNotFoundException
      */
     public void setCurrentImageOrderString(String currentImageOrderString)
-            throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException {
-        if (StringUtils.isEmpty(currentImageOrderString)) {
-            return;
-        }
-
+            throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         int newImageOrder = 1;
-        if (currentImageOrderString.contains("-")) {
+        if (currentImageOrderString != null && currentImageOrderString.contains("-")) {
             String[] orderSplit = currentImageOrderString.split("[-]");
-            newImageOrder = Integer.valueOf(orderSplit[0]);
+            newImageOrder = StringTools.parseInt(orderSplit[0]).orElse(1);
         } else {
-            newImageOrder = Integer.valueOf(currentImageOrderString);
+            newImageOrder = StringTools.parseInt(currentImageOrderString).orElse(1);
         }
 
         setCurrentImageOrder(newImageOrder);
@@ -1860,11 +1875,15 @@ public class ViewManager implements Serializable {
      */
     public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         String pi = getPi();
-        return DataManager.getInstance()
-                .getRestApiManager()
-                .getContentApiManager()
-                .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO_ZIP).params(pi).build())
-                .orElse("");
+        if(pi != null) {            
+            return DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
+                    .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO_ZIP).params(pi).build())
+                    .orElse("");
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -1951,17 +1970,21 @@ public class ViewManager implements Serializable {
         String filename;
         try {
             filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | NullPointerException e) {
             return "";
         }
         String pi = getPi();
-        return DataManager.getInstance()
-                .getRestApiManager()
-                .getContentApiManager()
-                .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
-                        .params(pi, filename)
-                        .build())
-                .orElse("");
+        if(StringUtils.isNoneBlank(pi, filename)) {
+            return DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
+                    .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
+                            .params(pi, filename)
+                            .build())
+                    .orElse("");            
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -2130,9 +2153,6 @@ public class ViewManager implements Serializable {
             } catch (DAOException e) {
                 logger.debug("DAOException thrown here: {}", e.getMessage());
                 return false;
-            } catch (RecordNotFoundException e) {
-                logger.error("Record not found in index: {}", pi);
-                return false;
             }
         }
 
@@ -2145,11 +2165,14 @@ public class ViewManager implements Serializable {
      * @return true if current user has the privilege for this record; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws RecordNotFoundException
      */
-    public boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException, RecordNotFoundException {
+    public boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, privilege, request);
+        try {
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, privilege, request);
+        } catch (RecordNotFoundException e) {
+            return false;
+        }
     }
 
     /**
@@ -2564,15 +2587,19 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws RecordNotFoundException
      */
-    public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
+    public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
         if (isBornDigital()) {
             return false;
         }
 
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                BeanUtils.getRequest());
+        boolean access;
+        try {
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                    BeanUtils.getRequest());
+        } catch ( RecordNotFoundException e) {
+            return false;
+        }
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
     }
 
@@ -2601,16 +2628,20 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws RecordNotFoundException
      */
-    public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
+    public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException  {
         if (isBornDigital()) {
             return false;
         }
 
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                BeanUtils.getRequest());
-        return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork() || isWorkHasTEIFiles());
+        boolean access;
+        try {
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                    BeanUtils.getRequest());
+            return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork() || isWorkHasTEIFiles());
+        } catch (RecordNotFoundException e) {
+            return false;
+        }
     }
 
     /**
@@ -2668,11 +2699,15 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws RecordNotFoundException
      */
-    public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException, DAOException, RecordNotFoundException {
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                BeanUtils.getRequest());
+    public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException, DAOException {
+        boolean access;
+        try {
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                    BeanUtils.getRequest());
+        } catch (RecordNotFoundException e) {
+            return false;
+        }
         if (!access) {
             return false;
         }
@@ -3916,13 +3951,6 @@ public class ViewManager implements Serializable {
 
         // logger.trace("getArchiveEntryIdentifier: {}", topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID));
         return topStructElement.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID);
-    }
-
-    /**
-     * @return the archiveEntryUri
-     */
-    public String getArchiveEntryUri() {
-        return archiveEntryUri;
     }
 
     /**
