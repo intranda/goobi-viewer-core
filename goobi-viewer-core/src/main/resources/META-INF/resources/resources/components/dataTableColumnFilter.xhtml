@@ -37,10 +37,12 @@
                         </ui:fragment>
                         <!-- NO MESSAGE KEY, USE ICON INSTEAD -->
                         <ui:fragment rendered="#{cc.attrs.key == 'empty'}">
-                            <h:commandLink id="#{cc.attrs.filter.column}BtnIcon" styleClass="btn btn--icon btn-filter">
+                            <button
+								id="#{cc.attrs.filter.column}BtnIcon"
+								jsf:styleClass="btn btn--icon btn-filter">
                                 <i class="fa fa-filter" aria-hidden="true"></i>
                                 <f:ajax execute="@form" render="@form" />
-                            </h:commandLink>
+                            </button>
                         </ui:fragment>
                     </div>
                 </div>
