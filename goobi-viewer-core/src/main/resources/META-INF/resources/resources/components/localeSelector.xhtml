@@ -17,11 +17,12 @@
 		<ul class="#{cc.attrs.styleClass}" role="tablist">
 			<ui:repeat var="locale" value="#{cc.attrs.object.getLocales()}">
 				<li role="tab"
-					class="admin__language-tab 
+					class="admin__language-tab
 						#{cc.attrs.object.isSelected(locale) ? 'active':''}
 						#{cc.attrs.object.isEmpty(locale) ? '' : (cc.attrs.object.isComplete(locale) ? '-already-translated' : '-partly-translated')}
 						#{cc.attrs.object.isDefaultLocaleSelected() ? '-default-language':''}">
 					<h:commandLink
+						role="button"
 						value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
 						action="#{cc.attrs.object.setSelectedLocale(locale)}"
 						immediate="false">

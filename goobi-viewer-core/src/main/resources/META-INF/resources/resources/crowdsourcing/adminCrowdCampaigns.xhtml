@@ -85,11 +85,6 @@
                                                 <a href="#{navigationHelper.applicationUrl}admin/crowdsourcing/campaigns/edit/#{campaign.id}/"
                                                     class="admin__table-action-link" aria-label="#{msg.edit}: #{campaign.getTitle(navigationHelper.locale, true)}">#{msg.edit}</a>
                                                 <!-- Delete link -->
-                                                <!--
-                                                <h:commandLink styleClass="admin__table-action-link -redlink"
-                                                    onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_campaign_deleteConfirmationText}&quot; ) ) { return false };"
-                                                    action="#{crowdsourcingBean.deleteCampaignAction(campaign)}" title="#{msg.delete}" alt="#{msg.delete}">#{msg.delete}</h:commandLink>
-                                                -->
                                                 <button class="admin__table-action-link -redlink"
                                                     jsf:onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_campaign_deleteConfirmationText}&quot; ) ) { return false };"
                                                     jsf:action="#{crowdsourcingBean.deleteCampaignAction(campaign)}" title="#{msg.delete}" alt="#{msg.delete}">
@@ -144,11 +139,11 @@
                     viewerJS.dataTable.init( dataTableConfig );
                 } );
                         riot.mount("progressBar");
-                        
+
                 // Create no entries found message
     			if($('.admin__table-entry').length == 0) {
     				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
-    			}    
+    			}
 
             </script>
         </h:panelGroup>

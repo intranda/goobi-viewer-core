@@ -100,11 +100,12 @@
 												contentid="annotation_body_#{annotation.id}" />
 											<div>
 												<!-- TODO INLINE CSS -->
-												<a
+												<button
 													href="#{navigationHelper.objectUrl}#{annotation.targetLink}"
-													class="admin__table-action-link"
+													class="btn btn--clear admin__table-action-link"
 													style="padding-right: 1.4rem;" target="_blank"
-													aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}</a>
+													aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}
+												</button>
 											</div>
 										</div>
 										<!-- CAMPAIGN -->
