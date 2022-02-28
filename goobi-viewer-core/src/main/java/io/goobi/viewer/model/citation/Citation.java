@@ -103,8 +103,13 @@ public class Citation {
     public String getCitationString(String outputFormat) throws IOException {
         // logger.trace("Citation string generation START");
         CSLItemData itemData = itemDataProvider.addItemData(id, fields, type);
-        String ret = makeAdhocBibliography(outputFormat, itemData).makeString().trim();
-        // logger.trace("Citation string generation END");
-        return ret;
+        try {
+            String ret = makeAdhocBibliography(outputFormat, itemData).makeString().trim();
+            // logger.trace("Citation string generation END");
+            return ret;
+        } catch (Exception e) {
+            logger.warn(e.getMessage());
+            return "";
+        }
     }
 }
