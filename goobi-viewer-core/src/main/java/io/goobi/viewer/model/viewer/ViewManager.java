@@ -1875,11 +1875,15 @@ public class ViewManager implements Serializable {
      */
     public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         String pi = getPi();
-        return DataManager.getInstance()
-                .getRestApiManager()
-                .getContentApiManager()
-                .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO_ZIP).params(pi).build())
-                .orElse("");
+        if(pi != null) {            
+            return DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
+                    .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO_ZIP).params(pi).build())
+                    .orElse("");
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -1970,13 +1974,17 @@ public class ViewManager implements Serializable {
             return "";
         }
         String pi = getPi();
-        return DataManager.getInstance()
-                .getRestApiManager()
-                .getContentApiManager()
-                .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
-                        .params(pi, filename)
-                        .build())
-                .orElse("");
+        if(StringUtils.isNoneBlank(pi, filename)) {
+            return DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
+                    .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
+                            .params(pi, filename)
+                            .build())
+                    .orElse("");            
+        } else {
+            return "";
+        }
     }
 
     /**
