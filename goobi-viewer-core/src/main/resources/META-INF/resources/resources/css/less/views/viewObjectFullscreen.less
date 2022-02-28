@@ -423,6 +423,14 @@
         display: none;
       }
     }
+	&.fs-archives {
+		.fullscreen__view-sidebar-accordeon-panel-title {
+			display: flex;
+		}
+		.widget-archives__archives-link {
+			margin-top: 1.6rem;
+		}
+	}
     &.share-image-area {
       ul {
         list-style: circle;
@@ -459,6 +467,15 @@
       background-color: @fsLightgray;
     }
   }
+  &__view-sidebar-accordeon-panel-title-actions {
+	margin-left: auto;
+		a {
+			margin-inline-start: 0.6rem;
+			&:hover {
+				text-decoration: none;
+			}
+		}
+	}
   &__view-sidebar-accordeon-panel-body {
     display: none;
     padding: 15px;

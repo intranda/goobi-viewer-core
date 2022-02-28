@@ -723,5 +723,41 @@ public class StringTools {
             }
         }
     }
+    
+    public static int[] getIntegerRange(String range) {
+        int page;
+        int page2 = Integer.MAX_VALUE;
+        if (range.contains("-")) {
+            boolean firstMinus = false;
+            boolean secondMinus = false;
+            if (range.startsWith("-")) {
+                firstMinus = true;
+                range = range.substring(1);
+            }
+            if (range.contains("-")) {
+                if (range.contains("--")) {
+                    secondMinus = true;
+                    range = range.replace("--", "-");
+                }
+                String[] split = range.split("[-]");
+                page = Integer.valueOf(split[0]);
+                page2 = Integer.valueOf(split[1]);
+                if (firstMinus) {
+                    page *= -1;
+                }
+                if (secondMinus) {
+                    page2 *= -1;
+                }
+            } else {
+                page = Integer.valueOf(range);
+                if (firstMinus) {
+                    page *= -1;
+                }
+            }
+        } else {
+            page = Integer.valueOf(range);
+        }
+        return new int[]{page, page2};
+    }
 
 }
