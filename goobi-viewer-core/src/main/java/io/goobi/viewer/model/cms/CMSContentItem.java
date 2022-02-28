@@ -572,6 +572,13 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public String getHtmlFragment() {
         return htmlFragment;
     }
+    
+    public String getContent() {
+        return Optional.ofNullable(getOwnerPageLanguageVersion())
+                .map(CMSPageLanguageVersion::getOwnerPage)
+                .map(page -> page.getContent(this.itemId))
+                .orElse("");
+    }
 
     /**
      * <p>
