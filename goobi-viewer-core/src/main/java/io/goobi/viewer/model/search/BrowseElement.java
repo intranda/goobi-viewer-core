@@ -532,6 +532,7 @@ public class BrowseElement implements Serializable {
                     MetadataParameterType type;
                     switch (sortField.getOne()) {
                         case SolrConstants.DATECREATED:
+                        case SolrConstants.DATEINDEXED:
                         case SolrConstants.DATEUPDATED:
                             type = MetadataParameterType.MILLISFIELD;
                             break;

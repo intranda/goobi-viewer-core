@@ -971,7 +971,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public CMSMediaItemMetadata getMediaMetadata(String itemId) {
         CMSContentItem item;
         try {
-            item = getContentItem(itemId);
+            item = getContentItemOrThrowException(itemId);
         } catch (CmsElementNotFoundException e1) {
             item = null;
         }
@@ -992,7 +992,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public CMSMediaItem getMedia(String itemId) {
         CMSContentItem item;
         try {
-            item = getContentItem(itemId);
+            item = getContentItemOrThrowException(itemId);
         } catch (CmsElementNotFoundException e1) {
             item = null;
         }
@@ -1012,7 +1012,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      */
     public Optional<CMSContentItem> getContentItemIfExists(String itemId) {
         try {
-            return Optional.of(getContentItem(itemId));
+            return Optional.of(getContentItemOrThrowException(itemId));
         } catch (CmsElementNotFoundException e) {
             return Optional.empty();
         }
@@ -1024,10 +1024,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      *
      * @param itemId a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
-     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if any.
+     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if no matching element was found
      */
-    public CMSContentItem getContentItem(String itemId) throws CmsElementNotFoundException {
-        CMSPageLanguageVersion language;
+    public CMSContentItem getContentItemOrThrowException(String itemId) throws CmsElementNotFoundException {
         CMSContentItem item = null;
         try {
             item = getBestLanguage().getContentItem(itemId);
@@ -1041,24 +1040,36 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
         return item;
     }
+    
+    public CMSContentItem getContentItem(String itemId) {
+        try {            
+            return getContentItemOrThrowException(itemId);
+        } catch(CmsElementNotFoundException e) {
+            return null;
+        }
+    }
 
-    public String getContentItemText(String itemId) throws CmsElementNotFoundException {
-        CMSContentItem item = getContentItem(itemId);
-        if (item != null) {
-            switch (item.getType()) {
-                case TEXT:
-                    return item.getHtmlFragment();
-                case HTML:
-                    String htmlText = item.getHtmlFragment();
-                    String plainText = htmlText.replaceAll("\\<.*?\\>", "");
-                    plainText = StringEscapeUtils.unescapeHtml4(plainText);
-                    return plainText;
-                default:
-                    return item.toString();
+    public String getContentItemText(String itemId) {
+        try {            
+            CMSContentItem item = getContentItemOrThrowException(itemId);
+            if (item != null) {
+                switch (item.getType()) {
+                    case TEXT:
+                        return item.getHtmlFragment();
+                    case HTML:
+                        String htmlText = item.getHtmlFragment();
+                        String plainText = htmlText.replaceAll("\\<.*?\\>", "");
+                        plainText = StringEscapeUtils.unescapeHtml4(plainText);
+                        return plainText;
+                    default:
+                        return item.toString();
+                }
             }
+            return "";
+        } catch(CmsElementNotFoundException e) {
+            return "";
         }
 
-        return "";
     }
 
     /**
@@ -1157,7 +1168,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public boolean hasContent(String itemId) {
         CMSContentItem item;
         try {
-            item = getContentItem(itemId);
+            item = getContentItemOrThrowException(itemId);
         } catch (CmsElementNotFoundException e) {
             return false;
         }
@@ -1246,7 +1257,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         logger.trace("Getting content {} from page {}", itemId, getId());
         CMSContentItem item;
         try {
-            item = getContentItem(itemId);
+            item = getContentItemOrThrowException(itemId);
 
             String contentString = "";
             switch (item.getType()) {
@@ -1496,7 +1507,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      */
     public String getTileGridUrl(String itemId) throws IllegalRequestException {
         try {
-            CMSContentItem item = getContentItem(itemId);
+            CMSContentItem item = getContentItemOrThrowException(itemId);
             if (item != null && item.getType().equals(CMSContentItemType.TILEGRID)) {
 
                 String tags = item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));

@@ -722,14 +722,17 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * 
      * @param privilege Privilege name to check
-     * @return true if current user has the privilege for this record; false otherwise
+     * @return true if current user has the privilege for this record; false otherwise. Also return false if no record was found
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws RecordNotFoundException
      */
-    boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException, RecordNotFoundException {
+    boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), logid, privilege, request);
+        try {
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), logid, privilege, request);
+        } catch (RecordNotFoundException e) {
+            return false;
+        }
     }
 
     /**
