@@ -48,7 +48,7 @@ import io.goobi.viewer.solr.SolrTools;
  *
  */
 public class ArchiveManager {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(ArchiveManager.class);
 
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
@@ -58,7 +58,7 @@ public class ArchiveManager {
     private final List<NodeType> nodeTypes;
 
     private final BasexEADParser eadParser;
-    
+
     public static enum DatabaseState {
         /**
          * State before the first query to the basex server
@@ -81,12 +81,11 @@ public class ArchiveManager {
          */
         ERROR_NOT_REACHABLE,
         /**
-         * State only applicable to a single database if loading the database failed 
-         * because the basex server answer could not be interpreted
+         * State only applicable to a single database if loading the database failed because the basex server answer could not be interpreted
          */
         ERROR_INVALID_FORMAT
     }
-    
+
     public ArchiveManager(String basexUrl, Map<String, String> archiveNodeTypes, SolrSearchIndex searchIndex) {
         BasexEADParser eadParser = null;
         if (StringUtils.isNotBlank(basexUrl)) {
@@ -110,40 +109,39 @@ public class ArchiveManager {
         this.eadParser = eadParser;
         this.nodeTypes = loadNodeTypes(archiveNodeTypes);
     }
-    
+
     public ArchiveManager(BasexEADParser eadParser, Map<String, String> archiveNodeTypes) {
-            try {
-                //initialize archives with 'null' archive tree values
-                List<ArchiveResource> databases = eadParser.getPossibleDatabases();
-                for (ArchiveResource db : databases) {
-                    this.archives.put(db, null);
-                }
-                //this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
-                this.databaseState = DatabaseState.ARCHIVES_LOADED;
-            } catch (IOException | HTTPException e) {
-                logger.error("Failed to retrieve database names from '{}': {}", eadParser.getBasexUrl(), e.toString());
-                this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
+        try {
+            //initialize archives with 'null' archive tree values
+            List<ArchiveResource> databases = eadParser.getPossibleDatabases();
+            for (ArchiveResource db : databases) {
+                this.archives.put(db, null);
             }
+            //this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
+            this.databaseState = DatabaseState.ARCHIVES_LOADED;
+        } catch (IOException | HTTPException e) {
+            logger.error("Failed to retrieve database names from '{}': {}", eadParser.getBasexUrl(), e.toString());
+            this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
+        }
         this.eadParser = eadParser;
         this.nodeTypes = loadNodeTypes(archiveNodeTypes);
     }
-    
+
     public ArchiveTree getArchiveTree(String archiveId, String resourceId) {
         ArchiveResource resource = getArchive(archiveId, resourceId);
         this.initializeArchiveTree(resource);
         return this.archives.get(resource);
     }
-    
-    
+
     public ArchiveResource getArchiveResource(String archiveName) {
         ArchiveResource database = this.archives.keySet().stream().filter(db -> db.getCombinedId().equals(archiveName)).findAny().orElse(null);
         return database;
     }
-    
+
     public NodeType getNodeType(String name) {
         return this.nodeTypes.stream().filter(node -> node.getName().equals(name)).findAny().orElse(new NodeType("", ""));
     }
-    
+
     /**
      * If only one archive database exists and database status is {@link DatabaseState#ARCHIVES_LOADED}, redirect to the matching url.
      */
@@ -154,35 +152,34 @@ public class ArchiveManager {
             return Optional.empty();
         }
     }
-    
+
     public ArchiveResource loadArchiveForEntry(String identifier) {
         ArchiveResource resource = getArchiveForEntry(identifier);
         this.initializeArchiveTree(resource);
         return resource;
     }
-    
+
     public String getArchiveUrl(ArchiveResource resource, String entryIdentifier) {
-        if(resource == null || StringUtils.isBlank(entryIdentifier)) {
-            return "archives/"; 
+        if (resource == null || StringUtils.isBlank(entryIdentifier)) {
+            return "archives/";
         } else {
-        return "archives/{database}/{filename}/?selected={identifier}#selected"
-                .replace("{database}", resource.getDatabaseId())
-                .replace("{filename}", resource.getResourceId())
-                .replace("{identifier}", entryIdentifier);
+            return "archives/{database}/{filename}/?selected={identifier}#selected"
+                    .replace("{database}", resource.getDatabaseId())
+                    .replace("{filename}", resource.getResourceId())
+                    .replace("{identifier}", entryIdentifier);
         }
     }
 
     public DatabaseState getDatabaseState() {
         return databaseState;
     }
-    
+
     public List<ArchiveResource> getDatabases() {
         List<ArchiveResource> databases = new ArrayList<>(this.archives.keySet());
         databases.sort((db1, db2) -> db1.getCombinedName().compareTo(db2.getCombinedName()));
         return databases;
     }
 
-    
     /**
      * In the list of archive document search hits, find the id of the entry just before the given one
      * 
@@ -219,7 +216,7 @@ public class ArchiveManager {
         }
         return Pair.of(prev, next);
     }
-    
+
     /**
      * Returns the entry hierarchy from the root down to the entry with the given identifier.
      * 
@@ -229,19 +226,24 @@ public class ArchiveManager {
     public List<ArchiveEntry> getArchiveHierarchyForIdentifier(ArchiveResource resource, String identifier) {
         if (StringUtils.isEmpty(identifier)) {
             return Collections.emptyList();
-        } else if(resource == null) {
+        } else if (resource == null) {
             logger.error("Archive not loaded");
             return Collections.emptyList();
         }
 
-        ArchiveEntry entry = archives.get(resource).getEntryById(identifier);
-        if (entry == null) {
-            //            return Collections.emptyList();
-            return Collections.singletonList(getTrueRoot(archives.get(resource)));
-        } else if (getTrueRoot(archives.get(resource)).equals(entry) || getTrueRoot(archives.get(resource)).equals(entry.getParentNode())) {
-            return Collections.singletonList(entry);
+        ArchiveTree tree = archives.get(resource);
+        if (tree != null) {
+            ArchiveEntry entry = tree.getEntryById(identifier);
+            if (entry == null) {
+                //            return Collections.emptyList();
+                return Collections.singletonList(getTrueRoot(archives.get(resource)));
+            } else if (getTrueRoot(archives.get(resource)).equals(entry) || getTrueRoot(archives.get(resource)).equals(entry.getParentNode())) {
+                return Collections.singletonList(entry);
+            } else {
+                return entry.getAncestors(false).stream().skip(1).collect(Collectors.toList());
+            }
         } else {
-            return entry.getAncestors(false).stream().skip(1).collect(Collectors.toList());
+            return Collections.emptyList();
         }
     }
 
@@ -258,8 +260,8 @@ public class ArchiveManager {
         } else {
             return null;
         }
-    }    
-    
+    }
+
     private ArchiveResource getArchiveForEntry(String identifier) {
         URI archiveUri = URI.create(DataManager.getInstance().getConfiguration().getBaseXUrl());
         URI requestUri = UriBuilder.fromUri(archiveUri).path("dbname").path(identifier).build();
@@ -267,8 +269,12 @@ public class ArchiveManager {
         try {
             String response = NetTools.getWebContentGET(requestUri.toString());
             Document doc = new SAXBuilder().build(new StringReader(response));
-            String database = Optional.ofNullable(doc).map(Document::getRootElement).map(d -> d.getChild("record", null)).map(d -> d.getAttributeValue("database")).orElse("");
-            if(StringUtils.isBlank(database)) {
+            String database = Optional.ofNullable(doc)
+                    .map(Document::getRootElement)
+                    .map(d -> d.getChild("record", null))
+                    .map(d -> d.getAttributeValue("database"))
+                    .orElse("");
+            if (StringUtils.isBlank(database)) {
                 logger.warn("Error retrieving data base for " + identifier + ": empty or unexcepted response");
                 return null;
             }
@@ -281,8 +287,7 @@ public class ArchiveManager {
             return null;
         }
     }
-    
-    
+
     /**
      * 
      * @return actual root element of the document, even if it's not in the displayed tree
@@ -294,7 +299,7 @@ public class ArchiveManager {
 
         return tree.getRootElement();
     }
-    
+
     private void initializeArchiveTree(ArchiveResource resource) {
 
         if (resource != null) {
@@ -323,19 +328,20 @@ public class ArchiveManager {
      * Check if the given resource is outdated compared to the last updated date from the basex server
      * 
      * @param resource
-     * @return  true if the resource in basex is newer than the given one
-     * @throws IOException  if the basex server is not reachable
+     * @return true if the resource in basex is newer than the given one
+     * @throws IOException if the basex server is not reachable
      */
     private boolean isOutdated(ArchiveResource resource) throws BaseXException, IOException {
         try {
             List<ArchiveResource> resources = this.eadParser.getPossibleDatabases();
-            ArchiveResource externalResource = resources.stream().filter(extResource -> extResource.getCombinedId().equals(resource.getCombinedId())).findAny().orElse(null);
-            if(externalResource != null) {
+            ArchiveResource externalResource =
+                    resources.stream().filter(extResource -> extResource.getCombinedId().equals(resource.getCombinedId())).findAny().orElse(null);
+            if (externalResource != null) {
                 return externalResource.getModifiedDate().isAfter(resource.getModifiedDate());
             } else {
                 throw new BaseXException("Resource " + resource.getCombinedName() + " not found on basex server " + this.eadParser.getBasexUrl());
             }
-        } catch ( HTTPException e) {
+        } catch (HTTPException e) {
             throw new IOException("BaseX server cannot be reached: " + e.toString());
         }
     }
@@ -362,9 +368,9 @@ public class ArchiveManager {
         return ret;
 
     }
-    
+
     private List<NodeType> loadNodeTypes(Map<String, String> archiveNodeTypes) {
-        if(archiveNodeTypes != null) {            
+        if (archiveNodeTypes != null) {
             return archiveNodeTypes.entrySet().stream().map(entry -> new NodeType(entry.getKey(), entry.getValue())).collect(Collectors.toList());
         } else {
             return Collections.emptyList();
