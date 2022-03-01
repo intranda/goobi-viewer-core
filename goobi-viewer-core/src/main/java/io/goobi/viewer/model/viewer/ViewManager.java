@@ -1875,11 +1875,15 @@ public class ViewManager implements Serializable {
      */
     public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         String pi = getPi();
-        return DataManager.getInstance()
-                .getRestApiManager()
-                .getContentApiManager()
-                .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO_ZIP).params(pi).build())
-                .orElse("");
+        if(pi != null) {            
+            return DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
+                    .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO_ZIP).params(pi).build())
+                    .orElse("");
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -1966,17 +1970,21 @@ public class ViewManager implements Serializable {
         String filename;
         try {
             filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | NullPointerException e) {
             return "";
         }
         String pi = getPi();
-        return DataManager.getInstance()
-                .getRestApiManager()
-                .getContentApiManager()
-                .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
-                        .params(pi, filename)
-                        .build())
-                .orElse("");
+        if(StringUtils.isNoneBlank(pi, filename)) {
+            return DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
+                    .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
+                            .params(pi, filename)
+                            .build())
+                    .orElse("");            
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -2145,9 +2153,6 @@ public class ViewManager implements Serializable {
             } catch (DAOException e) {
                 logger.debug("DAOException thrown here: {}", e.getMessage());
                 return false;
-            } catch (RecordNotFoundException e) {
-                logger.error("Record not found in index: {}", pi);
-                return false;
             }
         }
 
@@ -2160,11 +2165,14 @@ public class ViewManager implements Serializable {
      * @return true if current user has the privilege for this record; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws RecordNotFoundException
      */
-    public boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException, RecordNotFoundException {
+    public boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, privilege, request);
+        try {
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, privilege, request);
+        } catch (RecordNotFoundException e) {
+            return false;
+        }
     }
 
     /**
@@ -2579,15 +2587,19 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws RecordNotFoundException
      */
-    public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
+    public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
         if (isBornDigital()) {
             return false;
         }
 
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                BeanUtils.getRequest());
+        boolean access;
+        try {
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                    BeanUtils.getRequest());
+        } catch ( RecordNotFoundException e) {
+            return false;
+        }
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
     }
 
@@ -2616,16 +2628,20 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws RecordNotFoundException
      */
-    public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
+    public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException  {
         if (isBornDigital()) {
             return false;
         }
 
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                BeanUtils.getRequest());
-        return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork() || isWorkHasTEIFiles());
+        boolean access;
+        try {
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                    BeanUtils.getRequest());
+            return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork() || isWorkHasTEIFiles());
+        } catch (RecordNotFoundException e) {
+            return false;
+        }
     }
 
     /**
@@ -2683,11 +2699,15 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws RecordNotFoundException
      */
-    public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException, DAOException, RecordNotFoundException {
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                BeanUtils.getRequest());
+    public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException, DAOException {
+        boolean access;
+        try {
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                    BeanUtils.getRequest());
+        } catch (RecordNotFoundException e) {
+            return false;
+        }
         if (!access) {
             return false;
         }

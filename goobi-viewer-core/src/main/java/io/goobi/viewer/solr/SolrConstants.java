@@ -124,6 +124,8 @@ public class SolrConstants {
     public static final String DATECREATED = "DATECREATED";
     /** Constant <code>DATEDELETED="DATEDELETED"</code> */
     public static final String DATEDELETED = "DATEDELETED";
+    /** Constant <code>DATEINDEXED="DATEINDEXED"</code> */
+    public static final String DATEINDEXED = "DATEINDEXED";
     /** Constant <code>DATEUPDATED="DATEUPDATED"</code> */
     public static final String DATEUPDATED = "DATEUPDATED";
     /** Constant <code>DEFAULT="DEFAULT"</code> */
