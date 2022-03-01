@@ -8,17 +8,23 @@
   /* ELEMENT */
   h1 {
   }
-  &__table {
-    border-left: 0 !important;
-    border-right: 0 !important;
-    border-top: 0 !important;
-    border-bottom: 0 !important;
-    * {
-      border-left: 0 !important;
-      border-right: 0 !important;
-      border-top: 0 !important;
-      border-bottom: 0 !important;
+
+  &__table,
+  // Bootstrap + user-backen-table overrides
+  .user-backend-table tbody tr td {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 0;
+
+	&.user-backend-table thead tr th,
+    thead tr th {
+      border-left: 0;
+      border-right: 0;
+      border-top: 0;
+      border-bottom: 0;
     }
+
     &__actions {
       display: flex;
       a,
