@@ -1290,7 +1290,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getComments_shouldSortResultsCorrectly() throws Exception {
-        List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, "body", true, null);
+        List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, "body", true, null, null);
         Assert.assertEquals(2, ret.size());
         Assert.assertEquals(Long.valueOf(4), ret.get(0).getId());
         Assert.assertEquals(Long.valueOf(3), ret.get(1).getId());
@@ -1305,9 +1305,22 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Map<String, String> filterMap = new HashMap<>();
         filterMap.put("targetPI", "pi_1");
         filterMap.put("body", "ment 2");
-        List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, null, true, filterMap);
+        List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, null, true, filterMap, null);
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("comment 2 text", ret.get(0).getText());
+    }
+    
+
+    /**
+     * @see JPADAO#getComments(int,int,String,boolean,Map,Set)
+     * @verifies apply target pi filter correctly
+     */
+    @Test
+    public void getComments_shouldApplyTargetPiFilterCorrectly() throws Exception {
+        Map<String, String> filterMap = new HashMap<>();
+        // TODO update test dataset to include comments with different target_pi
+        List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 10, null, true, filterMap, Collections.singleton("PI_1"));
+        Assert.assertEquals(4, ret.size());
     }
 
     /**

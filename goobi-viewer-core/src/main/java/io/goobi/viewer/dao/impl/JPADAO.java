@@ -1960,7 +1960,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc}
+     * @should sort results correctly
+     * @should filter results correctly
+     * @should apply target pi filter correctly 
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters,
