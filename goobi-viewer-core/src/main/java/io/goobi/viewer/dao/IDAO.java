@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -865,14 +866,14 @@ public interface IDAO {
     public boolean deleteIpRange(IpRange ipRange) throws DAOException;
 
     // CommentView
-    
+
     /**
      * 
      * @return
      * @throws DAOException
      */
     public List<CommentView> getAllCommentViews() throws DAOException;
-    
+
     /**
      * <p>
      * getCommentView.
@@ -916,7 +917,7 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteCommentView(CommentView commentView) throws DAOException;
-    
+
     // Comment
 
     /**
@@ -950,10 +951,12 @@ public interface IDAO {
      * @param sortField a {@link java.lang.String} object.
      * @param descending a boolean.
      * @param filters a {@link java.util.Map} object.
+     * @param targetPIs
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
+    public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters,
+            Set<String> targetPIs) throws DAOException;
 
     /**
      * Get Comments created by a specific user

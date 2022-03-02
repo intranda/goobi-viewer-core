@@ -26,12 +26,12 @@
                         <div class="admin__table-tools">
                             <!-- PAGINATOR -->
                             <div class="admin__table-paginator">
-                                <viewerComponent:dataTablePaginator tableValues="#{adminContentBean.lazyModelComments}" />
+                                <viewerComponent:dataTablePaginator tableValues="#{adminCommentBean.lazyModelComments}" />
                             </div>
                             <!-- FILTER -->
                             <div class="admin__table-filter">
                                 <viewerComponent:dataTableColumnFilter key="admin__comment_search"
-                                    filter="#{adminContentBean.lazyModelComments.getFilter('body_targetPI')}" />
+                                    filter="#{adminCommentBean.lazyModelComments.getFilter('body_targetPI')}" />
                             </div>
                         </div>
 
@@ -58,7 +58,7 @@
                             </div>
                            
                             <!-- INDIVIDUAL COMMENTS -->
-                            <ui:repeat var="comment" value="#{adminBean.pageComments}">
+                            <ui:repeat var="comment" value="#{adminCommentBean.pageComments}">
                                 <div class="row no-gutters admin__table-entry">
                                     <div class="col-8 d-flex" style="flex-direction:column;">
                                         <!-- COMMENT -->
@@ -72,7 +72,7 @@
                                             <!-- DELETE -->
                                             <h:commandLink styleClass="admin__table-action-link -redlink"
                                                 onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
-                                                action="#{adminBean.deleteCommentAction(comment)}">#{msg.delete}
+                                                action="#{adminCommentBean.deleteCommentAction(comment)}">#{msg.delete}
                                             </h:commandLink>
                                         </div>
                                     </div>

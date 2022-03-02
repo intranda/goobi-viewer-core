@@ -17,12 +17,16 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentView;
+import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.solr.SolrConstants;
 
 @Named
 @SessionScoped
@@ -34,6 +38,7 @@ public class AdminCommentBean implements Serializable {
 
     private TableDataProvider<Comment> lazyModelComments;
 
+    private CommentView commentViewAll;
     private CommentView currentCommentView;
     private Comment currentComment = null;
 
@@ -42,6 +47,9 @@ public class AdminCommentBean implements Serializable {
      */
     @PostConstruct
     public void init() {
+        commentViewAll = new CommentView();
+        commentViewAll.setTitle("admin__comment_views_all_title");
+        commentViewAll.setDescription("admin__comment_views_all_desc");
         {
             lazyModelComments = new TableDataProvider<>(new TableDataSource<Comment>() {
 
@@ -52,8 +60,25 @@ public class AdminCommentBean implements Serializable {
                             sortField = "dateCreated";
                             sortOrder = SortOrder.DESCENDING;
                         }
-                        return DataManager.getInstance().getDao().getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                        if (currentCommentView != null) {
+                            if (!currentCommentView.isIdentifiersQueried()) {
+                                queryCommentViewIdentifiers(currentCommentView);
+                            }
+                            if (currentCommentView.getIdentifiers().isEmpty()) {
+                                return Collections.emptyList();
+                            }
+                            return DataManager.getInstance()
+                                    .getDao()
+                                    .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, currentCommentView.getIdentifiers());
+                        }
+                        return DataManager.getInstance()
+                                .getDao()
+                                .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, null);
                     } catch (DAOException e) {
+                        logger.error(e.getMessage());
+                    } catch (PresentationException e) {
+                        logger.error(e.getMessage());
+                    } catch (IndexUnreachableException e) {
                         logger.error(e.getMessage());
                     }
                     return Collections.emptyList();
@@ -77,6 +102,39 @@ public class AdminCommentBean implements Serializable {
             lazyModelComments.setEntriesPerPage(AdminBean.DEFAULT_ROWS_PER_PAGE);
             lazyModelComments.setFilters("body_targetPI");
         }
+    }
+
+    /**
+     * y
+     * 
+     * @param commentView
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private boolean queryCommentViewIdentifiers(CommentView commentView) throws PresentationException, IndexUnreachableException {
+        if (commentView == null) {
+            return false;
+        }
+        if (StringUtils.isBlank(currentCommentView.getSolrQuery())) {
+            commentView.setIdentifiersQueried(true);
+            return false;
+        }
+
+        String query = "+" + SolrConstants.ISWORK + ":true +(" + currentCommentView.getSolrQuery() + ")";
+        logger.trace(query);
+        currentCommentView.getIdentifiers().addAll(SearchHelper.getFacetValues(query, SolrConstants.PI, 1));
+        currentCommentView.setIdentifiersQueried(true);
+
+        return !currentCommentView.getIdentifiers().isEmpty();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public CommentView getCommentViewAll() {
+        return commentViewAll;
     }
 
     /**
@@ -231,12 +289,12 @@ public class AdminCommentBean implements Serializable {
      * 
      * @return currentCommentView.id
      */
-    public Long getCurrentCommentViewId() {
+    public String getCurrentCommentViewId() {
         if (currentCommentView != null) {
-            return currentCommentView.getId();
+            return String.valueOf(currentCommentView.getId());
         }
 
-        return null;
+        return "all";
     }
 
     /**
@@ -245,14 +303,19 @@ public class AdminCommentBean implements Serializable {
      * @param id
      * @throws DAOException
      */
-    public void setCurrentCommentViewId(Long id) throws DAOException {
+    public void setCurrentCommentViewId(String id) throws DAOException {
         logger.trace("setCurrentCommentViewId: {}", id);
-        if (ObjectUtils.notEqual(getCurrentCommentViewId(), id)) {
-            if (id != null) {
-                setCurrentCommentView(DataManager.getInstance().getDao().getCommentView(id));
-            } else {
-                setCurrentCommentView(null);
+        try {
+            Long longId = Long.valueOf(id);
+            if (ObjectUtils.notEqual(getCurrentCommentViewId(), longId)) {
+                if (id != null) {
+                    setCurrentCommentView(DataManager.getInstance().getDao().getCommentView(longId));
+                } else {
+                    setCurrentCommentView(null);
+                }
             }
+        } catch (NumberFormatException e) {
+            setCurrentCommentView(null);
         }
     }
 

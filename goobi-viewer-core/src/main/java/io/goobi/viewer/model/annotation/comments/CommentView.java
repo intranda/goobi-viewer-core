@@ -1,5 +1,8 @@
 package io.goobi.viewer.model.annotation.comments;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +54,12 @@ public class CommentView {
     @Column(name = "members_may_delete_comments")
     private boolean membersMayDeleteComments = false;
 
+    @Transient
+    private final Set<String> identifiers = new HashSet<>();
+
+    @Transient
+    boolean identifiersQueried = false;
+    
     /**
      * @return the id
      */
@@ -164,5 +174,26 @@ public class CommentView {
     public void setMembersMayDeleteComments(boolean membersMayDeleteComments) {
         logger.trace("setMembersMayDeleteComments: {}", membersMayDeleteComments);
         this.membersMayDeleteComments = membersMayDeleteComments;
+    }
+
+    /**
+     * @return the identifiers
+     */
+    public Set<String> getIdentifiers() {
+        return identifiers;
+    }
+
+    /**
+     * @return the identifiersQueried
+     */
+    public boolean isIdentifiersQueried() {
+        return identifiersQueried;
+    }
+
+    /**
+     * @param identifiersQueried the identifiersQueried to set
+     */
+    public void setIdentifiersQueried(boolean identifiersQueried) {
+        this.identifiersQueried = identifiersQueried;
     }
 }

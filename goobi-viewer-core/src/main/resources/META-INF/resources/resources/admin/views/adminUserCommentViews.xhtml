@@ -33,7 +33,34 @@
                         </div>
 
                         <div class="admin__entry-list -w33">
-                            <!--  INDIVIDUAL COMMENT VIEWS -->
+                            <!-- ALL COMMENTS -->
+                            <div class="admin__boxed-entry -w33">
+                                    <div class="row">
+                                        <h2 class="col-12">#{adminCommentBean.commentViewAll.title}</h2>
+                                    </div>
+                                    <!-- DESCRIPTION -->
+                                    <div class="row">
+                                        <ui:fragment rendered="#{commentView.description ne ''}">
+                                            <p class="col-12 admin__boxed-entry-description">#{adminCommentBean.commentViewAll.description}</p>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{commentView.description eq ''}">
+                                            <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
+                                        </ui:fragment>
+                                    </div>
+                                    <!-- ACTIONS -->
+                                    <div class="row admin__boxed-entry-actions">
+                                        <div class="col-3 d-flex">
+                                            <!-- EDIT -->
+                                            <a href="#{navigationHelper.applicationUrl}admin/comments/edit/all/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{ipRange.name}">#{msg.edit}</a>
+                                        </div>
+                                    </div>
+ 
+                                    <!-- VIEW BUTTON -->
+                                    <a href="#{navigationHelper.applicationUrl}admin/comments/all/">VIEW</a>
+ 
+                            </div>
+                        
+                            <!-- INDIVIDUAL COMMENT VIEWS -->
                             <ui:repeat var="commentView" value="#{adminCommentBean.allCommentViews}">
                                 <div class="admin__boxed-entry -w33">
                                     <div class="row">

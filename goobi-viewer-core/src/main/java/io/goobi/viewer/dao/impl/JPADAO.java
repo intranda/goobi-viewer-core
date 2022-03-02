@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1869,9 +1870,6 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             CommentView o = em.getReference(CommentView.class, id);
-            if (o != null) {
-                getEntityManager().refresh(o);
-            }
             return o;
         } catch (EntityNotFoundException e) {
             return null;
@@ -1965,13 +1963,23 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
+    public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters,
+            Set<String> targetPIs) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             StringBuilder sbQuery = new StringBuilder("SELECT a FROM Comment a");
             Map<String, String> params = new HashMap<>();
-            sbQuery.append(createFilterQuery(null, filters, params));
+            String filterQuery = createFilterQuery(null, filters, params);
+            sbQuery.append(filterQuery);
+            if (targetPIs != null && !targetPIs.isEmpty()) {
+                if (StringUtils.isEmpty(filterQuery)) {
+                    sbQuery.append(" WHERE ");
+                } else {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append(" a.targetPI in :targetPIs");
+            }
             if (StringUtils.isNotBlank(sortField)) {
                 String[] sortFields = sortField.split("_");
                 sbQuery.append(" ORDER BY ");
@@ -1987,6 +1995,9 @@ public class JPADAO implements IDAO {
 
             Query q = em.createQuery(sbQuery.toString());
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+            if (targetPIs != null && !targetPIs.isEmpty()) {
+                q.setParameter("targetPIs", targetPIs);
+            }
             // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
         } finally {
