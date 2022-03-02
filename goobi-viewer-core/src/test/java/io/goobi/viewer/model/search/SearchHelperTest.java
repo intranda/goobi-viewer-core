@@ -597,7 +597,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertTrue(terms.contains("\"foo\""));
         }
     }
-    
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String,String)
@@ -1270,6 +1269,19 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#applyHighlightingToPhrase(String,String)
+     * @verifies not add highlighting to hyperlink urls
+     */
+    @Test
+    public void applyHighlightingToPhrase_shouldNotAddHighlightingToHyperlinkUrls() throws Exception {
+        String phrase = "foo <a href=\"https://example.com/foo\">foo</a> foo";
+        String highlightedPhrase1 = SearchHelper.applyHighlightingToPhrase(phrase, "foo");
+        Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END
+                + " <a href=\"https://example.com/foo\">foo</a> "
+                + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END, highlightedPhrase1);
+    }
+
+    /**
      * @see SearchHelper#applyHighlightingToTerm(String)
      * @verifies add span correctly
      */
@@ -1381,6 +1393,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void normalizeString_shouldPreserveHebrewChars() throws Exception {
         Assert.assertEquals("דעה", SearchHelper.normalizeString("דעה"));
+    }
+
+    /**
+     * @see SearchHelper#normalizeString(String)
+     * @verifies remove hyperlink html elements including terms
+     */
+    @Test
+    public void normalizeString_shouldRemoveHyperlinkHtmlElementsIncludingTerms() throws Exception {
+        Assert.assertEquals("one                                                                                    two",
+                SearchHelper.normalizeString("one <a href=\"https://example.com/foo\">foo</a><a href=\"https://example.com/bar\">bar</a> two"));
     }
 
     /**
