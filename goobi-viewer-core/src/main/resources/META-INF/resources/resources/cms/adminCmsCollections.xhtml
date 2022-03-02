@@ -22,14 +22,14 @@
 		<ui:fragment id="cmsCollectionsAccessControl"
 			rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
 			<div id="adminCMSCollections" class="admin__cms-collections">
-			
+
 				<!-- TITLE -->
 				<div class="admin__title-bar">
 					<h1 class="admin__title">#{msg.admin__cms_collections}</h1>
 				</div>
 
 				<div class="admin__content-inner-content">
-				
+
 				<!-- GENERAL DESCRIPTION -->
 				<div class="admin__info-text">#{msg.admin__cms_collections_desc}</div>
 
@@ -37,22 +37,22 @@
 					<h:form id="cmsCollectionsForm" prependId="false">
 
 						<div class="admin__content-wrapper">
-						
+
 							<div class="admin__content-main -sticky -refreshHCsticky">
 								<h2>#{msg.admin__cms_collections_collection_tree}</h2>
-                                    
+
                                 <h:panelGroup layout="block" id="collectionTreeGroup">
-                        
+
                                     <!-- LANGUAGE TABS -->
                                     <div class="admin__language-tabs">
-                                        <viewerComponent:localeSelector 
+                                        <viewerComponent:localeSelector
                                             object="#{cmsCollectionsBean.currentTab}"
                                             render="collectionTreeGroup"
                                             execute="collectionTreeGroup"/>
-                                    </div>  
-                                    
+                                    </div>
+
 								    <div class="admin__default-block">
-								
+
                                             <ul class="admin__cms-collections-tree-listing">
                                                 <ui:repeat var="browseDcElement" value="#{browseBean.getCollection(cmsCollectionsBean.solrField).visibleDcElements}">
                                                     <li class="row no-gutters admin__cms-collections-entry admin__cms-collections-entry -level-#{browseDcElement.level}"
@@ -81,25 +81,21 @@
 													</div>
 													<div class="col-9">
 														<div class="collection__title">
-															<div class="row">
-																<div class="col-12">
-																	<!-- TITLE -->
-																	<h:outputLink
-																		value="#{navigationHelper.applicationUrl}admin/cms/collections/edit/#{browseDcElement.name}/"
-																		styleClass="#{browseBean.dcCollection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
-																		<h:outputText
-																			rendered="#{browseDcElement.displayNumberOfVolumes}"
-																			value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)} (#{browseDcElement.numberOfVolumes})" />
-																		<h:outputText
-																			rendered="#{!browseDcElement.displayNumberOfVolumes}"
-																			value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)}" />
-																		<f:passThroughAttribute name="data-toggle" value="tooltip" />
-																		<f:passThroughAttribute name="data-placement" value="top" />
-																		<f:passThroughAttribute name="title" value="#{msg.edit}" />
-																		<f:ajax render="collectionTreeGroup" />
-																	</h:outputLink>
-																</div>
-															</div>
+															<!-- TITLE -->
+															<h:outputLink
+																value="#{navigationHelper.applicationUrl}admin/cms/collections/edit/#{browseDcElement.name}/"
+																styleClass="#{browseBean.dcCollection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
+																<h:outputText
+																	rendered="#{browseDcElement.displayNumberOfVolumes}"
+																	value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)} (#{browseDcElement.numberOfVolumes})" />
+																<h:outputText
+																	rendered="#{!browseDcElement.displayNumberOfVolumes}"
+																	value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)}" />
+																<f:passThroughAttribute name="data-toggle" value="tooltip" />
+																<f:passThroughAttribute name="data-placement" value="top" />
+																<f:passThroughAttribute name="title" value="#{msg.edit}" />
+																<f:ajax render="collectionTreeGroup" />
+															</h:outputLink>
 														</div>
 													</div>
 													<div class="col-2 admin__cms-collections-entry-end">
@@ -141,14 +137,14 @@
 																	class="img-fluid" data-viewer-thumbnail="thumbnail" />
 															</h:panelGroup>
 														</div>
-														
+
 													</h:panelGroup>
 
 											</li>
 										</ui:repeat>
 									</ul>
 								</div>
-								
+
 								</h:panelGroup>
 							</div>
 
@@ -156,7 +152,7 @@
 							<!-- SIDEBAR -->
 							<div class="admin__content-side -sticky -refreshHCsticky">
 							<h:panelGroup id="collectionsTranslationProgress" layout="block">
-							
+
 							    <!-- IMPORT -->
                                 <ui:fragment rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}">
                                     <div class="admin__default-block -danger">
@@ -173,7 +169,7 @@
                                         </div>
                                     </div>
                                 </ui:fragment>
-        
+
 
 							<!-- TRANSLATIONS -->
 							<ui:fragment rendered="#{cmsCollectionsBean.displayTranslationWidget}">
@@ -182,17 +178,17 @@
 											<ui:repeat var="group"
 												value="#{adminBean.getTranslationGroupsForSolrField(cmsCollectionsBean.solrField)}">
 												<div class="admin__default-block -warning">
-	
+
 													<!-- GROUP TITLE -->
 													<h2>#{msg.admin__cms_collections_translation}</h2>
 
                                                     <div class="admin__form-help-text in mb-2">
 														#{msg.admin__cms_collections_translation_desc}
                                                     </div>
-													
+
 													<!-- PROGRESS BAR FOR COLLECTION NAMES-->
 													<div class="admin__cms-collections-progress-bar-wrapper mb-4">
-													
+
 														<div class="row no-gutters admin__cms-collections-progress-bar-info">
 			                                                <div class="col-8">
 			                                                	#{msg.label__crowdsourcing_campaign_progress}
@@ -201,16 +197,16 @@
 																<span>(#{group.fullyTranslatedEntryCount} #{msg.of} #{group.entryCount})</span>
 															</div>
 														</div>
-		                                                    
+
 			                                        	<div class="admin__cms-collections-progress-bar">
 															<div class="admin__dashboard-translations-progress-complete"
 																style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
 															<div class="admin__dashboard-translations-progress-partially"
 																style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
 														</div>
-													
+
 													</div>
-													
+
 													<!-- TRANSLATION ACTION -->
 													<div class="row">
 														<div class="col-12 d-flex justify-content-center">
@@ -221,7 +217,7 @@
                                                                         href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
                                                                         aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__cms_collections_translation_translate}</a>
                                                                 </ui:fragment>
-			
+
                                                                 <!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
                                                                 <ui:fragment rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
                                                                     <a class="btn btn--default"
@@ -229,7 +225,7 @@
                                                                         aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.show}</a>
                                                                 </ui:fragment>
                                                             </ui:fragment>
-															
+
 															<!-- TRANSLATIONS LOCKED -->
 															<h:outputText rendered="#{adminBean.translationLocked}" value="#{msg.admin__translation_locked}" />
 														</div>
@@ -251,7 +247,7 @@
                                 <ui:fragment rendered="#{cmsCollectionsBean.displaySolrFieldSelectionWidget}">
                                     <div class="admin__default-block">
                                         <h2>#{msg.admin__cms_collections_solr_field}</h2>
-                                        <div class="admin__form-help-text in mb-4">#{msg.admin__cms_collections_solr_field_desc}</div>						
+                                        <div class="admin__form-help-text in mb-4">#{msg.admin__cms_collections_solr_field_desc}</div>
                                         <div class="d-flex">
                                             <h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect"
                                                 value="#{cmsCollectionsBean.solrField}" styleClass="form-control">
@@ -262,7 +258,7 @@
                                         </div>
                                     </div>
 								</ui:fragment>
-								
+
 								<!-- PREVIEW -->
 								<div class="admin__default-block">
 									<h2>#{msg.admin__cms_collections_preview}</h2>
