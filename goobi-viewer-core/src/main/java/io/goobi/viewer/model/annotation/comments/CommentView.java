@@ -22,7 +22,7 @@ import io.goobi.viewer.model.security.user.UserGroup;
  * Filtered view on collections.
  */
 @Entity
-@Table(name = "annotations_comment_views")
+@Table(name = "comment_views")
 public class CommentView {
 
     private static final Logger logger = LoggerFactory.getLogger(CommentView.class);
@@ -54,12 +54,29 @@ public class CommentView {
     @Column(name = "members_may_delete_comments")
     private boolean membersMayDeleteComments = false;
 
+    @Column(name = "core_type")
+    private boolean coreType = false;
+
     @Transient
     private final Set<String> identifiers = new HashSet<>();
 
     @Transient
     boolean identifiersQueried = false;
-    
+
+    /**
+     * Creates a {@link CommentView} instance representing unfiltered listing.
+     * 
+     * @return {@link CommentView}
+     */
+    public static CommentView createCommentViewAll() {
+        CommentView commentViewAll = new CommentView();
+        commentViewAll.setTitle("admin__comment_views_all_title");
+        commentViewAll.setDescription("admin__comment_views_all_desc");
+        commentViewAll.setCoreType(true);
+
+        return commentViewAll;
+    }
+
     /**
      * @return the id
      */
@@ -174,6 +191,20 @@ public class CommentView {
     public void setMembersMayDeleteComments(boolean membersMayDeleteComments) {
         logger.trace("setMembersMayDeleteComments: {}", membersMayDeleteComments);
         this.membersMayDeleteComments = membersMayDeleteComments;
+    }
+
+    /**
+     * @return the coreType
+     */
+    public boolean isCoreType() {
+        return coreType;
+    }
+
+    /**
+     * @param coreType the coreType to set
+     */
+    public void setCoreType(boolean coreType) {
+        this.coreType = coreType;
     }
 
     /**

@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.comments.CommentView;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.UserTools;

@@ -1862,6 +1862,27 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @throws DAOException
+     * @see io.goobi.viewer.dao.IDAO#getCommentViewUnfiltered()
+     * @should return correct row
+     */
+    @Override
+    public CommentView getCommentViewUnfiltered() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            ;
+            return (CommentView) em.createQuery("SELECT o FROM CommentView o WHERE o.coreType = true").setMaxResults(1).getSingleResult();
+        } catch (EntityNotFoundException e) {
+            return null;
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
      * @see io.goobi.viewer.dao.IDAO#getCommentView(long)
      */
     @Override
@@ -1960,10 +1981,12 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc}
+    /**
+     * {@inheritDoc}
+     * 
      * @should sort results correctly
      * @should filter results correctly
-     * @should apply target pi filter correctly 
+     * @should apply target pi filter correctly
      */
     @SuppressWarnings("unchecked")
     @Override

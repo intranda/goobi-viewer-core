@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,6 +53,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
+import io.goobi.viewer.model.annotation.comments.CommentView;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
@@ -631,6 +633,28 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         IpRange ipRange3 = DataManager.getInstance().getDao().getIpRange(ipRange.getId());
         Assert.assertNotNull(ipRange3);
         Assert.assertEquals(0, ipRange3.getLicenses().size());
+    }
+
+    // CommentViews
+
+    /**
+     * @see JPADAO#getAllCommentViews()
+     * @verifies return all rows
+     */
+    @Test
+    public void getAllCommentViews_shouldReturnAllRows() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllCommentViews().size());
+    }
+
+    /**
+     * @see JPADAO#getCommentViewUnfiltered()
+     * @verifies return correct row
+     */
+    @Test
+    public void getCommentViewUnfiltered_shouldReturnCorrectRow() throws Exception {
+        CommentView commentView = DataManager.getInstance().getDao().getCommentViewUnfiltered();
+        Assert.assertNotNull(commentView);
+        Assert.assertEquals(Long.valueOf(1), commentView.getId());
     }
 
     // Comments
@@ -1309,7 +1333,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("comment 2 text", ret.get(0).getText());
     }
-    
 
     /**
      * @see JPADAO#getComments(int,int,String,boolean,Map,Set)
@@ -1985,37 +2008,36 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(2));
         Assert.assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(3));
     }
-    
-    
-/*
- * Unused since the tested behaviour (licence entity ids being bein immediately visible in owning user group)
- * Is no longer supported because of transaction-scoped EntityManagers; and the purpose of this behaviour is unclear
- */
-//
-//    /**
-//     * @see JPADAO#updateUserGroup(UserGroup)
-//     * @verifies set id on new license
-//     */
-//    @Test
-//    public void updateUserGroup_shouldSetIdOnNewLicense() throws Exception {
-//        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
-//        Assert.assertNotNull(userGroup);
-//        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
-//        Assert.assertNotNull(licenseType);
-//        License license = new License();
-//        license.setDescription("xxx");
-//        license.setLicenseType(licenseType);
-//        userGroup.addLicense(license);
-//        Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
-//        boolean licenseFound = false;
-//        for (License l : userGroup.getLicenses()) {
-//            if ("xxx".equals(l.getDescription())) {
-//                licenseFound = true;
-//                Assert.assertNotNull(l.getId());
-//            }
-//        }
-//        Assert.assertTrue(licenseFound);
-//    }
+
+    /*
+     * Unused since the tested behaviour (licence entity ids being bein immediately visible in owning user group)
+     * Is no longer supported because of transaction-scoped EntityManagers; and the purpose of this behaviour is unclear
+     */
+    //
+    //    /**
+    //     * @see JPADAO#updateUserGroup(UserGroup)
+    //     * @verifies set id on new license
+    //     */
+    //    @Test
+    //    public void updateUserGroup_shouldSetIdOnNewLicense() throws Exception {
+    //        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
+    //        Assert.assertNotNull(userGroup);
+    //        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
+    //        Assert.assertNotNull(licenseType);
+    //        License license = new License();
+    //        license.setDescription("xxx");
+    //        license.setLicenseType(licenseType);
+    //        userGroup.addLicense(license);
+    //        Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
+    //        boolean licenseFound = false;
+    //        for (License l : userGroup.getLicenses()) {
+    //            if ("xxx".equals(l.getDescription())) {
+    //                licenseFound = true;
+    //                Assert.assertNotNull(l.getId());
+    //            }
+    //        }
+    //        Assert.assertTrue(licenseFound);
+    //    }
 
     /**
      * @see JPADAO#getUserCount()
@@ -2808,7 +2830,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         TermsOfUse tou = DataManager.getInstance().getDao().getTermsOfUse();
         Assert.assertNotNull(tou);
     }
-
 
     @Test
     public void testSaveTermsOfUse() throws DAOException {

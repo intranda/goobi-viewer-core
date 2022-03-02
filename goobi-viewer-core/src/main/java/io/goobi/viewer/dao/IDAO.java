@@ -875,6 +875,13 @@ public interface IDAO {
     public List<CommentView> getAllCommentViews() throws DAOException;
 
     /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public CommentView getCommentViewUnfiltered() throws DAOException;
+
+    /**
      * <p>
      * getCommentView.
      * </p>

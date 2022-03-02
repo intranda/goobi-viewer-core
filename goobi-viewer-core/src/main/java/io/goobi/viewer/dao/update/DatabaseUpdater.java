@@ -45,7 +45,8 @@ public class DatabaseUpdater {
 //            new LicenseTypeUpdate(), 
 //            new CMSContentItemUpdate(), 
 //            new AnnotationUpdate(),
-//            new SidebarWidgetUpdate()
+//            new SidebarWidgetUpdate(),
+//            new CommentViewUpdate()
 //         };
     
     private static final IModelUpdate[] updates = {};

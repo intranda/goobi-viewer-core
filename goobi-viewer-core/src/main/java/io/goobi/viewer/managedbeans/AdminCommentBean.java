@@ -38,7 +38,6 @@ public class AdminCommentBean implements Serializable {
 
     private TableDataProvider<Comment> lazyModelComments;
 
-    private CommentView commentViewAll;
     private CommentView currentCommentView;
     private Comment currentComment = null;
 
@@ -47,9 +46,6 @@ public class AdminCommentBean implements Serializable {
      */
     @PostConstruct
     public void init() {
-        commentViewAll = new CommentView();
-        commentViewAll.setTitle("admin__comment_views_all_title");
-        commentViewAll.setDescription("admin__comment_views_all_desc");
         {
             lazyModelComments = new TableDataProvider<>(new TableDataSource<Comment>() {
 
@@ -132,14 +128,6 @@ public class AdminCommentBean implements Serializable {
     /**
      * 
      * @return
-     */
-    public CommentView getCommentViewAll() {
-        return commentViewAll;
-    }
-
-    /**
-     * 
-     * @return
      * @throws DAOException
      */
     public List<CommentView> getAllCommentViews() throws DAOException {
@@ -150,6 +138,7 @@ public class AdminCommentBean implements Serializable {
      * 
      */
     public void newCurrentCommentViewAction() {
+        logger.trace("newCurrentCommentViewAction");
         currentCommentView = new CommentView();
     }
 
@@ -289,12 +278,12 @@ public class AdminCommentBean implements Serializable {
      * 
      * @return currentCommentView.id
      */
-    public String getCurrentCommentViewId() {
+    public Long getCurrentCommentViewId() {
         if (currentCommentView != null) {
-            return String.valueOf(currentCommentView.getId());
+            return Long.valueOf(currentCommentView.getId());
         }
 
-        return "all";
+        return null;
     }
 
     /**
@@ -303,7 +292,7 @@ public class AdminCommentBean implements Serializable {
      * @param id
      * @throws DAOException
      */
-    public void setCurrentCommentViewId(String id) throws DAOException {
+    public void setCurrentCommentViewId(Long id) throws DAOException {
         logger.trace("setCurrentCommentViewId: {}", id);
         try {
             Long longId = Long.valueOf(id);
