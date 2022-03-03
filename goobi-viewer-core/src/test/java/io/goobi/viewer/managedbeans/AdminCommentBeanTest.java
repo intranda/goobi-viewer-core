@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-
 import java.time.LocalDateTime;
 
 import org.junit.Assert;
@@ -24,24 +23,31 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.model.annotation.comments.Comment;
+import io.goobi.viewer.model.annotation.comments.CommentView;
+import io.goobi.viewer.model.security.user.User;
 
 public class AdminCommentBeanTest extends AbstractDatabaseEnabledTest {
-    
+
     /**
-    * @see AdminCommentBean#init()
-    * @verifies sort lazyModelComments by dateCreated desc by default
-    */
+     * @see AdminCommentBean#init()
+     * @verifies sort lazyModelComments by dateCreated desc by default
+     */
     @Test
     public void init_shouldSortLazyModelCommentsByDateCreatedDescByDefault() throws Exception {
         AdminCommentBean bean = new AdminCommentBean();
+        bean.userBean = new UserBean();
+        User admin = new User();
+        admin.setSuperuser(true);
+        bean.userBean.setUser(admin);
+        bean.setCurrentCommentView(CommentView.createCommentViewAll());
+
         bean.init();
         Assert.assertNotNull(bean.getLazyModelComments());
         Assert.assertEquals(4, bean.getLazyModelComments().getSizeOfDataList());
         LocalDateTime prevDate = null;
         for (Comment comment : bean.getLazyModelComments().getPaginatorList()) {
             if (prevDate != null && comment.getDateCreated() != null) {
-                Assert.assertTrue(DateTools.getMillisFromLocalDateTime(prevDate, false)
-                        >= DateTools
+                Assert.assertTrue(DateTools.getMillisFromLocalDateTime(prevDate, false) >= DateTools
                         .getMillisFromLocalDateTime(comment.getDateCreated(), false));
             }
             prevDate = comment.getDateCreated();
