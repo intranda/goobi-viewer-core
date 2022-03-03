@@ -36,10 +36,11 @@
 					<div class="admin__content-inner-content">
 
 						<div class="admin__content-wrapper">
-							<div class="admin__content-main -refreshHCsticky">
-								<h:form id="editCommentView"
-									styleClass="form-horizontal form-group" role="form"
-									prependId="false">
+						    <h:form id="editCommentView"
+                                styleClass="form-horizontal form-group" role="form"
+                                prependId="false">
+                                
+							    <div class="admin__content-main -refreshHCsticky">
 									<h2>#{msg.general}</h2>
 									<div class="user-settings__form-wrapper">
 
@@ -115,24 +116,21 @@
                                         <h:commandLink action="#{adminCommentBean.saveCommentViewAction(adminCommentBean.currentCommentView)}"
                                             value="#{msg.save}" styleClass="btn btn--success" />
                                     </div>
-
-								</h:form>
 								
-							</div>
+							    </div>
 
 
-							<!-- SIDEBAR -->
-							<div class="admin__content-side -sticky">
+							    <!-- SIDEBAR -->
+							    <div class="admin__content-side -sticky">
                                 
-                                <div class="admin__default-block">
-                                    <div class="row">
-                                        <div class="col-12 control-label admin__form-label">
-                                            <h2>#{msg.admin__settings}</h2>
+                                    <div class="admin__default-block">
+                                        <div class="row">
+                                            <div class="col-12 control-label admin__form-label">
+                                                <h2>#{msg.admin__settings}</h2>
+                                            </div>
                                         </div>
-                                    </div>
                                     
-                                    <!-- USER GROUP SELECTION -->
-                                    <h:form id="sidebarForm0">
+                                        <!-- USER GROUP SELECTION -->
                                         <div class="row">
                                             <div class="col-11">
                                                 <h3>#{msg.admin__comment_view_user_group}:</h3>
@@ -148,18 +146,15 @@
                                                 <div>
                                                     <h:selectOneMenu value="#{adminCommentBean.currentCommentView.userGroup}"
                                                         id="userGroupOwner" converter="userGroupConverter"
-                                                        immediate="true" required="false" styleClass="form-control">
+                                                        required="false" styleClass="form-control">
                                                         <f:selectItems value="#{adminBean.allUserGroups}" />
-                                                        <f:ajax execute="@this" render="@none"></f:ajax>
                                                     </h:selectOneMenu>
                                                     <span class="admin__form-help-text">#{msg.admin__comment_view_user_group__help}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                    </h:form>
                                     
-                                    <!-- E-MAIL NOTIFICATIONS -->
-                                    <h:form id="sidebarForm1">
+                                        <!-- E-MAIL NOTIFICATIONS -->
                                         <div class="row">
                                             <div class="col-11">
                                                 <h3>#{msg.admin__comment_view_send_email_notifications}:</h3>
@@ -175,15 +170,13 @@
                                                 <div class="admin__radio-switch openAccessToggle">
                                                     <h:selectOneRadio group="sendEmailNotificationsToggle"
                                                         value="#{adminCommentBean.currentCommentView.sendEmailNotifications}"
-                                                        immediate="true" checked="true">
+                                                        checked="true">
                                                         <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                        <f:ajax execute="@this" render="@none"></f:ajax>
                                                     </h:selectOneRadio>
                                                     <h:selectOneRadio group="sendEmailNotificationsToggle"
                                                         value="#{adminCommentBean.currentCommentView.sendEmailNotifications}"
-                                                        immediate="true" checked="null">
+                                                        checked="null">
                                                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                        <f:ajax execute="@this" render="@none"></f:ajax>
                                                     </h:selectOneRadio>
                                                     <span class="toggle-outside">
                                                         <span class="toggle-inside"></span>
@@ -192,10 +185,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </h:form>
                                     
-                                    <!-- MEMBERS MAY EDIT COMMENTS -->
-                                    <h:form id="sidebarForm2">
+                                        <!-- MEMBERS MAY EDIT COMMENTS -->
                                         <div class="row">
                                             <div class="col-11">
                                                 <h3>#{msg.admin__comment_view_members_may_edit_comments}:</h3>
@@ -211,15 +202,13 @@
                                                 <div class="admin__radio-switch openAccessToggle">
                                                     <h:selectOneRadio group="membersMayEditCommentsToggle"
                                                         value="#{adminCommentBean.currentCommentView.membersMayEditComments}"
-                                                        immediate="true" checked="true">
+                                                        checked="true">
                                                         <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                        <f:ajax execute="@this" render="@none"></f:ajax>
                                                     </h:selectOneRadio>
                                                     <h:selectOneRadio group="membersMayEditCommentsToggle"
                                                         value="#{adminCommentBean.currentCommentView.membersMayEditComments}"
-                                                        immediate="true" checked="null">
+                                                        checked="null">
                                                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                        <f:ajax execute="@this" render="@none"></f:ajax>
                                                     </h:selectOneRadio>
                                                     <span class="toggle-outside">
                                                         <span class="toggle-inside"></span>
@@ -228,10 +217,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </h:form>
                                     
-                                    <!-- MEMBERS MAY DELETE COMMENTS -->
-                                    <h:form id="sidebarForm3">
+                                        <!-- MEMBERS MAY DELETE COMMENTS -->
                                         <div class="row">
                                             <div class="col-11">
                                                 <h3>#{msg.admin__comment_view_members_may_delete_comments}:</h3>
@@ -247,15 +234,13 @@
                                                 <div class="admin__radio-switch openAccessToggle">
                                                     <h:selectOneRadio group="membersMayDeleteCommentsToggle"
                                                         value="#{adminCommentBean.currentCommentView.membersMayDeleteComments}"
-                                                        immediate="true" checked="true">
+                                                        checked="true">
                                                         <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                        <f:ajax execute="@this" render="@none"></f:ajax>
                                                     </h:selectOneRadio>
                                                     <h:selectOneRadio group="membersMayDeleteCommentsToggle"
                                                         value="#{adminCommentBean.currentCommentView.membersMayDeleteComments}"
-                                                        immediate="true" checked="null">
+                                                        checked="null">
                                                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                        <f:ajax execute="@this" render="@none"></f:ajax>
                                                     </h:selectOneRadio>
                                                     <span class="toggle-outside">
                                                         <span class="toggle-inside"></span>
@@ -264,12 +249,10 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </h:form>   
-                                    
-                                </div>
+                                    </div>
 							
-							</div>
-
+							    </div>
+                            </h:form>
 						</div>
 					</div>
 				</h:panelGroup>
