@@ -33,22 +33,18 @@ import io.goobi.viewer.exceptions.DAOException;
 public class DatabaseUpdater {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseUpdater.class);
-
-    //for testing purposes, ignore all updaters.
-    //TODO: Reinsert before release
     
-//    private static final IModelUpdate[] updates = { 
-//            new UserUpdate(),
-//            new CMSRecordNoteUpdate(), 
-//            new CMSMediaUpdate(), 
-//            new CMSCategoryUpdate(), 
-//            new LicenseTypeUpdate(), 
-//            new CMSContentItemUpdate(), 
-//            new AnnotationUpdate(),
-//            new SidebarWidgetUpdate()
-//         };
+    private static final IModelUpdate[] updates = { 
+            new UserUpdate(),
+            new CMSRecordNoteUpdate(), 
+            new CMSMediaUpdate(), 
+            new CMSCategoryUpdate(), 
+            new LicenseTypeUpdate(), 
+            new CMSContentItemUpdate(), 
+            new AnnotationUpdate(),
+            new SidebarWidgetUpdate()
+         };
     
-    private static final IModelUpdate[] updates = {};
 
     private final IDAO dao;
 
