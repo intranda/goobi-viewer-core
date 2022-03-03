@@ -3975,10 +3975,18 @@ public class JPADAO implements IDAO {
         return getRowCount("IpRange", null, filters);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct count
+     * @should filter correctly
+     * @should filter for users correctly
+     * @should apply target pi filter correctly
+     */
     @Override
-    public long getCommentCount(Map<String, String> filters, User owner) throws DAOException {
+    public long getCommentCount(Map<String, String> filters, User owner, Set<String> targetPIs) throws DAOException {
         preQuery();
+        // TODO
         EntityManager em = getEntityManager();
         try {
             StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Comment a");
@@ -3986,10 +3994,21 @@ public class JPADAO implements IDAO {
             if (owner != null) {
                 sbQuery.append(" WHERE a.creatorId = :owner");
             }
+            if (targetPIs != null && !targetPIs.isEmpty()) {
+                if (owner == null) {
+                    sbQuery.append(" WHERE ");
+                } else {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append(" a.targetPI in :targetPIs");
+            }
             Query q = em.createQuery(sbQuery.append(createFilterQuery(null, filters, params)).toString());
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
             if (owner != null) {
                 q.setParameter("owner", owner.getId());
+            }
+            if (targetPIs != null && !targetPIs.isEmpty()) {
+                q.setParameter("targetPIs", targetPIs);
             }
 
             return (long) q.getSingleResult();

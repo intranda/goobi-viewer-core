@@ -72,7 +72,8 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
     @Override
     public long getTotalAnnotationCount() {
         try {
-            return dao.getCommentCount(null, null);
+            // TODO filter via PI whitelist here?
+            return dao.getCommentCount(null, null, null);
         } catch (DAOException e) {
             logger.error("Error getting comment count", e);
             return 0;

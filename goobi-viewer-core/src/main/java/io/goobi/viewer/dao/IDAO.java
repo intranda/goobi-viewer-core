@@ -943,10 +943,12 @@ public interface IDAO {
      * </p>
      *
      * @param filters a {@link java.util.Map} object.
-     * @return a long.
+     * @param owner
+     * @param targetPIs
+     * @return Number of rows that match the criteria
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public long getCommentCount(Map<String, String> filters, User owner) throws DAOException;
+    public long getCommentCount(Map<String, String> filters, User owner, Set<String> targetPIs) throws DAOException;
 
     /**
      * <p>

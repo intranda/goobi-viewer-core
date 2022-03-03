@@ -37,12 +37,12 @@
                             <ui:repeat var="commentView" value="#{adminCommentBean.allCommentViews}">
                                 <div class="admin__boxed-entry -w33">
                                     <div class="row">
-                                        <h2 class="col-12">#{commentView.title}</h2>
+                                        <h2 class="col-12">#{msg[commentView.title]}</h2>
                                     </div>
                                     <!-- DESCRIPTION -->
                                     <div class="row">
                                         <ui:fragment rendered="#{commentView.description ne ''}">
-                                            <p class="col-12 admin__boxed-entry-description">#{commentView.description}</p>
+                                            <p class="col-12 admin__boxed-entry-description">#{msg[commentView.description]}</p>
                                         </ui:fragment>
                                         <ui:fragment rendered="#{commentView.description eq ''}">
                                             <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>

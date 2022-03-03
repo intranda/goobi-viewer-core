@@ -666,35 +666,49 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getCommentCount(Map)
+     * @see JPADAO#getCommentCount(Map,User,Set)
      * @verifies return correct count
      */
     @Test
     public void getCommentCount_shouldReturnCorrectCount() throws Exception {
-        Assert.assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null, null));
+        Assert.assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null, null, null));
     }
 
     /**
-     * @see JPADAO#getCommentCount(Map)
+     * @see JPADAO#getCommentCount(Map,User,Set)
      * @verifies filter correctly
      */
     @Test
     public void getCommentCount_shouldFilterCorrectly() throws Exception {
         Map<String, String> filters = new HashMap<>();
         filters.put("targetPageOrder", "1");
-        Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(filters, null));
+        Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(filters, null, null));
     }
 
+    /**
+     * @see JPADAO#getCommentCount(Map,User,Set)
+     * @verifies filter for users correctly
+     */
     @Test
-    public void getCommentCount_shouldFilterForUserCorrectly() throws Exception {
+    public void getCommentCount_shouldFilterForUsersCorrectly() throws Exception {
         {
             User owner = DataManager.getInstance().getDao().getUser(1l);
-            Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(null, owner));
+            Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(null, owner, null));
         }
         {
             User owner = DataManager.getInstance().getDao().getUser(2l);
-            Assert.assertEquals(1L, DataManager.getInstance().getDao().getCommentCount(null, owner));
+            Assert.assertEquals(1L, DataManager.getInstance().getDao().getCommentCount(null, owner, null));
         }
+    }
+
+    /**
+     * @see JPADAO#getCommentCount(Map,User,Set)
+     * @verifies apply target pi filter correctly
+     */
+    @Test
+    public void getCommentCount_shouldApplyTargetPiFilterCorrectly() throws Exception {
+        // TODO update test dataset to include comments with different target_pi
+        Assert.assertEquals(4L ,DataManager.getInstance().getDao().getCommentCount(null, null, Collections.singleton("PI_1")));
     }
 
     @Test

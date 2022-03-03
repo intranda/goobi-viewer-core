@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -20,8 +21,8 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
-import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
+import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentView;
@@ -35,6 +36,9 @@ public class AdminCommentBean implements Serializable {
     private static final long serialVersionUID = -640422863609139392L;
 
     private static final Logger logger = LoggerFactory.getLogger(AdminCommentBean.class);
+
+    @Inject
+    UserBean userBean;
 
     private TableDataProvider<Comment> lazyModelComments;
 
@@ -56,20 +60,23 @@ public class AdminCommentBean implements Serializable {
                             sortField = "dateCreated";
                             sortOrder = SortOrder.DESCENDING;
                         }
-                        if (currentCommentView != null) {
-                            if (!currentCommentView.isIdentifiersQueried()) {
-                                queryCommentViewIdentifiers(currentCommentView);
-                            }
-                            if (currentCommentView.getIdentifiers().isEmpty()) {
-                                return Collections.emptyList();
-                            }
+                        if (currentCommentView == null) {
+                            return Collections.emptyList();
+                        }
+                        if (currentCommentView.isCoreType() && userBean != null && userBean.isAdmin()) {
                             return DataManager.getInstance()
                                     .getDao()
-                                    .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, currentCommentView.getIdentifiers());
+                                    .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, null);
+                        }
+                        if (!currentCommentView.isIdentifiersQueried()) {
+                            queryCommentViewIdentifiers(currentCommentView);
+                        }
+                        if (currentCommentView.getIdentifiers().isEmpty()) {
+                            return Collections.emptyList();
                         }
                         return DataManager.getInstance()
                                 .getDao()
-                                .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, null);
+                                .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, currentCommentView.getIdentifiers());
                     } catch (DAOException e) {
                         logger.error(e.getMessage());
                     } catch (PresentationException e) {
@@ -82,9 +89,29 @@ public class AdminCommentBean implements Serializable {
 
                 @Override
                 public long getTotalNumberOfRecords(Map<String, String> filters) {
+                    if (currentCommentView == null) {
+                        return 0;
+                    }
+
                     try {
-                        return DataManager.getInstance().getDao().getCommentCount(filters, null);
+                        if (currentCommentView.isCoreType() && userBean != null && userBean.isAdmin()) {
+                            return DataManager.getInstance().getDao().getCommentCount(filters, null, null);
+                        }
+
+                        if (!currentCommentView.isIdentifiersQueried()) {
+                            queryCommentViewIdentifiers(currentCommentView);
+                        }
+                        if (currentCommentView.getIdentifiers().isEmpty()) {
+                            return 0;
+                        }
+                        return DataManager.getInstance().getDao().getCommentCount(filters, null, currentCommentView.getIdentifiers());
                     } catch (DAOException e) {
+                        logger.error(e.getMessage(), e);
+                        return 0;
+                    } catch (PresentationException e) {
+                        logger.error(e.getMessage(), e);
+                        return 0;
+                    } catch (IndexUnreachableException e) {
                         logger.error(e.getMessage(), e);
                         return 0;
                     }
