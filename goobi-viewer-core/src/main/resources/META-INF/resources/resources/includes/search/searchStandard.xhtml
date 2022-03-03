@@ -94,10 +94,15 @@
 
             <!-- SEARCH STANDARD ACTION -->
             <div class="search-standard__action">
-                <h:commandLink styleClass="btn btn--default" value="#{msg.reset}" action="#{search.resetSearch}" />
                 <h:commandButton id="submitSearch" type="submit" styleClass="btn btn--full" action="#{search.searchSimple}" value="#{msg.search}">
                     <f:setPropertyActionListener target="#{search.activeSearchType}" value="0" />
                 </h:commandButton>
+                <button
+					type="submit"
+					class="btn btn--default"
+					jsf:action="#{search.resetSearch}">
+					#{msg.reset}
+				</button>
             </div>
         </h:form>
     </div>
