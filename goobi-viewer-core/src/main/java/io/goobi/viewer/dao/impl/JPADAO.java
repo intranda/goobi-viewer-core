@@ -53,6 +53,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
+import io.goobi.viewer.model.administration.legal.Disclaimer;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
@@ -5839,6 +5840,49 @@ public class JPADAO implements IDAO {
                 em.persist(banner);
             } else {
                 em.merge(banner);
+            }
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+    
+
+    @Override
+    public Disclaimer getDisclaimer() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT u FROM Disclaimer u");
+            //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+            @SuppressWarnings("unchecked")
+            List<Disclaimer> results = q.getResultList();
+            if (results.isEmpty()) {
+                //No results. Just return a new object which may be saved later
+                return new Disclaimer();
+            }
+            return results.get(0);
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean saveDisclaimer(Disclaimer disclaimer) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            if (disclaimer.getId() == null) {
+                //create initial tou
+                em.persist(disclaimer);
+            } else {
+                em.merge(disclaimer);
             }
             commitTransaction(em);
             return true;
