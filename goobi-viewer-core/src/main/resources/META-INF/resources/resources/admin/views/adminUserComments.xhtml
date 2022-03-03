@@ -15,7 +15,7 @@
 
     <ui:define name="content">
         <div id="adminUserComments">
-            <h:panelGroup rendered="#{userBean.admin}">
+            <h:panelGroup rendered="#{adminCommentBean.currentCommentView != null}">
                 <h:form id="adminUserCommentsForm" prependId="false">
                     <div class="admin__title-bar">
                         <!-- TITLE -->

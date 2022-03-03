@@ -14,7 +14,7 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:panelGroup rendered="#{userBean.admin}">
+        <h:panelGroup rendered="#{userBean.loggedIn}">
             <div id="adminUserCommentViews">
                 <h:form id="adminUserCommentViewsForm" prependId="false">
                     <div class="admin__title-bar">
@@ -34,7 +34,7 @@
 
                         <div class="admin__entry-list -w33">
                             <!-- INDIVIDUAL COMMENT VIEWS -->
-                            <ui:repeat var="commentView" value="#{adminCommentBean.allCommentViews}">
+                            <ui:repeat var="commentView" value="#{adminCommentBean.getCommentViewsForUser(userBean.user)}">
                                 <div class="admin__boxed-entry -w33">
                                     <div class="row">
                                         <h2 class="col-12">#{msg[commentView.title]}</h2>
@@ -49,21 +49,23 @@
                                         </ui:fragment>
                                     </div>
                                     <!-- ACTIONS -->
-                                    <div class="row admin__boxed-entry-actions">
-                                        <div class="col-3 d-flex">
-                                            <!-- EDIT -->
-                                            <a href="#{navigationHelper.applicationUrl}admin/comments/edit/#{commentView.id}/"
-                                                class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{ipRange.name}">#{msg.edit}</a>
-                                            <!-- DELETE -->
-                                            <h:commandLink rendered="#{!commentView.coreType}" styleClass="admin__boxed-entry-actions-delete -redlink"
-                                                onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, commentView.title)}&quot; ) ) { return false };"
-                                                action="adminUserCommentViews"
-                                                actionListener="#{adminCommentBean.deleteCommentviewAction(commentView)}">
-                                                <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{commentView.title}" />
-                                                #{msg.delete}
-                                            </h:commandLink>
+                                    <ui:fragment rendered="#{userBean.admin}">
+                                        <div class="row admin__boxed-entry-actions">
+                                            <div class="col-3 d-flex">
+                                                <!-- EDIT -->
+                                                <a href="#{navigationHelper.applicationUrl}admin/comments/edit/#{commentView.id}/"
+                                                    class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{ipRange.name}">#{msg.edit}</a>
+                                                <!-- DELETE -->
+                                                <h:commandLink rendered="#{!commentView.coreType}" styleClass="admin__boxed-entry-actions-delete -redlink"
+                                                    onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, commentView.title)}&quot; ) ) { return false };"
+                                                    action="adminUserCommentViews"
+                                                    actionListener="#{adminCommentBean.deleteCommentviewAction(commentView)}">
+                                                    <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{commentView.title}" />
+                                                    #{msg.delete}
+                                                </h:commandLink>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </ui:fragment>
  
                                     <!-- TODO VIEW BUTTON -->
                                     <a href="#{navigationHelper.applicationUrl}admin/comments/#{commentView.id}/">VIEW</a>

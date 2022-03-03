@@ -19,9 +19,9 @@
 
 	<ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
-			<div id="adminUser">
+			<div id="adminUserCommentView">
 				<h:panelGroup id="adminCommmentView"
-					rendered="#{userBean.admin == true and adminCommentBean.currentCommentView != null}">
+					rendered="#{userBean.admin and adminCommentBean.currentCommentView != null}">
 					<div class="admin__title-bar">
 						<ui:fragment
 							rendered="#{adminCommentBean.currentCommentView.id == null}">

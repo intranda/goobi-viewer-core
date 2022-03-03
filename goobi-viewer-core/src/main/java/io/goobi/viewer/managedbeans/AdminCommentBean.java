@@ -2,6 +2,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentView;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
 @Named
@@ -159,6 +161,34 @@ public class AdminCommentBean implements Serializable {
      */
     public List<CommentView> getAllCommentViews() throws DAOException {
         return DataManager.getInstance().getDao().getAllCommentViews();
+    }
+
+    /**
+     * 
+     * @param user Current user
+     * @return Filtered list of available {@link CommentView}s to the given user
+     * @throws DAOException
+     */
+    public List<CommentView> getCommentViewsForUser(User user) throws DAOException {
+        if (user == null) {
+            return Collections.emptyList();
+        }
+        
+        logger.trace("user: {}", user.getEmail());
+
+        // Unfiltered list for admins
+        if (user.isSuperuser()) {
+            return DataManager.getInstance().getDao().getAllCommentViews();
+        }
+
+        List<CommentView> ret = new ArrayList<>();
+        for (CommentView commentView : DataManager.getInstance().getDao().getAllCommentViews()) {
+            if (!commentView.isCoreType() && commentView.getUserGroup() != null && commentView.getUserGroup().getMembersAndOwner().contains(user)) {
+                ret.add(commentView);
+            }
+        }
+
+        return ret;
     }
 
     /**
