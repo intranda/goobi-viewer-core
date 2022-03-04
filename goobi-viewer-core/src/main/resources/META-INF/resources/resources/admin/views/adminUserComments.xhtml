@@ -21,8 +21,12 @@
                         <!-- TITLE -->
                         <h1 class="admin__title">#{msg.admin__comments}</h1>
                     </div>
-
+                    
                     <div class="admin__content-inner-content">
+
+                    <div class="admin__content-wrapper">
+                    
+                   <div class="admin__content-main -refreshHCsticky">
                         <div class="admin__table-tools">
                             <!-- PAGINATOR -->
                             <div class="admin__table-paginator">
@@ -86,6 +90,28 @@
                                </div>
                             </ui:repeat>
                         </div>
+                        </div>
+                        
+                        <div class="admin__content-side -sticky">
+                        	<div class="admin__default-block">
+								<h2>#{msg.admin__overview}</h2>
+								<div class="admin__form-help-text in mb-2">
+									#{msg.admin__comment_all_comments_back_to_overview_info}
+								</div>
+								<div class="d-flex justify-content-center mt-2">
+									<a href="#{request.contextPath}/admin/comments" class="btn btn--full">#{msg.admin__overview}</a>
+                       			</div>
+                       		</div>
+                       		
+                        	<div class="admin__default-block">
+								<h2>#{msg.information}</h2>
+								<div class="admin__form-help-text in mb-2">
+									#{msg.admin__comment_all_comments_info}
+								</div>
+                       		</div>
+
+                        </div>
+                    </div>
                     </div>
                 </h:form>
             </h:panelGroup>

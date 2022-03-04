@@ -31,23 +31,54 @@
                         <div class="admin__info-text">
                             <h:outputText value="#{msg.admin__comment_views_description_text}" escape="false" />
                         </div>
+                        
+                        <!-- ACTIVATE COMMENTS -->
+						<h:form id="userCommentsViewsActivateForm" prependId="false">
+							<div class="form-horizontal form-group">
+								<div class="row no-gutters mb-3 align-items-center">
+									<div class="control-label mr-3 admin__form-label">#{msg.admin__comment_views_activate}:</div>
+									<div class="admin__form-input">
+						<!-- ******** TODO VALUE FUNCTIONALITY ****** -->
+										<viewerComponent:toggleSwitch name="activateUserComments" toggleTarget="#userCommentViews"
+											value="#{cookieBannerBean.bannerActive}"/>
+									</div>
+								</div>
+							</div>
+						</h:form>
 
-                        <div class="admin__entry-list -w33">
+                        <div id="userCommentViews" class="admin__entry-list">
                             <!-- INDIVIDUAL COMMENT VIEWS -->
                             <ui:repeat var="commentView" value="#{adminCommentBean.getCommentViewsForUser(userBean.user)}">
-                                <div class="admin__boxed-entry -w33">
+                                <div class="admin__boxed-entry -w100 -std-bottom-pad">
                                     <div class="row">
-                                        <h2 class="col-12">#{msg[commentView.title]}</h2>
+	                                    <div class="col-12 col-lg-9">
+	                                    <!-- TITLE -->
+	                                    <h2>#{msg[commentView.title]}</h2>
+	                                    <!-- DESCRIPTION -->
+	                                      <ui:fragment rendered="#{commentView.description ne ''}">
+	                                          <p>#{msg[commentView.description]}</p>
+	                                      </ui:fragment>
+	                                      <ui:fragment rendered="#{commentView.description eq ''}">
+	                                          <p aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
+	                                      </ui:fragment>
+	                                      
+	                                    </div>
+	                                    
+	                                    <div class="col-12 col-lg-3 d-flex align-items-center justify-content-center justify-content-lg-end">
+	                                    
+	                                    <div class="d-flex flex-column align-items-center">
+	                                    	<!-- VIEW BUTTON -->
+                                    		<a class="btn btn--full" href="#{navigationHelper.applicationUrl}admin/comments/#{commentView.id}/">#{msg.show}</a>
+                                    	</div>
+	                                    
+	                                    </div>
+
                                     </div>
-                                    <!-- DESCRIPTION -->
-                                    <div class="row">
-                                        <ui:fragment rendered="#{commentView.description ne ''}">
-                                            <p class="col-12 admin__boxed-entry-description">#{msg[commentView.description]}</p>
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{commentView.description eq ''}">
-                                            <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
-                                        </ui:fragment>
-                                    </div>
+                                    
+                                    
+
+                                    
+
                                     <!-- ACTIONS -->
                                     <ui:fragment rendered="#{userBean.admin}">
                                         <div class="row admin__boxed-entry-actions">
@@ -67,8 +98,7 @@
                                         </div>
                                     </ui:fragment>
  
-                                    <!-- TODO VIEW BUTTON -->
-                                    <a href="#{navigationHelper.applicationUrl}admin/comments/#{commentView.id}/">VIEW</a>
+
  
                                 </div>
                             </ui:repeat>
