@@ -35,12 +35,11 @@
 
 					<div class="admin__content-inner-content">
 
-						<div class="admin__content-wrapper">
 						    <h:form id="editCommentView"
-                                styleClass="form-horizontal form-group" role="form"
+                                styleClass="form-horizontal form-group admin__content-wrapper" role="form"
                                 prependId="false">
                                 
-							    <div class="admin__content-main -refreshHCsticky">
+							    <div class="admin__content-main -refreshHCsticky #{adminCommentBean.currentCommentView.coreType == '' ? '' : '-full'}">
 									<h2>#{msg.general}</h2>
 									<div class="user-settings__form-wrapper">
 
@@ -148,7 +147,7 @@
 
 
 							    <!-- SIDEBAR -->
-							    <ui:fragment rendered="#{!adminCommentBean.currentCommentView.coreType}">
+								<ui:fragment rendered="#{!adminCommentBean.currentCommentView.coreType}">
 							    <div class="admin__content-side -sticky">
                                 
                                     <div class="admin__default-block">
@@ -283,7 +282,6 @@
 							    </ui:fragment>
 							    
                             </h:form>
-						</div>
 					</div>
 				</h:panelGroup>
 			</div>
