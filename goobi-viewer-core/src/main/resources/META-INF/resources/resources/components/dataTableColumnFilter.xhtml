@@ -51,15 +51,23 @@
         <!-- FILTER INPUT SCRIPT - ADDED HERE BECAUSE OF COMPONENT RELOAD-->
         <script type="text/javascript">
 		$( document ).ready(function() {
-			/* check for input value and show clear button */
-	        if(!$('.admin__search-input').val() == ''){
-				$('.admin__search-clear').show();
-	        }
-			$('.admin__search-clear').click(function(){
-				/* clear value on click*/
-		    $('.admin__search-input').val("");
-			    /* trigger empty search on click */
-			    $('.admin__search-action button').click();
+
+        // Trigger search on pressing enter
+        const searchInp = document.querySelector('.admin__search-input-wrapper input');
+        const searchBtn = document.querySelector('.admin__search-action button');
+        searchInp.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') searchBtn.click();
+        });
+
+        /* check for input value and show clear button */
+	      if(!$('.admin__search-input').val() == '') {
+				    $('.admin__search-clear').show();
+	      }
+			  $('.admin__search-clear').click(function() {
+            /* clear value on click*/
+            $('.admin__search-input').val("");
+            /* trigger empty search on click */
+            $('.admin__search-action button').click();
 			});
 		});
 		</script>
