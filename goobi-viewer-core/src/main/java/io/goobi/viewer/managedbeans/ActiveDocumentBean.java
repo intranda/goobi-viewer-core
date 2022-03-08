@@ -71,6 +71,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PublicationStatus;
+import io.goobi.viewer.model.annotation.comments.CommentView;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
@@ -2427,5 +2428,55 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return "";
+    }
+
+    /**
+     * Indicates whether user comments are allowed for the current record based on several criteria.
+     *
+     * @return a boolean.
+     * @throws DAOException 
+     */
+    public boolean isAllowUserComments() throws DAOException {
+        if (viewManager == null) {
+            return false;
+        }
+
+        CommentView commentViewAll = DataManager.getInstance().getDao().getCommentViewUnfiltered();
+        if (commentViewAll == null) {
+            logger.warn("Comment view for all comments not found in the DB, please insert.");
+            return false;
+        }
+        if (!commentViewAll.isEnabled()) {
+            logger.trace("User comments disabled globally.");
+            viewManager.setAllowUserComments(false);
+            return false;
+        }
+
+        if (viewManager.isAllowUserComments() == null) {
+            try {
+                if (StringUtils.isNotEmpty(commentViewAll.getSolrQuery()) && DataManager.getInstance()
+                        .getSearchIndex()
+                        .getHitCount(new StringBuilder("+").append(SolrConstants.PI)
+                                .append(':')
+                                .append(viewManager.getPi())
+                                .append(" +(")
+                                .append(commentViewAll.getSolrQuery())
+                                .append(')')
+                                .toString()) == 0) {
+                    viewManager.setAllowUserComments(false);
+                    logger.trace("User comments are not allowed for this record.");
+                } else {
+                    viewManager.setAllowUserComments(true);
+                }
+            } catch (IndexUnreachableException e) {
+                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+                return false;
+            } catch (PresentationException e) {
+                logger.debug("PresentationException thrown here: {}", e.getMessage());
+                return false;
+            }
+        }
+
+        return viewManager.isAllowUserComments();
     }
 }

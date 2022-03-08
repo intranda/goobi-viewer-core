@@ -17,26 +17,23 @@ package io.goobi.viewer.model.annotation.comments;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 import javax.mail.MessagingException;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.persistence.annotations.Index;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
@@ -150,7 +147,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
      * @return a boolean.
      */
     public static boolean sendEmailNotifications(CommentLegacy comment, String oldText, Locale locale) {
-        List<String> addresses = DataManager.getInstance().getConfiguration().getCommentsNotificationEmailAddresses();
+        List<String> addresses = new ArrayList<>(); // Static configured list of email addresses is no longer available
         if (addresses == null || addresses.isEmpty()) {
             return false;
         }

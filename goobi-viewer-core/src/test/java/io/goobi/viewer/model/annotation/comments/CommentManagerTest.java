@@ -22,14 +22,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.Date;
+import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -48,7 +48,7 @@ import io.goobi.viewer.model.security.user.User;
  * @author florian
  *
  */
-public class CommentManagerTest extends AbstractDatabaseEnabledTest {
+public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static final PublicationStatus PUBLISHED = PublicationStatus.PUBLISHED;
     private static final String OPEN_ACCESS = "OPEN_ACCESS";
@@ -129,6 +129,19 @@ public class CommentManagerTest extends AbstractDatabaseEnabledTest {
         
         Mockito.verify(notificator, Mockito.times(1)).notifyDeletion(Mockito.any(), Mockito.any());
 
+    }
+
+    /**
+     * @see CommentManager#getNotificationEmailAddresesForRecord(String)
+     * @verifies return email addresses for matching comment views
+     */
+    @Test
+    public void getNotificationEmailAddresesForRecord_shouldReturnEmailAddressesForMatchingCommentViews() throws Exception {
+        Set<String> result = CommentManager.getNotificationEmailAddresesForRecord("02008011811811");
+        Assert.assertNotNull(result);
+        Assert.assertEquals(3, result.size());
+        Assert.assertTrue(result.contains("2@users.org"));
+        Assert.assertTrue(result.contains("3@users.org"));
     }
 
 }

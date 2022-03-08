@@ -26,10 +26,9 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.comments.Comment;
+import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.annotation.comments.CommentView;
-import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.solr.SolrConstants;
 
 @Named
 @SessionScoped
@@ -44,6 +43,7 @@ public class AdminCommentBean implements Serializable {
 
     private TableDataProvider<Comment> lazyModelComments;
 
+    private CommentView commentViewAll;
     private CommentView currentCommentView;
     private Comment currentComment = null;
 
@@ -52,6 +52,12 @@ public class AdminCommentBean implements Serializable {
      */
     @PostConstruct
     public void init() {
+        try {
+            commentViewAll = DataManager.getInstance().getDao().getCommentViewUnfiltered();
+        } catch (DAOException e) {
+            logger.error(e.getMessage());
+        }
+
         {
             lazyModelComments = new TableDataProvider<>(new TableDataSource<Comment>() {
 
@@ -71,7 +77,7 @@ public class AdminCommentBean implements Serializable {
                                     .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, null);
                         }
                         if (!currentCommentView.isIdentifiersQueried()) {
-                            queryCommentViewIdentifiers(currentCommentView);
+                            CommentManager.queryCommentViewIdentifiers(currentCommentView);
                         }
                         if (currentCommentView.getIdentifiers().isEmpty()) {
                             return Collections.emptyList();
@@ -101,7 +107,7 @@ public class AdminCommentBean implements Serializable {
                         }
 
                         if (!currentCommentView.isIdentifiersQueried()) {
-                            queryCommentViewIdentifiers(currentCommentView);
+                            CommentManager.queryCommentViewIdentifiers(currentCommentView);
                         }
                         if (currentCommentView.getIdentifiers().isEmpty()) {
                             return 0;
@@ -130,29 +136,31 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * y
      * 
-     * @param commentView
      * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
      */
-    private boolean queryCommentViewIdentifiers(CommentView commentView) throws PresentationException, IndexUnreachableException {
-        if (commentView == null) {
-            return false;
-        }
-        if (StringUtils.isBlank(currentCommentView.getSolrQuery())) {
-            commentView.setIdentifiersQueried(true);
-            return false;
+    public boolean isUserCommentsEnabled() {
+        if (commentViewAll != null) {
+            return commentViewAll.isEnabled();
         }
 
-        String query = "+" + SolrConstants.ISWORK + ":true +(" + currentCommentView.getSolrQuery() + ")";
-        logger.trace(query);
-        currentCommentView.getIdentifiers().addAll(SearchHelper.getFacetValues(query, SolrConstants.PI, 1));
-        currentCommentView.setIdentifiersQueried(true);
-
-        return !currentCommentView.getIdentifiers().isEmpty();
+        return false;
     }
+
+    /**
+     * 
+     * @param userCommentsEnabled
+     * @throws DAOException
+     */
+    public void setUserCommentsEnabled(boolean userCommentsEnabled) throws DAOException {
+        if (commentViewAll != null) {
+            if (commentViewAll.isEnabled() != userCommentsEnabled) {
+                commentViewAll.setEnabled(userCommentsEnabled);
+                DataManager.getInstance().getDao().updateCommentView(commentViewAll);
+            }
+        }
+    }
+
 
     /**
      * 
@@ -173,7 +181,7 @@ public class AdminCommentBean implements Serializable {
         if (user == null) {
             return Collections.emptyList();
         }
-        
+
         logger.trace("user: {}", user.getEmail());
 
         // Unfiltered list for admins

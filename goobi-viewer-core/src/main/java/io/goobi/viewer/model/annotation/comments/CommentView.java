@@ -57,6 +57,9 @@ public class CommentView {
     @Column(name = "core_type")
     private boolean coreType = false;
 
+    @Column(name = "enabled")
+    private boolean enabled = true;
+
     @Transient
     private final Set<String> identifiers = new HashSet<>();
 
@@ -205,6 +208,20 @@ public class CommentView {
      */
     public void setCoreType(boolean coreType) {
         this.coreType = coreType;
+    }
+
+    /**
+     * @return the enabled
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * @param enabled the enabled to set
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     /**

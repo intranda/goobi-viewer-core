@@ -19,31 +19,33 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.annotation.AgentType;
-import de.intranda.api.annotation.IResource;
-import de.intranda.api.annotation.SimpleResource;
-import de.intranda.api.annotation.wa.Agent;
 import de.intranda.api.annotation.wa.Motivation;
-import de.intranda.api.annotation.wa.TextualResource;
-import de.intranda.api.annotation.wa.WebAnnotation;
-import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.AjaxResponseException;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.notification.ChangeNotificator;
+import io.goobi.viewer.model.annotation.notification.CommentMailNotificator;
 import io.goobi.viewer.model.annotation.serialization.AnnotationDeleter;
 import io.goobi.viewer.model.annotation.serialization.AnnotationLister;
 import io.goobi.viewer.model.annotation.serialization.AnnotationSaver;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Class to create comments from a text input for a given PI and page order and to save them using a given {@link AnnotationSaver}
@@ -54,13 +56,20 @@ import io.goobi.viewer.model.security.user.User;
 public class CommentManager implements AnnotationLister<Comment> {
 
     private final static Logger logger = LoggerFactory.getLogger(CommentManager.class);
-    
+
     private final AnnotationSaver saver;
     private final AnnotationDeleter deleter;
     private final List<ChangeNotificator> notificators;
     private final AnnotationConverter converter = new AnnotationConverter();
     private final AnnotationLister<Comment> lister;
 
+    /**
+     * 
+     * @param saver
+     * @param deleter
+     * @param lister
+     * @param notificators
+     */
     public CommentManager(AnnotationSaver saver, AnnotationDeleter deleter, AnnotationLister<Comment> lister, ChangeNotificator... notificators) {
         this.saver = saver;
         this.deleter = deleter;
@@ -68,18 +77,47 @@ public class CommentManager implements AnnotationLister<Comment> {
         this.notificators = Arrays.asList(notificators);
     }
 
+    /**
+     * 
+     * @param text
+     * @param creator
+     * @param pi
+     * @param pageOrder
+     * @param license
+     * @param publicationStatus
+     */
     public void createComment(String text, User creator, String pi, Integer pageOrder, String license, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, creator, pi, pageOrder);
         Comment comment = new Comment(pi, pageOrder, creator, textCleaned, license, publicationStatus);
         comment.setPublicationStatus(publicationStatus);
         try {
             saver.save(comment);
-            notificators.forEach(n -> n.notifyCreation(comment, BeanUtils.getLocale()));
+            for (ChangeNotificator n : notificators) {
+                if (n.getClass().equals(CommentMailNotificator.class)) {
+                    Set<String> recipients = getNotificationEmailAddresesForRecord(pi);
+                    ((CommentMailNotificator) n).setAddresses(new ArrayList<>(recipients));
+                }
+                n.notifyCreation(comment, BeanUtils.getLocale());
+            }
         } catch (IOException e) {
             notificators.forEach(n -> n.notifyError(e, BeanUtils.getLocale()));
+        } catch (DAOException e) {
+            logger.error(e.getMessage());
+        } catch (PresentationException e) {
+            logger.error(e.getMessage());
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage());
         }
     }
 
+    /**
+     * 
+     * @param comment
+     * @param text
+     * @param editor
+     * @param license
+     * @param publicationStatus
+     */
     public void editComment(Comment comment, String text, User editor, String license, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, editor, comment.getTargetPI(), comment.getTargetPageOrder());
         Comment editedComment = new Comment(comment);
@@ -88,12 +126,28 @@ public class CommentManager implements AnnotationLister<Comment> {
         editedComment.setDateModified(LocalDateTime.now());
         try {
             saver.save(editedComment);
-            notificators.forEach(n -> n.notifyEdit(comment, editedComment, BeanUtils.getLocale()));
+            for (ChangeNotificator n : notificators) {
+                if (n.getClass().equals(CommentMailNotificator.class)) {
+                    Set<String> recipients = getNotificationEmailAddresesForRecord(editedComment.getTargetPI());
+                    ((CommentMailNotificator) n).setAddresses(new ArrayList<>(recipients));
+                }
+                n.notifyEdit(comment, editedComment, BeanUtils.getLocale());
+            }
         } catch (IOException e) {
             notificators.forEach(n -> n.notifyError(e, BeanUtils.getLocale()));
+        } catch (DAOException e) {
+            logger.error(e.getMessage());
+        } catch (PresentationException e) {
+            logger.error(e.getMessage());
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage());
         }
     }
 
+    /**
+     * 
+     * @param comment
+     */
     public void deleteComment(Comment comment) {
         try {
             deleter.delete(comment);
@@ -127,13 +181,13 @@ public class CommentManager implements AnnotationLister<Comment> {
             List<Long> creators, String targetPi, Integer targetPage, String sortField, boolean sortDescending) {
         List<String> allMotivations = new ArrayList<>();
         allMotivations.add(Motivation.COMMENTING);
-        if(motivations  != null) {
+        if (motivations != null) {
             allMotivations.addAll(allMotivations);
         }
-        return lister.getAnnotations(firstIndex, items, textQuery, allMotivations, generators, creators, targetPi, targetPage, sortField, sortDescending);
+        return lister.getAnnotations(firstIndex, items, textQuery, allMotivations, generators, creators, targetPi, targetPage, sortField,
+                sortDescending);
     }
 
-    
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotationCount(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer)
      */
@@ -142,23 +196,32 @@ public class CommentManager implements AnnotationLister<Comment> {
             Integer targetPage) {
         List<String> allMotivations = new ArrayList<>();
         allMotivations.add(Motivation.COMMENTING);
-        if(motivations  != null) {
+        if (motivations != null) {
             allMotivations.addAll(allMotivations);
         }
         return lister.getAnnotationCount(textQuery, allMotivations, generators, creators, targetPi, targetPage);
     }
 
+    /**
+     * 
+     * @param text
+     * @param editor
+     * @param pi
+     * @param page
+     * @return
+     */
     public static String checkAndCleanScripts(String text, User editor, String pi, Integer page) {
         if (text != null) {
             String cleanText = StringTools.stripJS(text);
             if (cleanText.length() < text.length()) {
-                logger.warn("User {} attempted to add a script block into a comment for {}, page {}, which was removed:\n{}", Optional.ofNullable(editor).map(User::getId).orElse(null), pi, page, text);
+                logger.warn("User {} attempted to add a script block into a comment for {}, page {}, which was removed:\n{}",
+                        Optional.ofNullable(editor).map(User::getId).orElse(null), pi, page, text);
                 text = cleanText;
             }
             return cleanText;
-        } else {
-            return text;
         }
+
+        return text;
     }
 
     /* (non-Javadoc)
@@ -167,5 +230,71 @@ public class CommentManager implements AnnotationLister<Comment> {
     @Override
     public Optional<Comment> getAnnotation(Long id) {
         return lister.getAnnotation(id);
+    }
+
+    /**
+     * Returns a list of email addresses that are configured (via comment views) to receive notifications for comments for the given record
+     * identifier.
+     * 
+     * @param pi
+     * @return List of email addresses
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @should return email addresses for matching comment views
+     */
+    static Set<String> getNotificationEmailAddresesForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
+        List<CommentView> commentViews = DataManager.getInstance().getDao().getAllCommentViews();
+        if (commentViews.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        Set<String> ret = new HashSet<>();
+        for (CommentView commentView : commentViews) {
+            if (commentView.getUserGroup() == null) {
+                logger.trace("Comment view '{}' - no user group set", commentView.getTitle());
+                continue;
+            }
+            if (StringUtils.isNotEmpty(commentView.getSolrQuery())) {
+                if (queryCommentViewIdentifiers(commentView)) {
+                    if ((commentView.isCoreType() && StringUtils.isEmpty(commentView.getSolrQuery())) || commentView.getIdentifiers().contains(pi)) {
+                        for (User user : commentView.getUserGroup().getMembersAndOwner()) {
+                            ret.add(user.getEmail());
+                        }
+                    }
+                }
+            } else if (commentView.isCoreType()) {
+                // "All comments" group without a filter query - add all users email addresses
+                for (User user : commentView.getUserGroup().getMembersAndOwner()) {
+                    ret.add(user.getEmail());
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * 
+     * @param commentView
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public static boolean queryCommentViewIdentifiers(CommentView commentView) throws PresentationException, IndexUnreachableException {
+        if (commentView == null) {
+            return false;
+        }
+        if (StringUtils.isBlank(commentView.getSolrQuery())) {
+            commentView.setIdentifiersQueried(true);
+            return false;
+        }
+
+        String query = "+" + SolrConstants.ISWORK + ":true +(" + commentView.getSolrQuery() + ")";
+        commentView.getIdentifiers().addAll(SearchHelper.getFacetValues(query, SolrConstants.PI, 1));
+        commentView.setIdentifiersQueried(true);
+
+        return !commentView.getIdentifiers().isEmpty();
     }
 }

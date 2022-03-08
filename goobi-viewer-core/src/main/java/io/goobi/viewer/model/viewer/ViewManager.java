@@ -223,34 +223,34 @@ public class ViewManager implements Serializable {
         if (StringUtils.isNotBlank(archiveId)) {
             this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
             this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
-        } 
+        }
     }
-    
+
     public Pair<Optional<String>, Optional<String>> getArchiveTreeNeighbours() {
         return archiveTreeNeighbours;
     }
-    
+
     public List<ArchiveEntry> getArchiveHierarchyForIdentifier(String identifier) {
-        if(this.archiveResource != null) {            
+        if (this.archiveResource != null) {
             return DataManager.getInstance().getArchiveManager().getArchiveHierarchyForIdentifier(this.archiveResource, identifier);
         } else {
             return Collections.emptyList();
         }
     }
-    
+
     public String getArchiveUrlForIdentifier(String identifier) {
         String url = DataManager.getInstance().getArchiveManager().getArchiveUrl(this.archiveResource, identifier);
         return url.replaceAll("\\s", "+");
     }
-    
+
     private void setDoublePageModeForDropDown(boolean doublePages) {
         this.dropdownFulltext.forEach(i -> i.setDoublePageMode(doublePages));
         this.dropdownPages.forEach(i -> i.setDoublePageMode(doublePages));
-        
+
     }
 
     public String getPageUrl(SelectItem item) {
-        if(isDoublePageMode()) {
+        if (isDoublePageMode()) {
             return item.getValue().toString() + item.getValue().toString();
         } else {
             return item.getValue().toString();
@@ -332,8 +332,9 @@ public class ViewManager implements Serializable {
             urlBuilder.append("[");
             String imageInfoLeft =
                     (leftPage.isPresent() && leftPage.get().isDoubleImage()) ? null : leftPage.map(page -> getImageInfo(page, pageType)).orElse(null);
-            String imageInfoRight = (rightPage.isPresent() && (rightPage.get().isDoubleImage() || rightPage.get().equals(leftPage.orElse(null)))) ? null
-                    : rightPage.map(page -> getImageInfo(page, pageType)).orElse(null);
+            String imageInfoRight =
+                    (rightPage.isPresent() && (rightPage.get().isDoubleImage() || rightPage.get().equals(leftPage.orElse(null)))) ? null
+                            : rightPage.map(page -> getImageInfo(page, pageType)).orElse(null);
             if (StringUtils.isNotBlank(imageInfoLeft)) {
                 urlBuilder.append("\"").append(imageInfoLeft).append("\"");
             }
@@ -1344,8 +1345,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * Main method for setting the current page(s) in this ViewManager. If the given String cannot be parsed to an integer
-     * the current image order is set to 1
+     * Main method for setting the current page(s) in this ViewManager. If the given String cannot be parsed to an integer the current image order is
+     * set to 1
      * 
      * @param currentImageOrderString A string containing a single page number or a range of two pages
      * @throws IndexUnreachableException
@@ -1690,9 +1691,9 @@ public class ViewManager implements Serializable {
      * </p>
      */
     public void updateDropdownSelected() {
-        if(doublePageMode) {
+        if (doublePageMode) {
             setDropdownSelected(String.valueOf(currentImageOrder) + "-" + String.valueOf(currentImageOrder));
-        } else {            
+        } else {
             setDropdownSelected(String.valueOf(currentImageOrder));
         }
     }
@@ -1875,7 +1876,7 @@ public class ViewManager implements Serializable {
      */
     public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         String pi = getPi();
-        if(pi != null) {            
+        if (pi != null) {
             return DataManager.getInstance()
                     .getRestApiManager()
                     .getContentApiManager()
@@ -1974,14 +1975,14 @@ public class ViewManager implements Serializable {
             return "";
         }
         String pi = getPi();
-        if(StringUtils.isNoneBlank(pi, filename)) {
+        if (StringUtils.isNoneBlank(pi, filename)) {
             return DataManager.getInstance()
                     .getRestApiManager()
                     .getContentApiManager()
                     .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
                             .params(pi, filename)
                             .build())
-                    .orElse("");            
+                    .orElse("");
         } else {
             return "";
         }
@@ -2183,41 +2184,17 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * Indicates whether user comments are allowed for the current record based on several criteria.
-     *
-     * @return a boolean.
+     * @return the allowUserComments
      */
-    public boolean isAllowUserComments() {
-        if (!DataManager.getInstance().getConfiguration().isCommentsEnabled()) {
-            return false;
-        }
-
-        if (allowUserComments == null) {
-            String query = DataManager.getInstance().getConfiguration().getCommentsCondition();
-            try {
-                if (StringUtils.isNotEmpty(query) && DataManager.getInstance()
-                        .getSearchIndex()
-                        .getHitCount(new StringBuilder(SolrConstants.PI).append(':')
-                                .append(pi)
-                                .append(" AND (")
-                                .append(query)
-                                .append(')')
-                                .toString()) == 0) {
-                    allowUserComments = false;
-                    logger.trace("User comments are not allowed for this record.");
-                } else {
-                    allowUserComments = true;
-                }
-            } catch (IndexUnreachableException e) {
-                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-                return false;
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-                return false;
-            }
-        }
-
+    public Boolean isAllowUserComments() {
         return allowUserComments;
+    }
+
+    /**
+     * @param allowUserComments the allowUserComments to set
+     */
+    public void setAllowUserComments(Boolean allowUserComments) {
+        this.allowUserComments = allowUserComments;
     }
 
     /**
@@ -2597,7 +2574,7 @@ public class ViewManager implements Serializable {
         try {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                     BeanUtils.getRequest());
-        } catch ( RecordNotFoundException e) {
+        } catch (RecordNotFoundException e) {
             return false;
         }
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
@@ -2629,7 +2606,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException  {
+    public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
         if (isBornDigital()) {
             return false;
         }
@@ -3597,7 +3574,6 @@ public class ViewManager implements Serializable {
         }
         return firstPageOrientation;
     }
-
 
     /**
      * <p>
