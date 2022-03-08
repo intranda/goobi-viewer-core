@@ -2,28 +2,36 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.administration.legal.ConsentScope;
+import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.administration.legal.ConsentScope.StorageMode;
 import io.goobi.viewer.model.administration.legal.Disclaimer;
 
 /**
- * This this the java backend class for enabling and configuring the disclaimer modal feature. 
- * This bean is view scoped, i.e. created fresh for each new page loaded
-**/
+ * This this the java backend class for enabling and configuring the disclaimer modal feature. This bean is view scoped, i.e. created fresh for each
+ * new page loaded
+ **/
 @Named
 @ViewScoped
 public class DisclaimerBean implements Serializable {
@@ -33,7 +41,7 @@ public class DisclaimerBean implements Serializable {
 
     private final IDAO dao;
     private final Disclaimer disclaimerForEdit;
-    
+
     /**
      * Default constructor using the IDAO from the {@link DataManager} class
      */
@@ -41,18 +49,17 @@ public class DisclaimerBean implements Serializable {
         dao = retrieveDAO();
         this.disclaimerForEdit = loadDisclaimerForEdit();
     }
-    
-
 
     /**
      * Constructor for testing purposes
-     * @param dao   the IDAO implementation to use
+     * 
+     * @param dao the IDAO implementation to use
      */
     public DisclaimerBean(IDAO dao) {
         this.dao = dao;
         this.disclaimerForEdit = loadDisclaimerForEdit();
     }
-    
+
     private IDAO retrieveDAO() {
         try {
             return DataManager.getInstance().getDao();
@@ -61,9 +68,10 @@ public class DisclaimerBean implements Serializable {
             return null;
         }
     }
-    
+
     /**
      * Get the stored disclaimer to display on a viewer web-page. Do not use for modifications
+     * 
      * @return the cookie banner stored in the DAO
      */
     public Disclaimer getDisclaimer() {
@@ -78,12 +86,12 @@ public class DisclaimerBean implements Serializable {
             return null;
         }
     }
-    
+
     public void save() {
-        if(this.disclaimerForEdit != null) {
-//            this.disclaimerForEdit.setAcceptanceScope(new ConsentScope(this.disclaimerForEdit.getAcceptanceScope().toString()));
+        if (this.disclaimerForEdit != null) {
+            //            this.disclaimerForEdit.setAcceptanceScope(new ConsentScope(this.disclaimerForEdit.getAcceptanceScope().toString()));
             try {
-                if(!this.dao.saveDisclaimer(this.disclaimerForEdit)) {
+                if (!this.dao.saveDisclaimer(this.disclaimerForEdit)) {
                     throw new DAOException("Saving disclaimer failed");
                 }
                 Messages.info("admin__legal__save_disclaimer__success");
@@ -96,9 +104,10 @@ public class DisclaimerBean implements Serializable {
     public Disclaimer getDisclaimerForEdit() {
         return disclaimerForEdit;
     }
-    
+
     /**
      * Activate/deactivate the disclaimer. Applies directly to the persisted object
+     * 
      * @param active
      * @throws DAOException
      */
@@ -112,17 +121,19 @@ public class DisclaimerBean implements Serializable {
             }
         }
     }
-    
+
     /**
      * Check if the banner is active, i.e. should be displayed at all
+     * 
      * @return true if the banner should be shown if appropriate
      */
     public boolean isDisclaimerActive() {
         return this.disclaimerForEdit.isActive();
     }
-    
+
     /**
      * Set the {@link Disclaimer#getRequiresConsentAfter()} to the current time. Applies directly to the persisted object
+     * 
      * @throws DAOException
      */
     public void resetUserConsent() throws DAOException {
@@ -141,14 +152,64 @@ public class DisclaimerBean implements Serializable {
     private Disclaimer loadDisclaimerForEdit() {
         try {
             Disclaimer persistedDisclaimer = dao.getDisclaimer();
-            if(persistedDisclaimer == null) {
+            if (persistedDisclaimer == null) {
                 persistedDisclaimer = new Disclaimer();
                 dao.saveDisclaimer(persistedDisclaimer);
             }
-            return new Disclaimer(persistedDisclaimer);            
-        } catch(DAOException e) {
+            return new Disclaimer(persistedDisclaimer);
+        } catch (DAOException e) {
             logger.error("Error synchronizing editable disclaimer with database", e);
-            return new Disclaimer();      
+            return new Disclaimer();
+        }
+    }
+
+    public String getDisclaimerConfig() {
+        if (dao != null) {
+            try {
+                Disclaimer disclaimer = dao.getDisclaimer();
+                JSONObject json = new JSONObject();
+                boolean active = disclaimer.isActive();
+                if (active && BeanUtils.getNavigationHelper().isDocumentPage()) {
+                    String pi = BeanUtils.getActiveDocumentBean().getPersistentIdentifier();
+                    json.put("active", active);
+                    json.put("lastEdited", disclaimer.getRequiresConsentAfter().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+                    json.put("storage", disclaimer.getAcceptanceScope().getStorageMode().toString().toLowerCase());
+                    json.put("daysToLive", disclaimer.getAcceptanceScope().getDaysToLive());
+                    BeanUtils.getSessionId().ifPresent(id -> {                        
+                        json.put("sessionId", id);
+                    });
+                    return json.toString();
+                }
+            } catch (DAOException | IndexUnreachableException e) {
+                logger.error("Error loading disclaimer config", e);
+                return "{}";
+            }
+        }
+        return "{}";
+    }
+
+    /**
+     * Check if the given pi is a match for the query of the record note The pi is a match if the record note query combined with a query for the
+     * given pi returns at least one result
+     * 
+     * @param pi
+     * @return
+     */
+    public boolean matchesRecord(Disclaimer disclaimer, String pi) {
+        if (StringUtils.isNotBlank(pi)) {
+            String solrQuery = disclaimer.getQueryForSearch();
+            String singleRecordQuery = "+({1}) +{2}".replace("{1}", solrQuery).replace("{2}", "PI:" + pi);
+
+            try {
+                return DataManager.getInstance()
+                        .getSearchIndex()
+                        .count(singleRecordQuery) > 0;
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error("Failed to test match for record note '{}': {}", this, e.toString());
+                return false;
+            }
+        } else {
+            return false;
         }
     }
 }

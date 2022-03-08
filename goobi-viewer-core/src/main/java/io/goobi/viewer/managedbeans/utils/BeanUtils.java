@@ -608,4 +608,10 @@ public class BeanUtils {
         }
         return value;
     }
+    
+    public static Optional<String> getSessionId() {
+        return Optional.ofNullable(FacesContext.getCurrentInstance())
+        .map(FacesContext::getExternalContext)
+        .map(extCtx -> extCtx.getSessionId(false));
+    }
 }

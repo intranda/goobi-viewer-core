@@ -5852,27 +5852,6 @@ public class JPADAO implements IDAO {
         }
     }
     
-
-    @Override
-    public Disclaimer getDisclaimer() throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("SELECT u FROM Disclaimer u");
-            //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
-            @SuppressWarnings("unchecked")
-            List<Disclaimer> results = q.getResultList();
-            if (results.isEmpty()) {
-                //No results. Just return a new object which may be saved later
-                return null;
-            }
-            return results.get(0);
-        } finally {
-            close(em);
-        }
-    }
-
     @Override
     public boolean saveDisclaimer(Disclaimer disclaimer) throws DAOException {
         preQuery();
@@ -5891,6 +5870,27 @@ public class JPADAO implements IDAO {
             logger.error("Error saving disclaimer",e  );
             handleException(em);
             return false;
+        } finally {
+            close(em);
+        }
+    }
+    
+
+    @Override
+    public Disclaimer getDisclaimer() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT u FROM Disclaimer u");
+            //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+            @SuppressWarnings("unchecked")
+            List<Disclaimer> results = q.getResultList();
+            if (results.isEmpty()) {
+                //No results. Just return a new object which may be saved later
+                return null;
+            }
+            return results.get(0);
         } finally {
             close(em);
         }

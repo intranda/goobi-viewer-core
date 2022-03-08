@@ -51,7 +51,7 @@ public class Disclaimer {
     private LocalDateTime requiresConsentAfter = LocalDateTime.now();
   
     
-    @Column(name="acceptance_scope")
+    @Column(name="acceptance_scope", nullable = false)
     @Convert(converter = ConsentScopeConverter.class)
     private ConsentScope acceptanceScope = new ConsentScope();
     
@@ -66,7 +66,6 @@ public class Disclaimer {
     }
     
     public Disclaimer(Disclaimer orig) {
-        this.acceptanceScope = orig.acceptanceScope;
         this.active = orig.active;
         this.id = orig.id;
         this.requiresConsentAfter = LocalDateTime.from(orig.requiresConsentAfter);
@@ -165,6 +164,10 @@ public class Disclaimer {
      */
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
+    }
+    
+    public String getQueryForSearch() {
+        return "+(" + this.solrQuery + ") +(ISWORK:* ISANCHOR:*)";
     }
 
     public ConsentScope getAcceptanceScope() {
