@@ -92,21 +92,23 @@ public class CommentManager implements AnnotationLister<Comment> {
         comment.setPublicationStatus(publicationStatus);
         try {
             saver.save(comment);
-            for (ChangeNotificator n : notificators) {
+            notificators.parallelStream().forEach(n -> {
                 if (n.getClass().equals(CommentMailNotificator.class)) {
-                    Set<String> recipients = getNotificationEmailAddresesForRecord(pi);
-                    ((CommentMailNotificator) n).setAddresses(new ArrayList<>(recipients));
+                    try {
+                        Set<String> recipients = getNotificationEmailAddresesForRecord(pi);
+                        ((CommentMailNotificator) n).setAddresses(new ArrayList<>(recipients));
+                    } catch (DAOException e) {
+                        logger.error(e.getMessage());
+                    } catch (PresentationException e) {
+                        logger.error(e.getMessage());
+                    } catch (IndexUnreachableException e) {
+                        logger.error(e.getMessage());
+                    }
                 }
                 n.notifyCreation(comment, BeanUtils.getLocale());
-            }
+            });
         } catch (IOException e) {
             notificators.forEach(n -> n.notifyError(e, BeanUtils.getLocale()));
-        } catch (DAOException e) {
-            logger.error(e.getMessage());
-        } catch (PresentationException e) {
-            logger.error(e.getMessage());
-        } catch (IndexUnreachableException e) {
-            logger.error(e.getMessage());
         }
     }
 
@@ -126,21 +128,23 @@ public class CommentManager implements AnnotationLister<Comment> {
         editedComment.setDateModified(LocalDateTime.now());
         try {
             saver.save(editedComment);
-            for (ChangeNotificator n : notificators) {
+            notificators.parallelStream().forEach(n -> {
                 if (n.getClass().equals(CommentMailNotificator.class)) {
-                    Set<String> recipients = getNotificationEmailAddresesForRecord(editedComment.getTargetPI());
-                    ((CommentMailNotificator) n).setAddresses(new ArrayList<>(recipients));
+                    try {
+                        Set<String> recipients = getNotificationEmailAddresesForRecord(editedComment.getTargetPI());
+                        ((CommentMailNotificator) n).setAddresses(new ArrayList<>(recipients));
+                    } catch (DAOException e) {
+                        logger.error(e.getMessage());
+                    } catch (PresentationException e) {
+                        logger.error(e.getMessage());
+                    } catch (IndexUnreachableException e) {
+                        logger.error(e.getMessage());
+                    }
                 }
                 n.notifyEdit(comment, editedComment, BeanUtils.getLocale());
-            }
+            });
         } catch (IOException e) {
             notificators.forEach(n -> n.notifyError(e, BeanUtils.getLocale()));
-        } catch (DAOException e) {
-            logger.error(e.getMessage());
-        } catch (PresentationException e) {
-            logger.error(e.getMessage());
-        } catch (IndexUnreachableException e) {
-            logger.error(e.getMessage());
         }
     }
 
