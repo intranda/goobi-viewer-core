@@ -182,6 +182,7 @@ public class JPADAO implements IDAO {
     @Override
     public EntityManager getEntityManager() {
         EntityManager em = getFactory().createEntityManager();
+//        em.setFlushMode(FlushModeType.COMMIT);
         return em;
     }
 
@@ -5864,7 +5865,7 @@ public class JPADAO implements IDAO {
             List<Disclaimer> results = q.getResultList();
             if (results.isEmpty()) {
                 //No results. Just return a new object which may be saved later
-                return new Disclaimer();
+                return null;
             }
             return results.get(0);
         } finally {
@@ -5887,6 +5888,7 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
+            logger.error("Error saving disclaimer",e  );
             handleException(em);
             return false;
         } finally {

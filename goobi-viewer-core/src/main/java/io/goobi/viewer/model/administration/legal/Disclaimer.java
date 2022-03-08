@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.goobi.viewer.dao.converter.ConsentScopeConverter;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.translations.TranslatedText;
 
@@ -51,6 +52,7 @@ public class Disclaimer {
   
     
     @Column(name="acceptance_scope")
+    @Convert(converter = ConsentScopeConverter.class)
     private ConsentScope acceptanceScope = new ConsentScope();
     
     @Column(name="solr_query")
@@ -70,7 +72,7 @@ public class Disclaimer {
         this.requiresConsentAfter = LocalDateTime.from(orig.requiresConsentAfter);
         this.text = new TranslatedText(orig.text);
         this.solrQuery = orig.solrQuery;
-        this.acceptanceScope = orig.acceptanceScope;
+        this.acceptanceScope = new ConsentScope(orig.acceptanceScope.toString());
     }
     
     
@@ -167,6 +169,10 @@ public class Disclaimer {
 
     public ConsentScope getAcceptanceScope() {
         return this.acceptanceScope;
+    }
+    
+    public void setAcceptanceScope(ConsentScope acceptanceScope) {
+        this.acceptanceScope = acceptanceScope;
     }
     
 }

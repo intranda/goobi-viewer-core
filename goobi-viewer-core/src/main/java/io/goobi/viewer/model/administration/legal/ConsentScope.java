@@ -2,6 +2,8 @@ package io.goobi.viewer.model.administration.legal;
 
 import java.io.Serializable;
 
+import javax.persistence.Entity;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -95,4 +97,19 @@ public class ConsentScope implements Serializable{
          */
         SESSION;
     }
+    
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(this.getClass())) {
+            return ((ConsentScope)obj).toString().equals(this.toString());
+        } else {
+            return false;
+        }
+    }
+    
 }

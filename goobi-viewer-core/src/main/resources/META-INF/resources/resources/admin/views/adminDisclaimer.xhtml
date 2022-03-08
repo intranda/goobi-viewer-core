@@ -23,7 +23,7 @@
 
 			<!-- No scope, so getter in value is called on every call of var -->
 			<c:set var="disclaimer"
-				value="#{cookieBannerBean.getDisclaimerForEdit()}" />
+				value="#{disclaimerBean.getDisclaimerForEdit()}" />
 
 			<h:panelGroup layout="block" id="adminDisclaimer"
 				rendered="#{userBean.admin}">
@@ -42,38 +42,79 @@
 							<div class="row no-gutters mb-3 align-items-center">
 								<div class="control-label mr-3 admin__form-label">#{msg.admin__legal__disclaimer_active}:</div>
 								<div class="admin__form-input">
-									<viewerComponent:toggleSwitch name="activateDisclaimer" toggleTarget="#disclaimerEditWrapper"
-										value="#{disclaimerBean.disclaimerActive}"/>
+									<viewerComponent:toggleSwitch name="activateDisclaimer"
+										toggleTarget="#disclaimerEditWrapper"
+										value="#{disclaimerBean.disclaimerActive}" />
 								</div>
 							</div>
 						</div>
 					</h:form>
 
-					<div id="disclaimerEditWrapper" class="admin__user-terms-box-editable hide">
-						<h:form id="disclaimerEditForm" prependId="false" >
-							<div class="form-horizontal form-group">
+					<div id="disclaimerEditWrapper"
+						class="admin__user-terms-box-editable hide">
+						<div class="form-horizontal form-group">
+							<h:form id="disclaimerEditForm" prependId="false">
 
-								<viewerForms:inputFormBlock title="#{msg.admin__terms_of_use__manage_text}" languageSelector="#{disclaimer.text}">
-								
-									<viewerForms:htmlInputField 
-										label="#{msg.text}"
+								<viewerForms:inputFormBlock
+									title="#{msg.admin__terms_of_use__manage_text}"
+									languageSelector="#{disclaimer.text}">
+
+									<viewerForms:htmlInputField label="#{msg.text}"
 										value="#{disclaimer.text.text}"
 										required="#{disclaimer.text.isDefaultLocaleSelected()}">
 									</viewerForms:htmlInputField>
-								
+
 								</viewerForms:inputFormBlock>
-								
-								<viewerForms:inputFormBlock title="#{msg.admin__legal__ignore_cookie_banner_exceptions}">
-									
+
+								<viewerForms:inputFormBlock id="properties"
+									title="#{msg.admin__legal__disclaimer_properties__label}">
+
 									<p>#{msg.admin__legal__disclaimer_properties__label}</p>
-									
-									<viewerForms:textInputField 
-										label="#{msg.admin__legal__disclaimer_query__label"
+
+									<viewerForms:textInputField
+										label="#{msg.admin__legal__disclaimer_query__label}"
 										value="#{disclaimer.solrQuery}"
 										helpText="#{msg.admin__legal__disclaimer_query__info}"
 										validatorId="solrQueryValidator"
-										validatorMessage="#{msg.inline_help__solr_query_danger}"   />
-									
+										validatorMessage="#{msg.inline_help__solr_query_danger}" />
+
+									<h:panelGroup id="scopeGroup">
+										<viewerForms:inputFormField
+											label="#{msg.admin__legal__disclaimer_scope}">
+
+											<div
+												class="form-group admin__cms-edit-collection-connected-radio-buttons">
+												<div class="connected-top">
+													<h:selectOneRadio group="scopeRadio"
+														value="#{disclaimer.acceptanceScope.storageMode}"
+														immediate="true">
+														<f:selectItem itemValue="SESSION"
+															itemLabel="#{msg.admin__legal__disclaimer_scope__session}" />
+														<f:ajax render="properties:scopeGroup" />
+													</h:selectOneRadio>
+												</div>
+												<div class="connected-bottom">
+													<h:selectOneRadio group="scopeRadio"
+														value="#{disclaimer.acceptanceScope.storageMode}"
+														immediate="true">
+														<f:selectItem itemValue="LOCAL"
+															itemLabel="#{msg.admin__legal__disclaimer_scope__local}" />
+														<f:ajax render="properties:scopeGroup" />
+													</h:selectOneRadio>
+												</div>
+											</div>
+											<h:panelGroup layout="block" id="scopeDurationInputGroup"
+												rendered="#{disclaimer.acceptanceScope.storageMode == 'LOCAL'}">
+												<div>
+													<h:inputText id="scopeDurationInput"
+														styleClass="form-control"
+														value="#{disclaimer.acceptanceScope.daysToLive}">
+													</h:inputText>
+												</div>
+											</h:panelGroup>
+
+										</viewerForms:inputFormField>
+									</h:panelGroup>
 								</viewerForms:inputFormBlock>
 
 								<!-- SAVE DISCLAIMER -->
@@ -83,7 +124,8 @@
 										action="#{disclaimerBean.save()}">
 									</h:commandButton>
 								</div>
-
+							</h:form>
+							<h:form>
 								<!-- DEACTIVATE TERMS OF USE + RESET STATUS ACCEPTED FOR USERS -->
 								<h2>#{msg.admin__legal__reset_disclaimer_consent__title}</h2>
 								<div class="admin__default-block -danger">
@@ -102,8 +144,8 @@
 										</div>
 									</div>
 								</div>
-							</div>
-						</h:form>
+							</h:form>
+						</div>
 					</div>
 				</div>
 			</h:panelGroup>

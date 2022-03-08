@@ -2,6 +2,9 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -13,7 +16,8 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.administration.legal.CookieBanner;
+import io.goobi.viewer.model.administration.legal.ConsentScope;
+import io.goobi.viewer.model.administration.legal.ConsentScope.StorageMode;
 import io.goobi.viewer.model.administration.legal.Disclaimer;
 
 /**
@@ -35,8 +39,10 @@ public class DisclaimerBean implements Serializable {
      */
     public DisclaimerBean() {
         dao = retrieveDAO();
-        disclaimerForEdit = new Disclaimer(getDisclaimer());
+        this.disclaimerForEdit = loadDisclaimerForEdit();
     }
+    
+
 
     /**
      * Constructor for testing purposes
@@ -44,7 +50,7 @@ public class DisclaimerBean implements Serializable {
      */
     public DisclaimerBean(IDAO dao) {
         this.dao = dao;
-        disclaimerForEdit = new Disclaimer(getDisclaimer());
+        this.disclaimerForEdit = loadDisclaimerForEdit();
     }
     
     private IDAO retrieveDAO() {
@@ -63,7 +69,7 @@ public class DisclaimerBean implements Serializable {
     public Disclaimer getDisclaimer() {
         if (dao != null) {
             try {
-                return dao.getDisclaimer();
+                return Optional.ofNullable(dao.getDisclaimer()).orElse(new Disclaimer());
             } catch (DAOException e) {
                 logger.error("Error retrieving disclaimer from dao: {}", e.toString());
                 return null;
@@ -75,6 +81,7 @@ public class DisclaimerBean implements Serializable {
     
     public void save() {
         if(this.disclaimerForEdit != null) {
+//            this.disclaimerForEdit.setAcceptanceScope(new ConsentScope(this.disclaimerForEdit.getAcceptanceScope().toString()));
             try {
                 if(!this.dao.saveDisclaimer(this.disclaimerForEdit)) {
                     throw new DAOException("Saving disclaimer failed");
@@ -102,7 +109,6 @@ public class DisclaimerBean implements Serializable {
             dao.saveDisclaimer(disclaimer);
             if (this.disclaimerForEdit != null) {
                 this.disclaimerForEdit.setActive(active);
-                this.disclaimerForEdit.setId(disclaimer.getId());
             }
         }
     }
@@ -128,9 +134,21 @@ public class DisclaimerBean implements Serializable {
             dao.saveDisclaimer(disclaimer);
             if (this.disclaimerForEdit != null) {
                 this.disclaimerForEdit.setRequiresConsentAfter(disclaimer.getRequiresConsentAfter());
-                this.disclaimerForEdit.setId(disclaimer.getId());
             }
         }
     }
-    
+
+    private Disclaimer loadDisclaimerForEdit() {
+        try {
+            Disclaimer persistedDisclaimer = dao.getDisclaimer();
+            if(persistedDisclaimer == null) {
+                persistedDisclaimer = new Disclaimer();
+                dao.saveDisclaimer(persistedDisclaimer);
+            }
+            return new Disclaimer(persistedDisclaimer);            
+        } catch(DAOException e) {
+            logger.error("Error synchronizing editable disclaimer with database", e);
+            return new Disclaimer();      
+        }
+    }
 }

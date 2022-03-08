@@ -2340,6 +2340,11 @@ public interface IDAO {
 
     public boolean saveCookieBanner(CookieBanner banner) throws DAOException;
 
+    /**
+     * Get the single stored {@link Disclaimer}. May return null if no disclaimer has been persisted yet
+     * @return  the disclaimer or null
+     * @throws DAOException
+     */
     public Disclaimer getDisclaimer() throws DAOException;
 
     public boolean saveDisclaimer(Disclaimer disclaimer) throws DAOException;

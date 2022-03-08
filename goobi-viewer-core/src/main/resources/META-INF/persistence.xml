@@ -165,8 +165,8 @@
 		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
 		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
 		<class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
-				<class>io.goobi.viewer.model.administration.legal.Disclaimer</class>
-				<class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
+		<class>io.goobi.viewer.model.administration.legal.Disclaimer</class>
+		<class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
