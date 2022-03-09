@@ -35,8 +35,6 @@
     "bootstrap": "~4.4.1",
     "clipboard": "~2.0.4",
     "font-awesome": "~4.7.0",
-    "grunt-copy-deps": "^1.4.0",
-    "grunt-kss": "^5.0.1",
     "hc-sticky": "~2.2.7",
     "imagesloaded": "~4.1.1",
     "jqplot": "~1.0.9",
