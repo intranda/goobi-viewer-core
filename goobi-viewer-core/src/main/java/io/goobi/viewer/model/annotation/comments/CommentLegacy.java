@@ -23,16 +23,13 @@ import java.util.Optional;
 
 import javax.mail.MessagingException;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.persistence.annotations.Index;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -174,7 +171,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
         }
 
         try {
-            NetTools.postMail(addresses, subject, body);
+            NetTools.postMail(addresses, null, null, subject, body);
             return true;
         } catch (UnsupportedEncodingException | MessagingException e) {
             logger.error(e.getMessage(), e);
