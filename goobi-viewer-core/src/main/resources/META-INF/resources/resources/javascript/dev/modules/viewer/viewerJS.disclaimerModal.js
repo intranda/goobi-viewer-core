@@ -26,7 +26,7 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // variables
-    var _debug = false;
+    var _debug = true;
     var _defaults = {
     	lastEdited: '',
     	active : false,
@@ -51,7 +51,7 @@ var viewerJS = ( function( viewer ) {
             this.config = $.extend(true, {}, _defaults, config );
             if(_debug)console.log("init disclaimer modal with config", this.config);
             if(this.config.active) {
-            	this.settings = this.getStoredSettings();
+            	this.settings = this.getStoredSettings(this.config.storage);
             	if(this.settings.lastAccepted) {
             		let lastEditedDate = new Date(this.config.lastEdited);
             		let lastAcceptedDate = new Date(this.settings.lastAccepted);
@@ -76,11 +76,17 @@ var viewerJS = ( function( viewer ) {
 			}
         },
         showDisclaimer() {
-            let $text = $(this.config.disclaimerText);
-        	viewer.notifications.warn("", this.config.disclaimerText)
+        	Swal.fire({
+        		html : this.config.disclaimerText,
+        		allowOutsideClick: false,
+        		customClass: { 
+        			popup: 'disclaimer-modal__alert',
+			    	confirmButton: 'btn btn--full'
+			    }
+        	})
         	.then(() => {
         		console.log("accepted disclaimer");
-        		this.setStoredSettings({lastAccepted : Date.now(), sessionId: this.config.sessionId});        		
+        		this.setStoredSettings({lastAccepted : Date.now(), sessionId: this.config.sessionId}, this.config.storage);        		
         	});
         	
         },

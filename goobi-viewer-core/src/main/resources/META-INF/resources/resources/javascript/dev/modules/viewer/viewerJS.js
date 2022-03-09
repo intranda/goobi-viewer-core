@@ -66,7 +66,8 @@ var viewerJS = (function () {
         console.info('Current Browser = ', _defaults.browser);
         console.info('Current Theme = ', _defaults.theme);
         console.info('Current Page = ', _defaults.currentPage);
-
+ 
+ 		viewer.disclaimerModal.init(this.disclaimerConfig);
 
         //init websocket
         viewer.webSocket = new viewerJS.WebSocket(window.location.host, currentPath, viewerJS.WebSocket.PATH_SESSION_SOCKET);

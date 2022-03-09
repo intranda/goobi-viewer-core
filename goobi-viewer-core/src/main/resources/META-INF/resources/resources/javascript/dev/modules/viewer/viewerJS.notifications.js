@@ -40,7 +40,7 @@ var viewerJS = ( function( viewer ) {
 					return Swal.fire({
 						scrollbarPadding: false,
 						title: titleAlert,
-						html: message,
+						text: message,
 						icon: 'warning',
 						showCancelButton: true,
 						confirmButtonText: confirmText,
@@ -71,7 +71,7 @@ var viewerJS = ( function( viewer ) {
 				return Swal.fire({
 					scrollbarPadding: false,
 					title: titleAlert,
-					html: message,
+					text: message,
 					icon: type,
 				    buttonsStyling: false,
 					showClass: {

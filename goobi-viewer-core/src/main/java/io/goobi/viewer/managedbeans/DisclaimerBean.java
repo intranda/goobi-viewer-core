@@ -93,12 +93,12 @@ public class DisclaimerBean implements Serializable {
 
 
     public String getDisclaimerConfig() {
-        if (dao != null) {
+        if (dao != null && BeanUtils.getNavigationHelper().isDocumentPage()) {
             try {
                 Disclaimer disclaimer = dao.getDisclaimer();
                 JSONObject json = new JSONObject();
                 boolean active = disclaimer.isActive();
-                if (active && BeanUtils.getNavigationHelper().isDocumentPage()) {
+                if (active ) {
                     if (appliesToRecord(disclaimer, BeanUtils.getActiveDocumentBean().getPersistentIdentifier())) {
                         ConsentScope scope = getConsentScope(disclaimer);
                         json.put("active", active);
