@@ -412,8 +412,6 @@ public class BookmarkBean implements Serializable {
     public List<BookmarkList> getBookmarkListsForUser(User user) throws DAOException {
         return DataManager.getInstance().getDao().getBookmarkLists(user);
     }
-    
-
 
     /**
      * <p>
@@ -830,7 +828,7 @@ public class BookmarkBean implements Serializable {
                             bookmarkList);
             String subject = ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUBJECT, null);
             try {
-                NetTools.postMail(Collections.singletonList(getSessionBookmarkListEmail()), subject, body);
+                NetTools.postMail(Collections.singletonList(getSessionBookmarkListEmail()), null, null, subject, body);
                 Messages.info(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUCCESS, null));
             } catch (UnsupportedEncodingException | MessagingException e) {
                 logger.error(e.getMessage(), e);

@@ -114,7 +114,7 @@ public class CommentMailNotificator implements ChangeNotificator {
         }
 
         try {
-            NetTools.postMail(addresses, subject, body);
+            NetTools.postMail(addresses, null, null, subject, body);
             return true;
         } catch (UnsupportedEncodingException | MessagingException e) {
             logger.error(e.getMessage(), e);

@@ -98,7 +98,7 @@ public class SearchHitsNotifier {
 
         if (StringUtils.isNotEmpty(address)) {
             try {
-                NetTools.postMail(Collections.singletonList(address), subject, body);
+                NetTools.postMail(Collections.singletonList(address), null, null, subject, body);
             } catch (UnsupportedEncodingException | MessagingException e) {
                 logger.error(e.getMessage(), e);
             }

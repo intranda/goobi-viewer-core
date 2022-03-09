@@ -171,7 +171,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
         }
 
         try {
-            NetTools.postMail(addresses, subject, body);
+            NetTools.postMail(addresses, null, null, subject, body);
             return true;
         } catch (UnsupportedEncodingException | MessagingException e) {
             logger.error(e.getMessage(), e);
