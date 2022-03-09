@@ -441,6 +441,12 @@ public class SearchQueryItem implements Serializable {
             fields.add(field);
         }
 
+        // Detect implicit phrase search
+        if (SearchHelper.isPhrase(value.trim())) {
+            logger.trace("Phrase detected, changing operator.");
+            operator = SearchItemOperator.PHRASE;
+        }
+
         switch (operator) {
             case IS:
             case PHRASE:
@@ -451,6 +457,7 @@ public class SearchQueryItem implements Serializable {
                 }
                 String useValue = value.trim();
                 int proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
+                logger.trace("proximity distance: {}", proximitySearchDistance);
                 boolean additionalField = false;
                 for (String field : fields) {
                     if (additionalField) {
