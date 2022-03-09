@@ -3,20 +3,21 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
-import javax.inject.Named;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -24,15 +25,13 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.administration.legal.ConsentScope;
-import io.goobi.viewer.model.administration.legal.CookieBanner;
-import io.goobi.viewer.model.administration.legal.ConsentScope.StorageMode;
 import io.goobi.viewer.model.administration.legal.Disclaimer;
-
-/**
- * This this the java backend class for enabling and configuring the disclaimer modal feature. This bean is view scoped, i.e. created fresh for each
- * new page loaded
- **/
-@Named
+import io.goobi.viewer.model.security.License;
+import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.user.IpRange;
+import io.goobi.viewer.model.security.user.IpRange;
+import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 @ViewScoped
 public class DisclaimerBean implements Serializable {
 
@@ -171,14 +170,17 @@ public class DisclaimerBean implements Serializable {
                 boolean active = disclaimer.isActive();
                 if (active && BeanUtils.getNavigationHelper().isDocumentPage()) {
                     String pi = BeanUtils.getActiveDocumentBean().getPersistentIdentifier();
-                    json.put("active", active);
-                    json.put("lastEdited", disclaimer.getRequiresConsentAfter().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-                    json.put("storage", disclaimer.getAcceptanceScope().getStorageMode().toString().toLowerCase());
-                    json.put("daysToLive", disclaimer.getAcceptanceScope().getDaysToLive());
-                    BeanUtils.getSessionId().ifPresent(id -> {                        
-                        json.put("sessionId", id);
-                    });
-                    return json.toString();
+                    if (matchesRecord(disclaimer, pi)) {
+                        ConsentScope scope = getConsentScope(disclaimer);
+                        json.put("active", active);
+                        json.put("lastEdited", disclaimer.getRequiresConsentAfter().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+                        json.put("storage", scope.getStorageMode().toString().toLowerCase());
+                        json.put("daysToLive", scope.getDaysToLive());
+                        BeanUtils.getSessionId().ifPresent(id -> {
+                            json.put("sessionId", id);
+                        });
+                        return json.toString();
+                    }
                 }
             } catch (DAOException | IndexUnreachableException e) {
                 logger.error("Error loading disclaimer config", e);
@@ -188,6 +190,33 @@ public class DisclaimerBean implements Serializable {
         return "{}";
     }
 
+    private ConsentScope getConsentScope(Disclaimer disclaimer) throws DAOException {
+        
+        String licenceTypeName = LicenseType.LICENSE_TYPE_LEGAL_DISCLAIMER;
+        
+        LicenseType type = DataManager.getInstance().getDao().getLicenseType(licenceTypeName);      
+        List<License> licenses = DataManager.getInstance().getDao().getLicenses(type);
+        Optional<User> user = Optional.ofNullable(BeanUtils.getUserBean()).map(UserBean::getUser);
+        List<UserGroup> userGroups = user.map(User::getAllUserGroups).orElse(Collections.emptyList());
+        String ipAddress = NetTools.getIpAddress(BeanUtils.getRequest());
+        List<IpRange> ipRanges = DataManager.getInstance().getDao().getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).collect(Collectors.toList());
+        
+        List<License> applyingLicenses = licenses.stream()
+        .filter(license -> {
+           return user.map(u -> u.equals(license.getUser())).orElse(false)
+                   || userGroups.contains(license.getUserGroup())
+                   || ipRanges.contains(license.getIpRange());
+        })
+        .collect(Collectors.toList());
+ 
+        License licenseToUse = applyingLicenses.stream()
+                .filter(l -> {
+                    
+                })
+        
+        return disclaimer.getAcceptanceScope();
+    }
+
     /**
      * Check if the given pi is a match for the query of the record note The pi is a match if the record note query combined with a query for the
      * given pi returns at least one result
@@ -195,7 +224,7 @@ public class DisclaimerBean implements Serializable {
      * @param pi
      * @return
      */
-    public boolean matchesRecord(Disclaimer disclaimer, String pi) {
+    private boolean matchesRecord(Disclaimer disclaimer, String pi) {
         if (StringUtils.isNotBlank(pi)) {
             String solrQuery = disclaimer.getQueryForSearch();
             String singleRecordQuery = "+({1}) +{2}".replace("{1}", solrQuery).replace("{2}", "PI:" + pi);

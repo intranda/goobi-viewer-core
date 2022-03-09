@@ -443,11 +443,15 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<UserGroup> getAllUserGroups() throws DAOException {
+    public List<UserGroup> getAllUserGroups() {
+        try {
         List<UserGroup> ret = getUserGroupsWithMembership();
         ret.addAll(getUserGroupOwnerships());
-
         return ret;
+        } catch(DAOException e) {
+            logger.error("Error getting user groups for user " + this.id, e);
+            return Collections.emptyList();
+        }
     }
 
     /**
