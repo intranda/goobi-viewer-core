@@ -829,6 +829,7 @@
     <url-mapping id="adminUserCommentViews">
         <pattern value="/admin/comments/" />
         <view-id value="/resources/admin/views/adminUserCommentViews.xhtml" />
+        <action onPostback="false">#{adminCommentBean.resetCurrentCommentViewAction}</action>
     </url-mapping>
     <url-mapping id="adminUserCommentViewAll">
         <pattern value="/admin/comments/all/" />

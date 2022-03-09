@@ -17,13 +17,15 @@
         <h:panelGroup rendered="#{userBean.loggedIn}">
             <div id="adminUserCommentViews">
                 <h:form id="adminUserCommentViewsForm" prependId="false">
-                    <div class="admin__title-bar">
+                    <div id="adminUserCommentViewsTitle" class="admin__title-bar">
                         <!-- TITLE -->
                         <h1 class="admin__title">#{msg.admin__comment_views}</h1>
                         <!-- CREATE NEW IP RANGE -->
-                        <a href="#{navigationHelper.getPageUrl('adminUserCommentGroupNew')}/" class="btn btn--default admin__title-bar-action">
-                            #{msg.add}
-                        </a>
+                        <ui:fragment rendered="#{adminCommentBean.userCommentsEnabled}">
+                            <a href="#{navigationHelper.getPageUrl('adminUserCommentGroupNew')}/" class="btn btn--default admin__title-bar-action">
+                                #{msg.add}
+                            </a>
+                        </ui:fragment>
                     </div>
 
                     <div class="admin__content-inner-content">
@@ -38,7 +40,8 @@
 								<div class="row no-gutters mb-3 align-items-center">
 									<div class="control-label mr-3 admin__form-label">#{msg.admin__comment_views_activate}:</div>
 									<div class="admin__form-input">
-										<viewerComponent:toggleSwitch name="activateUserComments" toggleTarget="#userCommentViews"
+										<viewerComponent:toggleSwitch name="activateUserComments" toggleTarget="userCommentViews"
+											render=":adminUserCommentViewsTitle :userCommentViews"
 											value="#{adminCommentBean.userCommentsEnabled}" immediate="true" />
 									</div>
 								</div>
@@ -46,6 +49,7 @@
 						</h:form>
 
                         <div id="userCommentViews" class="admin__entry-list">
+                            <ui:fragment rendered="#{adminCommentBean.userCommentsEnabled}">
                             <!-- INDIVIDUAL COMMENT VIEWS -->
                             <ui:repeat var="commentView" value="#{adminCommentBean.getCommentViewsForUser(userBean.user)}">
                                 <div class="admin__boxed-entry -w100 -std-bottom-pad">
@@ -101,6 +105,7 @@
  
                                 </div>
                             </ui:repeat>
+                            </ui:fragment>
                         </div>
                     </div>
                 </h:form>

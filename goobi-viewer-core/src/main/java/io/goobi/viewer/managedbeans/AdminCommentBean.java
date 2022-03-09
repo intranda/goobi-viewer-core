@@ -161,7 +161,6 @@ public class AdminCommentBean implements Serializable {
         }
     }
 
-
     /**
      * 
      * @return
@@ -197,6 +196,13 @@ public class AdminCommentBean implements Serializable {
         }
 
         return ret;
+    }
+
+    /**
+     * 
+     */
+    public void resetCurrentCommentViewAction() {
+        currentCommentView = null;
     }
 
     /**
@@ -344,7 +350,7 @@ public class AdminCommentBean implements Serializable {
      * @return currentCommentView.id
      */
     public Long getCurrentCommentViewId() {
-        if (currentCommentView != null) {
+        if (currentCommentView != null && currentCommentView.getId() != null) {
             return Long.valueOf(currentCommentView.getId());
         }
 
