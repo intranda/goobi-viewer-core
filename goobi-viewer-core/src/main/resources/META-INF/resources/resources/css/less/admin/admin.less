@@ -226,6 +226,9 @@
 		&.-warning {
 			border-top: 5px solid @yellowBar;
 		}
+		&.-primary {
+			border-top: 5px solid @blue;
+		}
 		&.-success-box {
 		border: 1px solid #ABD9B5;
     	border-top: 5px solid #ABD9B5;
@@ -321,6 +324,9 @@
 		}
 		&.-warning {
 			border-top: 5px solid @yellowBar;
+		}
+		&.-primary {
+			border-top: 5px solid @blue;
 		}
 		&-actions {
 			opacity: 0.0;
@@ -1747,6 +1753,13 @@
 			opacity: 0.5;
 		}
 	}
+	&__comments-functionality-wrapper,
+	&__comments-functionality-add {
+		display: none;
+	}
+	&__comments-functionality-wrapper {
+		margin-top: 3rem;
+	}
 	// BASIC STRUCTURES
 	&__content-wrapper {
 		display: flex;
@@ -1803,7 +1816,11 @@
 	&__form-label-highlight {
 		color: @validDanger;
 	}
-	
+	&__text-ellipsis {
+		text-overflow: ellipsis;
+		max-width: 100%;
+		overflow: hidden;
+	}	
 	.msgUnfinishedIdentifier, #msgUnfinishedIdentifier  {
 		span {
 			display: none;

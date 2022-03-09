@@ -80,7 +80,7 @@
                                             </h:commandLink>
                                         </div>
                                     </div>
-                                    <div class="col-2 d-flex">#{comment.creator}</div>
+                                    <div class="col-2 d-flex"><div class="admin__text-ellipsis pr-1" title="#{comment.creator}">#{comment.creator}</div></div>
                                     <div class="col-2 d-flex">
                                         <h:outputText value="#{comment.dateCreated}">
                                             <f:converter converterId="localDateTimeConverter" />
