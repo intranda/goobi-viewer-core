@@ -214,7 +214,7 @@
 								</ui:fragment>
 
 								<ui:fragment rendered="#{!userList}">
-									<ui:fragment rendered="#{bookmarkList.items.size() > 0}">
+									<ui:fragment rendered="#{bookmarkList.items.size() > 0 and bookmarkList.numItemsWithoutImages() lt bookmarkList.items.size()}">
 		                              <a
 		                                data-toggle="tooltip"
 		                                title="#{msg.bookmarkList_openMirador}"
