@@ -22,7 +22,8 @@
                         <h1 class="admin__title">#{msg.admin__comment_views}</h1>
                         <!-- CREATE NEW IP RANGE -->
                         <ui:fragment rendered="#{adminCommentBean.userCommentsEnabled}">
-                            <a href="#{navigationHelper.getPageUrl('adminUserCommentGroupNew')}/" class="btn btn--default admin__title-bar-action">
+                            <a href="#{navigationHelper.getPageUrl('adminUserCommentGroupNew')}/"
+                                class="btn btn--default admin__title-bar-action toggle-comments-functions">
                                 #{msg.add}
                             </a>
                         </ui:fragment>
@@ -40,7 +41,7 @@
 								<div class="row no-gutters mb-3 align-items-center">
 									<div class="control-label mr-3 admin__form-label">#{msg.admin__comment_views_activate}:</div>
 									<div class="admin__form-input">
-										<viewerComponent:toggleSwitch name="activateUserComments" toggleTarget="userCommentViews"
+										<viewerComponent:toggleSwitch name="activateUserComments" toggleTarget=".toggle-comments-functions"
 											render=":adminUserCommentViewsTitle :userCommentViews"
 											value="#{adminCommentBean.userCommentsEnabled}" immediate="true" />
 									</div>
@@ -48,7 +49,7 @@
 							</div>
 						</h:form>
 
-                        <div id="userCommentViews" class="admin__entry-list">
+                        <div id="userCommentViews" class="admin__entry-list toggle-comments-functions">
                             <ui:fragment rendered="#{adminCommentBean.userCommentsEnabled}">
                             <!-- INDIVIDUAL COMMENT VIEWS -->
                             <ui:repeat var="commentView" value="#{adminCommentBean.getCommentViewsForUser(userBean.user)}">
