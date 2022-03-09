@@ -76,14 +76,12 @@ var viewerJS = ( function( viewer ) {
 			}
         },
         showDisclaimer() {
-        	let $modal = $( '#disclaimerModal' );
-        	if(_debug)console.log("show disclaimer modal", $modal);
-        	$modal.find("[data-set='disclaimer-accept']").one("click", (e) => {
-        		this.setStoredSettings({lastAccepted : Date.now(), sessionId: this.config.sessionId});
-        		$modal.hide();
-        		if(_debug)console.log("hide disclaimer modal");
+            let $text = $(this.config.disclaimerText);
+        	viewer.notifications.warn("", this.config.disclaimerText)
+        	.then(() => {
+        		console.log("accepted disclaimer");
+        		this.setStoredSettings({lastAccepted : Date.now(), sessionId: this.config.sessionId});        		
         	});
-        	$modal.show();
         	
         },
         getStoredSettings(location) {

@@ -30,7 +30,7 @@ var viewerJS = ( function( viewer ) {
     viewer.notifications = {
 		success : (titleAlert, message) => viewer.notifications.notify(titleAlert, message, "success"),
 		error : (titleAlert, message) => viewer.notifications.notify(titleAlert, message, "error"),
-		warn : (titleAlert, message) => viewer.notifications.notify(titleAlert, message, "warn"),
+		warn : (titleAlert, message) => viewer.notifications.notify(titleAlert, message, "warning"),
 		confirm : (message, confirmText, denyText, titleAlert) => {
 			return viewer.translator.addTranslations(["cancel", "ok"])
 			.then( () => {
@@ -40,7 +40,7 @@ var viewerJS = ( function( viewer ) {
 					return Swal.fire({
 						scrollbarPadding: false,
 						title: titleAlert,
-						text: message,
+						html: message,
 						icon: 'warning',
 						showCancelButton: true,
 						confirmButtonText: confirmText,
@@ -68,10 +68,10 @@ var viewerJS = ( function( viewer ) {
 		},
 		notify : (titleAlert, message, type) => {
 			if(typeof Swal !== 'undefined') {
-				Swal.fire({
+				return Swal.fire({
 					scrollbarPadding: false,
 					title: titleAlert,
-					text: message,
+					html: message,
 					icon: type,
 				    buttonsStyling: false,
 					showClass: {
@@ -86,13 +86,12 @@ var viewerJS = ( function( viewer ) {
 					  }
 				});
 			} else if(typeof sweetAlert !== 'undefined') {
-				swal(message, "", type);
+				return swal(message, "", type);
 			} else if(jQuery().overhang) {
 				$("body").overhang({
 				  type: type,
 				  message: message
 				});
-
 			} else {
 				alert(message);
 			}			
