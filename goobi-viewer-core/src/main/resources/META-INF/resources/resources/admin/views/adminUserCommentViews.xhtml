@@ -75,14 +75,17 @@
 													<p class="admin__boxed-entry-description" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
 												</ui:fragment>
 												
+												<dl class="row">
 												<ui:fragment rendered="#{commentView.userGroup != null}">
-													<dl class="row">
 	                                            		<dt class="col-sm-4">#{msg.admin__comment_group_enabled_for_user_group}:</dt>
 	                                            		<dd class="col-sm-8">#{commentView.userGroup}</dd>
+                                        		</ui:fragment>
+											    <ui:fragment rendered="#{commentView.solrQuery != null}">
 	                                            		<dt class="col-sm-4">#{msg.admin__comment_group_solr_query}:</dt>
 	                                            		<dd class="col-sm-8 text-break">#{commentView.solrQuery}</dd>
+	                                            </ui:fragment>
 	                                        		</dl>
-                                        		</ui:fragment>
+
 								
 											</div>
 								
