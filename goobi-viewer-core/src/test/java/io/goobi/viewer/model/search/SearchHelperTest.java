@@ -1680,4 +1680,24 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void extractProximitySearchDistanceFromQuery_shouldExtractDistanceCorrectly() throws Exception {
         Assert.assertEquals(10, SearchHelper.extractProximitySearchDistanceFromQuery("\"foobar\"~10"));
     }
+
+    /**
+     * @see SearchHelper#isPhrase(String)
+     * @verifies detect phrase correctly
+     */
+    @Test
+    public void isPhrase_shouldDetectPhraseCorrectly() throws Exception {
+        Assert.assertFalse(SearchHelper.isPhrase("foo bar"));
+        Assert.assertTrue(SearchHelper.isPhrase("\"foo bar\""));
+    }
+
+    /**
+     * @see SearchHelper#isPhrase(String)
+     * @verifies detect phrase with proximity correctly
+     */
+    @Test
+    public void isPhrase_shouldDetectPhraseWithProximityCorrectly() throws Exception {
+        Assert.assertFalse(SearchHelper.isPhrase("foo bar~10"));
+        Assert.assertTrue(SearchHelper.isPhrase("\"foo bar\"~10"));
+    }
 }
