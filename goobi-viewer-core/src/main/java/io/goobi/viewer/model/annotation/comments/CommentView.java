@@ -73,8 +73,8 @@ public class CommentView {
      */
     public static CommentView createCommentViewAll() {
         CommentView commentViewAll = new CommentView();
-        commentViewAll.setTitle("admin__comment_views_all_title");
-        commentViewAll.setDescription("admin__comment_views_all_desc");
+        commentViewAll.setTitle("admin__comment_groups_all_comments_title");
+        commentViewAll.setDescription("admin__comment_groups_all_comments_desc");
         commentViewAll.setCoreType(true);
 
         return commentViewAll;

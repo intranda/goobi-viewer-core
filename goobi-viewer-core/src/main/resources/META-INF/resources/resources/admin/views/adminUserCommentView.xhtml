@@ -24,15 +24,15 @@
 					<div class="admin__title-bar">
 						<ui:fragment
 							rendered="#{adminCommentBean.currentCommentView.id == null}">
-							<h1 class="admin__title">#{msg.admin__comment_views_create_view}</h1>
+							<h1 class="admin__title">#{msg.admin__comment_group_create}</h1>
 						</ui:fragment>
 						<ui:fragment
 							rendered="#{adminCommentBean.currentCommentView.id != null}">
 							<ui:fragment rendered="#{adminCommentBean.currentCommentView.coreType}">
-							    <h1 class="admin__title">#{msg.admin__comment_views_all_edit_view}</h1>
+							    <h1 class="admin__title">#{msg.admin__comment_group_all_comments_edit}</h1>
 							</ui:fragment>
                             <ui:fragment rendered="#{!adminCommentBean.currentCommentView.coreType}">
-                                <h1 class="admin__title">#{msg.admin__comment_views_edit_view}</h1>
+                                <h1 class="admin__title">#{msg.admin__comment_group_edit}</h1>
                             </ui:fragment>
 						</ui:fragment>
 					</div>
@@ -52,14 +52,14 @@
 											<ui:fragment rendered="#{!adminCommentBean.currentCommentView.coreType}">
                                                 <div class="form-group form-row">
 												    <div class="col-12 col-lg-2 control-label admin__form-label">
-													   <label for="title">#{msg.admin__collection_view_title}: <span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
+													   <label for="title">#{msg.admin__comment_group_input_title}: <span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
 												    </div>
 												    <div class="col-11 col-lg-9 admin__form-input">
 													   <h:inputText value="#{adminCommentBean.currentCommentView.title}"
 														  id="title" label="title"
 														  styleClass="form-control" required="true"
 														  requiredMessage="#{msg.admin_collection_view_title__required}" />
-													   <span class="admin__form-help-text">#{msg.admin__collection_view_title__help}</span>
+													   <span class="admin__form-help-text">#{msg.admin__comment_group_title__help}</span>
 												    </div>
 												    <div class="col-1 admin__form-help-icon">
 													   <button type="button" class="btn btn--clean"
@@ -74,7 +74,7 @@
                                             <div class="form-group form-row">
 												
 												<div class="col-2 control-label admin__form-label">
-													<label for="solrQuery">#{msg.admin__collection_view_solr_query}: <span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
+													<label for="solrQuery">#{msg.admin__comment_group_solr_query}: <span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
 												</div>
 	
 												<div class="cms-module__option-control col-11 col-lg-9 admin__form-input">
@@ -92,15 +92,13 @@
 														</div>
 														<h:inputText id="solrQueryInput" required="false"
 															value="#{adminCommentBean.currentCommentView.solrQuery}"
-															styleClass="form-control"
-															disabled="#{!crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected()}">
-															<f:passThroughAttribute name="aria-label" value="#{msg.admin__crowdsourcing_campaign_solrQuery}"/>
+															styleClass="form-control">
 															<f:validator validatorId="solrQueryValidator"
 																for="solrQueryInput" />
-															<f:ajax event="blur" render="solrQueryInputGroup addQuestionButton noQuestionYet statisticsArea" />
+															<f:ajax event="blur" render="solrQueryInputGroup" />
 														</h:inputText>
 													</h:panelGroup>
-													<span class="admin__form-help-text">#{msg.admin__collection_view_solr_query__help}</span>
+													<span class="admin__form-help-text">#{msg.admin__comment_group_view_solr_query__help}</span>
 												</div>
 												
 												<div class="col-1 admin__form-help-icon">
@@ -117,14 +115,14 @@
                                             <ui:fragment rendered="#{!adminCommentBean.currentCommentView.coreType}">
                                                 <div class="form-group form-row">
                                                 <div class="col-12 col-lg-2 control-label admin__form-label">
-                                                    <label for="description">#{msg.admin__collection_view_description}:</label>
+                                                    <label for="description">#{msg.admin__comment_group_description}:</label>
                                                 </div>
                                                 <div class="col-11 col-lg-9 admin__form-input">
                                                     <h:inputText value="#{adminCommentBean.currentCommentView.description}"
                                                         id="description" label="description"
                                                         styleClass="form-control" required="false"
                                                         requiredMessage="#{msg.admin_collection_view_description__required}" />
-                                                    <span class="admin__form-help-text">#{msg.admin__collection_view_description__help}</span>
+                                                    <span class="admin__form-help-text">#{msg.admin__comment_group_description_input__help}</span>
                                                 </div>
                                                 <div class="col-1 admin__form-help-icon">
                                                     <button type="button" class="btn btn--clean"
@@ -139,7 +137,7 @@
                                             <ui:fragment rendered="#{adminCommentBean.currentCommentView.coreType}">
                                                 <div class="form-group form-row">
                                                 <div class="col-12 col-lg-2 control-label admin__form-label">
-                                                    <label for="userEmailNotificationsUserGroup">#{msg.admin__comment_view_send_email_notification}:</label>
+                                                    <label for="userEmailNotificationsUserGroup">#{msg.admin__comment_group_send_email_notification}:</label>
                                                 </div>
                                                 <div class="col-11 col-lg-9 admin__form-input">
                                                   <h:selectOneMenu value="#{adminCommentBean.currentCommentView.userGroup}"
@@ -148,7 +146,7 @@
                                                         <f:selectItem itemLabel="#{msg.select}" noSelectionOption="true" />
                                                         <f:selectItems value="#{adminBean.allUserGroups}" />
                                                     </h:selectOneMenu>
-                                                    <span class="admin__form-help-text">#{msg.admin__collection_view_all_user_group__help}</span>
+                                                    <span class="admin__form-help-text">#{msg.admin__comment_group_send_email_notification__help}</span>
                                                 </div>
                                                 <div class="col-1 admin__form-help-icon">
                                                     <button type="button" class="btn btn--clean"
@@ -184,7 +182,7 @@
 
 										        <div class="col-11 control-label admin__form-label">
 											        <label id="labelAdminCrowdVisibleStatus" for="adminCrowdVisibleStatus">
-												        #{msg.admin__comment_view_user_group}:
+												        #{msg.admin__comment_group_enable_for_user_group}:
 											        </label>
 										        </div>
 
@@ -202,7 +200,7 @@
 					                                   <f:selectItem itemLabel="#{msg.select}" noSelectionOption="true" />
 					                                   <f:selectItems value="#{adminBean.allUserGroups}" />
 					                               </h:selectOneMenu>
-					                               <span class="admin__form-help-text">#{msg.admin__comment_view_user_group__help}</span>
+					                               <span class="admin__form-help-text">#{msg.admin__comment_group_enable_for_user_group__help}</span>
 				                   	            </div>
                                             </div>
                                     
@@ -210,7 +208,7 @@
                                             <div class="form-group form-row admin__sidebar-divider-top">
                                    			    <div class="col-11 control-label admin__form-label">
 												    <label for="adminCrowdVisibleFor">
-													   #{msg.admin__comment_view_send_email_notification}:
+													   #{msg.admin__comment_group_send_email_notification}:
 												    </label>
 											    </div>
                                         
@@ -234,7 +232,7 @@
                                                         </h:selectOneRadio>
                                                         <span class="toggle-outside"><span class="toggle-inside" /></span>
                                                     </div>
-							                        <span class="admin__form-help-text">#{msg.admin__comment_view_send_email_notifications__help}</span>
+							                        <span class="admin__form-help-text">#{msg.admin__comment_group_send_email_notification__help}</span>
 						                   	    </div>
                                             </div>
 
@@ -243,7 +241,7 @@
                                         <div class="form-group form-row admin__sidebar-divider-top">
                                    			<div class="col-11 control-label admin__form-label">
 												<label for="adminCrowdVisibleFor">
-													#{msg.admin__comment_view_members_may_edit_comments}:
+													#{msg.admin__comment_group_members_may_edit_comments}:
 												</label>
 											</div>
                                         
@@ -268,7 +266,7 @@
                                                            </h:selectOneRadio>
                                                            <span class="toggle-outside"><span class="toggle-inside" /></span>
                                                        </div>
-							                        <span class="admin__form-help-text">#{msg.admin__comment_view_members_may_edit_comments__help}</span>
+							                        <span class="admin__form-help-text">#{msg.admin__comment_group_members_may_edit_comments__help}</span>
 						                   		</div>
                                         
                                         </div>
@@ -277,7 +275,7 @@
                                         <div class="form-group form-row admin__sidebar-divider-top">
                                    			<div class="col-11 control-label admin__form-label">
 												<label for="adminCrowdVisibleFor">
-													#{msg.admin__comment_view_members_may_delete_comments}:
+													#{msg.admin__comment_group_members_may_delete_comments}:
 												</label>
 											</div>
                                         
@@ -301,7 +299,7 @@
                                                     </h:selectOneRadio>
                                                     <span class="toggle-outside"><span class="toggle-inside" /></span>
                                                 </div>
-							                    <span class="admin__form-help-text">#{msg.admin__comment_view_members_may_delete_comments__help}</span>
+							                    <span class="admin__form-help-text">#{msg.admin__comment_group_members_may_delete_comments__help}</span>
 						                    </div>
                                         
                                         </div>

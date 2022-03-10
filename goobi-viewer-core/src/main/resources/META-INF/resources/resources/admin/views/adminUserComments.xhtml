@@ -19,7 +19,7 @@
                 <h:form id="adminUserCommentsForm" prependId="false">
                     <div class="admin__title-bar">
                         <!-- TITLE -->
-                        <h1 class="admin__title">#{msg.admin__comments_view}</h1>
+                        <h1 class="admin__title">#{msg.admin__comments_group_view_comments}</h1>
                     </div>
                     
                     <div class="admin__content-inner-content">
@@ -96,7 +96,7 @@
                         	<div class="admin__default-block">
 								<h2>#{msg.admin__overview}</h2>
 								<div class="admin__form-help-text in mb-2">
-									#{msg.admin__comment_all_comments_back_to_overview_info}
+									#{msg.admin__comment_groups_all_comments_back_to_overview_info}
 								</div>
 								<div class="d-flex justify-content-center mt-2">
 									<a href="#{request.contextPath}/admin/comments" class="btn btn--full">#{msg.admin__overview}</a>
@@ -105,8 +105,22 @@
                        		
                         	<div class="admin__default-block">
 								<h2>#{msg.information}</h2>
-								<div class="admin__form-help-text in mb-2">
-									#{msg.admin__comment_all_comments_info}
+
+								<div><span><b>#{msg.admin__comment_group_input_title}:</b></span></div>
+								<div class="mb-2">
+									#{msg[adminCommentBean.currentCommentView.title]}
+								</div>
+								<div><span><b>#{msg.admin__comment_group_description}:</b></span></div>
+								<div>
+									#{msg[adminCommentBean.currentCommentView.description]}
+								</div>
+								
+                       		</div>
+                       		
+                        	<div class="admin__default-block">
+								<h2>#{msg.title__did_you_know}</h2>
+								<div>
+									#{msg.admin__comment_groups_all_comments_hint}
 								</div>
                        		</div>
 

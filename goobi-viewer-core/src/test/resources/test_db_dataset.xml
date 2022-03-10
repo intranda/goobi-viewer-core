@@ -269,7 +269,7 @@
     
     <cs_campaign_log message_id="1" creator_id="1" campaign_id="1" pi="PI_1" date_created="2020-11-05 09:09:12" message="Eine Nachricht im Log"></cs_campaign_log>
 
-    <comment_views comment_view_id="1" title="admin__comment_views_all_title" description="admin__comment_views_all_desc" user_group_id="3" core_type="1" />
+    <comment_views comment_view_id="1" title="admin__comment_groups_all_comments_title" description="admin__comment_groups_all_comments_desc" user_group_id="3" core_type="1" />
     <comment_views comment_view_id="2" title="test" description="desc" core_type="0" solr_query="DC:dcmetadata" user_group_id="1" />
 
     <annotations_crowdsourcing annotation_id="1" body="&quot;a&quot;" date_created="2019-09-19 00:00:00.000000000" creator_id="1" generator_id="1" target="&quot;aa&quot;" target_pi="PI_1" target_page="1" />
