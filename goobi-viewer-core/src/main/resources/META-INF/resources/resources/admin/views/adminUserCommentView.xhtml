@@ -118,7 +118,7 @@
                                                     <label for="description">#{msg.admin__comment_group_description}:</label>
                                                 </div>
                                                 <div class="col-11 col-lg-9 admin__form-input">
-                                                    <h:inputText value="#{adminCommentBean.currentCommentView.description}"
+                                                    <h:inputTextarea value="#{adminCommentBean.currentCommentView.description}"
                                                         id="description" label="description"
                                                         styleClass="form-control" required="false"
                                                         requiredMessage="#{msg.admin_collection_view_description__required}" />
@@ -199,12 +199,28 @@
 					                                   converter="userGroupConverter">
 					                                   <f:selectItem itemLabel="#{msg.select}" noSelectionOption="true" />
 					                                   <f:selectItems value="#{adminBean.allUserGroups}" />
+                                                       <f:ajax render="GroupOwner GroupOwnerNotification GroupOwnerEdit GroupOwnerDelete" />
 					                               </h:selectOneMenu>
 					                               <span class="admin__form-help-text">#{msg.admin__comment_group_enable_for_user_group__help}</span>
+                                                
+	                                                <h:panelGroup id="GroupOwner">
+	                                                    <ui:fragment rendered="#{adminCommentBean.currentCommentView.userGroup != null}">
+	                                                     <div class="mt-1 d-flex justify-content-start crowdsourcing-annotations__sidebar-owner">
+	                                                      <label for="groupOwnerName" class="pr-1 mb-0">#{msg.owner}:</label>
+	                                                      <h:outputLink id="groupOwnerName"
+	                                                          value="#{navigationHelper.applicationUrl}admin/users/edit/#{adminCommentBean.currentCommentView.userGroup.owner.id}/">
+	                                                          <h:outputText value="#{adminCommentBean.currentCommentView.userGroup.owner.displayName}" />
+	                                                      </h:outputLink>
+	                                                     </div>
+	                                                    </ui:fragment>
+	                                                </h:panelGroup>
+				                   	           
 				                   	            </div>
                                             </div>
-                                    
+
                                             <!-- E-MAIL NOTIFICATIONS -->
+	                                        <h:panelGroup id="GroupOwnerNotification">
+	                                        <ui:fragment rendered="#{adminCommentBean.currentCommentView.userGroup != null}">
                                             <div class="form-group form-row admin__sidebar-divider-top">
                                    			    <div class="col-11 control-label admin__form-label">
 												    <label for="adminCrowdVisibleFor">
@@ -235,9 +251,12 @@
 							                        <span class="admin__form-help-text">#{msg.admin__comment_group_send_email_notification__help}</span>
 						                   	    </div>
                                             </div>
-
+                                            </ui:fragment>
+										</h:panelGroup>
 
 										<!-- MEMBERS MAY EDIT COMMENTS -->
+	                                    <h:panelGroup id="GroupOwnerEdit">
+	                                    <ui:fragment rendered="#{adminCommentBean.currentCommentView.userGroup != null}">
                                         <div class="form-group form-row admin__sidebar-divider-top">
                                    			<div class="col-11 control-label admin__form-label">
 												<label for="adminCrowdVisibleFor">
@@ -270,8 +289,12 @@
 						                   		</div>
                                         
                                         </div>
+                                        </ui:fragment>
+                                        </h:panelGroup>
                                         
 										<!-- MEMBERS MAY DELETE COMMENTS -->
+	                                    <h:panelGroup id="GroupOwnerDelete">
+	                                    <ui:fragment rendered="#{adminCommentBean.currentCommentView.userGroup != null}">
                                         <div class="form-group form-row admin__sidebar-divider-top">
                                    			<div class="col-11 control-label admin__form-label">
 												<label for="adminCrowdVisibleFor">
@@ -303,6 +326,8 @@
 						                    </div>
                                         
                                         </div>
+                                        </ui:fragment>
+                                        </h:panelGroup>
 
                                     </div>
 							
