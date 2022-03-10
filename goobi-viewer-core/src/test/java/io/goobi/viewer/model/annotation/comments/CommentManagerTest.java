@@ -42,6 +42,7 @@ import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationSaver;
 import io.goobi.viewer.model.annotation.serialization.SqlCommentLister;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * 
@@ -132,16 +133,13 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CommentManager#getNotificationEmailAddresesForRecord(String)
-     * @verifies return email addresses for matching comment views
+     * @see CommentManager#getNotificationUserGroupsForRecord(String)
+     * @verifies return user groups for matching comment views
      */
     @Test
-    public void getNotificationEmailAddresesForRecord_shouldReturnEmailAddressesForMatchingCommentViews() throws Exception {
-        Set<String> result = CommentManager.getNotificationEmailAddresesForRecord("02008011811811");
+    public void getNotificationUserGroupsForRecord_shouldReturnUserGroupsForMatchingCommentViews() throws Exception {
+        Set<UserGroup> result = CommentManager.getNotificationUserGroupsForRecord("02008011811811");
         Assert.assertNotNull(result);
-        Assert.assertEquals(3, result.size());
-        Assert.assertTrue(result.contains("2@users.org"));
-        Assert.assertTrue(result.contains("3@users.org"));
+        Assert.assertEquals(2, result.size());
     }
-
 }

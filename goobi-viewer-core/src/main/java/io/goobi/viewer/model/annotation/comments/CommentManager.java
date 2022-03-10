@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,7 @@ import io.goobi.viewer.model.annotation.serialization.AnnotationLister;
 import io.goobi.viewer.model.annotation.serialization.AnnotationSaver;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -95,8 +97,13 @@ public class CommentManager implements AnnotationLister<Comment> {
             notificators.parallelStream().forEach(n -> {
                 if (n.getClass().equals(CommentMailNotificator.class)) {
                     try {
-                        Set<String> recipients = getNotificationEmailAddresesForRecord(pi);
-                        ((CommentMailNotificator) n).setAddresses(new ArrayList<>(recipients));
+                        // Send notification mails to each user group that receives notifications
+                        Set<UserGroup> groups = getNotificationUserGroupsForRecord(pi);
+                        Set<String> usedAddresses = new HashSet<>();
+                        for (UserGroup group : groups) {
+                            populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
+                            n.notifyCreation(comment, BeanUtils.getLocale());
+                        }
                     } catch (DAOException e) {
                         logger.error(e.getMessage());
                     } catch (PresentationException e) {
@@ -104,8 +111,9 @@ public class CommentManager implements AnnotationLister<Comment> {
                     } catch (IndexUnreachableException e) {
                         logger.error(e.getMessage());
                     }
+                } else {
+                    n.notifyCreation(comment, BeanUtils.getLocale());
                 }
-                n.notifyCreation(comment, BeanUtils.getLocale());
             });
         } catch (IOException e) {
             notificators.forEach(n -> n.notifyError(e, BeanUtils.getLocale()));
@@ -131,8 +139,13 @@ public class CommentManager implements AnnotationLister<Comment> {
             notificators.parallelStream().forEach(n -> {
                 if (n.getClass().equals(CommentMailNotificator.class)) {
                     try {
-                        Set<String> recipients = getNotificationEmailAddresesForRecord(editedComment.getTargetPI());
-                        ((CommentMailNotificator) n).setAddresses(new ArrayList<>(recipients));
+                        // Send notification mails to each user group that receives notifications
+                        Set<UserGroup> groups = getNotificationUserGroupsForRecord(editedComment.getTargetPI());
+                        Set<String> usedAddresses = new HashSet<>();
+                        for (UserGroup group : groups) {
+                            populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
+                            n.notifyEdit(comment, editedComment, BeanUtils.getLocale());
+                        }
                     } catch (DAOException e) {
                         logger.error(e.getMessage());
                     } catch (PresentationException e) {
@@ -140,12 +153,50 @@ public class CommentManager implements AnnotationLister<Comment> {
                     } catch (IndexUnreachableException e) {
                         logger.error(e.getMessage());
                     }
+                } else {
+                    n.notifyEdit(comment, editedComment, BeanUtils.getLocale());
                 }
-                n.notifyEdit(comment, editedComment, BeanUtils.getLocale());
             });
         } catch (IOException e) {
             notificators.forEach(n -> n.notifyError(e, BeanUtils.getLocale()));
         }
+    }
+
+    /**
+     * Populates recipient and BCC lists for given from given user group owner and members.
+     * 
+     * @param pi
+     * @param notificator
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should not add addresses included in usedAddresses
+     */
+    static void populateRecipientsForGroup(UserGroup group, CommentMailNotificator notificator, Set<String> usedAddresses)
+            throws DAOException, PresentationException, IndexUnreachableException {
+        if (group == null) {
+            throw new IllegalArgumentException("group may not be null");
+        }
+        if (notificator == null) {
+            throw new IllegalArgumentException("notificator may not be null");
+        }
+        if (usedAddresses == null) {
+            throw new IllegalArgumentException("usedAddresses may not be null");
+        }
+
+        notificator.setRecipients(Collections.singletonList(group.getOwner().getEmail()));
+        usedAddresses.add(group.getOwner().getEmail());
+        // logger.trace("Added owner for group '{}': '{}'", group.getName(), group.getOwner().getEmail());
+        Set<User> members = group.getMembers();
+        List<String> bcc = new ArrayList<>(members.size());
+        for (User member : members) {
+            if (!usedAddresses.contains(member.getEmail())) {
+                bcc.add(member.getEmail());
+                usedAddresses.add(member.getEmail());
+                // logger.trace("Added member for group '{}': '{}'", group.getName(), member.getEmail());
+            }
+        }
+        notificator.setBcc(bcc);
     }
 
     /**
@@ -245,15 +296,15 @@ public class CommentManager implements AnnotationLister<Comment> {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @should return email addresses for matching comment views
+     * @should return user groups for matching comment views
      */
-    static Set<String> getNotificationEmailAddresesForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
+    static Set<UserGroup> getNotificationUserGroupsForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
         List<CommentView> commentViews = DataManager.getInstance().getDao().getAllCommentViews();
         if (commentViews.isEmpty()) {
             return Collections.emptySet();
         }
 
-        Set<String> ret = new HashSet<>();
+        Set<UserGroup> ret = new HashSet<>();
         for (CommentView commentView : commentViews) {
             if (commentView.getUserGroup() == null) {
                 logger.trace("Comment view '{}' - no user group set", commentView.getTitle());
@@ -262,16 +313,12 @@ public class CommentManager implements AnnotationLister<Comment> {
             if (StringUtils.isNotEmpty(commentView.getSolrQuery())) {
                 if (queryCommentViewIdentifiers(commentView)) {
                     if ((commentView.isCoreType() && StringUtils.isEmpty(commentView.getSolrQuery())) || commentView.getIdentifiers().contains(pi)) {
-                        for (User user : commentView.getUserGroup().getMembersAndOwner()) {
-                            ret.add(user.getEmail());
-                        }
+                        ret.add(commentView.getUserGroup());
                     }
                 }
             } else if (commentView.isCoreType()) {
                 // "All comments" group without a filter query - add all users email addresses
-                for (User user : commentView.getUserGroup().getMembersAndOwner()) {
-                    ret.add(user.getEmail());
-                }
+                ret.add(commentView.getUserGroup());
             }
         }
 

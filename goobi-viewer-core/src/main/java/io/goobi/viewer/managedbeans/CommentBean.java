@@ -31,7 +31,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AjaxResponseException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.comments.Comment;
@@ -39,11 +38,8 @@ import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.annotation.comments.CommentView;
 import io.goobi.viewer.model.annotation.notification.CommentMailNotificator;
 import io.goobi.viewer.model.annotation.notification.JsfMessagesNotificator;
-import io.goobi.viewer.model.annotation.serialization.SolrAndSqlAnnotationDeleter;
 import io.goobi.viewer.model.annotation.serialization.SolrAndSqlAnnotationSaver;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
-import io.goobi.viewer.model.annotation.serialization.SqlAnnotationLister;
-import io.goobi.viewer.model.annotation.serialization.SqlAnnotationSaver;
 import io.goobi.viewer.model.annotation.serialization.SqlCommentLister;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
@@ -76,7 +72,7 @@ public class CommentBean implements Serializable {
                 new SolrAndSqlAnnotationSaver(),
                 new SqlAnnotationDeleter(),
                 new SqlCommentLister(),
-                new CommentMailNotificator(Collections.emptyList()), // TODO
+                new CommentMailNotificator(),
                 new JsfMessagesNotificator());
     }
 
