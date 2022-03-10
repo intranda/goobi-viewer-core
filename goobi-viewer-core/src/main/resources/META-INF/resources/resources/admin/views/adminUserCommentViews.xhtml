@@ -61,18 +61,28 @@
 								<ui:repeat var="commentView" varStatus="status"
 									value="#{adminCommentBean.getCommentViewsForUser(userBean.user)}">
 									<div
-										class="admin__boxed-entry -w33 -std-bottom-pad #{status.first?'-primary':''} #{status.first?'-primary':''}">
+										class="admin__boxed-entry -w33 #{status.first?'-primary':''} #{status.first?'-primary':''}">
 										<div class="row">
 											<div class="col-12">
 												<!-- TITLE -->
 												<h2>#{msg[commentView.title]}</h2>
+
 												<!-- DESCRIPTION -->
 												<ui:fragment rendered="#{commentView.description ne ''}">
-													<p>#{msg[commentView.description]}</p>
+													<p class="admin__boxed-entry-description">#{msg[commentView.description]}</p>
 												</ui:fragment>
 												<ui:fragment rendered="#{commentView.description eq ''}">
-													<p aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
+													<p class="admin__boxed-entry-description" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
 												</ui:fragment>
+												
+												<ui:fragment rendered="#{commentView.userGroup != null}">
+													<dl class="row">
+	                                            		<dt class="col-sm-4">#{msg.admin__comment_group_enabled_for_user_group}:</dt>
+	                                            		<dd class="col-sm-8">#{commentView.userGroup}</dd>
+	                                            		<dt class="col-sm-4">#{msg.admin__comment_group_solr_query}:</dt>
+	                                            		<dd class="col-sm-8">#{commentView.solrQuery}</dd>
+	                                        		</dl>
+                                        		</ui:fragment>
 								
 											</div>
 								
