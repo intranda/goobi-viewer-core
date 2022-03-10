@@ -1,3 +1,18 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
@@ -34,6 +49,12 @@ import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
+/**
+ * Bean to check whether the disclaimer applies to a page/record as well as provide a configuration json object for the javascript
+ * This bean is session scoped, so all stored settings are discarded outside a jsf session
+ * @author florian
+ *
+ */
 @Named
 @SessionScoped
 public class DisclaimerBean implements Serializable {
@@ -41,12 +62,27 @@ public class DisclaimerBean implements Serializable {
     private static final long serialVersionUID = -6562240290914952926L;
     private static final Logger logger = LoggerFactory.getLogger(DisclaimerBean.class);
 
+    @Inject
+    ActiveDocumentBean activeDocumentBean;
+    
+    /**
+     * the {@link LicenseType#LICENSE_TYPE_LEGAL_DISCLAIMER} core license type derived from the dao
+     */
     private final LicenseType licenseType;
 
     private final IDAO dao;
 
+    /**
+     * the current user, which may be empty. Licenses applying to the disclaimer are only updated if the user changes
+     */
     private Optional<User> currentUser = Optional.empty();
+    /**
+     * the consentScope to use as long as the user doesn't change
+     */
     private Optional<ConsentScope> currentConsentScope = Optional.empty();
+    /**
+     * map storing PIs of records and whether the disclaimer applies to them 
+     */
     private Map<String, Boolean> recordApplicabilityMap = new HashMap<>();
     
     
@@ -91,14 +127,17 @@ public class DisclaimerBean implements Serializable {
         }
     }
 
-
+    /**
+     * The configuration object for the disclaimer to be used by the viewerJS.disclaimerModal module
+     * @return  a json object
+     */
     public String getDisclaimerConfig() {
         if (dao != null && BeanUtils.getNavigationHelper().isDocumentPage()) {
             try {
                 Disclaimer disclaimer = dao.getDisclaimer();
                 JSONObject json = new JSONObject();
                 boolean active = disclaimer.isActive();
-                if (active ) {
+                if (active) {
                     if (appliesToRecord(disclaimer, BeanUtils.getActiveDocumentBean().getPersistentIdentifier())) {
                         ConsentScope scope = getConsentScope(disclaimer);
                         json.put("active", active);

@@ -1,3 +1,18 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.model.administration.legal;
 
 import java.time.LocalDateTime;
@@ -50,11 +65,16 @@ public class Disclaimer {
     @Column(name = "requires_consent_after", nullable = false)
     private LocalDateTime requiresConsentAfter = LocalDateTime.now();
   
-    
+    /**
+     * The scope within which accepting the disclaimer modal is valid for any user
+     */
     @Column(name="acceptance_scope", nullable = false)
     @Convert(converter = ConsentScopeConverter.class)
     private ConsentScope acceptanceScope = new ConsentScope();
     
+    /**
+     * Solr query detailing on which records the disclaimer is to be shown
+     */
     @Column(name="solr_query")
     private String solrQuery = "";
 
@@ -65,6 +85,10 @@ public class Disclaimer {
         
     }
     
+    /**
+     * cloning constructor
+     * @param orig
+     */
     public Disclaimer(Disclaimer orig) {
         this.active = orig.active;
         this.id = orig.id;
@@ -76,6 +100,7 @@ public class Disclaimer {
     
     
     /**
+     * database id
      * @return the id
      */
     public Long getId() {
@@ -86,6 +111,7 @@ public class Disclaimer {
 
 
     /**
+     * set the database id
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -96,6 +122,7 @@ public class Disclaimer {
 
 
     /**
+     * the text to show in the disclaimer
      * @return the text
      */
     public TranslatedText getText() {
@@ -106,6 +133,7 @@ public class Disclaimer {
 
 
     /**
+     * set the disclaimer text
      * @param text the text to set
      */
     public void setText(TranslatedText text) {
@@ -116,7 +144,8 @@ public class Disclaimer {
 
 
     /**
-     * @return the active
+     * get if the disclaimer is active
+     * @return true if the disclaimer is to be shown at all
      */
     public boolean isActive() {
         return active;
@@ -126,6 +155,7 @@ public class Disclaimer {
 
 
     /**
+     * set the disclaimer to active/inactive state
      * @param active the active to set
      */
     public void setActive(boolean active) {
@@ -136,7 +166,8 @@ public class Disclaimer {
 
 
     /**
-     * @return the requiresConsentAfter
+     * get the date after which acceptance of the disclaimer must have happened to be valid
+     * @return a date
      */
     public LocalDateTime getRequiresConsentAfter() {
         return requiresConsentAfter;
@@ -146,6 +177,7 @@ public class Disclaimer {
 
 
     /**
+     * set the date after which acceptance of the disclaimer must have happened to be valid
      * @param requiresConsentAfter the requiresConsentAfter to set
      */
     public void setRequiresConsentAfter(LocalDateTime requiresConsentAfter) {
@@ -153,6 +185,7 @@ public class Disclaimer {
     }
 
     /**
+     * get the solr query determining the records showing the disclaimer
      * @return the solrQuery
      */
     public String getSolrQuery() {
@@ -160,20 +193,33 @@ public class Disclaimer {
     }
 
     /**
+     * set the solr query  determining the records showing the disclaimer
      * @param solrQuery the solrQuery to set
      */
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
     }
-    
+
+    /**
+     * Get the query to use in a SOLR search to deterimine whether a record should show the disclaimer
+     * @return  a solr search query for the disclaimer
+     */
     public String getQueryForSearch() {
         return "+(" + this.solrQuery + ") +(ISWORK:* ISANCHOR:*)";
     }
 
+    /**
+     * get the {@link #acceptanceScope} of the disclaimer
+     * @return the {@link ConsentScope} 
+     */
     public ConsentScope getAcceptanceScope() {
         return this.acceptanceScope;
     }
     
+    /**
+     * set the {@link #acceptanceScope} of the disclaimer
+     * @param a {@link ConsentScope} 
+     */
     public void setAcceptanceScope(ConsentScope acceptanceScope) {
         this.acceptanceScope = acceptanceScope;
     }
