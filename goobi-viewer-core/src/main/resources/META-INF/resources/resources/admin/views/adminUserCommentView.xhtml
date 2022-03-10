@@ -69,26 +69,49 @@
 												    </div>
                                                 </div>
 											</ui:fragment>
-
+											
 											<!-- SOLR QUERY -->
                                             <div class="form-group form-row">
-                                                <div class="col-12 col-lg-2 control-label admin__form-label">
-                                                    <label for="solrQuery">#{msg.admin__collection_view_solr_query}: <span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
-                                                </div>
-                                                <div class="col-11 col-lg-9 admin__form-input">
-                                                    <h:inputText value="#{adminCommentBean.currentCommentView.solrQuery}"
-                                                        id="solrQuery" label="solrQuery"
-                                                        styleClass="form-control" required="true"
-                                                        requiredMessage="#{msg.admin_collection_view_solr_query__required}" />
-                                                    <span class="admin__form-help-text">#{msg.admin__collection_view_solr_query__help}</span>
-                                                </div>
-                                                <div class="col-1 admin__form-help-icon">
-                                                    <button type="button" class="btn btn--clean"
-                                                        data-toggle="helptext" aria-label="inline help icon">
-                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
+												
+												<div class="col-2 control-label admin__form-label">
+													<label for="solrQuery">#{msg.admin__collection_view_solr_query}: <span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
+												</div>
+	
+												<div class="cms-module__option-control col-11 col-lg-9 admin__form-input">
+													<h:panelGroup id="solrQueryInputGroup">
+														<div class="cms-module__option-message">
+															<h:messages for="solrQueryInput"
+																infoClass="cms-module__option-message-status success"
+																warnClass="cms-module__option-message-status warning"
+																errorClass="cms-module__option-message-status danger" />
+					
+															<div class="cms-module__option-message-mark">
+																<i class="fa fa-check" aria-hidden="true"></i> <i
+																	class="fa fa-exclamation" aria-hidden="true"></i>
+															</div>
+														</div>
+														<h:inputText id="solrQueryInput" required="false"
+															value="#{adminCommentBean.currentCommentView.solrQuery}"
+															styleClass="form-control"
+															disabled="#{!crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected()}">
+															<f:passThroughAttribute name="aria-label" value="#{msg.admin__crowdsourcing_campaign_solrQuery}"/>
+															<f:validator validatorId="solrQueryValidator"
+																for="solrQueryInput" />
+															<f:ajax event="blur" render="solrQueryInputGroup addQuestionButton noQuestionYet statisticsArea" />
+														</h:inputText>
+													</h:panelGroup>
+													<span class="admin__form-help-text">#{msg.admin__collection_view_solr_query__help}</span>
+												</div>
+												
+												<div class="col-1 admin__form-help-icon">
+													<button type="button" class="btn btn--clean"
+														data-toggle="helptext" aria-label="inline help icon">
+														<i class="fa fa-question-circle" aria-hidden="true"></i>
+													</button>
+												</div>
+											
+											</div>
+
 
 											<!-- DESCRIPTION (non-all comments only) -->
                                             <ui:fragment rendered="#{!adminCommentBean.currentCommentView.coreType}">
