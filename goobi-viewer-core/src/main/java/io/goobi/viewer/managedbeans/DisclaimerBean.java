@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,12 +34,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.administration.legal.ConsentScope;
 import io.goobi.viewer.model.administration.legal.Disclaimer;
 import io.goobi.viewer.model.security.License;
@@ -48,6 +45,7 @@ import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * Bean to check whether the disclaimer applies to a page/record as well as provide a configuration json object for the javascript
@@ -64,6 +62,10 @@ public class DisclaimerBean implements Serializable {
 
     @Inject
     ActiveDocumentBean activeDocumentBean;
+    @Inject 
+    NavigationHelper navigationHelper;
+    @Inject
+    UserBean userBean;
     
     /**
      * the {@link LicenseType#LICENSE_TYPE_LEGAL_DISCLAIMER} core license type derived from the dao
@@ -71,6 +73,7 @@ public class DisclaimerBean implements Serializable {
     private final LicenseType licenseType;
 
     private final IDAO dao;
+    private final SolrSearchIndex searchIndex;
 
     /**
      * the current user, which may be empty. Licenses applying to the disclaimer are only updated if the user changes
@@ -90,7 +93,7 @@ public class DisclaimerBean implements Serializable {
      * Default constructor using the IDAO from the {@link DataManager} class
      */
     public DisclaimerBean() {
-        this(retrieveDAO());
+        this(retrieveDAO(), DataManager.getInstance().getSearchIndex());
     }
 
     /**
@@ -98,8 +101,9 @@ public class DisclaimerBean implements Serializable {
      * 
      * @param dao the IDAO implementation to use
      */
-    public DisclaimerBean(IDAO dao) {
+    public DisclaimerBean(IDAO dao, SolrSearchIndex searchIndex) {
         this.dao = dao;
+        this.searchIndex = searchIndex;
         this.licenseType = getDisclaimerLicenseType(this.dao);
 
     }
@@ -132,20 +136,20 @@ public class DisclaimerBean implements Serializable {
      * @return  a json object
      */
     public String getDisclaimerConfig() {
-        if (dao != null && BeanUtils.getNavigationHelper().isDocumentPage()) {
+        if (dao != null && navigationHelper.isDocumentPage()) {
             try {
                 Disclaimer disclaimer = dao.getDisclaimer();
                 JSONObject json = new JSONObject();
                 boolean active = disclaimer.isActive();
                 if (active) {
-                    if (appliesToRecord(disclaimer, BeanUtils.getActiveDocumentBean().getPersistentIdentifier())) {
+                    if (appliesToRecord(disclaimer, activeDocumentBean.getPersistentIdentifier())) {
                         ConsentScope scope = getConsentScope(disclaimer);
                         json.put("active", active);
                         json.put("lastEdited", disclaimer.getRequiresConsentAfter().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
                         json.put("storage", scope.getStorageMode().toString().toLowerCase());
                         json.put("daysToLive", scope.getDaysToLive());
-                        json.put("disclaimerText", disclaimer.getText().getText(BeanUtils.getLocale()));
-                        BeanUtils.getSessionId().ifPresent(id -> {
+                        json.put("disclaimerText", disclaimer.getText().getText(navigationHelper.getLocale()));
+                        navigationHelper.getSessionId().ifPresent(id -> {
                             json.put("sessionId", id);
                         });
                         return json.toString();
@@ -188,7 +192,7 @@ public class DisclaimerBean implements Serializable {
      */
     private ConsentScope getConsentScope(Disclaimer disclaimer) throws DAOException {
         
-        Optional<User> user = Optional.ofNullable(BeanUtils.getUserBean()).map(UserBean::getUser);
+        Optional<User> user = Optional.ofNullable(userBean).map(UserBean::getUser);
         if(user.equals(currentUser) && currentConsentScope.isPresent()) {
             return currentConsentScope.get();
         } else {
@@ -201,10 +205,10 @@ public class DisclaimerBean implements Serializable {
     }
 
     private List<License> getApplyingLicenses(Optional<User> user, LicenseType type) throws DAOException {
-        List<License> licenses = DataManager.getInstance().getDao().getLicenses(type);
+        List<License> licenses = dao.getLicenses(type);
         List<UserGroup> userGroups = user.map(User::getAllUserGroups).orElse(Collections.emptyList());
-        String ipAddress = NetTools.getIpAddress(BeanUtils.getRequest());
-        List<IpRange> ipRanges = DataManager.getInstance().getDao().getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).collect(Collectors.toList());
+        String ipAddress = navigationHelper.getSessionIPAddress();
+        List<IpRange> ipRanges = dao.getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).collect(Collectors.toList());
         
         List<License> applyingLicenses = licenses.stream()
         .filter(license -> {
@@ -223,6 +227,7 @@ public class DisclaimerBean implements Serializable {
                 .collect(Collectors.toList());
     }
 
+
     /**
      * Check if the given pi is a match for the query of the record note The pi is a match if the record note query combined with a query for the
      * given pi returns at least one result
@@ -236,9 +241,7 @@ public class DisclaimerBean implements Serializable {
             String singleRecordQuery = "+({1}) +{2}".replace("{1}", solrQuery).replace("{2}", "PI:" + pi);
 
             try {
-                return DataManager.getInstance()
-                        .getSearchIndex()
-                        .count(singleRecordQuery) > 0;
+                return searchIndex.count(singleRecordQuery) > 0;
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.error("Failed to test match for record note '{}': {}", this, e.toString());
                 return false;
