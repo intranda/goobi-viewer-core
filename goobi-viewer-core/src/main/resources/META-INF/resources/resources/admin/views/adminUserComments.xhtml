@@ -19,7 +19,14 @@
                 <h:form id="adminUserCommentsForm" prependId="false">
                     <div class="admin__title-bar">
                         <!-- TITLE -->
-                        <h1 class="admin__title">#{msg.admin__comments_group_view_comments}</h1>
+                        <ui:fragment rendered="#{!adminCommentBean.currentCommentView.coreType}">
+                        	<h1 class="admin__title">#{msg.admin__comments_group_view_comments}</h1>
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{adminCommentBean.currentCommentView.coreType}">
+                        	<h1 class="admin__title">#{msg.admin__comment_groups_all_comments_title}</h1>
+                        </ui:fragment>
+                        
                     </div>
                     
                     <div class="admin__content-inner-content">
