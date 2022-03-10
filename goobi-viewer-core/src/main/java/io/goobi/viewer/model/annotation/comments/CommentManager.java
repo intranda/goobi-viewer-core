@@ -96,21 +96,28 @@ public class CommentManager implements AnnotationLister<Comment> {
             saver.save(comment);
             notificators.parallelStream().forEach(n -> {
                 if (n.getClass().equals(CommentMailNotificator.class)) {
-                    try {
-                        // Send notification mails to each user group that receives notifications
-                        Set<UserGroup> groups = getNotificationUserGroupsForRecord(pi);
-                        Set<String> usedAddresses = new HashSet<>();
-                        for (UserGroup group : groups) {
-                            populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
-                            n.notifyCreation(comment, BeanUtils.getLocale());
+                    Thread fileChangedObserver = new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            try {
+                                // Send notification mails to each user group that receives notifications
+                                Set<UserGroup> groups = getNotificationUserGroupsForRecord(pi);
+                                Set<String> usedAddresses = new HashSet<>();
+                                for (UserGroup group : groups) {
+                                    populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
+                                    n.notifyCreation(comment, BeanUtils.getLocale());
+                                }
+                            } catch (DAOException e) {
+                                logger.error(e.getMessage());
+                            } catch (PresentationException e) {
+                                logger.error(e.getMessage());
+                            } catch (IndexUnreachableException e) {
+                                logger.error(e.getMessage());
+                            }
                         }
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage());
-                    } catch (PresentationException e) {
-                        logger.error(e.getMessage());
-                    } catch (IndexUnreachableException e) {
-                        logger.error(e.getMessage());
-                    }
+                    });
+                    fileChangedObserver.start();
                 } else {
                     n.notifyCreation(comment, BeanUtils.getLocale());
                 }
@@ -138,21 +145,28 @@ public class CommentManager implements AnnotationLister<Comment> {
             saver.save(editedComment);
             notificators.parallelStream().forEach(n -> {
                 if (n.getClass().equals(CommentMailNotificator.class)) {
-                    try {
-                        // Send notification mails to each user group that receives notifications
-                        Set<UserGroup> groups = getNotificationUserGroupsForRecord(editedComment.getTargetPI());
-                        Set<String> usedAddresses = new HashSet<>();
-                        for (UserGroup group : groups) {
-                            populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
-                            n.notifyEdit(comment, editedComment, BeanUtils.getLocale());
+                    Thread fileChangedObserver = new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            try {
+                                // Send notification mails to each user group that receives notifications
+                                Set<UserGroup> groups = getNotificationUserGroupsForRecord(editedComment.getTargetPI());
+                                Set<String> usedAddresses = new HashSet<>();
+                                for (UserGroup group : groups) {
+                                    populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
+                                    n.notifyEdit(comment, editedComment, BeanUtils.getLocale());
+                                }
+                            } catch (DAOException e) {
+                                logger.error(e.getMessage());
+                            } catch (PresentationException e) {
+                                logger.error(e.getMessage());
+                            } catch (IndexUnreachableException e) {
+                                logger.error(e.getMessage());
+                            }
                         }
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage());
-                    } catch (PresentationException e) {
-                        logger.error(e.getMessage());
-                    } catch (IndexUnreachableException e) {
-                        logger.error(e.getMessage());
-                    }
+                    });
+                    fileChangedObserver.start();
                 } else {
                     n.notifyEdit(comment, editedComment, BeanUtils.getLocale());
                 }
