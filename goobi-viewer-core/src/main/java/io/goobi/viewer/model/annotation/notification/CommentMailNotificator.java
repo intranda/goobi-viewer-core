@@ -16,8 +16,11 @@
 package io.goobi.viewer.model.annotation.notification;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.mail.MessagingException;
 
@@ -26,9 +29,11 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * @author florian
@@ -38,18 +43,32 @@ public class CommentMailNotificator implements ChangeNotificator {
 
     private static final Logger logger = LoggerFactory.getLogger(CommentMailNotificator.class);
 
-    private List<String> addresses;
+    private List<String> recipients;
+    private List<String> bcc;
 
-    public CommentMailNotificator(List<String> addresses) {
-        this.addresses = addresses;
+    public CommentMailNotificator() {
     }
 
     /**
      * 
-     * @param addresses
+     * @param recipients
      */
-    public void setAddresses(List<String> addresses) {
-        this.addresses = addresses;
+    public void setRecipients(List<String> recipients) {
+        this.recipients = recipients;
+    }
+
+    /**
+     * @return the bcc
+     */
+    public List<String> getBcc() {
+        return bcc;
+    }
+
+    /**
+     * @param bcc the bcc to set
+     */
+    public void setBcc(List<String> bcc) {
+        this.bcc = bcc;
     }
 
     /* (non-Javadoc)
@@ -109,12 +128,12 @@ public class CommentMailNotificator implements ChangeNotificator {
      * @return a boolean.
      */
     private boolean sendEmailNotifications(String subject, String body) {
-        if (addresses == null || addresses.isEmpty()) {
+        if (recipients == null || recipients.isEmpty()) {
             return false;
         }
 
         try {
-            NetTools.postMail(addresses, null, null, subject, body);
+            NetTools.postMail(recipients, null, bcc, subject, body);
             return true;
         } catch (UnsupportedEncodingException | MessagingException e) {
             logger.error(e.getMessage(), e);
@@ -123,14 +142,13 @@ public class CommentMailNotificator implements ChangeNotificator {
         return false;
     }
 
-    private String getCreator(PersistentAnnotation annotation) {
+    private static String getCreator(PersistentAnnotation annotation) {
         try {
             User user = annotation.getCreator();
             if (user != null) {
                 return annotation.getCreator().getDisplayName();
-            } else {
-                return "unknown";
             }
+            return "unknown";
         } catch (DAOException e) {
             return "unknown";
         }
