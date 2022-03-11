@@ -173,7 +173,7 @@ public class License implements IPrivilegeHolder, Serializable {
     private List<Campaign> allowedCrowdsourcingCampaigns = new ArrayList<>();
 
 
-    @Column(name="legal_disclaimer_scope", nullable = false)
+    @Column(name="legal_disclaimer_scope", nullable = true)
     @Convert(converter = ConsentScopeConverter.class)
     private ConsentScope disclaimerScope = new ConsentScope();
     
