@@ -180,8 +180,7 @@ public class AdminCommentBean implements Serializable {
         if (user == null) {
             return Collections.emptyList();
         }
-
-        logger.trace("user: {}", user.getEmail());
+        // logger.trace("user: {}", user.getEmail());
 
         // Unfiltered list for admins
         if (user.isSuperuser()) {
@@ -192,6 +191,7 @@ public class AdminCommentBean implements Serializable {
         for (CommentView commentView : DataManager.getInstance().getDao().getAllCommentViews()) {
             if (!commentView.isCoreType() && commentView.getUserGroup() != null && commentView.getUserGroup().getMembersAndOwner().contains(user)) {
                 ret.add(commentView);
+                logger.trace("added: "+ commentView.getTitle());
             }
         }
 

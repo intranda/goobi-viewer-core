@@ -75,6 +75,7 @@ public class CommentView {
         CommentView commentViewAll = new CommentView();
         commentViewAll.setTitle("admin__comment_groups_all_comments_title");
         commentViewAll.setDescription("admin__comment_groups_all_comments_desc");
+        commentViewAll.setSendEmailNotifications(true);
         commentViewAll.setCoreType(true);
 
         return commentViewAll;

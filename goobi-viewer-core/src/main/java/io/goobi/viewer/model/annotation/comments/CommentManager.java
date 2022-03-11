@@ -366,4 +366,34 @@ public class CommentManager implements AnnotationLister<Comment> {
 
         return !commentView.getIdentifiers().isEmpty();
     }
+
+    /**
+     * Checks whether the given user has access to any comment groups, whether via being admin or owner or member of any linked user group.
+     * 
+     * @param user
+     * @return true if user has access; false otherwise
+     * @throws DAOException
+     * @should return false if user null
+     * @should return true if user admin
+     * @should return true if user owner of user group linked to comment group
+     * @should return true if user member of user group linked to comment group
+     */
+    public static boolean isUserHasAccessToCommentGroups(User user) throws DAOException {
+        if (user == null) {
+            return false;
+        }
+        if (user.isSuperuser()) {
+            return true;
+        }
+        for (CommentView commentGroup : DataManager.getInstance().getDao().getAllCommentViews()) {
+            if (commentGroup.getUserGroup() != null) {
+                if (user.equals(commentGroup.getUserGroup().getOwner()) || commentGroup.getUserGroup().getMembers().contains(user)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }
