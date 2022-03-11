@@ -887,6 +887,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
        
         if(isRandomizeItems()) {
             nestedPagesStream = nestedPagesStream.sorted(new RandomComparator<CMSPage>());
+        } else {
+            nestedPagesStream = nestedPagesStream.sorted(new CMSPage.PageComparator());     
         }
         if(isPaginated()) {    
             nestedPagesStream = nestedPagesStream.skip(offset).limit(size);
