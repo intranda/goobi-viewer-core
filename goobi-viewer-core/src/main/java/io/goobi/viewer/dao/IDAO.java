@@ -96,6 +96,8 @@ public interface IDAO {
      */
     boolean columnsExists(String tableName, String columnName) throws DAOException, SQLException;
 
+    List<String> getColumnNames(String tableName) throws DAOException, SQLException;
+    
     // User
 
     /**

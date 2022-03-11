@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -3159,6 +3160,16 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             fail("Updating or retrieving interrupted");
         }
 
+    }
+    
+    @Test
+    public void test_getColumnNames() throws DAOException, SQLException {
+        
+        IDAO dao = DataManager.getInstance().getDao();
+        
+        List<String> columns = dao.getColumnNames("users");
+        assertTrue(columns != null && !columns.isEmpty());
+        columns.forEach(col -> System.out.println(col));
     }
 
     private static void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException, DAOException {

@@ -112,6 +112,7 @@ public class JPADAO implements IDAO {
     private final EntityManagerFactory factory;
     private Object cmsRequestLock = new Object();
     private Object crowdsourcingRequestLock = new Object();
+    private final String persistenceUnitName;
 
     /**
      * <p>
@@ -141,6 +142,7 @@ public class JPADAO implements IDAO {
         if (StringUtils.isEmpty(persistenceUnitName)) {
             persistenceUnitName = DEFAULT_PERSISTENCE_UNIT_NAME;
         }
+        this.persistenceUnitName = persistenceUnitName;
         logger.info("Using persistence unit: {}", persistenceUnitName);
         try {
             // Create EntityManagerFactory in a custom class loader
@@ -6248,5 +6250,12 @@ public class JPADAO implements IDAO {
         }
         String filterString = join.append(where).toString();
         return filterString;
+    }
+
+    @Override
+    public List<String> getColumnNames(String tableName) throws DAOException, SQLException {
+        String query = "SELECT table_schema FROM information_schema.columns WHERE table_name = \""+tableName+"\";";
+        List<Object> res = getNativeQueryResults(query);
+        return res.stream().map(Object::toString).collect(Collectors.toList());
     }
 }
