@@ -39,7 +39,7 @@
 						</div>
 
 						<!-- ENABLE COMMENTS -->
-						<ui:fragment rendered="#{userBean.admin}">
+						<div class="admin__comment-groups-toggle #{!userBean.admin ? '-isDisabled' : ''}">
 						<h:form id="userCommentsViewsActivateForm" prependId="false"> 
 							<div class="form-horizontal form-group">
 								<div class="row no-gutters mb-3 align-items-center">
@@ -49,12 +49,13 @@
 											toggleTarget=".-toggle-comments-functions"
 											render=":adminUserCommentViewsTitle :userCommentViews"
 											value="#{adminCommentBean.userCommentsEnabled}"
-											immediate="true" />
+											immediate="true"
+											disabled="#{!userBean.admin}" />
 									</div>
 								</div>
 							</div>
 						</h:form>
-						</ui:fragment>
+						</div>
 
 						<div id="userCommentViews"
 							class="admin__comments-functionality-wrapper -toggle-comments-functions">
@@ -64,8 +65,7 @@
 								<!-- INDIVIDUAL COMMENT VIEWS -->
 								<ui:repeat var="commentView" varStatus="status"
 									value="#{adminCommentBean.getCommentViewsForUser(userBean.user)}">
-									<div
-										class="admin__boxed-entry -w33 #{status.first?'-primary':''} #{status.first?'-primary':''}">
+									<div class="admin__boxed-entry -w33 #{status.first?'-primary':''} #{status.first?'-primary':''}">
 										<div class="row">
 											<div class="col-12">
 												<!-- TITLE -->

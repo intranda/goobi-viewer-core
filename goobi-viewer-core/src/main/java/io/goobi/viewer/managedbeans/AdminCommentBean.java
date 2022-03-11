@@ -187,11 +187,11 @@ public class AdminCommentBean implements Serializable {
             return DataManager.getInstance().getDao().getAllCommentViews();
         }
 
+        // Regular users
         List<CommentView> ret = new ArrayList<>();
         for (CommentView commentView : DataManager.getInstance().getDao().getAllCommentViews()) {
             if (!commentView.isCoreType() && commentView.getUserGroup() != null && commentView.getUserGroup().getMembersAndOwner().contains(user)) {
                 ret.add(commentView);
-                logger.trace("added: "+ commentView.getTitle());
             }
         }
 
