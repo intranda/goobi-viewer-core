@@ -321,11 +321,7 @@ public class CommentManager implements AnnotationLister<Comment> {
 
         Set<UserGroup> ret = new HashSet<>();
         for (CommentView commentView : commentViews) {
-            if (commentView.getUserGroup() == null) {
-                logger.trace("Comment view '{}' - no user group set", commentView.getTitle());
-                continue;
-            }
-            if (!commentView.isSendEmailNotifications()) {
+            if (commentView.getUserGroup() == null || !commentView.isSendEmailNotifications()) {
                 continue;
             }
             if (StringUtils.isNotEmpty(commentView.getSolrQuery())) {
@@ -337,6 +333,35 @@ public class CommentManager implements AnnotationLister<Comment> {
             } else if (commentView.isCoreType()) {
                 // "All comments" group without a filter query - add all users email addresses
                 ret.add(commentView.getUserGroup());
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns {@link UserGroup}s linked to {@link CommentView}s (non-core only) whose Solr query matches the given <code>pi</code>.
+     * 
+     * @param pi
+     * @return
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public static Set<CommentView> getRelevantCommentGroupsForRecord(String pi)
+            throws DAOException, PresentationException, IndexUnreachableException {
+        List<CommentView> commentGroups = DataManager.getInstance().getDao().getAllCommentViews();
+        if (commentGroups.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        Set<CommentView> ret = new HashSet<>();
+        for (CommentView commentGroup : commentGroups) {
+            if (commentGroup.isCoreType() ||StringUtils.isEmpty(commentGroup.getSolrQuery())) {
+                continue;
+            }
+            if (queryCommentViewIdentifiers(commentGroup) && commentGroup.getIdentifiers().contains(pi)) {
+                ret.add(commentGroup);
             }
         }
 

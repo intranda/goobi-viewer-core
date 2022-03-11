@@ -17,8 +17,11 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.SessionScoped;
@@ -31,6 +34,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AjaxResponseException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.comments.Comment;
@@ -42,6 +46,7 @@ import io.goobi.viewer.model.annotation.serialization.SolrAndSqlAnnotationSaver;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
 import io.goobi.viewer.model.annotation.serialization.SqlCommentLister;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -66,6 +71,9 @@ public class CommentBean implements Serializable {
     private UserBean userBean;
 
     private Boolean userCommentsEnabled;
+
+    private Map<String, Boolean> editCommentPermissionMap = new HashMap<>();
+    private Map<String, Boolean> deleteCommentPermissionMap = new HashMap<>();
 
     public CommentBean() throws IndexUnreachableException, DAOException {
         commentManager = new CommentManager(
@@ -201,5 +209,86 @@ public class CommentBean implements Serializable {
         }
 
         return userCommentsEnabled;
+    }
+
+    /**
+     * Checks whether the current user may edit comments for the given record identifier, based on their admin status or membership in any user group
+     * that has such permission via comment groups.
+     * 
+     * @param pi Record identifier
+     * @return
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public boolean isMayEditCommentsForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
+        if (userBean == null || userBean.getUser() == null || pi == null) {
+            return false;
+        }
+
+        if (deleteCommentPermissionMap.get(pi) == null) {
+            deleteCommentPermissionMap.put(pi, false);
+            checkEditDeletePermissionsForRecord(pi);
+        }
+
+        return deleteCommentPermissionMap.get(pi);
+    }
+
+    /**
+     * Checks whether the current user may delete comments for the given record identifier, based on their admin status or membership in any user
+     * group that has such permission via comment groups.
+     * 
+     * @param pi Record identifier
+     * @return
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public boolean isMayDeleteCommentsForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
+        if (userBean == null || userBean.getUser() == null || pi == null) {
+            return false;
+        }
+
+        if (editCommentPermissionMap.get(pi) == null) {
+            editCommentPermissionMap.put(pi, false);
+            checkEditDeletePermissionsForRecord(pi);
+        }
+
+        return editCommentPermissionMap.get(pi);
+    }
+
+    /**
+     * Enables edit/delete privileges for the current session for the given record identifier, based on admin status or {@link CommentView} settings.
+     * 
+     * @param pi
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    void checkEditDeletePermissionsForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
+        if (userBean == null || userBean.getUser() == null) {
+            return;
+        }
+
+        // Always allow for admins
+        if (userBean.getUser().isSuperuser()) {
+            editCommentPermissionMap.put(pi, true);
+            deleteCommentPermissionMap.put(pi, true);
+            return;
+        }
+
+        // Check permissions granted via CommentViews
+        Set<CommentView> commentGroups = CommentManager.getRelevantCommentGroupsForRecord(pi);
+        for (CommentView commentGroup : commentGroups) {
+            if (commentGroup.getUserGroup() != null && (userBean.getUser().equals(commentGroup.getUserGroup().getOwner())
+                    || commentGroup.getUserGroup().getMembers().contains(userBean.getUser()))) {
+                if (commentGroup.isMembersMayEditComments()) {
+                    editCommentPermissionMap.put(pi, true);
+                }
+                if (commentGroup.isMembersMayDeleteComments()) {
+                    deleteCommentPermissionMap.put(pi, true);
+                }
+            }
+        }
     }
 }
