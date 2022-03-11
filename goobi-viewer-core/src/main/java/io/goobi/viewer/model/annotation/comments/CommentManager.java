@@ -311,6 +311,7 @@ public class CommentManager implements AnnotationLister<Comment> {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @should return user groups for matching comment views
+     * @should skip comment groups where notifications disabled
      */
     static Set<UserGroup> getNotificationUserGroupsForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
         List<CommentView> commentViews = DataManager.getInstance().getDao().getAllCommentViews();
@@ -322,6 +323,9 @@ public class CommentManager implements AnnotationLister<Comment> {
         for (CommentView commentView : commentViews) {
             if (commentView.getUserGroup() == null) {
                 logger.trace("Comment view '{}' - no user group set", commentView.getTitle());
+                continue;
+            }
+            if (!commentView.isSendEmailNotifications()) {
                 continue;
             }
             if (StringUtils.isNotEmpty(commentView.getSolrQuery())) {
