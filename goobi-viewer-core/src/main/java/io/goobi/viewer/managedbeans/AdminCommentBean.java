@@ -253,10 +253,10 @@ public class AdminCommentBean implements Serializable {
 
     /**
      * <p>
-     * deleteCommentAction.
+     * deleteCommentGroupAction.
      * </p>
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
+     * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
