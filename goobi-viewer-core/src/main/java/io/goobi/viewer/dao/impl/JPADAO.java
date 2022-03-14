@@ -4001,7 +4001,6 @@ public class JPADAO implements IDAO {
                     where = true;
                 }
                 sbQuery.append("a.creatorId = :owner");
-                where = true;
             }
             if (targetPIs != null && !targetPIs.isEmpty()) {
                 if (where) {
