@@ -2005,7 +2005,7 @@ public class JPADAO implements IDAO {
                 } else {
                     sbQuery.append(" AND ");
                 }
-                sbQuery.append(" a.targetPI in :targetPIs");
+                sbQuery.append("a.targetPI in :targetPIs");
             }
             if (StringUtils.isNotBlank(sortField)) {
                 String[] sortFields = sortField.split("_");
@@ -3986,23 +3986,34 @@ public class JPADAO implements IDAO {
     @Override
     public long getCommentCount(Map<String, String> filters, User owner, Set<String> targetPIs) throws DAOException {
         preQuery();
-        // TODO
         EntityManager em = getEntityManager();
         try {
             StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Comment a");
             Map<String, String> params = new HashMap<>();
+            String filterQuery = createFilterQuery(null, filters, params);
+            boolean where = StringUtils.isNotEmpty(filterQuery);
+            sbQuery.append(filterQuery);
             if (owner != null) {
-                sbQuery.append(" WHERE a.creatorId = :owner");
+                if (where) {
+                    sbQuery.append(" AND ");
+                } else {
+                    sbQuery.append(" WHERE ");
+                    where = true;
+                }
+                sbQuery.append("a.creatorId = :owner");
+                where = true;
             }
             if (targetPIs != null && !targetPIs.isEmpty()) {
-                if (owner == null) {
-                    sbQuery.append(" WHERE ");
-                } else {
+                if (where) {
                     sbQuery.append(" AND ");
+                } else {
+                    sbQuery.append(" WHERE ");
+                    where = true;
                 }
-                sbQuery.append(" a.targetPI in :targetPIs");
+                sbQuery.append("a.targetPI in :targetPIs");
             }
-            Query q = em.createQuery(sbQuery.append(createFilterQuery(null, filters, params)).toString());
+            logger.trace(sbQuery.toString());
+            Query q = em.createQuery(sbQuery.toString());
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
             if (owner != null) {
                 q.setParameter("owner", owner.getId());
