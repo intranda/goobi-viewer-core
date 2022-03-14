@@ -22,14 +22,14 @@ import io.goobi.viewer.model.security.user.UserGroup;
  * Filtered view on collections.
  */
 @Entity
-@Table(name = "comment_views")
-public class CommentView {
+@Table(name = "comment_groups")
+public class CommentGroup {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommentView.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommentGroup.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_view_id")
+    @Column(name = "comment_group_id")
     private Long id;
 
     @Column(name = "title", nullable = true)
@@ -67,18 +67,18 @@ public class CommentView {
     boolean identifiersQueried = false;
 
     /**
-     * Creates a {@link CommentView} instance representing unfiltered listing.
+     * Creates a {@link CommentGroup} instance representing unfiltered listing.
      * 
-     * @return {@link CommentView}
+     * @return {@link CommentGroup}
      */
-    public static CommentView createCommentViewAll() {
-        CommentView commentViewAll = new CommentView();
-        commentViewAll.setTitle("admin__comment_groups_all_comments_title");
-        commentViewAll.setDescription("admin__comment_groups_all_comments_desc");
-        commentViewAll.setSendEmailNotifications(true);
-        commentViewAll.setCoreType(true);
+    public static CommentGroup createCommentGroupAll() {
+        CommentGroup commentGroupAll = new CommentGroup();
+        commentGroupAll.setTitle("admin__comment_groups_all_comments_title");
+        commentGroupAll.setDescription("admin__comment_groups_all_comments_desc");
+        commentGroupAll.setSendEmailNotifications(true);
+        commentGroupAll.setCoreType(true);
 
-        return commentViewAll;
+        return commentGroupAll;
     }
 
     /**

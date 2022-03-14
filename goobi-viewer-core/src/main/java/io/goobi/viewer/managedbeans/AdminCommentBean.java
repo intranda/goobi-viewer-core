@@ -27,7 +27,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
-import io.goobi.viewer.model.annotation.comments.CommentView;
+import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.security.user.User;
 
 @Named
@@ -43,8 +43,8 @@ public class AdminCommentBean implements Serializable {
 
     private TableDataProvider<Comment> lazyModelComments;
 
-    private CommentView commentViewAll;
-    private CommentView currentCommentView;
+    private CommentGroup commentGroupAll;
+    private CommentGroup currentCommentGroup;
     private Comment currentComment = null;
 
     /**
@@ -53,7 +53,7 @@ public class AdminCommentBean implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            commentViewAll = DataManager.getInstance().getDao().getCommentViewUnfiltered();
+            commentGroupAll = DataManager.getInstance().getDao().getCommentGroupUnfiltered();
         } catch (DAOException e) {
             logger.error(e.getMessage());
         }
@@ -68,23 +68,23 @@ public class AdminCommentBean implements Serializable {
                             sortField = "dateCreated";
                             sortOrder = SortOrder.DESCENDING;
                         }
-                        if (currentCommentView == null) {
+                        if (currentCommentGroup == null) {
                             return Collections.emptyList();
                         }
-                        if (currentCommentView.isCoreType() && userBean != null && userBean.isAdmin()) {
+                        if (currentCommentGroup.isCoreType() && userBean != null && userBean.isAdmin()) {
                             return DataManager.getInstance()
                                     .getDao()
                                     .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, null);
                         }
-                        if (!currentCommentView.isIdentifiersQueried()) {
-                            CommentManager.queryCommentViewIdentifiers(currentCommentView);
+                        if (!currentCommentGroup.isIdentifiersQueried()) {
+                            CommentManager.queryCommentGroupIdentifiers(currentCommentGroup);
                         }
-                        if (currentCommentView.getIdentifiers().isEmpty()) {
+                        if (currentCommentGroup.getIdentifiers().isEmpty()) {
                             return Collections.emptyList();
                         }
                         return DataManager.getInstance()
                                 .getDao()
-                                .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, currentCommentView.getIdentifiers());
+                                .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters, currentCommentGroup.getIdentifiers());
                     } catch (DAOException e) {
                         logger.error(e.getMessage());
                     } catch (PresentationException e) {
@@ -97,22 +97,22 @@ public class AdminCommentBean implements Serializable {
 
                 @Override
                 public long getTotalNumberOfRecords(Map<String, String> filters) {
-                    if (currentCommentView == null) {
+                    if (currentCommentGroup == null) {
                         return 0;
                     }
 
                     try {
-                        if (currentCommentView.isCoreType() && userBean != null && userBean.isAdmin()) {
+                        if (currentCommentGroup.isCoreType() && userBean != null && userBean.isAdmin()) {
                             return DataManager.getInstance().getDao().getCommentCount(filters, null, null);
                         }
 
-                        if (!currentCommentView.isIdentifiersQueried()) {
-                            CommentManager.queryCommentViewIdentifiers(currentCommentView);
+                        if (!currentCommentGroup.isIdentifiersQueried()) {
+                            CommentManager.queryCommentGroupIdentifiers(currentCommentGroup);
                         }
-                        if (currentCommentView.getIdentifiers().isEmpty()) {
+                        if (currentCommentGroup.getIdentifiers().isEmpty()) {
                             return 0;
                         }
-                        return DataManager.getInstance().getDao().getCommentCount(filters, null, currentCommentView.getIdentifiers());
+                        return DataManager.getInstance().getDao().getCommentCount(filters, null, currentCommentGroup.getIdentifiers());
                     } catch (DAOException e) {
                         logger.error(e.getMessage(), e);
                         return 0;
@@ -140,8 +140,8 @@ public class AdminCommentBean implements Serializable {
      * @return
      */
     public boolean isUserCommentsEnabled() {
-        if (commentViewAll != null) {
-            return commentViewAll.isEnabled();
+        if (commentGroupAll != null) {
+            return commentGroupAll.isEnabled();
         }
 
         return false;
@@ -153,10 +153,10 @@ public class AdminCommentBean implements Serializable {
      * @throws DAOException
      */
     public void setUserCommentsEnabled(boolean userCommentsEnabled) throws DAOException {
-        if (commentViewAll != null) {
-            if (commentViewAll.isEnabled() != userCommentsEnabled) {
-                commentViewAll.setEnabled(userCommentsEnabled);
-                DataManager.getInstance().getDao().updateCommentView(commentViewAll);
+        if (commentGroupAll != null) {
+            if (commentGroupAll.isEnabled() != userCommentsEnabled) {
+                commentGroupAll.setEnabled(userCommentsEnabled);
+                DataManager.getInstance().getDao().updateCommentGroup(commentGroupAll);
             }
         }
     }
@@ -166,17 +166,17 @@ public class AdminCommentBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public List<CommentView> getAllCommentViews() throws DAOException {
-        return DataManager.getInstance().getDao().getAllCommentViews();
+    public List<CommentGroup> getAllCommentGroups() throws DAOException {
+        return DataManager.getInstance().getDao().getAllCommentGroups();
     }
 
     /**
      * 
      * @param user Current user
-     * @return Filtered list of available {@link CommentView}s to the given user
+     * @return Filtered list of available {@link CommentGroup}s to the given user
      * @throws DAOException
      */
-    public List<CommentView> getCommentViewsForUser(User user) throws DAOException {
+    public List<CommentGroup> getCommentGroupsForUser(User user) throws DAOException {
         if (user == null) {
             return Collections.emptyList();
         }
@@ -184,14 +184,14 @@ public class AdminCommentBean implements Serializable {
 
         // Unfiltered list for admins
         if (user.isSuperuser()) {
-            return DataManager.getInstance().getDao().getAllCommentViews();
+            return DataManager.getInstance().getDao().getAllCommentGroups();
         }
 
         // Regular users
-        List<CommentView> ret = new ArrayList<>();
-        for (CommentView commentView : DataManager.getInstance().getDao().getAllCommentViews()) {
-            if (!commentView.isCoreType() && commentView.getUserGroup() != null && commentView.getUserGroup().getMembersAndOwner().contains(user)) {
-                ret.add(commentView);
+        List<CommentGroup> ret = new ArrayList<>();
+        for (CommentGroup commentGroup : DataManager.getInstance().getDao().getAllCommentGroups()) {
+            if (!commentGroup.isCoreType() && commentGroup.getUserGroup() != null && commentGroup.getUserGroup().getMembersAndOwner().contains(user)) {
+                ret.add(commentGroup);
             }
         }
 
@@ -201,16 +201,16 @@ public class AdminCommentBean implements Serializable {
     /**
      * 
      */
-    public void resetCurrentCommentViewAction() {
-        currentCommentView = null;
+    public void resetCurrentCommentGroupAction() {
+        currentCommentGroup = null;
     }
 
     /**
      * 
      */
-    public void newCurrentCommentViewAction() {
-        logger.trace("newCurrentCommentViewAction");
-        currentCommentView = new CommentView();
+    public void newCurrentCommentGroupAction() {
+        logger.trace("newCurrentCommentGroupAction");
+        currentCommentGroup = new CommentGroup();
     }
 
     /**
@@ -218,32 +218,32 @@ public class AdminCommentBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public String saveCurentCommentViewAction() throws DAOException {
-        return saveCommentViewAction(currentCommentView);
+    public String saveCurentCommentGroupAction() throws DAOException {
+        return saveCommentGroupAction(currentCommentGroup);
     }
 
     /**
      * <p>
-     * saveCommentViewAction.
+     * saveCommentGroupAction.
      * </p>
      *
-     * @param comment a {@link io.goobi.viewer.model.annotation.comments.CommentView} object.
+     * @param comment a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String saveCommentViewAction(CommentView commentView) throws DAOException {
-        logger.trace("saveCommentViewAction");
-        if (commentView.getId() != null) {
-            if (DataManager.getInstance().getDao().updateCommentView(commentView)) {
+    public String saveCommentGroupAction(CommentGroup commentGroup) throws DAOException {
+        logger.trace("saveCommentGroupAction");
+        if (commentGroup.getId() != null) {
+            if (DataManager.getInstance().getDao().updateCommentGroup(commentGroup)) {
                 Messages.info("updatedSuccessfully");
-                currentCommentView = null;
-                return "pretty:adminUserCommentViews";
+                currentCommentGroup = null;
+                return "pretty:adminUserCommentGroups";
             }
             Messages.info("errSave");
         } else {
-            if (DataManager.getInstance().getDao().addCommentView(commentView)) {
+            if (DataManager.getInstance().getDao().addCommentGroup(commentGroup)) {
                 Messages.info("addedSuccessfully");
-                currentCommentView = null;
-                return "pretty:adminUserCommentViews";
+                currentCommentGroup = null;
+                return "pretty:adminUserCommentGroups";
             }
             Messages.info("errSave");
         }
@@ -330,52 +330,52 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * @return the currentCommentView
+     * @return the currentCommentGroup
      */
-    public CommentView getCurrentCommentView() {
-        return currentCommentView;
+    public CommentGroup getCurrentCommentGroup() {
+        return currentCommentGroup;
     }
 
     /**
-     * @param currentCommentView the currentCommentView to set
+     * @param currentCommentGroup the currentCommentGroup to set
      */
-    public void setCurrentCommentView(CommentView currentCommentView) {
-        this.currentCommentView = currentCommentView;
+    public void setCurrentCommentGroup(CommentGroup currentCommentGroup) {
+        this.currentCommentGroup = currentCommentGroup;
         init();
     }
 
     /**
-     * Returns the ID of <code>currentCommentView</code>.
+     * Returns the ID of <code>currentCommentGroup</code>.
      * 
-     * @return currentCommentView.id
+     * @return currentCommentGroup.id
      */
-    public Long getCurrentCommentViewId() {
-        if (currentCommentView != null && currentCommentView.getId() != null) {
-            return Long.valueOf(currentCommentView.getId());
+    public Long getCurrentCommentGroupId() {
+        if (currentCommentGroup != null && currentCommentGroup.getId() != null) {
+            return Long.valueOf(currentCommentGroup.getId());
         }
 
         return null;
     }
 
     /**
-     * Sets <code>currentCommentView</code> by loading it from the DB via the given ID.
+     * Sets <code>currentCommentGroup</code> by loading it from the DB via the given ID.
      * 
      * @param id
      * @throws DAOException
      */
-    public void setCurrentCommentViewId(Long id) throws DAOException {
-        logger.trace("setCurrentCommentViewId: {}", id);
+    public void setCurrentCommentGroupId(Long id) throws DAOException {
+        logger.trace("setCurrentCommentGroupId: {}", id);
         try {
             Long longId = Long.valueOf(id);
-            if (ObjectUtils.notEqual(getCurrentCommentViewId(), longId)) {
+            if (ObjectUtils.notEqual(getCurrentCommentGroupId(), longId)) {
                 if (id != null) {
-                    setCurrentCommentView(DataManager.getInstance().getDao().getCommentView(longId));
+                    setCurrentCommentGroup(DataManager.getInstance().getDao().getCommentGroup(longId));
                 } else {
-                    setCurrentCommentView(null);
+                    setCurrentCommentGroup(null);
                 }
             }
         } catch (NumberFormatException e) {
-            setCurrentCommentView(null);
+            setCurrentCommentGroup(null);
         }
     }
 

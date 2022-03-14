@@ -23,7 +23,7 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.model.annotation.comments.Comment;
-import io.goobi.viewer.model.annotation.comments.CommentView;
+import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.security.user.User;
 
 public class AdminCommentBeanTest extends AbstractDatabaseEnabledTest {
@@ -39,7 +39,7 @@ public class AdminCommentBeanTest extends AbstractDatabaseEnabledTest {
         User admin = new User();
         admin.setSuperuser(true);
         bean.userBean.setUser(admin);
-        bean.setCurrentCommentView(CommentView.createCommentViewAll());
+        bean.setCurrentCommentGroup(CommentGroup.createCommentGroupAll());
 
         bean.init();
         Assert.assertNotNull(bean.getLazyModelComments());

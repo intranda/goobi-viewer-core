@@ -314,25 +314,26 @@ public class CommentManager implements AnnotationLister<Comment> {
      * @should skip comment groups where notifications disabled
      */
     static Set<UserGroup> getNotificationUserGroupsForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
-        List<CommentView> commentViews = DataManager.getInstance().getDao().getAllCommentViews();
-        if (commentViews.isEmpty()) {
+        List<CommentGroup> commentGroups = DataManager.getInstance().getDao().getAllCommentGroups();
+        if (commentGroups.isEmpty()) {
             return Collections.emptySet();
         }
 
         Set<UserGroup> ret = new HashSet<>();
-        for (CommentView commentView : commentViews) {
-            if (commentView.getUserGroup() == null || !commentView.isSendEmailNotifications()) {
+        for (CommentGroup commentGroup : commentGroups) {
+            if (commentGroup.getUserGroup() == null || !commentGroup.isSendEmailNotifications()) {
                 continue;
             }
-            if (StringUtils.isNotEmpty(commentView.getSolrQuery())) {
-                if (queryCommentViewIdentifiers(commentView)) {
-                    if ((commentView.isCoreType() && StringUtils.isEmpty(commentView.getSolrQuery())) || commentView.getIdentifiers().contains(pi)) {
-                        ret.add(commentView.getUserGroup());
+            if (StringUtils.isNotEmpty(commentGroup.getSolrQuery())) {
+                if (queryCommentGroupIdentifiers(commentGroup)) {
+                    if ((commentGroup.isCoreType() && StringUtils.isEmpty(commentGroup.getSolrQuery()))
+                            || commentGroup.getIdentifiers().contains(pi)) {
+                        ret.add(commentGroup.getUserGroup());
                     }
                 }
-            } else if (commentView.isCoreType()) {
+            } else if (commentGroup.isCoreType()) {
                 // "All comments" group without a filter query - add all users email addresses
-                ret.add(commentView.getUserGroup());
+                ret.add(commentGroup.getUserGroup());
             }
         }
 
@@ -340,7 +341,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     }
 
     /**
-     * Returns {@link UserGroup}s linked to {@link CommentView}s (non-core only) whose Solr query matches the given <code>pi</code>.
+     * Returns {@link UserGroup}s linked to {@link CommentGroup}s (non-core only) whose Solr query matches the given <code>pi</code>.
      * 
      * @param pi
      * @return
@@ -348,19 +349,19 @@ public class CommentManager implements AnnotationLister<Comment> {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static Set<CommentView> getRelevantCommentGroupsForRecord(String pi)
+    public static Set<CommentGroup> getRelevantCommentGroupsForRecord(String pi)
             throws DAOException, PresentationException, IndexUnreachableException {
-        List<CommentView> commentGroups = DataManager.getInstance().getDao().getAllCommentViews();
+        List<CommentGroup> commentGroups = DataManager.getInstance().getDao().getAllCommentGroups();
         if (commentGroups.isEmpty()) {
             return Collections.emptySet();
         }
 
-        Set<CommentView> ret = new HashSet<>();
-        for (CommentView commentGroup : commentGroups) {
-            if (commentGroup.isCoreType() ||StringUtils.isEmpty(commentGroup.getSolrQuery())) {
+        Set<CommentGroup> ret = new HashSet<>();
+        for (CommentGroup commentGroup : commentGroups) {
+            if (commentGroup.isCoreType() || StringUtils.isEmpty(commentGroup.getSolrQuery())) {
                 continue;
             }
-            if (queryCommentViewIdentifiers(commentGroup) && commentGroup.getIdentifiers().contains(pi)) {
+            if (queryCommentGroupIdentifiers(commentGroup) && commentGroup.getIdentifiers().contains(pi)) {
                 ret.add(commentGroup);
             }
         }
@@ -371,25 +372,25 @@ public class CommentManager implements AnnotationLister<Comment> {
     /**
      * 
      * 
-     * @param commentView
+     * @param commentGroup
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static boolean queryCommentViewIdentifiers(CommentView commentView) throws PresentationException, IndexUnreachableException {
-        if (commentView == null) {
+    public static boolean queryCommentGroupIdentifiers(CommentGroup commentGroup) throws PresentationException, IndexUnreachableException {
+        if (commentGroup == null) {
             return false;
         }
-        if (StringUtils.isBlank(commentView.getSolrQuery())) {
-            commentView.setIdentifiersQueried(true);
+        if (StringUtils.isBlank(commentGroup.getSolrQuery())) {
+            commentGroup.setIdentifiersQueried(true);
             return false;
         }
 
-        String query = "+" + SolrConstants.ISWORK + ":true +(" + commentView.getSolrQuery() + ")";
-        commentView.getIdentifiers().addAll(SearchHelper.getFacetValues(query, SolrConstants.PI, 1));
-        commentView.setIdentifiersQueried(true);
+        String query = "+" + SolrConstants.ISWORK + ":true +(" + commentGroup.getSolrQuery() + ")";
+        commentGroup.getIdentifiers().addAll(SearchHelper.getFacetValues(query, SolrConstants.PI, 1));
+        commentGroup.setIdentifiersQueried(true);
 
-        return !commentView.getIdentifiers().isEmpty();
+        return !commentGroup.getIdentifiers().isEmpty();
     }
 
     /**
@@ -410,7 +411,7 @@ public class CommentManager implements AnnotationLister<Comment> {
         if (user.isSuperuser()) {
             return true;
         }
-        for (CommentView commentGroup : DataManager.getInstance().getDao().getAllCommentViews()) {
+        for (CommentGroup commentGroup : DataManager.getInstance().getDao().getAllCommentGroups()) {
             if (commentGroup.getUserGroup() != null) {
                 if (user.equals(commentGroup.getUserGroup().getOwner()) || commentGroup.getUserGroup().getMembers().contains(user)) {
                     return true;

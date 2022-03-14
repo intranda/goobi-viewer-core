@@ -53,7 +53,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
-import io.goobi.viewer.model.annotation.comments.CommentView;
+import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
@@ -635,26 +635,26 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(0, ipRange3.getLicenses().size());
     }
 
-    // CommentViews
+    // CommentGroups
 
     /**
-     * @see JPADAO#getAllCommentViews()
+     * @see JPADAO#getAllCommentGroups()
      * @verifies return all rows
      */
     @Test
-    public void getAllCommentViews_shouldReturnAllRows() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllCommentViews().size());
+    public void getAllCommentGroups_shouldReturnAllRows() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllCommentGroups().size());
     }
 
     /**
-     * @see JPADAO#getCommentViewUnfiltered()
+     * @see JPADAO#getCommentGroupUnfiltered()
      * @verifies return correct row
      */
     @Test
-    public void getCommentViewUnfiltered_shouldReturnCorrectRow() throws Exception {
-        CommentView commentView = DataManager.getInstance().getDao().getCommentViewUnfiltered();
-        Assert.assertNotNull(commentView);
-        Assert.assertEquals(Long.valueOf(1), commentView.getId());
+    public void getCommentGroupUnfiltered_shouldReturnCorrectRow() throws Exception {
+        CommentGroup commentGroup = DataManager.getInstance().getDao().getCommentGroupUnfiltered();
+        Assert.assertNotNull(commentGroup);
+        Assert.assertEquals(Long.valueOf(1), commentGroup.getId());
     }
 
     // Comments

@@ -57,7 +57,7 @@ import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
-import io.goobi.viewer.model.annotation.comments.CommentView;
+import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
@@ -1840,19 +1840,19 @@ public class JPADAO implements IDAO {
         }
     }
 
-    // CommentView
+    // CommentGroup
 
     /**
-     * @see io.goobi.viewer.dao.IDAO#getAllCommentViews()
+     * @see io.goobi.viewer.dao.IDAO#getAllCommentGroups()
      * @should return all rows
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<CommentView> getAllCommentViews() throws DAOException {
+    public List<CommentGroup> getAllCommentGroups() throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("SELECT o FROM CommentView o");
+            Query q = em.createQuery("SELECT o FROM CommentGroup o");
             q.setFlushMode(FlushModeType.COMMIT);
             // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
@@ -1863,16 +1863,16 @@ public class JPADAO implements IDAO {
 
     /**
      * @throws DAOException
-     * @see io.goobi.viewer.dao.IDAO#getCommentViewUnfiltered()
+     * @see io.goobi.viewer.dao.IDAO#getCommentGroupUnfiltered()
      * @should return correct row
      */
     @Override
-    public CommentView getCommentViewUnfiltered() throws DAOException {
+    public CommentGroup getCommentGroupUnfiltered() throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             ;
-            return (CommentView) em.createQuery("SELECT o FROM CommentView o WHERE o.coreType = true").setMaxResults(1).getSingleResult();
+            return (CommentGroup) em.createQuery("SELECT o FROM CommentGroup o WHERE o.coreType = true").setMaxResults(1).getSingleResult();
         } catch (EntityNotFoundException e) {
             return null;
         } catch (NoResultException e) {
@@ -1883,14 +1883,14 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @see io.goobi.viewer.dao.IDAO#getCommentView(long)
+     * @see io.goobi.viewer.dao.IDAO#getCommentGroup(long)
      */
     @Override
-    public CommentView getCommentView(long id) throws DAOException {
+    public CommentGroup getCommentGroup(long id) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            CommentView o = em.getReference(CommentView.class, id);
+            CommentGroup o = em.getReference(CommentGroup.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
@@ -1900,15 +1900,15 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @see io.goobi.viewer.dao.IDAO#addCommentView(io.goobi.viewer.model.annotation.comments.CommentView)
+     * @see io.goobi.viewer.dao.IDAO#addCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
      */
     @Override
-    public boolean addCommentView(CommentView commentView) throws DAOException {
+    public boolean addCommentGroup(CommentGroup commentGroup) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.persist(commentView);
+            em.persist(commentGroup);
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
@@ -1921,15 +1921,15 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @see io.goobi.viewer.dao.IDAO#updateCommentView(io.goobi.viewer.model.annotation.comments.CommentView)
+     * @see io.goobi.viewer.dao.IDAO#updateCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
      */
     @Override
-    public boolean updateCommentView(CommentView commentView) throws DAOException {
+    public boolean updateCommentGroup(CommentGroup commentGroup) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(commentView);
+            em.merge(commentGroup);
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
@@ -1942,15 +1942,15 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @see io.goobi.viewer.dao.IDAO#deleteCommentView(io.goobi.viewer.model.annotation.comments.CommentView)
+     * @see io.goobi.viewer.dao.IDAO#deleteCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
      */
     @Override
-    public boolean deleteCommentView(CommentView commentView) throws DAOException {
+    public boolean deleteCommentGroup(CommentGroup commentGroup) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            CommentView o = em.getReference(CommentView.class, commentView.getId());
+            CommentGroup o = em.getReference(CommentGroup.class, commentGroup.getId());
             em.remove(o);
             commitTransaction(em);
             return true;

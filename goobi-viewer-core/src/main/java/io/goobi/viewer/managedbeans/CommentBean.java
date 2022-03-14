@@ -38,15 +38,14 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.comments.Comment;
+import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
-import io.goobi.viewer.model.annotation.comments.CommentView;
 import io.goobi.viewer.model.annotation.notification.CommentMailNotificator;
 import io.goobi.viewer.model.annotation.notification.JsfMessagesNotificator;
 import io.goobi.viewer.model.annotation.serialization.SolrAndSqlAnnotationSaver;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
 import io.goobi.viewer.model.annotation.serialization.SqlCommentLister;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -200,9 +199,9 @@ public class CommentBean implements Serializable {
      */
     public boolean isUserCommentsEnabled() throws DAOException {
         if (userCommentsEnabled == null) {
-            CommentView commentViewAll = DataManager.getInstance().getDao().getCommentViewUnfiltered();
-            if (commentViewAll != null) {
-                userCommentsEnabled = commentViewAll.isEnabled();
+            CommentGroup commentGroupAll = DataManager.getInstance().getDao().getCommentGroupUnfiltered();
+            if (commentGroupAll != null) {
+                userCommentsEnabled = commentGroupAll.isEnabled();
             } else {
                 userCommentsEnabled = false;
             }
@@ -258,7 +257,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * Enables edit/delete privileges for the current session for the given record identifier, based on admin status or {@link CommentView} settings.
+     * Enables edit/delete privileges for the current session for the given record identifier, based on admin status or {@link CommentGroup} settings.
      * 
      * @param pi
      * @throws DAOException
@@ -277,9 +276,9 @@ public class CommentBean implements Serializable {
             return;
         }
 
-        // Check permissions granted via CommentViews
-        Set<CommentView> commentGroups = CommentManager.getRelevantCommentGroupsForRecord(pi);
-        for (CommentView commentGroup : commentGroups) {
+        // Check permissions granted via CommentGroups
+        Set<CommentGroup> commentGroups = CommentManager.getRelevantCommentGroupsForRecord(pi);
+        for (CommentGroup commentGroup : commentGroups) {
             if (commentGroup.getUserGroup() != null && (userBean.getUser().equals(commentGroup.getUserGroup().getOwner())
                     || commentGroup.getUserGroup().getMembers().contains(userBean.getUser()))) {
                 if (commentGroup.isMembersMayEditComments()) {

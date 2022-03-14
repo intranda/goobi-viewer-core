@@ -32,7 +32,7 @@ import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
-import io.goobi.viewer.model.annotation.comments.CommentView;
+import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
@@ -865,65 +865,65 @@ public interface IDAO {
      */
     public boolean deleteIpRange(IpRange ipRange) throws DAOException;
 
-    // CommentView
+    // CommentGroup
 
     /**
      * 
      * @return
      * @throws DAOException
      */
-    public List<CommentView> getAllCommentViews() throws DAOException;
+    public List<CommentGroup> getAllCommentGroups() throws DAOException;
 
     /**
      * 
      * @return
      * @throws DAOException
      */
-    public CommentView getCommentViewUnfiltered() throws DAOException;
+    public CommentGroup getCommentGroupUnfiltered() throws DAOException;
 
     /**
      * <p>
-     * getCommentView.
+     * getCommentGroup.
      * </p>
      *
      * @param id a long.
-     * @return a {@link io.goobi.viewer.model.annotation.comments.CommentView} object.
+     * @return a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public CommentView getCommentView(long id) throws DAOException;
+    public CommentGroup getCommentGroup(long id) throws DAOException;
 
     /**
      * <p>
-     * addCommentView.
+     * addCommentGroup.
      * </p>
      *
-     * @param commentView a {@link io.goobi.viewer.model.annotation.comments.CommentView} object.
+     * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addCommentView(CommentView commentView) throws DAOException;
+    public boolean addCommentGroup(CommentGroup commentGroup) throws DAOException;
 
     /**
      * <p>
-     * updateCommentView.
+     * updateCommentGroup.
      * </p>
      *
-     * @param commentView a {@link io.goobi.viewer.model.annotation.comments.CommentView} object.
+     * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateCommentView(CommentView commentView) throws DAOException;
+    public boolean updateCommentGroup(CommentGroup commentGroup) throws DAOException;
 
     /**
      * <p>
-     * deleteCommentView.
+     * deleteCommentGroup.
      * </p>
      *
-     * @param commentView a {@link io.goobi.viewer.model.annotation.comments.CommentView} object.
+     * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean deleteCommentView(CommentView commentView) throws DAOException;
+    public boolean deleteCommentGroup(CommentGroup commentGroup) throws DAOException;
 
     // Comment
 

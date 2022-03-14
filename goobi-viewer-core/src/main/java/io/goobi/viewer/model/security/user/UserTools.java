@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.faces.validators.EmailValidator;
-import io.goobi.viewer.model.annotation.comments.CommentView;
+import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.modules.IModule;
@@ -85,19 +85,19 @@ public class UserTools {
                 }
             }
 
-            // Remove group  from comment views
-            List<CommentView> commentViews = DataManager.getInstance().getDao().getAllCommentViews();
-            Set<CommentView> toUpdate = new HashSet<>();
-            for (CommentView commentView : commentViews) {
-                if (userGroup.equals(commentView.getUserGroup())) {
-                    commentView.setUserGroup(null);
-                    toUpdate.add(commentView);
+            // Remove group  from comment groups
+            List<CommentGroup> commentGroups = DataManager.getInstance().getDao().getAllCommentGroups();
+            Set<CommentGroup> toUpdate = new HashSet<>();
+            for (CommentGroup commentGroup : commentGroups) {
+                if (userGroup.equals(commentGroup.getUserGroup())) {
+                    commentGroup.setUserGroup(null);
+                    toUpdate.add(commentGroup);
                 }
 
             }
             if (!toUpdate.isEmpty()) {
-                for (CommentView commentView : toUpdate) {
-                    DataManager.getInstance().getDao().updateCommentView(commentView);
+                for (CommentGroup commentGroup : toUpdate) {
+                    DataManager.getInstance().getDao().updateCommentGroup(commentGroup);
                 }
             }
 

@@ -19,19 +19,19 @@
 
 	<ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
-			<div id="adminUserCommentView">
-				<h:panelGroup id="adminCommmentView" rendered="#{userBean.admin and adminCommentBean.currentCommentView != null}">
+			<div id="adminUserCommentGroup">
+				<h:panelGroup id="adminCommmentView" rendered="#{userBean.admin and adminCommentBean.currentCommentGroup != null}">
 					<div class="admin__title-bar">
 						<ui:fragment
-							rendered="#{adminCommentBean.currentCommentView.id == null}">
+							rendered="#{adminCommentBean.currentCommentGroup.id == null}">
 							<h1 class="admin__title">#{msg.admin__comment_group_create}</h1>
 						</ui:fragment>
 						<ui:fragment
-							rendered="#{adminCommentBean.currentCommentView.id != null}">
-							<ui:fragment rendered="#{adminCommentBean.currentCommentView.coreType}">
+							rendered="#{adminCommentBean.currentCommentGroup.id != null}">
+							<ui:fragment rendered="#{adminCommentBean.currentCommentGroup.coreType}">
 							    <h1 class="admin__title">#{msg.admin__comment_group_all_comments_edit}</h1>
 							</ui:fragment>
-                            <ui:fragment rendered="#{!adminCommentBean.currentCommentView.coreType}">
+                            <ui:fragment rendered="#{!adminCommentBean.currentCommentGroup.coreType}">
                                 <h1 class="admin__title">#{msg.admin__comment_group_edit}</h1>
                             </ui:fragment>
 						</ui:fragment>
@@ -39,23 +39,23 @@
 
 					<div class="admin__content-inner-content">
 
-					   <h:form id="editCommentView"
+					   <h:form id="editCommentGroup"
                            styleClass="form-horizontal form-group admin__content-wrapper" role="form"
                            prependId="false">
                                 
-						   <div class="admin__content-main -refreshHCsticky #{adminCommentBean.currentCommentView.coreType == '' ? '' : '-full'}">
+						   <div class="admin__content-main -refreshHCsticky #{adminCommentBean.currentCommentGroup.coreType == '' ? '' : '-full'}">
 						      <h2>#{msg.general}</h2>
 						      <div class="user-settings__form-wrapper">
 
 							      <fieldset>
 											<!-- TITLE -->
-											<ui:fragment rendered="#{!adminCommentBean.currentCommentView.coreType}">
+											<ui:fragment rendered="#{!adminCommentBean.currentCommentGroup.coreType}">
                                                 <div class="form-group form-row">
 												    <div class="col-12 col-lg-2 control-label admin__form-label">
 													   <label for="title">#{msg.admin__comment_group_input_title}: <span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
 												    </div>
 												    <div class="col-11 col-lg-9 admin__form-input">
-													   <h:inputText value="#{adminCommentBean.currentCommentView.title}"
+													   <h:inputText value="#{adminCommentBean.currentCommentGroup.title}"
 														  id="title" label="title"
 														  styleClass="form-control" required="true"
 														  requiredMessage="#{msg.admin_collection_view_title__required}" />
@@ -91,7 +91,7 @@
 															</div>
 														</div>
 														<h:inputText id="solrQueryInput" required="false"
-															value="#{adminCommentBean.currentCommentView.solrQuery}"
+															value="#{adminCommentBean.currentCommentGroup.solrQuery}"
 															styleClass="form-control">
 															<f:validator validatorId="solrQueryValidator"
 																for="solrQueryInput" />
@@ -112,13 +112,13 @@
 
 
 											<!-- DESCRIPTION (non-all comments only) -->
-                                            <ui:fragment rendered="#{!adminCommentBean.currentCommentView.coreType}">
+                                            <ui:fragment rendered="#{!adminCommentBean.currentCommentGroup.coreType}">
                                                 <div class="form-group form-row">
                                                 <div class="col-12 col-lg-2 control-label admin__form-label">
                                                     <label for="description">#{msg.admin__comment_group_description}:</label>
                                                 </div>
                                                 <div class="col-11 col-lg-9 admin__form-input">
-                                                    <h:inputTextarea value="#{adminCommentBean.currentCommentView.description}"
+                                                    <h:inputTextarea value="#{adminCommentBean.currentCommentGroup.description}"
                                                         id="description" label="description"
                                                         styleClass="form-control" required="false"
                                                         requiredMessage="#{msg.admin_collection_view_description__required}" />
@@ -134,13 +134,13 @@
                                             </ui:fragment>
                                             
                                             <!-- USER GROUP FOR EMAIL NOTIFICATION (all comments only) -->
-                                            <ui:fragment rendered="#{adminCommentBean.currentCommentView.coreType}">
+                                            <ui:fragment rendered="#{adminCommentBean.currentCommentGroup.coreType}">
                                                 <div class="form-group form-row">
                                                 <div class="col-12 col-lg-2 control-label admin__form-label">
                                                     <label for="userEmailNotificationsUserGroup">#{msg.admin__comment_group_send_email_notification}:</label>
                                                 </div>
                                                 <div class="col-11 col-lg-9 admin__form-input">
-                                                  <h:selectOneMenu value="#{adminCommentBean.currentCommentView.userGroup}"
+                                                  <h:selectOneMenu value="#{adminCommentBean.currentCommentGroup.userGroup}"
                                                         id="userEmailNotificationsUserGroup" converter="userGroupConverter"
                                                         required="false" styleClass="form-control">
                                                         <f:selectItem itemLabel="#{msg.select}" noSelectionOption="true" />
@@ -162,9 +162,9 @@
 									
                                     <!-- ACTION -->
                                     <div class="row no-gutters justify-content-end admin__final-actions">
-                                        <h:commandLink action="pretty:adminUserCommentViews" value="#{msg.cancel}"
+                                        <h:commandLink action="pretty:adminUserCommentGroups" value="#{msg.cancel}"
                                             styleClass="btn admin__cancel-button" immediate="true" />
-                                        <h:commandLink action="#{adminCommentBean.saveCommentViewAction(adminCommentBean.currentCommentView)}"
+                                        <h:commandLink action="#{adminCommentBean.saveCommentGroupAction(adminCommentBean.currentCommentGroup)}"
                                             value="#{msg.save}" styleClass="btn btn--success" />
                                     </div>
 								
@@ -172,7 +172,7 @@
 
 
 							    <!-- SIDEBAR -->
-								<ui:fragment rendered="#{!adminCommentBean.currentCommentView.coreType}">
+								<ui:fragment rendered="#{!adminCommentBean.currentCommentGroup.coreType}">
 							        <div class="admin__content-side -sticky">
                                         <div class="admin__default-block">
                                             <h2>#{msg.admin__crowdsourcing_campaign_settings}</h2>
@@ -194,8 +194,8 @@
 										        </div>
 
 					                            <div class="col-12 admin__form-input">
-					                               <h:selectOneMenu id="adminCommentViewUserGroupSelection" required="false"
-					                                   value="#{adminCommentBean.currentCommentView.userGroup}" styleClass="form-control"
+					                               <h:selectOneMenu id="adminCommentGroupUserGroupSelection" required="false"
+					                                   value="#{adminCommentBean.currentCommentGroup.userGroup}" styleClass="form-control"
 					                                   converter="userGroupConverter">
 					                                   <f:selectItem itemLabel="#{msg.select}" noSelectionOption="true" />
 					                                   <f:selectItems value="#{adminBean.allUserGroups}" />
@@ -204,12 +204,12 @@
 					                               <span class="admin__form-help-text">#{msg.admin__comment_group_enable_for_user_group__help}</span>
                                                 
 	                                                <h:panelGroup id="GroupOwner">
-	                                                    <ui:fragment rendered="#{adminCommentBean.currentCommentView.userGroup != null}">
+	                                                    <ui:fragment rendered="#{adminCommentBean.currentCommentGroup.userGroup != null}">
 	                                                     <div class="mt-1 d-flex justify-content-start crowdsourcing-annotations__sidebar-owner">
 	                                                      <label for="groupOwnerName" class="pr-1 mb-0">#{msg.owner}:</label>
 	                                                      <h:outputLink id="groupOwnerName"
-	                                                          value="#{navigationHelper.applicationUrl}admin/users/edit/#{adminCommentBean.currentCommentView.userGroup.owner.id}/">
-	                                                          <h:outputText value="#{adminCommentBean.currentCommentView.userGroup.owner.displayName}" />
+	                                                          value="#{navigationHelper.applicationUrl}admin/users/edit/#{adminCommentBean.currentCommentGroup.userGroup.owner.id}/">
+	                                                          <h:outputText value="#{adminCommentBean.currentCommentGroup.userGroup.owner.displayName}" />
 	                                                      </h:outputLink>
 	                                                     </div>
 	                                                    </ui:fragment>
@@ -220,7 +220,7 @@
 
                                             <!-- E-MAIL NOTIFICATIONS -->
 	                                        <h:panelGroup id="GroupOwnerNotification">
-	                                        <ui:fragment rendered="#{adminCommentBean.currentCommentView.userGroup != null}">
+	                                        <ui:fragment rendered="#{adminCommentBean.currentCommentGroup.userGroup != null}">
                                             <div class="form-group form-row admin__sidebar-divider-top">
                                    			    <div class="col-11 control-label admin__form-label">
 												    <label for="adminCrowdVisibleFor">
@@ -239,11 +239,11 @@
 							                    <div class="col-12 admin__form-input">
                                                     <div class="admin__radio-switch">
                                                         <h:selectOneRadio group="sendEmailNotificationsToggle"
-                                                            value="#{adminCommentBean.currentCommentView.sendEmailNotifications}" immediate="true">
+                                                            value="#{adminCommentBean.currentCommentGroup.sendEmailNotifications}" immediate="true">
                                                             <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                         </h:selectOneRadio>                                                        
                                                         <h:selectOneRadio group="sendEmailNotificationsToggle"
-                                                            value="#{adminCommentBean.currentCommentView.sendEmailNotifications}" immediate="true">
+                                                            value="#{adminCommentBean.currentCommentGroup.sendEmailNotifications}" immediate="true">
                                                             <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                         </h:selectOneRadio>
                                                         <span class="toggle-outside"><span class="toggle-inside" /></span>
@@ -256,7 +256,7 @@
 
 										<!-- MEMBERS MAY EDIT COMMENTS -->
 	                                    <h:panelGroup id="GroupOwnerEdit">
-	                                    <ui:fragment rendered="#{adminCommentBean.currentCommentView.userGroup != null}">
+	                                    <ui:fragment rendered="#{adminCommentBean.currentCommentGroup.userGroup != null}">
                                         <div class="form-group form-row admin__sidebar-divider-top">
                                    			<div class="col-11 control-label admin__form-label">
 												<label for="adminCrowdVisibleFor">
@@ -276,11 +276,11 @@
 							                    <div class="col-12 admin__form-input">
                                                        <div class="admin__radio-switch">
                                                            <h:selectOneRadio group="membersMayEditCommentsToggle"
-                                                               value="#{adminCommentBean.currentCommentView.membersMayEditComments}" immediate="true">
+                                                               value="#{adminCommentBean.currentCommentGroup.membersMayEditComments}" immediate="true">
                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" checked="true" />
                                                            </h:selectOneRadio>                                                        
                                                            <h:selectOneRadio group="membersMayEditCommentsToggle"
-                                                               value="#{adminCommentBean.currentCommentView.membersMayEditComments}" immediate="true">
+                                                               value="#{adminCommentBean.currentCommentGroup.membersMayEditComments}" immediate="true">
                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" checked="null" />
                                                            </h:selectOneRadio>
                                                            <span class="toggle-outside"><span class="toggle-inside" /></span>
@@ -294,7 +294,7 @@
                                         
 										<!-- MEMBERS MAY DELETE COMMENTS -->
 	                                    <h:panelGroup id="GroupOwnerDelete">
-	                                    <ui:fragment rendered="#{adminCommentBean.currentCommentView.userGroup != null}">
+	                                    <ui:fragment rendered="#{adminCommentBean.currentCommentGroup.userGroup != null}">
                                         <div class="form-group form-row admin__sidebar-divider-top">
                                    			<div class="col-11 control-label admin__form-label">
 												<label for="adminCrowdVisibleFor">
@@ -313,11 +313,11 @@
 							                <div class="col-12 admin__form-input">
                                                 <div class="admin__radio-switch">
                                                     <h:selectOneRadio group="membersMayDeleteCommentsToggle"
-                                                        value="#{adminCommentBean.currentCommentView.membersMayDeleteComments}" immediate="true">
+                                                        value="#{adminCommentBean.currentCommentGroup.membersMayDeleteComments}" immediate="true">
                                                         <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" checked="true" />
                                                     </h:selectOneRadio>                                                        
                                                     <h:selectOneRadio group="membersMayDeleteCommentsToggle"
-                                                        value="#{adminCommentBean.currentCommentView.membersMayDeleteComments}" immediate="true">
+                                                        value="#{adminCommentBean.currentCommentGroup.membersMayDeleteComments}" immediate="true">
                                                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" checked="null" />
                                                     </h:selectOneRadio>
                                                     <span class="toggle-outside"><span class="toggle-inside" /></span>

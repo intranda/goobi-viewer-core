@@ -15,15 +15,15 @@
 
     <ui:define name="content">
         <div id="adminUserComments">
-            <h:panelGroup rendered="#{adminCommentBean.currentCommentView != null}">
+            <h:panelGroup rendered="#{adminCommentBean.currentCommentGroup != null}">
                 <h:form id="adminUserCommentsForm" prependId="false">
                     <div class="admin__title-bar">
                         <!-- TITLE -->
-                        <ui:fragment rendered="#{!adminCommentBean.currentCommentView.coreType}">
+                        <ui:fragment rendered="#{!adminCommentBean.currentCommentGroup.coreType}">
                         	<h1 class="admin__title">#{msg.admin__comments_group_view_comments}</h1>
                         </ui:fragment>
                         
-                        <ui:fragment rendered="#{adminCommentBean.currentCommentView.coreType}">
+                        <ui:fragment rendered="#{adminCommentBean.currentCommentGroup.coreType}">
                         	<h1 class="admin__title">#{msg.admin__comment_groups_all_comments_title}</h1>
                         </ui:fragment>
                         
@@ -115,11 +115,11 @@
 
 								<div><span><b>#{msg.admin__comment_group_input_title}:</b></span></div>
 								<div class="mb-2">
-									#{msg[adminCommentBean.currentCommentView.title]}
+									#{msg[adminCommentBean.currentCommentGroup.title]}
 								</div>
 								<div><span><b>#{msg.admin__comment_group_description}:</b></span></div>
 								<div>
-									#{msg[adminCommentBean.currentCommentView.description]}
+									#{msg[adminCommentBean.currentCommentGroup.description]}
 								</div>
 								
                        		</div>

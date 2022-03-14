@@ -71,7 +71,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PublicationStatus;
-import io.goobi.viewer.model.annotation.comments.CommentView;
+import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
@@ -2441,12 +2441,12 @@ public class ActiveDocumentBean implements Serializable {
             return false;
         }
 
-        CommentView commentViewAll = DataManager.getInstance().getDao().getCommentViewUnfiltered();
-        if (commentViewAll == null) {
+        CommentGroup commentGroupAll = DataManager.getInstance().getDao().getCommentGroupUnfiltered();
+        if (commentGroupAll == null) {
             logger.warn("Comment view for all comments not found in the DB, please insert.");
             return false;
         }
-        if (!commentViewAll.isEnabled()) {
+        if (!commentGroupAll.isEnabled()) {
             logger.trace("User comments disabled globally.");
             viewManager.setAllowUserComments(false);
             return false;
@@ -2454,13 +2454,13 @@ public class ActiveDocumentBean implements Serializable {
 
         if (viewManager.isAllowUserComments() == null) {
             try {
-                if (StringUtils.isNotEmpty(commentViewAll.getSolrQuery()) && DataManager.getInstance()
+                if (StringUtils.isNotEmpty(commentGroupAll.getSolrQuery()) && DataManager.getInstance()
                         .getSearchIndex()
                         .getHitCount(new StringBuilder("+").append(SolrConstants.PI)
                                 .append(':')
                                 .append(viewManager.getPi())
                                 .append(" +(")
-                                .append(commentViewAll.getSolrQuery())
+                                .append(commentGroupAll.getSolrQuery())
                                 .append(')')
                                 .toString()) == 0) {
                     viewManager.setAllowUserComments(false);

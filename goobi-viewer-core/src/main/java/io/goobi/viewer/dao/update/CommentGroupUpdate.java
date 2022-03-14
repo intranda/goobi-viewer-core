@@ -23,11 +23,11 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.annotation.comments.CommentView;
+import io.goobi.viewer.model.annotation.comments.CommentGroup;
 
-public class CommentViewUpdate implements IModelUpdate {
+public class CommentGroupUpdate implements IModelUpdate {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommentViewUpdate.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommentGroupUpdate.class);
 
     /** {@inheritDoc} */
     @Override
@@ -45,12 +45,12 @@ public class CommentViewUpdate implements IModelUpdate {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     private static void performUpdates(IDAO dao) throws DAOException {
-        // Add "all" comment view, if not yet exists
-        CommentView commentView = dao.getCommentViewUnfiltered();
-        if (commentView == null) {
-            commentView = CommentView.createCommentViewAll();
-            if (DataManager.getInstance().getDao().addCommentView(commentView)) {
-                logger.info("Added static \"all comments\" view to DB.");
+        // Add "all" comment group, if not yet exists
+        CommentGroup commentGroup = dao.getCommentGroupUnfiltered();
+        if (commentGroup == null) {
+            commentGroup = CommentGroup.createCommentGroupAll();
+            if (DataManager.getInstance().getDao().addCommentGroup(commentGroup)) {
+                logger.info("Added static \"all comments\" comment group to DB.");
             }
         }
 

@@ -826,27 +826,27 @@
         <view-id value="/resources/admin/views/adminRight.xhtml" />
         <action onPostback="false">#{adminBean.newCurrentLicenseAction}</action>
     </url-mapping>
-    <url-mapping id="adminUserCommentViews">
+    <url-mapping id="adminUserCommentGroups">
         <pattern value="/admin/comments/" />
-        <view-id value="/resources/admin/views/adminUserCommentViews.xhtml" />
-        <action onPostback="false">#{adminCommentBean.resetCurrentCommentViewAction}</action>
+        <view-id value="/resources/admin/views/adminUserCommentGroups.xhtml" />
+        <action onPostback="false">#{adminCommentBean.resetCurrentCommentGroupAction}</action>
     </url-mapping>
-    <url-mapping id="adminUserCommentViewAll">
+    <url-mapping id="adminUserCommentGroupAll">
         <pattern value="/admin/comments/all/" />
         <view-id value="/resources/admin/views/adminUserComments.xhtml" />
     </url-mapping>
-    <url-mapping id="adminUserCommentViewNew">
+    <url-mapping id="adminUserCommentGroupNew">
         <pattern value="/admin/comments/new/" />
-        <view-id value="/resources/admin/views/adminUserCommentView.xhtml" />
-        <action onPostback="false">#{adminCommentBean.newCurrentCommentViewAction}</action>
+        <view-id value="/resources/admin/views/adminUserCommentGroup.xhtml" />
+        <action onPostback="false">#{adminCommentBean.newCurrentCommentGroupAction}</action>
     </url-mapping>
-    <url-mapping id="adminUserCommentView">
-        <pattern value="/admin/comments/#{commentViewId:adminCommentBean.currentCommentViewId}/" />
+    <url-mapping id="adminUserCommentGroup">
+        <pattern value="/admin/comments/#{commentGroupId:adminCommentBean.currentCommentGroupId}/" />
         <view-id value="/resources/admin/views/adminUserComments.xhtml" />
     </url-mapping>
-    <url-mapping id="adminUserCommentViewEdit">
-        <pattern value="/admin/comments/edit/#{commentViewId:adminCommentBean.currentCommentViewId}/" />
-        <view-id value="/resources/admin/views/adminUserCommentView.xhtml" />
+    <url-mapping id="adminUserCommentGroupEdit">
+        <pattern value="/admin/comments/edit/#{commentGroupId:adminCommentBean.currentCommentGroupId}/" />
+        <view-id value="/resources/admin/views/adminUserCommentGroup.xhtml" />
     </url-mapping>
     <url-mapping id="adminUserTerms">
         <pattern value="/admin/userterms/" />

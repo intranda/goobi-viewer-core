@@ -16,9 +16,9 @@
 
 	<ui:define name="content">
 		<h:panelGroup rendered="#{userBean.loggedIn}">
-			<div id="adminUserCommentViews">
-				<h:form id="adminUserCommentViewsForm" prependId="false">
-					<div id="adminUserCommentViewsTitle" class="admin__title-bar">
+			<div id="adminUserCommentGroups">
+				<h:form id="adminUserCommentGroupsForm" prependId="false">
+					<div id="adminUserCommentGroupsTitle" class="admin__title-bar">
 						<!-- TITLE -->
 						<h1 class="admin__title">#{msg.admin__comment_groups_title}</h1>
 						<!-- CREATE NEW COMMENT GROUP -->
@@ -47,7 +47,7 @@
 									<div class="admin__form-input">
 										<viewerComponent:toggleSwitch name="activateUserComments"
 											toggleTarget=".-toggle-comments-functions"
-											render=":adminUserCommentViewsTitle :userCommentViews"
+											render=":adminUserCommentGroupsTitle :userCommentGroups"
 											value="#{adminCommentBean.userCommentsEnabled}"
 											immediate="true"
 											disabled="#{!userBean.admin}" />
@@ -57,36 +57,36 @@
 						</h:form>
 						</div>
 
-						<div id="userCommentViews"
+						<div id="userCommentGroups"
 							class="admin__comments-functionality-wrapper -toggle-comments-functions">
 
 							<div class="admin__entry-list -w33">
 
 								<!-- INDIVIDUAL COMMENT VIEWS -->
-								<ui:repeat var="commentView" varStatus="status"
-									value="#{adminCommentBean.getCommentViewsForUser(userBean.user)}">
+								<ui:repeat var="commentGroup" varStatus="status"
+									value="#{adminCommentBean.getCommentGroupsForUser(userBean.user)}">
 									<div class="admin__boxed-entry -w33 #{status.first?'-primary':''} #{status.first?'-primary':''}">
 										<div class="row">
 											<div class="col-12">
 												<!-- TITLE -->
-												<h2>#{msg[commentView.title]}</h2>
+												<h2>#{msg[commentGroup.title]}</h2>
 
 												<!-- DESCRIPTION -->
-												<ui:fragment rendered="#{commentView.description ne ''}">
-													<p class="admin__boxed-entry-description">#{msg[commentView.description]}</p>
+												<ui:fragment rendered="#{commentGroup.description ne ''}">
+													<p class="admin__boxed-entry-description">#{msg[commentGroup.description]}</p>
 												</ui:fragment>
-												<ui:fragment rendered="#{commentView.description eq ''}">
+												<ui:fragment rendered="#{commentGroup.description eq ''}">
 													<p class="admin__boxed-entry-description" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
 												</ui:fragment>
 												
 												<dl class="row">
-												<ui:fragment rendered="#{commentView.userGroup != null}">
+												<ui:fragment rendered="#{commentGroup.userGroup != null}">
 	                                            		<dt class="col-sm-4">#{msg.admin__comment_group_enabled_for_user_group}:</dt>
-	                                            		<dd class="col-sm-8">#{commentView.userGroup}</dd>
+	                                            		<dd class="col-sm-8">#{commentGroup.userGroup}</dd>
                                         		</ui:fragment>
-											    <ui:fragment rendered="#{commentView.solrQuery != null}">
+											    <ui:fragment rendered="#{commentGroup.solrQuery != null}">
 	                                            		<dt class="col-sm-4">#{msg.admin__comment_group_solr_query}:</dt>
-	                                            		<dd class="col-sm-8 text-break">#{commentView.solrQuery}</dd>
+	                                            		<dd class="col-sm-8 text-break">#{commentGroup.solrQuery}</dd>
 	                                            </ui:fragment>
 	                                        		</dl>
 
@@ -101,20 +101,20 @@
 												<div class="col-3 d-flex">
 													<!-- SHOW -->
 													<a class="admin__boxed-entry-actions-show"
-														href="#{navigationHelper.applicationUrl}admin/comments/#{commentView.id}/">#{msg.show}</a>
+														href="#{navigationHelper.applicationUrl}admin/comments/#{commentGroup.id}/">#{msg.show}</a>
 													<!-- EDIT -->
 													<a
-														href="#{navigationHelper.applicationUrl}admin/comments/edit/#{commentView.id}/"
+														href="#{navigationHelper.applicationUrl}admin/comments/edit/#{commentGroup.id}/"
 														class="admin__boxed-entry-actions-edit"
 														aria-label="#{msg.edit}: #{ipRange.name}">#{msg.edit}</a>
 													<!-- DELETE -->
-													<h:commandLink rendered="#{!commentView.coreType}"
+													<h:commandLink rendered="#{!commentGroup.coreType}"
 														styleClass="admin__boxed-entry-actions-delete -redlink"
-														onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, commentView.title)}&quot; ) ) { return false };"
-														action="adminUserCommentViews"
-														actionListener="#{adminCommentBean.deleteCommentviewAction(commentView)}">
+														onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, commentGroup.title)}&quot; ) ) { return false };"
+														action="adminUserCommentGroups"
+														actionListener="#{adminCommentBean.deleteCommentGroupAction(commentGroup)}">
 														<f:passThroughAttribute name="aria-label"
-															value="#{msg.delete}: #{commentView.title}" />
+															value="#{msg.delete}: #{commentGroup.title}" />
                                                     #{msg.delete}
                                                 </h:commandLink>
 												</div>
