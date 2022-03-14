@@ -39,12 +39,12 @@
 						</div>
 
 						<!-- ENABLE COMMENTS -->
-						<div class="admin__comment-groups-toggle #{!userBean.admin ? '-isDisabled' : ''}">
+						<div class="admin__comment-groups-toggle-wrapper">
 						<h:form id="userCommentsViewsActivateForm" prependId="false"> 
 							<div class="form-horizontal form-group">
 								<div class="row no-gutters mb-3 align-items-center">
 									<div class="control-label mr-3 admin__form-label">#{msg.admin__comment_groups_functionality_active}:</div>
-									<div class="admin__form-input">
+									<div class="admin__form-input admin__comment-groups-toggle  #{!userBean.admin ? '-isDisabled' : ''}">
 										<viewerComponent:toggleSwitch name="activateUserComments"
 											toggleTarget=".-toggle-comments-functions"
 											render=":adminUserCommentGroupsTitle :userCommentGroups"
@@ -110,7 +110,7 @@
 													<!-- DELETE -->
 													<h:commandLink rendered="#{!commentGroup.coreType}"
 														styleClass="admin__boxed-entry-actions-delete -redlink"
-														onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, commentGroup.title)}&quot; ) ) { return false };"
+														onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.admin__comment_group_members_may_delete_comments_warning, commentGroup.title)}&quot; ) ) { return false };"
 														action="adminUserCommentGroups"
 														actionListener="#{adminCommentBean.deleteCommentGroupAction(commentGroup)}">
 														<f:passThroughAttribute name="aria-label"
