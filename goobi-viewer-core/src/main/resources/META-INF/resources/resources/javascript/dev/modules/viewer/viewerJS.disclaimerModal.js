@@ -26,7 +26,7 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // variables
-    var _debug = true;
+    var _debug = false;
     var _defaults = {
     	lastEdited: '',
     	active : false,
@@ -79,13 +79,14 @@ var viewerJS = ( function( viewer ) {
         	Swal.fire({
         		html : this.config.disclaimerText,
         		allowOutsideClick: false,
-        		customClass: { 
+        		customClass: {
         			popup: 'disclaimer-modal__alert',
 			    	confirmButton: 'btn btn--full'
-			    }
+			    },
+				buttonsStyling: false,
         	})
         	.then(() => {
-        		console.log("accepted disclaimer");
+        		// console.log("accepted disclaimer");
         		this.setStoredSettings({lastAccepted : Date.now(), sessionId: this.config.sessionId}, this.config.storage);        		
         	});
         	

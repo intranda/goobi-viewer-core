@@ -69,12 +69,11 @@
 								<viewerForms:inputFormBlock id="properties"
 									title="#{msg.admin__legal__disclaimer_properties__label}">
 
-									<p>#{msg.admin__legal__disclaimer_properties__label}</p>
 
 									<viewerForms:textInputField
 										label="#{msg.admin__legal__disclaimer_query__label}"
 										value="#{disclaimer.solrQuery}"
-										helpText="#{msg.admin__legal__disclaimer_query__info}"
+										helpText="#{msg.admin__legal__disclaimer_query__help}"
 										validatorId="solrQueryValidator"
 										validatorMessage="#{msg.inline_help__solr_query_danger}" />
 
@@ -132,11 +131,11 @@
 
 									<div class="row">
 										<div class="col-12">
-											<p>#{msg.admin__legal__reset_disclaimer_consent__info}</p>
+											<p>#{msg.admin__legal__disclaimer_reset_consent__info}</p>
 											<div class="text-right">
 												<h:commandButton class="btn btn--danger"
 													value="#{msg.admin__legal__reset_cookie_banner_consent__action}"
-													onclick="if ( !confirm( &quot;#{msg.admin__legal__reset_disclaimer_consent__confirm}&quot; ) ) { return false };"
+													onclick="if ( !confirm( &quot;#{msg.admin__legal__disclaimer_reset_consent__confirm}&quot; ) ) { return false };"
 													action="#{disclaimerEditBean.resetUserConsent()}">
 													<f:ajax render="@form :messages"></f:ajax>
 												</h:commandButton>
