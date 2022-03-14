@@ -58,16 +58,16 @@
 	                                    jsf:action="#{search.toggleNotifications}"
 	                                    class="my-searches__action"
 	                                    title="#{msg.user_mySearches_disableNotifications}">
-	                                    <i class="fa fa-envelope" aria-hidden="true"></i>
-									</button>
+																			#{msg.user__mySearches__notifications_off}
+																</button>
 	                            </ui:fragment>
 	                            <ui:fragment rendered="#{!search.newHitsNotification}">
 	                                <button
 	                                    jsf:action="#{search.toggleNotifications}"
-	                                    jsf:styleClass="my-searches__action"
+	                                    class="my-searches__action"
 	                                    title="#{msg.user_mySearches_enableNotifications}">
-										#{msg.email}
-									</button>
+																			#{msg.user__mySearches__notifications_on}
+																	</button>
 	                            </ui:fragment>
 	                            <!-- DELETE SEARCH BUTTON -->
 	                            <button
