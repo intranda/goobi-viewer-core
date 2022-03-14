@@ -249,6 +249,26 @@ public class AdminCommentBean implements Serializable {
         }
         return "";
     }
+    
+
+    /**
+     * <p>
+     * deleteCommentAction.
+     * </p>
+     *
+     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public String deleteCommentGroupAction(CommentGroup commentGroup) throws DAOException {
+        if (DataManager.getInstance().getDao().deleteCommentGroup(commentGroup)) {
+            Messages.info("deletedSuccessfully");
+        } else {
+            Messages.error("deleteFailure");
+        }
+
+        return "";
+    }
 
     // Comments
 
