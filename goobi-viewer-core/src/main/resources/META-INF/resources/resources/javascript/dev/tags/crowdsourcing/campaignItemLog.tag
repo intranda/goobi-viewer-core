@@ -1,16 +1,16 @@
 <campaignItemLog>
-	
+
 	<div class="crowdsourcing-annotations__log-wrapper">
 		<div class="crowdsourcing-annotations__log-title">
 			<span>{Crowdsourcing.translate("log")}</span>
-			<span ref="compress" onclick="{compressLog}" class="crowdsourcing-annotations__log-expand"><i class="fa fa-angle-up" aria-hidden="true"></i></span>
-			<span ref="expand" onclick="{expandLog}" class="crowdsourcing-annotations__log-expand"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+			<button ref="compress" onclick="{compressLog}" class="crowdsourcing-annotations__log-expand btn btn--clear"><i class="fa fa-angle-up" aria-hidden="true"></i></button>
+			<button ref="expand" onclick="{expandLog}" class="btn btn--clear crowdsourcing-annotations__log-expand"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
 		</div>
 		<div ref="toggleBox" class="crowdsourcing-annotations__toggle-box">
 			<div ref="innerWrapper" class="crowdsourcing-annotations__log-inner-wrapper">
 				<div each="{message in messages}" class="crowdsourcing-annotations__log-message-entry {isCurrentUser(message.creator) ? '-from-me' : ''}">
 					<img class="crowdsourcing-annotations__log-round-avatar" src="{message.creator.avatar}"></img>
-					
+
 					<div class="crowdsourcing-annotations__log-speech-bubble">
 						<div class="crowdsourcing-annotations__log-message-info">
 							<div class="crowdsourcing-annotations__log-message-user-name">
@@ -35,7 +35,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 
 <script>
 
@@ -49,7 +49,7 @@ this.on("mount", function() {
     if (sessionStorage.getItem("logCompressed") === 'logIsCompressed') {
     	$(this.refs.toggleBox).hide();
         $(this.refs.compress).hide();
-    } 
+    }
     else {
         $(this.refs.expand).hide();
     }
@@ -58,7 +58,7 @@ this.on("mount", function() {
 
 this.on("updated", function() {
     //update occurs after mount and then every time a message is added
-    this.scrollToBottom();    
+    this.scrollToBottom();
 
 });
 
@@ -84,7 +84,7 @@ addMessage() {
         this.opts.item.addLogMessage(message);
 //         console.log("added message", message);
     }
-    
+
 }
 
 isCurrentUser(user) {

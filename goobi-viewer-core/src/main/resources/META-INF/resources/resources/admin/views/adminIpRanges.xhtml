@@ -1,7 +1,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                
+	              xmlns:jsf="http://xmlns.jcp.org/jsf"
+
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -62,14 +63,14 @@
                                                 <a href="#{navigationHelper.applicationUrl}admin/ipranges/edit/#{ipRange.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{ipRange.name}">#{msg.edit}</a>
 
                                                 <!-- DELETE -->
-                                                <h:commandLink
-                                                    styleClass="admin__boxed-entry-actions-delete -redlink"
-                                                    onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
-                                                    action="adminIpRanges"
+                                                <button
+                                                    class="admin__boxed-entry-actions-delete -redlink"
+                                                    jsf:onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
+                                                    jsf:action="adminIpRanges"
                                                     actionListener="#{adminBean.deleteIpRangeAction(ipRange)}">
                                                     <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{ipRange.name}" />
                                                     #{msg.delete}
-                                                </h:commandLink>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>

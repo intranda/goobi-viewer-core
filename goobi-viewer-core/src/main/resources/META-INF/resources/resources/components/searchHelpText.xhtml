@@ -11,19 +11,24 @@
 
     <!-- component content -->
 	<composite:implementation>
-		<div class="card-group" id="searchHelpAccordion" role="tablist"
-			aria-multiselectable="true">
+		<div class="card-group" id="searchHelpAccordion">
 			<div class="row no-gutters">
 				<div class="col-12">
 					<div class="card">
-						<div class="card-header" role="tab" id="headingOne">
+						<div class="card-header" id="headingOne">
 							<h3 class="card-title">
-								<a role="button" data-toggle="collapse" data-target="#collapseOne"
-									aria-expanded="false" aria-controls="collapseOne">#{msg.searchExplanationText_heading01}</a>
+								<button
+									class="btn btn--clear"
+									data-toggle="collapse"
+									data-target="#collapseOne"
+									aria-expanded="false"
+									aria-controls="collapseOne">
+									#{msg.searchExplanationText_heading01}
+								</button>
 							</h3>
 						</div>
 						<div id="collapseOne" class="collapse show"
-							aria-labelledby="headingOne" data-parent="#searchHelpAccordion">
+							data-parent="#searchHelpAccordion">
 							<div class="card-body">
 								<h:outputText value="#{msg.searchExplanationText_paragraph01}"
 									escape="false" />
@@ -33,10 +38,16 @@
 				</div>
 				<div class="col-12">
 					<div class="card">
-						<div class="card-header" role="tab" id="headingTwo">
+						<div class="card-header" id="headingTwo">
 							<h3 class="card-title">
-								<a role="button" data-toggle="collapse" data-target="#collapseTwo"
-									aria-expanded="false" aria-controls="collapseTwo">#{msg.searchExplanationText_heading02}</a>
+								<button
+									class="btn btn--clear"
+									data-toggle="collapse"
+									data-target="#collapseTwo"
+									aria-expanded="false"
+									aria-controls="collapseTwo">
+									#{msg.searchExplanationText_heading02}
+								</button>
 							</h3>
 						</div>
 						<div id="collapseTwo" class="collapse"
@@ -50,10 +61,16 @@
 				</div>
 				<div class="col-12">
 					<div class="card">
-						<div class="card-header" role="tab" id="headingThree">
+						<div class="card-header" id="headingThree">
 							<h3 class="card-title">
-								<a role="button" data-toggle="collapse" data-target="#collapseThree"
-									aria-expanded="false" aria-controls="collapseThree">#{msg.searchExplanationText_heading03}</a>
+								<button
+									class="btn btn--clear"
+									data-toggle="collapse"
+									data-target="#collapseThree"
+									aria-expanded="false"
+									aria-controls="collapseThree">
+									#{msg.searchExplanationText_heading03}
+								</button>
 							</h3>
 						</div>
 						<div id="collapseThree" class="collapse"
@@ -67,10 +84,16 @@
 				</div>
 				<div class="col-12">
 					<div class="card">
-						<div class="card-header" role="tab" id="headingFour">
+						<div class="card-header" id="headingFour">
 							<h3 class="card-title">
-								<a role="button" data-toggle="collapse" data-target="#collapseFour"
-									aria-expanded="false" aria-controls="collapseFour">#{msg.searchExplanationText_heading04}</a>
+								<button
+									class="btn btn--clear"
+									data-toggle="collapse"
+									data-target="#collapseFour"
+									aria-expanded="false"
+									aria-controls="collapseFour">
+									#{msg.searchExplanationText_heading04}
+								</button>
 							</h3>
 						</div>
 						<div id="collapseFour" class="collapse"
@@ -84,10 +107,16 @@
 				</div>
 				<div class="col-12">
 					<div class="card">
-						<div class="card-header" role="tab" id="headingFive">
+						<div class="card-header" id="headingFive">
 							<h3 class="card-title">
-								<a role="button" data-toggle="collapse" data-target="#collapseFive"
-									aria-expanded="false" aria-controls="collapseFive">#{msg.searchExplanationText_heading05}</a>
+								<button
+									class="btn btn--clear"
+									data-toggle="collapse"
+									data-target="#collapseFive"
+									aria-expanded="false"
+									aria-controls="collapseFive">
+									#{msg.searchExplanationText_heading05}
+								</button>
 							</h3>
 						</div>
 						<div id="collapseFive" class="collapse"

@@ -3,6 +3,7 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -526,25 +527,28 @@
                                                             </div>
                                                         </ui:repeat>
                                                         <ui:repeat var="priv" value="#{adminBean.currentLicense.getSortedPrivileges(adminBean.currentLicense.privilegesCopy)}">
-                                                            <h:commandLink styleClass="admin__license-action"
-                                                                action="#{adminBean.currentLicense.removePrivilege(priv)}" title="#{msg.remove}">
+                                                            <button 
+                                                                class="admin__license-action btn btn--link"
+                                                                jsf:action="#{adminBean.currentLicense.removePrivilege(priv)}" title="#{msg.remove}">
                                                                 <div class="badge badge-success">
                                                                     #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
                                                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                                 </div>
-                                                            </h:commandLink>
+                                                            </button>
                                                         </ui:repeat>
                                                     </div>
                                                     <div class="col-1"></div>
                                                     <!-- Privileges available to add -->
                                                     <div class="col-5 badge-hover">
                                                         <ui:repeat var="priv" value="#{adminBean.currentLicense.availablePrivileges}">
-                                                            <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicense.addPrivilege(priv)}" title="#{msg.add}">
+                                                            <button 
+                                                                class="admin__license-action btn btn--link" 
+                                                                jsf:action="#{adminBean.currentLicense.addPrivilege(priv)}" title="#{msg.add}">
                                                                 <div class="badge badge-dark">
                                                                     #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
                                                                     <i class="fa fa-plus-circle" aria-hidden="true"></i>
                                                                 </div>
-                                                            </h:commandLink>
+                                                            </button>
                                                         </ui:repeat>
                                                     </div>
 	                                                <div class="col-12 admin__license-functions-help">
@@ -561,7 +565,11 @@
                             <div
 								class="row no-gutters justify-content-end admin__final-actions">
                                 <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
-                                <h:commandLink action="#{adminBean.saveCurrentLicenseAction}" value="#{msg.save}" styleClass="btn btn--success" />
+                                <button 
+                                    jsf:action="#{adminBean.saveCurrentLicenseAction}" value="" 
+                                    class="btn btn--success">
+                                    #{msg.save}
+                                </button>
                             </div>
                         </div>
                     </h:form>

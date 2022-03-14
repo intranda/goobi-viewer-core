@@ -1,5 +1,5 @@
 /* ==============================================================
-   Crowdsourcing 
+   Crowdsourcing
    global style declarations for crowdsourcing_layout.xhtml
    ==============================================================*/
 /* ADMIN LAYOUT */
@@ -11,9 +11,9 @@
 		position: sticky;
 		top: 0;
 		background-color:  #444;
-		z-index: 2020;		
+		z-index: 2020;
 		.container {
-			width: auto;	
+			width: auto;
 		}
 		.login-navigation [data-login="true"] .login-navigation__user-dropdown {
 			top: calc(100% + 18px);
@@ -93,7 +93,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		justify-content: flex-end;	
+		justify-content: flex-end;
 		padding: 1.5rem;
 	}
 	&__top-actions-language,
@@ -108,7 +108,7 @@
 			.fa {
 				padding-right: .5rem;
 			}
-		} 
+		}
 		.change-local {
 			background: #444;
 			display: none;
@@ -136,7 +136,7 @@
 				&.activeLang {
 					background-color: #606060;
 				}
-			}	
+			}
 			img {}
 		}
 	}
@@ -362,9 +362,9 @@
 							}
 						}
 					}
-			
-			
-					
+
+
+
 				}
 			}
 			.thumbnails-filters {
@@ -392,7 +392,7 @@
 //					font-size: 13px;
 //					border: 1px solid rgba(68,68,68,0.7);
 //				}
-				&.-activeFilter { 
+				&.-activeFilter {
 					font-weight: 700;
 					&::before {
 //						background: #444;
@@ -715,7 +715,7 @@
 		    align-items: center;
 		    flex-wrap: wrap;
 		    align-content: center;
-		    
+
 		    flex-basis
 		    label {
 		    	max-width: 150px;
@@ -773,7 +773,7 @@
 		}
 //		.mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
 //			border: 2px solid rgba(0,0,0,0.2);
-//		}		
+//		}
 		.mapboxgl-ctrl-geocoder--input:focus {
 			outline: none;
 		}
@@ -850,7 +850,7 @@
 		li {
 			margin: 10px 3px 5px 0;
 			text-align: center;
-		} 
+		}
 		span {
 			&:hover {
 			background-color: @lightgray;
@@ -877,7 +877,7 @@
 		top: -5px;
 		height: 2.3rem;
 		width: 1.075rem;
-		background-color: #444;             	
+		background-color: #444;
 	}
 	&__log-wrapper {
 		background: @white;
@@ -902,6 +902,13 @@
 		flex: 1;
 		text-align: right;
 		cursor: pointer;
+		color: inherit;
+
+		&:focus,
+		&:hover,
+		&:active {
+			color: inherit;
+		}
 	}
 	&__log-message-entry {
 		display: flex;
@@ -945,7 +952,7 @@
 			padding-top: 2px;
 		}
 	}
-	
+
 	&__log-message-info {
 		margin-bottom: 0.6rem;
 		display: flex;
@@ -1022,7 +1029,7 @@
 			left: -10px;
 			position: absolute;
 			top: 24px;
-			
+
 		}
 	}
 	&__sidebar-owner {
@@ -1084,7 +1091,7 @@
 						right: unset;
 						transform: rotate(180deg);
 					}
-	
+
 				}
 			}
 		}
@@ -1097,11 +1104,11 @@
 			right: unset;
 			left: 0;
 		}
-	}	
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
