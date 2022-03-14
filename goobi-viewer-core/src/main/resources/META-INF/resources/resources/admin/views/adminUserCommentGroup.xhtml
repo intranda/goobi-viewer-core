@@ -70,11 +70,15 @@
                                                 </div>
 											</ui:fragment>
 											
-											<!-- SOLR QUERY -->
+											<!-- SOLR QUERY (required if not "all comments" group) -->
                                             <div class="form-group form-row">
 												
 												<div class="col-2 control-label admin__form-label">
-													<label for="solrQuery">#{msg.admin__comment_group_solr_query}: <span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
+													<label for="solrQuery">#{msg.admin__comment_group_solr_query}: 
+													    <ui:fragment rendered="#{!adminCommentBean.currentCommentGroup.coreType}">
+													        <span class="admin__label-required-field">(#{msg.form__required_field})</span>
+													    </ui:fragment>
+													</label>
 												</div>
 	
 												<div class="cms-module__option-control col-11 col-lg-9 admin__form-input">
@@ -90,11 +94,10 @@
 																	class="fa fa-exclamation" aria-hidden="true"></i>
 															</div>
 														</div>
-														<h:inputText id="solrQueryInput" required="false"
+														<h:inputText id="solrQueryInput" required="#{!adminCommentBean.currentCommentGroup.coreType}"
 															value="#{adminCommentBean.currentCommentGroup.solrQuery}"
 															styleClass="form-control">
-															<f:validator validatorId="solrQueryValidator"
-																for="solrQueryInput" />
+															<f:validator validatorId="solrQueryValidator" for="solrQueryInput" />
 															<f:ajax event="blur" render="solrQueryInputGroup" />
 														</h:inputText>
 													</h:panelGroup>
