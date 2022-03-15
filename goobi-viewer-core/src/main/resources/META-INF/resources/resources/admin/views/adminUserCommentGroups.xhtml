@@ -85,12 +85,12 @@
 												
 												<dl class="row">
 												<ui:fragment rendered="#{commentGroup.userGroup != null}">
-	                                            		<dt class="col-sm-4">#{msg.admin__comment_group_enabled_for_user_group}:</dt>
-	                                            		<dd class="col-sm-8">#{commentGroup.userGroup}</dd>
+	                                            		<dt class="col-xl-6 col-lg-12 mb-2">#{msg.admin__comment_group_enabled_for_user_group}:</dt>
+	                                            		<dd class="col-xl-6 col-lg-12 text-break mb-2">#{commentGroup.userGroup}</dd>
                                         		</ui:fragment>
 											    <ui:fragment rendered="#{commentGroup.solrQuery != null}">
-	                                            		<dt class="col-sm-4">#{msg.admin__comment_group_solr_query}:</dt>
-	                                            		<dd class="col-sm-8 text-break">#{commentGroup.solrQuery}</dd>
+	                                            		<dt class="col-xl-6 col-lg-12">#{msg.admin__comment_group_solr_query}:</dt>
+	                                            		<dd class="col-xl-6 col-lg-12 text-break mb-0">#{commentGroup.solrQuery}</dd>
 	                                            </ui:fragment>
 	                                        		</dl>
 
