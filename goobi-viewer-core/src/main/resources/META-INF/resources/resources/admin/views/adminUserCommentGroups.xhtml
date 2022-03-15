@@ -96,15 +96,14 @@
 										</div>
 
 										<!-- ACTIONS -->
-										<ui:fragment rendered="#{userBean.admin}">
-											<div class="row admin__boxed-entry-actions">
-												<div class="col-3 d-flex">
-													<!-- SHOW -->
-													<a class="admin__boxed-entry-actions-show"
-														href="#{navigationHelper.applicationUrl}admin/comments/#{commentGroup.id}/">#{msg.show}</a>
+										<div class="row admin__boxed-entry-actions">
+											<div class="col-3 d-flex">
+												<!-- SHOW -->
+												<a class="admin__boxed-entry-actions-show"
+													href="#{navigationHelper.applicationUrl}admin/comments/#{commentGroup.id}/">#{msg.show}</a>
+										        <ui:fragment rendered="#{userBean.admin}">
 													<!-- EDIT -->
-													<a
-														href="#{navigationHelper.applicationUrl}admin/comments/edit/#{commentGroup.id}/"
+													<a	href="#{navigationHelper.applicationUrl}admin/comments/edit/#{commentGroup.id}/"
 														class="admin__boxed-entry-actions-edit"
 														aria-label="#{msg.edit}: #{ipRange.name}">#{msg.edit}</a>
 													<!-- DELETE -->
@@ -116,10 +115,10 @@
 														<f:passThroughAttribute name="aria-label"
 															value="#{msg.delete}: #{commentGroup.title}" />
                                                     #{msg.delete}
-                                                </h:commandLink>
-												</div>
+                                                    </h:commandLink>
+										        </ui:fragment>
 											</div>
-										</ui:fragment>
+										</div>
 									</div>
 								</ui:repeat>
 							</div>
