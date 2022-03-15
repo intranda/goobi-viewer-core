@@ -81,10 +81,13 @@
                                             <a href="#{navigationHelper.imageUrl}/#{comment.targetPI}/#{comment.targetPageOrder}/" class="admin__table-action-link" target="_blank" aria-label="#{msg.Comment} #{msg.show} (#{comment.targetPI}/#{comment.targetPageOrder})">#{msg.show}</a>
 
                                             <!-- DELETE -->
-                                            <h:commandLink styleClass="admin__table-action-link -redlink"
-                                                onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
-                                                action="#{adminCommentBean.deleteCommentAction(comment)}">#{msg.delete}
+                                            <ui:fragment
+                                                rendered="#{userBean.user == comment.creator or commentBean.isMayDeleteCommentsForRecord(comment.targetPI)}">
+                                                <h:commandLink styleClass="admin__table-action-link -redlink"
+                                                    onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
+                                                    action="#{adminCommentBean.deleteCommentAction(comment)}">#{msg.delete}
                                             </h:commandLink>
+                                            </ui:fragment>
                                         </div>
                                     </div>
                                     <div class="col-2 d-flex"><div class="admin__text-ellipsis pr-1" title="#{comment.creator}">#{comment.creator}</div></div>
