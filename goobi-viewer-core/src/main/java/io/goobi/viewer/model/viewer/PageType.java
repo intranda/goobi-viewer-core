@@ -435,6 +435,10 @@ public enum PageType {
                 || ViewerPathBuilder.startsWith(pagePath, getName());
     }
 
+    public boolean isAdminBackendPage() {
+        return this.name().toLowerCase().startsWith("admin");
+    }
+    
     /**
      * <p>
      * isRestricted.
