@@ -72,6 +72,8 @@ public class Disclaimer {
     @Convert(converter = ConsentScopeConverter.class)
     private ConsentScope acceptanceScope = new ConsentScope();
     
+    
+    
     /**
      * Solr query detailing on which records the disclaimer is to be shown
      */

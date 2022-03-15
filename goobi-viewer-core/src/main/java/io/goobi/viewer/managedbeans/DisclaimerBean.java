@@ -238,6 +238,7 @@ public class DisclaimerBean implements Serializable {
     private boolean matchesRecord(Disclaimer disclaimer, String pi) {
         if (StringUtils.isNotBlank(pi)) {
             String solrQuery = disclaimer.getQueryForSearch();
+            
             String singleRecordQuery = "+({1}) +{2}".replace("{1}", solrQuery).replace("{2}", "PI:" + pi);
 
             try {
