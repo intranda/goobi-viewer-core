@@ -225,12 +225,12 @@ public class CommentBean implements Serializable {
             return false;
         }
 
-        if (deleteCommentPermissionMap.get(pi) == null) {
-            deleteCommentPermissionMap.put(pi, false);
+        if (editCommentPermissionMap.get(pi) == null) {
+            editCommentPermissionMap.put(pi, false);
             checkEditDeletePermissionsForRecord(pi);
         }
 
-        return deleteCommentPermissionMap.get(pi);
+        return editCommentPermissionMap.get(pi);
     }
 
     /**
@@ -248,12 +248,12 @@ public class CommentBean implements Serializable {
             return false;
         }
 
-        if (editCommentPermissionMap.get(pi) == null) {
-            editCommentPermissionMap.put(pi, false);
+        if (deleteCommentPermissionMap.get(pi) == null) {
+            deleteCommentPermissionMap.put(pi, false);
             checkEditDeletePermissionsForRecord(pi);
         }
 
-        return editCommentPermissionMap.get(pi);
+        return deleteCommentPermissionMap.get(pi);
     }
 
     /**
