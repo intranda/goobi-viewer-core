@@ -59,13 +59,17 @@
 
 						<div id="userCommentGroups"
 							class="admin__comments-functionality-wrapper -toggle-comments-functions">
+							
+							
 
 							<div class="admin__entry-list -w33">
+							
+							
 
 								<!-- INDIVIDUAL COMMENT VIEWS -->
-								<ui:repeat var="commentGroup" varStatus="status"
+								<ui:repeat var="commentGroup"
 									value="#{adminCommentBean.getCommentGroupsForUser(userBean.user)}">
-									<div class="admin__boxed-entry -w33 #{status.first?'-primary':''} #{status.first?'-primary':''}">
+									<div class="admin__boxed-entry -w33 #{commentGroup.coreType ? '-primary' : '' }">
 										<div class="row">
 											<div class="col-12">
 												<!-- TITLE -->
