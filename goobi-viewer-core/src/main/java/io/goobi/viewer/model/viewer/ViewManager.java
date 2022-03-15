@@ -221,6 +221,7 @@ public class ViewManager implements Serializable {
 
         String archiveId = getArchiveEntryIdentifier();
         if (StringUtils.isNotBlank(archiveId)) {
+            DataManager.getInstance().getArchiveManager().updateArchiveList();
             this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
             this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
         } 

@@ -13,6 +13,7 @@
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('archives', false, true)}" />
 			<f:event type="preRenderView" listener="#{archiveBean.redirectToOnlyDatabase()}" />
+			<f:viewAction onPostback="false" action="#{archiveBean.updateArchives()}" />
 		</f:metadata>
 	</ui:define>
 
