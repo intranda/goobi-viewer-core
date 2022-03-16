@@ -220,6 +220,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param sortFields
      * @param ignoreAdditionalFields a {@link java.util.Set} object.
      * @param translateAdditionalFields a {@link java.util.Set} object.
+     * @param oneLineAdditionalFields
      * @param overrideType a {@link io.goobi.viewer.model.search.SearchHit.HitType} object.
      * @param proximitySearchDistance
      * @param thumbnailHandler
@@ -233,7 +234,7 @@ public class SearchHit implements Comparable<SearchHit> {
     public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Set<String> ownerAlreadyHasMetadata,
             Locale locale, String fulltext, Map<String, Set<String>> searchTerms, List<String> exportFields,
             List<StringPair> sortFields, Set<String> ignoreAdditionalFields, Set<String> translateAdditionalFields,
-            HitType overrideType, int proximitySearchDistance, ThumbnailHandler thumbnailHandler)
+            Set<String> oneLineAdditionalFields, HitType overrideType, int proximitySearchDistance, ThumbnailHandler thumbnailHandler)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         List<String> fulltextFragments =
                 (fulltext == null || searchTerms == null) ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
@@ -253,7 +254,8 @@ public class SearchHit implements Comparable<SearchHit> {
                 (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, foundSearchTerms,
                 thumbnailHandler);
         // Add additional metadata fields that aren't configured for search hits but contain search term values
-        browseElement.addAdditionalMetadataContainingSearchTerms(se, foundSearchTerms, ignoreAdditionalFields, translateAdditionalFields);
+        browseElement.addAdditionalMetadataContainingSearchTerms(se, foundSearchTerms, ignoreAdditionalFields, translateAdditionalFields,
+                oneLineAdditionalFields);
         // Add sorting fields (should be added after all other metadata to avoid duplicates)
         browseElement.addSortFieldsToMetadata(se, sortFields, ignoreAdditionalFields);
 
@@ -573,6 +575,7 @@ public class SearchHit implements Comparable<SearchHit> {
         }
         Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
         Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
+        Set<String> oneLineFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields());
         for (int i = 0; i < number; ++i) {
             SolrDocument childDoc = childDocs.get(i + skip);
             String fulltext = null;
@@ -623,7 +626,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
                         if (ownerDoc != null) {
                             ownerHit = createSearchHit(ownerDoc, null, null, locale, fulltext, searchTerms, null, null, ignoreFields,
-                                    translateFields, null, proximitySearchDistance, thumbnailHandler);
+                                    translateFields, oneLineFields, null, proximitySearchDistance, thumbnailHandler);
                             children.add(ownerHit);
                             ownerHits.put(ownerIddoc, ownerHit);
                             ownerDocs.put(ownerIddoc, ownerDoc);
@@ -639,8 +642,8 @@ public class SearchHit implements Comparable<SearchHit> {
                         SearchHit childHit =
                                 createSearchHit(childDoc, ownerDocs.get(ownerIddoc),
                                         ownerHit.getBrowseElement().getExistingMetadataFields(), locale, fulltext, searchTerms, null,
-                                        null, ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null, proximitySearchDistance,
-                                        thumbnailHandler);
+                                        null, ignoreFields, translateFields, oneLineFields, acccessDeniedType ? HitType.ACCESSDENIED : null,
+                                        proximitySearchDistance, thumbnailHandler);
                         // Skip grouped metadata child hits that have no additional (unique) metadata to display
                         if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty()) {
                             continue;
@@ -670,7 +673,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     if (!ownerHits.containsKey(iddoc)) {
                         SearchHit childHit =
                                 createSearchHit(childDoc, null, null, locale, fulltext, searchTerms, null, null, ignoreFields,
-                                        translateFields, null, proximitySearchDistance, thumbnailHandler);
+                                        translateFields, oneLineFields, null, proximitySearchDistance, thumbnailHandler);
                         children.add(childHit);
                         ownerHits.put(iddoc, childHit);
                         ownerDocs.put(iddoc, childDoc);

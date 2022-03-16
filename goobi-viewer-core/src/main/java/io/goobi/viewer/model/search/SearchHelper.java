@@ -225,6 +225,7 @@ public final class SearchHelper {
         }
         Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
         Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
+        Set<String> oneLineFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields());
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
         ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
@@ -236,7 +237,7 @@ public final class SearchHelper {
             // logger.trace("Creating search hit from {}", doc);
             SearchHit hit =
                     SearchHit.createSearchHit(doc, null, null, locale, null, searchTerms, exportFields, sortFields, ignoreFields,
-                            translateFields, null, proximitySearchDistance, thumbs);
+                            translateFields, oneLineFields, null, proximitySearchDistance, thumbs);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }

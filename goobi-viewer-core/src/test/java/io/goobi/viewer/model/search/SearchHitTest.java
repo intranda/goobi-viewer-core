@@ -73,7 +73,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("MD_2", "bla blup");
         doc.addField("MD_3", "none of the above");
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, 0, null);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null, 0, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
@@ -106,7 +106,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("MD_SUBTITLE", "FROM FOO TO BAR"); // do not use MD_TITLE because values == label will be skipped
         doc.addField("MD_2", "bla blup");
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, 0, null);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null, 0, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
@@ -137,7 +137,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("MD_AUTHOR", "Doe, John");
         doc.addField("MD_AUTHOR" + SolrConstants._UNTOKENIZED, "Doe, John");
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, 0, null);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null, 0, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(1, hit.getFoundMetadata().size());
         Assert.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
@@ -167,7 +167,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("T-1000", "Call to John now.");
 
         SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null,
-                new HashSet<>(Collections.singletonList("T-1000")), null, null, 0, null);
+                new HashSet<>(Collections.singletonList("T-1000")), null, null, null, 0, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(1, hit.getFoundMetadata().size());
         Assert.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
@@ -196,7 +196,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField("MD_TITLE", "FROM FOO TO BAR"); // do not use MD_TITLE because values == label will be skipped
         doc.addField("MD_2", "bla blup");
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, 0, null);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null, 0, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(1, hit.getFoundMetadata().size());
         Assert.assertEquals("MD_2", hit.getFoundMetadata().get(0).getOne());
@@ -230,7 +230,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
         String[] translateFields = { SolrConstants.DC, SolrConstants.DOCSTRCT };
         SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null,
-                new HashSet<>(Arrays.asList(translateFields)), null, 0, null);
+                new HashSet<>(Arrays.asList(translateFields)), null, null, 0, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Structure type", hit.getFoundMetadata().get(0).getOne());
@@ -258,7 +258,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField("MD_TITLE", SearchHelperTest.LOREM_IPSUM);
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, 0, null);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null, 0, null);
         Assert.assertNotNull(hit);
         hit.addLabelHighlighting();
         Assert.assertTrue("label: " + hit.getBrowseElement().getLabelShort(), hit.getBrowseElement()
@@ -275,7 +275,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.setField("MD_PUBLISHER", "Nørre");
         Map<String, Set<String>> searchTerms = Collections.singletonMap(SolrConstants.DEFAULT, Collections.singleton("Nörde~1"));
         SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", searchTerms, Arrays.asList("MD_CREATOR", "MD_PUBLISHER"),
-                Collections.emptyList(), Collections.emptySet(), Collections.emptySet(), null, 0, null);
+                Collections.emptyList(), Collections.emptySet(), Collections.emptySet(), null, null, 0, null);
         assertEquals(1, hit.getFoundMetadata().size());
     }
 
@@ -287,7 +287,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.setField("MD_PUBLISHER", "Nørre");
         Map<String, Set<String>> searchTerms = Collections.singletonMap(SolrConstants.DEFAULT, Collections.singleton("Norde~1"));
         SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", searchTerms, Arrays.asList("MD_CREATOR", "MD_PUBLISHER"),
-                Collections.emptyList(), Collections.emptySet(), Collections.emptySet(), null, 0, null);
+                Collections.emptyList(), Collections.emptySet(), Collections.emptySet(), null, null, 0, null);
         assertEquals(1, hit.getFoundMetadata().size());
     }
 }
