@@ -15,11 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v1.index;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_FIELDS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_QUERY;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STATISTICS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STREAM;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -290,6 +286,28 @@ public class IndexResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieves a JSON list of all existing Solr fields.", tags = { "index" })
     public List<SolrFieldInfo> getAllIndexFields() throws IOException {
+        logger.trace("getAllIndexFields");
+
+        try {
+            return collectFieldInfo();
+        } catch (DAOException e) {
+            logger.error(e.getMessage());
+            servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+
+        return Collections.emptyList();
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws IOException
+     */
+    @GET
+    @Path(INDEX_HEATMAP)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieves a JSON list of all existing Solr fields.", tags = { "index" })
+    public List<SolrFieldInfo> getHeatmap() throws IOException {
         logger.trace("getAllIndexFields");
 
         try {
