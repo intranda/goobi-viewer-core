@@ -18,7 +18,7 @@
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-            <ui:fragment rendered="#{userBean.admin or userBean.user.isHasCmsPrivilege('CMS_PAGES') or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)}">
+            <ui:fragment rendered="#{userBean.hasAdminBackendAccess}">
                 <div id="adminDashboard">
                     <div class="admin__title-bar">
                         <h1 class="admin__title">#{msg.admin__dashboard}</h1>

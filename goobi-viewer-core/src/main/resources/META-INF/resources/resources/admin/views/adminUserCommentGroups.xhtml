@@ -1,0 +1,158 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminUserComments')}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:panelGroup rendered="#{userBean.loggedIn}">
+			<div id="adminUserCommentGroups">
+				<h:form id="adminUserCommentGroupsForm" prependId="false">
+					<div id="adminUserCommentGroupsTitle" class="admin__title-bar">
+						<!-- TITLE -->
+						<h1 class="admin__title">#{msg.admin__comment_groups_title}</h1>
+						<!-- CREATE NEW COMMENT GROUP -->
+						<ui:fragment rendered="#{userBean.admin}">
+                            <a
+                                href="#{navigationHelper.getPageUrl('adminUserCommentGroupNew')}/"
+                                class="btn btn--default admin__title-bar-action admin__comments-functionality-add -toggle-comments-functions">
+                                #{msg.add} </a>
+						</ui:fragment>
+					</div>
+
+					<div class="admin__content-inner-content">
+						<!-- INFO TEXT -->
+						<div class="admin__info-text">
+							<h:outputText
+								value="#{msg.admin__comment_groups_info_text}"
+								escape="false" />
+						</div>
+
+						<!-- ENABLE COMMENTS -->
+						<div class="admin__comment-groups-toggle-wrapper">
+						<h:form id="userCommentsViewsActivateForm" prependId="false"> 
+							<div class="form-horizontal form-group">
+								<div class="row no-gutters mb-3 align-items-center">
+									<div class="control-label mr-3 admin__form-label">#{msg.admin__comment_groups_functionality_active}:</div>
+									<div class="admin__form-input admin__comment-groups-toggle  #{!userBean.admin ? '-isDisabled' : ''}">
+										<viewerComponent:toggleSwitch name="activateUserComments"
+											toggleTarget=".-toggle-comments-functions"
+											render=":adminUserCommentGroupsTitle :userCommentGroups"
+											value="#{adminCommentBean.userCommentsEnabled}"
+											immediate="true"
+											disabled="#{!userBean.admin}" />
+									</div>
+								</div>
+							</div>
+						</h:form>
+						</div>
+
+						<div id="userCommentGroups"
+							class="admin__comments-functionality-wrapper -toggle-comments-functions">
+							
+							
+
+							<div class="admin__entry-list -w33">
+							
+							
+
+								<!-- INDIVIDUAL COMMENT VIEWS -->
+								<ui:repeat var="commentGroup"
+									value="#{adminCommentBean.getCommentGroupsForUser(userBean.user)}">
+									<div class="admin__boxed-entry -w33 #{commentGroup.coreType ? '-primary' : '' }">
+										<div class="row">
+											<div class="col-12">
+												<!-- TITLE -->
+												<h2>#{msg[commentGroup.title]}</h2>
+
+												<!-- DESCRIPTION -->
+												<ui:fragment rendered="#{commentGroup.description ne ''}">
+													<p class="admin__boxed-entry-description">#{msg[commentGroup.description]}</p>
+												</ui:fragment>
+												<ui:fragment rendered="#{commentGroup.description eq ''}">
+													<p class="admin__boxed-entry-description" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
+												</ui:fragment>
+												
+												<!-- SOLR QUERY -->
+												<dl class="row">
+												<ui:fragment rendered="#{commentGroup.userGroup != null}">
+	                                            		<dt class="col-xl-6 col-lg-12 mb-2">#{msg.admin__comment_group_enabled_for_user_group}:</dt>
+	                                            		<dd class="col-xl-6 col-lg-12 text-break mb-2">#{commentGroup.userGroup}</dd>
+                                        		</ui:fragment>
+											    <ui:fragment rendered="#{commentGroup.solrQuery != null}">
+	                                            		<dt class="col-xl-6 col-lg-12">#{msg.admin__comment_group_solr_query}:</dt>
+	                                            		<dd class="col-xl-6 col-lg-12 text-break mb-0">#{commentGroup.solrQuery}</dd>
+	                                            </ui:fragment>
+	                                        	</dl>
+
+								
+											</div>
+								
+										</div>
+
+										<!-- ACTIONS -->
+										<div class="row admin__boxed-entry-actions">
+											<div class="col-3 d-flex">
+												<!-- SHOW -->
+												<a class="admin__boxed-entry-actions-show"
+													href="#{navigationHelper.applicationUrl}admin/comments/#{commentGroup.id}/">#{msg.show}</a>
+										        <ui:fragment rendered="#{userBean.admin}">
+													<!-- EDIT -->
+													<a	href="#{navigationHelper.applicationUrl}admin/comments/edit/#{commentGroup.id}/"
+														class="admin__boxed-entry-actions-edit"
+														aria-label="#{msg.edit}: #{ipRange.name}">#{msg.edit}</a>
+													<!-- DELETE -->
+													<h:commandLink rendered="#{!commentGroup.coreType}"
+														styleClass="admin__boxed-entry-actions-delete -redlink"
+														onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.admin__comment_group_members_may_delete_comments_warning, commentGroup.title)}&quot; ) ) { return false };"
+														action="adminUserCommentGroups"
+														actionListener="#{adminCommentBean.deleteCommentGroupAction(commentGroup)}">
+														<f:passThroughAttribute name="aria-label"
+															value="#{msg.delete}: #{commentGroup.title}" />
+                                                    #{msg.delete}
+                                                    </h:commandLink>
+										        </ui:fragment>
+											</div>
+										</div>
+									</div>
+								</ui:repeat>
+							</div>
+						</div>
+					</div>
+				</h:form>
+			</div>
+		</h:panelGroup>
+
+		<script type="text/javascript">
+            $( document ).ready( function() {
+                var dataTableConfig = {
+                        dataTablePaginator: "#dataTablePaginator",
+                        txtField1: "#txtMoveTo1",
+                        txtField2: "#txtMoveTo2",
+                        totalCount: "#totalCount",
+                        reloadBtn: 'input[id*="cmdMoveTo"]',
+                };
+
+                viewerJS.dataTable.init( dataTableConfig );
+
+            } );
+            
+            // Create no entries found message
+			if($('.admin__table-entry').length == 0) {
+				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+			}    
+
+        </script>
+
+	</ui:define>
+</ui:composition>

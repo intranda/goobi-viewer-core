@@ -73,7 +73,7 @@
 				</div>
 
 				<!-- OVERVIEW BLOCK -->
-			<c:if test="#{configurationBean.bookmarksEnabled or configurationBean.searchSavingEnabled or configurationBean.userCommentsEnabled}">
+			<c:if test="#{configurationBean.bookmarksEnabled or configurationBean.searchSavingEnabled or commentBean.userCommentsEnabled}">
 				<h2 >#{msg.admin__overview}</h2>
 				<div class="user-dashboard__form-wrapper-container">
 
@@ -154,7 +154,7 @@
 
 					</div>
 
-					<div class="user-dashboard__form-wrapper-container" jsf:rendered="#{configurationBean.userCommentsEnabled}">
+					<div class="user-dashboard__form-wrapper-container" jsf:rendered="#{commentBean.userCommentsEnabled}">
 						<!-- COMMENTS BOX -->
 						<div class="user-dashboard__form-wrapper -w100">
 							<h3 >#{msg.userComments}</h3>

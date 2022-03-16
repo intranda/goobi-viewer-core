@@ -12,7 +12,7 @@
 
 	<!-- USER COMMENTS -->
 	<ui:fragment
-		rendered="#{activeDocumentBean.viewManager.allowUserComments}">
+		rendered="#{activeDocumentBean.allowUserComments}">
 		<!-- JUMP TO THIS ANCHOR AFTER LOGIN -->
 		<a name="userComments"></a>
 
@@ -84,8 +84,7 @@
 
 									<!-- EDIT COMMENT -->
 									<ui:fragment
-										rendered="#{userBean.user == comment.creator or userBean.user.superuser}">
-
+										rendered="#{userBean.user == comment.creator or commentBean.isMayEditCommentsForRecord(activeDocumentBean.viewManager.pi)}">
 										<div class="user-comments__action-wrapper">
 											<!-- TRIGGER EDIT COMMENT MODAL -->
 											<button class="btn--clean user-comments__edit-comment-button" type="button" data-backdrop="false" data-toggle="modal" data-target="#modalUserCommentEdit-#{comment.id}-modal">
@@ -94,7 +93,7 @@
 
 											<!-- DELETE COMMENT -->
 											<ui:fragment
-												rendered="#{userBean.loggedIn and (userBean.user == comment.creator or userBean.user.superuser)}">
+												rendered="#{userBean.user == comment.creator or commentBean.isMayDeleteCommentsForRecord(activeDocumentBean.viewManager.pi)}">
 												<button class="user-comments__delete-comment-button" type="button" data-delete="comment-#{comment.id}">
 												  #{msg.delete}
 												</button>

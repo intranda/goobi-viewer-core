@@ -35,6 +35,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -105,7 +106,7 @@ public class LoginFilter implements Filter {
         } else if (httpRequest.getRequestURI().contains("/admin")) {
             try {
                 if (user.isSuperuser() || user.isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES)
-                        || CrowdsourcingTools.isUserOwnsAnyCampaigns(user)) {
+                        || CrowdsourcingTools.isUserOwnsAnyCampaigns(user) || CommentManager.isUserHasAccessToCommentGroups(user)) {
                     chain.doFilter(request, response); // continue
                     return;
                 }

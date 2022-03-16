@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -32,6 +33,7 @@ import io.goobi.viewer.model.administration.legal.Disclaimer;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
+import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
@@ -864,6 +866,66 @@ public interface IDAO {
      */
     public boolean deleteIpRange(IpRange ipRange) throws DAOException;
 
+    // CommentGroup
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<CommentGroup> getAllCommentGroups() throws DAOException;
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public CommentGroup getCommentGroupUnfiltered() throws DAOException;
+
+    /**
+     * <p>
+     * getCommentGroup.
+     * </p>
+     *
+     * @param id a long.
+     * @return a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public CommentGroup getCommentGroup(long id) throws DAOException;
+
+    /**
+     * <p>
+     * addCommentGroup.
+     * </p>
+     *
+     * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean addCommentGroup(CommentGroup commentGroup) throws DAOException;
+
+    /**
+     * <p>
+     * updateCommentGroup.
+     * </p>
+     *
+     * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean updateCommentGroup(CommentGroup commentGroup) throws DAOException;
+
+    /**
+     * <p>
+     * deleteCommentGroup.
+     * </p>
+     *
+     * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean deleteCommentGroup(CommentGroup commentGroup) throws DAOException;
+
     // Comment
 
     /**
@@ -882,10 +944,12 @@ public interface IDAO {
      * </p>
      *
      * @param filters a {@link java.util.Map} object.
-     * @return a long.
+     * @param owner
+     * @param targetPIs
+     * @return Number of rows that match the criteria
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public long getCommentCount(Map<String, String> filters, User owner) throws DAOException;
+    public long getCommentCount(Map<String, String> filters, User owner, Set<String> targetPIs) throws DAOException;
 
     /**
      * <p>
@@ -897,10 +961,12 @@ public interface IDAO {
      * @param sortField a {@link java.lang.String} object.
      * @param descending a boolean.
      * @param filters a {@link java.util.Map} object.
+     * @param targetPIs
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
+    public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters,
+            Set<String> targetPIs) throws DAOException;
 
     /**
      * Get Comments created by a specific user
