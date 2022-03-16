@@ -119,9 +119,13 @@ public class DisclaimerEditBean implements Serializable {
         if (this.dao != null) {
             Disclaimer disclaimer = dao.getDisclaimer();
             disclaimer.setRequiresConsentAfter(LocalDateTime.now());
-            dao.saveDisclaimer(disclaimer);
-            if (this.disclaimerForEdit != null) {
-                this.disclaimerForEdit.setRequiresConsentAfter(disclaimer.getRequiresConsentAfter());
+            if(dao.saveDisclaimer(disclaimer)) {
+                if (this.disclaimerForEdit != null) {
+                    this.disclaimerForEdit.setRequiresConsentAfter(disclaimer.getRequiresConsentAfter());
+                }
+                Messages.info("admin__legal__disclaimer_reset_consent__success");
+            } else {
+                Messages.error("admin__legal__disclaimer_reset_consent__error");
             }
         }
     }
