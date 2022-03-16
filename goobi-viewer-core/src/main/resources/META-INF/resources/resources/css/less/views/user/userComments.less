@@ -37,9 +37,12 @@
         opacity: 1;
       }
     }
+	button {
+		font-weight: 600;
+		padding: 0;
+	}
   }
   &__table-entry {
-    word-wrap: anywhere;
     display: grid;
     grid-template-columns: 2fr 2fr 1fr;
     grid-template-rows: minmax(20px, 1fr);
@@ -50,7 +53,15 @@
       background: #f7f7f7;
       .user-comments__table-entry-action-link {
         opacity: 1;
+        text-decoration: none;
       }
+    }
+    &-label,
+    &-text {
+      word-break: break-all;
+    }
+    &-label {
+      color: @colorFonts;
     }
   }
   &__table-entry-label-record {
@@ -62,6 +73,13 @@
     opacity: 0;
     transition: opacity 0.2s ease;
   }
+}
+.using-keyboard	{
+ .user-comments__table-entry-action-link {
+    opacity: 1;
+    transition: opacity 0.2s ease;
+  }
+
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -100,4 +118,3 @@
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
 }
-

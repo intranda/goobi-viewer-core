@@ -582,7 +582,7 @@ public class UserBean implements Serializable {
 
             // Send
             try {
-                if (NetTools.postMail(Collections.singletonList(user.getEmail()),
+                if (NetTools.postMail(Collections.singletonList(user.getEmail()), null, null,
                         ViewerResourceBundle.getTranslation("user_activationEmailSubject", null),
                         sb.toString())) {
                     logger.debug("Activation e-mail sent for: {}", user.getEmail());
@@ -620,7 +620,7 @@ public class UserBean implements Serializable {
 
                 if (DataManager.getInstance().getDao().updateUser(user)) {
                     try {
-                        if (NetTools.postMail(Collections.singletonList(email),
+                        if (NetTools.postMail(Collections.singletonList(email), null, null,
                                 ViewerResourceBundle.getTranslation("user_retrieveAccountConfirmationEmailSubject", null),
                                 ViewerResourceBundle.getTranslation("user_retrieveAccountConfirmationEmailBody", null)
                                         .replace("{0}", requesterIp)
@@ -669,7 +669,7 @@ public class UserBean implements Serializable {
                 user.setNewPassword(newPassword);
                 user.setActivationKey(null);
                 try {
-                    if (NetTools.postMail(Collections.singletonList(email),
+                    if (NetTools.postMail(Collections.singletonList(email), null, null,
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailBody", null).replace("{0}", newPassword))
                             && DataManager.getInstance().getDao().updateUser(user)) {
@@ -805,11 +805,12 @@ public class UserBean implements Serializable {
         }
 
         try {
-            if (NetTools.postMail(Collections.singletonList(feedback.getRecipientAddress()),
+            if (NetTools.postMail(Collections.singletonList(feedback.getRecipientAddress()), null, null,
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
                 // Send confirmation to sender
-                if (StringUtils.isNotEmpty(feedback.getSenderAddress()) && !NetTools.postMail(Collections.singletonList(feedback.getSenderAddress()),
-                        feedback.getEmailSubject("feedbackEmailSubjectSender"), feedback.getEmailBody("feedbackEmailBody"))) {
+                if (StringUtils.isNotEmpty(feedback.getSenderAddress())
+                        && !NetTools.postMail(Collections.singletonList(feedback.getSenderAddress()), null, null,
+                                feedback.getEmailSubject("feedbackEmailSubjectSender"), feedback.getEmailBody("feedbackEmailBody"))) {
                     logger.warn("Could not send feedback confirmation to sender.");
                 }
                 Messages.info("feedbackSubmitted");

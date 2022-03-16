@@ -1,8 +1,9 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <composite:interface>
@@ -12,10 +13,10 @@
     <composite:implementation>
    		 <ui:param name="collection" value="#{cc.attrs.collection}" />
 <!--    		 #{collection.reset(!collection.displayParentCollections)} -->
-   		  
+
    		 <div class="collections">
    		 	<h:form id="collectionsForm" prependId="false">
-   		 		<div class="collections__wrapper">                	
+   		 		<div class="collections__wrapper">
                 	<!-- COLLECTIONS -->
                 	<ul class="collection">
                 		<ui:repeat var="browseDcElement" value="#{collection.visibleDcElements}">
@@ -25,7 +26,9 @@
                                         <!-- STRUCTURE -->
                                         <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
                                             <div class="collection__structure text-center">
-                                                <h:commandLink action="#{collection.toggleChildren(browseDcElement)}">
+                                                <button
+                                                    class="btn btn-link"
+                                                    jsf:action="#{collection.toggleChildren(browseDcElement)}">
                                                 	<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__show_details}"/>
                                                     <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
                                                         <i class="fa fa-plus-square-o" aria-hidden="true"></i>
@@ -34,7 +37,7 @@
                                                         <i class="fa fa-minus-square-o" aria-hidden="true"></i>
                                                     </h:panelGroup>
                                                     <f:ajax render="@form" />
-                                                </h:commandLink>
+                                                </button>
                                             </div>
                                         </h:panelGroup>
                                     </div>
@@ -57,18 +60,20 @@
 										<!-- TOGGLE DESCRIPTION -->
 										<h:panelGroup rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
 											<div class="collection__description-toggle">
-												<h:commandLink title="#{msg[browseDcElement.label]}">
+												<button
+													jsf:styleClass="btn btn-link"
+													title="#{msg[browseDcElement.label]}">
 													<h:panelGroup rendered="#{not browseDcElement.showDescription}">
 														<i class="fa fa-angle-down" aria-hidden="true"></i>
 													</h:panelGroup>
-													
+
 													<h:panelGroup rendered="#{browseDcElement.showDescription}">
 														<i class="fa fa-angle-up" aria-hidden="true"></i>
 													</h:panelGroup>
 
 													<f:setPropertyActionListener target="#{browseDcElement.showDescription}" value="#{not browseDcElement.showDescription}" />
 													<f:ajax render="@form" />
-												</h:commandLink>
+												</button>
 											</div>
 										</h:panelGroup>
 
@@ -90,13 +95,13 @@
                                                 <h:outputText value="#{msg[browseDcElement.description]}" escape="false" />
                                             </div>
                                             <h:panelGroup rendered="#{browseDcElement.hasIcon()}">
-                                                <img data-src="#{browseDcElement.icon}" alt="" class="img-fluid" 
+                                                <img data-src="#{browseDcElement.icon}" alt="" class="img-fluid"
                                                 data-viewer-thumbnail="thumbnail"/>
                                             </h:panelGroup>
                                         </div>
                                     </h:panelGroup>
                                 </div>
-								
+
                                 <!-- CMS-INFO -->
 <!--                                 <h:panelGroup rendered="#{browseDcElement.hasCMSDescription()}"> -->
 <!--                                 	<div class="row"> -->
@@ -120,6 +125,6 @@
                 //]]>
                 </script>
    		 	</h:form>
-   		 </div>         
+   		 </div>
     </composite:implementation>
 </ui:composition>

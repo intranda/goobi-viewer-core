@@ -1,6 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
+	              xmlns:jsf="http://xmlns.jcp.org/jsf"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
@@ -37,32 +38,34 @@
 
 
                         <!-- ALL COMMENTS TABLE -->
-                        <div id="adminUserCommentsTable" class="admin__table-content">
+                        <div id="adminUserCommentsTable" class="admin__table-content" role="grid" aria-label="#{msg.admin__comments}: #{msg.aria_label__table__actions}">
 
                             <!-- TITLE ROW -->
-                            <div class="row no-gutters admin__table-title">
+                            <div class="row no-gutters admin__table-title" role="row">
                                 <!-- COMMENT COL -->
-	                            <div class="col-8 d-flex">                            
+	                            <div class="col-8 d-flex">
 	                                <viewerComponent:sortingArrow filterType="text" colHeading="#{msg.Comment}" list="#{adminBean.lazyModelComments}" />
 	                            </div>
 
                                 <!-- USER COL -->
-	                            <div class="col-2 d-flex">                            
+	                            <div class="col-2 d-flex">
 	                                <viewerComponent:sortingArrow filterType="owner" colHeading="#{msg.user}" list="#{adminBean.lazyModelComments}" />
 	                            </div>
 
                                 <!-- DATE COL -->
-	                            <div class="col-2 d-flex">                            
+	                            <div class="col-2 d-flex">
 	                                <viewerComponent:sortingArrow filterType="dateCreated" colHeading="#{msg.date}" list="#{adminBean.lazyModelComments}" />
 	                            </div>
                             </div>
-                           
+
                             <!-- INDIVIDUAL COMMENTS -->
                             <ui:repeat var="comment" value="#{adminBean.pageComments}">
-                                <div class="row no-gutters admin__table-entry">
+                                <div class="row no-gutters admin__table-entry" role="row">
                                     <div class="col-8 d-flex" style="flex-direction:column;">
                                         <!-- COMMENT -->
-                                        <h:outputText value="#{comment.text}" />
+                                        <div role="gridcell">
+                                            <h:outputText value="#{comment.text}" />
+                                        </div>
 
                                         <!-- ACTIONS -->
                                         <div>
@@ -70,14 +73,15 @@
                                             <a href="#{navigationHelper.imageUrl}/#{comment.targetPI}/#{comment.targetPageOrder}/" class="admin__table-action-link" target="_blank" aria-label="#{msg.Comment} #{msg.show} (#{comment.targetPI}/#{comment.targetPageOrder})">#{msg.show}</a>
 
                                             <!-- DELETE -->
-                                            <h:commandLink styleClass="admin__table-action-link -redlink"
-                                                onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
-                                                action="#{adminBean.deleteCommentAction(comment)}">#{msg.delete}
-                                            </h:commandLink>
+                                            <button
+                                                class="admin__table-action-link -redlink"
+                                                jsf:onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
+                                                jsf:action="#{adminBean.deleteCommentAction(comment)}">#{msg.delete}
+                                            </button>
                                         </div>
                                     </div>
-                                    <div class="col-2 d-flex">#{comment.creator}</div>
-                                    <div class="col-2 d-flex">
+                                    <div class="col-2 d-flex" role="gridcell">#{comment.creator}</div>
+                                    <div class="col-2 d-flex" role="gridcell">
                                         <h:outputText value="#{comment.dateCreated}">
                                             <f:converter converterId="localDateTimeConverter" />
                                             <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />

@@ -21,6 +21,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
@@ -53,7 +54,7 @@ public class ArchiveManager {
 
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 
-    private final Map<ArchiveResource, ArchiveTree> archives = new HashMap<>();
+    private Map<ArchiveResource, ArchiveTree> archives = new HashMap<>();
 
     private final List<NodeType> nodeTypes;
 
@@ -91,11 +92,7 @@ public class ArchiveManager {
         if (StringUtils.isNotBlank(basexUrl)) {
             try {
                 eadParser = new BasexEADParser(basexUrl, searchIndex);
-                //initialize archives with 'null' archive tree values
-                List<ArchiveResource> databases = eadParser.getPossibleDatabases();
-                for (ArchiveResource db : databases) {
-                    this.archives.put(db, null);
-                }
+                initArchivesFromBaseXServer(eadParser);
                 //this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
                 this.databaseState = DatabaseState.ARCHIVES_LOADED;
             } catch (PresentationException | IndexUnreachableException e) {
@@ -112,11 +109,7 @@ public class ArchiveManager {
 
     public ArchiveManager(BasexEADParser eadParser, Map<String, String> archiveNodeTypes) {
         try {
-            //initialize archives with 'null' archive tree values
-            List<ArchiveResource> databases = eadParser.getPossibleDatabases();
-            for (ArchiveResource db : databases) {
-                this.archives.put(db, null);
-            }
+            initArchivesFromBaseXServer(eadParser);
             //this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
             this.databaseState = DatabaseState.ARCHIVES_LOADED;
         } catch (IOException | HTTPException e) {
@@ -125,6 +118,50 @@ public class ArchiveManager {
         }
         this.eadParser = eadParser;
         this.nodeTypes = loadNodeTypes(archiveNodeTypes);
+    }
+
+    /**
+     * Queries the list of databases from the basex server and updated the internal database list from it.
+     * 
+     * @param eadParser
+     * @return true if the internal list of databases was updated, either because a database was outdated, didn't exist before or doesn't exist
+     *         anymore
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws HTTPException
+     */
+    private boolean initArchivesFromBaseXServer(BasexEADParser eadParser) throws ClientProtocolException, IOException, HTTPException {
+        //initialize archives with 'null' archive tree values
+        List<ArchiveResource> databases = eadParser.getPossibleDatabases();
+        Map<ArchiveResource, ArchiveTree> cachedDatabases = this.archives;
+        this.archives = new HashMap<ArchiveResource, ArchiveTree>();
+        boolean updated = false;
+        for (ArchiveResource db : databases) {
+            ArchiveResource cachedResource =
+                    cachedDatabases.keySet().stream().filter(res -> res.getCombinedId().equals(db.getCombinedId())).findAny().orElse(null);
+            ArchiveTree cachedTree = cachedDatabases.get(cachedResource);
+
+            if (cachedResource == null || isOutdated(cachedResource, db)) {
+                this.archives.put(db, null);
+                updated = true;
+            } else {
+                this.archives.put(cachedResource, cachedTree);
+                cachedDatabases.remove(cachedResource);
+            }
+        }
+        //cached databases that are included in the basex response are removed from the cachedDatabases list. If it is still not empty at this point, databases were removed
+        updated = updated || !cachedDatabases.isEmpty();
+        return updated;
+    }
+
+    private boolean isOutdated(ArchiveResource cachedResource, ArchiveResource currentResource) {
+        if (cachedResource == null) {
+            return true;
+        } else if (currentResource == null) {
+            return true;
+        } else {
+            return currentResource.getModifiedDate().isAfter(cachedResource.getModifiedDate());
+        }
     }
 
     public ArchiveTree getArchiveTree(String archiveId, String resourceId) {
@@ -374,6 +411,24 @@ public class ArchiveManager {
             return archiveNodeTypes.entrySet().stream().map(entry -> new NodeType(entry.getKey(), entry.getValue())).collect(Collectors.toList());
         } else {
             return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Checks the list of ead archives for updates. An update occurs if either the "lastModifiedDate" of an archive has changed since
+     * the last request, or if an archive was added or removed. In these cases, the list of records assiciated with an archive entry is updated as well
+     */
+    public void updateArchiveList() {
+        try {
+            if (this.initArchivesFromBaseXServer(eadParser)) {
+                this.eadParser.updateAssociatedRecordMap();
+            }
+        } catch (IOException | HTTPException e) {
+            logger.error("Failed to retrieve database names from '{}': {}", eadParser.getBasexUrl(), e.toString());
+            this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error("Failed to retrieve associated records from SOLR: {}", e.toString());
+            this.databaseState = DatabaseState.ERROR_NOT_CONFIGURED;
         }
     }
 }

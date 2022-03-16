@@ -151,12 +151,16 @@ public final class SearchHelper {
     public static Pattern patternNotBrackets = Pattern.compile("NOT\\([^()]*\\)");
     /** Regex pattern for negations not followed by brackets */
     public static Pattern patternNot = Pattern.compile("NOT[ ][a-zA-Z_]+[:][a-zA-Z0-9\\*]+");
+    /** Constant <code>patternFieldPhrase</code> */
+    public static Pattern patternFieldPhrase = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
     /** Constant <code>patternPhrase</code> */
-    public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
+    public static Pattern patternPhrase = Pattern.compile("^" + StringTools.REGEX_QUOTATION_MARKS + "(~[0-9]+)?$");
     /** Constant <code>patternProximitySearchToken</code> */
     public static Pattern patternProximitySearchToken = Pattern.compile("~([0-9]+)");
     /** Constant <code>patternYearRange</code> */
     public static Pattern patternYearRange = Pattern.compile("\\[[0-9]+ TO [0-9]+\\]");
+    /** Constant <code>patternHyperlink</code> */
+    public static Pattern patternHyperlink = Pattern.compile("(<a .*<\\/a>)");
 
     /**
      * Main search method for aggregated search.
@@ -1217,9 +1221,9 @@ public final class SearchHelper {
      *
      * @param phrase a {@link java.lang.String} object.
      * @param terms a {@link java.util.Set} object.
+     * @return a {@link java.lang.String} object.
      * @should apply highlighting for all terms
      * @should skip single character terms
-     * @return a {@link java.lang.String} object.
      */
     public static String applyHighlightingToPhrase(String phrase, Set<String> terms) {
         if (phrase == null) {
@@ -1286,6 +1290,7 @@ public final class SearchHelper {
      * @should apply highlighting to all occurrences of term
      * @should ignore special characters
      * @should skip single character terms
+     * @should not add highlighting to hyperlink urls
      */
     static String applyHighlightingToPhrase(String phrase, String term) {
         if (phrase == null) {
@@ -1324,12 +1329,27 @@ public final class SearchHelper {
      * @should preserve digits
      * @should preserve latin chars
      * @should preserve hebrew chars
+     * @should remove hyperlink html elements including terms
      */
     static String normalizeString(String string) {
         if (string == null) {
             return null;
         }
         string = Normalizer.normalize(string, Normalizer.Form.NFD);
+
+        // Replace entire hyperink elements with spaces
+        Matcher m = patternHyperlink.matcher(string);
+        while (m.find()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(string.substring(0, m.start()));
+            for (int i = m.start(); i < m.end(); ++i) {
+                sb.append(' ');
+            }
+            sb.append(string.substring(m.end()));
+            string = sb.toString();
+        }
+
+        string = string.replaceAll(patternHyperlink.pattern(), " ");
         string = string.toLowerCase().replaceAll("\\p{M}", "").replaceAll("[^\\p{L}0-9#]", " ");
         string = Normalizer.normalize(string, Normalizer.Form.NFC);
         return string;
@@ -1853,7 +1873,7 @@ public final class SearchHelper {
 
         // Drop proximity search tokens
         query = query.replaceAll(patternProximitySearchToken.pattern(), "");
-        
+
         // Drop year ranges
         query = query.replaceAll(patternYearRange.pattern(), "");
 
@@ -1861,7 +1881,7 @@ public final class SearchHelper {
         String queryCopy = query;
         {
             // Extract phrases and add them directly
-            Matcher mPhrases = patternPhrase.matcher(queryCopy);
+            Matcher mPhrases = patternFieldPhrase.matcher(queryCopy);
             while (mPhrases.find()) {
                 String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
                 String[] phraseSplit = phrase.split(":");
@@ -2966,7 +2986,7 @@ public final class SearchHelper {
         }
 
         int ret = 0;
-        Matcher m = SearchHelper.patternProximitySearchToken.matcher(query);
+        Matcher m = patternProximitySearchToken.matcher(query);
         if (m.find()) {
             String num = m.group(1);
             if (StringUtils.isNotBlank(num)) {
@@ -2980,6 +3000,23 @@ public final class SearchHelper {
         }
 
         return ret;
+    }
+
+    /**
+     * Determines whether the given string is a quoted search phrase, optionally with a proximity distance.
+     * 
+     * @param s Search terms
+     * @return true if phrase; false otherwise
+     * @should detect phrase correctly
+     * @should detect phrase with proximity correctly
+     */
+    public static boolean isPhrase(String s) {
+        if (StringUtils.isBlank(s)) {
+            return false;
+        }
+
+        Matcher m = patternPhrase.matcher(s.trim());
+        return m.find();
     }
 
     /**

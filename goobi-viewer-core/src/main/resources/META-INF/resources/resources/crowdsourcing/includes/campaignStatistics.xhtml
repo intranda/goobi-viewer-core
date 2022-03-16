@@ -33,7 +33,7 @@
 			</dl>
 		</div>
 		<div
-			class="campaign-statistics__bar">
+			class="campaign-statistics__bar" role="presentation">
 			<progressBar total="#{campaign.numRecords}"
 				values="[#{campaign.getNumRecordsForStatus('FINISHED')}, #{campaign.getNumRecordsForStatus('REVIEW')}]"
 				styleclasses='["finished", "review"]'></progressBar>

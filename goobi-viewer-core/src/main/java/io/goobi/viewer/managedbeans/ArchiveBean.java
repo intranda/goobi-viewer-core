@@ -405,5 +405,10 @@ public class ArchiveBean implements Serializable {
     public NodeType getNodeType(String name) {
         return DataManager.getInstance().getArchiveManager().getNodeType(name);
     }
+    
+    public void updateArchives() {
+        this.archiveManager.updateArchiveList();
+        
+    }
 
 }

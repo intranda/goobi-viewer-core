@@ -33,6 +33,7 @@
 							#{cc.attrs.value.isComplete(locale) ? '-already-translated':''}
 							#{cc.attrs.value.isDefaultLocaleSelected() ? '-default-language':''}">
 							<h:commandLink
+								role="button"
 								value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
 								action="#{cc.attrs.value.setSelectedLocale(locale)}"
 								immediate="false">
@@ -51,7 +52,7 @@
 					<f:passThroughAttribute name="aria-label" value="#{cc.attrs.ariaLabel}"/>
 					<f:ajax event="change" render="@none" execute="@this"></f:ajax>
 					</h:inputTextarea>
-					
+
 			</div>
 	</div>
 

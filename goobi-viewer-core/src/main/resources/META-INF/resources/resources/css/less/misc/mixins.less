@@ -3,57 +3,57 @@
    ==============================================================*/
 /* CLEARFLOATS */
 .mx-clearfloats {
-	&:before,
-    &:after {
-    	content: " ";
-		display: table;
-	}
-	&:after {
-		clear: both;
-	}
+  &:before,
+  &:after {
+    content: " ";
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
 }
 /* BACKGROUND IMAGE */
 .mx-bgi(@image; @pX: center; @pY: center; @size: auto) {
-	background-image: url(@image);
-	background-repeat: no-repeat;
-	background-position: @pX @pY;
-	-webkit-background-size: @size;
-	background-size: @size;
+  background-image: url(@image);
+  background-repeat: no-repeat;
+  background-position: @pX @pY;
+  -webkit-background-size: @size;
+  background-size: @size;
 }
 /* CSS TRIANGLE */
 .mx-triangle(@top: 0; @left: 0; @bWidth: 10px; @bcTop: transparent; @bcRight: transparent; @bcBottom: #000; @bcLeft: transparent) {
-	position: relative;
-	&:after {
-		content: "";
-		display: block;
-		position: absolute;
-		top: @top;
-		left: @left;
-		width: 0;
-		height: 0;
-		border-width: @bWidth;
-		border-style: solid;
-		border-color: @bcTop @bcRight @bcBottom @bcLeft;
-	}
+  position: relative;
+  &:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: @top;
+    left: @left;
+    width: 0;
+    height: 0;
+    border-width: @bWidth;
+    border-style: solid;
+    border-color: @bcTop @bcRight @bcBottom @bcLeft;
+  }
 }
 /* HIDDEN */
 .mx-visible {
-	display: block !important;
-	visibility: visible !important;
+  display: block !important;
+  visibility: visible !important;
 }
 /* HIDDEN */
 .mx-hidden {
-	display: none !important;
-	visibility: hidden !important;
+  display: none !important;
+  visibility: hidden !important;
 }
 /* VISUALLY HIDDEN */
 .mx-v-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-	clip: rect(1px, 1px, 1px, 1px);
-    white-space: nowrap;
-    overflow: hidden;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  overflow: hidden;
 }
 /* GRID */
 .mx-grid(@width: 145px; @gap: 15px) {
@@ -63,32 +63,43 @@
 }
 /* LIST RESET */
 .mx-list-reset {
-	margin: 0;
-	padding: 0;
-	list-style: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 .mx-no-style-button {
-	background: transparent;
-	box-shadow: 0px 0px 0px transparent;
-	border: 0px solid transparent;
-	text-shadow: 0px 0px 0px transparent;
-	&:hover {
-	  background: transparent;
-	  box-shadow: 0px 0px 0px transparent;
-	  border: 0px solid transparent;
-	  text-shadow: 0px 0px 0px transparent;
-	}
-	&:active {
-	  outline: none;
-	  border: none;
-	}
-	&:focus {
-	  outline: 0;
-	}
+  background: transparent;
+  box-shadow: 0px 0px 0px transparent;
+  border: 0px solid transparent;
+  text-shadow: 0px 0px 0px transparent;
+  &:hover {
+    background: transparent;
+    box-shadow: 0px 0px 0px transparent;
+    border: 0px solid transparent;
+    text-shadow: 0px 0px 0px transparent;
+  }
+  &:active {
+    outline: none;
+    border: none;
+  }
+  &:focus {
+    outline: 0;
+  }
 }
 
 .mx-focus-visible {
-	outline: 2px solid @colorOutline;
-	outline-offset: 2px;
-	z-index: 9999;
+  outline: 2px solid @colorOutline;
+  outline-offset: 2px;
+  z-index: 9999;
+}
+
+.mx-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }

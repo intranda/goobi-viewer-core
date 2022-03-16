@@ -1,7 +1,7 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
     <composite:interface />
@@ -11,7 +11,7 @@
         <div id="widgetNerFacetting">
             <a name="widgetNerFacettingTop"></a>
             <h2 >#{msg.widgetNerFacetting}</h2>
-            
+
             <!-- TABS -->
             <div class="facetting-content">
                 <!-- NAV TABS -->
@@ -28,20 +28,20 @@
                 <div class="tab-content">
                     <!-- AJAX LOADER -->
                     <div id="nerFacettingLoader"></div>
-                
+
                     <!-- OVERVIEW -->
                     <div role="tabpanel" class="tab-pane active" id="overview">
                         <!-- CURRENT TAGS -->
                         <div class="current-tags"></div>
-                        
+
                         <!-- DESCRIPTION -->
                         <div class="tag-filter-description">
-                            <span class="pull-left">#{msg.widgetNerFacetting_setRange}:</span> 
+                            <span class="pull-left">#{msg.widgetNerFacetting_setRange}:</span>
                             <span class="pull-right">#{msg.widgetNerFacetting_filterTags}:</span>
                         </div>
 
                         <div class="clearfix"></div>
-                    
+
                         <!-- SET RANGE -->
                         <select class="set-tag-range-widget overview pull-left">
                             <h:panelGroup rendered="#{activeDocumentBean.viewManager.pageLoader.numPages >= 1}">
@@ -60,21 +60,39 @@
                                 <option value="100">#{msg.widgetNerFacetting_100Pages}</option>
                             </h:panelGroup>
                         </select>
-                        
+
                         <!-- TYPE FACETTING -->
                         <ul class="filter-tags pull-right">
                             <li class="reset-filter">
-                                <a href="#widgetNerFacettingTop" class="facetting-trigger" data-type="-" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagAll}">
+                                <a href="#widgetNerFacettingTop"
+									role="button"
+									class="facetting-trigger"
+									data-type="-"
+									data-toggle="tooltip"
+									data-placement="bottom"
+									title="#{msg.widgetNerFacetting_tagAll}">
                                     <i class="fa fa-times-circle" aria-hidden="true"></i>
                                 </a>
                             </li>
                             <li>
-                                <a href="#widgetNerFacettingTop" class="facetting-trigger active" data-type="person" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagPerson}">
+                                <a href="#widgetNerFacettingTop"
+									role="button"
+									class="facetting-trigger active"
+									data-type="person"
+									data-toggle="tooltip"
+									data-placement="bottom"
+									title="#{msg.widgetNerFacetting_tagPerson}">
                                     <i class="fa fa-male" aria-hidden="true"></i>
                                 </a>
                             </li>
                             <li>
-                                <a href="#widgetNerFacettingTop" class="facetting-trigger active" data-type="location" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagLocation}">
+                                <a href="#widgetNerFacettingTop"
+									role="button"
+									class="facetting-trigger active"
+									data-type="location"
+									data-toggle="tooltip"
+									data-placement="bottom"
+									title="#{msg.widgetNerFacetting_tagLocation}">
                                     <i class="fa fa-map-marker" aria-hidden="true"></i>
                                 </a>
                             </li>
@@ -84,12 +102,12 @@
                                 </a>
                             </li>
                         </ul>
-                        
+
                         <div class="clearfix"></div>
-                                                
+
                         <div class="overview-content"></div>
                     </div>
-                    
+
                     <!-- SECTION -->
                     <div role="tabpanel" class="tab-pane" id="section">
                         <!-- DESCRIPTION -->
@@ -99,8 +117,8 @@
                         </div>
 
                         <div class="clearfix"></div>
-                        
-                        
+
+
                         <!-- SET RANGE -->
                         <select class="set-tag-range-widget section pull-left">
                             <h:panelGroup rendered="#{activeDocumentBean.viewManager.pageLoader.numPages >= 5}">
@@ -116,7 +134,7 @@
                                 <option value="100">#{msg.widgetNerFacetting_100Pages}</option>
                             </h:panelGroup>
                         </select>
-                        
+
                         <!-- TYPE FACETTING -->
                         <ul class="filter-tags pull-right">
                             <li class="reset-filter">
@@ -140,9 +158,9 @@
                                 </a>
                             </li>
                         </ul>
-                        
+
                         <div class="clearfix"></div>
-                                            
+
                         <!-- SCALE -->
                         <div id="sliderScale">
                             <span class="scale-page start">1</span>
@@ -161,19 +179,19 @@
                             </ul>
                             <span class="scale-page end"></span>
                             <div class="scale-section-stripe"></div>
-                                                        
-                            <!-- SLIDER -->                            
+
+                            <!-- SLIDER -->
                             <div id="sliderVertical"></div>
                         </div>
-                        
+
                         <!-- TAGS -->
                         <div id="sectionTags"></div>
-                        
+
                         <div class="clearfix"></div>
                     </div>
                 </div>
             </div>
-            
+
             <script type="text/javascript">
                 var nerFacettingConfig = {
                     currentPage: "#{navigationHelper.currentPage}",
@@ -203,7 +221,7 @@
                         tags: "#{msg.widgetNerFacetting_tags}",
                     }
                 };
-            
+
                 viewerJS.nerFacetting.init( nerFacettingConfig );
             </script>
         </div>

@@ -1,13 +1,14 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+<ui:composition
+
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
-    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
@@ -32,14 +33,17 @@
                         <!-- AJAX LOADER -->
                         <div class="search-advanced__loader"></div>
 
-                        <h:commandLink styleClass="remove btn btn--clean" role="button" title="#{msg.searchAdvanved_deleteSearchGroup}"
-                            action="#{searchBean.removeAdvancedQueryGroup(queryGroup)}" disabled="#{fn:length(searchBean.advancedQueryGroups) == 1}">
+                        <button
+							class="remove btn btn--clean"
+							title="#{msg.searchAdvanved_deleteSearchGroup}"
+                            jsf:action="#{searchBean.removeAdvancedQueryGroup(queryGroup)}"
+							jsf:disabled="#{fn:length(searchBean.advancedQueryGroups) == 1}">
                             <i class="fa fa-times-circle" aria-hidden="true"></i>
                             <f:passThroughAttribute name="data-toggle" value="tooltip" />
                             <f:passThroughAttribute name="data-placement" value="top" />
                             <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_deleteSearchGroup}"/>
                             <f:ajax render="@form" />
-                        </h:commandLink>
+                        </button>
 
                         <!-- SEARCH ADVANCED CONNECTOR -->
                         <div class="search-advanced__connector">
@@ -145,21 +149,27 @@
                                     <div class="col-6 col-sm-1 mb-3 d-flex align-items-center">
                                         <!-- ADD / REMOVE -->
                                         <div class="search-advanced__input-col search-advanced__additional-wrapper">
-                                            <h:commandLink role="button" title="#{msg.searchAdvanved_deleteSelection}" action="#{queryGroup.removeQueryItem(queryItem)}" styleClass="search-advanced__additional-action">
+                                            <button
+												class="btn btn--link search-advanced__additional-action"
+												title="#{msg.searchAdvanved_deleteSelection}"
+												jsf:action="#{queryGroup.removeQueryItem(queryItem)}">
                                                 <i class="fa fa-times-circle" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                 <f:passThroughAttribute name="data-placement" value="top" />
                                                 <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_deleteSelection}" />
                                                 <f:ajax render="@form" />
-                                            </h:commandLink>
-                                            <h:commandLink role="button" title="#{msg.searchAdvanved_addSelection}" action="#{queryGroup.addNewQueryItem}" styleClass="search-advanced__additional-action"
-                                                disabled="#{fn:length(queryGroup.queryItems) != status.count}">
+                                            </button>
+                                            <button
+												class="btn btn--link"
+												title="#{msg.searchAdvanved_addSelection}"
+												jsf:action="#{queryGroup.addNewQueryItem}" styleClass="search-advanced__additional-action"
+                                                jsf:disabled="#{fn:length(queryGroup.queryItems) != status.count}">
                                                 <i class="fa fa-plus-square-o" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                 <f:passThroughAttribute name="data-placement" value="top" />
                                                 <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_addSelection}" />
                                                 <f:ajax render="@form" />
-                                            </h:commandLink>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -176,7 +186,7 @@
                             <h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" styleClass="custom-control custom-control--select value-text"
                                 value="#{searchBean.advancedSearchGroupOperator}">
                                 <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_operatorGroups}"/>
-								<f:passThroughAttribute name="aria-haspopup" value="listbox"/>                        
+								<f:passThroughAttribute name="aria-haspopup" value="listbox"/>
                                 <f:selectItem itemLabel="#{msg.searchAdvanced_connectGroupsAND}" itemValue="0" />
                                 <f:selectItem itemLabel="#{msg.searchAdvanced_connectGroupsOR}" itemValue="1" />
                             </h:selectOneMenu>
@@ -186,26 +196,32 @@
 
                 <!-- SEARCH ADVANCED ADD GROUP -->
                 <div class="search-advanced__add-group pull-right">
-                    <h:commandLink action="#{searchBean.addNewAdvancedQueryGroup}" role="button">
-                                #{msg.searchAdvanved_addSearchGroup}
-                                <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+                    <button
+						class="btn btn--link"
+						jsf:action="#{searchBean.addNewAdvancedQueryGroup}">
                         <f:ajax render="@form" />
-                    </h:commandLink>
+						#{msg.searchAdvanved_addSearchGroup}
+						<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+                    </button>
                 </div>
 
                 <div class="clearfix"></div>
 
                 <!-- SEARCH ADVANCED ACTION -->
                 <div class="search-advanced__action">
-                    <h:commandLink styleClass="btn btn--default" value="#{msg.reset}" action="#{search.resetSearch}" />
                     <h:commandButton styleClass="btn btn--full" value="#{msg.search}" action="#{search.searchAdvanced}">
                         <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" />
                     </h:commandButton>
+                    <button
+						class="btn btn--default"
+						jsf:action="#{search.resetSearch}">
+						#{msg.reset}
+					</button>
                 </div>
             </h:form>
         </h:panelGroup>
     </div>
-    
+
     <script type="text/javascript">
         $(document).ready(function() {
         	var searchAdvancedConfig = {};

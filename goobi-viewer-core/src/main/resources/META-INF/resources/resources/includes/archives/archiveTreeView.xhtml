@@ -6,46 +6,49 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
-	
+
 	<!-- Changed render @all to archivesForm to avoid reloads of surrounding layout elements + performance advantage  -->
 	<c:set var="render" value="#{render != null ? render : 'archivesForm'}" scope="request"></c:set>
-	
+
 	<c:set var="archiveTree" value="#{archiveTree != null ? archiveTree : archiveBean.archiveTree}" scope="request" />
-	
+
 	<!-- A list of  EadEntry object which should be displayed in the tree.
 	Note: all entries in the list are displayed. The list must be filtered for visible elements beforehand-->
 	<c:set var="visibleTree"
 		value="#{archiveTree.treeView.stream().filter(e -> e.visible).filter(e -> !archiveBean.searchActive or e.displaySearch).toList()}"
 		scope="request" />
-	
+
 	<!-- The indentation of each hierarchical level in pixel -->
 	<c:set var="indent" value="#{indent != null ? indent : configurationBean.tocIndentation}" scope="view" />
 
 	<div class="archives-tree__inner">
 		<h:form id="archivesForm" prependId="false">
-	
+
 			<!-- ARCHIVE TREE VIEW -->
 			<h:panelGroup>
-	
+
 				<!-- EXPANDABLE TREEVIEW -->
 				<h:panelGroup>
 
 					<!-- Call to trigger a noop ajax call to update the url of the page (to set the query "selected" to the correct record) -->
 					<h:commandScript id="url-updater" name="updateUrl">
 					</h:commandScript>
-					
+
 					<h:outputLabel value="#{msg.hitsZero}" rendered="#{empty visibleTree}"></h:outputLabel>
-					
+
 					<!-- EXPAND ALL -->
 					<div class="archives-tree__expand-minimize-all">
-						<h:commandLink rendered="#{not empty visibleTree}"
-							action="#{archiveBean.archiveTree.collapseAll(true)}"
-							title="#{msg.allClose}">#{msg.allClose}
+						<button
+							class="btn btn--clean"
+							jsf:rendered="#{not empty visibleTree}"
+							jsf:action="#{archiveBean.archiveTree.collapseAll(true)}"
+							title="#{msg.allClose}">
 							<f:passThroughAttribute name="data-toggle" value="tooltip" />
 							<f:passThroughAttribute name="data-placement" value="top" />
 							<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
 							<f:ajax render="archivesForm" />
-						</h:commandLink>
+							#{msg.allClose}
+						</button>
 					</div>
 					<nav class="archives-tree__list">
 						<ul>
@@ -56,17 +59,19 @@
 									style="padding-left: #{entry.hierarchyLevel * indent}px">
 									<!-- EXPAND OPTION -->
 									<div class="archives-tree__expandable-icon #{entry.expanded == true ? '-expanded' : '-collapsed' }">
-										<h:commandLink rendered="#{entry.hasChild}"
-											action="#{archiveBean.toggleEntryExpansion(entry)}">
+										<button
+											class="btn btn--clean"
+											jsf:rendered="#{entry.hasChild}"
+											jsf:action="#{archiveBean.toggleEntryExpansion(entry)}">
 											<i class="fa fa-plus-square-o" aria-hidden="true"></i>
 											<f:passThroughAttribute name="aria-label"
 												value="#{msg.allOpen}" />
 											<f:passThroughAttribute name="data-expand-entry"
 												value="expanded" />
 											<f:ajax render="archivesForm" />
-										</h:commandLink>
+										</button>
 									</div>
-									
+
 									<!-- TITLE -->
 									<div class="archives-tree__list-expandable-title #{entry.id == archiveTree.selectedEntry.id ? '-archives-selected' : ''} #{entry.searchHit ? '-archives-search-hit':''}">
 										<span class="fa-stack">

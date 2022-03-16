@@ -77,7 +77,7 @@
 			}
 			&:hover {
 				background-color: @lightgray;
-				a {
+				a, button {
 					color: @darkgray;
 				}
 			}
@@ -85,12 +85,13 @@
 	}
 	&__list-expandable-title,
 	&__list-full-title {
-		a {
+		a, button {
 			display: block;
 			padding: 5px 0;
 			&:hover,
 			&:focus,
-			&:active {}
+			&:active {
+			}
 		}
 	}
 	&__list-expandable-number,
@@ -124,9 +125,15 @@
 		li {
 			display: inline-block;
 		}
-		a {
+		a, button {
 			display: block;
 			padding: 5px;
+
+			&:focus,
+			&:hover,
+			&:active {
+				color: inherit;
+			}
 		}
 	}
 	/* TOC EXPANDABLE */
@@ -136,9 +143,14 @@
 		&.child {}
 	}
 	&__list-expandable-expand {
-		a {
+		a, button {
 			display: block;
 			padding: 5px 0;
+			&:focus,
+			&:hover,
+			&:active {
+				color: inherit;
+			}
 		}
 	}
 	&__list-expandable-title {

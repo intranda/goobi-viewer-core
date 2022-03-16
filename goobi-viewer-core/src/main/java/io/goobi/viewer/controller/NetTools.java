@@ -30,6 +30,7 @@ import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -308,14 +309,17 @@ public class NetTools {
      * Sends an email to with the given subject and body to the given recipient list.
      *
      * @param recipients a {@link java.util.List} object.
+     * @param cc
+     * @param bcc
      * @param subject a {@link java.lang.String} object.
      * @param body a {@link java.lang.String} object.
      * @return a boolean.
      * @throws java.io.UnsupportedEncodingException if any.
      * @throws javax.mail.MessagingException if any.
      */
-    public static boolean postMail(List<String> recipients, String subject, String body) throws UnsupportedEncodingException, MessagingException {
-        return postMail(recipients, subject, body, DataManager.getInstance().getConfiguration().getSmtpServer(),
+    public static boolean postMail(List<String> recipients, List<String> cc, List<String> bcc, String subject, String body)
+            throws UnsupportedEncodingException, MessagingException {
+        return postMail(recipients, cc, bcc, subject, body, DataManager.getInstance().getConfiguration().getSmtpServer(),
                 DataManager.getInstance().getConfiguration().getSmtpUser(), DataManager.getInstance().getConfiguration().getSmtpPassword(),
                 DataManager.getInstance().getConfiguration().getSmtpSenderAddress(), DataManager.getInstance().getConfiguration().getSmtpSenderName(),
                 DataManager.getInstance().getConfiguration().getSmtpSecurity(), DataManager.getInstance().getConfiguration().getSmtpPort());
@@ -325,6 +329,8 @@ public class NetTools {
      * Sends an email to with the given subject and body to the given recipient list using the given SMTP parameters.
      *
      * @param recipients
+     * @param cc
+     * @param bcc
      * @param subject
      * @param body
      * @param smtpServer
@@ -337,7 +343,8 @@ public class NetTools {
      * @throws MessagingException
      * @throws UnsupportedEncodingException
      */
-    private static boolean postMail(List<String> recipients, String subject, String body, String smtpServer, final String smtpUser,
+    private static boolean postMail(List<String> recipients, List<String> cc, List<String> bcc, String subject, String body, String smtpServer,
+            final String smtpUser,
             final String smtpPassword, String smtpSenderAddress, String smtpSenderName, String smtpSecurity, Integer smtpPort)
             throws MessagingException, UnsupportedEncodingException {
         if (recipients == null) {
@@ -433,13 +440,20 @@ public class NetTools {
         Message msg = new MimeMessage(session);
         InternetAddress addressFrom = new InternetAddress(smtpSenderAddress, smtpSenderName);
         msg.setFrom(addressFrom);
-        InternetAddress[] addressTo = new InternetAddress[recipients.size()];
-        int i = 0;
-        for (String recipient : recipients) {
-            addressTo[i] = new InternetAddress(recipient);
-            i++;
+
+        // Recipients
+        msg.setRecipients(Message.RecipientType.TO, prepareRecipients(recipients));
+
+        // CC
+        if (cc != null && !cc.isEmpty()) {
+            msg.setRecipients(Message.RecipientType.CC, prepareRecipients(cc));
         }
-        msg.setRecipients(Message.RecipientType.TO, addressTo);
+
+        // BCC
+
+        if (bcc != null && !bcc.isEmpty()) {
+            msg.setRecipients(Message.RecipientType.BCC, prepareRecipients(bcc));
+        }
         // Optional : You can also set your custom headers in the Email if you want
         // msg.addHeader("MyHeaderName", "myHeaderValue");
         msg.setSubject(subject);
@@ -457,6 +471,27 @@ public class NetTools {
         Transport.send(msg);
 
         return true;
+    }
+
+    /**
+     * 
+     * @param recipients
+     * @return
+     * @throws AddressException
+     */
+    static InternetAddress[] prepareRecipients(List<String> recipients) throws AddressException {
+        if (recipients == null) {
+            return new InternetAddress[0];
+        }
+
+        InternetAddress[] ret = new InternetAddress[recipients.size()];
+        int i = 0;
+        for (String recipient : recipients) {
+            ret[i] = new InternetAddress(recipient);
+            i++;
+        }
+
+        return ret;
     }
 
     /**
@@ -621,15 +656,16 @@ public class NetTools {
     }
 
     /**
-     * return true if the given string is a whole number between 200 and 399 (inclusive) 
+     * return true if the given string is a whole number between 200 and 399 (inclusive)
+     * 
      * @param string
      * @return
      */
     public static boolean isStatusOk(String string) {
-        try {            
+        try {
             int code = Integer.parseInt(string);
             return 200 <= code && code < 400;
-        } catch(NullPointerException | NumberFormatException e) {
+        } catch (NullPointerException | NumberFormatException e) {
             return false;
         }
     }

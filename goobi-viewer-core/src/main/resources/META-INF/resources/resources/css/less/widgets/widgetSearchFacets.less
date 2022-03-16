@@ -52,7 +52,7 @@
 		input, button, button:hover {
 			position: absolute;
 			color: @white;
-			
+
 			i.fa {
 				font-size: 1.6rem;
 			}
@@ -67,7 +67,7 @@
 			border-bottom: 1px solid @white;
 			background-color: @blue;
 			opacity: 0;
-			&::-webkit-input-placeholder { 
+			&::-webkit-input-placeholder {
 			    color: @white;
 			    opacity: 0.5;
 			}
@@ -85,7 +85,7 @@
 			}
 			&.in {
 				width: calc(~"100% - 36px");
-				opacity: 1;				
+				opacity: 1;
 			}
 		}
 		[data-toggle="filter-input"],
@@ -98,7 +98,7 @@
 			// background-repeat: no-repeat;
 			// background-position: center;
 			// background-size: 16px;
-			
+
 			i.fa {
 				font-size: 1.8rem;
 			}
@@ -121,9 +121,9 @@
 	&__groups {}
 	/* COLLAPSE FACETS */
     &__collapse {
-        a {
             display: block;
             text-align: center;
+        a, button {
             color: @middlegray;
         }
     }
@@ -146,7 +146,7 @@
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {}

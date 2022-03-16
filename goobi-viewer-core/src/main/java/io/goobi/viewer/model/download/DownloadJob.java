@@ -472,7 +472,7 @@ public abstract class DownloadJob implements Serializable {
             subject = subject.replace("{0}", pi);
         }
 
-        return NetTools.postMail(observers, subject, body);
+        return NetTools.postMail(observers, null, null, subject, body);
     }
 
     /**

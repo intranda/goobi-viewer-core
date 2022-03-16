@@ -177,22 +177,6 @@ const depsPathsJS = [
   },
   */
 
-  { // Q-PROMISES
-    expand: true,
-    cwd: nodeModules,
-    src: 'q/q.js', 
-    flatten: true,
-    dest: `${jsLibsDir}q-promises/`,
-    rename: (dest) => `${dest}q.min.js`
-  },
-  {
-    expand: true,
-    cwd: nodeModules,
-    src: 'q/LICENSE', 
-    flatten: true,
-    dest:`${jsLibsDir}q-promises/`
-  },
-
   { // RIOT
     expand: true,
     cwd: nodeModules,

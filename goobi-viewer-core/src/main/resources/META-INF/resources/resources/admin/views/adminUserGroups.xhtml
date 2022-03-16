@@ -2,7 +2,9 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+   
+
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -65,14 +67,15 @@
                                                 <a href="#{navigationHelper.applicationUrl}admin/groups/edit/#{userGroup.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{userGroup.name}">#{msg.edit}</a>
 
                                                 <!-- DELETE -->
-                                                <h:commandLink rendered="#{!userGroup.hasMembers}"
-                                                    onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
-                                                    action="adminAllUserGroups"
-                                                    actionListener="#{adminBean.deleteUserGroupAction(userGroup)}"
-                                                    styleClass="admin__boxed-entry-actions-delete -redlink">
+                                                <button 
+                                                	jsf:rendered="#{!userGroup.hasMembers}"
+                                                    class="admin__boxed-entry-actions-delete -redlink"
+                                                    jsf:onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
+                                                    jsf:action="adminAllUserGroups"
+                                                    jsf:actionListener="#{adminBean.deleteUserGroupAction(userGroup)}">
                                                     <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{userGroup.name}" />
                                                     #{msg.delete}
-                                                </h:commandLink>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>

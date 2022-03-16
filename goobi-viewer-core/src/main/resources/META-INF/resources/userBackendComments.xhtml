@@ -46,60 +46,59 @@
 
 
 							<!-- ALL USER COMMENTS TABLE -->
-							<div id="userCommentsTable" class="user-comments__table">
+							<div id="userCommentsTable" class="user-comments__table" role="grid" aria-label="#{msg.userComments}">
 
 								<!-- TITLE ROW -->
-								<div class="user-comments__table-title">
-
+								<div class="user-comments__table-title" role="row">
 									<!-- TARGET COL -->
-									<div class="user-comments__table-title-target">
+									<div class="user-comments__table-title-target" role="presentation">
 										<viewerComponent:sortingArrow filterType="targetPI_targetPageOrder"
 											colHeading="#{msg.record}"
 											list="#{userDataBean.lazyModelComments}" />
 									</div>
 
 									<!-- TEXT COL -->
-									<div class="user-comments__table-title-comment">
+									<div class="user-comments__table-title-comment" role="presentation">
 										<viewerComponent:sortingArrow filterType="body"
 											colHeading="#{msg.Comment}"
 											list="#{userDataBean.lazyModelComments}" />
 									</div>
 
 									<!-- DATE COL -->
-									<div class="user-comments__table-title-date">
+									<div class="user-comments__table-title-date" role="presentation">
 										<viewerComponent:sortingArrow filterType="dateCreated"
 											colHeading="#{msg.date}"
 											list="#{userDataBean.lazyModelComments}" />
 									</div>
-									
+
 								</div>
-								
-								<div class="user-comments__table-body">
+
+								<div class="user-comments__table-body" role="presentation">
 
 									<!-- INDIVIDUAL COMMENTS ROWS -->
 									<ui:repeat var="comment"
 										value="#{userDataBean.lazyModelComments.paginatorList}">
-										<div class="user-comments__table-entry">
+										<div class="user-comments__table-entry" role="row">
 											<!-- TARGET -->
-												<div class="user-comments__table-entry-label">
+												<div class="user-comments__table-entry-label" role="cell">
 													<h:outputText styleClass="user-comments__table-entry-label-record" rendered="#{comment.targetPageOrder != null}" value="#{comment.targetPI}, #{msg.page} #{comment.targetPageOrder}" />
 													<a
 														href="#{navigationHelper.objectUrl}#{comment.targetLink}"
 														class="user-comments__table-entry-action-link" target="_blank"
 														aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{comment.targetPI})">#{msg.show}</a>	
 												</div>
-	
+
 											<!-- TEXT -->
-											<div class="user-comments__table-entry-text">
+											<div class="user-comments__table-entry-text" role="cell">
 												<!-- INFO: ID NAME CANT BE CHANGED WITHOUT LOSING FUNCTIONALITY -->
 												<div id="annotation_body_#{comment.id}" class="annotation__body__content_wrapper">
 													#{contentBean.cleanUpValue(comment.body.toString())}
 												</div>
 												<annotationBody annotationid="#{comment.id}"
-													contentid="annotation_body_#{comment.id}" />
+													contentid="annotation_body_#{comment.id}" role="presentation" />
 											</div>
 											<!-- DATE -->
-											<div class="user-comments__table-entry-date">
+											<div class="user-comments__table-entry-date" role="cell">
 												<h:outputText value="#{comment.dateCreated}">
 													<f:converter converterId="localDateTimeConverter" />
 													<f:attribute name="pattern"
@@ -112,17 +111,18 @@
 							</div>
 						<script>
 						$(document).ready(() => {
-                            riot.mount( "annotationBody", {
-                                currentlang: "#{navigationHelper.localeString}",
-                                resturl: "#{configurationBean.restApiUrlV1}",
-                            } );
+							riot.mount( "annotationBody", {
+									currentlang: "#{navigationHelper.localeString}",
+									resturl: "#{configurationBean.restApiUrlV1}",
+							} );
 						});
-                        </script>
+            </script>
 
 					</h:form>
 				</div>
 			</h:panelGroup>
 		</div>
+
 	</ui:define>
 
 	<ui:define name="sidebar">
@@ -135,5 +135,6 @@
             </c:forEach>
         </c:forEach>
 	</ui:define>
+
 
 </ui:composition>
