@@ -287,7 +287,7 @@ public class SearchHit implements Comparable<SearchHit> {
 
         SearchHit hit = new SearchHit(hitType, browseElement, searchTerms, locale);
         hit.populateFoundMetadata(doc, ownerAlreadyHasMetadata,
-                ignoreAdditionalFields, translateAdditionalFields);
+                ignoreAdditionalFields, translateAdditionalFields, oneLineAdditionalFields);
         hit.proximitySearchDistance = proximitySearchDistance;
 
         // Export fields for Excel export
@@ -703,14 +703,17 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param ownerAlreadyHasFields List of metadata field+value combos that the owner already has
      * @param ignoreFields Fields to be skipped
      * @param translateFields Fields to be translated
+     * @param oneLineFields
      * @should add field values pairs that match search terms
      * @should add MD fields that contain terms from DEFAULT
      * @should not add duplicate values
      * @should not add ignored fields
      * @should not add field values that equal the label
      * @should translate configured field values correctly
+     * @should write one line fields into a single string
      */
-    public void populateFoundMetadata(SolrDocument doc, Set<String> ownerAlreadyHasFields, Set<String> ignoreFields, Set<String> translateFields) {
+    public void populateFoundMetadata(SolrDocument doc, Set<String> ownerAlreadyHasFields, Set<String> ignoreFields, Set<String> translateFields,
+            Set<String> oneLineFields) {
         // logger.trace("populateFoundMetadata: {}", searchTerms);
         if (searchTerms == null) {
             return;
@@ -748,27 +751,61 @@ public class SearchHit implements Comparable<SearchHit> {
                         }
 
                         List<String> fieldValues = SolrTools.getMetadataValues(doc, docFieldName);
-                        for (String fieldValue : fieldValues) {
-                            // Skip values that are equal to the hit label
-                            if (fieldValue.equals(browseElement.getLabel())) {
-                                continue;
+                        if (oneLineFields != null && oneLineFields.contains(docFieldName)) {
+                            // All values into a single field value
+                            StringBuilder sb = new StringBuilder();
+                            for (String fieldValue : fieldValues) {
+                                // Skip values that are equal to the hit label
+                                if (fieldValue.equals(browseElement.getLabel())) {
+                                    continue;
+                                }
+                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
+                                if (!highlightedValue.equals(fieldValue)) {
+                                    // Translate values for certain fields, keeping the highlighting
+                                    if (translateFields != null && (translateFields.contains(termsFieldName)
+                                            || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                                "$1" + translatedValue + "$3");
+                                    }
+                                    highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
+                                    // Only add one instance of NORM_ALTNAME (as there can be dozens)
+                                    if ("NORM_ALTNAME".equals(docFieldName)) {
+                                        break;
+                                    }
+                                }
+                                if (sb.length() > 0) {
+                                    sb.append(", ");
+                                }
+                                sb.append(highlightedValue);
                             }
-                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
-                            if (!highlightedValue.equals(fieldValue)) {
-                                // Translate values for certain fields, keeping the highlighting
-                                if (translateFields != null && (translateFields.contains(termsFieldName)
-                                        || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
-                                    String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
-                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
-                                            "$1" + translatedValue + "$3");
-                                }
-                                highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), highlightedValue));
-                                // Only add one instance of NORM_ALTNAME (as there can be dozens)
-                                if ("NORM_ALTNAME".equals(docFieldName)) {
-                                    break;
-                                }
+                            if (sb.length() > 0) {
+                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), sb.toString()));
                                 // logger.trace("found metadata: {}:{}", docFieldName, fieldValue);
+                            }
+                        } else {
+                            for (String fieldValue : fieldValues) {
+                                // Skip values that are equal to the hit label
+                                if (fieldValue.equals(browseElement.getLabel())) {
+                                    continue;
+                                }
+                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
+                                if (!highlightedValue.equals(fieldValue)) {
+                                    // Translate values for certain fields, keeping the highlighting
+                                    if (translateFields != null && (translateFields.contains(termsFieldName)
+                                            || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                                "$1" + translatedValue + "$3");
+                                    }
+                                    highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
+                                    foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), highlightedValue));
+                                    // Only add one instance of NORM_ALTNAME (as there can be dozens)
+                                    if ("NORM_ALTNAME".equals(docFieldName)) {
+                                        break;
+                                    }
+                                    // logger.trace("found metadata: {}:{}", docFieldName, fieldValue);
+                                }
                             }
                         }
                     }
@@ -777,36 +814,83 @@ public class SearchHit implements Comparable<SearchHit> {
                     // Look up the exact field name in he Solr doc and add its values that contain any of the terms for that field
                     if (doc.containsKey(termsFieldName)) {
                         List<String> fieldValues = SolrTools.getMetadataValues(doc, termsFieldName);
-                        for (String fieldValue : fieldValues) {
-                            // Skip values that are equal to the hit label
-                            if (fieldValue.equals(browseElement.getLabel())) {
-                                continue;
-                            }
-                            // Prevent showing child hit metadata that's already displayed on the parent hit
-                            if (ownerAlreadyHasFields != null) {
-                                switch (browseElement.getDocType()) {
-                                    case METADATA:
-                                        if (ownerAlreadyHasFields.contains(doc.getFieldValue(SolrConstants.LABEL))) {
-                                            logger.trace("child hit metadata field {} already exists", browseElement.getLabel());
-                                            continue;
-                                        }
-                                        break;
-                                    default:
-                                        break;
+
+                        if (oneLineFields != null && oneLineFields.contains(termsFieldName)) {
+                            // All values into a single field value
+                            StringBuilder sb = new StringBuilder();
+                            for (String fieldValue : fieldValues) {
+                                // Skip values that are equal to the hit label
+                                if (fieldValue.equals(browseElement.getLabel())) {
+                                    continue;
                                 }
+                                // Prevent showing child hit metadata that's already displayed on the parent hit
+                                if (ownerAlreadyHasFields != null) {
+                                    switch (browseElement.getDocType()) {
+                                        case METADATA:
+                                            if (ownerAlreadyHasFields.contains(doc.getFieldValue(SolrConstants.LABEL))) {
+                                                logger.trace("child hit metadata field {} already exists", browseElement.getLabel());
+                                                continue;
+                                            }
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+
+                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
+                                if (!highlightedValue.equals(fieldValue)) {
+                                    // Translate values for certain fields, keeping the highlighting
+                                    if (translateFields != null && (translateFields.contains(termsFieldName)
+                                            || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                                "$1" + translatedValue + "$3");
+                                    }
+                                    highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
+                                    foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(termsFieldName, locale), highlightedValue));
+                                }
+                                if (sb.length() > 0) {
+                                    sb.append(", ");
+                                }
+                                sb.append(highlightedValue);
+                            }
+                            if (sb.length() > 0) {
+                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(termsFieldName, locale), sb.toString()));
+                                // logger.trace("found metadata: {}:{}", docFieldName, fieldValue);
                             }
 
-                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
-                            if (!highlightedValue.equals(fieldValue)) {
-                                // Translate values for certain fields, keeping the highlighting
-                                if (translateFields != null && (translateFields.contains(termsFieldName)
-                                        || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
-                                    String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
-                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
-                                            "$1" + translatedValue + "$3");
+                        } else {
+                            for (String fieldValue : fieldValues) {
+                                // Skip values that are equal to the hit label
+                                if (fieldValue.equals(browseElement.getLabel())) {
+                                    continue;
                                 }
-                                highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(termsFieldName, locale), highlightedValue));
+                                // Prevent showing child hit metadata that's already displayed on the parent hit
+                                if (ownerAlreadyHasFields != null) {
+                                    switch (browseElement.getDocType()) {
+                                        case METADATA:
+                                            if (ownerAlreadyHasFields.contains(doc.getFieldValue(SolrConstants.LABEL))) {
+                                                logger.trace("child hit metadata field {} already exists", browseElement.getLabel());
+                                                continue;
+                                            }
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+
+                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
+                                if (!highlightedValue.equals(fieldValue)) {
+                                    // Translate values for certain fields, keeping the highlighting
+                                    if (translateFields != null && (translateFields.contains(termsFieldName)
+                                            || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                        String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                        highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                                "$1" + translatedValue + "$3");
+                                    }
+                                    highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
+                                    foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(termsFieldName, locale), highlightedValue));
+                                }
                             }
                         }
                     }
