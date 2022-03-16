@@ -97,11 +97,19 @@
 											<h:panelGroup layout="block" id="solrQueryInputGroup"
 												rendered="#{disclaimer.displayScope.pageScope == 'RECORD'}">
 												<div class="cms-module__option-control admin__form-input">
-													<h:message for="solrQueryInput" errorClass="-validation-message -danger"></h:message>
-													<div class="-validation-mark">
-														<i class="fa fa-check" aria-hidden="true"></i>
-														<i class="fa fa-exclamation" aria-hidden="true"></i>
-													</div>
+													
+													<div class="input_form__option-message">
+									                    <h:messages for="solrQueryInput" 
+									                        infoClass="input_form__option-message-status success" 
+									                        warnClass="input_form__option-message-status warning"
+									                        errorClass="input_form__option-message-status danger" />
+									
+									                    <div class="input_form__option-message-mark">
+									                        <i class="fa fa-check" aria-hidden="true"></i>
+									                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+									                    </div>
+									                </div>
+													
 													<h:inputText id="solrQueryInput"
 														styleClass="form-control"
 														value="#{disclaimer.displayScope.filterQuery}"
