@@ -91,7 +91,7 @@ public class CookieBanner {
         this.text = new TranslatedText(orig.text);
         this.active = orig.active;
         this.ignoreList = new ArrayList<>(orig.ignoreList);
-        this.requiresConsentAfter = orig.requiresConsentAfter;
+        this.requiresConsentAfter = LocalDateTime.from(orig.requiresConsentAfter);
     }
     
     /**

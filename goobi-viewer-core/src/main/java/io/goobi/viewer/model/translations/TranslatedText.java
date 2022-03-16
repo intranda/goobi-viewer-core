@@ -167,6 +167,11 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
         return getText();
     }
     
+    @Override
+    public int hashCode() {
+        return this.getValues().stream().map(ValuePair::getValue).mapToInt(String::hashCode).sum();
+    }
+    
     public boolean equals(Object obj) {
         if (obj.getClass().equals(TranslatedText.class)) {
             TranslatedText other = (TranslatedText)obj;

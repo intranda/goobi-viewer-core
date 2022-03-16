@@ -28,6 +28,7 @@ import javax.persistence.PersistenceException;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
+import io.goobi.viewer.model.administration.legal.Disclaimer;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
@@ -2339,6 +2340,15 @@ public interface IDAO {
 
     public boolean saveCookieBanner(CookieBanner banner) throws DAOException;
 
+    /**
+     * Get the single stored {@link Disclaimer}. May return null if no disclaimer has been persisted yet
+     * @return  the disclaimer or null
+     * @throws DAOException
+     */
+    public Disclaimer getDisclaimer() throws DAOException;
+
+    public boolean saveDisclaimer(Disclaimer disclaimer) throws DAOException;
+    
     public Long getNumRecordsWithComments(User user) throws DAOException;
 
     public List getNativeQueryResults(String query) throws DAOException;

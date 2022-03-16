@@ -97,6 +97,7 @@ public enum PageType {
     adminCmsSliders("admin/cms/slider", "cms__sliders__title"),
     adminCmsSidebarWidgets("admin/cms/widgets", "cms_widgets__title"),
     adminCookieBanner("admin/legal/cookies", "label__cookie_banner"),
+    adminDisclaimer("admin/legal/disclaimer", "label__disclaimer"),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing
@@ -434,6 +435,10 @@ public enum PageType {
                 || ViewerPathBuilder.startsWith(pagePath, getName());
     }
 
+    public boolean isAdminBackendPage() {
+        return this.name().toLowerCase().startsWith("admin");
+    }
+    
     /**
      * <p>
      * isRestricted.
