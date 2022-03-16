@@ -77,6 +77,46 @@
 										validatorId="solrQueryValidator"
 										validatorMessage="#{msg.inline_help__solr_query_danger}" />
 
+									<h:panelGroup id="displayScopeGroup">
+										<viewerForms:inputFormField
+											label="#{msg.admin__legal__disclaimer_display}">
+
+											<div
+												class="form-group admin__cms-edit-collection-connected-radio-buttons">
+												<div class="connected-top">
+													<h:selectOneRadio group="displayScopeRadio"
+														value="#{disclaimer.displayScope.pageScope}"
+														immediate="true">
+														<f:selectItem itemValue="ALL"
+															itemLabel="#{msg.admin__legal__disclaimer_display__all_pages}" />
+														<f:ajax render="properties:displayScopeGroup" />
+													</h:selectOneRadio>
+												</div>
+												<div class="connected-bottom">
+													<h:selectOneRadio group="displayScopeRadio"
+														value="#{disclaimer.displayScope.pageScope}"
+														immediate="true">
+														<f:selectItem itemValue="RECORD"
+															itemLabel="#{msg.admin__legal__disclaimer_display__record_pages}" />
+														<f:ajax render="properties:displayScopeGroup" />
+													</h:selectOneRadio>
+												</div>
+											</div>
+											<h:panelGroup layout="block" id="solrQueryInputGroup"
+												rendered="#{disclaimer.displayScope.pageScope == 'RECORD'}">
+												<div>
+													<h:inputText id="solrQueryInput"
+														styleClass="form-control"
+														value="#{disclaimer.displayScope.filterQuery}"
+														validatorId="solrQueryValidator"
+														validatorMessage="#{msg.inline_help__solr_query_danger}">
+													</h:inputText>
+												</div>
+											</h:panelGroup>
+
+										</viewerForms:inputFormField>
+									</h:panelGroup>
+
 									<h:panelGroup id="scopeGroup">
 										<viewerForms:inputFormField
 											label="#{msg.admin__legal__disclaimer_scope}">

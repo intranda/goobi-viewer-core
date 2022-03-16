@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,13 +137,13 @@ public class DisclaimerBean implements Serializable {
      * @return  a json object
      */
     public String getDisclaimerConfig() {
-        if (dao != null && navigationHelper.isDocumentPage()) {
+        if (dao != null) {
             try {
                 Disclaimer disclaimer = dao.getDisclaimer();
                 JSONObject json = new JSONObject();
                 boolean active = disclaimer.isActive();
                 if (active) {
-                    if (appliesToRecord(disclaimer, activeDocumentBean.getPersistentIdentifier())) {
+                    if (disclaimer.getDisplayScope().appliesToPage(navigationHelper.getCurrentPageType(), activeDocumentBean.getPersistentIdentifier(), searchIndex)) {
                         ConsentScope scope = getConsentScope(disclaimer);
                         json.put("active", active);
                         json.put("lastEdited", disclaimer.getRequiresConsentAfter().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
@@ -155,28 +156,14 @@ public class DisclaimerBean implements Serializable {
                         return json.toString();
                     }
                 }
-            } catch (DAOException | IndexUnreachableException e) {
+            } catch (DAOException | IndexUnreachableException | JSONException | PresentationException e) {
                 logger.error("Error loading disclaimer config", e);
                 return "{}";
             }
         }
         return "{}";
     }
-    
-    private boolean appliesToRecord(Disclaimer disclaimer, String pi) throws IndexUnreachableException {
-        if(StringUtils.isNotBlank(pi)) {
-            Boolean apply = recordApplicabilityMap.get(pi);
-            if(apply != null) {
-                return apply;
-            } else {
-                apply = matchesRecord(disclaimer, pi);
-                recordApplicabilityMap.put(pi, apply);
-                return apply;
-            }
-        } else {
-            return false;
-        }
-    }
+
 
     /**
      * Checks the currently logged in user. If it matches the user stored in this bean return the stored consentScope.
@@ -228,29 +215,6 @@ public class DisclaimerBean implements Serializable {
     }
 
 
-    /**
-     * Check if the given pi is a match for the query of the record note The pi is a match if the record note query combined with a query for the
-     * given pi returns at least one result
-     * 
-     * @param pi
-     * @return
-     */
-    private boolean matchesRecord(Disclaimer disclaimer, String pi) {
-        if (StringUtils.isNotBlank(pi)) {
-            String solrQuery = disclaimer.getQueryForSearch();
-            
-            String singleRecordQuery = "+({1}) +{2}".replace("{1}", solrQuery).replace("{2}", "PI:" + pi);
-
-            try {
-                return searchIndex.count(singleRecordQuery) > 0;
-            } catch (PresentationException | IndexUnreachableException e) {
-                logger.error("Failed to test match for record note '{}': {}", this, e.toString());
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
     
     private static IDAO retrieveDAO() {
         try {

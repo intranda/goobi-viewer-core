@@ -18,6 +18,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.administration.legal.ConsentScope;
 import io.goobi.viewer.model.administration.legal.Disclaimer;
+import io.goobi.viewer.model.administration.legal.DisplayScope.PageScope;
+import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
 public class DisclaimerBeanTest extends AbstractTest {
@@ -36,7 +38,8 @@ public class DisclaimerBeanTest extends AbstractTest {
         storedDisclaimer.getText().setText("Trigger Warnung", Locale.GERMAN);
         storedDisclaimer.getText().setText("Trigger wariung", Locale.ENGLISH);
         storedDisclaimer.setId(1l);
-        storedDisclaimer.setSolrQuery("PI:*");
+        storedDisclaimer.getDisplayScope().setPageScope(PageScope.RECORD);
+        storedDisclaimer.getDisplayScope().setFilterQuery("PI:*");
         storedDisclaimer.setActive(true);
         storedDisclaimer.setAcceptanceScope(new ConsentScope("2d"));
         
@@ -49,7 +52,7 @@ public class DisclaimerBeanTest extends AbstractTest {
         navigationHelper = Mockito.mock(NavigationHelper.class);
         Mockito.when(navigationHelper.isDocumentPage()).thenReturn(true);
         Mockito.when(navigationHelper.getLocale()).thenReturn(Locale.GERMAN);
-
+        Mockito.when(navigationHelper.getCurrentPageType()).thenReturn(PageType.viewImage);
         
         activeDocumentBean = Mockito.mock(ActiveDocumentBean.class);
         Mockito.when(activeDocumentBean.getPersistentIdentifier()).thenReturn("PI1");

@@ -26,7 +26,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import io.goobi.viewer.dao.converter.ConsentScopeConverter;
+import io.goobi.viewer.dao.converter.DisplayScopeConverter;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
+import io.goobi.viewer.model.administration.legal.DisplayScope.PageScope;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
@@ -72,13 +74,12 @@ public class Disclaimer {
     @Convert(converter = ConsentScopeConverter.class)
     private ConsentScope acceptanceScope = new ConsentScope();
     
-    
-    
     /**
-     * Solr query detailing on which records the disclaimer is to be shown
+     * The scope within which accepting the disclaimer modal is valid for any user
      */
-    @Column(name="solr_query")
-    private String solrQuery = "";
+    @Column(name="display_scope", nullable = true)
+    @Convert(converter = DisplayScopeConverter.class)
+    private DisplayScope displayScope = new DisplayScope(PageScope.RECORD, "");
 
     /**
      * Empty default constructor
@@ -96,7 +97,7 @@ public class Disclaimer {
         this.id = orig.id;
         this.requiresConsentAfter = LocalDateTime.from(orig.requiresConsentAfter);
         this.text = new TranslatedText(orig.text);
-        this.solrQuery = orig.solrQuery;
+        this.displayScope = new DisplayScope(orig.displayScope.getAsJson());
         this.acceptanceScope = new ConsentScope(orig.acceptanceScope.toString());
     }
     
@@ -186,28 +187,12 @@ public class Disclaimer {
         this.requiresConsentAfter = requiresConsentAfter;
     }
 
-    /**
-     * get the solr query determining the records showing the disclaimer
-     * @return the solrQuery
-     */
-    public String getSolrQuery() {
-        return solrQuery;
+    public DisplayScope getDisplayScope() {
+        return displayScope;
     }
-
-    /**
-     * set the solr query  determining the records showing the disclaimer
-     * @param solrQuery the solrQuery to set
-     */
-    public void setSolrQuery(String solrQuery) {
-        this.solrQuery = solrQuery;
-    }
-
-    /**
-     * Get the query to use in a SOLR search to deterimine whether a record should show the disclaimer
-     * @return  a solr search query for the disclaimer
-     */
-    public String getQueryForSearch() {
-        return "+(" + this.solrQuery + ") +(ISWORK:* ISANCHOR:*)";
+    
+    public void setDisplayScope(DisplayScope displayScope) {
+        this.displayScope = displayScope;
     }
 
     /**

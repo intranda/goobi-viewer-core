@@ -10,6 +10,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.administration.legal.DisplayScope.PageScope;
 
 public class DisclaimerTest extends AbstractDatabaseEnabledTest {
 
@@ -23,13 +24,13 @@ public class DisclaimerTest extends AbstractDatabaseEnabledTest {
     @Test
     public void test_persist() throws DAOException {
         Disclaimer disclaimer = new Disclaimer();
-        disclaimer.setSolrQuery("PI:X");
+        disclaimer.setDisplayScope(new DisplayScope(PageScope.RECORD, "PI:X"));
         disclaimer.getAcceptanceScope().setDaysToLive(8);
         dao.saveDisclaimer(disclaimer);
-        disclaimer.setSolrQuery("PI:Y");
+        disclaimer.getDisplayScope().setFilterQuery("PI:Y");
         Disclaimer storage = dao.getDisclaimer();
         assertNotNull(storage);
-        assertEquals("PI:X", storage.getSolrQuery());
+        assertEquals("PI:X", storage.getDisplayScope().getFilterQuery());
         assertEquals(8, storage.getAcceptanceScope().getDaysToLive());
     }
 

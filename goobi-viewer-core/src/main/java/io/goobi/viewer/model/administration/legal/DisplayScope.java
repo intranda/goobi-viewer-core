@@ -102,7 +102,7 @@ public class DisplayScope implements Serializable {
         if(this.pageScope.equals(PageScope.ALL)) {
             return !pageType.isAdminBackendPage();
         } else if(pageType != null && pageType.isDocumentPage()) {
-            return matchesFilter(this.filterQuery, pi, searchIndex);
+            return matchesFilter(this.getQueryForSearch(), pi, searchIndex);
         } else {
             return false;
         }
@@ -116,6 +116,18 @@ public class DisplayScope implements Serializable {
         } else {
             String singleRecordQuery = "+({1}) +{2}".replace("{1}", query).replace("{2}", "PI:" + pi);            
             return searchIndex.count(singleRecordQuery) > 0;
+        }
+    }
+    
+    /**
+     * Get the query to use in a SOLR search to deterimine whether a record should show the disclaimer
+     * @return  a solr search query for the disclaimer
+     */
+    public String getQueryForSearch() {
+        if(StringUtils.isBlank(this.filterQuery)) {
+            return "";
+        } else {
+            return "+(" + this.filterQuery + ") +(ISWORK:* ISANCHOR:*)";
         }
     }
     
