@@ -3904,46 +3904,10 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * isCommentsEnabled.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isCommentsEnabled() {
-        return getLocalBoolean(("comments[@enabled]"), false);
-    }
-
-    /**
      * @return
      */
     public boolean reviewEnabledForComments() {
         return getLocalBoolean("comments.review[@enabled]", false);
-    }
-
-    /**
-     * <p>
-     * getCommentsCondition.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getCommentsCondition() {
-        return getLocalString("comments.condition");
-    }
-
-    /**
-     * <p>
-     * getCommentsNotificationEmailAddresses.
-     * </p>
-     *
-     * @should return all configured elements
-     * @return a {@link java.util.List} object.
-     */
-    public List<String> getCommentsNotificationEmailAddresses() {
-        return getLocalList("comments.notificationEmailAddress");
     }
 
     /**

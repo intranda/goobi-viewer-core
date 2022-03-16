@@ -1,0 +1,44 @@
+/* ==============================================================
+   Disclaimer Modal (sweet alerts)
+   ==============================================================*/
+
+.swal2-popup.disclaimer-modal__alert {
+	width: 550px;
+	border-radius: .48rem;
+	color: #222;
+	padding-bottom: 2rem;
+}
+
+/* DISCLAIMER  */
+.disclaimer-modal {
+	&__alert {
+		.swal2-html-container {
+			margin: 3rem;
+			margin-bottom: 0.5rem;
+			text-align: left;
+			font-size: 1.4rem;
+			line-height: 1.5;
+		}
+		&.swal2-show {
+			animation: fadeInDisclaimerModal 0.25s linear;
+		}
+	}
+}
+
+@keyframes fadeInDisclaimerModal {
+  0% { opacity: 0; }
+  100% { opacity: 1;}
+}
+
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

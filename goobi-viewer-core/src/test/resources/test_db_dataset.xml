@@ -20,6 +20,8 @@
 		owner_id="1" description="user group 1 desc" active="true" />
 	<user_groups user_group_id="2" name="user group 2 name"
 		owner_id="1" description="user group 2 (no members)" active="false" />
+    <user_groups user_group_id="3" name="user group 3 name"
+        owner_id="1" description="user group 3" active="false" />
 
 	<roles role_id="1" name="role 1 name" description="role 1 desc" />
 	<roles role_id="2" name="role 2 name" description="role 2 (unused)" />
@@ -28,6 +30,8 @@
 
 	<user_role user_role_id="1" user_id="2" user_group_id="1"
 		role_id="1" />
+    <user_role user_role_id="2" user_id="3" user_group_id="3"
+        role_id="1" />
 
 	<ip_ranges ip_range_id="1" name="localhost" subnet_mask="1.2.3.4/24"
 		description="ip range 1 desc" />
@@ -265,12 +269,14 @@
     
     <cs_campaign_log message_id="1" creator_id="1" campaign_id="1" pi="PI_1" date_created="2020-11-05 09:09:12" message="Eine Nachricht im Log"></cs_campaign_log>
 
+    <comment_groups comment_group_id="1" title="admin__comment_groups_all_comments_title" description="admin__comment_groups_all_comments_desc" user_group_id="3" send_email_notifications="1" core_type="1" />
+    <comment_groups comment_group_id="2" title="test" description="desc" core_type="0" solr_query="DC:dcmetadata" user_group_id="1" send_email_notifications="1" />
+
     <annotations_crowdsourcing annotation_id="1" body="&quot;a&quot;" date_created="2019-09-19 00:00:00.000000000" creator_id="1" generator_id="1" target="&quot;aa&quot;" target_pi="PI_1" target_page="1" />
     <annotations_crowdsourcing annotation_id="2" body="&quot;b&quot;" date_created="2019-09-19 00:00:00.000000000" reviewer_id="1" generator_id="1" target="&quot;bb&quot;" target_pi="PI_2" target_page="6" />
     <annotations_crowdsourcing annotation_id="3" body="&quot;c&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="2" target="&quot;cc&quot;" target_pi="PI_1" />
     <annotations_crowdsourcing annotation_id="4" body="&quot;d&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;dd&quot;" target_pi="PI_1" />
     <annotations_crowdsourcing annotation_id="5" body="&quot;e&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;ee&quot;" target_pi="PI_2" />
     
-
 </dataset>
 

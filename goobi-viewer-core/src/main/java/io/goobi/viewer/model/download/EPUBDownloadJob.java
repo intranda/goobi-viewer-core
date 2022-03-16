@@ -123,20 +123,6 @@ public class EPUBDownloadJob extends DownloadJob {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#getSize()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public long getSize() {
-        File downloadFile = DownloadJobTools.getDownloadFileStatic(identifier, type, getFileExtension());
-        if (downloadFile.isFile()) {
-            return downloadFile.length();
-        }
-
-        return getEpubSizeFromTaskManager(identifier);
-    }
-
-    /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#getQueuePosition()
      */
     /** {@inheritDoc} */

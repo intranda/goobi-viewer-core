@@ -72,7 +72,8 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
     @Override
     public long getTotalAnnotationCount() {
         try {
-            return dao.getCommentCount(null, null);
+            // TODO filter via PI whitelist here?
+            return dao.getCommentCount(null, null, null);
         } catch (DAOException e) {
             logger.error("Error getting comment count", e);
             return 0;
@@ -86,7 +87,8 @@ public class SqlCommentLister implements AnnotationLister<Comment> {
     public List<Comment> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators,
             List<Long> creators, String targetPi, Integer targetPage, String sortField, boolean sortDescending) {
         try {
-            List<Comment> allAnnos = dao.getComments(0, Integer.MAX_VALUE, sortField, sortDescending, null);
+            // TODO filter via PI whitelist here?
+            List<Comment> allAnnos = dao.getComments(0, Integer.MAX_VALUE, sortField, sortDescending, null, null);
             Stream<Comment> stream = allAnnos.stream();
             if (StringUtils.isNotBlank(textQuery)) {
                 stream = stream.filter(a -> a.getContentString().toLowerCase().contains(textQuery.toLowerCase()));

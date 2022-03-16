@@ -369,6 +369,7 @@ public class CrowdsourcingBean implements Serializable {
      * @return
      * @throws DAOException
      */
+    @Deprecated
     public boolean isUserOwnsAnyCampaigns(User user) throws DAOException {
         return CrowdsourcingTools.isUserOwnsAnyCampaigns(user);
     }

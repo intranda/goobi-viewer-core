@@ -1448,24 +1448,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isCommentsEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    public void isUserCommentsEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isCommentsEnabled());
-    }
-
-    /**
-     * @see Configuration#getCommentsCondition()
-     * @verifies return correct value
-     */
-    @Test
-    public void getUserCommentsCondition_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("DC:varia", DataManager.getInstance().getConfiguration().getCommentsCondition());
-    }
-
-    /**
      * @see Configuration#useTiles()
      * @verifies return correct value
      */
@@ -1799,7 +1781,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getLabelFieldForFacetField_shouldReturnNullIfNoValueFound() throws Exception {
         Assert.assertNull(DataManager.getInstance().getConfiguration().getLabelFieldForFacetField("MD_PLACEPUBLISH"));
     }
-    
 
     /**
      * @see Configuration#isTranslateFacetFieldLabels(String)
@@ -1898,15 +1879,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isForceJpegConversion_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isForceJpegConversion());
-    }
-
-    /**
-     * @see Configuration#getCommentsNotificationEmailAddresses()
-     * @verifies return all configured elements
-     */
-    @Test
-    public void getUserCommentsNotificationEmailAddresses_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getCommentsNotificationEmailAddresses().size());
     }
 
     /**
