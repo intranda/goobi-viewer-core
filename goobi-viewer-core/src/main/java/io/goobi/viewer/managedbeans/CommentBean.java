@@ -74,6 +74,11 @@ public class CommentBean implements Serializable {
     private Map<String, Boolean> editCommentPermissionMap = new HashMap<>();
     private Map<String, Boolean> deleteCommentPermissionMap = new HashMap<>();
 
+    /**
+     * 
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
     public CommentBean() throws IndexUnreachableException, DAOException {
         commentManager = new CommentManager(
                 new SolrAndSqlAnnotationSaver(),
@@ -83,6 +88,12 @@ public class CommentBean implements Serializable {
                 new JsfMessagesNotificator());
     }
 
+    /**
+     * 
+     * @param text
+     * @param restricted
+     * @throws AjaxResponseException
+     */
     public void createComment(String text, boolean restricted) throws AjaxResponseException {
         try {
             this.commentManager.createComment(text, userBean.getUser(), activeDocumentBean.getViewManager().getPi(),
@@ -92,7 +103,11 @@ public class CommentBean implements Serializable {
         }
     }
 
-    public void editComment() throws AjaxResponseException {
+    /**
+     * 
+     * @throws PresentationException
+     */
+    public void editComment() throws PresentationException {
         String idString = Faces.getRequestParameter("id");
         String text = Faces.getRequestParameter("text");
         try {
@@ -106,15 +121,27 @@ public class CommentBean implements Serializable {
         }
     }
 
-    public void editComment(Comment original, String text, boolean restricted) throws IndexUnreachableException {
-        User currentUser = userBean.getUser();
-        User commentOwner = original.getCreatorIfPresent().orElse(null);
-        if (currentUser.isSuperuser() || currentUser.equals(commentOwner)) {
+    /**
+     * 
+     * @param original
+     * @param text
+     * @param restricted
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public void editComment(Comment original, String text, boolean restricted) throws DAOException, PresentationException, IndexUnreachableException {
+        if (isMayEditCommentsForRecord(original.getTargetPI())) {
             this.commentManager.editComment(original, text, userBean.getUser(), getLicense(restricted), getInitialPublicationStatus());
         }
     }
 
-    public void deleteComment() throws AjaxResponseException {
+    /**
+     * 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public void deleteComment() throws PresentationException, IndexUnreachableException {
         String idString = Faces.getRequestParameter("id");
         try {
             Long id = Long.parseLong(idString);
@@ -127,19 +154,39 @@ public class CommentBean implements Serializable {
         }
     }
 
-    public void deleteComment(Comment annotation) {
-        User currentUser = userBean.getUser();
-        User commentOwner = annotation.getCreatorIfPresent().orElse(null);
-        if (currentUser.isSuperuser() || currentUser.equals(commentOwner)) {
+    /**
+     * 
+     * @param annotation
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public void deleteComment(Comment annotation) throws DAOException, PresentationException, IndexUnreachableException {
+        if (isMayDeleteCommentsForRecord(annotation.getTargetPI())) {
             this.commentManager.deleteComment(annotation);
         }
     }
 
+    /**
+     * 
+     * @param startIndex
+     * @param numItems
+     * @param filter
+     * @param user
+     * @param sortField
+     * @param descending
+     * @return
+     */
     public List<Comment> getComments(int startIndex, int numItems, String filter, User user, String sortField, boolean descending) {
         return this.commentManager.getAnnotations(startIndex, numItems, filter, null, null, Collections.singletonList(user.getId()), null, null,
                 sortField, descending);
     }
 
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
     public List<Comment> getCommentsForCurrentPage() throws IndexUnreachableException {
         return this.commentManager
                 .getAnnotations(0, Integer.MAX_VALUE, null, null, null, null, activeDocumentBean.getViewManager().getPi(),
@@ -152,14 +199,28 @@ public class CommentBean implements Serializable {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 
+     * @return
+     */
     private Long getCurrentUserId() {
         return Optional.ofNullable(userBean).map(UserBean::getUser).map(User::getId).orElse(null);
     }
 
+    /**
+     * 
+     * @param anno
+     * @return
+     */
     public boolean isRestricted(CrowdsourcingAnnotation anno) {
         return REQUIRES_COMMENT_RIGHTS.equals(anno.getAccessCondition());
     }
 
+    /**
+     * 
+     * @param restricted
+     * @return
+     */
     private String getLicense(boolean restricted) {
         return restricted ? getRestrictedLicense() : getPublicLicense();
     }
