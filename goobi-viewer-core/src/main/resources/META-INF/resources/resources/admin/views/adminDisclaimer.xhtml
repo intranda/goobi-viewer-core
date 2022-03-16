@@ -69,14 +69,6 @@
 								<viewerForms:inputFormBlock id="properties"
 									title="#{msg.admin__legal__disclaimer_properties__label}">
 
-
-									<viewerForms:textInputField
-										label="#{msg.admin__legal__disclaimer_query__label}"
-										value="#{disclaimer.solrQuery}"
-										helpText="#{msg.admin__legal__disclaimer_query__help}"
-										validatorId="solrQueryValidator"
-										validatorMessage="#{msg.inline_help__solr_query_danger}" />
-
 									<h:panelGroup id="displayScopeGroup">
 										<viewerForms:inputFormField
 											label="#{msg.admin__legal__disclaimer_display}">
@@ -104,12 +96,18 @@
 											</div>
 											<h:panelGroup layout="block" id="solrQueryInputGroup"
 												rendered="#{disclaimer.displayScope.pageScope == 'RECORD'}">
-												<div>
+												<div class="cms-module__option-control admin__form-input">
+													<h:message for="solrQueryInput" errorClass="-validation-message -danger"></h:message>
+													<div class="-validation-mark">
+														<i class="fa fa-check" aria-hidden="true"></i>
+														<i class="fa fa-exclamation" aria-hidden="true"></i>
+													</div>
 													<h:inputText id="solrQueryInput"
 														styleClass="form-control"
 														value="#{disclaimer.displayScope.filterQuery}"
-														validatorId="solrQueryValidator"
+														validator="solrQueryValidator"
 														validatorMessage="#{msg.inline_help__solr_query_danger}">
+														<f:ajax event="valueChange" render="solrQueryInputGroup"/>
 													</h:inputText>
 												</div>
 											</h:panelGroup>
