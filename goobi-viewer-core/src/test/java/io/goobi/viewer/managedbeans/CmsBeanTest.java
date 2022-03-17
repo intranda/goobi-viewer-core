@@ -116,7 +116,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         CMSPage page = new CMSPage();
         page.setTemplateId("new");
         assertTrue(DataManager.getInstance().getDao().addCMSPage(page));
-   
+
         List<CMSStaticPage> staticPages = bean.getStaticPages();
         CMSStaticPage staticPage = staticPages.get(0);
         //    	Assert.assertNull(staticPage.getCmsPage());
@@ -180,7 +180,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, UUID.randomUUID());
         doc.addField("LABEL", doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
         SearchHit hit =
-                SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", null, null, null, null, null, SearchHit.HitType.DOCSTRCT, 0,
+                SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", null, null, null, null, null, null, SearchHit.HitType.DOCSTRCT, 0,
                         null);
         hit.getBrowseElement().setLabelShort(new SimpleMetadataValue(iddoc));
         // logger.debug("labelShort: {}", hit.getBrowseElement().getLabelShort());
@@ -212,9 +212,9 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(item.getElementsPerPage()).thenReturn(3);
         Mockito.when(item.getListPage()).thenReturn(3);
         Mockito.when(item.getListOffset()).thenCallRealMethod();
-        
+
         assertEquals(6, item.getListOffset());
-        
+
         List<CMSPage> children = bean.getNestedPages(item);
         assertEquals(1, children.size());
         assertEquals(3, item.getListPage());
