@@ -380,7 +380,18 @@ public class SearchQueryItem implements Serializable {
                     displaySelectItems = true;
                     break;
                 default:
-                    displaySelectItems = false;
+                    try {
+                        // Fields containing less than 10 values always as drop-down
+                        List<String> values = SearchHelper.getFacetValues("*:*", field, 1);
+                        if (values.size() < 10) {
+                            displaySelectItems = true;
+                        } else {
+                            displaySelectItems = false;
+                        }
+                    } catch (PresentationException | IndexUnreachableException e) {
+                        logger.error(e.getMessage());
+                        displaySelectItems = false;
+                    }
             }
             //            logger.trace("toggleDisplaySelectItems: {}:{}", field, displaySelectItems);
         }
