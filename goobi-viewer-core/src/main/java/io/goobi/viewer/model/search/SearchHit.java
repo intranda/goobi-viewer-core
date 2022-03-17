@@ -773,11 +773,11 @@ public class SearchHit implements Comparable<SearchHit> {
                                     if ("NORM_ALTNAME".equals(docFieldName)) {
                                         break;
                                     }
+                                    if (sb.length() > 0) {
+                                        sb.append(", ");
+                                    }
+                                    sb.append(highlightedValue);
                                 }
-                                if (sb.length() > 0) {
-                                    sb.append(", ");
-                                }
-                                sb.append(highlightedValue);
                             }
                             if (sb.length() > 0) {
                                 foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), sb.toString()));
@@ -847,12 +847,11 @@ public class SearchHit implements Comparable<SearchHit> {
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(termsFieldName, locale), highlightedValue));
+                                    if (sb.length() > 0) {
+                                        sb.append(", ");
+                                    }
+                                    sb.append(highlightedValue);
                                 }
-                                if (sb.length() > 0) {
-                                    sb.append(", ");
-                                }
-                                sb.append(highlightedValue);
                             }
                             if (sb.length() > 0) {
                                 foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(termsFieldName, locale), sb.toString()));

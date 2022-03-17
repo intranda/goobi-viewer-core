@@ -631,12 +631,11 @@ public class BrowseElement implements Serializable {
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
+                                    if (sb.length() > 0) {
+                                        sb.append(", ");
+                                    }
+                                    sb.append(highlightedValue);
                                 }
-                                if (sb.length() > 0) {
-                                    sb.append(", ");
-                                }
-                                sb.append(highlightedValue);
-
                             }
                             if (sb.length() > 0) {
                                 metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), docFieldName, "", sb.toString()));
@@ -697,11 +696,11 @@ public class BrowseElement implements Serializable {
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
+                                    if (sb.length() > 0) {
+                                        sb.append(", ");
+                                    }
+                                    sb.append(highlightedValue);
                                 }
-                                if (sb.length() > 0) {
-                                    sb.append(", ");
-                                }
-                                sb.append(highlightedValue);
                             }
                             if (sb.length() > 0) {
                                 metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), termsFieldName, "", sb.toString()));

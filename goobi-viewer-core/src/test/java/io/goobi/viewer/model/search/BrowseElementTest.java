@@ -229,20 +229,21 @@ public class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(2, se.getMetadataFields().size());
 
         Map<String, Set<String>> searchTerms = new HashMap<>();
-        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "ichi", "bar" })));
-        searchTerms.put("MD_COUNT_EN", new HashSet<>(Arrays.asList(new String[] { "one" })));
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "ichi", "ni" })));
+        searchTerms.put("MD_COUNT_EN", new HashSet<>(Arrays.asList(new String[] { "one", "three" })));
 
         String[] oneLineFields = { "MD_COUNT_EN", "MD_COUNT_JP" };
         be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null, new HashSet<>(Arrays.asList(oneLineFields)));
 
         // Via explicit term field
         Assert.assertEquals(1, be.getMetadataList("MD_COUNT_EN").size());
-        Assert.assertEquals("<span class=\"search-list--highlight\">one</span>, two, three",
+        Assert.assertEquals(
+                "<span class=\"search-list--highlight\">one</span>, <span class=\"search-list--highlight\">three</span>",
                 be.getMetadataList("MD_COUNT_EN").get(0).getValues().get(0).getComboValueShort(0));
 
         // Via DEFAULT
         Assert.assertEquals(1, be.getMetadataList("MD_COUNT_JP").size());
-        Assert.assertEquals("<span class=\"search-list--highlight\">ichi</span>, ni, san",
+        Assert.assertEquals("<span class=\"search-list--highlight\">ichi</span>, <span class=\"search-list--highlight\">ni</span>",
                 be.getMetadataList("MD_COUNT_JP").get(0).getValues().get(0).getComboValueShort(0));
     }
 

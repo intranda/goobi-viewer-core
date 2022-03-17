@@ -240,6 +240,46 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHit#populateFoundMetadata(SolrDocument,Set,Set,Set,Set)
+     * @verifies write one line fields into a single string
+     */
+    @Test
+    public void populateFoundMetadata_shouldWriteOneLineFieldsIntoASingleString() throws Exception {
+        //TODO auto-generated
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "bat", "hiru" })));
+        searchTerms.put("MD_COUNT_SE", new HashSet<>(Arrays.asList(new String[] { "ett", "två" })));
+
+        SolrDocument doc = new SolrDocument();
+        doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
+        doc.addField("MD_TITLE", "Any title");
+        doc.addField("MD_COUNT_EU", "bat");
+        doc.addField("MD_COUNT_EU", "bi");
+        doc.addField("MD_COUNT_EU", "hiru");
+        doc.addField("MD_COUNT_SE", "ett");
+        doc.addField("MD_COUNT_SE", "två");
+        doc.addField("MD_COUNT_SE", "tre");
+
+        String[] oneLineFields = { "MD_COUNT_EU", "MD_COUNT_SE" };
+        SearchHit hit =
+                SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null,
+                        new HashSet<>(Arrays.asList(oneLineFields)), null, 0, null);
+        Assert.assertNotNull(hit);
+        Assert.assertEquals(2, hit.getFoundMetadata().size());
+
+        // Via explicit term field
+        Assert.assertEquals("MD_COUNT_SE", hit.getFoundMetadata().get(0).getOne());
+        Assert.assertEquals("<span class=\"search-list--highlight\">ett</span>, <span class=\"search-list--highlight\">två</span>",
+                hit.getFoundMetadata().get(0).getTwo());
+        // Via DEFAULT
+        Assert.assertEquals("MD_COUNT_EU", hit.getFoundMetadata().get(1).getOne());
+        Assert.assertEquals("<span class=\"search-list--highlight\">bat</span>, <span class=\"search-list--highlight\">hiru</span>",
+                hit.getFoundMetadata().get(1).getTwo());
+    }
+
+    /**
      * @see SearchHit#addLabelHighlighting()
      * @verifies modify label correctly
      */
