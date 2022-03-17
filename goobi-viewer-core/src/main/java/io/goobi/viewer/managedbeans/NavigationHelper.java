@@ -488,7 +488,12 @@ public class NavigationHelper implements Serializable {
         breadcrumbBean.resetBreadcrumbs();
         resetCurrentDocument();
         if (pageName != null && !pageName.trim().isEmpty()) {
-            this.currentPage = pageName;
+            PageType pageType = PageType.getByName(pageName);
+            if(pageType== null || PageType.other == pageType) {
+                this.currentPage = PageType.admin.name();
+            } else {
+                this.currentPage = pageType.name();
+            }
         } else {
             this.currentPage = "adminAllUsers";
         }
