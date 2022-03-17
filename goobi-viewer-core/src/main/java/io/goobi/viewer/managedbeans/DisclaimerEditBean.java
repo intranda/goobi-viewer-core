@@ -71,9 +71,9 @@ public class DisclaimerEditBean implements Serializable {
                 if (!this.dao.saveDisclaimer(this.disclaimerForEdit)) {
                     throw new DAOException("Saving disclaimer failed");
                 }
-                Messages.info("admin__legal__save_disclaimer__success");
+                Messages.info("admin__legal__disclaimer_save_success");
             } catch (DAOException e) {
-                Messages.error("admin__legal__save_disclaimer__error");
+                Messages.error("admin__legal__disclaimer_save_error");
             }
         }
     }

@@ -1871,7 +1871,29 @@
 input[type="radio"]:checked+label {
     font-weight: bold;
 }
-
+.connected-bottom-wrapper {
+	display: flex;
+	align-items: flex-start;
+	padding-top: 14px;
+	label {
+		line-height: 1;
+		margin-top: -1px;
+		margin-bottom: 1.6rem;
+	}
+	.form-control {
+		margin-top: -10px;
+		// margin-left: 10px;
+	}
+	.admin__form-input {
+		padding-left: 20px;
+		input {
+			min-width: 400px;
+		}
+	}
+	.input_form__option-message-mark {
+		top: -8px !important;
+	}
+}
 
 // BACKEND STYLES FOR DEVS
 .backend-styles {

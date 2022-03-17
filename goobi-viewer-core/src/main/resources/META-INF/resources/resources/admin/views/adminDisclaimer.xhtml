@@ -84,7 +84,7 @@
 														<f:ajax render="properties:displayScopeGroup" />
 													</h:selectOneRadio>
 												</div>
-												<div class="connected-bottom">
+												<div class="connected-bottom connected-bottom-wrapper">
 													<h:selectOneRadio group="displayScopeRadio"
 														value="#{disclaimer.displayScope.pageScope}"
 														immediate="true">
@@ -92,33 +92,36 @@
 															itemLabel="#{msg.admin__legal__disclaimer_display__record_pages}" />
 														<f:ajax render="properties:displayScopeGroup" />
 													</h:selectOneRadio>
+													<h:panelGroup layout="block" id="solrQueryInputGroup"
+														rendered="#{disclaimer.displayScope.pageScope == 'RECORD'}">
+														<div class="cms-module__option-control admin__form-input">
+
+															<h:inputText id="solrQueryInput"
+																styleClass="form-control"
+																value="#{disclaimer.displayScope.filterQuery}"
+																validator="solrQueryValidator"
+																validatorMessage="#{msg.inline_help__solr_query_danger}">
+																<f:ajax event="valueChange" render="solrQueryInputGroup"/>
+															</h:inputText>
+															
+															<div class="input_form__option-message-mark">
+											                        <i class="fa fa-check" aria-hidden="true"></i>
+											                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+											                    </div>
+															
+															<div class="input_form__option-message">
+											                    <h:messages for="solrQueryInput" 
+											                        infoClass="input_form__option-message-status success" 
+											                        warnClass="input_form__option-message-status warning"
+											                        errorClass="input_form__option-message-status danger" />
+											                </div>
+															
+															
+														</div>
+													</h:panelGroup>
 												</div>
 											</div>
-											<h:panelGroup layout="block" id="solrQueryInputGroup"
-												rendered="#{disclaimer.displayScope.pageScope == 'RECORD'}">
-												<div class="cms-module__option-control admin__form-input">
-													
-													<div class="input_form__option-message">
-									                    <h:messages for="solrQueryInput" 
-									                        infoClass="input_form__option-message-status success" 
-									                        warnClass="input_form__option-message-status warning"
-									                        errorClass="input_form__option-message-status danger" />
-									
-									                    <div class="input_form__option-message-mark">
-									                        <i class="fa fa-check" aria-hidden="true"></i>
-									                        <i class="fa fa-exclamation" aria-hidden="true"></i>
-									                    </div>
-									                </div>
-													
-													<h:inputText id="solrQueryInput"
-														styleClass="form-control"
-														value="#{disclaimer.displayScope.filterQuery}"
-														validator="solrQueryValidator"
-														validatorMessage="#{msg.inline_help__solr_query_danger}">
-														<f:ajax event="valueChange" render="solrQueryInputGroup"/>
-													</h:inputText>
-												</div>
-											</h:panelGroup>
+
 
 										</viewerForms:inputFormField>
 									</h:panelGroup>
@@ -138,7 +141,7 @@
 														<f:ajax render="properties:scopeGroup" />
 													</h:selectOneRadio>
 												</div>
-												<div class="connected-bottom">
+												<div class="connected-bottom connected-bottom-wrapper">
 													<h:selectOneRadio group="scopeRadio"
 														value="#{disclaimer.acceptanceScope.storageMode}"
 														immediate="true">
@@ -146,18 +149,18 @@
 															itemLabel="#{msg.admin__legal__disclaimer_scope__local}" />
 														<f:ajax render="properties:scopeGroup" />
 													</h:selectOneRadio>
+													<h:panelGroup layout="block" id="scopeDurationInputGroup"
+														rendered="#{disclaimer.acceptanceScope.storageMode == 'LOCAL'}">
+														<div class="cms-module__option-control admin__form-input">
+															<h:inputText id="scopeDurationInput"
+																styleClass="form-control"
+																value="#{disclaimer.acceptanceScope.daysToLive}"
+																pt:data-input='number'>
+															</h:inputText>
+														</div>
+													</h:panelGroup>
 												</div>
 											</div>
-											<h:panelGroup layout="block" id="scopeDurationInputGroup"
-												rendered="#{disclaimer.acceptanceScope.storageMode == 'LOCAL'}">
-												<div>
-													<h:inputText id="scopeDurationInput"
-														styleClass="form-control"
-														value="#{disclaimer.acceptanceScope.daysToLive}"
-														pt:data-input='number'>
-													</h:inputText>
-												</div>
-											</h:panelGroup>
 
 										</viewerForms:inputFormField>
 									</h:panelGroup>
