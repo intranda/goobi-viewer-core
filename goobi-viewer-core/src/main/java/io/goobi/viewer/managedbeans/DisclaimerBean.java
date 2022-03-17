@@ -141,11 +141,10 @@ public class DisclaimerBean implements Serializable {
             try {
                 Disclaimer disclaimer = dao.getDisclaimer();
                 JSONObject json = new JSONObject();
-                boolean active = disclaimer.isActive();
-                if (active) {
+                if (disclaimer != null && disclaimer.isActive()) {
                     if (disclaimer.getDisplayScope().appliesToPage(navigationHelper.getCurrentPageType(), activeDocumentBean.getPersistentIdentifier(), searchIndex)) {
                         ConsentScope scope = getConsentScope(disclaimer);
-                        json.put("active", active);
+                        json.put("active", disclaimer.isActive());
                         json.put("lastEdited", disclaimer.getRequiresConsentAfter().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
                         json.put("storage", scope.getStorageMode().toString().toLowerCase());
                         json.put("daysToLive", scope.getDaysToLive());

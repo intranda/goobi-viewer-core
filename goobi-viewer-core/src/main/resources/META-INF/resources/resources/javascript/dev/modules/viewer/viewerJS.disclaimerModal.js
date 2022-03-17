@@ -71,9 +71,7 @@ var viewerJS = ( function( viewer ) {
             			}
             		}
             	} else {	//either the disclaimer has never been shown in this browser or within this session
-					if($("#admin").length == 0) {
             			this.showDisclaimer();
-					}
             	}
 			}
         },
