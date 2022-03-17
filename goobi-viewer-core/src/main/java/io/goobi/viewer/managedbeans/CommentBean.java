@@ -188,6 +188,10 @@ public class CommentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public List<Comment> getCommentsForCurrentPage() throws IndexUnreachableException {
+        if (!activeDocumentBean.isRecordLoaded()) {
+            return Collections.emptyList();
+        }
+
         return this.commentManager
                 .getAnnotations(0, Integer.MAX_VALUE, null, null, null, null, activeDocumentBean.getViewManager().getPi(),
                         activeDocumentBean.getViewManager().getCurrentImageOrder(), null, false)
