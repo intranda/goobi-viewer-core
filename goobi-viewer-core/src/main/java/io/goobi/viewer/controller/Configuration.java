@@ -1554,13 +1554,15 @@ public final class Configuration extends AbstractConfiguration {
             boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
             boolean range = subElement.getBoolean("[@range]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
+            int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 10);
 
             ret.add(new AdvancedSearchFieldConfiguration(field)
                     .setLabel(label)
                     .setHierarchical(hierarchical)
                     .setRange(range)
                     .setUntokenizeForPhraseSearch(untokenizeForPhraseSearch)
-                    .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#'));
+                    .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#')
+                    .setDisplaySelectItemsThreshold(displaySelectItemsThreshold));
         }
 
         return ret;
@@ -1602,7 +1604,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getDisplayAdditionalMetadataTranslateFields() {
         return getDisplayAdditionalMetadataFieldsByType("translate", true);
     }
-    
+
     /**
      * <p>
      * getDisplayAdditionalMetadataIgnoreFields.
@@ -1614,7 +1616,6 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getDisplayAdditionalMetadataOnelineFields() {
         return getDisplayAdditionalMetadataFieldsByType("oneline", false);
     }
-
 
     /**
      * 
@@ -1685,6 +1686,28 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field) {
         return isAdvancedSearchFieldHasAttribute(field, "untokenizeForPhraseSearch");
+    }
+    
+    /**
+     * 
+     * @param field
+     * @return
+     * @should return correct value
+     */
+    public int getAdvancedSearchFieldDisplaySelectItemsThreshold(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        if (fieldList == null) {
+            return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
+        }
+
+        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fieldList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+            if (subElement.getString(".").equals(field)) {
+                return subElement.getInt("[@displaySelectItemsThreshold]", AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD);
+            }
+        }
+        
+        return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
     }
 
     /**

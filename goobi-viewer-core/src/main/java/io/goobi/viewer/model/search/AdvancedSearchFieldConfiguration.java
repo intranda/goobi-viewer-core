@@ -19,6 +19,9 @@ package io.goobi.viewer.model.search;
  * Configuration element for advanced search fields.
  */
 public class AdvancedSearchFieldConfiguration {
+    
+    
+    public static final int DEFAULT_THRESHOLD = 10;
 
     private final String field;
     private String label;
@@ -26,6 +29,7 @@ public class AdvancedSearchFieldConfiguration {
     private boolean range;
     private boolean untokenizeForPhraseSearch;
     private boolean disabled;
+    private int displaySelectItemsThreshold = DEFAULT_THRESHOLD;
 
     /**
      * 
@@ -126,4 +130,19 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
+    /**
+     * @return the displaySelectItemsThreshold
+     */
+    public int getDisplaySelectItemsThreshold() {
+        return displaySelectItemsThreshold;
+    }
+
+    /**
+     * @param displaySelectItemsThreshold the displaySelectItemsThreshold to set
+     * @return this
+     */
+    public AdvancedSearchFieldConfiguration setDisplaySelectItemsThreshold(int displaySelectItemsThreshold) {
+        this.displaySelectItemsThreshold = displaySelectItemsThreshold;
+        return this;
+    }
 }

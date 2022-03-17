@@ -241,6 +241,14 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     */
+    public int getDisplaySelectItemsThreshold() {
+        return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldDisplaySelectItemsThreshold(field);
+    }
+
+    /**
      * <p>
      * Getter for the field <code>field</code>.
      * </p>
@@ -367,34 +375,39 @@ public class SearchQueryItem implements Serializable {
      * </p>
      */
     protected void toggleDisplaySelectItems() {
-        if (field != null) {
-            if (isHierarchical()) {
+        if (field == null) {
+            return;
+        }
+
+        if (isHierarchical()) {
+            displaySelectItems = true;
+            return;
+        }
+        switch (field) {
+            case SolrConstants.DOCSTRCT:
+            case SolrConstants.DOCSTRCT_TOP:
+            case SolrConstants.DOCSTRCT_SUB:
+            case SolrConstants.BOOKMARKS:
                 displaySelectItems = true;
-                return;
-            }
-            switch (field) {
-                case SolrConstants.DOCSTRCT:
-                case SolrConstants.DOCSTRCT_TOP:
-                case SolrConstants.DOCSTRCT_SUB:
-                case SolrConstants.BOOKMARKS:
-                    displaySelectItems = true;
-                    break;
-                default:
-                    try {
-                        // Fields containing less than 10 values always as drop-down
-                        List<String> values = SearchHelper.getFacetValues("*:*", field, 1);
-                        if (values.size() < 10) {
-                            displaySelectItems = true;
-                        } else {
-                            displaySelectItems = false;
-                        }
-                    } catch (PresentationException | IndexUnreachableException e) {
-                        logger.error(e.getMessage());
+                break;
+            default:
+                try {
+                    // Fields containing less values than the threshold for this field should be displayed as a drop-down
+                    // TODO cache result in session?
+                    String suffix = SearchHelper.getAllSuffixes();
+                    List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 1);
+                    // logger.trace("facets for " + field + ": " + values.size());
+                    if (!values.isEmpty() && values.size() < getDisplaySelectItemsThreshold()) {
+                        displaySelectItems = true;
+                    } else {
                         displaySelectItems = false;
                     }
-            }
-            //            logger.trace("toggleDisplaySelectItems: {}:{}", field, displaySelectItems);
+                } catch (PresentationException | IndexUnreachableException e) {
+                    logger.error(e.getMessage());
+                    displaySelectItems = false;
+                }
         }
+        //            logger.trace("toggleDisplaySelectItems: {}:{}", field, displaySelectItems);
     }
 
     /**
