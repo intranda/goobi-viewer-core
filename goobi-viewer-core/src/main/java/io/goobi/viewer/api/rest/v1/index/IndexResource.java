@@ -33,6 +33,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
@@ -307,8 +308,9 @@ public class IndexResource {
     @Path(INDEX_HEATMAP)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieves a JSON list of all existing Solr fields.", tags = { "index" })
-    public List<SolrFieldInfo> getHeatmap() throws IOException {
-        logger.trace("getAllIndexFields");
+    public List<SolrFieldInfo> getHeatmap(
+            @PathParam("solrField") @Parameter(description="SOLR field containing spatial coordinates") String solrField,
+            @QueryParam("x1") @Parameter(description="longitude of ")) throws IOException {
 
         try {
             return collectFieldInfo();
