@@ -117,6 +117,15 @@ const depsPathsJS = [
     flatten: true,
     dest:`${jsLibsDir}leaflet/draw/`
   },
+  
+    
+  { // leaflet solr heatmap
+    expand: true,
+    cwd: nodeModules,
+    src: ['leaflet-solr-heatmap/leafletSolrHeatmap.js'],
+    flatten: true,
+    dest: `${jsLibsDir}leaflet/solr-heatmap/`
+  },
 
   { // MAPBOX GL
     expand: true,
