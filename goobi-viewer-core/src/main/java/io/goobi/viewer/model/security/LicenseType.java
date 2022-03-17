@@ -72,7 +72,10 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     /** Constant <code>LICENSE_TYPE_CMS="licenseType_cms"</code> */
     public static final String LICENSE_TYPE_CMS = "licenseType_cms";
     private static final String LICENSE_TYPE_DESC_CMS = "licenseType_cms_desc";
+    public static final String LICENSE_TYPE_LEGAL_DISCLAIMER = "licenseType_disclaimer";
+    private static final String LICENSE_TYPE_DESC_LEGAL_DISCLAIMER = "licenseType_disclaimer_desc";
 
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "license_type_id")
@@ -309,6 +312,26 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
 
         switch (name) {
             case LICENSE_TYPE_CMS:
+                return true;
+            default:
+                return false;
+        }
+    }
+    
+    /**
+     * <p>
+     * isCmsType.
+     * </p>
+     *
+     * @return true if this license type has one of the static CMS type names; false otherwise
+     */
+    public boolean isLegalDisclaimerType() {
+        if (name == null) {
+            return false;
+        }
+
+        switch (name) {
+            case LICENSE_TYPE_LEGAL_DISCLAIMER:
                 return true;
             default:
                 return false;
@@ -914,6 +937,8 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
         addCoreLicenseType(LICENSE_TYPE_DELETE_OCR_PAGE, LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION, IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
         // Add CMS license types, if not yet in the database
         addCoreLicenseType(LICENSE_TYPE_CMS, LICENSE_TYPE_DESC_CMS, IPrivilegeHolder.PRIV_CMS_PAGES);
+        // Add legal disclaimer license type, if not yet in the database
+        addCoreLicenseType(LICENSE_TYPE_LEGAL_DISCLAIMER, LICENSE_TYPE_DESC_LEGAL_DISCLAIMER, IPrivilegeHolder.PRIV_LEGAL_DISCLAIMER);
     }
 
     /**

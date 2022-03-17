@@ -59,6 +59,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileResourceManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -1569,6 +1570,19 @@ public class NavigationHelper implements Serializable {
         return (String) BeanUtils.getRequest().getSession(false).getAttribute("lastRequest");
     }
 
+
+    public String getSessionIPAddress() {
+        String ipAddress = NetTools.getIpAddress(BeanUtils.getRequest());
+        return ipAddress;
+    }
+    
+    
+    public Optional<String> getSessionId() {
+        return Optional.ofNullable(FacesContext.getCurrentInstance())
+        .map(FacesContext::getExternalContext)
+        .map(extCtx -> extCtx.getSessionId(false));
+    }
+    
     /**
      * <p>
      * getStatusMapValue.

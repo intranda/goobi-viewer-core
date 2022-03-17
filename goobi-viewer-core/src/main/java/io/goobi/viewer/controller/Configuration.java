@@ -2802,7 +2802,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getLabelFieldForFacetField(String facetField) {
         return getPropertyForFacetField(facetField, "[@labelField]", null);
     }
-    
+
     /**
      * 
      * @param facetField
@@ -2810,7 +2810,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
-        String value= getPropertyForFacetField(facetField, "[@translateLabels]", "true");
+        String value = getPropertyForFacetField(facetField, "[@translateLabels]", "true");
         return Boolean.valueOf(value);
     }
 
@@ -3869,46 +3869,10 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * isCommentsEnabled.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isCommentsEnabled() {
-        return getLocalBoolean(("comments[@enabled]"), false);
-    }
-
-    /**
      * @return
      */
     public boolean reviewEnabledForComments() {
         return getLocalBoolean("comments.review[@enabled]", false);
-    }
-
-    /**
-     * <p>
-     * getCommentsCondition.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getCommentsCondition() {
-        return getLocalString("comments.condition");
-    }
-
-    /**
-     * <p>
-     * getCommentsNotificationEmailAddresses.
-     * </p>
-     *
-     * @should return all configured elements
-     * @return a {@link java.util.List} object.
-     */
-    public List<String> getCommentsNotificationEmailAddresses() {
-        return getLocalList("comments.notificationEmailAddress");
     }
 
     /**
@@ -4476,8 +4440,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getCmsMediaDisplayHeight.
-     * If not configured, return 100.000. In this case the actual image size always depends on the requested width
+     * getCmsMediaDisplayHeight. If not configured, return 100.000. In this case the actual image size always depends on the requested width
      * </p>
      *
      * @return a int.
@@ -5395,24 +5358,24 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isFuzzySearchEnabled() {
         return getLocalBoolean("search.fuzzy[@enabled]", false);
     }
-    
-//    /**
-//     * 
-//     * @return
-//     * @should return correct value
-//     */
-//    public boolean isProximitySearchEnabled() {
-//        return getLocalBoolean("search.proximity[@enabled]", false);
-//    }
-//    
-//    
-//    /**
-//     * 
-//     * @return
-//     * @should return correct value
-//     */
-//    public int getProximitySearchDistance() {
-//        return getLocalInt("search.proximity[@distance]", 10);
-//    }
+
+    //    /**
+    //     * 
+    //     * @return
+    //     * @should return correct value
+    //     */
+    //    public boolean isProximitySearchEnabled() {
+    //        return getLocalBoolean("search.proximity[@enabled]", false);
+    //    }
+    //    
+    //    
+    //    /**
+    //     * 
+    //     * @return
+    //     * @should return correct value
+    //     */
+    //    public int getProximitySearchDistance() {
+    //        return getLocalInt("search.proximity[@distance]", 10);
+    //    }
 
 }

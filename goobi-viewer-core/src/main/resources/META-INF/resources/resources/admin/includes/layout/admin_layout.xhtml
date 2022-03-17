@@ -120,8 +120,7 @@
               </div>
 
                 <!-- DASHBOARD -->
-                <ui:fragment
-                    rendered="#{userBean.admin or userBean.user.isHasCmsPrivilege('CMS_PAGES') or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)}">
+                <ui:fragment rendered="#{userBean.hasAdminBackendAccess}">
                     <div class="admin__sidebar-dashboard admin-widget">
                         <div class="admin-widget__header">#{msg.admin__general_title}</div>
                         <ul>
@@ -138,6 +137,7 @@
                 <!-- WIDGETS -->
                 <div class="admin__sidebar-widgets">
                     <adminWidget:widget_admin />
+                    <adminWidget:widget_legal />
                     <adminWidget:widget_crowdsourcing />
                     <adminWidget:widget_cms />
                 </div>

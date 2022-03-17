@@ -232,6 +232,9 @@
 		&.-warning {
 			border-top: 5px solid @yellowBar;
 		}
+		&.-primary {
+			border-top: 5px solid @blue;
+		}
 		&.-success-box {
 		border: 1px solid #ABD9B5;
     	border-top: 5px solid #ABD9B5;
@@ -327,6 +330,9 @@
 		}
 		&.-warning {
 			border-top: 5px solid @yellowBar;
+		}
+		&.-primary {
+			border-top: 5px solid @blue;
 		}
 		&-actions {
 			opacity: 0.0;
@@ -673,6 +679,7 @@
 		border: 0;
 		flex: 1;
 		margin-right: 2rem;
+		font-weight: 600;
 		&:hover {
 			text-decoration: none;
 			.admin__table-sorting-arrow-hidden {
@@ -1766,6 +1773,18 @@
 			opacity: 0.5;
 		}
 	}
+	&__comments-functionality-wrapper,
+	&__comments-functionality-add {
+		display: none;
+	}
+	&__comments-functionality-wrapper {
+		margin-top: 3rem;
+	}
+	&__comment-groups-toggle {
+		&.-isDisabled {
+			opacity: 0.4;	
+		}
+	}
 	// BASIC STRUCTURES
 	&__content-wrapper {
 		display: flex;
@@ -1822,7 +1841,11 @@
 	&__form-label-highlight {
 		color: @validDanger;
 	}
-
+	&__text-ellipsis {
+		text-overflow: ellipsis;
+		max-width: 100%;
+		overflow: hidden;
+	}
 	.msgUnfinishedIdentifier, #msgUnfinishedIdentifier  {
 		span {
 			display: none;
@@ -1871,7 +1894,29 @@
 input[type="radio"]:checked+label {
     font-weight: bold;
 }
-
+.connected-bottom-wrapper {
+	display: flex;
+	align-items: flex-start;
+	padding-top: 14px;
+	label {
+		line-height: 1;
+		margin-top: -1px;
+		margin-bottom: 1.6rem;
+	}
+	.form-control {
+		margin-top: -10px;
+		// margin-left: 10px;
+	}
+	.admin__form-input {
+		padding-left: 20px;
+		input {
+			min-width: 400px;
+		}
+	}
+	.input_form__option-message-mark {
+		top: -8px !important;
+	}
+}
 
 // BACKEND STYLES FOR DEVS
 .backend-styles {

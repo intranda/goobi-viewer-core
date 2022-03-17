@@ -66,7 +66,7 @@ module.exports = function (grunt) {
 					],
 					compress: true,
 					sourceMap: true,
-          sourceMapURL: '/viewer/resources/css/dist/viewer.min.css.map',
+          			sourceMapURL: '/viewer/resources/css/dist/viewer.min.css.map',
 					outputSourceFiles: true,
 				},
 				files: {

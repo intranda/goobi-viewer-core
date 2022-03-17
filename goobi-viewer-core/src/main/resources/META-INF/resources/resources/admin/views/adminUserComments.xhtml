@@ -16,23 +16,34 @@
 
     <ui:define name="content">
         <div id="adminUserComments">
-            <h:panelGroup rendered="#{userBean.admin}">
+            <h:panelGroup rendered="#{adminCommentBean.currentCommentGroup != null}">
                 <h:form id="adminUserCommentsForm" prependId="false">
                     <div class="admin__title-bar">
                         <!-- TITLE -->
-                        <h1 class="admin__title">#{msg.admin__comments}</h1>
+                        <ui:fragment rendered="#{!adminCommentBean.currentCommentGroup.coreType}">
+                        	<h1 class="admin__title">#{msg.admin__comments_group_view_comments}</h1>
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{adminCommentBean.currentCommentGroup.coreType}">
+                        	<h1 class="admin__title">#{msg.admin__comment_groups_all_comments_title}</h1>
+                        </ui:fragment>
+                        
                     </div>
-
+                    
                     <div class="admin__content-inner-content">
+
+                    <div class="admin__content-wrapper">
+                    
+                   <div class="admin__content-main -refreshHCsticky">
                         <div class="admin__table-tools">
                             <!-- PAGINATOR -->
                             <div class="admin__table-paginator">
-                                <viewerComponent:dataTablePaginator tableValues="#{adminBean.lazyModelComments}" />
+                                <viewerComponent:dataTablePaginator tableValues="#{adminCommentBean.lazyModelComments}" />
                             </div>
                             <!-- FILTER -->
                             <div class="admin__table-filter">
                                 <viewerComponent:dataTableColumnFilter key="admin__comment_search"
-                                    filter="#{adminBean.lazyModelComments.getFilter('body_targetPI')}" />
+                                    filter="#{adminCommentBean.lazyModelComments.getFilter('body_targetPI')}" />
                             </div>
                         </div>
 
@@ -43,23 +54,24 @@
                             <!-- TITLE ROW -->
                             <div class="row no-gutters admin__table-title" role="row">
                                 <!-- COMMENT COL -->
-	                            <div class="col-8 d-flex">
-	                                <viewerComponent:sortingArrow filterType="text" colHeading="#{msg.Comment}" list="#{adminBean.lazyModelComments}" />
+
+	                            <div class="col-8 d-flex">                            
+	                                <viewerComponent:sortingArrow filterType="text" colHeading="#{msg.Comment}" list="#{adminContentBean.lazyModelComments}" />
 	                            </div>
 
                                 <!-- USER COL -->
-	                            <div class="col-2 d-flex">
-	                                <viewerComponent:sortingArrow filterType="owner" colHeading="#{msg.user}" list="#{adminBean.lazyModelComments}" />
+	                            <div class="col-2 d-flex">                            
+	                                <viewerComponent:sortingArrow filterType="owner" colHeading="#{msg.user}" list="#{adminContentBean.lazyModelComments}" />
 	                            </div>
 
                                 <!-- DATE COL -->
-	                            <div class="col-2 d-flex">
-	                                <viewerComponent:sortingArrow filterType="dateCreated" colHeading="#{msg.date}" list="#{adminBean.lazyModelComments}" />
+	                            <div class="col-2 d-flex">                            
+	                                <viewerComponent:sortingArrow filterType="dateCreated" colHeading="#{msg.date}" list="#{adminContentBean.lazyModelComments}" />
 	                            </div>
                             </div>
 
                             <!-- INDIVIDUAL COMMENTS -->
-                            <ui:repeat var="comment" value="#{adminBean.pageComments}">
+                            <ui:repeat var="comment" value="#{adminCommentBean.pageComments}">
                                 <div class="row no-gutters admin__table-entry" role="row">
                                     <div class="col-8 d-flex" style="flex-direction:column;">
                                         <!-- COMMENT -->
@@ -73,14 +85,17 @@
                                             <a href="#{navigationHelper.imageUrl}/#{comment.targetPI}/#{comment.targetPageOrder}/" class="admin__table-action-link" target="_blank" aria-label="#{msg.Comment} #{msg.show} (#{comment.targetPI}/#{comment.targetPageOrder})">#{msg.show}</a>
 
                                             <!-- DELETE -->
-                                            <button
-                                                class="admin__table-action-link -redlink"
-                                                jsf:onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
-                                                jsf:action="#{adminBean.deleteCommentAction(comment)}">#{msg.delete}
-                                            </button>
+                                            <ui:fragment rendered="#{userBean.user == comment.creator or commentBean.isMayDeleteCommentsForRecord(comment.targetPI)}">
+	                                            <button
+	                                                class="admin__table-action-link -redlink"
+	                                                jsf:onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
+	                                                jsf:action="#{adminCommentBean.deleteCommentAction(comment)}">#{msg.delete}
+	                                            </button>
+                                            </ui:fragment>
                                         </div>
                                     </div>
-                                    <div class="col-2 d-flex" role="gridcell">#{comment.creator}</div>
+                                    
+                                    <div class="col-2 d-flex" role="gridcell"><div class="admin__text-ellipsis pr-1" title="#{comment.creator}">#{comment.creator}</div></div>
                                     <div class="col-2 d-flex" role="gridcell">
                                         <h:outputText value="#{comment.dateCreated}">
                                             <f:converter converterId="localDateTimeConverter" />
@@ -90,6 +105,42 @@
                                </div>
                             </ui:repeat>
                         </div>
+                        </div>
+                        
+                        <div class="admin__content-side -sticky">
+                        	<div class="admin__default-block">
+								<h2>#{msg.admin__overview}</h2>
+								<div class="admin__form-help-text in mb-2">
+									#{msg.admin__comment_groups_all_comments_back_to_overview_info}
+								</div>
+								<div class="d-flex justify-content-center mt-2">
+									<a href="#{request.contextPath}/admin/comments" class="btn btn--full">#{msg.admin__overview}</a>
+                       			</div>
+                       		</div>
+                       		
+                        	<div class="admin__default-block">
+								<h2>#{msg.information}</h2>
+
+								<div><span><b>#{msg.admin__comment_group_input_title}:</b></span></div>
+								<div class="mb-2">
+									#{msg[adminCommentBean.currentCommentGroup.title]}
+								</div>
+								<div><span><b>#{msg.admin__comment_group_description}:</b></span></div>
+								<div>
+									#{msg[adminCommentBean.currentCommentGroup.description]}
+								</div>
+								
+                       		</div>
+                       		
+                        	<div class="admin__default-block">
+								<h2>#{msg.title__did_you_know}</h2>
+								<div>
+									#{msg.admin__comment_groups_all_comments_hint}
+								</div>
+                       		</div>
+
+                        </div>
+                    </div>
                     </div>
                 </h:form>
             </h:panelGroup>

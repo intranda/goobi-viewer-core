@@ -470,6 +470,7 @@ public class UserGroup implements ILicensee, Serializable {
 
         for (UserRole membership : getMemberships()) {
             ret.add(membership.getUser());
+            // logger.trace("member: {}", membership.getUser().getEmail());
         }
 
         return ret;

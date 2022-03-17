@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,7 +65,6 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.Selectable;
@@ -98,7 +96,7 @@ public class AdminBean implements Serializable {
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(AdminBean.class);
 
-    private static final int DEFAULT_ROWS_PER_PAGE = 15;
+    static final int DEFAULT_ROWS_PER_PAGE = 15;
 
     private static final Object TRANSLATION_LOCK = new Object();
 
@@ -109,7 +107,6 @@ public class AdminBean implements Serializable {
     PushContext hotfolderFileCount;
 
     private TableDataProvider<User> lazyModelUsers;
-    private TableDataProvider<Comment> lazyModelComments;
 
     private User currentUser = null;
     private UserGroup currentUserGroup = null;
@@ -120,7 +117,6 @@ public class AdminBean implements Serializable {
     private LicenseType currentLicenseType = null;
     private License currentLicense = null;
     private IpRange currentIpRange = null;
-    private Comment currentComment = null;
     private TranslationGroup currentTranslationGroup = null;
 
     private String passwordOne = "";
@@ -146,8 +142,6 @@ public class AdminBean implements Serializable {
      * <p>
      * init.
      * </p>
-     *
-     * @should sort lazyModelComments by dateCreated desc by default
      */
     @PostConstruct
     public void init() {
@@ -189,41 +183,6 @@ public class AdminBean implements Serializable {
             });
             lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
             lazyModelUsers.setFilters("firstName_lastName_nickName_email");
-        }
-        {
-            lazyModelComments = new TableDataProvider<>(new TableDataSource<Comment>() {
-
-                @Override
-                public List<Comment> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                    try {
-                        if (StringUtils.isEmpty(sortField)) {
-                            sortField = "dateCreated";
-                            sortOrder = SortOrder.DESCENDING;
-                        }
-                        return DataManager.getInstance().getDao().getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage());
-                    }
-                    return Collections.emptyList();
-                }
-
-                @Override
-                public long getTotalNumberOfRecords(Map<String, String> filters) {
-                    try {
-                        return DataManager.getInstance().getDao().getCommentCount(filters, null);
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
-                        return 0;
-                    }
-                }
-
-                @Override
-                public void resetTotalNumberOfRecords() {
-                }
-
-            });
-            lazyModelComments.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            lazyModelComments.setFilters("body_targetPI");
         }
     }
 
@@ -1175,65 +1134,6 @@ public class AdminBean implements Serializable {
         return "pretty:adminRights";
     }
 
-    // Comments
-
-    /**
-     * <p>
-     * saveCommentAction.
-     * </p>
-     *
-     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public void saveCommentAction(Comment comment) throws DAOException {
-        logger.trace("saveCommentAction");
-        if (comment.getId() != null) {
-            // Set updated timestamp
-            comment.setDateModified(LocalDateTime.now());
-            logger.trace(comment.getContentString());
-            if (DataManager.getInstance().getDao().updateComment(comment)) {
-                Messages.info("updatedSuccessfully");
-            } else {
-                Messages.info("errSave");
-            }
-        } else {
-            if (DataManager.getInstance().getDao().addComment(comment)) {
-                Messages.info("addedSuccessfully");
-            } else {
-                Messages.info("errSave");
-            }
-        }
-        resetCurrentCommentAction();
-    }
-
-    /**
-     * <p>
-     * deleteCommentAction.
-     * </p>
-     *
-     * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String deleteCommentAction(Comment comment) throws DAOException {
-        if (DataManager.getInstance().getDao().deleteComment(comment)) {
-            Messages.info("commentDeleteSuccess");
-        } else {
-            Messages.error("commentDeleteFailure");
-        }
-
-        return "";
-    }
-
-    /**
-     * <p>
-     * resetCurrentCommentAction.
-     * </p>
-     */
-    public void resetCurrentCommentAction() {
-        currentComment = null;
-    }
-
     /*********************************** Getter and Setter ***************************************/
 
     /**
@@ -1522,28 +1422,6 @@ public class AdminBean implements Serializable {
         this.currentIpRange = DataManager.getInstance().getDao().getIpRange(id);
     }
 
-    /**
-     * <p>
-     * Getter for the field <code>currentComment</code>.
-     * </p>
-     *
-     * @return the currentComment
-     */
-    public Comment getCurrentComment() {
-        return currentComment;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>currentComment</code>.
-     * </p>
-     *
-     * @param currentComment the currentComment to set
-     */
-    public void setCurrentComment(Comment currentComment) {
-        this.currentComment = currentComment;
-    }
-
     // Lazy models
 
     /**
@@ -1566,28 +1444,6 @@ public class AdminBean implements Serializable {
      */
     public List<User> getPageUsers() {
         return lazyModelUsers.getPaginatorList();
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>lazyModelComments</code>.
-     * </p>
-     *
-     * @return the lazyModelComments
-     */
-    public TableDataProvider<Comment> getLazyModelComments() {
-        return lazyModelComments;
-    }
-
-    /**
-     * <p>
-     * getPageComments.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<Comment> getPageComments() {
-        return lazyModelComments.getPaginatorList();
     }
 
     /**
