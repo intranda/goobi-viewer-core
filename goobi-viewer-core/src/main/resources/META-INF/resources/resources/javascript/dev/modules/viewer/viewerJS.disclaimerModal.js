@@ -71,7 +71,9 @@ var viewerJS = ( function( viewer ) {
             			}
             		}
             	} else {	//either the disclaimer has never been shown in this browser or within this session
-            		this.showDisclaimer();
+					if($("#admin").length == 0) {
+            			this.showDisclaimer();
+					}
             	}
 			}
         },
@@ -79,6 +81,7 @@ var viewerJS = ( function( viewer ) {
         	Swal.fire({
         		html : this.config.disclaimerText,
         		allowOutsideClick: false,
+				scrollbarPadding: false,
         		customClass: {
         			popup: 'disclaimer-modal__alert',
 			    	confirmButton: 'btn btn--full'

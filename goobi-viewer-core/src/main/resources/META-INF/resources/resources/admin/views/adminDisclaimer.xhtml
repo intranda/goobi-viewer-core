@@ -97,6 +97,9 @@
 														rendered="#{disclaimer.displayScope.pageScope == 'RECORD'}">
 														<div class="cms-module__option-control admin__form-input">
 
+															<!-- EMPTY ELEMENT AS JS TARGET FOR COLORING THE INPUT BOX ON SUCCESS/WARNING/ERROR -->
+															<div class="cms-module__option-message"></div>
+
 															<h:inputText id="solrQueryInput"
 																styleClass="form-control"
 																value="#{disclaimer.displayScope.filterQuery}"
