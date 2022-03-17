@@ -2492,6 +2492,19 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(SolrConstants.DOCSTRCT, results.get(1));
         Assert.assertEquals("MD_LANGUAGE", results.get(2));
     }
+    
+
+    /**
+     * @see Configuration#getDisplayAdditionalMetadataOnelineFields()
+     * @verifies return correct values
+     */
+    @Test
+    public void getDisplayAdditionalMetadataOnelineFields_shouldReturnCorrectValues() throws Exception {
+        List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields();
+        Assert.assertNotNull(results);
+        Assert.assertEquals(1, results.size());
+        Assert.assertEquals("MD_ACCESSLOCATIONS", results.get(0));
+    }
 
     /**
      * @see Configuration#isDisplayEmptyTocInSidebar()

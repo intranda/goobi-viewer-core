@@ -1587,7 +1587,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct values
      */
     public List<String> getDisplayAdditionalMetadataIgnoreFields() {
-        return getLocalList("search.displayAdditionalMetadata.ignoreField", Collections.emptyList());
+        return getDisplayAdditionalMetadataFieldsByType("ignore", false);
     }
 
     /**
@@ -1600,14 +1600,49 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct values
      */
     public List<String> getDisplayAdditionalMetadataTranslateFields() {
-        List<String> fields = getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
-        if (fields.isEmpty()) {
-            return fields;
+        return getDisplayAdditionalMetadataFieldsByType("translate", true);
+    }
+    
+    /**
+     * <p>
+     * getDisplayAdditionalMetadataIgnoreFields.
+     * </p>
+     *
+     * @return List of configured fields; empty list if none found.
+     * @should return correct values
+     */
+    public List<String> getDisplayAdditionalMetadataOnelineFields() {
+        return getDisplayAdditionalMetadataFieldsByType("oneline", false);
+    }
+
+
+    /**
+     * 
+     * @param type Value of the type attribute
+     * @param normalize If true; field will be normalized
+     * @return List of <field> elements filtered by type
+     */
+    List<String> getDisplayAdditionalMetadataFieldsByType(String type, boolean normalize) {
+        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("search.displayAdditionalMetadata.field");
+        if (type == null) {
+            throw new IllegalArgumentException("type may not be null");
+        }
+        if (fields == null || fields.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        List<String> ret = new ArrayList<>(fields.size());
-        for (String field : fields) {
-            ret.add(SearchHelper.normalizeField(field));
+        List<String> ret = new ArrayList<>();
+        for (HierarchicalConfiguration<ImmutableNode> node : fields) {
+            if (!type.equals(node.getString("[@type]"))) {
+                continue;
+            }
+            String value = node.getString(".");
+            if (StringUtils.isNotEmpty(value)) {
+                if (normalize) {
+                    value = SearchHelper.normalizeField(value);
+                }
+                ret.add(value);
+            }
         }
 
         return ret;
