@@ -28,6 +28,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.omnifaces.util.Faces;
 
 import io.goobi.viewer.controller.DataManager;
@@ -131,7 +132,13 @@ public class CommentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public void editComment(Comment original, String text, boolean restricted) throws DAOException, PresentationException, IndexUnreachableException {
-        if (isMayEditCommentsForRecord(original.getTargetPI())) {
+        if (original == null) {
+            throw new IllegalArgumentException("original may not be null");
+        }
+
+        User currentUser = userBean.getUser();
+        User commentOwner = original.getCreatorIfPresent().orElse(null);
+        if (currentUser.equals(commentOwner) || isMayEditCommentsForRecord(original.getTargetPI())) {
             this.commentManager.editComment(original, text, userBean.getUser(), getLicense(restricted), getInitialPublicationStatus());
         }
     }
@@ -162,7 +169,13 @@ public class CommentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public void deleteComment(Comment annotation) throws DAOException, PresentationException, IndexUnreachableException {
-        if (isMayDeleteCommentsForRecord(annotation.getTargetPI())) {
+        if (annotation == null) {
+            throw new IllegalArgumentException("annotation may not be null");
+        }
+
+        User currentUser = userBean.getUser();
+        User commentOwner = annotation.getCreatorIfPresent().orElse(null);
+        if (currentUser.equals(commentOwner) || isMayDeleteCommentsForRecord(annotation.getTargetPI())) {
             this.commentManager.deleteComment(annotation);
         }
     }
