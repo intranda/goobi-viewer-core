@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.faces.event.ValueChangeEvent;
@@ -390,13 +391,17 @@ public class SearchQueryItem implements Serializable {
             case SolrConstants.BOOKMARKS:
                 displaySelectItems = true;
                 break;
+            case ADVANCED_SEARCH_ALL_FIELDS:
+                displaySelectItems = false;
+                break;
             default:
                 try {
                     // Fields containing less values than the threshold for this field should be displayed as a drop-down
                     // TODO cache result in session?
+                    Map<String, String> params = Collections.singletonMap("json.facet", "{uniqueCount : \"unique(" + field + ")\"}");
                     String suffix = SearchHelper.getAllSuffixes();
-                    List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 1);
-                    // logger.trace("facets for " + field + ": " + values.size());
+                    List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, "json:uniqueCount", null, 1, params);
+                    logger.trace("facets for " + field + ": " + values.size());
                     if (!values.isEmpty() && values.size() < getDisplaySelectItemsThreshold()) {
                         displaySelectItems = true;
                     } else {

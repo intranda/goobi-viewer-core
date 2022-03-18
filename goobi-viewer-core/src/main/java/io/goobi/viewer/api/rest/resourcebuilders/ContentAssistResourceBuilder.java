@@ -54,7 +54,7 @@ public class ContentAssistResourceBuilder {
         }
         String query = "DOCTYPE:DOCSTRCT AND (ISANCHOR:true OR ISWORK:true)";
         try {            
-            List<String> facets = SearchHelper.getFacetValues(query, solrField, inputString, 0);
+            List<String> facets = SearchHelper.getFacetValues(query, solrField, inputString, 0, null);
             List<String> collections = new ArrayList<>();
             CmsCollectionsBean bean = BeanUtils.getCMSCollectionsBean();
             if (bean != null) {

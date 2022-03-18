@@ -1488,7 +1488,7 @@ public final class SearchHelper {
      */
     public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount)
             throws PresentationException, IndexUnreachableException {
-        return getFacetValues(query, facetifyField(facetFieldName), null, facetMinCount);
+        return getFacetValues(query, facetifyField(facetFieldName), null, facetMinCount, null);
     }
 
     /**
@@ -1502,7 +1502,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static List<String> getFacetValues(String query, String facetFieldName, String facetPrefix, int facetMinCount)
+    public static List<String> getFacetValues(String query, String facetFieldName, String facetPrefix, int facetMinCount, Map<String, String> params)
             throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(query)) {
             throw new IllegalArgumentException("query may not be null or empty");
@@ -1511,10 +1511,27 @@ public final class SearchHelper {
             throw new IllegalArgumentException("facetFieldName may not be null or empty");
         }
 
+        boolean json = false;
+        List<String> facetFieldNames = new ArrayList<>(1);
+        if (facetFieldName.startsWith("json:")) {
+            json = true;
+            facetFieldName = facetFieldName.substring(5);
+        } else {
+            facetFieldNames.add(facetFieldName);
+        }
+
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
-                .searchFacetsAndStatistics(query, null, Collections.singletonList(facetFieldName), facetMinCount, facetPrefix, false);
+                .searchFacetsAndStatistics(query, null, facetFieldNames, facetMinCount, facetPrefix, params, false);
         FacetField facetField = resp.getFacetField(facetFieldName);
+        if (json && resp.getJsonFacetingResponse() != null) {
+            return Collections.singletonList(String.valueOf(resp.getJsonFacetingResponse().getStatValue(facetFieldName)));
+        }
+        
+        for (FacetField ff : resp.getFacetFields()) {
+            if (ff.getValueCount() > 0)
+                logger.trace("facet: " + ff.getName() + "=" + ff.getValues().get(0));
+        }
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
             if (StringUtils.isNotEmpty(count.getName()) && count.getCount() >= facetMinCount) {
@@ -1524,7 +1541,6 @@ public final class SearchHelper {
                 ret.add(count.getName());
             }
         }
-
         return ret;
     }
 
@@ -1750,7 +1766,9 @@ public final class SearchHelper {
         if (rows == 0 || DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries) > DataManager.getInstance()
                 .getConfiguration()
                 .getBrowsingMenuIndexSizeThreshold()) {
-            return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, filterQueries, facetFields, 1, startsWith, false);
+            return DataManager.getInstance()
+                    .getSearchIndex()
+                    .searchFacetsAndStatistics(query, filterQueries, facetFields, 1, startsWith, null, false);
         }
 
         // Docs (required for correct mapping of sorting vs displayed term names, but may time out if doc count is too high)
