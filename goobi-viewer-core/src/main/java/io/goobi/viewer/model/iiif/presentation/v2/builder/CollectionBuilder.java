@@ -436,7 +436,7 @@ public class CollectionBuilder extends AbstractBuilder {
                 if (!DataManager.getInstance().getSearchIndex().getAllFieldNames().contains(facetField)) {
                     facetField = collectionField;
                 }
-            } catch (DAOException e) {
+            } catch (IndexUnreachableException e) {
                 logger.warn("Unable to query for facet field", e);
                 facetField = collectionField;
             }

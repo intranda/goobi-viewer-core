@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,17 +45,23 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.request.QueryRequest;
+import org.apache.solr.client.solrj.request.json.HeatmapFacetMap;
+import org.apache.solr.client.solrj.request.json.JsonQueryRequest;
 import org.apache.solr.client.solrj.response.LukeResponse;
 import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.client.solrj.response.SpellCheckResponse;
+import org.apache.solr.client.solrj.response.json.HeatmapJsonFacet;
+import org.apache.solr.client.solrj.response.json.NestableJsonFacet;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.luke.FieldFlag;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.SpellingParams;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1021,7 +1028,7 @@ public final class SolrSearchIndex {
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws java.io.IOException if any.
      */
-    public List<String> getAllFieldNames() throws DAOException {
+    public List<String> getAllFieldNames() throws IndexUnreachableException {
         try {
             if (this.solrFields == null) {
                 LukeRequest lukeRequest = new LukeRequest();
@@ -1040,7 +1047,7 @@ public final class SolrSearchIndex {
                 this.solrFields = list;
             }
         } catch (IllegalStateException | SolrServerException | RemoteSolrException | IOException e) {
-            throw new DAOException("Failed to load SOLR field names: " + e.toString());
+            throw new IndexUnreachableException("Failed to load SOLR field names: " + e.toString());
         }
 
         return this.solrFields;
@@ -1292,5 +1299,65 @@ public final class SolrSearchIndex {
         }
 
         return null;
+    }
+
+    /**
+     * 
+     * 
+     * @param solrField
+     * @param wktRegion
+     * @param finalQuery
+     * @return
+     * @throws IndexUnreachableException 
+     */
+    public String getHeatMap(String solrField, String wktRegion, String query, int gridLevel) throws IndexUnreachableException {
+        
+        final JsonQueryRequest request = new JsonQueryRequest()
+                .setQuery(query)
+                .setLimit(0)
+                .withFacet("heatmapFacet", new HeatmapFacetMap(solrField)
+                        .setHeatmapFormat(HeatmapFacetMap.HeatmapFormat.INTS2D)
+                        .setRegionQuery(wktRegion)
+                        .setGridLevel(gridLevel));
+        
+        try {
+            QueryResponse response = request.process(client);
+            final NestableJsonFacet topLevelFacet = response.getJsonFacetingResponse();
+            final HeatmapJsonFacet heatmap = topLevelFacet.getHeatmapFacetByName("heatmapFacet");
+            String json = (String) topLevelFacet.getStatValue("heatmapFacet");
+            return getAsJson(heatmap);
+        } catch (SolrServerException | IOException e) {
+            throw new IndexUnreachableException("Error getting facet heatmap: " + e.toString());
+        }
+    }
+
+    /**
+     * @param heatmap
+     * @return
+     */
+    private String getAsJson(HeatmapJsonFacet heatmap) {
+        JSONObject json = new JSONObject();
+        json.put("gridLevel", heatmap.getGridLevel());
+        json.put("columns", heatmap.getNumColumns());
+        json.put("rows", heatmap.getNumRows());
+        json.put("minX", heatmap.getMinX());
+        json.put("maxX", heatmap.getMaxX());
+        json.put("minY", heatmap.getMinY());
+        json.put("maxY", heatmap.getMaxY());
+        JSONArray rows = new JSONArray();
+        List<List<Integer>> grid = heatmap.getCountGrid();
+        for (int row = 0; row < heatmap.getNumRows(); row++) {
+            List<Integer> gridRow = grid.get(row);
+            if(gridRow == null) {
+                rows.put(JSONObject.NULL);
+            } else {                
+                JSONArray column = new JSONArray();
+                column.putAll(gridRow);
+                rows.put(column);
+            }
+        }
+        json.put("counts_ints2D", rows);
+        
+        return json.toString();
     }
 }
