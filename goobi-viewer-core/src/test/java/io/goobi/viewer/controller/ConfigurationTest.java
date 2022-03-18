@@ -1448,24 +1448,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isCommentsEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    public void isUserCommentsEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isCommentsEnabled());
-    }
-
-    /**
-     * @see Configuration#getCommentsCondition()
-     * @verifies return correct value
-     */
-    @Test
-    public void getUserCommentsCondition_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("DC:varia", DataManager.getInstance().getConfiguration().getCommentsCondition());
-    }
-
-    /**
      * @see Configuration#useTiles()
      * @verifies return correct value
      */
@@ -1799,7 +1781,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getLabelFieldForFacetField_shouldReturnNullIfNoValueFound() throws Exception {
         Assert.assertNull(DataManager.getInstance().getConfiguration().getLabelFieldForFacetField("MD_PLACEPUBLISH"));
     }
-    
 
     /**
      * @see Configuration#isTranslateFacetFieldLabels(String)
@@ -1898,15 +1879,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isForceJpegConversion_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isForceJpegConversion());
-    }
-
-    /**
-     * @see Configuration#getCommentsNotificationEmailAddresses()
-     * @verifies return all configured elements
-     */
-    @Test
-    public void getUserCommentsNotificationEmailAddresses_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getCommentsNotificationEmailAddresses().size());
     }
 
     /**
@@ -2519,6 +2491,19 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(SolrConstants.DC, results.get(0));
         Assert.assertEquals(SolrConstants.DOCSTRCT, results.get(1));
         Assert.assertEquals("MD_LANGUAGE", results.get(2));
+    }
+    
+
+    /**
+     * @see Configuration#getDisplayAdditionalMetadataOnelineFields()
+     * @verifies return correct values
+     */
+    @Test
+    public void getDisplayAdditionalMetadataOnelineFields_shouldReturnCorrectValues() throws Exception {
+        List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields();
+        Assert.assertNotNull(results);
+        Assert.assertEquals(1, results.size());
+        Assert.assertEquals("MD_ACCESSLOCATIONS", results.get(0));
     }
 
     /**

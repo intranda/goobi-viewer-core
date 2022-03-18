@@ -378,7 +378,7 @@ public class TranslationGroup {
      */
     public List<MessageEntry> getAllEntries() {
         if (allEntries == null) {
-            logger.trace("Loading entries...");
+            // logger.trace("Loading entries...");
             Set<MessageEntry> retSet = new HashSet<>();
             for (TranslationGroupItem item : items) {
                 try {

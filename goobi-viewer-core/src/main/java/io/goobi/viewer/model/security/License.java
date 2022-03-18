@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -44,10 +45,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.converter.ConsentScopeConverter;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.administration.legal.ConsentScope;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.Selectable;
@@ -169,6 +172,11 @@ public class License implements IPrivilegeHolder, Serializable {
             inverseJoinColumns = @JoinColumn(name = "campaign_id"))
     private List<Campaign> allowedCrowdsourcingCampaigns = new ArrayList<>();
 
+
+    @Column(name="legal_disclaimer_scope", nullable = true)
+    @Convert(converter = ConsentScopeConverter.class)
+    private ConsentScope disclaimerScope = new ConsentScope();
+    
     @Transient
     private String type;
 
@@ -988,5 +996,9 @@ public class License implements IPrivilegeHolder, Serializable {
      */
     public void setPrivilegesCopy(Set<String> privilegesCopy) {
         this.privilegesCopy = privilegesCopy;
+    }
+    
+    public ConsentScope getDisclaimerScope() {
+        return disclaimerScope;
     }
 }

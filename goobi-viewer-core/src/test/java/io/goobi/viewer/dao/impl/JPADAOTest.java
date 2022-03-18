@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,6 +53,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
+import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
@@ -292,14 +294,14 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getAllUserGroupsTest() throws DAOException {
         List<UserGroup> userGroups = DataManager.getInstance().getDao().getAllUserGroups();
-        Assert.assertEquals(2, userGroups.size());
+        Assert.assertEquals(3, userGroups.size());
     }
 
     @Test
     public void getAllUserGroupsForOwnerTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getUserGroups(user).size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getUserGroups(user).size());
     }
 
     @Test
@@ -349,14 +351,14 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void updateUserGroupTest() throws DAOException {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserGroups().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
         Assert.assertNotNull(userGroup);
         Assert.assertEquals("user group 1 name", userGroup.getName());
 
         userGroup.setName("user group 1 new name");
         Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserGroups().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
 
         UserGroup userGroup2 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
         Assert.assertNotNull(userGroup2);
@@ -367,22 +369,22 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void deleteUserGroupWithMembersTest() throws DAOException {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserGroups().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
         Assert.assertNotNull(userGroup);
         Assert.assertFalse(DataManager.getInstance().getDao().deleteUserGroup(userGroup));
         Assert.assertNotNull(DataManager.getInstance().getDao().getUserGroup(2));
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserGroups().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
     }
 
     @Test
     public void deleteUserGroupWithoutMembersTest() throws DAOException {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserGroups().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(2);
         Assert.assertNotNull(userGroup);
         Assert.assertTrue(DataManager.getInstance().getDao().deleteUserGroup(userGroup));
         Assert.assertNull(DataManager.getInstance().getDao().getUserGroup(2));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllUserGroups().size());
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserGroups().size());
     }
 
     // UserRoles (group memberships)
@@ -390,7 +392,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getAllUserRolesTest() throws DAOException {
         List<UserRole> userRoles = DataManager.getInstance().getDao().getAllUserRoles();
-        Assert.assertEquals(1, userRoles.size());
+        Assert.assertEquals(2, userRoles.size());
     }
 
     /**
@@ -428,7 +430,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(role);
         List<UserRole> memberships = DataManager.getInstance().getDao().getUserRoles(null, null, role);
         Assert.assertNotNull(memberships);
-        Assert.assertEquals(1, memberships.size());
+        Assert.assertEquals(2, memberships.size());
     }
 
     @Test
@@ -482,7 +484,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Role role = DataManager.getInstance().getDao().getRole(2);
         Assert.assertNotNull(role);
 
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllUserRoles().size());
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserRoles().size());
         Assert.assertEquals(0, DataManager.getInstance().getDao().getUserRoles(userGroup, user, role).size());
         Assert.assertEquals(0, DataManager.getInstance().getDao().getUserRoles(userGroup, user, null).size());
         Assert.assertEquals(0, DataManager.getInstance().getDao().getUserRoles(userGroup, null, null).size());
@@ -491,7 +493,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertTrue(DataManager.getInstance().getDao().addUserRole(userRole));
         Assert.assertNotNull(userRole.getId());
 
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserRoles().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
         Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoles(userGroup, user, role).size());
         Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoles(userGroup, user, null).size());
         Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoles(userGroup, null, null).size());
@@ -505,7 +507,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void updateUserRoleTest() throws DAOException {
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllUserRoles().size());
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserRoles().size());
         UserRole userRole = DataManager.getInstance().getDao().getAllUserRoles().get(0);
         Assert.assertNotNull(userRole);
 
@@ -516,7 +518,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(role1, userRole.getRole());
         userRole.setRole(role2);
         Assert.assertTrue(DataManager.getInstance().getDao().updateUserRole(userRole));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllUserRoles().size());
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserRoles().size());
 
         UserRole userRole2 = DataManager.getInstance().getDao().getAllUserRoles().get(0);
         Assert.assertNotNull(userRole2);
@@ -525,10 +527,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void deleteUserRoleTest() throws DAOException {
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllUserRoles().size());
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserRoles().size());
         UserRole userRole = DataManager.getInstance().getDao().getAllUserRoles().get(0);
         Assert.assertTrue(DataManager.getInstance().getDao().deleteUserRole(userRole));
-        Assert.assertEquals(0, DataManager.getInstance().getDao().getAllUserRoles().size());
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllUserRoles().size());
     }
 
     // IP ranges
@@ -633,6 +635,28 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(0, ipRange3.getLicenses().size());
     }
 
+    // CommentGroups
+
+    /**
+     * @see JPADAO#getAllCommentGroups()
+     * @verifies return all rows
+     */
+    @Test
+    public void getAllCommentGroups_shouldReturnAllRows() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllCommentGroups().size());
+    }
+
+    /**
+     * @see JPADAO#getCommentGroupUnfiltered()
+     * @verifies return correct row
+     */
+    @Test
+    public void getCommentGroupUnfiltered_shouldReturnCorrectRow() throws Exception {
+        CommentGroup commentGroup = DataManager.getInstance().getDao().getCommentGroupUnfiltered();
+        Assert.assertNotNull(commentGroup);
+        Assert.assertEquals(Long.valueOf(1), commentGroup.getId());
+    }
+
     // Comments
 
     @Test
@@ -642,35 +666,49 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getCommentCount(Map)
+     * @see JPADAO#getCommentCount(Map,User,Set)
      * @verifies return correct count
      */
     @Test
     public void getCommentCount_shouldReturnCorrectCount() throws Exception {
-        Assert.assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null, null));
+        Assert.assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null, null, null));
     }
 
     /**
-     * @see JPADAO#getCommentCount(Map)
+     * @see JPADAO#getCommentCount(Map,User,Set)
      * @verifies filter correctly
      */
     @Test
     public void getCommentCount_shouldFilterCorrectly() throws Exception {
         Map<String, String> filters = new HashMap<>();
         filters.put("targetPageOrder", "1");
-        Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(filters, null));
+        Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(filters, null, null));
     }
 
+    /**
+     * @see JPADAO#getCommentCount(Map,User,Set)
+     * @verifies filter for users correctly
+     */
     @Test
-    public void getCommentCount_shouldFilterForUserCorrectly() throws Exception {
+    public void getCommentCount_shouldFilterForUsersCorrectly() throws Exception {
         {
             User owner = DataManager.getInstance().getDao().getUser(1l);
-            Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(null, owner));
+            Assert.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(null, owner, null));
         }
         {
             User owner = DataManager.getInstance().getDao().getUser(2l);
-            Assert.assertEquals(1L, DataManager.getInstance().getDao().getCommentCount(null, owner));
+            Assert.assertEquals(1L, DataManager.getInstance().getDao().getCommentCount(null, owner, null));
         }
+    }
+
+    /**
+     * @see JPADAO#getCommentCount(Map,User,Set)
+     * @verifies apply target pi filter correctly
+     */
+    @Test
+    public void getCommentCount_shouldApplyTargetPiFilterCorrectly() throws Exception {
+        // TODO update test dataset to include comments with different target_pi
+        Assert.assertEquals(4L ,DataManager.getInstance().getDao().getCommentCount(null, null, Collections.singleton("PI_1")));
     }
 
     @Test
@@ -1290,7 +1328,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getComments_shouldSortResultsCorrectly() throws Exception {
-        List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, "body", true, null);
+        List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, "body", true, null, null);
         Assert.assertEquals(2, ret.size());
         Assert.assertEquals(Long.valueOf(4), ret.get(0).getId());
         Assert.assertEquals(Long.valueOf(3), ret.get(1).getId());
@@ -1305,9 +1343,21 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Map<String, String> filterMap = new HashMap<>();
         filterMap.put("targetPI", "pi_1");
         filterMap.put("body", "ment 2");
-        List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, null, true, filterMap);
+        List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, null, true, filterMap, null);
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("comment 2 text", ret.get(0).getText());
+    }
+
+    /**
+     * @see JPADAO#getComments(int,int,String,boolean,Map,Set)
+     * @verifies apply target pi filter correctly
+     */
+    @Test
+    public void getComments_shouldApplyTargetPiFilterCorrectly() throws Exception {
+        Map<String, String> filterMap = new HashMap<>();
+        // TODO update test dataset to include comments with different target_pi
+        List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 10, null, true, filterMap, Collections.singleton("PI_1"));
+        Assert.assertEquals(4, ret.size());
     }
 
     /**
@@ -1318,8 +1368,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void getUserGroups_shouldSortResultsCorrectly() throws Exception {
         List<UserGroup> userGroups = DataManager.getInstance().getDao().getUserGroups(0, 2, "name", true, null);
         Assert.assertEquals(2, userGroups.size());
-        Assert.assertEquals(Long.valueOf(2), userGroups.get(0).getId());
-        Assert.assertEquals(Long.valueOf(1), userGroups.get(1).getId());
+        Assert.assertEquals(Long.valueOf(3), userGroups.get(0).getId());
+        Assert.assertEquals(Long.valueOf(2), userGroups.get(1).getId());
     }
 
     /**
@@ -1972,37 +2022,36 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(2));
         Assert.assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(3));
     }
-    
-    
-/*
- * Unused since the tested behaviour (licence entity ids being bein immediately visible in owning user group)
- * Is no longer supported because of transaction-scoped EntityManagers; and the purpose of this behaviour is unclear
- */
-//
-//    /**
-//     * @see JPADAO#updateUserGroup(UserGroup)
-//     * @verifies set id on new license
-//     */
-//    @Test
-//    public void updateUserGroup_shouldSetIdOnNewLicense() throws Exception {
-//        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
-//        Assert.assertNotNull(userGroup);
-//        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
-//        Assert.assertNotNull(licenseType);
-//        License license = new License();
-//        license.setDescription("xxx");
-//        license.setLicenseType(licenseType);
-//        userGroup.addLicense(license);
-//        Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
-//        boolean licenseFound = false;
-//        for (License l : userGroup.getLicenses()) {
-//            if ("xxx".equals(l.getDescription())) {
-//                licenseFound = true;
-//                Assert.assertNotNull(l.getId());
-//            }
-//        }
-//        Assert.assertTrue(licenseFound);
-//    }
+
+    /*
+     * Unused since the tested behaviour (licence entity ids being bein immediately visible in owning user group)
+     * Is no longer supported because of transaction-scoped EntityManagers; and the purpose of this behaviour is unclear
+     */
+    //
+    //    /**
+    //     * @see JPADAO#updateUserGroup(UserGroup)
+    //     * @verifies set id on new license
+    //     */
+    //    @Test
+    //    public void updateUserGroup_shouldSetIdOnNewLicense() throws Exception {
+    //        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
+    //        Assert.assertNotNull(userGroup);
+    //        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
+    //        Assert.assertNotNull(licenseType);
+    //        License license = new License();
+    //        license.setDescription("xxx");
+    //        license.setLicenseType(licenseType);
+    //        userGroup.addLicense(license);
+    //        Assert.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
+    //        boolean licenseFound = false;
+    //        for (License l : userGroup.getLicenses()) {
+    //            if ("xxx".equals(l.getDescription())) {
+    //                licenseFound = true;
+    //                Assert.assertNotNull(l.getId());
+    //            }
+    //        }
+    //        Assert.assertTrue(licenseFound);
+    //    }
 
     /**
      * @see JPADAO#getUserCount()
@@ -2059,7 +2108,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getUserGroupCount_shouldReturnCorrectCount() throws Exception {
-        Assert.assertEquals(2L, DataManager.getInstance().getDao().getUserGroupCount(null));
+        Assert.assertEquals(3L, DataManager.getInstance().getDao().getUserGroupCount(null));
     }
 
     /**
@@ -2795,7 +2844,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         TermsOfUse tou = DataManager.getInstance().getDao().getTermsOfUse();
         Assert.assertNotNull(tou);
     }
-
 
     @Test
     public void testSaveTermsOfUse() throws DAOException {

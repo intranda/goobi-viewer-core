@@ -1587,7 +1587,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct values
      */
     public List<String> getDisplayAdditionalMetadataIgnoreFields() {
-        return getLocalList("search.displayAdditionalMetadata.ignoreField", Collections.emptyList());
+        return getDisplayAdditionalMetadataFieldsByType("ignore", false);
     }
 
     /**
@@ -1600,14 +1600,49 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct values
      */
     public List<String> getDisplayAdditionalMetadataTranslateFields() {
-        List<String> fields = getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
-        if (fields.isEmpty()) {
-            return fields;
+        return getDisplayAdditionalMetadataFieldsByType("translate", true);
+    }
+    
+    /**
+     * <p>
+     * getDisplayAdditionalMetadataIgnoreFields.
+     * </p>
+     *
+     * @return List of configured fields; empty list if none found.
+     * @should return correct values
+     */
+    public List<String> getDisplayAdditionalMetadataOnelineFields() {
+        return getDisplayAdditionalMetadataFieldsByType("oneline", false);
+    }
+
+
+    /**
+     * 
+     * @param type Value of the type attribute
+     * @param normalize If true; field will be normalized
+     * @return List of <field> elements filtered by type
+     */
+    List<String> getDisplayAdditionalMetadataFieldsByType(String type, boolean normalize) {
+        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("search.displayAdditionalMetadata.field");
+        if (type == null) {
+            throw new IllegalArgumentException("type may not be null");
+        }
+        if (fields == null || fields.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        List<String> ret = new ArrayList<>(fields.size());
-        for (String field : fields) {
-            ret.add(SearchHelper.normalizeField(field));
+        List<String> ret = new ArrayList<>();
+        for (HierarchicalConfiguration<ImmutableNode> node : fields) {
+            if (!type.equals(node.getString("[@type]"))) {
+                continue;
+            }
+            String value = node.getString(".");
+            if (StringUtils.isNotEmpty(value)) {
+                if (normalize) {
+                    value = SearchHelper.normalizeField(value);
+                }
+                ret.add(value);
+            }
         }
 
         return ret;
@@ -2802,7 +2837,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getLabelFieldForFacetField(String facetField) {
         return getPropertyForFacetField(facetField, "[@labelField]", null);
     }
-    
+
     /**
      * 
      * @param facetField
@@ -2810,7 +2845,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
-        String value= getPropertyForFacetField(facetField, "[@translateLabels]", "true");
+        String value = getPropertyForFacetField(facetField, "[@translateLabels]", "true");
         return Boolean.valueOf(value);
     }
 
@@ -3869,46 +3904,10 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * isCommentsEnabled.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isCommentsEnabled() {
-        return getLocalBoolean(("comments[@enabled]"), false);
-    }
-
-    /**
      * @return
      */
     public boolean reviewEnabledForComments() {
         return getLocalBoolean("comments.review[@enabled]", false);
-    }
-
-    /**
-     * <p>
-     * getCommentsCondition.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getCommentsCondition() {
-        return getLocalString("comments.condition");
-    }
-
-    /**
-     * <p>
-     * getCommentsNotificationEmailAddresses.
-     * </p>
-     *
-     * @should return all configured elements
-     * @return a {@link java.util.List} object.
-     */
-    public List<String> getCommentsNotificationEmailAddresses() {
-        return getLocalList("comments.notificationEmailAddress");
     }
 
     /**
@@ -4476,8 +4475,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getCmsMediaDisplayHeight.
-     * If not configured, return 100.000. In this case the actual image size always depends on the requested width
+     * getCmsMediaDisplayHeight. If not configured, return 100.000. In this case the actual image size always depends on the requested width
      * </p>
      *
      * @return a int.
@@ -5395,24 +5393,24 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isFuzzySearchEnabled() {
         return getLocalBoolean("search.fuzzy[@enabled]", false);
     }
-    
-//    /**
-//     * 
-//     * @return
-//     * @should return correct value
-//     */
-//    public boolean isProximitySearchEnabled() {
-//        return getLocalBoolean("search.proximity[@enabled]", false);
-//    }
-//    
-//    
-//    /**
-//     * 
-//     * @return
-//     * @should return correct value
-//     */
-//    public int getProximitySearchDistance() {
-//        return getLocalInt("search.proximity[@distance]", 10);
-//    }
+
+    //    /**
+    //     * 
+    //     * @return
+    //     * @should return correct value
+    //     */
+    //    public boolean isProximitySearchEnabled() {
+    //        return getLocalBoolean("search.proximity[@enabled]", false);
+    //    }
+    //    
+    //    
+    //    /**
+    //     * 
+    //     * @return
+    //     * @should return correct value
+    //     */
+    //    public int getProximitySearchDistance() {
+    //        return getLocalInt("search.proximity[@distance]", 10);
+    //    }
 
 }

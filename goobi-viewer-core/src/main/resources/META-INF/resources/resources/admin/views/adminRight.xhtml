@@ -8,6 +8,7 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
     <ui:define name="metadata">
@@ -204,6 +205,46 @@
 
 
                                         <!-- CORE FUNCTIONS -->
+                                        <ui:fragment rendered="#{adminBean.currentLicense.licenseType.legalDisclaimerType}">
+                                        <h:panelGroup id="scopeGroup">
+											<viewerForms:inputFormField
+												label="#{msg.admin__legal__disclaimer_scope}">
+	
+												<div
+													class="form-group admin__cms-edit-collection-connected-radio-buttons">
+													<div class="connected-top">
+														<h:selectOneRadio group="scopeRadio"
+															value="#{adminBean.currentLicense.disclaimerScope.storageMode}"
+															immediate="true">
+															<f:selectItem itemValue="SESSION"
+																itemLabel="#{msg.admin__legal__disclaimer_scope__session}" />
+															<f:ajax render="scopeGroup" />
+														</h:selectOneRadio>
+													</div>
+													<div class="connected-bottom">
+														<h:selectOneRadio group="scopeRadio"
+															value="#{adminBean.currentLicense.disclaimerScope.storageMode}"
+															immediate="true">
+															<f:selectItem itemValue="LOCAL"
+																itemLabel="#{msg.admin__legal__disclaimer_scope__local}" />
+															<f:ajax render="scopeGroup" />
+														</h:selectOneRadio>
+													</div>
+												</div>
+												<h:panelGroup layout="block" id="scopeDurationInputGroup"
+													rendered="#{adminBean.currentLicense.disclaimerScope.storageMode == 'LOCAL'}">
+													<div>
+														<h:inputText id="scopeDurationInput"
+															styleClass="form-control"
+															value="#{adminBean.currentLicense.disclaimerScope.daysToLive}">
+														</h:inputText>
+													</div>
+												</h:panelGroup>
+	
+											</viewerForms:inputFormField>
+										</h:panelGroup>
+                                        </ui:fragment>
+                                        
                                         <ui:fragment rendered="#{adminBean.currentLicense.licenseType.cmsType}">
                                             <div class="admin__license-functions">
 

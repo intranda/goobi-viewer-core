@@ -125,10 +125,11 @@
 	                                        <!-- ACTIONS -->
 	                                        <div class="row justify-content-end admin__boxed-entry-actions">
 	                                            <div class="col-3 d-flex justify-content-end">
+	                                            	<!-- SHOW -->
+													<a href="#{navigationHelper.searchUrl}/-/#{adminBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/" target="_blank" class="admin__boxed-entry-actions-edit" aria-label="#{msg.show}">#{msg.show}</a>
+	                                                
 	                                                <!-- EDIT -->
 	                                                <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{licenseType.name}">#{msg.edit}</a>
-
-													<a href="#{navigationHelper.searchUrl}/-/#{adminBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/" target="_blank" class="admin__boxed-entry-actions-edit" aria-label="#{msg.show}">#{msg.show}</a>
 	
 	                                                <!-- DELETE -->
 	                                                <button

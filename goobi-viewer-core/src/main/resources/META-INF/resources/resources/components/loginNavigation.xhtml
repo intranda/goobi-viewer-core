@@ -143,8 +143,7 @@
                                     </li>
                                     
                                     <!-- ADMINISTRATION -->
-                                    <ui:fragment
-                                        rendered="#{userBean.admin or userBean.user.isHasCmsPrivilege('CMS_PAGES') or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)}">
+                                    <ui:fragment rendered="#{userBean.hasAdminBackendAccess}">
                                         <li>
                                             <div class="login-navigation__user-dropdown-item">
                                                 <div class="login-navigation__user-dropdown-item-icon">

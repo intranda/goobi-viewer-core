@@ -80,7 +80,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  * SolrSearchIndex class.
  * </p>
  */
-public final class SolrSearchIndex {
+public class SolrSearchIndex {
 
     private static final Logger logger = LoggerFactory.getLogger(SolrSearchIndex.class);
 

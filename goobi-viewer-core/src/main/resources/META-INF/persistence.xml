@@ -10,6 +10,7 @@
 		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
         <class>io.goobi.viewer.model.annotation.CrowdsourcingAnnotation</class>
 		<class>io.goobi.viewer.model.annotation.comments.Comment</class>
+        <class>io.goobi.viewer.model.annotation.comments.CommentGroup</class>
 		<class>io.goobi.viewer.model.bookmark.BookmarkList</class>
 		<class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
@@ -69,6 +70,9 @@
 		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
 		<class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
 		<class>io.goobi.viewer.model.administration.legal.CookieBanner</class>
+		<class>io.goobi.viewer.model.administration.legal.Disclaimer</class>
+		<class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
+		<class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -100,6 +104,7 @@
 		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
         <class>io.goobi.viewer.model.annotation.CrowdsourcingAnnotation</class>
 		<class>io.goobi.viewer.model.annotation.comments.Comment</class>
+        <class>io.goobi.viewer.model.annotation.comments.CommentGroup</class>
         <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
         <class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
@@ -163,6 +168,9 @@
 		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
 		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
 		<class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
+		<class>io.goobi.viewer.model.administration.legal.Disclaimer</class>
+		<class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
+		<class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
