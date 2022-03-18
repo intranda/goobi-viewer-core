@@ -287,7 +287,6 @@ public class SolrSearchIndex {
                 // logger.trace("&{}={}", key, params.get(key));
             }
         }
-        
 
         try {
             //             logger.trace("Solr query : {}", solrQuery.getQuery());
@@ -296,7 +295,7 @@ public class SolrSearchIndex {
             //             logger.debug("fieldList: {}", fieldList);                  
             QueryResponse resp = client.query(solrQuery);
             //             logger.debug("found: {}", resp.getResults().getNumFound());
-//                         logger.debug("fetched: {}", resp.getResults().size());
+            //                         logger.debug("fetched: {}", resp.getResults().size());
 
             return resp;
         } catch (SolrServerException e) {
@@ -325,19 +324,19 @@ public class SolrSearchIndex {
     public List<String> querySpellingSuggestions(String query, float accuracy, boolean build) throws IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.set(CommonParams.QT, "/spell");
-        solrQuery.set("spellcheck", true);  
+        solrQuery.set("spellcheck", true);
         solrQuery.set(SpellingParams.SPELLCHECK_ACCURACY, Float.toString(accuracy));
         solrQuery.set(SpellingParams.SPELLCHECK_BUILD, build);
         try {
             QueryResponse resp = client.query(solrQuery);
             QueryRequest request = new QueryRequest(solrQuery);
-            SpellCheckResponse response = request.process(client).getSpellCheckResponse(); 
+            SpellCheckResponse response = request.process(client).getSpellCheckResponse();
             return response.getSuggestions().stream().flatMap(suggestion -> suggestion.getAlternatives().stream()).collect(Collectors.toList());
-        } catch(IOException | SolrException | SolrServerException e) {
+        } catch (IOException | SolrException | SolrServerException e) {
             throw new IndexUnreachableException(e.toString());
         }
     }
-    
+
     /**
      * <p>
      * search.
@@ -1071,7 +1070,7 @@ public class SolrSearchIndex {
         List<String> list = new ArrayList<>();
         for (String name : fieldInfoMap.keySet()) {
             FieldInfo info = fieldInfoMap.get(name);
-            if ((name.startsWith("SORT_") || name.startsWith("SORTNUM_") || name.equals("DATECREATED") ) && !name.contains("_LANG_")) {
+            if ((name.startsWith("SORT_") || name.startsWith("SORTNUM_") || name.equals("DATECREATED")) && !name.contains("_LANG_")) {
                 list.add(name);
             }
         }
@@ -1308,18 +1307,22 @@ public class SolrSearchIndex {
      * @param wktRegion
      * @param finalQuery
      * @return
-     * @throws IndexUnreachableException 
+     * @throws IndexUnreachableException
      */
-    public String getHeatMap(String solrField, String wktRegion, String query, int gridLevel) throws IndexUnreachableException {
-        
+    public String getHeatMap(String solrField, String wktRegion, String query, Integer gridLevel) throws IndexUnreachableException {
+
+        HeatmapFacetMap facetMap = new HeatmapFacetMap(solrField)
+                .setHeatmapFormat(HeatmapFacetMap.HeatmapFormat.INTS2D)
+                .setRegionQuery(wktRegion);
+        if (gridLevel != null) {
+            facetMap.setGridLevel(gridLevel);
+        }
+
         final JsonQueryRequest request = new JsonQueryRequest()
                 .setQuery(query)
                 .setLimit(0)
-                .withFacet("heatmapFacet", new HeatmapFacetMap(solrField)
-                        .setHeatmapFormat(HeatmapFacetMap.HeatmapFormat.INTS2D)
-                        .setRegionQuery(wktRegion)
-                        .setGridLevel(gridLevel));
-        
+                .withFacet("heatmapFacet", facetMap);
+
         try {
             QueryResponse response = request.process(client);
             final NestableJsonFacet topLevelFacet = response.getJsonFacetingResponse();
@@ -1348,16 +1351,16 @@ public class SolrSearchIndex {
         List<List<Integer>> grid = heatmap.getCountGrid();
         for (int row = 0; row < heatmap.getNumRows(); row++) {
             List<Integer> gridRow = grid.get(row);
-            if(gridRow == null) {
+            if (gridRow == null) {
                 rows.put(JSONObject.NULL);
-            } else {                
+            } else {
                 JSONArray column = new JSONArray();
                 column.putAll(gridRow);
                 rows.put(column);
             }
         }
         json.put("counts_ints2D", rows);
-        
+
         return json.toString();
     }
 }

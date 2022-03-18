@@ -64,7 +64,43 @@
 	        	if(highlightDocumentId) {
 	        	    features.filter(f => f.properties.documentId == highlightDocumentId).forEach(f => f.properties.highlighted = true);
 	        	}
-            	layer.init(features, true);
+	        	
+	        	
+	        	let queryAdapter = L.SolrHeatmapBaseQueryAdapter.extend({
+	        	    ajaxOptions: function(bounds) {
+	        	        let options = {
+	        	          url: this._solrQuery(bounds)
+	        	        };
+	        	        return options;
+	        	      },
+	        	      responseFormatter: function(data) {
+	        	        return {
+	        	            "WKT_COORDS" : data
+	        	        }
+	        	      },
+	        	      _solrQuery: function(bounds) {
+	        	        let region = this.layer._mapViewToWkt(bounds);
+	        	        return this.layer._solrUrl + this.options.field + '?' + 
+	        	                "region=" + encodeURIComponent(region);
+	        	      }
+	        	    })
+	        	L.SolrHeatmapQueryAdapters.goobiViewerAdapter = queryAdapter;
+	        	
+	        	let heatmapUrl = "http://localhost:8082/viewer/api/v1/index/heatmap/";
+
+	        	let heatmap = L.solrHeatmap(heatmapUrl, {
+	        	    field: "WKT_COORDS",
+	        	    type: "clusters",
+	        	    gridLevel: 2,
+	        	    queryAdapter: "goobiViewerAdapter"    
+	        	});
+	        	heatmap.addTo(geoMap.map);
+	        	
+
+	        	
+	        	
+	        	
+//             	layer.init(features, true);
         	}
         	
            	$(document).ready(() => {   

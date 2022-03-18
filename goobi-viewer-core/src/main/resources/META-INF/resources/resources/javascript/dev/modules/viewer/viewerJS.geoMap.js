@@ -28,7 +28,7 @@ var viewerJS = ( function( viewer ) {
     'use strict'; 
         
     // default variables
-    var _debug = false;
+    var _debug = true;
     
     var _defaults = {
             mapId : "geomap",
@@ -40,7 +40,8 @@ var viewerJS = ( function( viewer ) {
             },
             mapBoxToken : undefined,
             language: "de",
-            fixed: false
+            fixed: false,
+            heatmap: true,
             
     }
     
@@ -153,14 +154,13 @@ var viewerJS = ( function( viewer ) {
         rxjs.fromEvent(this.map, "click")
         .pipe(rxjs.operators.map(e => this.layers[0].createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
         .subscribe(this.onMapClick);
-    
-        
+            
        	this.layers[0].init(features, false);
         if(features && features.length > 0) {
         	this.layers[0].setViewToFeatures(true)
             
         } else if(view){                                                    
-            this.setView(view);
+            this.setView(view); 
         }
         
         return this.initialized;

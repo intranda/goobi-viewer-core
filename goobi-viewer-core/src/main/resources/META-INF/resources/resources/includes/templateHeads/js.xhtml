@@ -101,7 +101,7 @@
         'resources/javascript/libs/leaflet/draw/leaflet.draw.js'
       ],
       ['leaflet.solr-heatmap',
-        ['templateAdmin', 'templateBlank', 'templateCrowdsourcing', 'templateMirador', 'templateArchives'],
+        ['templateMirador'],
         'resources/javascript/libs/leaflet/solr-heatmap/leafletSolrHeatmap.js'
       ],
       ['mapbox.gl-geocoder',
@@ -141,7 +141,6 @@
         'resources/javascript/dist/riot-tags.js'
       ]
     ]}" />
-
     <!-- INCLUDE FILES IF CONDITIONS ARE MET -->
     <c:forEach var="path" items="#{jsPaths}">
       <!-- include file, if it is not explicitly excluded -->

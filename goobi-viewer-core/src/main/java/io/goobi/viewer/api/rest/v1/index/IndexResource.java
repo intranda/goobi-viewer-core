@@ -268,7 +268,7 @@ public class IndexResource {
             @Parameter(description="Additional query to filter results by")
             @QueryParam("query") @DefaultValue("*:*") String filterQuery,
             @Parameter(description="The granularity of each grid cell")
-            @QueryParam("gridLevel") @DefaultValue("2") int gridLevel
+            @QueryParam("gridLevel") Integer gridLevel
             ) throws IOException, IndexUnreachableException {
 
         String finalQuery =
