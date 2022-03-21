@@ -280,7 +280,6 @@ public class SolrSearchIndex {
                 // logger.trace("&{}={}", key, params.get(key));
             }
         }
-        
 
         try {
             //             logger.trace("Solr query : {}", solrQuery.getQuery());
@@ -289,7 +288,7 @@ public class SolrSearchIndex {
             //             logger.debug("fieldList: {}", fieldList);                  
             QueryResponse resp = client.query(solrQuery);
             //             logger.debug("found: {}", resp.getResults().getNumFound());
-//                         logger.debug("fetched: {}", resp.getResults().size());
+            //                         logger.debug("fetched: {}", resp.getResults().size());
 
             return resp;
         } catch (SolrServerException e) {
@@ -318,19 +317,19 @@ public class SolrSearchIndex {
     public List<String> querySpellingSuggestions(String query, float accuracy, boolean build) throws IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.set(CommonParams.QT, "/spell");
-        solrQuery.set("spellcheck", true);  
+        solrQuery.set("spellcheck", true);
         solrQuery.set(SpellingParams.SPELLCHECK_ACCURACY, Float.toString(accuracy));
         solrQuery.set(SpellingParams.SPELLCHECK_BUILD, build);
         try {
             QueryResponse resp = client.query(solrQuery);
             QueryRequest request = new QueryRequest(solrQuery);
-            SpellCheckResponse response = request.process(client).getSpellCheckResponse(); 
+            SpellCheckResponse response = request.process(client).getSpellCheckResponse();
             return response.getSuggestions().stream().flatMap(suggestion -> suggestion.getAlternatives().stream()).collect(Collectors.toList());
-        } catch(IOException | SolrException | SolrServerException e) {
+        } catch (IOException | SolrException | SolrServerException e) {
             throw new IndexUnreachableException(e.toString());
         }
     }
-    
+
     /**
      * <p>
      * search.
@@ -419,21 +418,6 @@ public class SolrSearchIndex {
     public SolrDocumentList search(String query) throws PresentationException, IndexUnreachableException {
         //        logger.trace("search: {}", query);
         return search(query, 0, MAX_HITS, null, null, null).getResults();
-    }
-
-    /**
-     * <p>
-     * count.
-     * </p>
-     *
-     * @param query a {@link java.lang.String} object.
-     * @return a long.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public long count(String query) throws PresentationException, IndexUnreachableException {
-        //        logger.trace("search: {}", query);
-        return search(query, 0, 0, null, null, null).getResults().getNumFound();
     }
 
     /**
@@ -1064,7 +1048,7 @@ public class SolrSearchIndex {
         List<String> list = new ArrayList<>();
         for (String name : fieldInfoMap.keySet()) {
             FieldInfo info = fieldInfoMap.get(name);
-            if ((name.startsWith("SORT_") || name.startsWith("SORTNUM_") || name.equals("DATECREATED") ) && !name.contains("_LANG_")) {
+            if ((name.startsWith("SORT_") || name.startsWith("SORTNUM_") || name.equals("DATECREATED")) && !name.contains("_LANG_")) {
                 list.add(name);
             }
         }

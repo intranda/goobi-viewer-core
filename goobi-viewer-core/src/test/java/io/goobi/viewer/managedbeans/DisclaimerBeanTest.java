@@ -62,7 +62,7 @@ public class DisclaimerBeanTest extends AbstractTest {
         Mockito.when(dao.getDisclaimer()).thenReturn(storedDisclaimer);
         
         searchIndex = Mockito.mock(SolrSearchIndex.class);
-        Mockito.when(searchIndex.count(Mockito.anyString())).thenReturn(1l);
+        Mockito.when(searchIndex.getHitCount(Mockito.anyString())).thenReturn(1l);
         
         navigationHelper = Mockito.mock(NavigationHelper.class);
         Mockito.when(navigationHelper.isDocumentPage()).thenReturn(true);
