@@ -1528,10 +1528,6 @@ public final class SearchHelper {
             return Collections.singletonList(String.valueOf(resp.getJsonFacetingResponse().getStatValue(facetFieldName)));
         }
         
-        for (FacetField ff : resp.getFacetFields()) {
-            if (ff.getValueCount() > 0)
-                logger.trace("facet: " + ff.getName() + "=" + ff.getValues().get(0));
-        }
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
             if (StringUtils.isNotEmpty(count.getName()) && count.getCount() >= facetMinCount) {
