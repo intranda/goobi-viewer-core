@@ -221,7 +221,7 @@
 															<f:ajax render="scopeGroup" />
 														</h:selectOneRadio>
 													</div>
-													<div class="connected-bottom">
+													<div class="connected-bottom connected-bottom-wrapper">
 														<h:selectOneRadio group="scopeRadio"
 															value="#{adminBean.currentLicense.disclaimerScope.storageMode}"
 															immediate="true">
@@ -229,17 +229,18 @@
 																itemLabel="#{msg.admin__legal__disclaimer_scope__local}" />
 															<f:ajax render="scopeGroup" />
 														</h:selectOneRadio>
+														<h:panelGroup layout="block" id="scopeDurationInputGroup"
+															rendered="#{adminBean.currentLicense.disclaimerScope.storageMode == 'LOCAL'}">
+															<div class="cms-module__option-control admin__form-input">
+																<h:inputText id="scopeDurationInput"
+																	styleClass="form-control"
+																	value="#{adminBean.currentLicense.disclaimerScope.daysToLive}">
+																</h:inputText>
+															</div>
+														</h:panelGroup>
 													</div>
 												</div>
-												<h:panelGroup layout="block" id="scopeDurationInputGroup"
-													rendered="#{adminBean.currentLicense.disclaimerScope.storageMode == 'LOCAL'}">
-													<div>
-														<h:inputText id="scopeDurationInput"
-															styleClass="form-control"
-															value="#{adminBean.currentLicense.disclaimerScope.daysToLive}">
-														</h:inputText>
-													</div>
-												</h:panelGroup>
+
 	
 											</viewerForms:inputFormField>
 										</h:panelGroup>
