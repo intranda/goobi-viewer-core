@@ -206,6 +206,9 @@
 
                                         <!-- CORE FUNCTIONS -->
                                         <ui:fragment rendered="#{adminBean.currentLicense.licenseType.legalDisclaimerType}">
+                                        
+                                        <p>#{msg.admin__right_functions_info_disclaimer}</p>
+                                        
                                         <h:panelGroup id="scopeGroup">
 											<viewerForms:inputFormField
 												label="#{msg.admin__legal__disclaimer_scope}">
