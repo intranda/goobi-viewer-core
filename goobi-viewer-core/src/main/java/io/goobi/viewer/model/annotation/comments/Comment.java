@@ -24,14 +24,15 @@ import javax.persistence.Table;
 import de.intranda.api.annotation.wa.Motivation;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
-import de.intranda.api.iiif.presentation.v3.Canvas3;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * @author florian
@@ -87,6 +88,23 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
         setTargetPI(pi);
         setTargetPageOrder(page);
         setPublicationStatus(publicationStatus);
+    }
+
+    /**
+     * 
+     * @return true if record with <code>targetPI</code> exists in index; false otherwise
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @should return true if record exists
+     * @should return false if record missing
+     * @should return false if targetPI not set
+     */
+    public boolean isTargetPiRecordIndexed() throws IndexUnreachableException, PresentationException {
+        if (getTargetPI() == null) {
+            return false;
+        }
+
+        return DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.PI + ":" + getTargetPI()) > 0;
     }
 
     public String getDisplayText() {
