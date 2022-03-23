@@ -463,8 +463,6 @@ var viewerJS = ( function( viewer ) {
         if(!this.geoMap.config.fixed) {            
             cluster.on('clustermouseover', function (a) {
                 this.removePolygon();
-                
-//            a.layer.setOpacity(0.2);
                 this.shownLayer = a.layer;
                 this.polygon = L.polygon(a.layer.getConvexHull());
                 this.layer.addLayer(this.polygon);

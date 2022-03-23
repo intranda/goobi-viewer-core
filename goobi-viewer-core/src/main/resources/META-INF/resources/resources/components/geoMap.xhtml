@@ -88,7 +88,7 @@
 	        	
 	        	let heatmapUrl = "http://localhost:8082/viewer/api/v1/index/heatmap/";
 
-	        	let heatmap = L.solrHeatmap(heatmapUrl, {
+	        	let heatmap = L.solrHeatmap(heatmapUrl, geoMap, {
 	        	    field: "WKT_COORDS",
 	        	    type: "clusters",
 	        	    gridLevel: 2,
