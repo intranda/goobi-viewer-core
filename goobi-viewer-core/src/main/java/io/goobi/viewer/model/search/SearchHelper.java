@@ -1524,10 +1524,14 @@ public final class SearchHelper {
                 .getSearchIndex()
                 .searchFacetsAndStatistics(query, null, facetFieldNames, facetMinCount, facetPrefix, params, false);
         FacetField facetField = resp.getFacetField(facetFieldName);
-        if (json && resp.getJsonFacetingResponse() != null) {
+        if (json && resp.getJsonFacetingResponse() != null && resp.getJsonFacetingResponse().getStatValue(facetFieldName) != null) {
             return Collections.singletonList(String.valueOf(resp.getJsonFacetingResponse().getStatValue(facetFieldName)));
         }
-        
+
+        if (facetField == null) {
+            return Collections.emptyList();
+        }
+
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
             if (StringUtils.isNotEmpty(count.getName()) && count.getCount() >= facetMinCount) {
@@ -1537,6 +1541,7 @@ public final class SearchHelper {
                 ret.add(count.getName());
             }
         }
+
         return ret;
     }
 
