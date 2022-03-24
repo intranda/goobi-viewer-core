@@ -102,6 +102,7 @@ module.exports = function (grunt) {
 				src: [
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.js',
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.helper.js',
+					'<%=src.jsDevFolderModules %>viewer/viewerJS.geoMap.js',
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.*.js',
 					'<%=src.jsDevFolderModules %>cms/cmsJS.js',
 					'<%=src.jsDevFolderModules %>cms/cmsJS.*.js',

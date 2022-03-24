@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -58,6 +59,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -361,7 +363,7 @@ public class GeoMap {
                     string = "[" + string + "]";
                     return string;
                 case SOLR_QUERY:
-                    Collection<GeoMapFeature> features = getFeaturesFromSolrQuery(getSolrQuery());
+                    Collection<GeoMapFeature> features = getFeaturesFromSolrQuery(getSolrQuery(), getMarkerTitleField());
                     String ret = features.stream()
                             .distinct()
                             .map(GeoMapFeature::getJsonObject)
@@ -378,18 +380,31 @@ public class GeoMap {
         return "[]";
     }
 
-    public Collection<GeoMapFeature> getFeaturesFromSolrQuery(String query) throws PresentationException, IndexUnreachableException {
+    public static List<GeoMapFeature> getFeaturesFromSolrQuery(String query, String markerTitleField) throws PresentationException, IndexUnreachableException {
         List<SolrDocument> docs;
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
         List<String> fieldList = new ArrayList<>(coordinateFields);
-        fieldList.add(getMarkerTitleField());
-        docs = DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, fieldList);
-        Set<GeoMapFeature> features = new HashSet<>();
+        fieldList.add(markerTitleField);
+        docs = DataManager.getInstance().getSearchIndex().search(query, 10_000, null, fieldList);
+        List<GeoMapFeature> features = new ArrayList<>();
         for (SolrDocument doc : docs) {
             for (String field : coordinateFields) {
-                features.addAll(getGeojsonPoints(doc, field, getMarkerTitleField(), null));
+                features.addAll(getGeojsonPoints(doc, field, markerTitleField, null));
             }
         }
+         
+        Map<GeoMapFeature, List<GeoMapFeature>> featureMap = features
+                .stream()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.toList()));
+            
+            features = featureMap.entrySet().stream()
+                .map(e -> {
+                    GeoMapFeature f = e.getKey();
+                    f.setCount(e.getValue().size());
+                    return f;
+                })
+                .collect(Collectors.toList());
+        
         return features;
     }
 
@@ -452,6 +467,10 @@ public class GeoMap {
         return solrQuery;
     }
 
+    public String getSolrQueryEncoded() {
+        return StringTools.encodeUrl(getSolrQuery());
+    }
+    
     /**
      * @param solrQuery the solrQuery to set
      */

@@ -59,58 +59,37 @@
 	                    window.open(queryUrl, "#{cc.attrs.linkTarget}");
 	                });
 	            }
+	        	layer.init();
 	        	
 	        	let highlightDocumentId = "#{cc.attrs.highlightDocumentId}";
 	        	if(highlightDocumentId) {
 	        	    features.filter(f => f.properties.documentId == highlightDocumentId).forEach(f => f.properties.highlighted = true);
 	        	}
 	        	
+	        		        	
+	        	let heatmapUrl = "http://localhost:8082/viewer/api/v1/index/spatial/heatmap/";
+	        	let featureUrl = "http://localhost:8082/viewer/api/v1/index/spatial/search/"
 	        	
-	        	let queryAdapter = L.SolrHeatmapBaseQueryAdapter.extend({
-	        	    ajaxOptions: function(bounds) {
-	        	        let options = {
-	        	          url: this._solrQuery(bounds)
-	        	        };
-	        	        return options;
-	        	      },
-	        	      responseFormatter: function(data) {
-	        	        return {
-	        	            "WKT_COORDS" : data
-	        	        }
-	        	      },
-	        	      _solrQuery: function(bounds) {
-	        	        let region = this.layer._mapViewToWkt(bounds);
-	        	        return this.layer._solrUrl + this.options.field + '?' + 
-	        	                "region=" + encodeURIComponent(region);
-	        	      }
-	        	    })
-	        	L.SolrHeatmapQueryAdapters.goobiViewerAdapter = queryAdapter;
-	        	
-	        	let heatmapUrl = "http://localhost:8082/viewer/api/v1/index/heatmap/";
-
-	        	let heatmap = L.solrHeatmap(heatmapUrl, geoMap, {
+	        	let heatmap = L.solrHeatmap(heatmapUrl, featureUrl, layer, {
 	        	    field: "WKT_COORDS",
 	        	    type: "clusters",
-	        	    gridLevel: 2,
-	        	    queryAdapter: "goobiViewerAdapter"    
+	        	    filterQuery: "#{cc.attrs.geoMap.solrQueryEncoded}",
+	        	    labelField: "#{cc.attrs.geoMap.markerTitleField}",
+	        	    queryAdapter: "goobiViewer"    
 	        	});
 	        	heatmap.addTo(geoMap.map);
-	        	
 
-	        	
-	        	
-	        	
 //             	layer.init(features, true);
         	}
         	
            	$(document).ready(() => {   
             	let view = #{cc.attrs.geoMap.initialView};
-            	let features = #{cc.attrs.geoMap.featuresAsString};
-            	if(features.length > 0 ) {
+            	let features = [];
             	    initMap(view, features);
-            	} else {
-            	    $("##{cc.attrs.mapId}").parent().hide();
-            	}
+//             	if(features.length > 0 ) {
+//             	} else {
+//             	    $("##{cc.attrs.mapId}").parent().hide();
+//             	}
             })
 		    
 		})();

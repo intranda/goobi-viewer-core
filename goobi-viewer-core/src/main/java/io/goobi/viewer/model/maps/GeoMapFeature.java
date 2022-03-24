@@ -30,6 +30,7 @@ public class GeoMapFeature {
     private String description;
     private String link;
     private String json;
+    private int count = 1;
     //This is used to identify the feature with a certain document, specifically a LOGID of a TOC element
     private String documentId = null;
 
@@ -112,8 +113,23 @@ public class GeoMapFeature {
     public void setJson(String json) {
         this.json = json;
     }
+    
+    /**
+     * @return the count
+     */
+    public int getCount() {
+        return count;
+    }
+    
+    /**
+     * @param count the count to set
+     */
+    public void setCount(int count) {
+        this.count = count;
+    }
 
     public JSONObject getJsonObject() {
+        
         JSONObject object = new JSONObject(this.json);
         JSONObject properties = object.getJSONObject("properties");
         if (properties == null) {
@@ -132,6 +148,7 @@ public class GeoMapFeature {
         if (StringUtils.isNotBlank(this.documentId)) {
             properties.append("documentId", this.documentId);
         }
+        properties.append("count", this.count);
         return object;
     }
 
@@ -140,7 +157,10 @@ public class GeoMapFeature {
      */
     @Override
     public int hashCode() {
-        return this.json == null ? "".hashCode() : this.json.hashCode();
+        int jsonCode = this.json == null ? "".hashCode() : this.json.hashCode();
+        int titleCode = this.title == null ? "".hashCode() : this.title.hashCode();
+        int linkCode = this.link == null ? "".hashCode() : this.link.hashCode();
+        return jsonCode + 31 * (titleCode + 31 * linkCode);
     }
 
     /* (non-Javadoc)
@@ -152,7 +172,10 @@ public class GeoMapFeature {
             return false;
         }
         if (obj.getClass().equals(this.getClass())) {
-            return Objects.equals(this.json, ((GeoMapFeature) obj).json);
+            GeoMapFeature other = (GeoMapFeature)obj;
+            return Objects.equals(this.json, other.json) && 
+                    Objects.equals(this.title, other.title) && 
+                    Objects.equals(this.link, other.link);
         }
         
         return false;

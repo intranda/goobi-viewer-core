@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.apache.commons.lang3.StringUtils;
@@ -1349,16 +1350,21 @@ public class SolrSearchIndex {
         json.put("maxY", heatmap.getMaxY());
         JSONArray rows = new JSONArray();
         List<List<Integer>> grid = heatmap.getCountGrid();
-        for (int row = 0; row < heatmap.getNumRows(); row++) {
-            List<Integer> gridRow = grid.get(row);
-            if (gridRow == null) {
-                rows.put(JSONObject.NULL);
-            } else {
-                JSONArray column = new JSONArray();
-                column.putAll(gridRow);
-                rows.put(column);
+        int count = 0;
+        if (grid != null) {
+            for (int row = 0; row < heatmap.getNumRows(); row++) {
+                List<Integer> gridRow = grid.get(row);
+                if (gridRow == null) {
+                    rows.put(JSONObject.NULL);
+                } else {
+                    JSONArray column = new JSONArray();
+                    count += gridRow.stream().mapToInt(Integer::intValue).sum();
+                    column.putAll(gridRow);
+                    rows.put(column);
+                }
             }
         }
+        json.put("count", count);
         json.put("counts_ints2D", rows);
 
         return json.toString();

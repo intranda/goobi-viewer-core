@@ -26,6 +26,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -70,6 +72,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.maps.GeoMap;
+import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
@@ -257,9 +261,9 @@ public class IndexResource {
      * @throws IndexUnreachableException 
      */
     @GET
-    @Path(INDEX_HEATMAP)
+    @Path(INDEX_SPATIAL_HEATMAP)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Retrieves a JSON list of all existing Solr fields.", tags = { "index" })
+    @Operation(summary = "Returns a heatmap of geospatial search results", tags = { "index" })
     public String getHeatmap(
             @Parameter(description="SOLR field containing spatial coordinates") 
             @PathParam("solrField") String solrField,
@@ -270,14 +274,44 @@ public class IndexResource {
             @Parameter(description="The granularity of each grid cell")
             @QueryParam("gridLevel") Integer gridLevel
             ) throws IOException, IndexUnreachableException {
-
+        servletResponse.addHeader("Cache-Control", "max-age=300");
         String finalQuery =
-                new StringBuilder().append(filterQuery).append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
+                new StringBuilder().append("+(").append(filterQuery).append(") ").append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
         logger.debug("q: {}", finalQuery);
         
         return DataManager.getInstance()
                         .getSearchIndex().getHeatMap(solrField, wktRegion, finalQuery, gridLevel);
         
+    }
+    
+    @GET
+    @Path(INDEX_SPATIAL_SEARCH)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Returns results of a geospatial search as GeoJson objects", tags = { "index" })
+    public String getGeoJsonResuls(
+            @Parameter(description="SOLR field containing spatial coordinates") 
+            @PathParam("solrField") String solrField,
+            @Parameter(description="Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain the whole world")
+            @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
+            @Parameter(description="Additional query to filter results by")
+            @QueryParam("query") @DefaultValue("*:*") String filterQuery,
+            @Parameter(description="The SOLR field to be used as label for each feature")
+            @QueryParam("labelField") String labelField
+            ) throws IOException, IndexUnreachableException, PresentationException {
+        servletResponse.addHeader("Cache-Control", "max-age=300");
+        String finalQuery =
+                new StringBuilder()
+                .append(filterQuery)
+                .append(" +({wktField}:{wktCoords}) ".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion))
+                .append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
+        logger.debug("q: {}", finalQuery);
+        
+        String objects = GeoMap.getFeaturesFromSolrQuery(finalQuery, labelField)
+            .stream()
+            .map(GeoMapFeature::getJsonObject)
+            .map(Object::toString)
+            .collect(Collectors.joining(","));
+        return "[" + objects + "]";
     }
 
     private static Optional<JSONArray> getFacetResults(QueryResponse response) {
