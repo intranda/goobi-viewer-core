@@ -27,8 +27,8 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
- * Describes the locations in the viewer where a notification should be displayed.
- * This can either be all pages or all record pages which may be further restricted by a SOLR query condition
+ * Describes the locations in the viewer where a notification should be displayed. This can either be all pages or all record pages which may be
+ * further restricted by a SOLR query condition
  * 
  * @author florian
  *
@@ -39,6 +39,7 @@ public class DisplayScope implements Serializable {
 
     /**
      * The type of viewer-pages that are in scope
+     * 
      * @author florian
      *
      */
@@ -52,10 +53,10 @@ public class DisplayScope implements Serializable {
          */
         RECORD
     }
-    
+
     private PageScope pageScope;
     private String filterQuery;
-    
+
     /**
      * Creates a scope that appplies to all viewer pages
      */
@@ -63,26 +64,26 @@ public class DisplayScope implements Serializable {
         this.pageScope = PageScope.ALL;
         this.filterQuery = "";
     }
-    
+
     /**
-     * Creates a scope from a given PageScope and filterQuery. The filterQuery is only meaningful if 
-     * the scope is PageScope.RECORD
+     * Creates a scope from a given PageScope and filterQuery. The filterQuery is only meaningful if the scope is PageScope.RECORD
+     * 
      * @param query
      */
     public DisplayScope(PageScope scope, String filter) {
-        this.pageScope =scope;
+        this.pageScope = scope;
         this.filterQuery = filter;
     }
-    
+
     public DisplayScope(String jsonString) throws IllegalArgumentException {
-        try {            
+        try {
             JSONObject json = new JSONObject(jsonString);
             this.pageScope = PageScope.valueOf(json.getString("pageScope").toUpperCase());
             this.filterQuery = json.getString("filterQuery");
-        } catch(NullPointerException | JSONException e) {
+        } catch (NullPointerException | JSONException e) {
             throw new IllegalArgumentException("Cannot construct DisplayScope from string " + jsonString, e);
         }
-        
+
     }
 
     /**
@@ -112,45 +113,56 @@ public class DisplayScope implements Serializable {
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;
     }
-    
+
     public boolean appliesToPage(PageType pageType, String pi, SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
-        if(this.pageScope.equals(PageScope.ALL)) {
+        if (this.pageScope.equals(PageScope.ALL)) {
             return !pageType.isAdminBackendPage();
-        } else if(pageType != null && pageType.isDocumentPage()) {
+        } else if (pageType != null && pageType.isDocumentPage()) {
             return matchesFilter(this.getQueryForSearch(), pi, searchIndex);
         } else {
             return false;
         }
     }
 
-    private boolean matchesFilter(String query, String pi, SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
-        if(StringUtils.isBlank(pi)) {
+    /**
+     * 
+     * @param query
+     * @param pi
+     * @param searchIndex
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private static boolean matchesFilter(String query, String pi, SolrSearchIndex searchIndex)
+            throws PresentationException, IndexUnreachableException {
+        if (StringUtils.isBlank(pi)) {
             return false;
-        } else if(StringUtils.isBlank(query)) {
+        } else if (StringUtils.isBlank(query)) {
             return true;
         } else {
-            String singleRecordQuery = "+({1}) +{2}".replace("{1}", query).replace("{2}", "PI:" + pi);            
-            return searchIndex.count(singleRecordQuery) > 0;
+            String singleRecordQuery = "+({1}) +{2}".replace("{1}", query).replace("{2}", "PI:" + pi);
+            return searchIndex.getHitCount(singleRecordQuery) > 0;
         }
     }
-    
+
     /**
      * Get the query to use in a SOLR search to deterimine whether a record should show the disclaimer
-     * @return  a solr search query for the disclaimer
+     * 
+     * @return a solr search query for the disclaimer
      */
     public String getQueryForSearch() {
-        if(StringUtils.isBlank(this.filterQuery)) {
+        if (StringUtils.isBlank(this.filterQuery)) {
             return "";
-        } else {
-            return "+(" + this.filterQuery + ") +(ISWORK:* ISANCHOR:*)";
         }
+
+        return "+(" + this.filterQuery + ") +(ISWORK:* ISANCHOR:*)";
     }
-    
+
     public String getAsJson() {
-       JSONObject json = new JSONObject();
-       json.put("pageScope", this.getPageScope());
-       json.put("filterQuery", this.getFilterQuery());
-       return json.toString();
+        JSONObject json = new JSONObject();
+        json.put("pageScope", this.getPageScope());
+        json.put("filterQuery", this.getFilterQuery());
+        return json.toString();
     }
-    
+
 }

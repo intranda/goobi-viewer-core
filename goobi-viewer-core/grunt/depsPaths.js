@@ -2,8 +2,8 @@
 Static path definitions for Goobi viewer JS + CSS dependencies 
 They define what will be copied from node_modules to which Goobi viewer core lib directory
 
-They are feed into the copy tasks `copy:js` and `copy:css`,
-which can be called separately (`grunt copy:js` / `grunt copy:css`), or at once (`grunt copyDeps`)
+They are fed into the copy tasks `copy:js` and `copy:css`,
+which can be called separately (`grunt copy:js` / `grunt copy:css`), or at once (`grunt copyDeps  [--verbose]`)
 Run these tasks after updating dependencies with `npm update`
 Add new definitions after installing new packages with `npm install [<@scope>/]<name>` 
 */

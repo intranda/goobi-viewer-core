@@ -334,7 +334,7 @@ var viewerJS = (function () {
                        tinymce.triggerSave();
                        //trigger a change event on the underlying textArea
                        $(ed.targetElm).change();
-                        if (currentPage === 'adminCmsCreatePage') {
+                        if (currentPage === 'adminCmsNewPage') {
                             createPageConfig.prevBtn.attr('disabled', true);
                             createPageConfig.prevDescription.show();
                         }

@@ -2411,7 +2411,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public long getTotalNumberOfVolumes() throws IndexUnreachableException, PresentationException {
         String query = SearchHelper.buildFinalQuery(SearchHelper.ALL_RECORDS_QUERY, null, true, false);
-        return DataManager.getInstance().getSearchIndex().count(query);
+        return DataManager.getInstance().getSearchIndex().getHitCount(query);
     }
 
     /**
