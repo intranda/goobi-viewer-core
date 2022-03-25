@@ -72,7 +72,7 @@ public class DisplayScopeTest {
         }
         {
             SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);
-            Mockito.when(searchIndex.count(Mockito.anyString())).thenAnswer(inv -> {
+            Mockito.when(searchIndex.getHitCount(Mockito.anyString())).thenAnswer(inv -> {
                String arg = inv.getArgument(0, String.class); 
                if(arg.contains("PI1")) {                   
                    return 1l;

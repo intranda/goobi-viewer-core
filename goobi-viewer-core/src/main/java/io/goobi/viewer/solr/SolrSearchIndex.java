@@ -421,21 +421,6 @@ public class SolrSearchIndex {
     }
 
     /**
-     * <p>
-     * count.
-     * </p>
-     *
-     * @param query a {@link java.lang.String} object.
-     * @return a long.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public long count(String query) throws PresentationException, IndexUnreachableException {
-        //        logger.trace("search: {}", query);
-        return search(query, 0, 0, null, null, null).getResults().getNumFound();
-    }
-
-    /**
      * Retrieves the first document found by the given query
      *
      * @param query a {@link java.lang.String} object.

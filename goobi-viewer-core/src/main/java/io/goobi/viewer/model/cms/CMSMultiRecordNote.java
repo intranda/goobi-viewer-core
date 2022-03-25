@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -57,9 +56,8 @@ public class CMSMultiRecordNote extends CMSRecordNote {
     private String query;
 
     /**
-     * A list of PIs for all accessible records matching the query. 
-     * If null, {@link #getRecords()} queries the solr and sets records to a list (non-null) containing the matching results.
-     * Reset to null when loaded for editing and when the query is changed
+     * A list of PIs for all accessible records matching the query. If null, {@link #getRecords()} queries the solr and sets records to a list
+     * (non-null) containing the matching results. Reset to null when loaded for editing and when the query is changed
      */
     @Transient
     private List<String> records = null;
@@ -96,7 +94,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
      * @param query the query to set
      */
     public void setQuery(String query) {
-        if(!StringUtils.equals(query, this.query)) {            
+        if (!StringUtils.equals(query, this.query)) {
             this.records = null;
         }
         this.query = query;
@@ -158,32 +156,35 @@ public class CMSMultiRecordNote extends CMSRecordNote {
      */
     @Override
     public boolean matchesFilter(String filter) {
-        if(StringUtils.isNotBlank(filter)) {
-            return getNoteTitle().getValues().stream().map(pair -> pair.getValue()).anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase()));
-        } else {
-            return true;
+        if (StringUtils.isNotBlank(filter)) {
+            return getNoteTitle().getValues()
+                    .stream()
+                    .map(pair -> pair.getValue())
+                    .anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase()));
         }
+
+        return true;
     }
-    
+
     public String toString() {
         return getQuery();
     }
 
     /**
-     * Check if the given pi is a match for the query of the record note
-     * The pi is a match if the record note query combined with a query for the given pi returns at least one result
+     * Check if the given pi is a match for the query of the record note The pi is a match if the record note query combined with a query for the
+     * given pi returns at least one result
      * 
      * @param pi
      * @return
      */
     public boolean matchesRecord(String pi) {
         String solrQuery = getQueryForSearch();
-        String singleRecordQuery = "+({1}) +{2}".replace("{1}", solrQuery).replace("{2}", "PI:"+pi);
+        String singleRecordQuery = "+({1}) +{2}".replace("{1}", solrQuery).replace("{2}", "PI:" + pi);
 
         try {
             return DataManager.getInstance()
                     .getSearchIndex()
-                    .count(singleRecordQuery) > 0;
+                    .getHitCount(singleRecordQuery) > 0;
         } catch (PresentationException | IndexUnreachableException e) {
             logger.error("Failed to test match for record note '{}': {}", this, e.toString());
             return false;
