@@ -5213,7 +5213,7 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            GeoMap o = em.find(GeoMap.class, mapId);
+            GeoMap o = em.getReference(GeoMap.class, mapId);
             return o;
         } catch (EntityNotFoundException e) {
             return null;

@@ -170,7 +170,7 @@ var viewerJS = ( function( viewer ) {
         }
         
     }
-    
+     
     viewer.GeoMap.featureGroup.prototype.setViewToFeatures = function(setViewToHighlighted) {
     	let features = this.getFeatures();
     	if(features && features.length > 0) {
@@ -185,7 +185,7 @@ var viewerJS = ( function( viewer ) {
 	            this.geoMap.setView(viewAroundFeatures);
             }
         }
-    }
+    } 
     
     viewer.GeoMap.featureGroup.prototype.isEmpty = function() {
     	return this.markers.length == 0 && this.areas.length == 0;
@@ -232,7 +232,7 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.featureGroup.prototype.getClusterCount = function(cluster) {
-	  	let count = cluster.getAllChildMarkers().map(child => child.options?.count ? child.options.count : 0).reduce((a, b) => a + b, 0)
+	  	let count = cluster.getAllChildMarkers().map(child => child.options?.count ? child.options.count : 1).reduce((a, b) => a + b, 0)
 	  	return count;
 	  }
     

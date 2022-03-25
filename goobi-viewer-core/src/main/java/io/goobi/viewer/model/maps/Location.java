@@ -113,6 +113,7 @@ public class Location {
     }
 
     public String getGeoJson() {
+        
         JSONObject feature = new JSONObject();
         JSONObject geometry = new JSONObject(area.getGeoJson());
         JSONObject properties = new JSONObject();

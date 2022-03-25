@@ -101,14 +101,14 @@ L.SolrHeatmapQueryAdapters = {
       _solrQuery: function(bounds) {
         bounds = this._getBoundsForQuery(bounds);
         let region = this.layer._mapViewToWkt(bounds);
-        return this.layer._heatmapUrl + this.options.field + '?' + 
+        return this.layer._heatmapUrl.replace("{solrField}", this.options.field) + '?' + 
                 "region=" + encodeURIComponent(region) + '&' + 
 	            "query=" + this.options.filterQuery;
       },
       _searchHitsSolrQuery: function(bounds) {
             bounds = this._getBoundsForQuery(bounds);
 	        let region = this.layer._mapViewToWkt(bounds);
-	        return this.layer.featureUrl + this.options.field + '?' + 
+	        return this.layer.featureUrl.replace("{solrField}", this.options.field) + '?' + 
 	                "region=" + encodeURIComponent(region) + '&' + 
 	                "labelField=" + this.options.labelField + '&' + 
 	                "query=" + this.options.filterQuery;

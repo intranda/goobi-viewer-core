@@ -47,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -363,14 +363,6 @@ public class GeoMap {
                     string = "[" + string + "]";
                     return string;
                 case SOLR_QUERY:
-                    Collection<GeoMapFeature> features = getFeaturesFromSolrQuery(getSolrQuery(), getMarkerTitleField());
-                    String ret = features.stream()
-                            .distinct()
-                            .map(GeoMapFeature::getJsonObject)
-                            .map(Object::toString)
-                            .collect(Collectors.joining(","));
-
-                    return "[" + ret + "]";
                 default:
                     return "[]";
             }
@@ -418,6 +410,7 @@ public class GeoMap {
         List<GeoMapFeature> docFeatures = new ArrayList<>();
         List<String> points = SolrTools.getMetadataValues(doc, metadataField);
         for (String point : points) {
+            try {
             JSONObject json = new JSONObject(point);
             String type = json.getString("type");
             if ("FeatureCollection".equalsIgnoreCase(type)) {
@@ -435,12 +428,15 @@ public class GeoMap {
                             }
                         }
                     });
-                }
+                } 
             } else if ("Feature".equalsIgnoreCase(type)) {
                 GeoMapFeature feature = new GeoMapFeature(json.toString());
                 feature.setTitle(title);
                 feature.setDescription(desc);
                 docFeatures.add(feature);
+            }
+            } catch(JSONException e) {
+                logger.error("Encountered non-json feature: {}", point);
             }
         }
         return docFeatures;

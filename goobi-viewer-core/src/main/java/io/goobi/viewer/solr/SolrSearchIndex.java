@@ -1328,8 +1328,11 @@ public class SolrSearchIndex {
             QueryResponse response = request.process(client);
             final NestableJsonFacet topLevelFacet = response.getJsonFacetingResponse();
             final HeatmapJsonFacet heatmap = topLevelFacet.getHeatmapFacetByName("heatmapFacet");
-            String json = (String) topLevelFacet.getStatValue("heatmapFacet");
-            return getAsJson(heatmap);
+            if(heatmap != null) {                
+                return getAsJson(heatmap);
+            } else {
+                return "{}";
+            }
         } catch (SolrServerException | IOException e) {
             throw new IndexUnreachableException("Error getting facet heatmap: " + e.toString());
         }

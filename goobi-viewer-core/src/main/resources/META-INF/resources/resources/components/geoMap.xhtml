@@ -24,76 +24,44 @@
 				<span data-metadata="description"></span> 
 		</popover>
 		<script>
-		/**
-		* put this code in anonymous function and execute it to limit the scope of declared variables to 
-		* this script only
-		**/
-		//<![CDATA[
-		(() => {
-        	var geoMap = new viewerJS.GeoMap({
-        	    mapId: "#{cc.attrs.mapId}",
-           		language: "#{navigationHelper.localeString}",
-           		iconPath: "#{request.contextPath}/resources/images/map",
-           		layer : {
-	           		allowMovingFeatures: false,
-	           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
-	           		popoverOnHover: #{cc.attrs.popoverOnHover},
-	           		clusterMarkers: #{cc.attrs.clusterMarkers}
-           		}
-           	});
-        	var initMap = function(view, features) {
-        	    geoMap.init(view);
-            	let layer = new viewerJS.GeoMap.featureGroup(geoMap, {
-            	    markerIcon: #{cc.attrs.geoMap.markerAsJSON}
-            	})
-            	layer.onFeatureClick.subscribe(feature => {
-           	       if(feature.properties && feature.properties.link && !feature.properties.highlighted) {
-           	           window.location.assign(feature.properties.link);
-           	       }
-           	    });
-	        	if(#{cc.attrs.linkToSearch and cc.attrs.geoMap.type == 'SOLR_QUERY'}) {
-	                let searchUrlTemplate = '#{geoMapBean.getCoordinateSearchQueryTemplate(cc.attrs.geoMap)}';
-	                layer.onFeatureClick.subscribe( (feature) => {
-	                    let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
-	                    queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
-	                    window.open(queryUrl, "#{cc.attrs.linkTarget}");
-	                });
-	            }
-	        	layer.init();
-	        	
-	        	let highlightDocumentId = "#{cc.attrs.highlightDocumentId}";
-	        	if(highlightDocumentId) {
-	        	    features.filter(f => f.properties.documentId == highlightDocumentId).forEach(f => f.properties.highlighted = true);
-	        	}
-	        	
-	        		        	
-	        	let heatmapUrl = "http://localhost:8082/viewer/api/v1/index/spatial/heatmap/";
-	        	let featureUrl = "http://localhost:8082/viewer/api/v1/index/spatial/search/"
-	        	
-	        	let heatmap = L.solrHeatmap(heatmapUrl, featureUrl, layer, {
-	        	    field: "WKT_COORDS",
-	        	    type: "clusters",
-	        	    filterQuery: "#{cc.attrs.geoMap.solrQueryEncoded}",
-	        	    labelField: "#{cc.attrs.geoMap.markerTitleField}",
-	        	    queryAdapter: "goobiViewer"    
-	        	});
-	        	heatmap.addTo(geoMap.map);
-
-//             	layer.init(features, true);
-        	}
-        	
-           	$(document).ready(() => {   
-            	let view = #{cc.attrs.geoMap.initialView};
-            	let features = [];
-            	    initMap(view, features);
-//             	if(features.length > 0 ) {
-//             	} else {
-//             	    $("##{cc.attrs.mapId}").parent().hide();
-//             	}
-            })
 		    
-		})();
-		//]]>
+		$(document).ready(() => {   
+		    let config = {
+		    		mapType: "#{cc.attrs.geoMap.type}",
+		    		openSearchOnMarkerClick: true,
+		    		documentIdToHighlight: "#{cc.attrs.highlightDocumentId}",
+		            map: {
+			            mapId : "#{cc.attrs.mapId}",
+			            language: "#{navigationHelper.localeString}",
+			            iconPath: "#{request.contextPath}/resources/images/map",
+			            layer: {
+			                allowMovingFeatures: false,
+			           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
+			           		popoverOnHover: #{cc.attrs.popoverOnHover},
+			           		clusterMarkers: #{cc.attrs.clusterMarkers},
+			           		markerIcon: #{cc.attrs.geoMap.markerAsJSON},
+			            }
+		            },
+		            search: {
+		            	openSearchOnMarkerClick: #{cc.attrs.linkToSearch and cc.attrs.geoMap.type == 'SOLR_QUERY'},
+		            	searchUrlTemplate : '#{geoMapBean.getCoordinateSearchQueryTemplate(cc.attrs.geoMap)}',
+		            	linkTarget : "#{cc.attrs.linkTarget}",
+		            },
+		            heatmap: {
+		            	showSearchResultsHeatmap: #{cc.attrs.geoMap.type == 'SOLR_QUERY'},
+		            	heatmapUrl: "#{geoMapBean.heatmapUrl}",
+		            	featureUrl: "#{geoMapBean.featureUrl}",
+		        	    filterQuery: "#{cc.attrs.geoMap.solrQueryEncoded}",
+		        	    labelField: "#{cc.attrs.geoMap.markerTitleField}",
+		            }
+		    }
+	    	let geomap = new viewerJS.GeoMapCms(config);
+
+		    let view = #{cc.attrs.geoMap.initialView};
+	    	let features = #{cc.attrs.geoMap.featuresAsString};
+    	    geomap.init(view, features);
+    	})    
+
 		</script>
 	</composite:implementation>
 </ui:composition>
