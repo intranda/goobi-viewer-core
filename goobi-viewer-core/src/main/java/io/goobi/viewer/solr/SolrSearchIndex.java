@@ -1296,14 +1296,14 @@ public class SolrSearchIndex {
      * @throws IndexUnreachableException
      */
     public String getHeatMap(String solrField, String wktRegion, String query, Integer gridLevel) throws IndexUnreachableException {
-
+        
         HeatmapFacetMap facetMap = new HeatmapFacetMap(solrField)
                 .setHeatmapFormat(HeatmapFacetMap.HeatmapFormat.INTS2D)
                 .setRegionQuery(wktRegion);
         if (gridLevel != null) {
             facetMap.setGridLevel(gridLevel);
         }
-
+      
         final JsonQueryRequest request = new JsonQueryRequest()
                 .setQuery(query)
                 .setLimit(0)
