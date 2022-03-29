@@ -2,7 +2,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -81,7 +81,7 @@
                                             <ui:fragment rendered="#{!geoMapBean.isInUse(map)}">
                                                 <button
 													class="btn btn--clean delete" onclick="if ( !confirm( &quot;#{msg.confirm__delete_map}&quot; ) ) { return false };"
-													action="#{geoMapBean.deleteMap(map)}">
+													jsf:action="#{geoMapBean.deleteMap(map)}">
 													#{msg.delete}
 												</button>
                                             </ui:fragment>
