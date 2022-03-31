@@ -18,7 +18,11 @@
     
 	<composite:implementation>
 
-		<div id="#{cc.attrs.mapId}" class="geomap" />
+		<div id="#{cc.attrs.mapId}" class="geomap">
+			<span class="ajax_loader">
+				<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." />
+			</span>
+		</div>
 		<popover id="popoverTemplate_#{cc.attrs.mapId}" class="#{cc.attrs.popoverClass}">
 				<h3 data-metadata="title"></h3>
 				<span data-metadata="description"></span> 
@@ -46,6 +50,7 @@
 		            	openSearchOnMarkerClick: #{cc.attrs.linkToSearch and cc.attrs.geoMap.type == 'SOLR_QUERY'},
 		            	searchUrlTemplate : '#{geoMapBean.getCoordinateSearchQueryTemplate(cc.attrs.geoMap)}',
 		            	linkTarget : "#{cc.attrs.linkTarget}",
+		            	loader: "##{cc.attrs.mapId} .ajax_loader"
 		            },
 		            heatmap: {
 		            	showSearchResultsHeatmap: #{cc.attrs.geoMap.type == 'SOLR_QUERY'},

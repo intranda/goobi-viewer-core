@@ -61,11 +61,9 @@
     }
     
     viewer.GeoMapCms = function(config) {
- 
  		this.config = $.extend( true, {}, _defaults, config );
  		if(_debug)console.log("Initialize CMS-Geomap with config", config);
-
-        this.geoMap = new viewerJS.GeoMap(this.config.map);
+		this.geoMap = new viewerJS.GeoMap(this.config.map);
    }
    
    viewer.GeoMapCms.prototype.init = function(view, features) {
@@ -81,11 +79,15 @@
    	    
    	    //link to search url on feature click
     	if(this.config.search.openSearchOnMarkerClick) {
-            let searchUrlTemplate = this.config.search.searchUrlTemplate;
+			let searchUrlTemplate = this.config.search.searchUrlTemplate;
             this.layer.onFeatureClick.subscribe( (feature) => {
-                let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
-                queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
-                window.open(queryUrl, this.config.search.linkTarget);
+				// viewerJS.notifications.confirm("Do you want to show search results for this location?")
+				// .then(() => {
+					$(this.config.search.loader).show();
+					let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
+					queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
+					window.open(queryUrl, this.config.search.linkTarget);
+				// })
             });
         }
     	
