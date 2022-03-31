@@ -171,16 +171,17 @@
 
         <widgetComponent:widget_metadata />
         
-        <widgetComponent:widget_geoMap 
-        geoMap="#{activeDocumentBean.geoMap}" 
-        title="#{msg.NORM_LOCATION}" 
-        showIfNoFeatures="false"
-        allowFullscreen="false" 
-        linkToSearch="false" 
-        showAnnotations="true"
-        popoverOnHover="true"
-        popoverClass="record_geomap_popover"
-        highlightDocumentId="#{activeDocumentBean.logid}"/>
+		<ui:fragment rendered="#{not empty activeDocumentBean.geoMap.features}">
+	        <widgetComponent:widget_geoMap 
+		        geoMap="#{activeDocumentBean.geoMap}" 
+		        title="#{msg.NORM_LOCATION}" 
+		        allowFullscreen="false" 
+		        linkToSearch="false" 
+		        showAnnotations="true"
+		        popoverOnHover="true"
+		        popoverClass="record_geomap_popover"
+		        highlightDocumentId="#{activeDocumentBean.logid}"/>
+        </ui:fragment>
 
         <widgetComponent:widget_annotations />
         
