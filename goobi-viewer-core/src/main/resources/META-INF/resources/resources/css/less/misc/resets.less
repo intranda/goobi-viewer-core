@@ -373,10 +373,22 @@ button {
 	z-index: 1250;
 }
 
+// TinyMCE fullscreen editor below admin topbar
+.admin .tox.tox-tinymce.tox-fullscreen {
+	top: 35px;
+}
+
 // SWEET ALERT 2 OVERRIDES
 
 .swal2-container {
 	z-index: 2401;
+}
+
+// Move swal notification a bit away from top so admin topbar is visible
+
+body.swal2-toast-shown .swal2-container.swal2-top-end, 
+body.swal2-toast-shown .swal2-container.swal2-top-right {
+	top: 40px;
 }
 
 .swal2-header {

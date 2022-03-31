@@ -904,17 +904,35 @@ public class SolrSearchIndex {
      * @param facetFields List of facet fields.
      * @param facetMinCount a int.
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
+     * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should generate facets correctly
      * @should generate field statistics for every facet field if requested
      * @should not return any docs
+     */
+    public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
+            boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
+        return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, null, getFieldStatistics);
+    }
+
+    /**
+     * Returns facets for the given facet field list. No actual docs are returned since they aren't necessary.
+     *
+     * @param query The query to use.
+     * @param filterQueries Optional filter queries
+     * @param facetFields List of facet fields.
+     * @param facetMinCount a int.
+     * @param params
+     * @param getFieldStatistics If true, field statistics will be generated for every facet field.
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
-            boolean getFieldStatistics)
+            Map<String, String> params, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
-        return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, getFieldStatistics);
+        return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, params, getFieldStatistics);
     }
 
     /**
@@ -943,6 +961,7 @@ public class SolrSearchIndex {
      * @param facetFields List of facet fields.
      * @param facetMinCount a int.
      * @param facetPrefix The facet field value must start with these characters. Ignored if null or blank
+     * @param params
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -952,7 +971,7 @@ public class SolrSearchIndex {
      * @should not return any docs
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
-            String facetPrefix, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
+            String facetPrefix, Map<String, String> params, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
         // logger.trace("searchFacetsAndStatistics: {}", query);
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(0);
@@ -977,6 +996,14 @@ public class SolrSearchIndex {
             solrQuery.setFacetPrefix(facetPrefix);
         }
         solrQuery.setFacetLimit(-1); // no limit
+
+        if (params != null && !params.isEmpty()) {
+            for (String key : params.keySet()) {
+                solrQuery.set(key, params.get(key));
+                // logger.trace("&{}={}", key, params.get(key));
+            }
+        }
+
         try {
             QueryResponse resp = client.query(solrQuery);
             return resp;
