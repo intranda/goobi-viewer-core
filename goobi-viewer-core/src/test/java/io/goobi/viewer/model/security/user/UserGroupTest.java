@@ -33,7 +33,7 @@ public class UserGroupTest extends AbstractDatabaseEnabledTest {
     public void getMemberCount_shouldCountCorrectly() throws Exception {
         UserGroup ug = DataManager.getInstance().getDao().getUserGroup(1);
         Assert.assertNotNull(ug);
-        Assert.assertEquals(1, ug.getMemberCount());
+        Assert.assertEquals(2, ug.getMemberCount());
     }
 
     /**
