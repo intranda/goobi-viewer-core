@@ -31,9 +31,21 @@ public class UserGroupTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getMemberCount_shouldCountCorrectly() throws Exception {
-        UserGroup ug = DataManager.getInstance().getDao().getUserGroup(1);
-        Assert.assertNotNull(ug);
-        Assert.assertEquals(2, ug.getMemberCount());
+        {   //owner + user
+            UserGroup ug = DataManager.getInstance().getDao().getUserGroup(1);
+            Assert.assertNotNull(ug);
+            Assert.assertEquals(2, ug.getMemberCount());
+        }
+        {   //only owner
+            UserGroup ug = DataManager.getInstance().getDao().getUserGroup(2);
+            Assert.assertNotNull(ug);
+            Assert.assertEquals(1, ug.getMemberCount());
+        }
+        {   //owner + two users including owner
+            UserGroup ug = DataManager.getInstance().getDao().getUserGroup(3);
+            Assert.assertNotNull(ug);
+            Assert.assertEquals(2, ug.getMemberCount());
+        }
     }
 
     /**
@@ -55,8 +67,20 @@ public class UserGroupTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getMembersAndOwner_shouldReturnAllMembersAndOwner() throws Exception {
+        {
         UserGroup ug = DataManager.getInstance().getDao().getUserGroup(1);
         Assert.assertNotNull(ug);
         Assert.assertEquals(2, ug.getMembersAndOwner().size());
+        }
+        {
+            UserGroup ug = DataManager.getInstance().getDao().getUserGroup(2);
+            Assert.assertNotNull(ug);
+            Assert.assertEquals(1, ug.getMembersAndOwner().size());
+        }
+        {
+            UserGroup ug = DataManager.getInstance().getDao().getUserGroup(3);
+            Assert.assertNotNull(ug);
+            Assert.assertEquals(2, ug.getMembersAndOwner().size());
+        }
     }
 }
