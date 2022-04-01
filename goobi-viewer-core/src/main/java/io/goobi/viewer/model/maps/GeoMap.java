@@ -387,7 +387,7 @@ public class GeoMap {
          
         Map<GeoMapFeature, List<GeoMapFeature>> featureMap = features
                 .stream()
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.toList()));
+                .collect(Collectors.groupingBy(Function.identity()));
             
             features = featureMap.entrySet().stream()
                 .map(e -> {
