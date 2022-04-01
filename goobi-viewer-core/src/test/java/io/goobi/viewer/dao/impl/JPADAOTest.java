@@ -392,7 +392,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getAllUserRolesTest() throws DAOException {
         List<UserRole> userRoles = DataManager.getInstance().getDao().getAllUserRoles();
-        Assert.assertEquals(2, userRoles.size());
+        Assert.assertEquals(3, userRoles.size());
     }
 
     /**
@@ -430,7 +430,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(role);
         List<UserRole> memberships = DataManager.getInstance().getDao().getUserRoles(null, null, role);
         Assert.assertNotNull(memberships);
-        Assert.assertEquals(2, memberships.size());
+        Assert.assertEquals(3, memberships.size());
     }
 
     @Test
@@ -484,7 +484,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Role role = DataManager.getInstance().getDao().getRole(2);
         Assert.assertNotNull(role);
 
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserRoles().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
         Assert.assertEquals(0, DataManager.getInstance().getDao().getUserRoles(userGroup, user, role).size());
         Assert.assertEquals(0, DataManager.getInstance().getDao().getUserRoles(userGroup, user, null).size());
         Assert.assertEquals(0, DataManager.getInstance().getDao().getUserRoles(userGroup, null, null).size());
@@ -493,7 +493,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertTrue(DataManager.getInstance().getDao().addUserRole(userRole));
         Assert.assertNotNull(userRole.getId());
 
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllUserRoles().size());
         Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoles(userGroup, user, role).size());
         Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoles(userGroup, user, null).size());
         Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoles(userGroup, null, null).size());
@@ -507,7 +507,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void updateUserRoleTest() throws DAOException {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserRoles().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
         UserRole userRole = DataManager.getInstance().getDao().getAllUserRoles().get(0);
         Assert.assertNotNull(userRole);
 
@@ -518,7 +518,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(role1, userRole.getRole());
         userRole.setRole(role2);
         Assert.assertTrue(DataManager.getInstance().getDao().updateUserRole(userRole));
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserRoles().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
 
         UserRole userRole2 = DataManager.getInstance().getDao().getAllUserRoles().get(0);
         Assert.assertNotNull(userRole2);
@@ -527,10 +527,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void deleteUserRoleTest() throws DAOException {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserRoles().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
         UserRole userRole = DataManager.getInstance().getDao().getAllUserRoles().get(0);
         Assert.assertTrue(DataManager.getInstance().getDao().deleteUserRole(userRole));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllUserRoles().size());
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUserRoles().size());
     }
 
     // IP ranges
