@@ -32,6 +32,8 @@
 		role_id="1" />
     <user_role user_role_id="2" user_id="3" user_group_id="3"
         role_id="1" />
+    <user_role user_role_id="3" user_id="1" user_group_id="3"
+        role_id="1" />
 
 	<ip_ranges ip_range_id="1" name="localhost" subnet_mask="1.2.3.4/24"
 		description="ip range 1 desc" />
