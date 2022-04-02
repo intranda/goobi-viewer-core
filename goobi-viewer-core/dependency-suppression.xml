@@ -255,7 +255,7 @@
 
 
 
-    <!-- postcss we do not use postcss in production -->
+    <!-- We do not use postcss in production -->
     <suppress>
         <notes><![CDATA[
         file name: postcss:6.0.23
@@ -283,6 +283,7 @@
     </suppress>
 
 
+
     <!-- This CVE is not relevant, because the user interface does not allow uploading of tif images -->
     <suppress>
         <notes><![CDATA[
@@ -292,5 +293,37 @@
         <vulnerabilityName>CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')</vulnerabilityName>
     </suppress>
 
+
+
+    <!-- We use websockets from omnifaces and not this library -->
+    <suppress>
+        <notes><![CDATA[
+        file name: faye-websocket:0.10.0
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/faye\-websocket@.*$</packageUrl>
+        <cve>CVE-2020-15133</cve>
+    </suppress>
+
+
+
+    <!-- We use npm as package management but not to run applications -->
+    <suppress>
+        <notes><![CDATA[
+        file name: glob-parent:3.1.0
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/glob\-parent@.*$</packageUrl>
+        <vulnerabilityName>1067329</vulnerabilityName>
+    </suppress>
+
+
+
+    <!-- grunt is used only during development, i.e. to copy library updates -->
+    <suppress>
+        <notes><![CDATA[
+        file name: grunt-cli:1.4.3
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/grunt\-cli@.*$</packageUrl>
+        <cve>CVE-2017-16058</cve>
+    </suppress>
 
 </suppressions>
