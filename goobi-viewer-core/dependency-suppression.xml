@@ -43,7 +43,7 @@
    </suppress>
 
 
-    <!-- We do not use probe.js that is included in this jar file. All javascript libraries that are used are managed by npm -->
+    <!-- We do not use probe.js that is included in this jar file. All javascript libraries that are used are managed by npm. The last two vulns do not have any CVSS score  -->
     <suppress>
         <notes><![CDATA[
         file name: weld-servlet-shaded-3.1.9.Final.jar: probe.js
@@ -85,5 +85,168 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:javascript/bootstrap@.*$</packageUrl>
         <cve>CVE-2019-8331</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: weld-servlet-shaded-3.1.9.Final.jar: probe.js
+        ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/bootstrap@.*$</packageUrl>
+        <vulnerabilityName>Regular Expression Denial of Service (ReDoS)</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: weld-servlet-shaded-3.1.9.Final.jar: probe.js
+        ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/bootstrap@.*$</packageUrl>
+        <vulnerabilityName>reDOS - regular expression denial of service</vulnerabilityName>
+    </suppress>
+
+    <!-- We count only vulns with a CVSSv3 score. This javax.faces vulns only have a CVSSv2 score -->
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2000-1235</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2000-1236</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2002-0655</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2002-0656</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2002-0659</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2002-1635</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2002-1637</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2004-1362</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2004-1363</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2004-1364</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2004-1365</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2004-1366</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2004-1367</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2004-1368</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2004-1369</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2004-1370</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2004-1371</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2004-1707</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2006-0435</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2008-2583</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: javax.faces-2.3.9.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
+        <cve>CVE-2009-1999</cve>
     </suppress>
 </suppressions>
