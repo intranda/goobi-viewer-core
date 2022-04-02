@@ -40,5 +40,50 @@
        ]]></notes>
        <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
        <cve>CVE-2020-11023</cve>
+   </suppress>
+
+
+    <!-- We do not use probe.js that is included in this jar file. All javascript libraries that are used are managed by npm -->
+    <suppress>
+        <notes><![CDATA[
+        file name: weld-servlet-shaded-3.1.9.Final.jar: probe.js
+        ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/bootstrap@.*$</packageUrl>
+        <cve>CVE-2016-10735</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: weld-servlet-shaded-3.1.9.Final.jar: probe.js
+        ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/bootstrap@.*$</packageUrl>
+        <cve>CVE-2017-18214</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: weld-servlet-shaded-3.1.9.Final.jar: probe.js
+        ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/bootstrap@.*$</packageUrl>
+        <cve>CVE-2018-14040</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: weld-servlet-shaded-3.1.9.Final.jar: probe.js
+        ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/bootstrap@.*$</packageUrl>
+        <cve>CVE-2018-14041</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: weld-servlet-shaded-3.1.9.Final.jar: probe.js
+        ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/bootstrap@.*$</packageUrl>
+        <cve>CVE-2018-14042</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: weld-servlet-shaded-3.1.9.Final.jar: probe.js
+        ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/bootstrap@.*$</packageUrl>
+        <cve>CVE-2019-8331</cve>
     </suppress>
 </suppressions>
