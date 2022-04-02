@@ -40,7 +40,8 @@
        ]]></notes>
        <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
        <cve>CVE-2020-11023</cve>
-   </suppress>
+    </suppress>
+
 
 
     <!-- We do not use probe.js that is included in this jar file. All javascript libraries that are used are managed by npm. The last two vulns do not have any CVSS score  -->
@@ -100,6 +101,8 @@
         <packageUrl regex="true">^pkg:javascript/bootstrap@.*$</packageUrl>
         <vulnerabilityName>reDOS - regular expression denial of service</vulnerabilityName>
     </suppress>
+
+
 
     <!-- We count only vulns with a CVSSv3 score. This javax.faces vulns only have a CVSSv2 score -->
     <suppress>
@@ -249,4 +252,45 @@
         <packageUrl regex="true">^pkg:maven/org\.glassfish/javax\.faces@.*$</packageUrl>
         <cve>CVE-2009-1999</cve>
     </suppress>
+
+
+
+    <!-- postcss we do not use postcss in production -->
+    <suppress>
+        <notes><![CDATA[
+        file name: postcss:6.0.23
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/postcss@.*$</packageUrl>
+        <cve>CVE-2021-23382</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: postcss:6.0.23
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/postcss@.*$</packageUrl>
+        <vulnerabilityName>1064600</vulnerabilityName>
+    </suppress>
+    
+
+
+    <!-- JSTL has no CSSv3 score, but even after checking the CVE we are not vulnurable because we do not use x:parse or x:transform -->
+    <suppress>
+        <notes><![CDATA[
+        file name: jstl-1.2.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/javax\.servlet/jstl@.*$</packageUrl>
+        <vulnerabilityName>CVE-2015-0254</vulnerabilityName>
+    </suppress>
+
+
+    <!-- This CVE is not relevant, because the user interface does not allow uploading of tif images -->
+    <suppress>
+        <notes><![CDATA[
+        file name: jai-imageio-core-1.3.1.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.github\.jai\-imageio/jai\-imageio\-core@.*$</packageUrl>
+        <vulnerabilityName>CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')</vulnerabilityName>
+    </suppress>
+
+
 </suppressions>
