@@ -9,6 +9,36 @@
        ]]></notes>
        <packageUrl regex="true">^pkg:maven/javax\.ws\.rs/javax\.ws\.rs\-api@.*$</packageUrl>
        <cpe>cpe:/a:eclipse:eclipse_ide</cpe>
-   </suppress>
+    </suppress>
 
+    <!-- This jQuery version is used during internal and currently unused jasmine unit tests only. Not in a production environment. The folder is not
+         included in the final artifact because of explicit exclusion, see pom.xml ~ line 829 -->
+    <suppress>
+        <notes><![CDATA[
+        file name: jquery.js
+        ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
+        <cve>CVE-2015-9251</cve>
+    </suppress>
+    <suppress>
+       <notes><![CDATA[
+       file name: jquery.js
+       ]]></notes>
+       <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
+       <cve>CVE-2019-11358</cve>
+    </suppress>
+    <suppress>
+       <notes><![CDATA[
+       file name: jquery.js
+       ]]></notes>
+       <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
+       <cve>CVE-2020-11022</cve>
+    </suppress>
+    <suppress>
+       <notes><![CDATA[
+       file name: jquery.js
+       ]]></notes>
+       <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
+       <cve>CVE-2020-11023</cve>
+    </suppress>
 </suppressions>
