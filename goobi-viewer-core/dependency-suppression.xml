@@ -326,4 +326,14 @@
         <cve>CVE-2017-16058</cve>
     </suppress>
 
+
+
+    <!-- Comes via grunt-riot which is used in the development environment but not in production -->
+    <suppress>
+        <notes><![CDATA[
+        file name: glob-parent:3.1.0
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/glob\-parent@.*$</packageUrl>
+        <vulnerabilityName>CWE-400: Uncontrolled Resource Consumption ('Resource Exhaustion')</vulnerabilityName>
+    </suppress>
 </suppressions>
