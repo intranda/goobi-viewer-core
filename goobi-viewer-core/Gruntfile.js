@@ -74,23 +74,6 @@ module.exports = function (grunt) {
 				}
 			}
 		},
-		kss: {
-			options: {
-				title: 'Goobi viewer Style Guide',
-				verbose: false,
-				builder: "./node_modules/michelangelo/kss_styleguide/custom-template/",
-				css: [
-					"../libs/bs/bootstrap.min.css",
-					"../libs/font-awesome.min.css",
-					"../dist/viewer.min.css",
-					"../dist/kss-reset.css"
-				]
-			},
-			dist: {
-				src: "./src/main/resources/META-INF/resources/resources/css/less/",
-				dest: "./src/main/resources/META-INF/resources/resources/css/styleguide/",
-			}
-		},
 		concat: {
 			options: {
 				banner: banner,
