@@ -66,21 +66,8 @@
 				</div>
 	
 			</div>
-			<h:commandScript name="setGeoFacetFeature" render="@form" action="#{searchBean.facets.geoFacetting.setFeatureFromContext()}"
-			 onevent="applyDrilldown">
-			</h:commandScript>
 	          <script type="text/javascript">	  
 	          //<![CDATA[
-	              
-	              function applyDrilldown(data) {
-	                  //console.log("apply drilldown, ", data.status);
-	                  if(data && data.status=="success") {	                      
-	                  	let $searchButton = $("#submitSearch");
-                 	 	if($searchButton.length > 0) {
-                 	 	    $searchButton.click();
-                 	 	}
-	                  }
-	              }
 	              
 		            function initFacetWidgetMap() {
 		                
