@@ -121,6 +121,9 @@
 			color: @red;
 		}
 		&:focus {}
+		&.-noLeftPad {
+			padding-left: 0;
+		}
 	}
 	.-textlink {
 		color: initial;
@@ -1784,6 +1787,9 @@
 		&.-isDisabled {
 			opacity: 0.4;	
 		}
+	}
+	&__comment_greyed_out {
+		opacity: 0.35;
 	}
 	// BASIC STRUCTURES
 	&__content-wrapper {
