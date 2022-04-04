@@ -78,7 +78,7 @@
 	                                        <!-- COMMENT -->
 	                                        <div class="#{!comment.targetPiRecordIndexed ? 'admin__comment_greyed_out' : ''}" role="gridcell">
 	                                            <h:outputText value="#{comment.text}" />
-	                                            <span>#{comment.targetPiRecordIndexed ? '('.concat(msg.admin__comment_info_record_deleted).concat(')') : ''}</span>
+	                                            <span>#{!comment.targetPiRecordIndexed ? '('.concat(msg.admin__comment_info_record_deleted).concat(')') : ''}</span>
 	                                        </div>
 	
 	                                        <!-- ACTIONS -->
