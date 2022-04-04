@@ -73,35 +73,39 @@
                             <!-- INDIVIDUAL COMMENTS -->
                             <ui:repeat var="comment" value="#{adminCommentBean.pageComments}">
                                 <div class="row no-gutters admin__table-entry" role="row">
-                                    <div class="col-8 d-flex" style="flex-direction:column;">
-                                        <!-- COMMENT -->
-                                        <div role="gridcell">
-                                            <h:outputText value="#{comment.text}" />
-                                        </div>
-
-                                        <!-- ACTIONS -->
-                                        <div>
-                                            <!-- SHOW -->
-                                            <a href="#{navigationHelper.imageUrl}/#{comment.targetPI}/#{comment.targetPageOrder}/" class="admin__table-action-link" target="_blank" aria-label="#{msg.Comment} #{msg.show} (#{comment.targetPI}/#{comment.targetPageOrder})">#{msg.show}</a>
-
-                                            <!-- DELETE -->
-                                            <ui:fragment rendered="#{userBean.user == comment.creator or commentBean.isMayDeleteCommentsForRecord(comment.targetPI)}">
-	                                            <button
-	                                                class="admin__table-action-link -redlink"
-	                                                jsf:onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
-	                                                jsf:action="#{adminCommentBean.deleteCommentAction(comment)}">#{msg.delete}
-	                                            </button>
-                                            </ui:fragment>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-2 d-flex" role="gridcell"><div class="admin__text-ellipsis pr-1" title="#{comment.creator}">#{comment.creator}</div></div>
-                                    <div class="col-2 d-flex" role="gridcell">
-                                        <h:outputText value="#{comment.dateCreated}">
-                                            <f:converter converterId="localDateTimeConverter" />
-                                            <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
-                                        </h:outputText>
-                                    </div>
+                                	<!-- GREY OUT IF RELATED RECORD IS NOT INDEXED ANYMORE -->
+	                                    <div class="col-8 d-flex" style="flex-direction:column;">
+	                                        <!-- COMMENT -->
+	                                        <div class="#{!comment.targetPiRecordIndexed ? 'admin__comment_greyed_out' : ''}" role="gridcell">
+	                                            <h:outputText value="#{comment.text}" />
+	                                            <span>#{comment.targetPiRecordIndexed ? '('.concat(msg.admin__comment_info_record_deleted).concat(')') : ''}</span>
+	                                        </div>
+	
+	                                        <!-- ACTIONS -->
+	                                        <div>
+	                                            <!-- SHOW -->
+	                                            <ui:fragment rendered="#{comment.targetPiRecordIndexed}">
+	                                            	<a href="#{navigationHelper.imageUrl}/#{comment.targetPI}/#{comment.targetPageOrder}/" class="admin__table-action-link" target="_blank" aria-label="#{msg.Comment} #{msg.show} (#{comment.targetPI}/#{comment.targetPageOrder})">#{msg.show}</a>
+												</ui:fragment>
+	
+	                                            <!-- DELETE -->
+	                                            <ui:fragment rendered="#{userBean.user == comment.creator or commentBean.isMayDeleteCommentsForRecord(comment.targetPI)}">
+		                                            <button
+		                                                class="admin__table-action-link -redlink #{!comment.targetPiRecordIndexed ? '-noLeftPad' : ''}"
+		                                                jsf:onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
+		                                                jsf:action="#{adminCommentBean.deleteCommentAction(comment)}">#{msg.delete}
+		                                            </button>
+	                                            </ui:fragment>
+	                                        </div>
+	                                    </div>
+	                                    
+	                                    <div class="col-2 d-flex #{!comment.targetPiRecordIndexed ? 'admin__comment_greyed_out' : ''}" role="gridcell"><div class="admin__text-ellipsis pr-1" title="#{comment.creator}">#{comment.creator}</div></div>
+	                                    <div class="col-2 d-flex #{!comment.targetPiRecordIndexed ? 'admin__comment_greyed_out' : ''}" role="gridcell">
+	                                        <h:outputText value="#{comment.dateCreated}">
+	                                            <f:converter converterId="localDateTimeConverter" />
+	                                            <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+	                                        </h:outputText>
+	                                    </div>
                                </div>
                             </ui:repeat>
                         </div>
