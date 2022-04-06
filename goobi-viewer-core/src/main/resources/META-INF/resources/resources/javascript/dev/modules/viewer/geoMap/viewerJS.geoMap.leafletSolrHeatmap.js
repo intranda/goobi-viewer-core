@@ -69,7 +69,7 @@ L.SolrHeatmapQueryAdapters = {
       return data.response.facet_heatmaps;
     },
     _mapViewToBbox: function (bounds) {
-      if (this.layer._map === undefined) {
+      if (this._map === undefined) {
         return '-180,-90,180,90';
       }
       if (bounds === undefined) {
@@ -99,15 +99,15 @@ L.SolrHeatmapQueryAdapters = {
         }
       },
       _solrQuery: function(bounds) {
-        bounds = this._getBoundsForQuery(bounds);
-        let region = this.layer._mapViewToWkt(bounds);
+        let b = this._getBoundsForQuery(bounds);
+        let region = this.layer._mapViewToWkt(b);
         return this.layer._heatmapUrl.replace("{solrField}", this.options.field) + '?' + 
                 "region=" + encodeURIComponent(region) + '&' + 
 	            "query=" + this.options.filterQuery;
       },
       _searchHitsSolrQuery: function(bounds) {
-            bounds = this._getBoundsForQuery(bounds);
-	        let region = this.layer._mapViewToWkt(bounds);
+          bounds = this._getBoundsForQuery(bounds);
+          let region = this.layer._mapViewToWkt(bounds);
 	        return this.layer.featureUrl.replace("{solrField}", this.options.field) + '?' + 
 	                "region=" + encodeURIComponent(region) + '&' + 
 	                "labelField=" + this.options.labelField + '&' + 
@@ -115,10 +115,10 @@ L.SolrHeatmapQueryAdapters = {
 	  },
 	  _getBoundsForQuery(bounds) {
 	  	   if (bounds === undefined) {
-		  	  let rawBounds = this.layer._mapToAdd.getBounds();
-	          let east = rawBounds.getEast() > 180 ? 180 : rawBounds.getEast();
-	          let west = rawBounds.getWest() < -180 ? -180 : rawBounds.getWest();
-	          bounds = new L.latLngBounds(L.latLng(rawBounds.getNorth(), west), L.latLng(rawBounds.getSouth(), east));
+          let rawBounds = this.layer._mapToAdd.getBounds();
+          let east = rawBounds.getEast() > 180 ? 180 : rawBounds.getEast();
+          let west = rawBounds.getWest() < -180 ? -180 : rawBounds.getWest();
+          bounds = new L.latLngBounds(L.latLng(rawBounds.getNorth(), west), L.latLng(rawBounds.getSouth(), east));
         	}
        		return bounds;
        },
@@ -138,6 +138,8 @@ L.SolrHeatmap = L.GeoJSON.extend({
     queryAdapter: 'default',
     queryRadius: 40, // In pixels, used for nearby query
   },
+
+  visible: true,
 
   initialize: function(heatmapUrl, featureUrl, featureGroup, options) {
     var _this = this;
@@ -166,9 +168,21 @@ L.SolrHeatmap = L.GeoJSON.extend({
     this._getData();
   },
 
+  isVisible: function() {
+    return this.visible;
+  },
+
+  setVisible: function(visible) {
+      this.visible = visible;
+      this._resetLayer();
+      this.featureGroup.setVisible(visible);
+  },
+
   _resetLayer: function() {
-    this._clearLayers();
-    this._getData();
+    if(this.clusterMarkers) {
+      this._clearLayers();
+      this._getData();
+    }
   },
 
   _queryNearby: function(bounds) {
@@ -191,6 +205,8 @@ L.SolrHeatmap = L.GeoJSON.extend({
     );
     this._queryNearby(bounds);
   },
+
+
 
   _computeHeatmapObject: function(data) {
     var _this = this;
@@ -230,6 +246,7 @@ L.SolrHeatmap = L.GeoJSON.extend({
     break;
     }
   },
+  
 
   _createGeojson: function() {
     var _this = this;
@@ -413,12 +430,13 @@ L.SolrHeatmap = L.GeoJSON.extend({
 
   _computeTotalChildHits(cluster) {
   	let count = 0;
-  	if(cluster._childClusters && cluster._childClusters.length > 0) {
-  		count += cluster._childClusters.map(child => this._computeTotalChildHits(child)).reduce((a, b) => a + b, 0)
-  	}
-  	if(cluster._markers && cluster._markers.length > 0) {
-  		count += cluster._markers.map(child => child.options.count ? child.options.count : 0).reduce((a, b) => a + b, 0)
-  	}
+  	// if(cluster._childClusters && cluster._childClusters.length > 0) {
+  	// 	count += cluster._childClusters.map(child => this._computeTotalChildHits(child)).reduce((a, b) => a + b, 0)
+  	// }
+  	// if(cluster._markers && cluster._markers.length > 0) {
+  	// 	count += cluster._markers.map(child => child.options.count ? child.options.count : 0).reduce((a, b) => a + b, 0)
+    // }
+    count +=  cluster.getAllChildMarkers().map(child => child.options.count ? child.options.count : 0).reduce((a, b) => a + b, 0);
   	if(cluster.options && cluster.options.count) {
   		count += cluster.options.count;
   	}
@@ -517,16 +535,18 @@ L.SolrHeatmap = L.GeoJSON.extend({
   },
 
   _getData: function() {
-    var _this = this;
-    var startTime = Date.now();
-    var options = _this.queryAdapter.ajaxOptions();
-    options.success = function(data) {
-      _this.responseTime = Date.now() - startTime;
-      _this.renderStart = Date.now();
-      _this._computeHeatmapObject(data);
-      _this.fireEvent('dataAdded', data);
+    if(this.visible) {
+      var _this = this;
+      var startTime = Date.now();
+      var options = _this.queryAdapter.ajaxOptions();
+      options.success = function(data) {
+        _this.responseTime = Date.now() - startTime;
+        _this.renderStart = Date.now();
+        _this._computeHeatmapObject(data);
+        _this.fireEvent('dataAdded', data);
+      }
+      $.ajax(options);
     }
-    $.ajax(options);
   },
 
   _mapViewToEnvelope: function(bounds) {
@@ -542,11 +562,12 @@ L.SolrHeatmap = L.GeoJSON.extend({
   },
 
   _mapViewToWkt: function(bounds) {
-    if (this._map === undefined) {
+    let map = this._map ? this._map : this._mapToAdd;
+    if (map === undefined) {
       return '["-180 -90" TO "180 90"]';
     }
     if (bounds === undefined) {
-      bounds = this._map.getBounds();
+      bounds = map.getBounds();
     }
     var wrappedSw = bounds.getSouthWest().wrap();
     var wrappedNe = bounds.getNorthEast().wrap();

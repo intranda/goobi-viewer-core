@@ -18,6 +18,7 @@ package io.goobi.viewer.model.maps;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -131,24 +132,26 @@ public class GeoMapFeature {
     public JSONObject getJsonObject() {
         
         JSONObject object = new JSONObject(this.json);
-        JSONObject properties = object.getJSONObject("properties");
-        if (properties == null) {
+        JSONObject properties;
+        try {
+            properties = object.getJSONObject("properties");
+        } catch(JSONException e) {
             properties = new JSONObject();
-            object.append("properties", properties);
+            object.put("properties", properties);
         }
         if (StringUtils.isNotBlank(this.title)) {
-            properties.append("title", this.title);
+            properties.put("title", this.title);
         }
         if (StringUtils.isNotBlank(this.description)) {
-            properties.append("description", this.description);
+            properties.put("description", this.description);
         }
         if (StringUtils.isNotBlank(this.link)) {
-            properties.append("link", this.link);
+            properties.put("link", this.link);
         }
         if (StringUtils.isNotBlank(this.documentId)) {
-            properties.append("documentId", this.documentId);
+            properties.put("documentId", this.documentId);
         }
-        properties.append("count", this.count);
+        properties.put("count", new int[] { this.count });
         return object;
     }
 

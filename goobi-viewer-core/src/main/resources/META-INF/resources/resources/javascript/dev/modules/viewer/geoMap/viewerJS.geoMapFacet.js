@@ -20,116 +20,213 @@
  * GeoJson coordinates are always [lng, lat]
  * 
  * @version 3.4.0
- * @module viewerJS.geoMapCms
+ * @module viewerJS.geoMapFacet
  * @requires jQuery
  */
- 
- var viewerJS = ( function( viewer ) {
-    'use strict'; 
-        
-    // default variables
-    var _debug = false;
-    
-    var _defaults = {
-			facetString : "",
-            map: {
-	            mapId : "geomap",
-	            language: "en",
-	            iconPath: "/resources/images/map",
-	            layer: {
-	            	allowMovingFeatures: false,
-	           		popover: undefined,
-	           		popoverOnHover: false,
-	           		clusterMarkers: true,
-	           		markerIcon: undefined,
-	            }
-            },
-            heatmap: {
-            	showSearchResultsHeatmap: false,
-            	heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
-            	featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
-            	filterQuery: "BOOL_WKT_COORDS:*",
-		        labelField: "LABEL",
-			},search: {
-				$loader: $("[data-loader='geoFacet']"),
-				$searchButton: $("[data-geofacet='execute']")
+
+var viewerJS = ( function ( viewer ) {
+	'use strict';
+
+	// default variables
+	var _debug = false;
+
+	var _defaults = {
+		areaString: "",
+		map: {
+			mapId: "geomap",
+			language: "en",
+			iconPath: "/resources/images/map",
+			hitsLayer: {
+				allowMovingFeatures: false,
+				popoverOnHover: true,
+				popover: $( "<div><p data-metadata='title'></p></div>" ),
+				clusterMarkers: true,
+				style: {
+					fillOpacity: 0.02
+				}
 			},
-			buttons: {
-				$searchWithFacets : $("[data-geofacet='trigger-execute']"),  
-				$resetFacets : $("[data-geofacet='reset']"),
-				$cancelEditMode : $("[data-geofacet='cancel']"),
-				$facetInput : $("[data-geofacet='feature']"),
-				$toggleMarkers : $("[data-geofacet='toggleMarkers']"),
-				$toggleMarkersEditMode : $("[data-geofacet='toggleMarkersFullscreen']")
+			areaLayer: {
+				style : {
+					fillColor : "#d9534f",
+					color : "#d9534f",
+					fillOpacity : 0.3,
+				}
 			}
-    }
-    
-    viewer.GeoMapFacet = function(config) {
- 		this.config = $.extend( true, {}, _defaults, config );
- 		if(_debug)console.log("Initialize Facet-Geomap with config", config);
-		this.geoMap = new viewerJS.GeoMap(this.config.map);
-   }
-   
-	viewer.GeoMapFacet.prototype.applyDrilldown = function ( data ) {
-		//console.log("apply drilldown, ", data.status);
-		if ( data && data.status == "success" ) {
-			let $searchButton = $( "#submitSearch" );
-			if ( $searchButton.length > 0 ) {
-				$searchButton.click();
-			}
+		},
+		heatmap: {
+			showSearchResultsHeatmap: true,
+			heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
+			featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
+			mainQuery: "BOOL_WKT_COORDS:*",
+			facetQuery: "",
+			labelField: "LABEL",
+		}, 
+		search: {
+			$loader: $( "[data-loader='geoFacet']" ),
+			$searchButton: $( "[data-geofacet='execute']" )
+		},
+		buttons: {
+			$searchWithFacets: $( "[data-geofacet='trigger-execute']" ),
+			$resetFacets: $( "[data-geofacet='reset']" ),
+			$cancelEditMode: $( "[data-geofacet='cancel']" ),
+			$facetInput: $( "[data-geofacet='feature']" ),
+			$toggleMarkers: $( "[data-geofacet='toggleMarkers']" ),
+			$toggleMarkersEditMode: $( "[data-geofacet='toggleMarkersFullscreen']" ),
+			$openEditMode: $("#expandFacetMap"),
+		},
+		editMode: {
+			$editModeWrapper: $('#widgetGeoFacettingOverlay'),
+			$editModeMap: $("#geoFacettingOverlayMap"),
+			enableAddressSearch : true,
+			addressSearchPlaceholder : "Address"
 		}
 	}
 
-   viewer.GeoMapFacet.prototype.init = function(view, features) {
-	    this.geoMap.init(view);
-    	this.layer = new viewerJS.GeoMap.featureGroup(this.geoMap, this.config.map.layer)
-
-		//when clicking on features with an associated link, open that link
-    	this.layer.onFeatureClick.subscribe(feature => {
-   	       if(feature.properties && feature.properties.link && !feature.properties.highlighted) {
-   	           window.location.assign(feature.properties.link);
-   	       }
-   	    });
-   	    
-   	    //link to search url on feature click
-    	if(this.config.search.openSearchOnMarkerClick) {
-			let searchUrlTemplate = this.config.search.searchUrlTemplate;
-            this.layer.onFeatureClick.subscribe( (feature) => {
-				// viewerJS.notifications.confirm("Do you want to show search results for this location?")
-				// .then(() => {
-					$(this.config.search.loader).show();
-					let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
-					queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
-					window.open(queryUrl, this.config.search.linkTarget);
-				// })
-            });
-        }
-    	
-    	//Hightlight the marker belinging to a given SOLR document
-    	let highlightDocumentId = this.config.documentIdToHighlight;
-    	if(highlightDocumentId) {
-    	    features.filter(f => f.properties.documentId == highlightDocumentId).forEach(f => f.properties.highlighted = true);
-    	}
-    	
-    	//display search results as heatmap
-    	if(this.config.heatmap.showSearchResultsHeatmap) {	        	    
-        	let heatmapUrl = this.config.heatmap.heatmapUrl;
-        	let featureUrl = this.config.heatmap.featureUrl;
-        	
-        	this.heatmap = L.solrHeatmap(heatmapUrl, featureUrl, this.layer, {
-        	    field: "WKT_COORDS",
-        	    type: "clusters",
-        	    filterQuery: this.config.heatmap.filterQuery,
-        	    labelField: this.config.heatmap.labelField,
-        	    queryAdapter: "goobiViewer"    
-        	});
-        	this.heatmap.addTo(this.geoMap.map);
-    	}     	
-
-		//initialize layer
-     	this.layer.init(features, features?.length);
+	viewer.GeoMapFacet = function ( config ) {
+		this.config = $.extend( true, {}, _defaults, config );
+		if ( _debug ) console.log( "Initialize Facet-Geomap with config", config );
+		this.geoMap = new viewerJS.GeoMap( this.config.map );
 	}
-	
+
+
+	viewer.GeoMapFacet.prototype.init = function ( view ) {
+		this.area = this.getArea( this.config.areaString );
+		this.geoMap.init(view)
+
+		this.drawLayer = this.initDrawLayer();
+		this.hitsLayer = this.initHitsLayer();
+		this.heatmap = this.initHeatmap();
+
+
+		this.config.buttons.$toggleMarkers.on("click", () => {
+			this.hitsLayer.setVisible(!this.hitsLayer.isVisible());
+			this.heatmap.setVisible(!this.heatmap.isVisible());
+		})
+
+		$(this.config.buttons.$openEditMode).on("click", e => this.openEditMode());
+
+		// close map overlay with escape
+		$(document).on('keyup', e => {
+			if ( $( this.config.editMode.$editModeMap ).length ) {
+				if (e.key == "Escape") {
+					$(this.config.buttons.$cancelEditMode).click();
+				}
+			}
+		});
+	}
+
+	viewer.GeoMapFacet.prototype.initHitsLayer = function () {
+		let hitsLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, this.config.map.hitsLayer)
+
+		hitsLayer.onFeatureClick.subscribe(f => {
+			console.log("Clicked on feature ", f);
+			if(f.properties && f.properties.link) {
+				$(this.config.search.loader).show();
+				window.location.assign(f.properties.link);
+			}
+		})
+
+		return hitsLayer;
+	}
+
+	viewer.GeoMapFacet.prototype.initHeatmap = function () {
+		let heatmapQuery = "";
+		if(this.config.heatmap.mainQuery) {
+			heatmapQuery += " +(" + this.config.heatmap.mainQuery + ")";
+		}
+		if(this.config.heatmap.facetQuery) {
+			heatmapQuery += " +(" + this.config.heatmap.facetQuery + ")";
+		}
+		heatmapQuery = heatmapQuery.trim();
+		
+		let heatmap = L.solrHeatmap(this.config.heatmap.heatmapUrl, this.config.heatmap.featureUrl, this.hitsLayer, {
+			field: "WKT_COORDS",
+			type: "clusters",
+			filterQuery: heatmapQuery,
+			labelField: this.config.heatmap.labelField,
+			queryAdapter: "goobiViewer"    
+		});
+		heatmap.addTo(this.geoMap.map);
+		return heatmap;
+	}
+
+	viewer.GeoMapFacet.prototype.initDrawLayer = function() {
+		let drawLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, this.config.map.areaLayer);
+		if(this.area) {	                    	    
+			switch(this.area.type) {
+				case "polygon":
+					this.shape = drawLayer.drawPolygon(this.area.vertices, true);
+					break;
+				case "circle":
+					this.shape = drawLayer.drawCircle(this.area.center, this.area.radius, true);
+					break;
+				case "rectangle":
+					this.shape = drawLayer.drawRectangle([this.area.vertices[0], this.area.vertices[2]], true);
+					break;
+			}
+			this.config.buttons.$resetFacets.addClass("active");
+			this.config.buttons.$resetFacets.on("click", () => {
+				this.config.buttons.$facetInput.val("");
+				this.config.buttons.$searchWithFacets.click();
+			});
+		}
+		return drawLayer;
+	}
+
+	viewer.GeoMapFacet.prototype.openEditMode = function() {
+		viewerJS.overlay.open(this.config.editMode.$editModeWrapper, false, true, $node => {
+			$("body").append($node);
+			$node.hide();
+		})
+		.then(overlay => {
+			overlay.node.show();
+			this.config.buttons.$searchWithFacets.off().on("click", () => {
+				//console.log("trigger search");
+				this.config.search.$searchButton.click();
+				this.config.search.$loader.show();
+			});
+			this.config.buttons.$cancelEditMode.off().on("click", () => {
+				overlay.close();
+			})
+			if(this.mapTag) {
+				this.mapTag.forEach(tag => tag.unmount(true));
+			}
+			this.mapTag = riot.mount(this.config.editMode.$editModeMap, "geomapsearch", {
+				inactive: false,
+				area : this.area,
+				features : this.features,
+				toggleFeatures: this.config.buttons.$toggleMarkersEditMode.get(0),
+				search_enabled: this.config.editMode.enableAddressSearch,
+				search_placeholder: this.config.editMode.addressSearchPlaceholder,
+				onFeatureSelect: area => {
+					//console.log("Set facetting area", area);
+					sessionStorage.setItem("geoFacet", JSON.stringify(area));
+					this.config.buttons.$facetInput.val(area ? JSON.stringify(area) : "");
+				}
+			});
+		}); 
+	} 
+
+	viewer.GeoMapFacet.prototype.getArea = function(areaString) {
+		let area = areaString.length > 0 ? JSON.parse(areaString) : undefined;
+		if(area) {
+			let storedAreaString = sessionStorage.getItem("geoFacet");
+			if(storedAreaString) {
+				let storedArea = JSON.parse(storedAreaString);
+				for(let v=0; v<area.vertices.length; v++) {
+					for(let c=0; c<area.vertices[v].length; c++) {
+						if(area.vertices[v][c] != storedArea.vertices[v][c]) {
+							return area;
+						}
+					}
+				}
+				return storedArea;
+			}
+		}
+		return area;
+	}
+
+
 	return viewer;
 
 } )( viewerJS || {}, jQuery );

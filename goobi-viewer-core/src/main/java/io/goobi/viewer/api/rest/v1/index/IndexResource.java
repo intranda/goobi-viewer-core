@@ -71,6 +71,8 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMapFeature;
@@ -275,12 +277,21 @@ public class IndexResource {
             @QueryParam("gridLevel") Integer gridLevel
             ) throws IOException, IndexUnreachableException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
-        String finalQuery =
+        String finalQuery = 
                 new StringBuilder().append("+(").append(filterQuery).append(") ").append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
         logger.debug("q: {}", finalQuery);
         
+        SearchBean searchBean = BeanUtils.findInstanceInSessionAttributes(servletRequest, SearchBean.class).orElse(null);
+        String query = "";
+        String facetQuery = "";
+        if(searchBean != null) {
+            query = searchBean.getFinalSolrQuery();
+            facetQuery = searchBean.getCombinedFilterQuery();
+            finalQuery = query;
+        }
+        
         return DataManager.getInstance()
-                        .getSearchIndex().getHeatMap(solrField, wktRegion, finalQuery, gridLevel);
+                        .getSearchIndex().getHeatMap(solrField, wktRegion, finalQuery, facetQuery, gridLevel);
         
     }
     
@@ -306,7 +317,17 @@ public class IndexResource {
                 .append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
         logger.debug("q: {}", finalQuery);
         
-        String objects = GeoMap.getFeaturesFromSolrQuery(finalQuery, labelField)
+        SearchBean searchBean = BeanUtils.findInstanceInSessionAttributes(servletRequest, SearchBean.class).orElse(null);
+        String query = "";
+        List<String> facetQueries = null;
+        if(searchBean != null) {
+            query = searchBean.getFinalSolrQuery();
+            facetQueries = searchBean.getFilterQueries();
+            finalQuery = query + " +(" + finalQuery + ")";
+        }
+        
+        
+        String objects = GeoMap.getFeaturesFromSolrQuery(finalQuery, facetQueries, labelField)
             .stream()
             .map(GeoMapFeature::getJsonObject)
             .map(Object::toString)

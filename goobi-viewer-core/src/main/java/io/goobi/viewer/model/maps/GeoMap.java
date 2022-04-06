@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -87,6 +89,7 @@ public class GeoMap {
     private static final String METADATA_TAG_TITLE = "Title";
     private static final String METADATA_TAG_DESCRIPTION = "Description";
     private static final String DEFAULT_MARKER_NAME = "default";
+    private static final String POINT_LAT_LNG_PATTERN = "([\\d\\.]+)\\s*\\/\\s*([\\d\\.]+)";
 
     public static enum GeoMapType {
         SOLR_QUERY,
@@ -372,12 +375,12 @@ public class GeoMap {
         return "[]";
     }
 
-    public static List<GeoMapFeature> getFeaturesFromSolrQuery(String query, String markerTitleField) throws PresentationException, IndexUnreachableException {
+    public static List<GeoMapFeature> getFeaturesFromSolrQuery(String query, List<String> filterQueries, String markerTitleField) throws PresentationException, IndexUnreachableException {
         List<SolrDocument> docs;
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
         List<String> fieldList = new ArrayList<>(coordinateFields);
         fieldList.add(markerTitleField);
-        docs = DataManager.getInstance().getSearchIndex().search(query, 10_000, null, fieldList);
+        docs = DataManager.getInstance().getSearchIndex().search(query, 0, 10_000, null, null,fieldList, filterQueries, null).getResults();
         List<GeoMapFeature> features = new ArrayList<>();
         for (SolrDocument doc : docs) {
             for (String field : coordinateFields) {
@@ -411,35 +414,61 @@ public class GeoMap {
         List<String> points = SolrTools.getMetadataValues(doc, metadataField);
         for (String point : points) {
             try {
-            JSONObject json = new JSONObject(point);
-            String type = json.getString("type");
-            if ("FeatureCollection".equalsIgnoreCase(type)) {
-                JSONArray array = json.getJSONArray("features");
-                if (array != null) {
-                    array.forEach(f -> {
-                        if (f instanceof JSONObject) {
-                            JSONObject jsonObj = (JSONObject) f;
-                            String jsonString = jsonObj.toString();
-                            GeoMapFeature feature = new GeoMapFeature(jsonString);
-                            feature.setTitle(title);
-                            feature.setDescription(desc);
-                            if (!docFeatures.contains(feature)) {
-                                docFeatures.add(feature);
-                            }
-                        }
-                    });
-                } 
-            } else if ("Feature".equalsIgnoreCase(type)) {
-                GeoMapFeature feature = new GeoMapFeature(json.toString());
+            if(point.matches(POINT_LAT_LNG_PATTERN)) {
+                GeoMapFeature feature = new GeoMapFeature();
                 feature.setTitle(title);
                 feature.setDescription(desc);
+                
+                Matcher matcher = Pattern.compile(POINT_LAT_LNG_PATTERN).matcher(point);
+                matcher.find();
+                Double lat = Double.valueOf(matcher.group(1));
+                Double lng = Double.valueOf(matcher.group(2));
+                
+                JSONObject json = new JSONObject();
+                json.put("type", "Feature");
+                JSONObject geom = new JSONObject();
+                geom.put("type", "Point");
+                geom.put("coordinates", new double[] {lng, lat});
+                json.put("geometry", geom);
+                feature.setJson(json.toString());
                 docFeatures.add(feature);
+            } else {                
+                docFeatures.addAll(createFeaturesFromJson(title, desc, point));
             }
-            } catch(JSONException e) {
+            } catch(JSONException | NumberFormatException e) {
                 logger.error("Encountered non-json feature: {}", point);
             }
         }
         return docFeatures;
+    }
+
+    private static List<GeoMapFeature> createFeaturesFromJson(String title, String desc, String point) {
+        List<GeoMapFeature> features = new ArrayList<>();
+        JSONObject json = new JSONObject(point);
+        String type = json.getString("type");
+        if ("FeatureCollection".equalsIgnoreCase(type)) {
+            JSONArray array = json.getJSONArray("features");
+            if (array != null) {
+                array.forEach(f -> {
+                    if (f instanceof JSONObject) {
+                        JSONObject jsonObj = (JSONObject) f;
+                        String jsonString = jsonObj.toString();
+                        GeoMapFeature feature = new GeoMapFeature(jsonString);
+                        feature.setTitle(title);
+                        feature.setDescription(desc);
+                        if (!features.contains(feature)) {
+                            features.add(feature);
+                        }
+                    }
+                });
+            } 
+        } else if ("Feature".equalsIgnoreCase(type)) {
+            GeoMapFeature feature = new GeoMapFeature(json.toString());
+            feature.setTitle(title);
+            feature.setDescription(desc);
+            features.add(feature);
+        }
+        return features;
     }
 
     /**

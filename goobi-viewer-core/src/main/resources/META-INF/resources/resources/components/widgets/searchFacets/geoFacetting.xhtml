@@ -66,156 +66,68 @@
 				</div>
 	
 			</div>
-	          <script type="text/javascript">	  
-	          //<![CDATA[
-	              
-		            function initFacetWidgetMap() {
-		                
-	                 	let $facetSearch = $("[data-geofacet='execute']");  
-	                 	let $facetTriggerSearch = $("[data-geofacet='trigger-execute']");  
-	                 	let $facetReset = $("[data-geofacet='reset']");  
-	                 	let $facetCancel = $("[data-geofacet='cancel']"); 
-	                 	let $facetInput = $("[data-geofacet='feature']");  
-	                 	let $loader = $("[data-loader='geoFacet']"); 
-		                let $toggleMarkers = $("[data-geofacet='toggleMarkers']")
-	                 	let $toggleMarkersFullscreen = $("[data-geofacet='toggleMarkersFullscreen']")
-
-		                let areaString = '#{searchBean.facets.geoFacetFeature}';
-		                this.area = getArea(areaString);
-		                this.features = #{searchBean.getHitsLocations()};
-		                if(!this.features || this.features.length == 0) {
-		                    $toggleMarkers.hide();
-		                    $toggleMarkersFullscreen.hide();
-		                }
-		                //console.log("area is ", areaString, this.area, setGeoFacetFeature);
-		                let geoMap = new viewerJS.GeoMap({
-	                	    mapId: "geoFacettingMap",
-	                   		language: "#{navigationHelper.localeString}",
-	                   		fixed: false,
-	                   		layer: {
-		                   		allowMovingFeatures: false,
-		                   		popoverOnHover: true,
-		                   		popover: $("<div><p data-metadata='title'></p></div>"),
-		                   		clusterMarkers: true,
-		                   		style: {
-		                   		    fillOpacity: 0.02
-		                   		}
-	                   		}
-	                   	});
-
-	
-                    	geoMap.init(
-                    	   {
+	          <script type="text/javascript">	
+	        
+					$(document).ready(e => {	
+									    
+				    let config = {
+				      		areaString: '#{searchBean.facets.geoFacetFeature}',
+				      		map: {
+				      			mapId: "geoFacettingMap",
+				      			language: "#{navigationHelper.localeString}",
+				      			iconPath: "/resources/images/map",
+				      			hitsLayer: {
+				      				allowMovingFeatures: false,
+				      				popoverOnHover: true,
+				      				popover: $( '<div><p data-metadata="title"></p></div>' ),
+				      				clusterMarkers: true,
+				      				style: {
+				      					fillOpacity: 0.02
+				      				}
+				      			},
+				      			areaLayer: {
+				      				style : {
+				      					fillColor : "#d9534f",
+				      					color : "#d9534f",
+				      					fillOpacity : 0.3,
+				      				}
+				      			}
+				      		},
+				      		heatmap: {
+				      			showSearchResultsHeatmap: true,
+				      			heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
+				      			featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
+				      			mainQuery: "BOOL_WKT_COORDS:*",
+				      			facetQuery: "",
+				      			labelField: "LABEL",
+				      		}, 
+				      		search: {
+				      			$loader: $( "[data-loader='geoFacet']" ),
+				      			$searchButton: $( "[data-geofacet='execute']" )
+				      		},
+				      		buttons: {
+				      			$searchWithFacets: $( "[data-geofacet='trigger-execute']" ),
+				      			$resetFacets: $( "[data-geofacet='reset']" ),
+				      			$cancelEditMode: $( "[data-geofacet='cancel']" ),
+				      			$facetInput: $( "[data-geofacet='feature']" ),
+				      			$toggleMarkers: $( "[data-geofacet='toggleMarkers']" ),
+				      			$toggleMarkersEditMode: $( "[data-geofacet='toggleMarkersFullscreen']" ),
+				      			$openEditMode: $("#expandFacetMap"),
+				      		},
+				      		editMode: {
+				      			$editModeWrapper: $('#widgetGeoFacettingOverlay'),
+				      			$editModeMap: $("#geoFacettingOverlayMap"),
+				      			enableAddressSearch : true,
+				      			addressSearchPlaceholder : "#{msg.ADDRESS}"
+				      		}
+				      	}
+					    
+					    let facetMap = new viewerJS.GeoMapFacet(config);
+				    	facetMap.init({
 	                            zoom: 1,
 	                            center: [0,0] //long, lat
-                        	},
-                        	this.features
-                    	);
-                    	
-                        geoMap.layers[0].onFeatureClick.subscribe(f => {
-                            if(f.properties && f.properties.link) {
-                               window.location.assign(f.properties.link);
-                           }
-                        })
-                    	
-                    	this.drawLayer = new viewerJS.GeoMap.featureGroup(geoMap, {
-                    	    style : {
-    		                    	fillColor : "#d9534f",
-    		                    	color : "#d9534f",
-    		                    	fillOpacity : 0.3,
-    	                    	}
-                    	})
-                    	if(this.area) {	                    	    
-	                        switch(this.area.type) {
-	                            case "polygon":
-	                                this.shape = this.drawLayer.drawPolygon(this.area.vertices, true);
-	                                break;
-	                            case "circle":
-	                                this.shape = this.drawLayer.drawCircle(this.area.center, this.area.radius, true);
-	                                break;
-	                            case "rectangle":
-	                                this.shape = this.drawLayer.drawRectangle([this.area.vertices[0], this.area.vertices[2]], true);
-	                                break;
-	                        }
-	                        $facetReset.addClass("active");
-	                        $facetReset.on("click", () => {
-	                           $facetInput.val("");
-	                           $facetSearch.click();
-	                        });
-                    	}
-                        $toggleMarkers.on("click", () => {
-                            geoMap.layers[0].setVisible(!geoMap.layers[0].isVisible());
-                        })
-	                    	
- 
-						$("#expandFacetMap").on("click", e => {
-						    //console.log("open overlay ", this);
-						    
-	                       	viewerJS.overlay.open($('#widgetGeoFacettingOverlay'), false, true, $node => {
-	                       	    $("body").append($node);
-	                       	    $node.hide();
-	                       	})
-	                       	.then(overlay => {
-	                       	    overlay.node.show();
-			                 	$facetTriggerSearch.off().on("click", () => {
-			                 	   //console.log("trigger search");
- 			                 	   $facetSearch.click();
-			                 	   $loader.show();
-			                 	});
-			                 	$facetCancel.off().on("click", () => {
-			                 	    overlay.close();
-			                 	})
-			                 	if(this.mapTag) {
-			                 	   this.mapTag.forEach(tag => tag.unmount(true));
-			                 	}
-		                       	this.mapTag = riot.mount("#geoFacettingOverlayMap", "geomapsearch", {
-		     					    inactive: false,
-		     					    area : this.area,
-		     					    features : this.features,
-		     					    toggleFeatures: $toggleMarkersFullscreen.get(0),
-		     					    search_enabled: #{configurationBean.displayAddressSearchInMap},
-		     					    search_placeholder: "#{msg.ADDRESS}",
-		     					    onFeatureSelect: area => {
-		     					        //console.log("Set facetting area", area);
-									    sessionStorage.setItem("geoFacet", JSON.stringify(area));
-		     					      	$facetInput.val(area ? JSON.stringify(area) : "");
-		     					    }
-		     					});
-		                      
-	                       	});                       	
-		                })
-
-		                // close map overlay with escape
-		                $(document).on('keyup', function(e) {
-							if ( $( "#geoFacettingOverlayMap" ).length ) {
-			                	if (e.key == "Escape") $('[data-geofacet="cancel"]').click();
-								}
-		                	});
-					}
-		            
-		            function getArea(areaString) {
-		                let area = areaString.length > 0 ? JSON.parse(areaString) : undefined;
-		                if(area) {
-		                    let storedAreaString = sessionStorage.getItem("geoFacet");
-		                    if(storedAreaString) {
-		                        let storedArea = JSON.parse(storedAreaString);
-		                        for(v=0; v<area.vertices.length; v++) {
-		                            for(c=0; c<area.vertices[v].length; c++) {
-		                                if(area.vertices[v][c] != storedArea.vertices[v][c]) {
-		                                    return area;
-		                                }
-		                            }
-		                        }
-		                        return storedArea;
-		                    }
-		                }
-		                return area;
-		            }
-		            
-					$(document).ready(e => {					    
-					    let facetWidgetMap = new initFacetWidgetMap();
+                        	})
 					})				    
-	            //]]>
 	          
 		        </script>
         </h:form>

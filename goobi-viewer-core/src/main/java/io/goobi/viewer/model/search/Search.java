@@ -277,6 +277,27 @@ public class Search implements Serializable {
         execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, boostTopLevelDocstructs, false);
     }
 
+    public String generateFinalSolrQuery(SearchFacets facets, int advancedSearchGroupOperator) throws IndexUnreachableException {
+        String currentQuery = SearchHelper.prepareQuery(this.query);
+        String termQuery = null;
+
+        String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, true, false);
+        
+        // Apply current facets
+        String subElementQueryFilterSuffix = "";
+        if(facets != null) {
+            subElementQueryFilterSuffix = facets.generateSubElementFacetFilterQuery();
+            if (StringUtils.isNotEmpty(subElementQueryFilterSuffix)) {
+                subElementQueryFilterSuffix = " +(" + subElementQueryFilterSuffix + ")";
+            }
+        }
+
+
+        String finalQuery = query + subElementQueryFilterSuffix;
+        
+        return finalQuery;
+    }
+    
     /**
      * <p>
      * execute.

@@ -1322,7 +1322,7 @@ public class SolrSearchIndex {
      * @return
      * @throws IndexUnreachableException
      */
-    public String getHeatMap(String solrField, String wktRegion, String query, Integer gridLevel) throws IndexUnreachableException {
+    public String getHeatMap(String solrField, String wktRegion, String query, String filterQuery, Integer gridLevel) throws IndexUnreachableException {
         
         HeatmapFacetMap facetMap = new HeatmapFacetMap(solrField)
                 .setHeatmapFormat(HeatmapFacetMap.HeatmapFormat.INTS2D)
@@ -1333,6 +1333,7 @@ public class SolrSearchIndex {
       
         final JsonQueryRequest request = new JsonQueryRequest()
                 .setQuery(query)
+                .withFilter(filterQuery)
                 .setLimit(0)
                 .withFacet("heatmapFacet", facetMap);
 
