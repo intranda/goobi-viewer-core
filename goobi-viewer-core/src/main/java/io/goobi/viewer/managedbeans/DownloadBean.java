@@ -236,14 +236,4 @@ public class DownloadBean implements Serializable {
         this.downloadJob = downloadJob;
     }
 
-    /**
-     * <p>
-     * getDownloadSize.
-     * </p>
-     *
-     * @return a long.
-     */
-    public long getDownloadSize() {
-        return downloadJob.getSize();
-    }
 }

@@ -10,12 +10,12 @@
     <composite:interface />
 
     <composite:implementation>
-        <h:panelGroup rendered="#{userBean.admin}">
-            <div id="widgetAdmin" class="admin-widget">
-                <h:form id="widgetAdminForm">
-                    <div class="admin-widget__header">#{msg.admin__administration_title}</div>
+        <div id="widgetAdmin" class="admin-widget">
+            <h:form id="widgetAdminForm">
+                <div class="admin-widget__header">#{msg.admin__administration_title}</div>
 
                     <ul>
+                    <ui:fragment rendered="#{userBean.admin}">
                         <li class="#{navigationHelper.currentPage == 'adminUsers' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminUser' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminUsers')}/">
@@ -23,7 +23,7 @@
                                 <span>#{msg.admin__users}</span>
                             </h:outputLink>
                         </li>
-                        <li class="#{navigationHelper.currentPage == 'adminAllUserGroups' ? 'active' : '' or
+                        <li class="#{navigationHelper.currentPage == 'adminUserGroups' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminUserGroup' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminUserGroups')}/">
                                 <i class="fa fa-users" aria-hidden="true"></i>
@@ -37,8 +37,8 @@
                                 <span>#{msg.admin__ip_ranges}</span>
                             </h:outputLink>
                         </li>
-                        <li class="admin-widget__licences-link #{navigationHelper.currentPage == 'adminLicenses' ? 'active' : '' or
-                                     navigationHelper.currentPage == 'adminLicenseType' ? 'active' : ''}">
+                        <li class="admin-widget__licences-link #{navigationHelper.currentPage == 'adminLicenseType' ? 'active' : '' or
+                                     navigationHelper.currentPage == 'adminLicenseTypes' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminLicenseTypes')}/">
                                 <i class="fa fa-key" aria-hidden="true"></i>
                                 <span>#{msg.admin__licenses}</span>
@@ -50,19 +50,21 @@
                             </div>
                         </li>
                         <li class="#{navigationHelper.currentPage == 'adminRights' ? 'active' : '' or
-                                     navigationHelper.currentPage == 'adminRole' ? 'active' : ''}">
+                                     navigationHelper.currentPage == 'adminRight' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminRights')}/">
                                 <i class="fa fa-lock" aria-hidden="true"></i>
                                 <span>#{msg.admin__rights}</span>
                             </h:outputLink>
                         </li>
-                        <li class="#{navigationHelper.currentPage == 'adminUserComments' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminUserComments')}/">
+                    </ui:fragment>
+                        <li class="#{navigationHelper.currentPage == 'adminUserCommentGroupNew' ? 'active' : '' or
+                                     navigationHelper.currentPage == 'adminUserCommentGroups' ? 'active' : ''}">
+                             <h:outputLink value="#{navigationHelper.getPageUrl('adminUserCommentGroups')}/">
                                 <i class="fa fa-comments" aria-hidden="true"></i>
                                 <span>#{msg.admin__comments}</span>
                             </h:outputLink>
                         </li>
-                        
+                    <ui:fragment rendered="#{userBean.admin}">
                         <li class="#{navigationHelper.currentPage == 'adminCreateRecord' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminCreateRecord')}/">
                                 <i class="fa fa-plus" aria-hidden="true"></i>
@@ -84,25 +86,10 @@
                                 <span>#{msg.admin__themes__title}</span>
                             </h:outputLink>
                         </li>
+                    </ui:fragment>
                     </ul>
-                    
-                    <div class="admin-widget__header">#{msg.admin__legal__title}</div>
-                    <ul>
-                    	<li class="#{navigationHelper.currentPage == 'adminUserTerms' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminUserTerms')}/">
-                                <i class="fa fa-check-square-o" aria-hidden="true"></i>
-                                <span>#{msg.admin__terms_of_use__title}</span>
-                            </h:outputLink>
-                        </li>
-                        <li class="#{navigationHelper.currentPage == 'adminCookieBanner' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminCookieBanner')}/">
-                                <i class="fa fa-bullhorn" aria-hidden="true"></i>
-                                <span>#{msg.label__cookie_banner}</span>
-                            </h:outputLink>
-                        </li>
-                    </ul>
-                </h:form>
-            </div>
-        </h:panelGroup>
+
+            </h:form>
+        </div>
     </composite:implementation>
 </ui:composition>

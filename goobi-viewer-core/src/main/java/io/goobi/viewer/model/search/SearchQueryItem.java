@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.faces.event.ValueChangeEvent;
@@ -241,6 +242,14 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     */
+    public int getDisplaySelectItemsThreshold() {
+        return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldDisplaySelectItemsThreshold(field);
+    }
+
+    /**
      * <p>
      * Getter for the field <code>field</code>.
      * </p>
@@ -367,23 +376,51 @@ public class SearchQueryItem implements Serializable {
      * </p>
      */
     protected void toggleDisplaySelectItems() {
-        if (field != null) {
-            if (isHierarchical()) {
-                displaySelectItems = true;
-                return;
-            }
-            switch (field) {
-                case SolrConstants.DOCSTRCT:
-                case SolrConstants.DOCSTRCT_TOP:
-                case SolrConstants.DOCSTRCT_SUB:
-                case SolrConstants.BOOKMARKS:
-                    displaySelectItems = true;
-                    break;
-                default:
-                    displaySelectItems = false;
-            }
-            //            logger.trace("toggleDisplaySelectItems: {}:{}", field, displaySelectItems);
+        if (field == null) {
+            return;
         }
+
+        if (isHierarchical()) {
+            displaySelectItems = true;
+            return;
+        }
+        switch (field) {
+            case SolrConstants.DOCSTRCT:
+            case SolrConstants.DOCSTRCT_TOP:
+            case SolrConstants.DOCSTRCT_SUB:
+            case SolrConstants.BOOKMARKS:
+                displaySelectItems = true;
+                break;
+            case ADVANCED_SEARCH_ALL_FIELDS:
+                displaySelectItems = false;
+                break;
+            default:
+                try {
+                    // Fields containing less values than the threshold for this field should be displayed as a drop-down
+                    String facetField = SearchHelper.facetifyField(field); // use FACET_ to exclude reversed values from the count
+                    String suffix = SearchHelper.getAllSuffixes();
+
+                    // Via unique()
+                    Map<String, String> params = Collections.singletonMap("json.facet", "{uniqueCount : \"unique(" + facetField + ")\"}");
+                    List<String> values = SearchHelper.getFacetValues(facetField + ":[* TO *]" + suffix, "json:uniqueCount", null, 1, params);
+                    int size = !values.isEmpty() ? Integer.valueOf(values.get(0)) : 0;
+                    // logger.trace("facets for {}: {}", "json:uniqueCount", size);
+
+                    // Via regular facet values
+                    //                    values = SearchHelper.getFacetValues(facetField + ":[* TO *]" + suffix, field, null, 1, null);
+                    //                    logger.trace("facets for {}: {}", field, values.size());
+
+                    if (size < getDisplaySelectItemsThreshold()) {
+                        displaySelectItems = true;
+                    } else {
+                        displaySelectItems = false;
+                    }
+                } catch (PresentationException | IndexUnreachableException e) {
+                    logger.error(e.getMessage());
+                    displaySelectItems = false;
+                }
+        }
+        //            logger.trace("toggleDisplaySelectItems: {}:{}", field, displaySelectItems);
     }
 
     /**

@@ -63,6 +63,8 @@ import io.goobi.viewer.filters.LoginFilter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.comments.CommentManager;
+import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
@@ -114,6 +116,7 @@ public class UserBean implements Serializable {
     private Feedback feedback;
     private String transkribusUserName;
     private String transkribusPassword;
+    private Boolean hasAdminBackendAccess;
 
     /** Reusable Random object. */
     Random random = new SecureRandom();
@@ -414,6 +417,7 @@ public class UserBean implements Serializable {
         setUser(null);
         createFeedback();
         password = null;
+        hasAdminBackendAccess = null;
         if (loggedInProvider != null) {
             loggedInProvider.logout();
             loggedInProvider = null;
@@ -582,7 +586,7 @@ public class UserBean implements Serializable {
 
             // Send
             try {
-                if (NetTools.postMail(Collections.singletonList(user.getEmail()),
+                if (NetTools.postMail(Collections.singletonList(user.getEmail()), null, null,
                         ViewerResourceBundle.getTranslation("user_activationEmailSubject", null),
                         sb.toString())) {
                     logger.debug("Activation e-mail sent for: {}", user.getEmail());
@@ -620,7 +624,7 @@ public class UserBean implements Serializable {
 
                 if (DataManager.getInstance().getDao().updateUser(user)) {
                     try {
-                        if (NetTools.postMail(Collections.singletonList(email),
+                        if (NetTools.postMail(Collections.singletonList(email), null, null,
                                 ViewerResourceBundle.getTranslation("user_retrieveAccountConfirmationEmailSubject", null),
                                 ViewerResourceBundle.getTranslation("user_retrieveAccountConfirmationEmailBody", null)
                                         .replace("{0}", requesterIp)
@@ -669,7 +673,7 @@ public class UserBean implements Serializable {
                 user.setNewPassword(newPassword);
                 user.setActivationKey(null);
                 try {
-                    if (NetTools.postMail(Collections.singletonList(email),
+                    if (NetTools.postMail(Collections.singletonList(email), null, null,
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailBody", null).replace("{0}", newPassword))
                             && DataManager.getInstance().getDao().updateUser(user)) {
@@ -805,11 +809,12 @@ public class UserBean implements Serializable {
         }
 
         try {
-            if (NetTools.postMail(Collections.singletonList(feedback.getRecipientAddress()),
+            if (NetTools.postMail(Collections.singletonList(feedback.getRecipientAddress()), null, null,
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
                 // Send confirmation to sender
-                if (StringUtils.isNotEmpty(feedback.getSenderAddress()) && !NetTools.postMail(Collections.singletonList(feedback.getSenderAddress()),
-                        feedback.getEmailSubject("feedbackEmailSubjectSender"), feedback.getEmailBody("feedbackEmailBody"))) {
+                if (StringUtils.isNotEmpty(feedback.getSenderAddress())
+                        && !NetTools.postMail(Collections.singletonList(feedback.getSenderAddress()), null, null,
+                                feedback.getEmailSubject("feedbackEmailSubjectSender"), feedback.getEmailBody("feedbackEmailBody"))) {
                     logger.warn("Could not send feedback confirmation to sender.");
                 }
                 Messages.info("feedbackSubmitted");
@@ -1277,6 +1282,35 @@ public class UserBean implements Serializable {
      */
     public void setTranskribusPassword(String transkribusPassword) {
         this.transkribusPassword = transkribusPassword;
+    }
+
+    /**
+     * Checks whether the logged in user has access to the admin backend via being an admin or having CMS/campaign/comments access. Result is
+     * persisted for the duration of the session.
+     * 
+     * @return the hasAdminBackendAccess
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public Boolean getHasAdminBackendAccess() throws PresentationException, IndexUnreachableException, DAOException {
+        if (hasAdminBackendAccess == null) {
+            if (user == null) {
+                hasAdminBackendAccess = false;
+            } else {
+                hasAdminBackendAccess = user.isSuperuser() || user.isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES)
+                        || CrowdsourcingTools.isUserOwnsAnyCampaigns(user) || CommentManager.isUserHasAccessToCommentGroups(user);
+            }
+        }
+
+        return hasAdminBackendAccess;
+    }
+
+    /**
+     * @param hasAdminBackendAccess the hasAdminBackendAccess to set
+     */
+    public void setHasAdminBackendAccess(Boolean hasAdminBackendAccess) {
+        this.hasAdminBackendAccess = hasAdminBackendAccess;
     }
 
     /**

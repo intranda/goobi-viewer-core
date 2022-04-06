@@ -12,7 +12,7 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin(cmsBean.editMode ? 'adminCmsEditPage' : 'adminCmsCreatePage')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsNewPage')}" />
         </f:metadata>
     </ui:define>
 
@@ -53,11 +53,11 @@
                                             <ul class="nav nav-tabs">
                                                 <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
                                                     <li class="#{cmsBean.selectedLocale == locale ? 'active':''}">
-                                                        <h:commandLink value="#{locale}" action="#{cmsBean.setSelectedLocale(locale)}" immediate="false" />
+                                                        <h:commandLink role="button" value="#{locale}" action="#{cmsBean.setSelectedLocale(locale)}" immediate="false" />
                                                     </li>
                                                 </c:forEach>
                                                 <li class="#{cmsBean.selectedLocale == null ? 'active':''} nav-tabs__sidebar-button">
-                                                    <h:commandLink value="#{msg.cms_pageSidebar}" action="#{cmsBean.setSelectedLocale(null)}" />
+                                                    <h:commandLink role="button" value="#{msg.cms_pageSidebar}" action="#{cmsBean.setSelectedLocale(null)}" />
                                                 </li>
                                             </ul>
 

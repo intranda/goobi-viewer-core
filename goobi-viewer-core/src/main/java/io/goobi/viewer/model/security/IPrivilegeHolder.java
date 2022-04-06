@@ -72,6 +72,8 @@ public interface IPrivilegeHolder {
     // CMS privileges
     /** Constant <code>PRIV_CMS_PAGES="CMS_PAGES"</code> */
     public static final String PRIV_CMS_PAGES = "CMS_PAGES";
+    /** Constant <code>PRIV_CMS_PAGES="PRIV_LEGAL_DISCLAIMER"</code> */
+    public static final String PRIV_LEGAL_DISCLAIMER = "PRIV_LEGAL_DISCLAIMER";
     /** Constant <code>PRIV_CMS_ALL_SUBTHEMES="CMS_ALL_SUBTHEMES"</code> */
     public static final String PRIV_CMS_ALL_SUBTHEMES = "CMS_ALL_SUBTHEMES";
     /** Constant <code>PRIV_CMS_ALL_CATEGORIES="CMS_ALL_CATEGORIES"</code> */

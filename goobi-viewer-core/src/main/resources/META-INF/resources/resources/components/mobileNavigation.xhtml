@@ -100,11 +100,11 @@
                             <li>
                                 <h:outputLink
                                     value="#{navigationHelper.applicationUrl}admin/"
-                                    class="#{navigationHelper.currentPage == 'adminAllUsers' or 
-                                             navigationHelper.currentPage == 'adminAllUserGroups' or
+                                    class="#{navigationHelper.currentPage == 'adminUsers' or 
+                                             navigationHelper.currentPage == 'adminUserGroups' or
                                              navigationHelper.currentPage == 'adminIpRanges' or
                                              navigationHelper.currentPage == 'adminLicenseTypes' or
-                                             navigationHelper.currentPage == 'adminUserComments' or
+                                             navigationHelper.currentPage == 'adminUserCommentGroups' or
                                              navigationHelper.currentPage == 'adminUserActivity' ? 'mainnav-active' : ''}">
                                     <h:outputText value="#{msg.admin}" />
                                 </h:outputLink>
@@ -205,11 +205,11 @@
                                             <li>
                                                 <h:outputLink
                                                     value="#{navigationHelper.applicationUrl}admin/"
-                                                    class="#{navigationHelper.currentPage == 'adminAllUsers' or 
-			                                             navigationHelper.currentPage == 'adminAllUserGroups' or
+                                                    class="#{navigationHelper.currentPage == 'adminUsers' or 
+			                                             navigationHelper.currentPage == 'adminUserGroups' or
 			                                             navigationHelper.currentPage == 'adminIpRanges' or
 			                                             navigationHelper.currentPage == 'adminLicenseTypes' or
-			                                             navigationHelper.currentPage == 'adminUserComments' or
+			                                             navigationHelper.currentPage == 'adminUserCommentGroups' or
 			                                             navigationHelper.currentPage == 'adminUserActivity' ? 'mainnav-active' : ''}">
                                                     <h:outputText value="#{msg.admin}" />
                                                 </h:outputLink>

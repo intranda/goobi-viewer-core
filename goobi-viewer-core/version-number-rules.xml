@@ -14,11 +14,7 @@
     <rules>
         <rule groupId="org.glassfish.jersey">
             <ignoreVersions>
-                <ignoreVersion>3.0.0</ignoreVersion>
-                <ignoreVersion>3.0.1</ignoreVersion>
-                <ignoreVersion>3.0.2</ignoreVersion>
-                <ignoreVersion>3.0.3</ignoreVersion>
-                <ignoreVersion>3.0.4</ignoreVersion>
+                <ignoreVersion type="regex">3.0.*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.glassfish.jaxb">
@@ -26,6 +22,12 @@
                 <ignoreVersion>2.4.0-b180725.0644</ignoreVersion>
                 <ignoreVersion>2.4.0-b180830.0438</ignoreVersion>
                 <ignoreVersion type="regex">3.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <!-- see here why no 2.4.0 https://balusc.omnifaces.org/2018/04/do-not-use-orgglassfish-mojarra-240.html -->
+        <rule groupId="org.glassfish" artifactId="javax.faces">
+            <ignoreVersions>
+                <ignoreVersion>2.4.0</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="com.sun.xml.bind" artifactId="jaxb-*">
@@ -37,6 +39,7 @@
             <ignoreVersions>
                 <ignoreVersion>2.0.0</ignoreVersion>
                 <ignoreVersion>2.1.0-B1</ignoreVersion>
+                <ignoreVersion>2.1.0</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="jakarta.servlet" artifactId="jakarta.servlet-api">
@@ -51,20 +54,7 @@
         </rule>
         <rule groupId="org.apache.tomcat" artifactId="tomcat-catalina">
             <ignoreVersions>
-                <ignoreVersion>10.0.0</ignoreVersion>
-                <ignoreVersion>10.0.2</ignoreVersion>
-                <ignoreVersion>10.0.4</ignoreVersion>
-                <ignoreVersion>10.0.5</ignoreVersion>
-                <ignoreVersion>10.0.6</ignoreVersion>
-                <ignoreVersion>10.0.7</ignoreVersion>
-                <ignoreVersion>10.0.8</ignoreVersion>
-                <ignoreVersion>10.0.10</ignoreVersion>
-                <ignoreVersion>10.0.11</ignoreVersion>
-                <ignoreVersion>10.0.12</ignoreVersion>
-                <ignoreVersion>10.0.13</ignoreVersion>
-                <ignoreVersion>10.0.14</ignoreVersion>
-                <ignoreVersion>10.0.15</ignoreVersion>
-                <ignoreVersion>10.0.16</ignoreVersion>
+                <ignoreVersion type="regex">10.*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.eclipse.persistence" artifactId="org.eclipse.persistence.*">

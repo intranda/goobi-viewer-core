@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -430,7 +431,9 @@ public class UserGroup implements ILicensee, Serializable {
      * @should count correctly
      */
     public long getMemberCount() throws DAOException {
-        return DataManager.getInstance().getDao().getUserRoleCount(this, null, null);
+       List<User> users = DataManager.getInstance().getDao().getUserRoles(this, null, null).stream().map(UserRole::getUser).collect(Collectors.toList());
+       users.add(owner);
+       return users.stream().distinct().count();
     }
 
     /**
@@ -470,6 +473,7 @@ public class UserGroup implements ILicensee, Serializable {
 
         for (UserRole membership : getMemberships()) {
             ret.add(membership.getUser());
+            // logger.trace("member: {}", membership.getUser().getEmail());
         }
 
         return ret;

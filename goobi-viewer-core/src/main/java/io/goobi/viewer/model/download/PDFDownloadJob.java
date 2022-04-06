@@ -121,19 +121,6 @@ public class PDFDownloadJob extends DownloadJob {
         return "PDF";
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#getSize()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public long getSize() {
-        File downloadFile = DownloadJobTools.getDownloadFileStatic(identifier, type, getFileExtension());
-        if (downloadFile.isFile()) {
-            return downloadFile.length();
-        }
-
-        return getPdfSizeFromTaskManager(identifier);
-    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#triggerCreation(java.lang.String, java.lang.String, java.lang.String)
@@ -221,31 +208,6 @@ public class PDFDownloadJob extends DownloadJob {
         }
     }
 
-    /**
-     * <p>
-     * getPdfSizeFromTaskManager.
-     * </p>
-     *
-     * @param identifier a {@link java.lang.String} object.
-     * @return a long.
-     */
-    protected static long getPdfSizeFromTaskManager(String identifier) {
-        StringBuilder url = new StringBuilder();
-        url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
-        url.append("/viewerpdf/pdfSize/");
-        url.append(identifier);
-        ResponseHandler<String> handler = new BasicResponseHandler();
-        HttpGet httpGet = new HttpGet(url.toString());
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            CloseableHttpResponse response = httpclient.execute(httpGet);
-            String ret = handler.handleResponse(response);
-            logger.trace("TaskManager response: {}", ret);
-            return Long.parseLong(ret);
-        } catch (Throwable e) {
-            logger.warn("Error getting response from TaskManager");
-            return -1;
-        }
-    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#getQueuePosition()

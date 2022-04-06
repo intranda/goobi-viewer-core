@@ -2,6 +2,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
 
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -75,20 +76,20 @@
 
                       <!-- ACTIONS -->
                       <div class="cms-module__actions">
-                        <h:commandLink
-                          action="#{cmsBean.setSelectedMediaHolder(theme.logo)}"
-                          value="#{theme.logo.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}"
+                        <button
+                          jsf:action="#{cmsBean.setSelectedMediaHolder(theme.logo)}"
                           class="btn #{theme.logo.hasMediaItem() ? 'btn--clean' : 'btn--default edit'}"
                           role="button">
                           <f:ajax execute="@this" render="mediaSelectPanel" />
-                        </h:commandLink>
-                        <h:commandLink
-                          rendered="#{theme.logo.hasMediaItem()}"
-                          action="#{theme.logo.setMediaItem(null)}"
-                          value="#{msg.cms_selectMediaItem_deselect}"
+							#{theme.logo.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}
+                        </button>
+                        <button
+                          jsf:rendered="#{theme.logo.hasMediaItem()}"
+                          jsf:action="#{theme.logo.setMediaItem(null)}"
                           class="btn btn--clean delete" role="button">
                           <f:ajax render="logoPanel" />
-                        </h:commandLink>
+							#{msg.cms_selectMediaItem_deselect}
+                        </button>
                         <ui:fragment rendered="#{theme.logo.hasMediaItem()}">
                         	<img src="#{theme.logo.mediaItem.iconURI}" alt=""></img>
                         </ui:fragment>
@@ -123,20 +124,20 @@
 
                       <!-- ACTIONS -->
                       <div class="cms-module__actions">
-                        <h:commandLink
-                          action="#{cmsBean.setSelectedMediaHolder(theme.fullscreenLogo)}"
-                          value="#{theme.fullscreenLogo.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}"
+                        <button
+                          jsf:action="#{cmsBean.setSelectedMediaHolder(theme.fullscreenLogo)}"
                           class="btn #{theme.fullscreenLogo.hasMediaItem() ? 'btn--clean' : 'btn--default edit'}"
                           role="button">
                           <f:ajax execute="@this" render="mediaSelectPanel" />
-                        </h:commandLink>
-                        <h:commandLink
-                          rendered="#{theme.fullscreenLogo.hasMediaItem()}"
-                          action="#{theme.fullscreenLogo.setMediaItem(null)}"
-                          value="#{msg.cms_selectMediaItem_deselect}"
+							#{theme.fullscreenLogo.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}
+                        </button>
+                        <button
+                          jsf:rendered="#{theme.fullscreenLogo.hasMediaItem()}"
+                          jsf:action="#{theme.fullscreenLogo.setMediaItem(null)}"
                           class="btn btn--clean delete" role="button">
                           <f:ajax render="fullscreenLogoPanel" />
-                        </h:commandLink>
+							#{msg.cms_selectMediaItem_deselect}
+                        </button>
                         <ui:fragment rendered="#{theme.fullscreenLogo.hasMediaItem()}">
                         	<img src="#{theme.fullscreenLogo.mediaItem.iconURI}" alt=""></img>
                         </ui:fragment>
@@ -171,19 +172,19 @@
 
                       <!-- ACTIONS -->
                       <div class="cms-module__actions">
-                        <h:commandLink
-                          action="#{cmsBean.setSelectedMediaHolder(theme.icon)}"
-                          value="#{theme.icon.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}"
+                        <button
+                          jsf:action="#{cmsBean.setSelectedMediaHolder(theme.icon)}"
                           class="btn #{theme.icon.hasMediaItem() ? 'btn--clean' : 'btn--default edit'}"
                           role="button">
-                        </h:commandLink>
-                        <h:commandLink
-                          rendered="#{theme.icon.hasMediaItem()}"
-                          action="#{theme.icon.setMediaItem(null)}"
-                          value="#{msg.cms_selectMediaItem_deselect}"
+							#{theme.icon.hasMediaItem() ? msg.cms_media_editFile : msg.cms_selectMedia}
+                        </button>
+                        <button
+                          jsf:rendered="#{theme.icon.hasMediaItem()}"
+                          jsf:action="#{theme.icon.setMediaItem(null)}"
                           class="btn btn--clean delete" role="button">
                           <f:ajax render="iconPanel" />
-                        </h:commandLink>
+							#{msg.cms_selectMediaItem_deselect}
+                        </button>
                       </div>
                       <ui:fragment rendered="#{theme.icon.hasMediaItem()}">
                         	<img src="#{theme.icon.mediaItem.iconURI}"></img>

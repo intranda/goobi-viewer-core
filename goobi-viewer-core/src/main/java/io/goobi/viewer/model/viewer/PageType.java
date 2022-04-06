@@ -70,10 +70,14 @@ public enum PageType {
     adminLicenseTypes("admin/licenses"),
     adminLicenseType("admin/license"),
     adminRights("admin/rights"),
+    adminRight("admin/rights"),
     adminRightsNew("admin/rights/new"),
-    adminUserComments("admin/comments"),
+    adminUserCommentGroups("admin/comments"),
+    adminUserCommentGroupAll("admin/comments/all"),
+    adminUserCommentGroupNew("admin/comments/new"),
     adminUserTerms("admin/userterms"),
     adminCreateRecord("admin/record/new"),
+    adminThemes("admin/themes"),
     // admin/translations
     adminTranslations("admin/translations"),
     adminTranslationsNew("admin/translations/new"),
@@ -97,6 +101,7 @@ public enum PageType {
     adminCmsSliders("admin/cms/slider", "cms__sliders__title"),
     adminCmsSidebarWidgets("admin/cms/widgets", "cms_widgets__title"),
     adminCookieBanner("admin/legal/cookies", "label__cookie_banner"),
+    adminDisclaimer("admin/legal/disclaimer", "label__disclaimer"),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing
@@ -434,57 +439,7 @@ public enum PageType {
                 || ViewerPathBuilder.startsWith(pagePath, getName());
     }
 
-    /**
-     * <p>
-     * isRestricted.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    @Deprecated
-    public boolean isRestricted() {
-        switch (this) {
-            case admin:
-            case adminLicenseTypes:
-            case adminUserGroups:
-            case adminUsers:
-            case adminCms:
-            case adminCmsCategories:
-            case adminCmsNewCategory:
-            case adminCmsCollections:
-            case adminCmsNewPage:
-            case adminCmsEditCollection:
-            case adminCmsGeoMaps:
-            case adminCmsGeoMapEdit:
-            case adminCmsGeoMapNew:
-            case adminCmsMedia:
-            case adminCmsMenuItems:
-            case adminCmsOverview:
-            case adminCmsSelectTemplate:
-            case adminCmsStaticPages:
-            case adminCreateRecord:
-            case adminCrowdsourcingAnnotations:
-            case adminCrowdsourcingCampaigns:
-            case adminIpRange:
-            case adminIpRanges:
-            case adminIpRangeNew:
-            case adminLicenseType:
-            case adminRights:
-            case adminRightsNew:
-            case adminUser:
-            case adminUserNew:
-            case adminUserActivity:
-            case adminUserComments:
-            case adminUserGroup:
-            case adminUserGroupNew:
-            case editContent:
-            case editHistory:
-            case editOcr:
-            case bookmarks:
-            case user:
-                return true;
-            default:
-                return false;
-        }
+    public boolean isAdminBackendPage() {
+        return this.name().toLowerCase().startsWith("admin");
     }
 }

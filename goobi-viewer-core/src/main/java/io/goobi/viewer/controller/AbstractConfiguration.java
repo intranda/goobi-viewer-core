@@ -154,6 +154,28 @@ public abstract class AbstractConfiguration {
 
     /**
      * <p>
+     * getLocalNodeList.
+     * </p>
+     *
+     * @param inPath a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    protected List<Object> getLocalNodeList(String inPath) {
+        List<Object> objects = ((HierarchicalConfiguration<ImmutableNode>) getConfigLocal()).getList(inPath,
+                ((HierarchicalConfiguration<ImmutableNode>) getConfig()).getList(inPath));
+        if (objects != null && !objects.isEmpty()) {
+            List<Object> ret = new ArrayList<>(objects.size());
+            for (Object obj : objects) {
+                ret.add(obj);
+            }
+            return ret;
+        }
+
+        return new ArrayList<>();
+    }
+
+    /**
+     * <p>
      * getLocalList.
      * </p>
      *
@@ -173,28 +195,6 @@ public abstract class AbstractConfiguration {
             List<String> ret = new ArrayList<>(objects.size());
             for (Object obj : objects) {
                 ret.add((String) obj);
-            }
-            return ret;
-        }
-
-        return new ArrayList<>();
-    }
-
-    /**
-     * <p>
-     * getLocalNodeList.
-     * </p>
-     *
-     * @param inPath a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
-     */
-    protected List<Object> getLocalNodeList(String inPath) {
-        List<Object> objects = ((HierarchicalConfiguration<ImmutableNode>) getConfigLocal()).getList(inPath,
-                ((HierarchicalConfiguration<ImmutableNode>) getConfig()).getList(inPath));
-        if (objects != null && !objects.isEmpty()) {
-            List<Object> ret = new ArrayList<>(objects.size());
-            for (Object obj : objects) {
-                ret.add(obj);
             }
             return ret;
         }
@@ -246,6 +246,27 @@ public abstract class AbstractConfiguration {
     }
 
     /**
+     * 
+     * @param config
+     * @param altConfig
+     * @param inPath
+     * @return
+     */
+    protected static List<HierarchicalConfiguration<ImmutableNode>> getLocalConfigurationsAt(HierarchicalConfiguration<ImmutableNode> config,
+            HierarchicalConfiguration<ImmutableNode> altConfig, String inPath) {
+        if (config == null) {
+            throw new IllegalArgumentException("config may not be null");
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> ret = config.configurationsAt(inPath);
+        if ((ret == null || ret.isEmpty()) && altConfig != null) {
+            ret = altConfig.configurationsAt(inPath);
+        }
+
+        return ret;
+    }
+
+    /**
      * <p>
      * getLocalConfigurationsAt.
      * </p>
@@ -254,12 +275,7 @@ public abstract class AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     protected List<HierarchicalConfiguration<ImmutableNode>> getLocalConfigurationsAt(String inPath) {
-        List<HierarchicalConfiguration<ImmutableNode>> ret = getConfigLocal().configurationsAt(inPath);
-        if (ret == null || ret.isEmpty()) {
-            ret = getConfig().configurationsAt(inPath);
-        }
-
-        return ret;
+        return getLocalConfigurationsAt(getConfigLocal(), getConfig(), inPath);
     }
 
     /**

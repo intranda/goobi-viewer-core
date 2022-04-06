@@ -3,6 +3,7 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -120,13 +121,15 @@
                                         <div class="col-2"></div>
                                         <div class="col-9 badge-hover pb-3">
                                             <c:forEach var="priv" items="#{adminBean.currentLicenseType.getSortedPrivileges(adminBean.currentLicenseType.privilegesCopy)}">
-                                                <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
+                                                <button 
+                                                    class="admin__license-action btn btn--link" 
+                                                    jsf:action="#{adminBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
                                                     <div class="badge badge-success">
                                                         #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
                                                         <!-- remove button -->
                                                         <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                     </div>
-                                                </h:commandLink>
+                                                </button>
                                             </c:forEach>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
@@ -139,14 +142,15 @@
                                         <div class="col-2"></div>
                                         <div class="col-9 badge-hover">
                                             <c:forEach var="priv" items="#{adminBean.currentLicenseType.availablePrivileges}">
-                                                <h:commandLink styleClass="admin__license-action"
-                                                    action="#{adminBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
+                                                <button 
+                                                    class="admin__license-action btn btn--link"
+                                                    jsf:action="#{adminBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
                                                     <div class="badge badge-dark">
                                                         #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
                                                         <!-- add button -->
                                                         <i class="fa fa-plus-circle" aria-hidden="true"></i>
                                                     </div>
-                                                </h:commandLink>
+                                                </button>
                                             </c:forEach>
                                         </div>
                                         <div class="col-2"></div>
@@ -274,7 +278,11 @@
 
                             <div class="row no-gutters justify-content-end admin__final-actions">
                                 <h:commandLink action="pretty:adminLicenses" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
-                                <h:commandLink action="#{adminBean.saveCurrentLicenseTypeAction}" value="#{msg.save}" styleClass="btn btn--success" />
+                                <button
+                                    jsf:action="#{adminBean.saveCurrentLicenseTypeAction}" 
+                                    class="btn btn--success">
+                                    #{msg.save}
+                                </button>
                             </div>
                         </div>
                     </h:form>

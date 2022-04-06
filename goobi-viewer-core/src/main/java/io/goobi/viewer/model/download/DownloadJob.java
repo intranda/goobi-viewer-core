@@ -398,15 +398,6 @@ public abstract class DownloadJob implements Serializable {
 
     /**
      * <p>
-     * getSize.
-     * </p>
-     *
-     * @return a long.
-     */
-    public abstract long getSize();
-
-    /**
-     * <p>
      * getQueuePosition.
      * </p>
      *
@@ -481,7 +472,7 @@ public abstract class DownloadJob implements Serializable {
             subject = subject.replace("{0}", pi);
         }
 
-        return NetTools.postMail(observers, subject, body);
+        return NetTools.postMail(observers, null, null, subject, body);
     }
 
     /**
@@ -766,8 +757,8 @@ public abstract class DownloadJob implements Serializable {
     public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
         try {
             Client client = ClientBuilder.newClient();
-            client.property(ClientProperties.CONNECT_TIMEOUT, 4000);
-            client.property(ClientProperties.READ_TIMEOUT, 10000);
+            client.property(ClientProperties.CONNECT_TIMEOUT, 12000);
+            client.property(ClientProperties.READ_TIMEOUT, 30000);
             return client
                     .target(url)
                     .request(MediaType.APPLICATION_JSON)

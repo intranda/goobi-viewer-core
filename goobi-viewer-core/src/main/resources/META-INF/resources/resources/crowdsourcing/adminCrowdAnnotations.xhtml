@@ -1,7 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                
+				xmlns:jsf="http://xmlns.jcp.org/jsf"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -39,43 +39,43 @@
                         </div>
 
                         <!-- ALL ANNOTATIONS TABLE -->
-                        <div id="csAnnotationsTable" class="admin__table-content">
+                        <div id="csAnnotationsTable" class="admin__table-content" role="grid">
 
                             <!-- TITLE ROW -->
-                            <div class="row no-gutters admin__table-title">
+                            <div class="row no-gutters admin__table-title" role="row">
                                 <!-- One Square to check them all! -->
-                                <div class="d-flex admin__checkbox-column-all-entrys">
+                                <div class="d-flex admin__checkbox-column-all-entrys" role="columnheader"><span class="sr-only">#{msg.action__select}</span>
                                 	<h:selectBooleanCheckbox id="selectAllCheckbox" value="#{annotationBean.selectAll}" immediate="true" styleClass="admin__fancy-checkbox">
                                 		<f:passThroughAttribute name="data-group-select" value="select-all"></f:passThroughAttribute>
                                 		<f:passThroughAttribute name="data-group" value="exportSelection"></f:passThroughAttribute>
                                 		<f:ajax event="change"></f:ajax>
                                 	</h:selectBooleanCheckbox>
-	                                <h:outputLabel value="" for="selectAllCheckbox" />
+                                  <label for="selectAllCheckbox" ><span class="sr-only">#{msg.aria_label__select_all}</span></label>
                                 </div>
                                 <!-- ANNOTATION COL -->
-                                <div class="col d-flex">#{msg.admin__crowdsourcing_annotation}</div>
+                                <div class="col d-flex" role="columnheader">#{msg.admin__crowdsourcing_annotation}</div>
 
                                 <!-- TARGET COL -->
-	                            <div class="col-2 d-flex">                            
+	                            <div class="col-2 d-flex">
 	                                <viewerComponent:sortingArrow filterType="targetPI" colHeading="#{msg.admin__crowdsourcing_annotation_target}" list="#{annotationBean.lazyModelAnnotations}" />
 	                            </div>
 
                                 <!-- DATE COL -->
-	                            <div class="col-2 d-flex">                            
+	                            <div class="col-2 d-flex">
 	                                <viewerComponent:sortingArrow filterType="dateCreated" colHeading="#{msg.date}" list="#{annotationBean.lazyModelAnnotations}" />
 	                            </div>
-	                            
+
 	                            <!-- REVIEW STATE COL -->
-	                            <div class="col-1 d-flex" style="justify-content: center;">
-								        <span class="admin__sorting-table-heading">#{msg.label__crowdsourcing_review}</span>
-								</div>
+	                            <div class="col-1 d-flex" style="justify-content: center;" role="columnheader">
+                                <span class="admin__sorting-table-heading">#{msg.label__crowdsourcing_review}</span>
+                              </div>
                             </div>
 
                             <!-- INDIVIDUAL ANNOTATION ROWS -->
                             <ui:repeat var="annotation" value="#{annotationBean.lazyModelAnnotations.paginatorList}">
-                                <div class="row no-gutters admin__table-entry">
+                                <div class="row no-gutters admin__table-entry" role="row">
 	                                <!-- Check single entrys/rows -->
-	                                <div class="d-flex admin__checkbox-column-single-entry">
+	                                <div class="d-flex admin__checkbox-column-single-entry" role="gridcell">
 	                                	<h:selectBooleanCheckbox id="selectOne" data-group="exportSelection" value="#{annotationBean.exportSelection[annotation.id]}" styleClass="admin__fancy-checkbox">
 	                                		<f:passThroughAttribute name="data-group-select" value="select-one"></f:passThroughAttribute>
 	                                		<f:passThroughAttribute name="data-group" value="exportSelection"></f:passThroughAttribute>
@@ -83,7 +83,7 @@
 	                                	</h:selectBooleanCheckbox>
 		                                <h:outputLabel value="" for="selectOne" />
 	                                </div>
-                                    <div class="col d-flex" style="flex-direction:column;">
+                                    <div class="col d-flex" style="flex-direction:column;" role="gridcell">
                                         <div id="annotation_body_#{annotation.id}" class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(annotation.body.toString())}</div>
 										<annotationBody annotationid="#{annotation.id}" contentid="annotation_body_#{annotation.id}"/>
                                         <!-- ACTIONS -->
@@ -93,26 +93,27 @@
                                             <a href="#{navigationHelper.objectUrl}#{annotation.targetLink}" class="admin__table-action-link" style="padding-right: 1.4rem;" target="_blank" aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}</a>
 
                                             <!-- DELETE -->
-                                            <h:commandLink styleClass="admin__table-action-link -redlink"
-                                                onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_annotation_deleteConfirmationText}&quot; ) ) { return false };"
-                                                action="#{annotationBean.deleteAnnotationAction(annotation)}">#{msg.delete}
-                                            </h:commandLink>
+                                            <button
+                                            	jsf:styleClass="btn btn--clear admin__table-action-link -redlink"
+                                                jsf:onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_annotation_deleteConfirmationText}&quot; ) ) { return false };"
+                                                jsf:action="#{annotationBean.deleteAnnotationAction(annotation)}">#{msg.delete}
+                                            </button>
                                         </div>
                                     </div>
-                                    <div class="col-2 d-flex">
+                                    <div class="col-2 d-flex" role="gridcell">
                                         #{annotation.targetPI}<h:outputText rendered="#{annotation.targetPageOrder != null}" value=", #{msg.page} #{annotation.targetPageOrder}" />
                                     </div>
-                                    <div class="col-2 d-flex">
+                                    <div class="col-2 d-flex" role="gridcell">
                                         <h:outputText value="#{annotation.dateCreated}">
                                             <f:converter converterId="localDateTimeConverter" />
                                             <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                                         </h:outputText>
                                     </div>
-                                    
+
                                     <div class="col-1 d-flex" style="justify-content: center;">
-								        <ui:fragment rendered="#{annotation.publicationStatus == 'PUBLISHED'}">
-									        <i class="fa fa-check" aria-hidden="true"></i>
-								        </ui:fragment>
+                                    <ui:fragment rendered="#{annotation.publicationStatus == 'PUBLISHED'}" role="gridcell">
+									                      <i class="fa fa-check" aria-hidden="true"></i>
+                                    </ui:fragment>
 									</div>
                                 </div>
                             </ui:repeat>
@@ -124,26 +125,26 @@
                     </div>
 		            <script type="text/javascript">
 		                $( document ).ready( function() {
-			                
+
 			                initTable();
 		                    mountRiotTags();
 		                    viewerJS.groupSelect.init({reseter: ".btn-filter, admin__search-clear, .sort"});
 		                    viewerJS.groupSelect.onChange("exportSelection").subscribe(e => {
-		                        	
+
 	                        if(e.anyChecked) {
-								$('.admin__overlay-bar').addClass('-showExportOptions');		                            
+								$('.admin__overlay-bar').addClass('-showExportOptions');
 	                        } else {
-								$('.admin__overlay-bar').removeClass('-showExportOptions');		                            
+								$('.admin__overlay-bar').removeClass('-showExportOptions');
 		                        }
-		                    })		
+		                    })
  		                } );
-		                
+
 		                function initTable() {
 		                    var displayDateUpdated = true;
 		                    if ( !displayDateUpdated ) {
 		                        $( ".column_date_updated" ).hide();
 		                    }
-		                    
+
 		                    var dataTableConfig = {
 		                        dataTablePaginator: "#dataTablePaginator",
 		                        txtField1: "#txtMoveTo1",
@@ -151,11 +152,11 @@
 		                        totalCount: "#totalCount",
 		                        reloadBtn: 'input[id*="cmdMoveTo"]',
 		                    };
-		                    
+
 		                    viewerJS.dataTable.init( dataTableConfig );
 		                }
-		                
-		                function mountRiotTags() {		                    
+
+		                function mountRiotTags() {
 	                        riot.mount("annotationBody", {
 	                            currentlang: "#{navigationHelper.localeString}",
 	                            resturl: "#{configurationBean.restApiUrlV1}",
@@ -165,11 +166,11 @@
 		                // Create no entries found message
 		    			if($('.admin__table-entry').length == 0) {
 		    				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
-		    			}    
+		    			}
 
 		            </script>
-        
-                    
+
+
                 </h:form>
             </div>
 

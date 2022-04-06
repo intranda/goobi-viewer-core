@@ -487,17 +487,19 @@
 		<!-- displayAdditionalMetadata: Add relevant metadata fields and values 
 			to the search hits if they contain requested search terms. Default is enabled=true. -->
 		<displayAdditionalMetadata enabled="false">
-			<!-- ignoreField: Fields that add no value to the search hits but take 
+			<!-- ield type="ignore": Fields that add no value to the search hits but take 
 				up space (e.g. PI_TOPSTRUCT, DOCSTRCT) can be configured to not be added 
 				as additional metadata. This element can be repeated. -->
-			<ignoreField>ISANCHOR</ignoreField>
-			<ignoreField>ISWORK</ignoreField>
-			<ignoreField>PI_TOPSTRUCT</ignoreField>
-			<!-- translateField: Fields in this list will be highlighted with their 
+			<field type="ignore">ISANCHOR</field>
+			<field type="ignore">ISWORK</field>
+			<field type="ignore">PI_TOPSTRUCT</field>
+			<!-- field type="translate": Fields in this list will be highlighted with their 
 				translated value rather than raw. -->
-			<translateField>DC</translateField>
-			<translateField>DOCSTRCT</translateField>
-			<translateField>MD_LANGUAGE_UNTOKENIZED</translateField>
+			<field type="translate">DC</field>
+			<field type="translate">DOCSTRCT</field>
+			<field type="translate">MD_LANGUAGE_UNTOKENIZED</field>
+            <!-- field type="oneline": Fields in this list will have multiple values written into a single string, without line breaks. -->
+            <field type="oneline">MD_ACCESSLOCATIONS</field>
 		</displayAdditionalMetadata>
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries 
 			(e.g. for permanent filtering) -->
@@ -1105,20 +1107,6 @@
 
     <!-- bookmarks/@enabled: if false, no links to bookmark administration are displayed (default is true) -->
 	<bookmarks enabled="false" />
-
-    <!-- If enabled="true", the user comments functionality is enabled. Default is false. -->
-	<comments enabled="true">
-		<!-- condition: optional restriction of the user comments function 
-			(expressed as a Solr query) to records that match certain criteria. The criteria 
-			must apply to the root structure element of the record. -->
-		<condition>DC:varia</condition>
-		<!-- notifationEmailAddress: E-mail addresses to which notifications for 
-			new comments will be sent. Can be added multiple times for multiple recipients. -->
-		<notificationEmailAddress>notificationEmailAddress_1
-		</notificationEmailAddress>
-		<notificationEmailAddress>notificationEmailAddress_2
-		</notificationEmailAddress>
-	</comments>
 
 	<cms>
 		<!-- useCustomNavBar: enables the use of a custom navigation navigation 

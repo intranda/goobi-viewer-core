@@ -1,7 +1,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                
+	            xmlns:jsf="http://xmlns.jcp.org/jsf"
+				xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -36,7 +37,7 @@
 
                             <div class="admin__entry-list -w33">
                                 <!--  INDIVIDUAL IP RANGES -->
-                                <ui:repeat var="ipRange" value="#{adminBean.allIpRanges}">
+                                <ui:repeat  var="ipRange" value="#{adminBean.allIpRanges}">
                                     <div class="admin__boxed-entry -w33">
                                         <div class="row">
                                             <h2 class="col-12">#{ipRange.name}</h2>
@@ -62,14 +63,13 @@
                                                 <a href="#{navigationHelper.applicationUrl}admin/ipranges/edit/#{ipRange.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{ipRange.name}">#{msg.edit}</a>
 
                                                 <!-- DELETE -->
-                                                <h:commandLink
-                                                    styleClass="admin__boxed-entry-actions-delete -redlink"
+                                                <button
+                                                    class="admin__boxed-entry-actions-delete -redlink"
                                                     onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
-                                                    action="adminIpRanges"
-                                                    actionListener="#{adminBean.deleteIpRangeAction(ipRange)}">
+                                                    jsf:action="#{adminBean.deleteIpRangeAction(ipRange)}">
                                                     <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{ipRange.name}" />
                                                     #{msg.delete}
-                                                </h:commandLink>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>

@@ -1,0 +1,208 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminDisclaimer')}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+		<f:view contentType="text/html" encoding="utf-8">
+
+			<!-- No scope, so getter in value is called on every call of var -->
+			<c:set var="disclaimer"
+				value="#{disclaimerEditBean.getDisclaimerForEdit()}" />
+
+			<h:panelGroup layout="block" id="adminDisclaimer"
+				rendered="#{userBean.admin}">
+				<!-- TITLE -->
+				<div class="admin__title-bar">
+					<h1 class="admin__title">#{msg.label__legal_disclaimer}</h1>
+				</div>
+
+				<div class="admin__content-inner-content">
+					<h:form id="disclaimerActivateForm" prependId="false">
+						<div class="admin__info-text">
+							<h:outputText value="#{msg.admin__legal__disclaimer_info}"
+								escape="false" />
+						</div>
+						<div class="form-horizontal form-group">
+							<div class="row no-gutters mb-3 align-items-center">
+								<div class="control-label mr-3 admin__form-label">#{msg.admin__legal__disclaimer_active}:</div>
+								<div class="admin__form-input">
+									<viewerComponent:toggleSwitch name="activateDisclaimer"
+										toggleTarget="#disclaimerEditWrapper"
+										value="#{disclaimerEditBean.disclaimerActive}" />
+								</div>
+							</div>
+						</div>
+					</h:form>
+
+					<div id="disclaimerEditWrapper"
+						class="admin__user-terms-box-editable hide">
+						<div class="form-horizontal form-group">
+							<h:form id="disclaimerEditForm" prependId="false">
+
+								<viewerForms:inputFormBlock
+									title="#{msg.admin__terms_of_use__manage_text}"
+									languageSelector="#{disclaimer.text}">
+
+									<viewerForms:htmlInputField label="#{msg.text}"
+										value="#{disclaimer.text.text}"
+										required="#{disclaimer.text.isDefaultLocaleSelected()}">
+									</viewerForms:htmlInputField>
+
+								</viewerForms:inputFormBlock>
+
+								<viewerForms:inputFormBlock id="properties"
+									title="#{msg.admin__legal__disclaimer_properties__label}">
+
+									<h:panelGroup id="displayScopeGroup">
+                                        <p>#{msg.admin__legal__disclaimer_properties_description}</p>
+										<viewerForms:inputFormField
+											label="#{msg.admin__legal__disclaimer_display}">
+
+											<div
+												class="form-group admin__cms-edit-collection-connected-radio-buttons">
+												<div class="connected-top">
+													<h:selectOneRadio group="displayScopeRadio"
+														value="#{disclaimer.displayScope.pageScope}"
+														immediate="true">
+														<f:selectItem itemValue="ALL"
+															itemLabel="#{msg.admin__legal__disclaimer_display__all_pages}" />
+														<f:ajax render="properties:displayScopeGroup" />
+													</h:selectOneRadio>
+												</div>
+												<div class="connected-bottom connected-bottom-wrapper">
+													<h:selectOneRadio group="displayScopeRadio"
+														value="#{disclaimer.displayScope.pageScope}"
+														immediate="true">
+														<f:selectItem itemValue="RECORD"
+															itemLabel="#{msg.admin__legal__disclaimer_display__record_pages}" />
+														<f:ajax render="properties:displayScopeGroup" />
+													</h:selectOneRadio>
+													<h:panelGroup layout="block" id="solrQueryInputGroup"
+														rendered="#{disclaimer.displayScope.pageScope == 'RECORD'}">
+														<div class="cms-module__option-control admin__form-input">
+
+															<!-- EMPTY ELEMENT AS JS TARGET FOR COLORING THE INPUT BOX ON SUCCESS/WARNING/ERROR -->
+															<div class="cms-module__option-message"></div>
+
+															<h:inputText id="solrQueryInput"
+																styleClass="form-control"
+																value="#{disclaimer.displayScope.filterQuery}"
+																validator="solrQueryValidator"
+																validatorMessage="#{msg.inline_help__solr_query_danger}">
+																<f:ajax event="valueChange" render="solrQueryInputGroup"/>
+															</h:inputText>
+															
+															<div class="input_form__option-message-mark">
+											                        <i class="fa fa-check" aria-hidden="true"></i>
+											                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+											                    </div>
+															
+															<div class="input_form__option-message">
+											                    <h:messages for="solrQueryInput" 
+											                        infoClass="input_form__option-message-status success" 
+											                        warnClass="input_form__option-message-status warning"
+											                        errorClass="input_form__option-message-status danger" />
+											                </div>
+															
+															
+														</div>
+													</h:panelGroup>
+												</div>
+											</div>
+
+
+										</viewerForms:inputFormField>
+									</h:panelGroup>
+
+									<h:panelGroup id="scopeGroup">
+										<viewerForms:inputFormField
+											label="#{msg.admin__legal__disclaimer_scope}">
+
+											<div
+												class="form-group admin__cms-edit-collection-connected-radio-buttons">
+												<div class="connected-top">
+													<h:selectOneRadio group="scopeRadio"
+														value="#{disclaimer.acceptanceScope.storageMode}"
+														immediate="true">
+														<f:selectItem itemValue="SESSION"
+															itemLabel="#{msg.admin__legal__disclaimer_scope__session}" />
+														<f:ajax render="properties:scopeGroup" />
+													</h:selectOneRadio>
+												</div>
+												<div class="connected-bottom connected-bottom-wrapper">
+													<h:selectOneRadio group="scopeRadio"
+														value="#{disclaimer.acceptanceScope.storageMode}"
+														immediate="true">
+														<f:selectItem itemValue="LOCAL"
+															itemLabel="#{msg.admin__legal__disclaimer_scope__local}" />
+														<f:ajax render="properties:scopeGroup" />
+													</h:selectOneRadio>
+													<h:panelGroup layout="block" id="scopeDurationInputGroup"
+														rendered="#{disclaimer.acceptanceScope.storageMode == 'LOCAL'}">
+														<div class="cms-module__option-control admin__form-input">
+															<h:inputText id="scopeDurationInput"
+																styleClass="form-control"
+																value="#{disclaimer.acceptanceScope.daysToLive}"
+																pt:data-input='number'>
+															</h:inputText>
+														</div>
+													</h:panelGroup>
+												</div>
+											</div>
+
+										</viewerForms:inputFormField>
+									</h:panelGroup>
+								</viewerForms:inputFormBlock>
+
+								<!-- SAVE DISCLAIMER -->
+								<div
+									class="row no-gutters justify-content-end admin__final-actions">
+									<h:commandButton class="btn btn--success" value="#{msg.save}"
+										action="#{disclaimerEditBean.save()}">
+									</h:commandButton>
+								</div>
+							</h:form>
+							<h:form>
+								<!-- DEACTIVATE TERMS OF USE + RESET STATUS ACCEPTED FOR USERS -->
+								<h2>#{msg.admin__legal__reset_disclaimer_consent__title}</h2>
+								<div class="admin__default-block -danger">
+
+									<div class="row">
+										<div class="col-12">
+											<p>#{msg.admin__legal__disclaimer_reset_consent__info}</p>
+											<div class="text-right">
+												<h:commandButton class="btn btn--danger"
+													value="#{msg.admin__legal__reset_cookie_banner_consent__action}"
+													onclick="if ( !confirm( &quot;#{msg.admin__legal__disclaimer_reset_consent__confirm}&quot; ) ) { return false };"
+													action="#{disclaimerEditBean.resetUserConsent()}">
+													<f:ajax render="@form :messages"></f:ajax>
+												</h:commandButton>
+											</div>
+										</div>
+									</div>
+								</div>
+							</h:form>
+						</div>
+					</div>
+				</div>
+			</h:panelGroup>
+		</f:view>
+	</ui:define>
+</ui:composition>
+

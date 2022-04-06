@@ -66,29 +66,12 @@ module.exports = function (grunt) {
 					],
 					compress: true,
 					sourceMap: true,
-          sourceMapURL: '/viewer/resources/css/dist/viewer.min.css.map',
+          			sourceMapURL: '/viewer/resources/css/dist/viewer.min.css.map',
 					outputSourceFiles: true,
 				},
 				files: {
 					'<%=src.cssDistFolder %><%=theme.name%>.min.css': '<%=src.lessDevFolder%>constructor.less'
 				}
-			}
-		},
-		kss: {
-			options: {
-				title: 'Goobi viewer Style Guide',
-				verbose: false,
-				builder: "./node_modules/michelangelo/kss_styleguide/custom-template/",
-				css: [
-					"../libs/bs/bootstrap.min.css",
-					"../libs/font-awesome.min.css",
-					"../dist/viewer.min.css",
-					"../dist/kss-reset.css"
-				]
-			},
-			dist: {
-				src: "./src/main/resources/META-INF/resources/resources/css/less/",
-				dest: "./src/main/resources/META-INF/resources/resources/css/styleguide/",
 			}
 		},
 		concat: {
