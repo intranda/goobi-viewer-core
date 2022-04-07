@@ -218,12 +218,6 @@ public class CitationLink {
                     this.value = SolrTools.getAsString(doc.get(field));
                 }
             }
-            //            if (StringUtils.isNotBlank(this.value) && !CitationLinkLevel.RECORD.equals(level) && StringUtils.isNotBlank(this.suffix)) {
-            //                this.value = this.value + this.suffix;
-            //                if (appendImageNumberToSuffix) {
-            //                    this.value += viewManager.getCurrentImageOrder() + this.suffix;
-            //                }
-            //            }
 
             if (StringUtils.isNotEmpty(pattern)) {
                 this.value = pattern.replace("{value}", this.value).replace("{page}", String.valueOf(viewManager.getCurrentImageOrder()));
