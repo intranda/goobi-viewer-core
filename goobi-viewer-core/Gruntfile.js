@@ -175,7 +175,7 @@ module.exports = function (grunt) {
 			},
 			riot: {
 				files: [
-					'<%=src.jsDevFolder %>tags**/*.tag'
+					'<%=src.jsDevFolder %>tags/**/*.tag'
 				],
 				tasks: ['riot', 'sync'],
 				options: {
@@ -210,7 +210,6 @@ module.exports = function (grunt) {
 	// ---------- LOAD TASKS ---------
   grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-less');
-	grunt.loadNpmTasks('grunt-kss');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-riot');
 	grunt.loadNpmTasks('grunt-contrib-watch');
@@ -231,12 +230,6 @@ module.exports = function (grunt) {
     // This runs all tasks including sync.
 	// $ grunt devsync
 	grunt.registerTask('devsync', ['concurrent:devsync']);
-	
-	// ----------
-    // styleguide task.
-    // This runs a tasks to create a css styleguide.
-	// $ grunt styleguide
-	grunt.registerTask('styleguide', ['kss']);
 	
 	// ----------
     // build task.
