@@ -949,16 +949,12 @@ public final class Configuration extends AbstractConfiguration {
             String level = sub.getString("[@for]");
             String label = sub.getString("[@label]");
             String field = sub.getString("[@field]");
-            String prefix = sub.getString("[@prefix]");
-            String suffix = sub.getString("[@suffix]");
+            String pattern = sub.getString("[@pattern]");
             boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
-            boolean appendImageNumberToSuffix = sub.getBoolean("[@appendImageNumberToSuffix]", false);
             try {
                 ret.add(new CitationLink(type, level, label).setField(field)
-                        .setPrefix(prefix)
-                        .setSuffix(suffix)
-                        .setTopstructValueFallback(topstructValueFallback)
-                        .setAppendImageNumberToSuffix(appendImageNumberToSuffix));
+                        .setPattern(pattern)
+                        .setTopstructValueFallback(topstructValueFallback));
             } catch (IllegalArgumentException e) {
                 logger.error(e.getMessage());
             }
@@ -1687,7 +1683,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field) {
         return isAdvancedSearchFieldHasAttribute(field, "untokenizeForPhraseSearch");
     }
-    
+
     /**
      * 
      * @param field
@@ -1706,7 +1702,7 @@ public final class Configuration extends AbstractConfiguration {
                 return subElement.getInt("[@displaySelectItemsThreshold]", AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD);
             }
         }
-        
+
         return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
     }
 
