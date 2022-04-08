@@ -188,7 +188,7 @@ public class CitationLink {
         }
 
         if (StringUtils.isEmpty(this.value)) {
-             logger.trace("Loading value: {}/{}", level, field);
+            // logger.trace("Loading value: {}/{}", level, field);
             String query = null;
             switch (level) {
                 case RECORD:
