@@ -183,12 +183,12 @@ public class CitationLink {
      * @should fall back to topstruct value correctly
      */
     public String getValue(ViewManager viewManager) throws IndexUnreachableException, PresentationException {
-        if (!CitationLinkType.URL.equals(type)) {
+        if (!CitationLinkType.URL.equals(type) || viewManager == null) {
             return null;
         }
 
         if (StringUtils.isEmpty(this.value)) {
-            // logger.trace("Loading value: {}/{}", level, field);
+             logger.trace("Loading value: {}/{}", level, field);
             String query = null;
             switch (level) {
                 case RECORD:
@@ -219,12 +219,13 @@ public class CitationLink {
                 }
             }
 
-            if (StringUtils.isNotEmpty(pattern)) {
-                this.value = pattern.replace("{value}", this.value).replace("{page}", String.valueOf(viewManager.getCurrentImageOrder()));
+            if (StringUtils.isNotEmpty(pattern) && this.value != null) {
+                this.value = pattern.replace("{value}", this.value)
+                        .replace("{page}", String.valueOf(viewManager.getCurrentImageOrder()));
             }
         }
 
-        return value;
+        return this.value;
     }
 
     /**
