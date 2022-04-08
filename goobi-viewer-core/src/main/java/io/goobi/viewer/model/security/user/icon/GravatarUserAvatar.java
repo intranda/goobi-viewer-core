@@ -15,13 +15,13 @@
  */
 package io.goobi.viewer.model.security.user.icon;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-
-import com.timgroup.jgravatar.Gravatar;
-import com.timgroup.jgravatar.GravatarDefaultImage;
-import com.timgroup.jgravatar.GravatarRating;
 
 /**
  * @author florian
@@ -29,26 +29,51 @@ import com.timgroup.jgravatar.GravatarRating;
  */
 public class GravatarUserAvatar implements UserAvatar {
 
+    public static final String DEFAULT_GRAVATAR_ICON = "";
+    public static final String DEFAULT_HTTP_404 = "404";
+    public static final String DEFAULT_MYSTERY_MAN = "mm";
+    public static final String DEFAULT_IDENTICON = "identicon";
+    public static final String DEFAULT_MONSTERID = "monsterid";
+    public static final String DEFAULT_WAVATAR = "wavatar";
+    public static final String DEFAULT_RETRO = "retro";
+    public static final String DEFAULT_BLANK = "blank";
+
     private final String email;
 
     public GravatarUserAvatar(String email) {
         this.email = email;
     }
-    
+
     @Override
     public String getIconUrl(int size, HttpServletRequest request) {
         return getGravatarUrl(size);
     }
-    
+
     private String getGravatarUrl(int size) {
         if (StringUtils.isNotEmpty(email)) {
-            Gravatar gravatar =
-                    new Gravatar().setSize(size).setRating(GravatarRating.GENERAL_AUDIENCES).setDefaultImage(GravatarDefaultImage.IDENTICON);
-            String url = gravatar.getUrl(email);
-            return url.replace("http:", "");
+            return "//www.gravatar.com/avatar/" + md5Hex(email) + "?rating=g&size=" + size + "&default=" + DEFAULT_IDENTICON;
         }
 
         return "//www.gravatar.com/avatar/";
     }
 
+    static String hex(byte[] array) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < array.length; ++i) {
+            sb.append(Integer.toHexString((array[i]
+                    & 0xFF) | 0x100).substring(1, 3));
+        }
+        return sb.toString();
+    }
+
+    static String md5Hex(String message) {
+        try {
+            MessageDigest md =
+                    MessageDigest.getInstance("MD5");
+            return hex(md.digest(message.getBytes("CP1252")));
+        } catch (NoSuchAlgorithmException e) {
+        } catch (UnsupportedEncodingException e) {
+        }
+        return null;
+    }
 }

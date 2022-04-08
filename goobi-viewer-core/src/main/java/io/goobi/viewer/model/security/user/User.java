@@ -158,7 +158,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     @Column(name = "avatar_type")
     @Enumerated(EnumType.STRING)
     private UserAvatarOption avatarType = UserAvatarOption.DEFAULT;
-    
+
     @Column(name = "local_avatar_updated", nullable = true)
     private Long localAvatarUpdated = null;
 
@@ -445,10 +445,10 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public List<UserGroup> getAllUserGroups() {
         try {
-        List<UserGroup> ret = getUserGroupsWithMembership();
-        ret.addAll(getUserGroupOwnerships());
-        return ret;
-        } catch(DAOException e) {
+            List<UserGroup> ret = getUserGroupsWithMembership();
+            ret.addAll(getUserGroupOwnerships());
+            return ret;
+        } catch (DAOException e) {
             logger.error("Error getting user groups for user " + this.id, e);
             return Collections.emptyList();
         }
@@ -692,32 +692,6 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public String getAvatarUrl(int size) {
         return getAvatarUrl(size, null);
-    }
-
-    /**
-     * <p>
-     * getGravatarUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated use {@link #getAvatarUrl()}
-     */
-    @Deprecated
-    public String getGravatarUrl() {
-        return getGravatarUrl(AVATAR_DEFAULT_SIZE);
-    }
-
-
-    /**
-     * Generates and returns a Gravatar url for the user's e-mail address.
-     *
-     * @param size a int.
-     * @return Gravatar URL
-     * @deprecated use {@link #getAvatarUrl(int)}
-     */
-    @Deprecated
-    public String getGravatarUrl(int size) {
-        return getAvatarUrl(size);
     }
 
     /**
@@ -1362,45 +1336,6 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * <p>
-     * isUseGravatar.
-     * </p>
-     *
-     * @return the useGravatar
-     * @deprecated decision of avatar type is handled within {@link #getAvatarUrl()}
-     */
-    @Deprecated
-    public boolean isUseGravatar() {
-        return UserAvatarOption.GRAVATAR == this.avatarType;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>useGravatar</code>.
-     * </p>
-     *
-     * @param useGravatar the useGravatar to set
-     */
-    @Deprecated
-    public void setUseGravatar(boolean useGravatar) {
-        this.avatarType = useGravatar ? UserAvatarOption.GRAVATAR : UserAvatarOption.DEFAULT;
-    }
-
-    //    /**
-    //     * @return the dummy
-    //     */
-    //    public boolean isDummy() {
-    //        return dummy;
-    //    }
-    //
-    //    /**
-    //     * @param dummy the dummy to set
-    //     */
-    //    public void setDummy(boolean dummy) {
-    //        this.dummy = dummy;
-    //    }
-
-    /**
      * 
      * @return true if user email address equals the configured anonymous user address; false otherwise
      */
@@ -1619,7 +1554,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public void backupFields() {
         //keep avatar update date of copy because a change in the avatar file is recorded in the copy
-        if(copy != null) {
+        if (copy != null) {
             this.setLocalAvatarUpdated(copy.getLocalAvatarUpdated());
         }
         copy = clone();
@@ -1726,7 +1661,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         deleteAvatarFile();
         UserAvatarResource.removeFromImageCache(destFile);
         try (InputStream initialStream = uploadedFile.getInputStream()) {
-            if(!Files.isDirectory(destFile.getParent())) {
+            if (!Files.isDirectory(destFile.getParent())) {
                 Files.createDirectories(destFile.getParent());
             }
             java.nio.file.Files.copy(
@@ -1738,7 +1673,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             logger.error("Error uploaded avatar file: {}", e.toString());
         }
     }
-    
+
     public void deleteAvatarFile() throws IOException {
         UserAvatarResource.getUserAvatarFile(getId()).ifPresent(file -> {
             try {
@@ -1749,14 +1684,14 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             }
         });
     }
-    
+
     /**
      * @return the localAvatarUpdated
      */
     public Long getLocalAvatarUpdated() {
         return localAvatarUpdated;
     }
-    
+
     /**
      * @param localAvatarUpdated the localAvatarUpdated to set
      */
@@ -1765,34 +1700,32 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     public String getBackendDisplayName() {
-        if(StringUtils.isAllBlank(this.nickName, this.firstName, this.lastName)) {
+        if (StringUtils.isAllBlank(this.nickName, this.firstName, this.lastName)) {
             return this.email;
-        } else {
-            String name = "";
-            if(StringUtils.isNotBlank(nickName)) {
-                name += (nickName + " - ");
-            }
-            if(StringUtils.isNotBlank(firstName)) {
-                name += (firstName + " ");
-            }
-            if(StringUtils.isNotBlank(lastName)) {
-                name += (lastName + " ");
-            }
-            name += "(" + email + ")";
-            return name;
         }
+        String name = "";
+        if (StringUtils.isNotBlank(nickName)) {
+            name += (nickName + " - ");
+        }
+        if (StringUtils.isNotBlank(firstName)) {
+            name += (firstName + " ");
+        }
+        if (StringUtils.isNotBlank(lastName)) {
+            name += (lastName + " ");
+        }
+        name += "(" + email + ")";
+        return name;
     }
 
     @Override
     public int compareTo(User other) {
-        if(StringUtils.isNoneBlank(this.email, other.email)) {            
+        if (StringUtils.isNoneBlank(this.email, other.email)) {
             return this.email.compareToIgnoreCase(other.email);
-        } else if(StringUtils.isAllBlank(this.email, other.email)) {
+        } else if (StringUtils.isAllBlank(this.email, other.email)) {
             return 0;
         } else {
             return StringUtils.isBlank(this.email) ? -1 : 1;
         }
     }
-    
-    
+
 }
