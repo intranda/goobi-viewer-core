@@ -22,6 +22,8 @@ import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author florian
@@ -29,50 +31,78 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class GravatarUserAvatar implements UserAvatar {
 
-    public static final String DEFAULT_GRAVATAR_ICON = "";
-    public static final String DEFAULT_HTTP_404 = "404";
-    public static final String DEFAULT_MYSTERY_MAN = "mm";
-    public static final String DEFAULT_IDENTICON = "identicon";
-    public static final String DEFAULT_MONSTERID = "monsterid";
-    public static final String DEFAULT_WAVATAR = "wavatar";
-    public static final String DEFAULT_RETRO = "retro";
-    public static final String DEFAULT_BLANK = "blank";
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(GravatarUserAvatar.class);
+
+    private static final String DEFAULT_GRAVATAR_ICON = "";
+    private static final String DEFAULT_HTTP_404 = "404";
+    private static final String DEFAULT_MYSTERY_MAN = "mm";
+    private static final String DEFAULT_IDENTICON = "identicon";
+    private static final String DEFAULT_MONSTERID = "monsterid";
+    private static final String DEFAULT_WAVATAR = "wavatar";
+    private static final String DEFAULT_RETRO = "retro";
+    private static final String DEFAULT_BLANK = "blank";
+
+    private static final String GRAVATAR_URL = "//www.gravatar.com/avatar/";
 
     private final String email;
 
+    /**
+     * 
+     * @param email
+     */
     public GravatarUserAvatar(String email) {
         this.email = email;
     }
 
+    /**
+     * 
+     */
     @Override
     public String getIconUrl(int size, HttpServletRequest request) {
         return getGravatarUrl(size);
     }
 
+    /**
+     * 
+     * @param size
+     * @return
+     */
     private String getGravatarUrl(int size) {
         if (StringUtils.isNotEmpty(email)) {
-            return "//www.gravatar.com/avatar/" + md5Hex(email) + "?rating=g&size=" + size + "&default=" + DEFAULT_IDENTICON;
+            return GRAVATAR_URL + md5Hex(email) + "?rating=g&size=" + size + "&default=" + DEFAULT_IDENTICON;
         }
 
-        return "//www.gravatar.com/avatar/";
+        return GRAVATAR_URL;
     }
 
+    /**
+     * 
+     * @param array
+     * @return
+     */
     static String hex(byte[] array) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < array.length; ++i) {
-            sb.append(Integer.toHexString((array[i]
-                    & 0xFF) | 0x100).substring(1, 3));
+            sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
         }
+
         return sb.toString();
     }
 
+    /**
+     * 
+     * @param message
+     * @return
+     */
     static String md5Hex(String message) {
         try {
-            MessageDigest md =
-                    MessageDigest.getInstance("MD5");
+            MessageDigest md = MessageDigest.getInstance("MD5");
             return hex(md.digest(message.getBytes("CP1252")));
         } catch (NoSuchAlgorithmException e) {
+            logger.error(e.getMessage());
         } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
         }
         return null;
     }

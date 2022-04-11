@@ -29,6 +29,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.search.SearchHitChildList;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -49,6 +52,8 @@ import io.goobi.viewer.model.search.SearchHit;
 @Path(ApiUrls.SEARCH)
 @ViewerRestServiceBinding
 public class SearchResultResource {
+    
+    private static final Logger logger = LoggerFactory.getLogger(SearchResultResource.class);
 
     @Context
     private HttpServletRequest servletRequest;
@@ -74,6 +79,7 @@ public class SearchResultResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public SearchHitChildList getTagsForPageJson(@PathParam("id") String hitId, @PathParam("numChildren") int numChildren)
             throws DAOException, PresentationException, IndexUnreachableException, IOException, ViewerConfigurationException {
+        // logger.trace("/search/hit/{}/{}/", hitId, numChildren);
         SearchBean searchBean = BeanUtils.getSearchBean();
         if (searchBean == null) {
             servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
@@ -89,6 +95,7 @@ public class SearchResultResource {
         if (searchHits != null) {
             for (SearchHit searchHit : searchHits) {
                 if (hitId.equals(Long.toString(searchHit.getBrowseElement().getIddoc()))) {
+                    // logger.trace("found: {}", hitId);
                     if (searchHit.getHitsPopulated() < numChildren) {
                         searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), searchHit.getHitsPopulated(), locale,
                                 servletRequest, BeanUtils.getImageDeliveryBean().getThumbs());
@@ -96,6 +103,7 @@ public class SearchResultResource {
                     Collections.sort(searchHit.getChildren());
                     SearchHitChildList searchHitChildren =
                             new SearchHitChildList(searchHit.getChildren(), searchHit.getHitsPopulated(), searchHit.isHasMoreChildren());
+                    // logger.trace("children: {}", searchHit.getChildren().size());
                     return searchHitChildren;
                 }
             }
