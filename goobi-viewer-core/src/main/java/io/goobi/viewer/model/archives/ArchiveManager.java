@@ -199,7 +199,7 @@ public class ArchiveManager {
         if (this.databaseState == DatabaseState.ARCHIVES_LOADED && this.archives.size() == 1) {
             return this.archives.keySet().stream().findFirst();
         }
-        
+
         return Optional.empty();
     }
 
@@ -213,7 +213,7 @@ public class ArchiveManager {
         if (resource == null || StringUtils.isBlank(entryIdentifier)) {
             return "archives/";
         }
-        
+
         return "archives/{database}/{filename}/?selected={identifier}#selected"
                 .replace("{database}", resource.getDatabaseId())
                 .replace("{filename}", resource.getResourceId())
@@ -284,16 +284,19 @@ public class ArchiveManager {
         ArchiveTree tree = archives.get(resource);
         if (tree != null) {
             ArchiveEntry entry = tree.getEntryById(identifier);
+            ArchiveEntry trueRoot = getTrueRoot(archives.get(resource));
             if (entry == null) {
-                //            return Collections.emptyList();
-                return Collections.singletonList(getTrueRoot(archives.get(resource)));
-            } else if (getTrueRoot(archives.get(resource)).equals(entry) || getTrueRoot(archives.get(resource)).equals(entry.getParentNode())) {
+                if (trueRoot == null) {
+                    Collections.emptyList();
+                }
+                return Collections.singletonList(trueRoot);
+            } else if (trueRoot != null && (trueRoot.equals(entry) || trueRoot.equals(entry.getParentNode()))) {
                 return Collections.singletonList(entry);
             } else {
                 return entry.getAncestors(false).stream().skip(1).collect(Collectors.toList());
             }
         }
-        
+
         return Collections.emptyList();
     }
 
@@ -308,7 +311,7 @@ public class ArchiveManager {
                     .orElse(null);
             return archive;
         }
-        
+
         return null;
     }
 
@@ -422,13 +425,13 @@ public class ArchiveManager {
         if (archiveNodeTypes != null) {
             return archiveNodeTypes.entrySet().stream().map(entry -> new NodeType(entry.getKey(), entry.getValue())).collect(Collectors.toList());
         }
-        
+
         return Collections.emptyList();
     }
 
     /**
-     * Checks the list of ead archives for updates. An update occurs if either the "lastModifiedDate" of an archive has changed since
-     * the last request, or if an archive was added or removed. In these cases, the list of records assiciated with an archive entry is updated as well
+     * Checks the list of ead archives for updates. An update occurs if either the "lastModifiedDate" of an archive has changed since the last
+     * request, or if an archive was added or removed. In these cases, the list of records assiciated with an archive entry is updated as well
      */
     public void updateArchiveList() {
         try {

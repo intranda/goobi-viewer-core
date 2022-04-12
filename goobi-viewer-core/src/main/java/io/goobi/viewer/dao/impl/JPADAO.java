@@ -184,7 +184,7 @@ public class JPADAO implements IDAO {
     @Override
     public EntityManager getEntityManager() {
         EntityManager em = getFactory().createEntityManager();
-//        em.setFlushMode(FlushModeType.COMMIT);
+        //        em.setFlushMode(FlushModeType.COMMIT);
         return em;
     }
 
@@ -4800,7 +4800,7 @@ public class JPADAO implements IDAO {
 
             if (StringUtils.isNotEmpty(sortField)) {
                 StringBuilder sbOrder = new StringBuilder();
-                sbOrder.append(" ORDER BY a.").append(sortField);
+                sbOrder.append(" ORDER BY a.:sortField");
                 if (descending) {
                     sbOrder.append(" DESC");
                 }
@@ -4808,6 +4808,7 @@ public class JPADAO implements IDAO {
             }
 
             Query q = em.createQuery(query);
+            q.setParameter("sortField", sortField);
 
             return q.getResultList();
         } finally {
@@ -5049,14 +5050,14 @@ public class JPADAO implements IDAO {
             String queryString = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
             if (StringUtils.isNotEmpty(sortField)) {
                 StringBuilder sbOrder = new StringBuilder();
-                sbOrder.append(" ORDER BY a.").append(sortField);
+                sbOrder.append(" ORDER BY a.:sortField");
                 if (descending) {
                     sbOrder.append(" DESC");
                 }
                 queryString += sbOrder.toString();
             }
 
-            Query query = em.createQuery(queryString).setParameter("userId", userId);
+            Query query = em.createQuery(queryString).setParameter("userId", userId).setParameter("sortField", sortField);
             if (maxResults != null) {
                 query.setMaxResults(maxResults);
             }
@@ -6025,7 +6026,7 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
+
     @Override
     public boolean saveDisclaimer(Disclaimer disclaimer) throws DAOException {
         preQuery();
@@ -6041,14 +6042,13 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
-            logger.error("Error saving disclaimer",e  );
+            logger.error("Error saving disclaimer", e);
             handleException(em);
             return false;
         } finally {
             close(em);
         }
     }
-    
 
     @Override
     public Disclaimer getDisclaimer() throws DAOException {
@@ -6077,7 +6077,8 @@ public class JPADAO implements IDAO {
         try {
             Query query =
                     em.createNativeQuery(
-                            "SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id=" + user.getId());
+                            "SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id = :userId")
+                            .setParameter("userId", user.getId());
             return (Long) query.getSingleResult();
         } finally {
             close(em);

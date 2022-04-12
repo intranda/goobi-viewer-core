@@ -386,7 +386,7 @@ public class AdminCommentBean implements Serializable {
      */
     public Long getCurrentCommentGroupId() {
         if (currentCommentGroup != null && currentCommentGroup.getId() != null) {
-            return Long.valueOf(currentCommentGroup.getId());
+            return currentCommentGroup.getId();
         }
 
         return null;
@@ -401,7 +401,7 @@ public class AdminCommentBean implements Serializable {
     public void setCurrentCommentGroupId(Long id) throws DAOException {
         logger.trace("setCurrentCommentGroupId: {}", id);
         try {
-            Long longId = Long.valueOf(id);
+            Long longId = id;
             if (ObjectUtils.notEqual(getCurrentCommentGroupId(), longId)) {
                 if (id != null) {
                     setCurrentCommentGroup(DataManager.getInstance().getDao().getCommentGroup(longId));
