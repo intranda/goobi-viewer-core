@@ -18,7 +18,6 @@ package io.goobi.viewer.model.archives;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,13 +40,12 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -169,7 +167,7 @@ public class ArchiveManager {
         return updated;
     }
 
-    private boolean isOutdated(ArchiveResource cachedResource, ArchiveResource currentResource) {
+    private static boolean isOutdated(ArchiveResource cachedResource, ArchiveResource currentResource) {
         if (cachedResource == null) {
             return true;
         } else if (currentResource == null) {
@@ -200,9 +198,9 @@ public class ArchiveManager {
     public Optional<ArchiveResource> getOnlyDatabaseResource() {
         if (this.databaseState == DatabaseState.ARCHIVES_LOADED && this.archives.size() == 1) {
             return this.archives.keySet().stream().findFirst();
-        } else {
-            return Optional.empty();
         }
+        
+        return Optional.empty();
     }
 
     public ArchiveResource loadArchiveForEntry(String identifier) {
@@ -214,12 +212,12 @@ public class ArchiveManager {
     public String getArchiveUrl(ArchiveResource resource, String entryIdentifier) {
         if (resource == null || StringUtils.isBlank(entryIdentifier)) {
             return "archives/";
-        } else {
-            return "archives/{database}/{filename}/?selected={identifier}#selected"
-                    .replace("{database}", resource.getDatabaseId())
-                    .replace("{filename}", resource.getResourceId())
-                    .replace("{identifier}", entryIdentifier);
         }
+        
+        return "archives/{database}/{filename}/?selected={identifier}#selected"
+                .replace("{database}", resource.getDatabaseId())
+                .replace("{filename}", resource.getResourceId())
+                .replace("{identifier}", entryIdentifier);
     }
 
     public DatabaseState getDatabaseState() {
@@ -294,9 +292,9 @@ public class ArchiveManager {
             } else {
                 return entry.getAncestors(false).stream().skip(1).collect(Collectors.toList());
             }
-        } else {
-            return Collections.emptyList();
         }
+        
+        return Collections.emptyList();
     }
 
     public ArchiveResource getArchive(String databaseId, String resourceId) {
@@ -309,9 +307,9 @@ public class ArchiveManager {
                     .findAny()
                     .orElse(null);
             return archive;
-        } else {
-            return null;
         }
+        
+        return null;
     }
 
     private ArchiveResource getArchiveForEntry(String identifier) {
@@ -320,7 +318,7 @@ public class ArchiveManager {
 
         try {
             String response = NetTools.getWebContentGET(requestUri.toString());
-            Document doc = new SAXBuilder().build(new StringReader(response));
+            Document doc = XmlTools.getSAXBuilder().build(new StringReader(response));
             String database = Optional.ofNullable(doc)
                     .map(Document::getRootElement)
                     .map(d -> d.getChild("record", null))
@@ -344,7 +342,7 @@ public class ArchiveManager {
      * 
      * @return actual root element of the document, even if it's not in the displayed tree
      */
-    private ArchiveEntry getTrueRoot(ArchiveTree tree) {
+    private static ArchiveEntry getTrueRoot(ArchiveTree tree) {
         if (tree == null) {
             return null;
         }
@@ -390,9 +388,8 @@ public class ArchiveManager {
                     resources.stream().filter(extResource -> extResource.getCombinedId().equals(resource.getCombinedId())).findAny().orElse(null);
             if (externalResource != null) {
                 return externalResource.getModifiedDate().isAfter(resource.getModifiedDate());
-            } else {
-                throw new BaseXException("Resource " + resource.getCombinedName() + " not found on basex server " + this.eadParser.getBasexUrl());
             }
+            throw new BaseXException("Resource " + resource.getCombinedName() + " not found on basex server " + this.eadParser.getBasexUrl());
         } catch (HTTPException e) {
             throw new IOException("BaseX server cannot be reached: " + e.toString());
         }
@@ -407,7 +404,7 @@ public class ArchiveManager {
         return loadTree(rootElement);
     }
 
-    private ArchiveTree loadTree(ArchiveEntry rootElement) {
+    private static ArchiveTree loadTree(ArchiveEntry rootElement) {
 
         ArchiveTree ret = new ArchiveTree();
         ret.generate(rootElement);
@@ -421,12 +418,12 @@ public class ArchiveManager {
 
     }
 
-    private List<NodeType> loadNodeTypes(Map<String, String> archiveNodeTypes) {
+    private static List<NodeType> loadNodeTypes(Map<String, String> archiveNodeTypes) {
         if (archiveNodeTypes != null) {
             return archiveNodeTypes.entrySet().stream().map(entry -> new NodeType(entry.getKey(), entry.getValue())).collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
         }
+        
+        return Collections.emptyList();
     }
 
     /**
