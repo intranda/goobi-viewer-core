@@ -251,7 +251,7 @@ public class CommentManager implements AnnotationLister<Comment> {
         List<String> allMotivations = new ArrayList<>();
         allMotivations.add(Motivation.COMMENTING);
         if (motivations != null) {
-            allMotivations.addAll(allMotivations);
+            allMotivations.addAll(motivations);
         }
         return lister.getAnnotations(firstIndex, items, textQuery, allMotivations, generators, creators, targetPi, targetPage, sortField,
                 sortDescending);
@@ -266,7 +266,7 @@ public class CommentManager implements AnnotationLister<Comment> {
         List<String> allMotivations = new ArrayList<>();
         allMotivations.add(Motivation.COMMENTING);
         if (motivations != null) {
-            allMotivations.addAll(allMotivations);
+            allMotivations.addAll(motivations);
         }
         return lister.getAnnotationCount(textQuery, allMotivations, generators, creators, targetPi, targetPage);
     }

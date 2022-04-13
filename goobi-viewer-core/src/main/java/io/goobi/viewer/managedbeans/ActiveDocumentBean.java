@@ -371,7 +371,7 @@ public class ActiveDocumentBean implements Serializable {
                     topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(topStructElement.getPi());
                     if (topDocumentIddoc == 0) {
                         logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?",
-                                viewManager.getPi());
+                                topStructElement.getPi());
                         reset();
                         throw new RecordNotFoundException(lastReceivedIdentifier);
                     }
