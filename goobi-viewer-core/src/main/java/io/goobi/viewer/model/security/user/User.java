@@ -104,7 +104,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     public static final int AVATAR_DEFAULT_SIZE = 140;
 
     private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/{id}";
-    private static final String URI_ID_REGEX = ".*/users/(\\d+)/?$";
+    private static final String URI_ID_REGEX = "/users/(\\d{1,19})/?$";
 
     @Transient
     private transient BCrypt bcrypt = new BCrypt();
@@ -1582,6 +1582,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      *
      * @param idAsURI a {@link java.net.URI} object.
      * @return a {@link java.lang.Long} object.
+     * @should extract id correctly
      */
     public static Long getId(URI idAsURI) {
         if (idAsURI == null) {
