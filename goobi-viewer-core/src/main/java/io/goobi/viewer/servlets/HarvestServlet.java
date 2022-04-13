@@ -210,10 +210,10 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             return;
                         }
                         Files.createDirectory(localTempFolder);
-                        identifier = FilenameUtils.getName(identifier); // Make sure identifier doesn't inject a path traversal (even though PIValidator has been applied already)
                         String fileName =
                                 identifier + "_cmspage_" + (fromDate != null ? DateTools.getMillisFromLocalDateTime(fromDate, true) : "-") + "-"
                                         + (toDate != null ? DateTools.getMillisFromLocalDateTime(toDate, true) : "-") + ".zip";
+                        fileName = FilenameUtils.getName(fileName); // Make sure identifier doesn't inject a path traversal
                         Path zipFile = Paths.get(localTempFolder.toAbsolutePath().toString(), fileName);
                         List<File> tempFiles = new ArrayList<>(pages.size() * 2);
                         for (CMSPage page : pages) {
