@@ -109,6 +109,7 @@ public class JPADAO implements IDAO {
     private static final String DEFAULT_PERSISTENCE_UNIT_NAME = "intranda_viewer_tomcat";
     static final String MULTIKEY_SEPARATOR = "_";
     static final String KEY_FIELD_SEPARATOR = "-";
+
     /**
      * EntityManagerFactory for the persistence context. Only build once at application startup
      */
@@ -4799,18 +4800,18 @@ public class JPADAO implements IDAO {
             String query = "SELECT a FROM CrowdsourcingAnnotation a";
 
             if (StringUtils.isNotEmpty(sortField)) {
+                if (!CrowdsourcingAnnotation.VALID_COLUMNS_FOR_ORDER_BY.contains(sortField)) {
+                    throw new IllegalArgumentException("Sorting field not allowed: " + sortField);
+                }
                 StringBuilder sbOrder = new StringBuilder();
-                sbOrder.append(" ORDER BY a.:sortField");
+                sbOrder.append(" ORDER BY a.").append(sortField);
                 if (descending) {
                     sbOrder.append(" DESC");
                 }
                 query += sbOrder.toString();
             }
 
-            Query q = em.createQuery(query);
-            q.setParameter("sortField", sortField);
-
-            return q.getResultList();
+            return em.createQuery(query).getResultList();
         } finally {
             close(em);
         }
@@ -5049,15 +5050,18 @@ public class JPADAO implements IDAO {
         try {
             String queryString = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
             if (StringUtils.isNotEmpty(sortField)) {
+                if (!CrowdsourcingAnnotation.VALID_COLUMNS_FOR_ORDER_BY.contains(sortField)) {
+                    throw new IllegalArgumentException("Sorting field not allowed: " + sortField);
+                }
                 StringBuilder sbOrder = new StringBuilder();
-                sbOrder.append(" ORDER BY a.:sortField");
+                sbOrder.append(" ORDER BY a").append(sortField);
                 if (descending) {
                     sbOrder.append(" DESC");
                 }
                 queryString += sbOrder.toString();
             }
 
-            Query query = em.createQuery(queryString).setParameter("userId", userId).setParameter("sortField", sortField);
+            Query query = em.createQuery(queryString).setParameter("userId", userId);
             if (maxResults != null) {
                 query.setMaxResults(maxResults);
             }
