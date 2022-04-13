@@ -5054,7 +5054,7 @@ public class JPADAO implements IDAO {
                     throw new IllegalArgumentException("Sorting field not allowed: " + sortField);
                 }
                 StringBuilder sbOrder = new StringBuilder();
-                sbOrder.append(" ORDER BY a").append(sortField);
+                sbOrder.append(" ORDER BY a.").append(sortField);
                 if (descending) {
                     sbOrder.append(" DESC");
                 }
