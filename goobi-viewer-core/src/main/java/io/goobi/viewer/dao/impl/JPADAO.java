@@ -43,6 +43,9 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.RollbackException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -4791,27 +4794,32 @@ public class JPADAO implements IDAO {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * {@inheritDoc}
+     * @should sort correctly
+     * @should throw IllegalArgumentException if sortField unknown
+     */
     @Override
     public List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean descending) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            String query = "SELECT a FROM CrowdsourcingAnnotation a";
-
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<CrowdsourcingAnnotation> cq = cb.createQuery(CrowdsourcingAnnotation.class);
+            Root<CrowdsourcingAnnotation> root = cq.from(CrowdsourcingAnnotation.class);
+            cq.select(root);
             if (StringUtils.isNotEmpty(sortField)) {
                 if (!CrowdsourcingAnnotation.VALID_COLUMNS_FOR_ORDER_BY.contains(sortField)) {
                     throw new IllegalArgumentException("Sorting field not allowed: " + sortField);
                 }
-                StringBuilder sbOrder = new StringBuilder();
-                sbOrder.append(" ORDER BY a.").append(sortField);
                 if (descending) {
-                    sbOrder.append(" DESC");
+                    cq.orderBy(cb.desc(root.get(sortField)));
+                } else {
+                    cq.orderBy(cb.asc(root.get(sortField)));
                 }
-                query += sbOrder.toString();
             }
 
-            return em.createQuery(query).getResultList();
+            return em.createQuery(cq).getResultList();
         } finally {
             close(em);
         }
@@ -5036,6 +5044,7 @@ public class JPADAO implements IDAO {
     /**
      * @see io.goobi.viewer.dao.IDAO#getAnnotationsForUser(java.lang.Long)
      * @should return correct rows
+     * @should throw IllegalArgumentException if sortField unknown
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -5048,20 +5057,22 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            String queryString = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<CrowdsourcingAnnotation> cq = cb.createQuery(CrowdsourcingAnnotation.class);
+            Root<CrowdsourcingAnnotation> root = cq.from(CrowdsourcingAnnotation.class);
+            cq.select(root).where(cb.or(cb.equal(root.get("creatorId"), userId), cb.equal(root.get("reviewerId"), userId)));
             if (StringUtils.isNotEmpty(sortField)) {
                 if (!CrowdsourcingAnnotation.VALID_COLUMNS_FOR_ORDER_BY.contains(sortField)) {
                     throw new IllegalArgumentException("Sorting field not allowed: " + sortField);
                 }
-                StringBuilder sbOrder = new StringBuilder();
-                sbOrder.append(" ORDER BY a.").append(sortField);
                 if (descending) {
-                    sbOrder.append(" DESC");
+                    cq.orderBy(cb.desc(root.get(sortField)));
+                } else {
+                    cq.orderBy(cb.asc(root.get(sortField)));
                 }
-                queryString += sbOrder.toString();
             }
 
-            Query query = em.createQuery(queryString).setParameter("userId", userId);
+            Query query = em.createQuery(cq);
             if (maxResults != null) {
                 query.setMaxResults(maxResults);
             }
