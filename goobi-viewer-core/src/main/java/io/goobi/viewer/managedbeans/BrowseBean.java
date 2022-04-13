@@ -527,7 +527,7 @@ public class BrowseBean implements Serializable {
                     numericalFilter = filter;
                     break;
                 default:
-                    if (filter.matches(".*[A-Z].*") && alphaFilter == null) {
+                    if (filter.matches("[A-ZÄÁÀÂÖÓÒÔÜÚÙÛÉÈÊ]{1}") && alphaFilter == null) {
                         alphaFilter = filter;
                     }
                     break;
