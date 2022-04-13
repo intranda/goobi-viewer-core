@@ -5108,6 +5108,9 @@ public class JPADAO implements IDAO {
                 StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CrowdsourcingAnnotation a");
                 StringBuilder order = new StringBuilder();
                 if (StringUtils.isNotEmpty(sortField)) {
+                    if (!CrowdsourcingAnnotation.VALID_COLUMNS_FOR_ORDER_BY.contains(sortField)) {
+                        throw new IllegalArgumentException("Sorting field not allowed: " + sortField);
+                    }
                     order.append(" ORDER BY a.").append(sortField);
                     if (descending) {
                         order.append(" DESC");

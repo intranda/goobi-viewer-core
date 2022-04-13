@@ -72,7 +72,7 @@ public class CmsCollectionsBean implements Serializable {
     private static final long serialVersionUID = -2862611194397865986L;
 
     private static final Logger logger = LoggerFactory.getLogger(CmsCollectionsBean.class);
-    private static final int MAX_IMAGES_PER_PAGE = 36;
+    // private static final int MAX_IMAGES_PER_PAGE = 36;
 
     @Inject
     CmsMediaBean cmsMediaBean;
@@ -550,7 +550,9 @@ public class CmsCollectionsBean implements Serializable {
             // Remove thumbnail data for whatever mode is not selected
             switch (getImageMode()) {
                 case NONE:
+                    getCurrentCollection().setRepresentativeWorkPI(null);
                     getCurrentCollection().setMediaItem(null);
+                    break;
                 case IMAGE:
                     getCurrentCollection().setRepresentativeWorkPI(null);
                     break;
@@ -726,7 +728,7 @@ public class CmsCollectionsBean implements Serializable {
                 this.currentCollection != null && this.originalCollection != null && !this.currentCollection.contentEquals(this.originalCollection);
         return dirty;
     }
-    
+
     public String getSearchUrl(CMSCollection collection) {
         String filter = collection.getSolrField() + ":" + collection.getSolrFieldValue();
         filter = StringTools.encodeUrl(filter);
