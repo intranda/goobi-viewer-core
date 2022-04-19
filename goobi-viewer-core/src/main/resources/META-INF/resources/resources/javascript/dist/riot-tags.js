@@ -3239,7 +3239,7 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
 
     this.amendStyle = function(styleConfig) {
     	let swiperConfig = styleConfig.swiperConfig;
-    	if(swiperConfig.pagination) {
+    	if(swiperConfig.pagination && !swiperConfig.pagination.el)  {
     		swiperConfig.pagination.el = this.refs.paginator;
     		this.showPaginator = true;
     	} else {
