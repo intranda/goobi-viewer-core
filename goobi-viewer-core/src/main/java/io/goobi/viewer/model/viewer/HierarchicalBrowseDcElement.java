@@ -269,5 +269,11 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
         return list;
 
     }
+    
+    public String getQuery() {
+        return "{field}:({name} {name}.*)"
+                .replace("{field}", getSortField())
+                .replace("{name}", getName());
+    }
 
 }

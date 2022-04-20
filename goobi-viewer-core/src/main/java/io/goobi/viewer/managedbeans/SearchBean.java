@@ -2880,5 +2880,10 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return ret;
     }
+    
+    public long getQueryResultCount(String query) throws IndexUnreachableException, PresentationException {
+        String finalQuery = SearchHelper.buildFinalQuery(query, null, true, false); 
+        return DataManager.getInstance().getSearchIndex().getHitCount(finalQuery);
+   }
 
 }
