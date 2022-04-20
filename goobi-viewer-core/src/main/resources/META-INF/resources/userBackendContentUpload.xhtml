@@ -1,0 +1,133 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/template.html">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('userContentUpload', false, true)}" />
+			<f:event type="preRenderView"
+				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.admin__user_profile, request.contextPath.concat('/user/'), 1)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.userComments, 2)}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="breadcrumbs">
+		<viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
+	</ui:define>
+
+	<ui:define name="content">
+		<div id="myActivity" class="page-wrapp">
+			<h:panelGroup rendered="#{userBean.loggedIn}">
+				<h1 >#{msg.userComments}</h1>
+
+				<div id="userComments" class="user-comments">
+					<h:form id="userCommentsForm" prependId="false">
+
+							<div class="admin__table-tools flex-wrap">
+								<!-- PAGINATOR -->
+								<div class="admin__table-paginator">
+									<viewerComponent:dataTablePaginator tableValues="#{userDataBean.lazyModelUploadJobs}" />
+								</div>
+							</div>
+
+
+							<!-- ALL USER UPLOAD JOBS TABLE -->
+							<div id="userUploadJobsTable" class="user-comments__table" role="grid" aria-label="#{msg.userComments}">
+
+								<!-- TITLE ROW -->
+								<div class="user-comments__table-title" role="row">
+								
+                                    <!-- DATE COL -->
+                                    <div class="user-comments__table-title-date" role="presentation">
+                                        <viewerComponent:sortingArrow filterType="dateCreated"
+                                            colHeading="#{msg.date}"
+                                            list="#{userDataBean.lazyModelUploadJobs}" />
+                                    </div>
+								
+									<!-- TARGET COL -->
+									<div class="user-comments__table-title-target" role="presentation">
+										<viewerComponent:sortingArrow filterType="targetPI_targetPageOrder"
+											colHeading="#{msg.record}"
+											list="#{userDataBean.lazyModelUploadJobs}" />
+									</div>
+
+									<!-- TEXT COL -->
+									<div class="user-comments__table-title-comment" role="presentation">
+										<viewerComponent:sortingArrow filterType="body"
+											colHeading="#{msg.Comment}"
+											list="#{userDataBean.lazyModelUploadJobs}" />
+									</div>
+
+
+								</div>
+
+								<div class="user-comments__table-body" role="presentation">
+
+									<!-- INDIVIDUAL COMMENTS ROWS -->
+									<ui:repeat var="job" value="#{userDataBean.lazyModelUploadJobs.paginatorList}">
+										<div class="user-comments__table-entry" role="row">
+											<!-- TARGET -->
+												<div class="user-comments__table-entry-label" role="cell">
+													<h:outputText styleClass="user-comments__table-entry-label-record" rendered="#{comment.targetPageOrder != null}" value="#{comment.targetPI}, #{msg.page} #{comment.targetPageOrder}" />
+													<a
+														href="#{navigationHelper.objectUrl}#{comment.targetLink}"
+														class="user-comments__table-entry-action-link" target="_blank"
+														aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{comment.targetPI})">#{msg.show}</a>	
+												</div>
+
+											<!-- TEXT -->
+											<div class="user-comments__table-entry-text" role="cell">
+												<!-- INFO: ID NAME CANT BE CHANGED WITHOUT LOSING FUNCTIONALITY -->
+												<div id="annotation_body_#{comment.id}" class="annotation__body__content_wrapper">
+													#{contentBean.cleanUpValue(comment.body.toString())}
+												</div>
+												<annotationBody annotationid="#{comment.id}"
+													contentid="annotation_body_#{comment.id}" role="presentation" />
+											</div>
+											<!-- DATE -->
+											<div class="user-comments__table-entry-date" role="cell">
+												<h:outputText value="#{comment.dateCreated}">
+													<f:converter converterId="localDateTimeConverter" />
+													<f:attribute name="pattern"
+														value="#{navigationHelper.dateTimePattern}" />
+												</h:outputText>
+											</div>
+										</div>
+									</ui:repeat>
+								</div>
+							</div>
+						<script>
+						$(document).ready(() => {
+							riot.mount( "annotationBody", {
+									currentlang: "#{navigationHelper.localeString}",
+									resturl: "#{configurationBean.restApiUrlV1}",
+							} );
+						});
+            </script>
+
+					</h:form>
+				</div>
+			</h:panelGroup>
+		</div>
+
+	</ui:define>
+
+	<ui:define name="sidebar">
+		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+			<widgetComponent:widget_browsing />
+		</h:panelGroup>
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+	</ui:define>
+
+
+</ui:composition>

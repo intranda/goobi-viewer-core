@@ -24,6 +24,9 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.download.DownloadJobTools;
+import io.goobi.viewer.model.job.download.PDFDownloadJob;
 
 public class DownloadJobToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 

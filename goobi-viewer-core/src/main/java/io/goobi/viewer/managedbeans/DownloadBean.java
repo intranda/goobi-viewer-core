@@ -38,9 +38,9 @@ import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.download.DownloadJob;
-import io.goobi.viewer.model.download.EPUBDownloadJob;
-import io.goobi.viewer.model.download.PDFDownloadJob;
+import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.download.EPUBDownloadJob;
+import io.goobi.viewer.model.job.download.PDFDownloadJob;
 
 /**
  * <p>

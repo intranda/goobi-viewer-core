@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.download;
+package io.goobi.viewer.model.job.download;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -39,6 +39,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.job.JobStatus;
 
 /**
  * <p>

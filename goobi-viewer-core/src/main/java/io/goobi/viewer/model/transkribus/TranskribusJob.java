@@ -36,6 +36,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
+import io.goobi.viewer.model.job.JobStatus;
+
 /**
  * <p>
  * TranskribusJob class.
@@ -48,27 +50,6 @@ import javax.persistence.Table;
 public class TranskribusJob implements Serializable {
 
     private static final long serialVersionUID = 2399740912703228096L;
-
-    public enum JobStatus {
-        WAITING,
-        READY,
-        ERROR;
-
-        public static JobStatus getByName(String name) {
-            if (name != null) {
-                switch (name) {
-                    case "WAITING":
-                        return WAITING;
-                    case "READY":
-                        return READY;
-                    case "ERROR":
-                        return ERROR;
-                }
-            }
-
-            return null;
-        }
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

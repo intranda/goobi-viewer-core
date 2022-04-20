@@ -130,6 +130,20 @@
                                         </c:forEach>
                                     </c:forEach>
                                     
+                                    <!-- CONTENT UPLOAD -->
+                                    <ui:fragment rendered="#{configurationBean.contentUploadEnabled}">
+                                        <li>
+                                            <div class="login-navigation__user-dropdown-item">
+                                                <div class="login-navigation__user-dropdown-item-icon">
+                                                    <i class="fa fa-sticky-note " aria-hidden="true"></i>
+                                                </div>
+                                                <div class="login-navigation__user-dropdown-item-string">
+                                                    <a href="#{navigationHelper.applicationUrl}user/upload/">#{msg.user__upload_content}</a>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ui:fragment>
+                                    
                                     <!-- USERDATA/PROFILE SETTINGS -->
                                     <li>
                                         <div class="login-navigation__user-dropdown-item">

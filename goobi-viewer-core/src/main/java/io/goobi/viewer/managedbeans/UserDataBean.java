@@ -28,7 +28,6 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.Query;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +49,7 @@ import io.goobi.viewer.model.annotation.serialization.SqlAnnotationLister;
 import io.goobi.viewer.model.annotation.serialization.SqlCommentLister;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserActivity;
@@ -70,6 +70,7 @@ public class UserDataBean implements Serializable {
 
     private TableDataProvider<PersistentAnnotation> lazyModelAnnotations;
     private TableDataProvider<PersistentAnnotation> lazyModelComments;
+    private TableDataProvider<UploadJob> lazyModelUploadJobs;
 
     /**
      * Required setter for ManagedProperty injection
@@ -82,7 +83,8 @@ public class UserDataBean implements Serializable {
 
     /**
      * Initialize all campaigns as lazily loaded list
-     * @throws DAOException 
+     * 
+     * @throws DAOException
      */
     @PostConstruct
     public void init() throws DAOException {
@@ -92,29 +94,67 @@ public class UserDataBean implements Serializable {
         if (lazyModelComments == null) {
             lazyModelComments = initLazyModel(new SqlCommentLister());
         }
+
+        if (lazyModelUploadJobs == null) {
+            lazyModelUploadJobs = new TableDataProvider<>(new TableDataSource<UploadJob>() {
+
+                @Override
+                public List<UploadJob> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+                    logger.trace("getEntries<UploadJob>, {}-{}", first, first + pageSize);
+                    try {
+
+                        if (userBean != null && userBean.getUser() != null) {
+                            return DataManager.getInstance().getDao().getUploadJobsForCreatorId(userBean.getUser().getId());
+                        }
+                    } catch (DAOException e) {
+                        logger.error(e.getMessage());
+                    }
+                    return Collections.emptyList();
+                }
+
+                @Override
+                public long getTotalNumberOfRecords(Map<String, String> filters) {
+                    try {
+                        return DataManager.getInstance().getDao().getUploadJobsForCreatorId(userBean.getUser().getId()).size();
+                    } catch (DAOException e) {
+                        logger.error(e.getMessage(), e);
+                        return 0;
+                    }
+                }
+
+                @Override
+                public void resetTotalNumberOfRecords() {
+                }
+            });
+            lazyModelUploadJobs.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+        }
     }
 
-
+    @SuppressWarnings("rawtypes")
     private TableDataProvider<PersistentAnnotation> initLazyModel(AnnotationLister lister) {
         TableDataProvider<PersistentAnnotation> model = new TableDataProvider<>(new TableDataSource<PersistentAnnotation>() {
 
             private Optional<Long> numCreatedPages = Optional.empty();
 
+            @SuppressWarnings("unchecked")
             @Override
             public List<PersistentAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
                     Map<String, String> filters) {
-                    if (StringUtils.isBlank(sortField)) {
-                        sortField = "id";
-                        sortOrder = SortOrder.DESCENDING;
-                    }
-                    List<PersistentAnnotation> ret = lister.getAnnotations(first, pageSize, filters.get("targetPI_body_campaign_dateCreated"), null, null, Collections.singletonList(userBean.getUser().getId()), null, null, sortField, sortOrder.asBoolean());
-                    return ret;
+                if (StringUtils.isBlank(sortField)) {
+                    sortField = "id";
+                    sortOrder = SortOrder.DESCENDING;
+                }
+                List<PersistentAnnotation> ret = lister.getAnnotations(first, pageSize, filters.get("targetPI_body_campaign_dateCreated"), null, null,
+                        Collections.singletonList(userBean.getUser().getId()), null, null, sortField, sortOrder.asBoolean());
+                return ret;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
                 if (!numCreatedPages.isPresent()) {
-                    numCreatedPages = Optional.ofNullable(lister.getAnnotationCount(filters.get("targetPI_body_campaign_dateCreated"), null, null, Collections.singletonList(userBean.getUser().getId()), null, null));
+                    numCreatedPages = Optional.ofNullable(lister.getAnnotationCount(filters.get("targetPI_body_campaign_dateCreated"), null, null,
+                            Collections.singletonList(userBean.getUser().getId()), null, null));
                 }
                 return numCreatedPages.orElse(0l);
             }
@@ -160,8 +200,6 @@ public class UserDataBean implements Serializable {
         return DataManager.getInstance().getDao().getAnnotationsForUserId(userBean.getUser().getId(), null, null, false);
     }
 
-
-
     /**
      * Deletes the given persistent user search.
      *
@@ -196,11 +234,24 @@ public class UserDataBean implements Serializable {
     public TableDataProvider<PersistentAnnotation> getLazyModelAnnotations() {
         return lazyModelAnnotations;
     }
-    
+
     public TableDataProvider<PersistentAnnotation> getLazyModelComments() {
         return lazyModelComments;
     }
 
+    /**
+     * @return the lazyModelUploadJobs
+     */
+    public TableDataProvider<UploadJob> getLazyModelUploadJobs() {
+        return lazyModelUploadJobs;
+    }
+
+    /**
+     * @param lazyModelUploadJobs the lazyModelUploadJobs to set
+     */
+    public void setLazyModelUploadJobs(TableDataProvider<UploadJob> lazyModelUploadJobs) {
+        this.lazyModelUploadJobs = lazyModelUploadJobs;
+    }
 
     public long getNumBookmarkLists(User user) throws DAOException {
         return DataManager.getInstance().getDao().getBookmarkListCount(user);
@@ -214,7 +265,7 @@ public class UserDataBean implements Serializable {
         // TODO filter via PI whitelist here?
         return DataManager.getInstance().getDao().getCommentCount(null, user, null);
     }
-    
+
     public long getNumAnnotations(User user) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
@@ -230,14 +281,14 @@ public class UserDataBean implements Serializable {
             return 0;
         }
         return getNumAnnotations(userBean.getUser());
-   }
-    
+    }
+
     public long getCommentCount() throws DAOException {
         if (userBean == null || userBean.getUser() == null) {
             return 0;
         }
         return getNumComments(userBean.getUser());
-   }
+    }
 
     /**
      * 

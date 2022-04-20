@@ -37,8 +37,8 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
-import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -3155,5 +3155,33 @@ public class ConfigurationTest extends AbstractTest {
     public void isFuzzySearchEnabled_shouldReturnCorrectValue() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("search.fuzzy[@enabled]", true);
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled());
+    }
+
+
+    /**
+     * @see Configuration#getWorkflowUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getWorkflowUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("https://example.com/goobi/rest/", DataManager.getInstance().getConfiguration().getWorkflowUrl());
+    }
+
+    /**
+     * @see Configuration#isContentUploadEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isContentUploadEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isContentUploadEnabled());
+    }
+    
+    /**
+     * @see Configuration#getContentUploadToken()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadToken_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("12345-GOOBI-WORKFLOW-REST-TOKEN-67890", DataManager.getInstance().getConfiguration().getContentUploadToken());
     }
 }

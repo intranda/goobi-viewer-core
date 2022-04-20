@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.download;
+package io.goobi.viewer.model.job.download;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,6 +77,7 @@ import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.job.JobStatus;
 
 /**
  * <p>
@@ -98,36 +99,6 @@ public abstract class DownloadJob implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(DownloadJob.class);
 
     private static final long serialVersionUID = -491389510147134159L;
-
-    public enum JobStatus {
-        WAITING,
-        READY,
-        ERROR,
-        UNDEFINED,
-        INITIALIZED,
-        DELETED;
-
-        public static JobStatus getByName(String name) {
-            if (name != null) {
-                switch (name) {
-                    case "WAITING":
-                        return WAITING;
-                    case "READY":
-                        return READY;
-                    case "ERROR":
-                        return ERROR;
-                    case "UNDEFINED":
-                        return JobStatus.UNDEFINED;
-                    case "INITIALIZED":
-                        return JobStatus.INITIALIZED;
-                    case "DELETED":
-                        return JobStatus.DELETED;
-                }
-            }
-
-            return null;
-        }
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -428,7 +399,7 @@ public abstract class DownloadJob implements Serializable {
      * notifyObservers.
      * </p>
      *
-     * @param status a {@link io.goobi.viewer.model.download.DownloadJob.JobStatus} object.
+     * @param status a {@link io.goobi.viewer.model.job.download.DownloadJob.JobStatus} object.
      * @param message a {@link java.lang.String} object.
      * @return a boolean.
      * @throws java.io.UnsupportedEncodingException if any.

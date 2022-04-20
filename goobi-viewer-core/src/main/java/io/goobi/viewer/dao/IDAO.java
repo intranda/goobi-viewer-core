@@ -53,7 +53,9 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
-import io.goobi.viewer.model.download.DownloadJob;
+import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.License;
@@ -64,7 +66,6 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
-import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
 
@@ -1191,7 +1192,7 @@ public interface IDAO {
      * </p>
      *
      * @param id a long.
-     * @return a {@link io.goobi.viewer.model.download.DownloadJob} object.
+     * @return a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public DownloadJob getDownloadJob(long id) throws DAOException;
@@ -1202,7 +1203,7 @@ public interface IDAO {
      * </p>
      *
      * @param identifier a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.download.DownloadJob} object.
+     * @return a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public DownloadJob getDownloadJobByIdentifier(String identifier) throws DAOException;
@@ -1215,7 +1216,7 @@ public interface IDAO {
      * @param type a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.download.DownloadJob} object.
+     * @return a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public DownloadJob getDownloadJobByMetadata(String type, String pi, String logId) throws DAOException;
@@ -1225,7 +1226,7 @@ public interface IDAO {
      * addDownloadJob.
      * </p>
      *
-     * @param downloadJob a {@link io.goobi.viewer.model.download.DownloadJob} object.
+     * @param downloadJob a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1236,7 +1237,7 @@ public interface IDAO {
      * updateDownloadJob.
      * </p>
      *
-     * @param downloadJob a {@link io.goobi.viewer.model.download.DownloadJob} object.
+     * @param downloadJob a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1247,11 +1248,54 @@ public interface IDAO {
      * deleteDownloadJob.
      * </p>
      *
-     * @param downloadJob a {@link io.goobi.viewer.model.download.DownloadJob} object.
+     * @param downloadJob a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteDownloadJob(DownloadJob downloadJob) throws DAOException;
+
+    // UploadJob
+    
+    /**
+     * 
+     * @param creatorId User id of the creator
+     * @return
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<UploadJob> getUploadJobsForCreatorId(Long creatorId) throws DAOException;
+
+    /**
+     * <p>
+     * addDownloadJob.
+     * </p>
+     *
+     * @param uploadJob a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean addUploadJob(UploadJob uploadJob) throws DAOException;
+
+    /**
+     * <p>
+     * updateDownloadJob.
+     * </p>
+     *
+     * @param uploadJob a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean updateUploadJob(UploadJob uploadJob) throws DAOException;
+
+    /**
+     * <p>
+     * deleteDownloadJob.
+     * </p>
+     *
+     * @param uploadJob a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean deleteUploadJob(UploadJob uploadJob) throws DAOException;
 
     // CMS
 
@@ -2408,13 +2452,14 @@ public interface IDAO {
 
     /**
      * Get the single stored {@link Disclaimer}. May return null if no disclaimer has been persisted yet
-     * @return  the disclaimer or null
+     * 
+     * @return the disclaimer or null
      * @throws DAOException
      */
     public Disclaimer getDisclaimer() throws DAOException;
 
     public boolean saveDisclaimer(Disclaimer disclaimer) throws DAOException;
-    
+
     public Long getNumRecordsWithComments(User user) throws DAOException;
 
     public List getNativeQueryResults(String query) throws DAOException;

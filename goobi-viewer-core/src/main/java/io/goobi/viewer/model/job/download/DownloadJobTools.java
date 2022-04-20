@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.download;
+package io.goobi.viewer.model.job.download;
 
 import java.io.File;
 import java.util.List;
@@ -105,7 +105,7 @@ public class DownloadJobTools {
      * @return The Download location file, ending with ".pdf" or ".epub" depending on type
      * @throws java.lang.IllegalArgumentException If the hash is null, empty or blank, or if the type is not "epub" or "pdf"
      */
-    protected static File getDownloadFileStatic(String identifier, String type, String extension) {
+    public static File getDownloadFileStatic(String identifier, String type, String extension) {
         if (StringUtils.isBlank(identifier)) {
             throw new IllegalArgumentException("Cannot determine download path for empty identifier");
         }

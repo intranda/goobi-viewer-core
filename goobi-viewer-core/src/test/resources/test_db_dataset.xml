@@ -228,6 +228,11 @@
     
     <download_job_observers download_job_id="1" observer="viewer@intranda.com" />
     
+    <upload_jobs upload_job_id="1" identifier="187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118b" pi="PI_1" title="foo" description="the foo"
+        status="WAITING" creator_id="1" date_created="2022-04-20 00:00:00" />
+    <upload_jobs upload_job_id="2" identifier="4b689c5bd24d94ef88bedfd39d8819f8ef3a3676c52dc4f6acb50c7e8f3aab05" pi="PI_2" title="bar" description="the bar"
+        status="READY" creator_id="1" date_created="2022-04-20 19:00:00" />
+    
     <cs_campaigns campaign_id="1" visibility="PUBLIC" date_created="2019-08-29 00:00:00.000000000"
         date_start="2019-08-29 00:00:00.000000000" date_end="2020-08-29 00:00:00.000000000"
         solr_query="+DC:varia" statistic_mode="RECORD" />

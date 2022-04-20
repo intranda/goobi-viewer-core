@@ -36,7 +36,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
-import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
+import io.goobi.viewer.model.job.JobStatus;
 
 /**
  * <p>
@@ -410,7 +410,7 @@ public class TranskribusUtils {
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
-    protected static TranskribusJob.JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId)
+    protected static JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId)
             throws ClientProtocolException, IOException, HTTPException {
         if (baseUrl == null) {
             throw new IllegalArgumentException("baseUrl may not be null");
