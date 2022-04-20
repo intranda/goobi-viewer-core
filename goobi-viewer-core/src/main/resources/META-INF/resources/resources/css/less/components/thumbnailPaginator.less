@@ -1,21 +1,64 @@
 /* ==============================================================
-   Thumbnail Paginator
-   style declarations for thumbnailPaginator.xhtml
+   Thumbnail paginator
+   Style declarations for thumbnailPaginator.xhtml
    ==============================================================*/
+
 /* THUMBNAIL PAGINATOR */
 
 .thumbnail-paginator {
-	display:flex;
-	gap:5px;
+	display: flex;
+	gap: 15px;
+	&__item {
+		/* force items to be equal width */
+		flex: 1 0 0;
+		text-align: center;
+		overflow: hidden;
+		&.-activePage {
+			pointer-events: none;
+		}
+	}
+	&__link {
+		&:hover,
+		&:active,
+		&:focus {
+			text-decoration: none;
+		}
+	}
+	&__link-text {
+		margin-top: 1rem;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	    display: -webkit-box;
+	   -webkit-line-clamp: 3;
+	           line-clamp: 3; 
+	   -webkit-box-orient: vertical;
+	}
+	&__image {
+		background-size: cover;
+		height: 240px;
+	}
 }
 
+/* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.thumbnail-paginator {
+		&__item {
+			&.-activePage {
+				.thumbnail-paginator__image {
+				}
+			}
+		}
+		&__image {
+			height: 160px;
+		}
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}

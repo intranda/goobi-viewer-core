@@ -22,11 +22,11 @@
 			<ui:repeat var="order"
 				value="#{navigationHelper.getRange(cc.attrs.currentPageOrder - cc.attrs.range, cc.attrs.currentPageOrder + cc.attrs.range)}">
 				<ui:param name="page" value="#{activeDocumentBean.viewManager.getPage(order).orElse(null)}"></ui:param>
-				<div class="thumbnail-paginator__item" style="flex-basis: #{100/(cc.attrs.range*2+1)}%">
+				<div class="thumbnail-paginator__item #{order == cc.attrs.currentPageOrder ? '-activePage' : ''}">
 					<ui:fragment rendered="#{page != null}">
-						<h:outputLink value="#{activeDocumentBean.getPageUrl(order)}">
-							<img src="#{page.getImageUrl(cc.attrs.imageSize)}" />
-							<label>#{page.order}:#{page.orderLabel}</label>
+						<h:outputLink styleClass="thumbnail-paginator__link" value="#{activeDocumentBean.getPageUrl(order)}">
+							<div class="thumbnail-paginator__image" style="background-image: url('#{page.getImageUrl(cc.attrs.imageSize)}')" />
+							<div class="thumbnail-paginator__link-text">#{page.order}:#{page.orderLabel}</div>
 						</h:outputLink>
 					</ui:fragment>
 				</div>
