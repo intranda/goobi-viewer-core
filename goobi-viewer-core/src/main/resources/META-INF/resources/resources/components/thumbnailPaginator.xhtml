@@ -26,6 +26,7 @@
 					<ui:fragment rendered="#{page != null}">
 						<h:outputLink value="#{activeDocumentBean.getPageUrl(order)}">
 							<img src="#{page.getImageUrl(cc.attrs.imageSize)}" />
+							<label>#{page.order}:#{page.orderLabel}</label>
 						</h:outputLink>
 					</ui:fragment>
 				</div>
