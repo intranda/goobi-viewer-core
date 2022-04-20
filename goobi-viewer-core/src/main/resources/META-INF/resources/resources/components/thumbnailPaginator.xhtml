@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:o="http://omnifaces.org/ui"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface />
+
+	<composite:interface>
+		<composite:attribute name="currentPageOrder" required="true"
+			type="java.lang.Integer" />
+		<composite:attribute name="range" required="false" default="2"
+			type="java.lang.Integer" />
+			<composite:attribute name="imageSize" required="false" default="200"
+			type="java.lang.Integer" />
+	</composite:interface>
+
+	<composite:implementation>
+		<div class="thumbnail-paginator">
+			<ui:repeat var="order"
+				value="#{navigationHelper.getRange(cc.attrs.currentPageOrder - cc.attrs.range, cc.attrs.currentPageOrder + cc.attrs.range)}">
+				<ui:param name="page" value="#{activeDocumentBean.viewManager.getPage(order).orElse(null)}"></ui:param>
+				<div class="thumbnail-paginator__item" style="flex-basis: #{100/(cc.attrs.range*2+1)}%">
+					<ui:fragment rendered="#{page != null}">
+						<h:outputLink value="#{activeDocumentBean.getPageUrl(order)}">
+							<img src="#{page.getImageUrl(cc.attrs.imageSize)}" />
+						</h:outputLink>
+					</ui:fragment>
+				</div>
+			</ui:repeat>
+		</div>
+
+	</composite:implementation>
+</ui:composition>

@@ -1148,7 +1148,7 @@ public class ActiveDocumentBean implements Serializable {
      * @should return correct range in double page mode if currently showing two pages
      * @should return correct range in double page mode if currently showing one page
      */
-    public String getPageUrl(int step) throws IndexUnreachableException, DAOException {
+    public String getPageUrlRelativeToCurrentPage(int step) throws IndexUnreachableException, DAOException {
         // logger.trace("getPageUrl: {}", step);
         if (viewManager == null) {
             return getPageUrl(imageToShow);
@@ -1208,6 +1208,10 @@ public class ActiveDocumentBean implements Serializable {
 
         return getPageUrl(number + "-" + (number + 1));
     }
+    
+    public String getPageUrl(int order) throws IndexUnreachableException {
+        return getPageUrl(Integer.toString(order));
+    }
 
     /**
      * <p>
@@ -1220,7 +1224,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      */
     public String getPreviousPageUrl(int step) throws IndexUnreachableException, DAOException {
-        return getPageUrl(step * -1);
+        return getPageUrlRelativeToCurrentPage(step * -1);
     }
 
     /**
@@ -1234,7 +1238,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      */
     public String getNextPageUrl(int step) throws IndexUnreachableException, DAOException {
-        return getPageUrl(step);
+        return getPageUrlRelativeToCurrentPage(step);
     }
 
     /**
