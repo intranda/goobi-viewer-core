@@ -219,11 +219,13 @@ public class ViewManager implements Serializable {
         this.mainMimeType = mainMimeType;
         logger.trace("mainMimeType: {}", mainMimeType);
 
-        String archiveId = getArchiveEntryIdentifier();
-        if (StringUtils.isNotBlank(archiveId)) {
-            DataManager.getInstance().getArchiveManager().updateArchiveList();
-            this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
-            this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
+        if (DataManager.getInstance().getConfiguration().isArchivesEnabled()) {
+            String archiveId = getArchiveEntryIdentifier();
+            if (StringUtils.isNotBlank(archiveId)) {
+                DataManager.getInstance().getArchiveManager().updateArchiveList();
+                this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
+                this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
+            }
         }
     }
 

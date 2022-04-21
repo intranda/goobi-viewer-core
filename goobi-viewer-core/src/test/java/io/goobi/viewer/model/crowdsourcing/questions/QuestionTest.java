@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.crowdsourcing.questions;
 
+import java.net.URI;
 import java.util.Locale;
 
 import org.junit.After;
@@ -88,6 +89,26 @@ public class QuestionTest extends AbstractDatabaseEnabledTest {
             e.printStackTrace();
             Assert.fail(e.toString());
         }
+    }
+
+    /**
+     * @see Question#getCampaignId(URI)
+     * @verifies extract id correctly
+     */
+    @Test
+    public void getCampaignId_shouldExtractIdCorrectly() throws Exception {
+        Assert.assertEquals(Long.valueOf(1234567890L),
+                Question.getCampaignId(new URI("https://example.com/viewer/crowdsourcing/campaigns/1234567890/questions/9876543210/")));
+    }
+
+    /**
+     * @see Question#getQuestionId(URI)
+     * @verifies extract id correctly
+     */
+    @Test
+    public void getQuestionId_shouldExtractIdCorrectly() throws Exception {
+        Assert.assertEquals(Long.valueOf(9876543210L),
+                Question.getQuestionId(new URI("https://example.com/viewer/crowdsourcing/campaigns/1234567890/questions/9876543210/")));
     }
 
 }

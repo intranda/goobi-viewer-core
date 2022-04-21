@@ -99,7 +99,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             }
 
             try {
-                if( cause instanceof AjaxResponseException) {
+                if (cause instanceof AjaxResponseException) {
                     FacesContext facesContext = FacesContext.getCurrentInstance();
                     ExternalContext externalContext = facesContext.getExternalContext();
                     externalContext.setResponseStatus(500);
@@ -109,7 +109,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                         externalContext.getResponseOutputWriter().write(cause.getMessage());
                     } catch (IOException e) {
                         logger.error("Error writing response ", e);
-                    } finally {                        
+                    } finally {
                         facesContext.responseComplete();
                     }
                 } else if (t instanceof ViewExpiredException) {
@@ -119,8 +119,13 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     redirect("pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId());
                 } else if (t instanceof RecordNotFoundException || isCausedByExceptionType(t, RecordNotFoundException.class.getName())
                         || (t instanceof PrettyException && t.getMessage().contains(RecordNotFoundException.class.getSimpleName()))) {
-                    String pi =
-                            t.getMessage().substring(t.getMessage().indexOf("RecordNotFoundException: ")).replace("RecordNotFoundException: ", "");
+                    String pi = "";
+                    int index = t.getMessage().indexOf("RecordNotFoundException: ");
+                    if (index >= 0) {
+                        pi = t.getMessage()
+                                .substring(t.getMessage().indexOf("RecordNotFoundException: "))
+                                .replace("RecordNotFoundException: ", "");
+                    }
                     String msg = ViewerResourceBundle.getTranslation("errRecordNotFoundMsg", null).replace("{0}", pi);
                     handleError(msg, "recordNotFound");
 
@@ -324,7 +329,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
         return false;
     }
-    
+
     private static Throwable getCause(Throwable t) {
         Throwable cause = t;
         while (cause.getCause() != null) {

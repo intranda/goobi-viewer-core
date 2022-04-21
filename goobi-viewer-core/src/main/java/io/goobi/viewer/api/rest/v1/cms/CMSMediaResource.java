@@ -56,6 +56,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -105,7 +106,6 @@ public class CMSMediaResource {
     protected HttpServletRequest servletRequest;
     @Context
     protected HttpServletResponse servletResponse;
-    
 
     /**
      * <p>
@@ -192,13 +192,13 @@ public class CMSMediaResource {
         }
         throw new ContentNotFoundException("File " + path + " not found in file system");
     }
-    
+
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_SVG)
     @Produces("image/svg+xml")
     @CORSBinding
     public static StreamingOutput getSvgContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
-            throws ContentNotFoundException, DAOException {
+            throws ContentNotFoundException {
         String decFilename = StringTools.decodeUrl(filename);
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -217,13 +217,13 @@ public class CMSMediaResource {
         }
         throw new ContentNotFoundException("File " + path + " not found in file system");
     }
-    
+
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_ICO)
     @Produces("image/x-icon")
     @CORSBinding
     public static StreamingOutput getIcoContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
-            throws ContentNotFoundException, DAOException {
+            throws ContentNotFoundException {
         String decFilename = StringTools.decodeUrl(filename);
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -242,19 +242,21 @@ public class CMSMediaResource {
         }
         throw new ContentNotFoundException("File " + path + " not found in file system");
     }
-    
+
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
-    public String serveVideoContent(@PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, WebApplicationException {
+    public String serveVideoContent(@PathParam("filename") String filename)
+            throws PresentationException, IndexUnreachableException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         Path file = cmsMediaFolder.resolve(StringTools.decodeUrl(filename));
         return serveMediaContent("video", file);
     }
-    
+
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
-    public String serveAudioContent(@PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, WebApplicationException {
+    public String serveAudioContent(@PathParam("filename") String filename)
+            throws PresentationException, IndexUnreachableException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         Path file = cmsMediaFolder.resolve(StringTools.decodeUrl(filename));
@@ -281,8 +283,9 @@ public class CMSMediaResource {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         Path path = Paths.get(cmsMediaFolder.toAbsolutePath().toString(), decFilename);
+        
         try {
-            if (Files.isRegularFile(path)) {
+            if (Files.isRegularFile(path) && FileUtils.directoryContains(cmsMediaFolder.toFile(), path.toFile())) {
                 String encoding = "windows-1252";
                 String ret = FileTools.getStringFromFile(path.toFile(), encoding, StringTools.DEFAULT_ENCODING);
                 return StringTools.renameIncompatibleCSSClasses(ret);
@@ -439,7 +442,8 @@ public class CMSMediaResource {
      * @param item
      */
     public static void removeFromImageCache(CMSMediaItem item) {
-        String identifier = DataManager.getInstance().getConfiguration().getCmsMediaFolder() + "_" + item.getFileName().replace(".", "-").replaceAll("\\s", "");
+        String identifier =
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder() + "_" + item.getFileName().replace(".", "-").replaceAll("\\s", "");
         CacheUtils.deleteFromCache(identifier, true, true);
     }
 
@@ -589,7 +593,7 @@ public class CMSMediaResource {
         }
 
     }
-    
+
     private String serveMediaContent(String type, Path file) throws PresentationException, IndexUnreachableException, WebApplicationException {
         String mimeType = type + "/" + FilenameUtils.getExtension(file.getFileName().toString());
 

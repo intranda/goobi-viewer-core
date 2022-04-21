@@ -43,6 +43,9 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.RollbackException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -109,6 +112,7 @@ public class JPADAO implements IDAO {
     private static final String DEFAULT_PERSISTENCE_UNIT_NAME = "intranda_viewer_tomcat";
     static final String MULTIKEY_SEPARATOR = "_";
     static final String KEY_FIELD_SEPARATOR = "-";
+
     /**
      * EntityManagerFactory for the persistence context. Only build once at application startup
      */
@@ -184,7 +188,7 @@ public class JPADAO implements IDAO {
     @Override
     public EntityManager getEntityManager() {
         EntityManager em = getFactory().createEntityManager();
-//        em.setFlushMode(FlushModeType.COMMIT);
+        //        em.setFlushMode(FlushModeType.COMMIT);
         return em;
     }
 
@@ -4790,26 +4794,32 @@ public class JPADAO implements IDAO {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * {@inheritDoc}
+     * @should sort correctly
+     * @should throw IllegalArgumentException if sortField unknown
+     */
     @Override
     public List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean descending) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            String query = "SELECT a FROM CrowdsourcingAnnotation a";
-
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<CrowdsourcingAnnotation> cq = cb.createQuery(CrowdsourcingAnnotation.class);
+            Root<CrowdsourcingAnnotation> root = cq.from(CrowdsourcingAnnotation.class);
+            cq.select(root);
             if (StringUtils.isNotEmpty(sortField)) {
-                StringBuilder sbOrder = new StringBuilder();
-                sbOrder.append(" ORDER BY a.").append(sortField);
-                if (descending) {
-                    sbOrder.append(" DESC");
+                if (!CrowdsourcingAnnotation.VALID_COLUMNS_FOR_ORDER_BY.contains(sortField)) {
+                    throw new IllegalArgumentException("Sorting field not allowed: " + sortField);
                 }
-                query += sbOrder.toString();
+                if (descending) {
+                    cq.orderBy(cb.desc(root.get(sortField)));
+                } else {
+                    cq.orderBy(cb.asc(root.get(sortField)));
+                }
             }
 
-            Query q = em.createQuery(query);
-
-            return q.getResultList();
+            return em.createQuery(cq).getResultList();
         } finally {
             close(em);
         }
@@ -5034,6 +5044,7 @@ public class JPADAO implements IDAO {
     /**
      * @see io.goobi.viewer.dao.IDAO#getAnnotationsForUser(java.lang.Long)
      * @should return correct rows
+     * @should throw IllegalArgumentException if sortField unknown
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -5046,17 +5057,22 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            String queryString = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<CrowdsourcingAnnotation> cq = cb.createQuery(CrowdsourcingAnnotation.class);
+            Root<CrowdsourcingAnnotation> root = cq.from(CrowdsourcingAnnotation.class);
+            cq.select(root).where(cb.or(cb.equal(root.get("creatorId"), userId), cb.equal(root.get("reviewerId"), userId)));
             if (StringUtils.isNotEmpty(sortField)) {
-                StringBuilder sbOrder = new StringBuilder();
-                sbOrder.append(" ORDER BY a.").append(sortField);
-                if (descending) {
-                    sbOrder.append(" DESC");
+                if (!CrowdsourcingAnnotation.VALID_COLUMNS_FOR_ORDER_BY.contains(sortField)) {
+                    throw new IllegalArgumentException("Sorting field not allowed: " + sortField);
                 }
-                queryString += sbOrder.toString();
+                if (descending) {
+                    cq.orderBy(cb.desc(root.get(sortField)));
+                } else {
+                    cq.orderBy(cb.asc(root.get(sortField)));
+                }
             }
 
-            Query query = em.createQuery(queryString).setParameter("userId", userId);
+            Query query = em.createQuery(cq);
             if (maxResults != null) {
                 query.setMaxResults(maxResults);
             }
@@ -5092,6 +5108,9 @@ public class JPADAO implements IDAO {
                 StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CrowdsourcingAnnotation a");
                 StringBuilder order = new StringBuilder();
                 if (StringUtils.isNotEmpty(sortField)) {
+                    if (!CrowdsourcingAnnotation.VALID_COLUMNS_FOR_ORDER_BY.contains(sortField)) {
+                        throw new IllegalArgumentException("Sorting field not allowed: " + sortField);
+                    }
                     order.append(" ORDER BY a.").append(sortField);
                     if (descending) {
                         order.append(" DESC");
@@ -6025,7 +6044,7 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
+
     @Override
     public boolean saveDisclaimer(Disclaimer disclaimer) throws DAOException {
         preQuery();
@@ -6041,14 +6060,13 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
-            logger.error("Error saving disclaimer",e  );
+            logger.error("Error saving disclaimer", e);
             handleException(em);
             return false;
         } finally {
             close(em);
         }
     }
-    
 
     @Override
     public Disclaimer getDisclaimer() throws DAOException {
@@ -6077,7 +6095,8 @@ public class JPADAO implements IDAO {
         try {
             Query query =
                     em.createNativeQuery(
-                            "SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id=" + user.getId());
+                            "SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id = :userId")
+                            .setParameter("userId", user.getId());
             return (Long) query.getSingleResult();
         } finally {
             close(em);

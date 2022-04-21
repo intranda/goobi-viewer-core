@@ -646,6 +646,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                         proximitySearchDistance, thumbnailHandler);
                         // Skip grouped metadata child hits that have no additional (unique) metadata to display
                         if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty()) {
+                            // TODO This will result in an infinite loading animation if all child hits are skipped
                             continue;
                         }
                         if (!DocType.UGC.equals(docType)) {

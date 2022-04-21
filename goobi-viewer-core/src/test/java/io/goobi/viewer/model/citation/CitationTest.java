@@ -63,6 +63,6 @@ public class CitationTest extends AbstractTest {
         Citation cit = new Citation("id", cpw.getCitationProcessor("apa"), cpw.getCitationItemDataProvider(), CSLType.BOOK, fields);
         String s = cit.getCitationString("text");
         Assert.assertNotNull(s);
-        Assert.assertTrue(s.equals("Zahn, T. (2017-04-11). Thrawn."));
+        Assert.assertTrue(s, s.equals("Zahn, T. (2017-04-11). Thrawn."));
     }
 }

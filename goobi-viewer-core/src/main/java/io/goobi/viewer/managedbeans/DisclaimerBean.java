@@ -148,7 +148,7 @@ public class DisclaimerBean implements Serializable {
                         json.put("lastEdited", disclaimer.getRequiresConsentAfter().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
                         json.put("storage", scope.getStorageMode().toString().toLowerCase());
                         json.put("daysToLive", scope.getDaysToLive());
-                        json.put("disclaimerText", disclaimer.getText().getText(navigationHelper.getLocale()));
+                        json.put("disclaimerText", disclaimer.getText().getTextOrDefault(navigationHelper.getLocale(), navigationHelper.getDefaultLocale()));
                         navigationHelper.getSessionId().ifPresent(id -> {
                             json.put("sessionId", id);
                         });

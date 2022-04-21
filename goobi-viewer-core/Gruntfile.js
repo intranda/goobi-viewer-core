@@ -74,23 +74,6 @@ module.exports = function (grunt) {
 				}
 			}
 		},
-		kss: {
-			options: {
-				title: 'Goobi viewer Style Guide',
-				verbose: false,
-				builder: "./node_modules/michelangelo/kss_styleguide/custom-template/",
-				css: [
-					"../libs/bs/bootstrap.min.css",
-					"../libs/font-awesome.min.css",
-					"../dist/viewer.min.css",
-					"../dist/kss-reset.css"
-				]
-			},
-			dist: {
-				src: "./src/main/resources/META-INF/resources/resources/css/less/",
-				dest: "./src/main/resources/META-INF/resources/resources/css/styleguide/",
-			}
-		},
 		concat: {
 			options: {
 				banner: banner,
@@ -194,7 +177,7 @@ module.exports = function (grunt) {
 			},
 			riot: {
 				files: [
-					'<%=src.jsDevFolder %>tags**/*.tag'
+					'<%=src.jsDevFolder %>tags/**/*.tag'
 				],
 				tasks: ['riot', 'sync'],
 				options: {
@@ -229,7 +212,6 @@ module.exports = function (grunt) {
 	// ---------- LOAD TASKS ---------
   grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-less');
-	grunt.loadNpmTasks('grunt-kss');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-riot');
 	grunt.loadNpmTasks('grunt-contrib-watch');
@@ -250,12 +232,6 @@ module.exports = function (grunt) {
     // This runs all tasks including sync.
 	// $ grunt devsync
 	grunt.registerTask('devsync', ['concurrent:devsync']);
-	
-	// ----------
-    // styleguide task.
-    // This runs a tasks to create a css styleguide.
-	// $ grunt styleguide
-	grunt.registerTask('styleguide', ['kss']);
 	
 	// ----------
     // build task.

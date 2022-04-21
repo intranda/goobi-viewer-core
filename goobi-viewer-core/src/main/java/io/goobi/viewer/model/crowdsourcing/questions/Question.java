@@ -83,7 +83,7 @@ public class Question {
     
     private static final String URI_ID_TEMPLATE =
             DataManager.getInstance().getConfiguration().getRestApiUrl() + "crowdsourcing/campaigns/{campaignId}/questions/{questionId}";
-    private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/questions/(\\d+)/?$";
+    private static final String URI_ID_REGEX = "/crowdsourcing/campaigns/(\\d{1,19})/questions/(\\d{1,19})/?$";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -383,6 +383,7 @@ public class Question {
      *
      * @param idAsURI a {@link java.net.URI} object.
      * @return a {@link java.lang.Long} object.
+     * @should extract id correctly
      */
     public static Long getQuestionId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
@@ -399,6 +400,7 @@ public class Question {
      *
      * @param idAsURI a {@link java.net.URI} object.
      * @return a {@link java.lang.Long} object.
+     * @should extract id correctly
      */
     public static Long getCampaignId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());

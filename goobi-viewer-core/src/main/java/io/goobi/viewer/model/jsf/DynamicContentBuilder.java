@@ -62,22 +62,22 @@ public class DynamicContentBuilder {
         UIComponent composite = null;
         switch (content.getType()) {
             case GEOMAP:
-                String id = (String)content.getAttributes().get("geoMapId");
+                String id = (String) content.getAttributes().get("geoMapId");
                 try {
                     if (id != null && id.matches("\\d+")) {
                         GeoMap map = DataManager.getInstance().getDao().getGeoMap(Long.parseLong(id));
                         if (map != null) {
                             composite = loadCompositeComponent(parent, content.getComponentFilename(), "components");
-                            if(composite != null) {
-                            composite.getAttributes().put("geoMap", map);
-                            //if query param linkTarget is given, open links from map in that target,
-                            //otherwise open them in a new tab
-                            String linkTarget = (String)content.getAttributes().get("linkTarget");
-                            if(StringUtils.isNotBlank(linkTarget)) {
-                                composite.getAttributes().put("linkTarget", linkTarget);
-                            } else {
-                                composite.getAttributes().put("linkTarget", "_blank");
-                            }
+                            if (composite != null) {
+                                composite.getAttributes().put("geoMap", map);
+                                //if query param linkTarget is given, open links from map in that target,
+                                //otherwise open them in a new tab
+                                String linkTarget = (String) content.getAttributes().get("linkTarget");
+                                if (StringUtils.isNotBlank(linkTarget)) {
+                                    composite.getAttributes().put("linkTarget", linkTarget);
+                                } else {
+                                    composite.getAttributes().put("linkTarget", "_blank");
+                                }
                             }
                         } else {
                             logger.error("Cannot build GeoMap content. No map found with id = " + id);
@@ -90,20 +90,20 @@ public class DynamicContentBuilder {
                 }
                 break;
             case SLIDER:
-                Long sliderId = (Long)content.getAttributes().get("sliderId");
+                Long sliderId = (Long) content.getAttributes().get("sliderId");
                 try {
                     if (sliderId != null) {
                         CMSSlider slider = DataManager.getInstance().getDao().getSlider(sliderId);
                         if (slider != null) {
-                            composite = loadCompositeComponent(parent, content.getComponentFilename() , "components");
-                            if(composite != null) {
-                            composite.getAttributes().put("slider", slider);
-                            String linkTarget = (String)content.getAttributes().get("linkTarget");
-                            if(StringUtils.isNotBlank(linkTarget)) {
-                                composite.getAttributes().put("linkTarget", linkTarget);
-                            } else {
-                                composite.getAttributes().put("linkTarget", "_blank");
-                            }
+                            composite = loadCompositeComponent(parent, content.getComponentFilename(), "components");
+                            if (composite != null) {
+                                composite.getAttributes().put("slider", slider);
+                                String linkTarget = (String) content.getAttributes().get("linkTarget");
+                                if (StringUtils.isNotBlank(linkTarget)) {
+                                    composite.getAttributes().put("linkTarget", linkTarget);
+                                } else {
+                                    composite.getAttributes().put("linkTarget", "_blank");
+                                }
                             }
                         } else {
                             logger.error("Cannot build content. No item found with id = " + sliderId);
@@ -117,10 +117,12 @@ public class DynamicContentBuilder {
                 break;
             case WIDGET:
                 composite = loadCompositeComponent(parent, content.getComponentFilename(), "components/widgets");
-                for (String attribute : content.getAttributes().keySet()) {
-                    composite.getAttributes().put(attribute, content.getAttributes().get(attribute));
+                if (composite != null) {
+                    for (String attribute : content.getAttributes().keySet()) {
+                        composite.getAttributes().put(attribute, content.getAttributes().get(attribute));
+                    }
                 }
-                
+
         }
         if (composite != null) {
             composite.setId(content.getId());
@@ -135,7 +137,7 @@ public class DynamicContentBuilder {
      */
     private UIComponent loadCompositeComponent(UIComponent parent, String name, String library) {
         Resource componentResource = context.getApplication().getResourceHandler().createResource(name, library);
-        if(componentResource ==  null) {
+        if (componentResource == null) {
             return null;
         }
         UIComponent composite = application.createComponent(context, componentResource);
@@ -155,10 +157,10 @@ public class DynamicContentBuilder {
         }
         return composite;
     }
-    
+
     private UIComponent createTag(String name, Map<String, String> attributes) {
         UIComponent component = new UIComponentBase() {
-            
+
             @Override
             public void encodeBegin(FacesContext context) throws IOException {
                 ResponseWriter out = context.getResponseWriter();
@@ -174,7 +176,7 @@ public class DynamicContentBuilder {
                 ResponseWriter out = context.getResponseWriter();
                 out.endElement(name);
             }
-            
+
             @Override
             public String getFamily() {
                 return null;
@@ -182,7 +184,7 @@ public class DynamicContentBuilder {
         };
         return component;
     }
-    
+
     /**
      * @param content
      * @param headGroup
@@ -192,12 +194,12 @@ public class DynamicContentBuilder {
         UIComponent component = null;
         switch (content.getType()) {
             case GEOMAP:
-                String id = (String)content.getAttributes().get("geoMapId");
+                String id = (String) content.getAttributes().get("geoMapId");
                 try {
                     if (id != null && id.matches("\\d+")) {
                         GeoMap map = DataManager.getInstance().getDao().getGeoMap(Long.parseLong(id));
                         if (map != null) {
-                            
+
                             Map<String, String> attributes = new LinkedHashMap<>();
                             attributes.put("rel", "alternate");
                             attributes.put("type", "application/json+oembed");
@@ -205,7 +207,7 @@ public class DynamicContentBuilder {
                             attributes.put("title", "Goobi viewer oEmbed Profile");
                             component = createTag("link", attributes);
                             parent.getChildren().add(component);
-                            
+
                         } else {
                             logger.error("Cannot build GeoMap content. No map found with id = " + id);
                         }
@@ -219,16 +221,16 @@ public class DynamicContentBuilder {
         }
         return Optional.ofNullable(component);
     }
-    
-    public DynamicContent createContent(String id, DynamicContentType type, Map<String, Object> attributes ) {
-            DynamicContent content = new DynamicContent(type, getFilenameForType(type));
-            content.setId(id);
-            content.setAttributes(attributes);
-            return content;
+
+    public DynamicContent createContent(String id, DynamicContentType type, Map<String, Object> attributes) {
+        DynamicContent content = new DynamicContent(type, getFilenameForType(type));
+        content.setId(id);
+        content.setAttributes(attributes);
+        return content;
     }
 
     public static String getFilenameForType(DynamicContentType type) {
-        switch(type) {
+        switch (type) {
             case GEOMAP:
                 return "geoMap.xhtml";
             case SLIDER:

@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
@@ -2052,5 +2054,10 @@ public class NavigationHelper implements Serializable {
             json.put(key, translation);
         }
         return json.toString();
+    }
+    
+    public List<Integer> getRange(long from, long to) {
+        List<Integer> range = IntStream.range((int)from, (int)to+1).boxed().collect(Collectors.toList());
+        return range;
     }
 }

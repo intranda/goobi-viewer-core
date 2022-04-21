@@ -72,7 +72,7 @@ const depsPathsJS = [
     cwd: 'node_modules/jquery-ui-dist/',
     src: ['LICENSE.txt', 'jquery-ui.min.js'], 
     flatten: true,
-    dest:`${jsLibsDir}jqueryUI/1.12.1`
+    dest:`${jsLibsDir}jqueryUi/`
   },
 
   { // LEAFLET
@@ -312,6 +312,17 @@ const depsPathsCSS = [
     ], 
     flatten: false,
     dest:`${cssLibsDir}`
+  },
+
+   { // JQUERY UI
+    expand: true,
+    cwd: 'node_modules/jquery-ui-dist/',
+    src: [
+      'jquery-ui.min.css',
+      'jquery-ui.structure.min.css'
+    ], 
+    flatten: false,
+    dest:`${cssLibsDir}jQueryUi/`
   },
 
   { // LEAFLET

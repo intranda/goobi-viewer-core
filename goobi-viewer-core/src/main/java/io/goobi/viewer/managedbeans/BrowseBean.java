@@ -527,7 +527,7 @@ public class BrowseBean implements Serializable {
                     numericalFilter = filter;
                     break;
                 default:
-                    if (filter.matches(".*[A-Z].*") && alphaFilter == null) {
+                    if (filter.matches("[A-ZÄÁÀÂÖÓÒÔÜÚÙÛÉÈÊ]{1}") && alphaFilter == null) {
                         alphaFilter = filter;
                     }
                     break;
@@ -1051,5 +1051,12 @@ public class BrowseBean implements Serializable {
         }
 
         return null;
+    }
+    
+    public long getRecordCount(String collectionField, String collectionName) {
+        CollectionView view = this.getOrCreateCollection(collectionField);
+        return Optional.ofNullable(view.getCollectionElement(collectionName))
+        .map(e -> e.getNumberOfVolumes())
+        .orElse(0l);
     }
 }

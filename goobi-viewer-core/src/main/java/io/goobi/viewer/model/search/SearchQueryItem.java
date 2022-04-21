@@ -73,7 +73,7 @@ public class SearchQueryItem implements Serializable {
     private String value;
     private String value2;
     private Locale locale;
-    private volatile boolean displaySelectItems = false;
+    volatile boolean displaySelectItems = false;
 
     /**
      * Empty constructor
@@ -374,6 +374,9 @@ public class SearchQueryItem implements Serializable {
      * <p>
      * toggleDisplaySelectItems.
      * </p>
+     * @should set displaySelectItems false if searching in all fields
+     * @should set displaySelectItems true if value count below threshold
+     *  @should set displaySelectItems false if value count above threshold
      */
     protected void toggleDisplaySelectItems() {
         if (field == null) {

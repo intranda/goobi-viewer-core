@@ -2939,10 +2939,8 @@ public class ConfigurationTest extends AbstractTest {
             Assert.assertEquals(CitationLinkLevel.RECORD, link.getLevel());
             Assert.assertEquals("LABEL_URN", link.getLabel());
             Assert.assertEquals("URN", link.getField());
-            Assert.assertEquals("https://nbn-resolving.org/", link.getPrefix());
-            Assert.assertEquals("/", link.getSuffix());
+            Assert.assertEquals("https://nbn-resolving.org/{value}/", link.getPattern());
             Assert.assertTrue(link.isTopstructValueFallback());
-            Assert.assertTrue(link.isAppendImageNumberToSuffix());
         }
         {
             CitationLink link = result.get(1);

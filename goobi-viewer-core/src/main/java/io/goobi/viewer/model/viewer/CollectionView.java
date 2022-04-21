@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -1182,5 +1183,20 @@ public class CollectionView {
      */
     public int getDisplayNumberOfVolumesLevel() {
         return displayNumberOfVolumesLevel;
+    }
+    
+    public HierarchicalBrowseDcElement getCollectionElement(String name) {
+        return this.completeCollectionList.stream()
+        .filter(e -> e.getName().equals(name))
+        .findAny()
+        .orElse(null);
+    }
+    
+    public HierarchicalBrowseDcElement getBaseElement() {
+        if(StringUtils.isNotBlank(this.getBaseElementName())) {
+            return getCollectionElement(getBaseElementName());
+        } else {
+            return null;
+        }
     }
 }

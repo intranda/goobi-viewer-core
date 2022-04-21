@@ -1501,6 +1501,7 @@ public final class SearchHelper {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return correct values via json response
      */
     public static List<String> getFacetValues(String query, String facetFieldName, String facetPrefix, int facetMinCount, Map<String, String> params)
             throws PresentationException, IndexUnreachableException {

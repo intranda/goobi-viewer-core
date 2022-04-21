@@ -23,14 +23,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrTools;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * 
@@ -94,10 +93,8 @@ public class CitationLink {
     private final String label;
     private String field;
     private String value;
-    private String prefix;
-    private String suffix;
+    private String pattern;
     private boolean topstructValueFallback = false;
-    private boolean appendImageNumberToSuffix = false;
 
     /**
      * 
@@ -145,12 +142,7 @@ public class CitationLink {
             }
         }
 
-        StringBuilder sb = new StringBuilder();
-        if (prefix != null) {
-            sb.append(prefix);
-        }
-        sb.append(getValue(viewManager));
-        return sb.toString();
+        return getValue(viewManager);
     }
 
     /**
@@ -191,7 +183,7 @@ public class CitationLink {
      * @should fall back to topstruct value correctly
      */
     public String getValue(ViewManager viewManager) throws IndexUnreachableException, PresentationException {
-        if (!CitationLinkType.URL.equals(type)) {
+        if (!CitationLinkType.URL.equals(type) || viewManager == null) {
             return null;
         }
 
@@ -226,12 +218,14 @@ public class CitationLink {
                     this.value = SolrTools.getAsString(doc.get(field));
                 }
             }
-            if(StringUtils.isNotBlank(this.value) && !CitationLinkLevel.RECORD.equals(level) && StringUtils.isNotBlank(this.suffix)) {
-                this.value = this.value + this.suffix + viewManager.getCurrentImageOrder();
+
+            if (StringUtils.isNotEmpty(pattern) && this.value != null) {
+                this.value = pattern.replace("{value}", this.value)
+                        .replace("{page}", String.valueOf(viewManager.getCurrentImageOrder()));
             }
         }
 
-        return value;
+        return this.value;
     }
 
     /**
@@ -244,34 +238,18 @@ public class CitationLink {
     }
 
     /**
-     * @return the prefix
+     * @return the pattern
      */
-    public String getPrefix() {
-        return prefix;
+    public String getPattern() {
+        return pattern;
     }
 
     /**
-     * @param prefix the prefix to set
+     * @param pattern the pattern to set
      * @return this
      */
-    public CitationLink setPrefix(String prefix) {
-        this.prefix = prefix;
-        return this;
-    }
-
-    /**
-     * @return the suffix
-     */
-    public String getSuffix() {
-        return suffix;
-    }
-
-    /**
-     * @param suffix the suffix to set
-     * @return this
-     */
-    public CitationLink setSuffix(String suffix) {
-        this.suffix = suffix;
+    public CitationLink setPattern(String pattern) {
+        this.pattern = pattern;
         return this;
     }
 
@@ -288,22 +266,6 @@ public class CitationLink {
      */
     public CitationLink setTopstructValueFallback(boolean topstructValueFallback) {
         this.topstructValueFallback = topstructValueFallback;
-        return this;
-    }
-
-    /**
-     * @return the appendImageNumberToSuffix
-     */
-    public boolean isAppendImageNumberToSuffix() {
-        return appendImageNumberToSuffix;
-    }
-
-    /**
-     * @param appendImageNumberToSuffix the appendImageNumberToSuffix to set
-     * @return this
-     */
-    public CitationLink setAppendImageNumberToSuffix(boolean appendImageNumberToSuffix) {
-        this.appendImageNumberToSuffix = appendImageNumberToSuffix;
         return this;
     }
 

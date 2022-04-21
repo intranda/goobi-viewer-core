@@ -287,7 +287,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         String query = "*:*";
         
         String string = DataManager.getInstance()
-        .getSearchIndex().getHeatMap("WKT_COORDS", world, query, 1);
+        .getSearchIndex().getHeatMap("WKT_COORDS", world, query, "", 1);
         assertNotNull(string);
         JSONObject json = new JSONObject(string);
         

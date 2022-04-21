@@ -121,6 +121,9 @@
 			color: @red;
 		}
 		&:focus {}
+		&.-noLeftPad {
+			padding-left: 0;
+		}
 	}
 	.-textlink {
 		color: initial;
@@ -515,9 +518,9 @@
 	&__translations-not-translated,
 	&__translations-partially-translated,
 	&__translations-fully-translated {
+		display: flex;
 		position: relative;
 		word-wrap: break-word;
-		padding: 0.5rem 1rem;
 		border-top: 1px solid #ccc;
 		border-left: 1px solid #ccc;
 		border-right: 1px solid #ccc;
@@ -525,6 +528,9 @@
 			font-size: 1.4rem;
 			display: block;
 			color: #444;
+			flex-grow: 1;
+			text-align: left;
+			padding: 0.5rem 1rem;
 			&:hover,
 			&:active,
 			&:focus {
@@ -1784,6 +1790,9 @@
 		&.-isDisabled {
 			opacity: 0.4;	
 		}
+	}
+	&__comment_greyed_out {
+		opacity: 0.35;
 	}
 	// BASIC STRUCTURES
 	&__content-wrapper {
