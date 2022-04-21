@@ -94,7 +94,7 @@
 				      			}
 				      		},
 				      		heatmap: {
-				      			showSearchResultsHeatmap: true,
+				      			showSearchResultsHeatmap: false,
 				      			heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
 				      			featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
 				      			mainQuery: "BOOL_WKT_COORDS:*",
@@ -123,7 +123,8 @@
 				      	}
 					    
 					    let facetMap = new viewerJS.GeoMapFacet(config);
-				    	facetMap.init({
+				    	let features = #{searchBean.getHitsLocations()};
+				    	facetMap.init(features, {
 	                            zoom: 1,
 	                            center: [0,0] //long, lat
                         	})

@@ -2410,18 +2410,19 @@ this.on("mount", function() {
 	this.geoMap = this.initMap();
 	this.drawLayer = this.initDrawLayer(this.geoMap);
     if(this.opts.area) {
-    	initArea(this.drawLayer, this.opts.area);
+    	this.initArea(this.drawLayer, this.opts.area);
     }
 	if(!this.opts.inactive) {
 	    this.initGeocoder(this.geoMap);
 	    this.drawnItems = this.initMapDraw(this.geoMap, this.drawLayer);
 	}
-
 	this.hitsLayer = this.initHitsLayer(this.geoMap);
 	if(this.opts.toggleFeatures) {
 		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
 	}
-	this.heatmap = this.initHeatmap(this.hitsLayer)
+	if(this.opts.heatmap?.showSearchResultsHeatmap) {
+		this.heatmap = this.initHeatmap(this.hitsLayer)
+	}
 });
 
 this.initMap = function() {
@@ -2573,7 +2574,9 @@ this.initMapDraw = function(geomap, drawLayer) {
 
 this.onLayerDeleted = function(e) {
     if(this.searchLayer) {
-        this.drawnItems.removeLayer(this.searchLayer);
+        if(this.drawnItems) {
+        	this.drawnItems.removeLayer(this.searchLayer);
+        }
         this.searchLayer = undefined;
     }
     this.notifyFeatureSet(undefined);
@@ -2593,11 +2596,14 @@ this.onLayerEdited = function(e) {
 }.bind(this)
 
 this.onLayerDrawn = function(e) {
-
-    this.searchLayer = e.layer;
-	this.drawnItems.addLayer(e.layer);
-	this.searchLayer.editing.enable();
-	this.setSearchArea(this.searchLayer);
+    if(e.layer) {
+	    this.searchLayer = e.layer;
+		if(this.drawnItems) {
+	    	this.drawnItems.addLayer(e.layer);
+		}
+		this.searchLayer.editing.enable();
+		this.setSearchArea(this.searchLayer);
+    }
 }.bind(this)
 
 this.setSearchArea = function(layer) {
@@ -2684,9 +2690,8 @@ this.getType = function(layer) {
 
 this.initHitsLayer = function(map) {
 	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer)
-
+	hitsLayer.init(this.opts.features, false);
 	hitsLayer.onFeatureClick.subscribe(f => {
-		console.log("Clicked on feature ", f);
 		if(f.properties && f.properties.link) {
 			$(this.opts.search.loader).show();
 			window.location.assign(f.properties.link);

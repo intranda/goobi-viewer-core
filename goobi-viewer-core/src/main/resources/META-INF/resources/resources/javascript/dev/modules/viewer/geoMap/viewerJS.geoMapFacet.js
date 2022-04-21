@@ -12,14 +12,7 @@
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with this
- * program. If not, see <http://www.gnu.org/licenses/>.
- * 
- * Display a map with geospatial facetting results
- * GeoJson coordinates are always [lng, lat]
- * 
- * @version 3.4.0
+ * heatmapheat
  * @module viewerJS.geoMapFacet
  * @requires jQuery
  */
@@ -89,13 +82,16 @@ var viewerJS = ( function ( viewer ) {
 	}
 
 
-	viewer.GeoMapFacet.prototype.init = function ( view ) {
+	viewer.GeoMapFacet.prototype.init = function ( features, view ) {
 		this.area = this.getArea( this.config.areaString );
-		this.geoMap.init(view)
+		this.features = features;
+		this.geoMap.init(view, features);
 
 		this.drawLayer = this.initDrawLayer();
 		this.hitsLayer = this.initHitsLayer();
-		this.heatmap = this.initHeatmap();
+		if(this.config.heatmap.showSearchResultsHeatmap) {
+			this.heatmap = this.initHeatmap();
+		}
 
 
 		this.config.buttons.$toggleMarkers.on("click", () => {
@@ -198,6 +194,7 @@ var viewerJS = ( function ( viewer ) {
 				toggleFeatures: this.config.buttons.$toggleMarkersEditMode.get(0),
 				search_enabled: this.config.editMode.enableAddressSearch,
 				search_placeholder: this.config.editMode.addressSearchPlaceholder,
+				heatmap: this.config.heatmap,
 				onFeatureSelect: area => {
 					//console.log("Set facetting area", area);
 					sessionStorage.setItem("geoFacet", JSON.stringify(area));

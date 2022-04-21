@@ -488,7 +488,8 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.featureGroup.prototype.setVisible = function(visible) {
-	    if(visible && !this.isVisible()) {
+        console.log("set Visible ", visible, this);
+        if(visible && !this.isVisible()) {
 	    	this.geoMap.map.addLayer(this.layer);
 	    } else if(!visible) {
 	    	this.geoMap.map.removeLayer(this.layer);

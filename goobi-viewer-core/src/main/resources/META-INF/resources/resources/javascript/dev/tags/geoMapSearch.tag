@@ -17,18 +17,19 @@ this.on("mount", function() {
 	this.geoMap = this.initMap();
 	this.drawLayer = this.initDrawLayer(this.geoMap);
     if(this.opts.area) {
-    	initArea(this.drawLayer, this.opts.area);
-    }
+    	this.initArea(this.drawLayer, this.opts.area);
+    } 
 	if(!this.opts.inactive) { 
 	    this.initGeocoder(this.geoMap);
 	    this.drawnItems = this.initMapDraw(this.geoMap, this.drawLayer);
 	}
-	
 	this.hitsLayer = this.initHitsLayer(this.geoMap);
 	if(this.opts.toggleFeatures) {   
 		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
 	}
-	this.heatmap = this.initHeatmap(this.hitsLayer)
+	if(this.opts.heatmap?.showSearchResultsHeatmap) {	    
+		this.heatmap = this.initHeatmap(this.hitsLayer)
+	}
 }); 
 
 initMap() {
@@ -181,7 +182,9 @@ initMapDraw(geomap, drawLayer) {
 
 onLayerDeleted(e) {
     if(this.searchLayer) {
-        this.drawnItems.removeLayer(this.searchLayer);
+        if(this.drawnItems) {
+        	this.drawnItems.removeLayer(this.searchLayer);
+        }
         this.searchLayer = undefined;
     }
     this.notifyFeatureSet(undefined);
@@ -201,11 +204,14 @@ onLayerEdited(e) {
 }
 
 onLayerDrawn(e) {
-    //console.log("layer drawn ", e);
-    this.searchLayer = e.layer;
-	this.drawnItems.addLayer(e.layer);
-	this.searchLayer.editing.enable();
-	this.setSearchArea(this.searchLayer);
+    if(e.layer) {        
+	    this.searchLayer = e.layer;
+		if(this.drawnItems) {
+	    	this.drawnItems.addLayer(e.layer);
+		}
+		this.searchLayer.editing.enable();
+		this.setSearchArea(this.searchLayer);
+    }
 }
 
 setSearchArea(layer) {
@@ -292,9 +298,8 @@ getType(layer) {
 
 initHitsLayer(map) {
 	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer)
-
+	hitsLayer.init(this.opts.features, false);
 	hitsLayer.onFeatureClick.subscribe(f => {
-		console.log("Clicked on feature ", f);
 		if(f.properties && f.properties.link) {
 			$(this.opts.search.loader).show();
 			window.location.assign(f.properties.link);
