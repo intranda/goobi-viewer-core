@@ -281,13 +281,15 @@ public class IndexResource {
                 new StringBuilder().append("+(").append(filterQuery).append(") ").append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
         logger.debug("q: {}", finalQuery);
         
-        SearchBean searchBean = BeanUtils.findInstanceInSessionAttributes(servletRequest, SearchBean.class).orElse(null);
-        String query = "";
         String facetQuery = "";
-        if(searchBean != null) {
-            query = searchBean.getFinalSolrQuery();
-            facetQuery = searchBean.getCombinedFilterQuery();
-            finalQuery = query;
+        if(StringUtils.isBlank(finalQuery)) {
+            SearchBean searchBean = BeanUtils.findInstanceInSessionAttributes(servletRequest, SearchBean.class).orElse(null);
+            String query = "";
+            if(searchBean != null) {
+                query = searchBean.getFinalSolrQuery();
+                facetQuery = searchBean.getCombinedFilterQuery();
+                finalQuery = query;
+            }            
         }
         
         return DataManager.getInstance()

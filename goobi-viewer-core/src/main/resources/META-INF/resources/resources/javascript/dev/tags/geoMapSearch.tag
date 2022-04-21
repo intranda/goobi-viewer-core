@@ -16,14 +16,18 @@
 this.on("mount", function() {
 	this.geoMap = this.initMap();
 	this.drawLayer = this.initDrawLayer(this.geoMap);
-	
+    if(this.opts.area) {
+    	initArea(this.drawLayer, this.opts.area);
+    }
 	if(!this.opts.inactive) { 
 	    this.initGeocoder(this.geoMap);
 	    this.drawnItems = this.initMapDraw(this.geoMap, this.drawLayer);
-
 	}
 	
 	this.hitsLayer = this.initHitsLayer(this.geoMap);
+	if(this.opts.toggleFeatures) {   
+		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
+	}
 	this.heatmap = this.initHeatmap(this.hitsLayer)
 }); 
 
@@ -73,61 +77,55 @@ initGeocoder(map) {
 	} 
 }
     
-
-	if(this.opts.toggleFeatures) {   
-		let ToggleFeaturesControl = L.Control.extend({
-		    options: {
-		        position: "topleft"
-		    },
-		    onAdd: function(map) {
-		        let button  = this.opts.toggleFeatures;
-		        L.DomEvent.on(button, "dblclick" , (e) => {
-		            L.DomEvent.stopPropagation(e);
-		            e.stopPropagation();
-		            return false;
-		        });
-		        L.DomEvent.on(button, "click" , (e) => {
-		            this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
-		            L.DomEvent.stopPropagation(e);
-		            e.stopPropagation();
-		            return false;
-		        });
-		        return button;
-		    }.bind(this),
-		    onRemove: function(map) {
-		        
-		    }
-		})
-		let control = new ToggleFeaturesControl();
-		this.geoMap.map.addControl(control);
-	}
-    
-    if(this.opts.area) {
-        let shape = this.opts.area;
-        if(viewerJS.isString(shape)) {
-            try {                
-            	shape = JSON.parse(shape);
-            } catch(e) {
-                console.error("Unable to draw geomap area ", this.opts.area, ": cannot parse json");
-            }
+initToggleLayer(geoMap, layer, button) {
+	let ToggleFeaturesControl = L.Control.extend({
+	    options: {
+	        position: "topleft"
+	    },
+	    onAdd: function(map) {
+	        L.DomEvent.on(button, "dblclick" , (e) => {
+	            L.DomEvent.stopPropagation(e);
+	            e.stopPropagation();
+	            return false;
+	        });
+	        L.DomEvent.on(button, "click" , (e) => {
+	            layer.setVisible(!layer.isVisible());
+	            L.DomEvent.stopPropagation(e);
+	            e.stopPropagation();
+	            return false;
+	        });
+	        return button;
+	    }.bind(this),
+	    onRemove: function(map) {
+	        
+	    }
+	})
+	let control = new ToggleFeaturesControl();
+	geoMap.map.addControl(control);
+}
+ 
+initArea(layer, shape) {
+	if(viewerJS.isString(shape)) {
+        try {                
+        	shape = JSON.parse(shape);
+        } catch(e) {
+            console.error("Unable to draw geomap area ", this.opts.area, ": cannot parse json");
         }
-
-        let layer = undefined;
-        switch(shape.type) {
-            case "polygon":
-                layer = this.drawLayer.drawPolygon(shape.vertices, true);
-                break;
-            case "circle":
-                layer = this.drawLayer.drawCircle(shape.center, shape.radius, true);
-                break;
-            case "rectangle":
-                layer = this.drawLayer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
-                break;
-        }
-        this.onLayerDrawn({layer: layer});
-
     }
 
+    let feature = undefined;
+    switch(shape.type) {
+        case "polygon":
+            feature = layer.drawPolygon(shape.vertices, true);
+            break;
+        case "circle":
+            feature = layer.drawCircle(shape.center, shape.radius, true);
+            break;
+        case "rectangle":
+            feature = layer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
+            break;
+    }
+    this.onLayerDrawn({layer: feature});
 } 
 
 initMapDraw(geomap, drawLayer) {
