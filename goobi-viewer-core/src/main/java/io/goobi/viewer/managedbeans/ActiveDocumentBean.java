@@ -257,7 +257,7 @@ public class ActiveDocumentBean implements Serializable {
             clearCacheMode = null;
             prevDocstructUrlCache.clear();
             nextDocstructUrlCache.clear();
-            // lastReceivedIdentifier = null;
+            lastReceivedIdentifier = null;
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -289,7 +289,7 @@ public class ActiveDocumentBean implements Serializable {
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             } catch (RecordNotFoundException | RecordDeletedException | RecordLimitExceededException e) {
-                if (e.getMessage() != null && !"null".equals(e.getMessage())) {
+                if (e.getMessage() != null && !"null".equals(e.getMessage()) && !"???".equals(e.getMessage())) {
                     logger.warn("{}: {}", e.getClass().getName(), e.getMessage());
                 }
             } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
@@ -342,7 +342,10 @@ public class ActiveDocumentBean implements Serializable {
         synchronized (this) {
             if (topDocumentIddoc == 0) {
                 try {
-                    throw new RecordNotFoundException(lastReceivedIdentifier);
+                    if (StringUtils.isNotEmpty(lastReceivedIdentifier)) {
+                        throw new RecordNotFoundException(lastReceivedIdentifier);
+                    }
+                    throw new RecordNotFoundException("???");
                 } finally {
                     lastReceivedIdentifier = null;
                 }
@@ -1148,7 +1151,7 @@ public class ActiveDocumentBean implements Serializable {
      * @should return correct range in double page mode if currently showing two pages
      * @should return correct range in double page mode if currently showing one page
      */
-    public String getPageUrl(int step) throws IndexUnreachableException, DAOException {
+    public String getPageUrlRelativeToCurrentPage(int step) throws IndexUnreachableException, DAOException {
         // logger.trace("getPageUrl: {}", step);
         if (viewManager == null) {
             return getPageUrl(imageToShow);
@@ -1209,6 +1212,10 @@ public class ActiveDocumentBean implements Serializable {
         return getPageUrl(number + "-" + (number + 1));
     }
 
+    public String getPageUrl(int order) throws IndexUnreachableException {
+        return getPageUrl(Integer.toString(order));
+    }
+
     /**
      * <p>
      * getPreviousPageUrl.
@@ -1220,7 +1227,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      */
     public String getPreviousPageUrl(int step) throws IndexUnreachableException, DAOException {
-        return getPageUrl(step * -1);
+        return getPageUrlRelativeToCurrentPage(step * -1);
     }
 
     /**
@@ -1234,7 +1241,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      */
     public String getNextPageUrl(int step) throws IndexUnreachableException, DAOException {
-        return getPageUrl(step);
+        return getPageUrlRelativeToCurrentPage(step);
     }
 
     /**

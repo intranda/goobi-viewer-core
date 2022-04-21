@@ -149,7 +149,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("10");
         adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/13/", adb.getPageUrl(3));
+        Assert.assertEquals("/viewImage_value/PPN517154005/13/", adb.getPageUrlRelativeToCurrentPage(3));
     }
 
     /**
@@ -163,7 +163,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("15");
         adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getLastPageOrder() + "/", adb.getPageUrl(3));
+        Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getLastPageOrder() + "/", adb.getPageUrlRelativeToCurrentPage(3));
     }
 
     /**
@@ -255,7 +255,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrl(int)
+     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies return correct page in single page mode
      */
     @Test
@@ -267,13 +267,13 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertTrue(adb.isRecordLoaded());
 
         // Next page (2 -> 3)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/3/", adb.getPageUrl(1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/3/", adb.getPageUrlRelativeToCurrentPage(1));
         // Previous page (2 -> 1)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1/", adb.getPageUrl(-1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1/", adb.getPageUrlRelativeToCurrentPage(-1));
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrl(int)
+     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies return correct range in double page mode if currently showing one page
      */
     @Test
@@ -284,33 +284,33 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setImageToShow("1");
         adb.update();
         Assert.assertTrue(adb.isRecordLoaded());
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2/", adb.getPageUrl(1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2/", adb.getPageUrlRelativeToCurrentPage(1));
 
         // Next page (1 -> 2-3)
         adb.setImageToShow("1-1");
         adb.update();
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrl(1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrlRelativeToCurrentPage(1));
         
         // Previous page (16 -> 14-15)
         adb.setImageToShow("16");
         adb.update();
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/15/", adb.getPageUrl(-1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/15/", adb.getPageUrlRelativeToCurrentPage(-1));
         
         // Same in right-to-left
         adb.getViewManager().getTopStructElement().setRtl(true);
         // Next page (1 -> 2-3)
         adb.setImageToShow("1-1");
         adb.update();
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrl(1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrlRelativeToCurrentPage(1));
         // Previous page (16 -> 14-15)
         adb.setImageToShow("16-17");
         adb.update();
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/", adb.getPageUrl(-1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/", adb.getPageUrlRelativeToCurrentPage(-1));
         
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrl(int)
+     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies return correct range in double page mode if currently showing two pages
      */
     @Test
@@ -324,13 +324,13 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.getViewManager().setDoublePageMode(true);
 
         // Next page (4-5 -> 6-7)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/6-7/", adb.getPageUrl(1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/6-7/", adb.getPageUrlRelativeToCurrentPage(1));
         // Previous page (4-5 -> 2-3)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrl(-1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrlRelativeToCurrentPage(-1));
     }
 
     /**
-     * @see ActiveDocumentBean#getPageUrl(int)
+     * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
      * @verifies return correct range in double page mode if current page double image
      */
     @Test
@@ -345,9 +345,9 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.getViewManager().getCurrentPage().setDoubleImage(true);
 
         // Next page (3 -> 4-5)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/4-5/", adb.getPageUrl(1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/4-5/", adb.getPageUrlRelativeToCurrentPage(1));
         // Previous page (3 -> 1-2)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1-2/", adb.getPageUrl(-1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1-2/", adb.getPageUrlRelativeToCurrentPage(-1));
     }
 
     /**
