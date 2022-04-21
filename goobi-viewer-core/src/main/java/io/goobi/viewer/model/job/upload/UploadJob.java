@@ -32,6 +32,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -42,6 +43,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.glassfish.jersey.client.ClientProperties;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -54,7 +56,9 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
+import io.goobi.viewer.exceptions.UploadException;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.download.AbstractTaskManagerRequest;
 
@@ -339,7 +343,7 @@ public class UploadJob implements Serializable {
         Element root = new Element("record")
                 .addContent(new Element("identifier").setText(getPi()))
                 .addContent(new Element("processtitle").setText("TODO"))
-                .addContent(new Element("docstruct").setText("TODO"));
+                .addContent(new Element("docstruct").setText("monograph")); // TODO
         doc.setRootElement(root);
 
         Element eleMetadataList = new Element("metadataList")
@@ -353,17 +357,55 @@ public class UploadJob implements Serializable {
         return doc;
     }
 
-    public void createProcess() {
+    /**
+     * @throws UploadException
+     */
+    public void createProcess() throws UploadException {
         String url = DataManager.getInstance().getConfiguration().getWorkflowRestUrl() + "processes";
         String body = XmlTools.getStringFromElement(buildXmlBody(), StringTools.DEFAULT_ENCODING);
         try {
-            NetTools.getWebContentPOST(url, null, null, body, description);
+            // TODO auth via header param "password"
+            String response = NetTools.getWebContentPOST(url, null, null, body, description);
+            if (StringUtils.isEmpty(response)) {
+                logger.error("No XML response received.");
+                throw new UploadException("No XML response received.");
+            }
+            Document doc = XmlTools.getDocumentFromString(response, StringTools.DEFAULT_ENCODING);
+            if (doc == null || doc.getRootElement() == null) {
+                logger.error("Could not parse XML.");
+                throw new UploadException("Could not parse XML.");
+            }
+
+            if (!"success".equals(doc.getRootElement().getChildText("result"))) {
+                String errorText = doc.getRootElement().getChildText("errorText");
+                throw new UploadException(errorText);
+            }
+
+            String processId = doc.getRootElement().getChildText("processId");
+            try {
+                setProcessId(Integer.valueOf(processId));
+                if (DataManager.getInstance().getDao().addUploadJob(this)) {
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                logger.error("Cannot parse process ID: {}", processId);
+                throw new UploadException("Cannot parse process ID: " + processId);
+            } catch (DAOException e) {
+                logger.error(e.getMessage());
+                throw new UploadException(e.getMessage());
+            }
         } catch (ClientProtocolException e) {
             logger.error(e.getMessage());
+            throw new UploadException(e.getMessage());
         } catch (IOException e) {
             logger.error(e.getMessage());
+            throw new UploadException(e.getMessage());
         } catch (HTTPException e) {
             logger.error(e.getMessage());
+            throw new UploadException(e.getMessage());
+        } catch (JDOMException e) {
+            logger.error(e.getMessage());
+            throw new UploadException(e.getMessage());
         }
     }
 

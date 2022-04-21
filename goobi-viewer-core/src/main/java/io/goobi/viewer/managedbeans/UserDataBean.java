@@ -49,7 +49,6 @@ import io.goobi.viewer.model.annotation.serialization.SqlAnnotationLister;
 import io.goobi.viewer.model.annotation.serialization.SqlCommentLister;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
-import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserActivity;
@@ -70,7 +69,6 @@ public class UserDataBean implements Serializable {
 
     private TableDataProvider<PersistentAnnotation> lazyModelAnnotations;
     private TableDataProvider<PersistentAnnotation> lazyModelComments;
-    private TableDataProvider<UploadJob> lazyModelUploadJobs;
 
     /**
      * Required setter for ManagedProperty injection
@@ -93,40 +91,6 @@ public class UserDataBean implements Serializable {
         }
         if (lazyModelComments == null) {
             lazyModelComments = initLazyModel(new SqlCommentLister());
-        }
-
-        if (lazyModelUploadJobs == null) {
-            lazyModelUploadJobs = new TableDataProvider<>(new TableDataSource<UploadJob>() {
-
-                @Override
-                public List<UploadJob> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                    logger.trace("getEntries<UploadJob>, {}-{}", first, first + pageSize);
-                    try {
-
-                        if (userBean != null && userBean.getUser() != null) {
-                            return DataManager.getInstance().getDao().getUploadJobsForCreatorId(userBean.getUser().getId());
-                        }
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage());
-                    }
-                    return Collections.emptyList();
-                }
-
-                @Override
-                public long getTotalNumberOfRecords(Map<String, String> filters) {
-                    try {
-                        return DataManager.getInstance().getDao().getUploadJobsForCreatorId(userBean.getUser().getId()).size();
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
-                        return 0;
-                    }
-                }
-
-                @Override
-                public void resetTotalNumberOfRecords() {
-                }
-            });
-            lazyModelUploadJobs.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
         }
     }
 
@@ -237,20 +201,6 @@ public class UserDataBean implements Serializable {
 
     public TableDataProvider<PersistentAnnotation> getLazyModelComments() {
         return lazyModelComments;
-    }
-
-    /**
-     * @return the lazyModelUploadJobs
-     */
-    public TableDataProvider<UploadJob> getLazyModelUploadJobs() {
-        return lazyModelUploadJobs;
-    }
-
-    /**
-     * @param lazyModelUploadJobs the lazyModelUploadJobs to set
-     */
-    public void setLazyModelUploadJobs(TableDataProvider<UploadJob> lazyModelUploadJobs) {
-        this.lazyModelUploadJobs = lazyModelUploadJobs;
     }
 
     public long getNumBookmarkLists(User user) throws DAOException {
