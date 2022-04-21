@@ -32,6 +32,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -39,6 +40,8 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.glassfish.jersey.client.ClientProperties;
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -48,7 +51,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.XmlTools;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.download.AbstractTaskManagerRequest;
 
@@ -76,6 +82,9 @@ public class UploadJob implements Serializable {
 
     @Column(name = "creator_id", nullable = false)
     private Long creatorId;
+
+    @Column(name = "email")
+    private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -171,6 +180,20 @@ public class UploadJob implements Serializable {
      */
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /**
@@ -307,6 +330,44 @@ public class UploadJob implements Serializable {
     }
 
     /**
+     * 
+     * @return {@link Document}
+     * @should create xml document correctly
+     */
+    Document buildXmlBody() {
+        Document doc = new Document();
+        Element root = new Element("record")
+                .addContent(new Element("identifier").setText(getPi()))
+                .addContent(new Element("processtitle").setText("TODO"))
+                .addContent(new Element("docstruct").setText("TODO"));
+        doc.setRootElement(root);
+
+        Element eleMetadataList = new Element("metadataList")
+                .addContent(new Element("metadata").setAttribute("name", "TitleDocMain").setText(getTitle()))
+                .addContent(new Element("metadata").setAttribute("name", "Description").setText(getDescription()));
+        root.addContent(eleMetadataList);
+
+        Element propertyList = new Element("propertyList").addContent(new Element("property").setAttribute("name", "email").setText(email));
+        root.addContent(propertyList);
+
+        return doc;
+    }
+
+    public void createProcess() {
+        String url = DataManager.getInstance().getConfiguration().getWorkflowRestUrl() + "processes";
+        String body = XmlTools.getStringFromElement(buildXmlBody(), StringTools.DEFAULT_ENCODING);
+        try {
+            NetTools.getWebContentPOST(url, null, null, body, description);
+        } catch (ClientProtocolException e) {
+            logger.error(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        } catch (HTTPException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    /**
      * <p>
      * getJobStatus.
      * </p>
@@ -317,10 +378,11 @@ public class UploadJob implements Serializable {
     public String getJobStatus(Integer processId) {
         StringBuilder url = new StringBuilder()
                 .append(DataManager.getInstance().getConfiguration().getWorkflowRestUrl())
-                .append("/process/details/id/")
+                .append("process/details/id/")
                 .append(processId)
                 .append('/');
         ResponseHandler<String> handler = new BasicResponseHandler();
+
         HttpGet httpGet = new HttpGet(url.toString());
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             CloseableHttpResponse response = httpclient.execute(httpGet);
