@@ -2492,7 +2492,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(SolrConstants.DOCSTRCT, results.get(1));
         Assert.assertEquals("MD_LANGUAGE", results.get(2));
     }
-    
 
     /**
      * @see Configuration#getDisplayAdditionalMetadataOnelineFields()
@@ -2618,6 +2617,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getReCaptchaSiteKey_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("6LetEyITAAAAAEAj7NTxgRXR6S_uhZrk9rn5HyB3", DataManager.getInstance().getConfiguration().getReCaptchaSiteKey());
+    }
+
+    /**
+     * @see Configuration#getWorkflowRestUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getWorkflowRestUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("https://example.com/goobi/api/", DataManager.getInstance().getConfiguration().getWorkflowRestUrl());
     }
 
     /**
@@ -3157,16 +3165,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled());
     }
 
-
-    /**
-     * @see Configuration#getWorkflowUrl()
-     * @verifies return correct value
-     */
-    @Test
-    public void getWorkflowUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("https://example.com/goobi/rest/", DataManager.getInstance().getConfiguration().getWorkflowUrl());
-    }
-
     /**
      * @see Configuration#isContentUploadEnabled()
      * @verifies return correct value
@@ -3175,7 +3173,7 @@ public class ConfigurationTest extends AbstractTest {
     public void isContentUploadEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isContentUploadEnabled());
     }
-    
+
     /**
      * @see Configuration#getContentUploadToken()
      * @verifies return correct value

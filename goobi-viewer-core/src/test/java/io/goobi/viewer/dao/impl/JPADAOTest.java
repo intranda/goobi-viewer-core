@@ -2279,7 +2279,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getUploadJobsForCreatorId_shouldReturnEmptyListIfCreatorIdNull() throws Exception {
-        List<UploadJob> result = DataManager.getInstance().getDao().getUploadJobsForCreatorId(1L);
+        List<UploadJob> result = DataManager.getInstance().getDao().getUploadJobsForCreatorId(null);
         Assert.assertTrue(result.isEmpty());
     }
 

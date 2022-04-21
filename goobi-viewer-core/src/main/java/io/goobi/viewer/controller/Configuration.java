@@ -1385,27 +1385,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getWorkflowUrl.
-     * </p>
-     *
-     * @return The url to the Goobi workflow REST API as configured in the config_viewer. The url always ends with "/"
-     * @should return correct value
-     */
-    public String getWorkflowUrl() {
-        String urlString = getLocalString("urls.workflow");
-        if (urlString == null) {
-            urlString = "localhost:8080/goobi/rest/";
-        }
-
-        if (!urlString.endsWith("/")) {
-            urlString += "/";
-        }
-
-        return urlString;
-    }
-
-    /**
-     * <p>
      * getContentServerRealUrl.
      * </p>
      *
@@ -4652,6 +4631,23 @@ public final class Configuration extends AbstractConfiguration {
      */
     public int getPageSelectDropdownDisplayMinPages() {
         return getLocalInt("viewer.pageSelectDropdownDisplayMinPages", 3);
+    }
+
+    /**
+     * <p>
+     * getWorkflowRestUrl.
+     * </p>
+     *
+     * @return The url to the Goobi workflow REST API as configured in the config_viewer. The url always ends with "/"
+     * @should return correct value
+     */
+    public String getWorkflowRestUrl() {
+        String urlString = getLocalString("urls.workflow", "localhost:8080/goobi/api/");
+        if (!urlString.endsWith("/")) {
+            urlString += "/";
+        }
+
+        return urlString;
     }
 
     /**

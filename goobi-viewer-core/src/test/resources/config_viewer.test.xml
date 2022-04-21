@@ -74,9 +74,6 @@
 			<ese>ese_value</ese>
 		</metadata>
 
-		<!-- taskManager: Url of local taskManager for pdf-download -->
-		<taskManager>taskmanager_url/</taskManager>
-
 		<!-- solr: URL to the Solr index core -->
 		<solr>https://viewer-testing-index.goobi.io/solr/collection1</solr>
 
@@ -96,7 +93,10 @@
 		<rest>http://localhost:8080/viewer/api/v1/</rest>
         
         <!-- workflow: REST service URL of Goobi workflow -->
-        <workflow>https://example.com/goobi/rest</workflow>
+        <workflow>https://example.com/goobi/api</workflow>
+
+        <!-- taskManager: Url of local taskManager for pdf-download -->
+        <taskManager>taskmanager_url/</taskManager>
 
 		<download>https://viewer.goobi.io/download/</download>
 		

@@ -60,16 +60,11 @@ import io.goobi.viewer.model.job.download.AbstractTaskManagerRequest;
 @Entity
 @Table(name = "upload_jobs")
 @JsonInclude(Include.NON_NULL)
-public abstract class UploadJob implements Serializable {
+public class UploadJob implements Serializable {
 
     private static final long serialVersionUID = 2732786560804670250L;
 
     private static final Logger logger = LoggerFactory.getLogger(UploadJob.class);
-
-    /** Constant <code>DATETIME_FORMAT="yyyy-MM-dd'T'HH:mm:ss'Z'"</code> */
-    protected static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-    /** Constant <code>TTL_FORMAT="dd'T'HH:mm:ss"</code> */
-    protected static final String TTL_FORMAT = "dd'T'HH:mm:ss";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -86,9 +81,9 @@ public abstract class UploadJob implements Serializable {
     @Column(name = "status", nullable = false)
     protected JobStatus status = JobStatus.UNDEFINED;
 
-    /** Unique identifier for the download (e.g. a combination of PI and LOGID for PDFs). */
-    @Column(name = "identifier", nullable = false, unique = true)
-    protected String identifier;
+    /** Assigned Goobi workflow process ID. */
+    @Column(name = "process_id")
+    protected Integer processId;
 
     @Column(name = "pi", nullable = false)
     protected String pi;
@@ -103,17 +98,10 @@ public abstract class UploadJob implements Serializable {
 
     @Column(name = "message", nullable = true)
     protected String message;
-    
-    public UploadJob() {
-        
-    }
 
-    /**
-     * <p>
-     * generateDownloadIdentifier.
-     * </p>
-     */
-    public abstract void generateDownloadIdentifier();
+    public UploadJob() {
+
+    }
 
     /**
      * <p>
@@ -208,25 +196,17 @@ public abstract class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
-     * Getter for the field <code>identifier</code>.
-     * </p>
-     *
-     * @return the identifier
+     * @return the processId
      */
-    public String getIdentifier() {
-        return identifier;
+    public Integer getProcessId() {
+        return processId;
     }
 
     /**
-     * <p>
-     * Setter for the field <code>identifier</code>.
-     * </p>
-     *
-     * @param identifier the identifier to set
+     * @param processId the processId to set
      */
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+    public void setProcessId(Integer processId) {
+        this.processId = processId;
     }
 
     /**
@@ -331,14 +311,15 @@ public abstract class UploadJob implements Serializable {
      * getJobStatus.
      * </p>
      *
-     * @param identifier a {@link java.lang.String} object.
+     * @param processId a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getJobStatus(String identifier) {
-        StringBuilder url = new StringBuilder();
-        url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
-        url.append(getRestApiPath()).append("/info/");
-        url.append(identifier);
+    public String getJobStatus(Integer processId) {
+        StringBuilder url = new StringBuilder()
+                .append(DataManager.getInstance().getConfiguration().getWorkflowRestUrl())
+                .append("/process/details/id/")
+                .append(processId)
+                .append('/');
         ResponseHandler<String> handler = new BasicResponseHandler();
         HttpGet httpGet = new HttpGet(url.toString());
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
@@ -353,17 +334,12 @@ public abstract class UploadJob implements Serializable {
     }
 
     /**
-     * @return
-     */
-    protected abstract String getRestApiPath();
-
-    /**
      * <p>
      * updateStatus.
      * </p>
      */
     public void updateStatus() {
-        String ret = getJobStatus(identifier);
+        String ret = getJobStatus(processId);
         try {
             JSONObject object = new JSONObject(ret);
             String statusString = object.getString("status");
@@ -387,7 +363,7 @@ public abstract class UploadJob implements Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("UploadJob ").append(getIdentifier()).append("; ");
+        sb.append("UploadJob process ID ").append(getProcessId()).append("; ");
         sb.append("Status ").append(getStatus()).append("; ");
         sb.append("PI ").append(getPi()).append("; ");
         return sb.toString();
