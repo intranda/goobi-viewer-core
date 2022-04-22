@@ -100,7 +100,7 @@ var viewerJS = ( function( viewer ) {
                 let marker = L.marker(latlng, {
                     draggable: this.config.allowMovingFeatures,
                     icon: this.getMarkerIcon(geoJsonPoint.properties),
-                    count: geoJsonPoint.properties?.count?.[0]
+                    count: geoJsonPoint.properties?.count ? geoJsonPoint.properties.count : 1
                 });
                 return marker; 
             }.bind(this),
@@ -141,7 +141,7 @@ var viewerJS = ( function( viewer ) {
         });
         
         //add layer
-		this.geoMap.map.addLayer(this.layer);
+        this.geoMap.map.addLayer(this.layer);
         if(this.config.clusterMarkers) {        
             try {                
                 this.cluster = this.createMarkerCluster();
@@ -231,8 +231,8 @@ var viewerJS = ( function( viewer ) {
         return cluster;
     }
     
-    viewer.GeoMap.featureGroup.prototype.getClusterCount = function(cluster) {
-	  	let count = cluster.getAllChildMarkers().map(child => child.options?.count ? child.options.count : 1).reduce((a, b) => a + b, 0)
+    viewer.GeoMap.featureGroup.prototype.getClusterCount = function(cluster) { 
+	  	let count = cluster.getAllChildMarkers().map(child => child.options?.count ? child.options.count : 0).reduce((a, b) => a + b, 0)
 	  	return count;
 	  }
     
@@ -295,7 +295,7 @@ var viewerJS = ( function( viewer ) {
     
     viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function(properties) {
     	
-    	let count = properties?.count?.[0];
+    	let count = properties?.count;
 	    count = count ? count : 1;
     	let highlighted = properties?.highlighted;
         

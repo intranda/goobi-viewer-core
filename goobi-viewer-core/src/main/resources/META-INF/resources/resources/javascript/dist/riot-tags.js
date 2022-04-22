@@ -2439,6 +2439,12 @@ this.initMap = function() {
 	        clusterMarkers: true,
 		    style: {
 				fillOpacity: 0.02
+			},
+			markerIcon: {
+				icon: "fa-number",
+				svg: true,
+				prefix: "fa",
+				iconRotate: 0
 			}
         }
     })
@@ -2702,15 +2708,7 @@ this.initHitsLayer = function(map) {
 }.bind(this)
 
 this.initHeatmap = function(hitsLayer) {
-	let heatmapQuery = "";
-	if(this.opts.heatmap.mainQuery) {
-		heatmapQuery += " +(" + this.opts.heatmap.mainQuery + ")";
-	}
-	if(this.opts.heatmap.facetQuery) {
-		heatmapQuery += " +(" + this.opts.heatmap.facetQuery + ")";
-	}
-	heatmapQuery = heatmapQuery.trim();
-
+	let heatmapQuery = this.opts.heatmap.mainQuery;
 	let heatmap = L.solrHeatmap(this.opts.heatmap.heatmapUrl, this.opts.heatmap.featureUrl, hitsLayer, {
 		field: "WKT_COORDS",
 		type: "clusters",

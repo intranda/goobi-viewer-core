@@ -151,7 +151,7 @@ public class GeoMapFeature {
         if (StringUtils.isNotBlank(this.documentId)) {
             properties.put("documentId", this.documentId);
         }
-        properties.put("count", new int[] { this.count });
+        properties.put("count", this.count);
         return object;
     }
 

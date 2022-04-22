@@ -2929,5 +2929,13 @@ public class SearchBean implements SearchInterface, Serializable {
         String finalQuery = SearchHelper.buildFinalQuery(query, null, true, false); 
         return DataManager.getInstance().getSearchIndex().getHitCount(finalQuery);
    }
+    
+   public String getFinalSolrQueryEscaped() throws IndexUnreachableException {
+       return StringTools.encodeUrl(getFinalSolrQuery());
+   }
+   
+   public String getCombinedFilterQueryEscaped() {
+       return StringTools.encodeUrl(getCombinedFilterQuery());
+   }
 
 }

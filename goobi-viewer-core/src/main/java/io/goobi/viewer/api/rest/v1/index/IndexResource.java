@@ -277,20 +277,23 @@ public class IndexResource {
             @QueryParam("gridLevel") Integer gridLevel
             ) throws IOException, IndexUnreachableException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
-        String finalQuery = 
-                new StringBuilder().append("+(").append(filterQuery).append(") ").append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
+        
+        String finalQuery = filterQuery;
+        if(!finalQuery.startsWith("{!join")) {            
+            finalQuery = 
+                    new StringBuilder().append("+(").append(filterQuery).append(") ").append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
+        }
         logger.debug("q: {}", finalQuery);
         
         String facetQuery = "";
-        if(StringUtils.isBlank(finalQuery)) {
-            SearchBean searchBean = BeanUtils.findInstanceInSessionAttributes(servletRequest, SearchBean.class).orElse(null);
-            String query = "";
-            if(searchBean != null) {
-                query = searchBean.getFinalSolrQuery();
-                facetQuery = searchBean.getCombinedFilterQuery();
-                finalQuery = query;
-            }            
-        }
+
+//            SearchBean searchBean = BeanUtils.findInstanceInSessionAttributes(servletRequest, SearchBean.class).orElse(null);
+//            String query = "";
+//            if(searchBean != null) {
+//                query = searchBean.getFinalSolrQuery();
+//                facetQuery = searchBean.getCombinedFilterQuery();
+//                finalQuery = query;
+//            }            
         
         return DataManager.getInstance()
                         .getSearchIndex().getHeatMap(solrField, wktRegion, finalQuery, facetQuery, gridLevel);
@@ -312,20 +315,19 @@ public class IndexResource {
             @QueryParam("labelField") String labelField
             ) throws IOException, IndexUnreachableException, PresentationException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
-        String finalQuery =
-                new StringBuilder()
-                .append(filterQuery)
-                .append(" +({wktField}:{wktCoords}) ".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion))
-                .append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
-        logger.debug("q: {}", finalQuery);
         
-        SearchBean searchBean = BeanUtils.findInstanceInSessionAttributes(servletRequest, SearchBean.class).orElse(null);
-        String query = "";
-        List<String> facetQueries = null;
-        if(searchBean != null) {
-            query = searchBean.getFinalSolrQuery();
-            facetQueries = searchBean.getFilterQueries();
-            finalQuery = query + " +(" + finalQuery + ")";
+        String finalQuery = filterQuery;
+        List<String> facetQueries = new ArrayList<>();
+        if(!finalQuery.startsWith("{!join")) {  
+            finalQuery =
+                    new StringBuilder()
+                    .append(filterQuery)
+                    .append(" +({wktField}:{wktCoords}) ".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion))
+                    .append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
+            logger.debug("q: {}", finalQuery);
+        } else {
+            String coordQuery = "{wktField}:{wktCoords}".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion);
+            facetQueries.add(coordQuery);
         }
         
         

@@ -36,6 +36,12 @@ var viewerJS = ( function ( viewer ) {
 				clusterMarkers: true,
 				style: {
 					fillOpacity: 0.02
+				},
+				markerIcon: {
+					icon: "fa-number",
+					svg: true,
+					prefix: "fa",
+					iconRotate: 0
 				}
 			},
 			areaLayer: {
@@ -82,13 +88,13 @@ var viewerJS = ( function ( viewer ) {
 	}
 
 
-	viewer.GeoMapFacet.prototype.init = function ( features, view ) {
+	viewer.GeoMapFacet.prototype.init = function (features,  view ) {
 		this.area = this.getArea( this.config.areaString );
 		this.features = features;
-		this.geoMap.init(view, features);
+		this.geoMap.init(view);
 
 		this.drawLayer = this.initDrawLayer();
-		this.hitsLayer = this.initHitsLayer();
+		this.hitsLayer = this.initHitsLayer(this.features);
 		if(this.config.heatmap.showSearchResultsHeatmap) {
 			this.heatmap = this.initHeatmap();
 		}
@@ -111,9 +117,10 @@ var viewerJS = ( function ( viewer ) {
 		});
 	}
 
-	viewer.GeoMapFacet.prototype.initHitsLayer = function () {
+	viewer.GeoMapFacet.prototype.initHitsLayer = function (features) {
+		console.log("init hits layer ", this.config.map.hitsLayer);
 		let hitsLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, this.config.map.hitsLayer)
-
+		hitsLayer.init(features, false);
 		hitsLayer.onFeatureClick.subscribe(f => {
 			console.log("Clicked on feature ", f);
 			if(f.properties && f.properties.link) {
@@ -126,14 +133,7 @@ var viewerJS = ( function ( viewer ) {
 	}
 
 	viewer.GeoMapFacet.prototype.initHeatmap = function () {
-		let heatmapQuery = "";
-		if(this.config.heatmap.mainQuery) {
-			heatmapQuery += " +(" + this.config.heatmap.mainQuery + ")";
-		}
-		if(this.config.heatmap.facetQuery) {
-			heatmapQuery += " +(" + this.config.heatmap.facetQuery + ")";
-		}
-		heatmapQuery = heatmapQuery.trim();
+		let heatmapQuery = this.config.heatmap.mainQuery;
 		
 		let heatmap = L.solrHeatmap(this.config.heatmap.heatmapUrl, this.config.heatmap.featureUrl, this.hitsLayer, {
 			field: "WKT_COORDS",
