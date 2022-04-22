@@ -13,26 +13,22 @@
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('userContentUpload', false, true)}" />
 			<f:event type="preRenderView"
 				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.admin__user_profile, request.contextPath.concat('/user/'), 1)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.userComments, 2)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.userContentUpload, 2)}" />
 		</f:metadata>
 	</ui:define>
 
-	<ui:define name="breadcrumbs">
-		<viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
-	</ui:define>
+    <ui:define name="content">
+        <ui:fragment rendered="#{userBean.loggedIn and configurationBean.contentUploadEnabled}">
+		    <div id="userContentUploadWrap" class="page-wrapp">
+				<h1>#{msg.user__upload_content}</h1>
 
-	<ui:define name="content">
-		<div id="myActivity" class="page-wrapp">
-			<h:panelGroup rendered="#{userBean.loggedIn}">
-				<h1 >#{msg.userComments}</h1>
-
-				<div id="userComments" class="user-comments">
-					<h:form id="userCommentsForm" prependId="false">
+				<div id="userContentUpload" class="user-comments">
+					<h:form id="userUploadJobsForm" prependId="false">
 
 							<div class="admin__table-tools flex-wrap">
 								<!-- PAGINATOR -->
 								<div class="admin__table-paginator">
-									<viewerComponent:dataTablePaginator tableValues="#{userDataBean.lazyModelUploadJobs}" />
+									<viewerComponent:dataTablePaginator tableValues="#{uploadBean.lazyModelUploadJobs}" />
 								</div>
 							</div>
 
@@ -47,21 +43,21 @@
                                     <div class="user-comments__table-title-date" role="presentation">
                                         <viewerComponent:sortingArrow filterType="dateCreated"
                                             colHeading="#{msg.date}"
-                                            list="#{userDataBean.lazyModelUploadJobs}" />
+                                            list="#{uploadBean.lazyModelUploadJobs}" />
                                     </div>
 								
 									<!-- TARGET COL -->
 									<div class="user-comments__table-title-target" role="presentation">
 										<viewerComponent:sortingArrow filterType="targetPI_targetPageOrder"
 											colHeading="#{msg.record}"
-											list="#{userDataBean.lazyModelUploadJobs}" />
+											list="#{uploadBean.lazyModelUploadJobs}" />
 									</div>
 
 									<!-- TEXT COL -->
 									<div class="user-comments__table-title-comment" role="presentation">
 										<viewerComponent:sortingArrow filterType="body"
 											colHeading="#{msg.Comment}"
-											list="#{userDataBean.lazyModelUploadJobs}" />
+											list="#{uploadBean.lazyModelUploadJobs}" />
 									</div>
 
 
@@ -69,65 +65,62 @@
 
 								<div class="user-comments__table-body" role="presentation">
 
-									<!-- INDIVIDUAL COMMENTS ROWS -->
-									<ui:repeat var="job" value="#{userDataBean.lazyModelUploadJobs.paginatorList}">
+									<!-- INDIVIDUAL JOB ROWS -->
+									<ui:repeat var="job" value="#{uploadBean.lazyModelUploadJobs.paginatorList}">
 										<div class="user-comments__table-entry" role="row">
-											<!-- TARGET -->
-												<div class="user-comments__table-entry-label" role="cell">
-													<h:outputText styleClass="user-comments__table-entry-label-record" rendered="#{comment.targetPageOrder != null}" value="#{comment.targetPI}, #{msg.page} #{comment.targetPageOrder}" />
-													<a
-														href="#{navigationHelper.objectUrl}#{comment.targetLink}"
-														class="user-comments__table-entry-action-link" target="_blank"
-														aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{comment.targetPI})">#{msg.show}</a>	
-												</div>
-
-											<!-- TEXT -->
-											<div class="user-comments__table-entry-text" role="cell">
-												<!-- INFO: ID NAME CANT BE CHANGED WITHOUT LOSING FUNCTIONALITY -->
-												<div id="annotation_body_#{comment.id}" class="annotation__body__content_wrapper">
-													#{contentBean.cleanUpValue(comment.body.toString())}
-												</div>
-												<annotationBody annotationid="#{comment.id}"
-													contentid="annotation_body_#{comment.id}" role="presentation" />
+                                            <!-- DATE -->
+                                            <div class="user-comments__table-entry-date" role="cell">
+                                                <h:outputText value="#{job.dateCreated}">
+                                                    <f:converter converterId="localDateTimeConverter" />
+                                                    <f:attribute name="pattern"
+                                                        value="#{navigationHelper.dateTimePattern}" />
+                                                </h:outputText>
+                                            </div>
+											<!-- TITLE -->
+											<div class="user-comments__table-entry-label" role="cell">
+												<h:outputText value="#{job.title}" />	
 											</div>
-											<!-- DATE -->
-											<div class="user-comments__table-entry-date" role="cell">
-												<h:outputText value="#{comment.dateCreated}">
-													<f:converter converterId="localDateTimeConverter" />
-													<f:attribute name="pattern"
-														value="#{navigationHelper.dateTimePattern}" />
-												</h:outputText>
+
+											<!-- STATUS -->
+											<div class="user-comments__table-entry-text" role="cell">
+												<ui:fragment rendered="#{job.status eq 'WAITING'}">
+												    TODO (W)
+												</ui:fragment>
+                                                <ui:fragment rendered="#{job.status eq 'READY'}">
+                                                    TODO (X)
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{job.status eq 'ERROR'}">
+                                                    TODO (V)
+                                                </ui:fragment>
 											</div>
 										</div>
 									</ui:repeat>
 								</div>
 							</div>
-						<script>
-						$(document).ready(() => {
-							riot.mount( "annotationBody", {
-									currentlang: "#{navigationHelper.localeString}",
-									resturl: "#{configurationBean.restApiUrlV1}",
-							} );
-						});
-            </script>
 
-					</h:form>
-				</div>
-			</h:panelGroup>
-		</div>
+					 </h:form>
+			    </div>
+            </div>
+            
+        </ui:fragment>
 
 	</ui:define>
 
 	<ui:define name="sidebar">
-		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
-			<widgetComponent:widget_browsing />
-		</h:panelGroup>
-        <c:forEach var="module" items="#{configurationBean.modules}">
-            <c:forEach var="contribution" items="#{module.sidebarContributions}">
-                <ui:include src="/#{contribution}" />
-            </c:forEach>
-        </c:forEach>
+	    <ui:fragment rendered="#{userBean.loggedIn and configurationBean.contentUploadEnabled}">
+            <div class="admin__content-side -sticky">
+                <div class="admin__default-block">
+                    <div id="widgetSidebar" class="widget">
+                        <h:form id="widgetSidebarForm">
+                            <h2>#{msg.user__upload_content__sidebar_label}</h2>
+                            <h:outputText value="#{msg.user__upload_content__sidebar_desc}" />
+                            <button class="btn btn--icon" data-toggle="modal" data-target="#contentUploadModal">#{msg.user__upload_content}</button>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </ui:fragment>
 	</ui:define>
-
+	
 
 </ui:composition>

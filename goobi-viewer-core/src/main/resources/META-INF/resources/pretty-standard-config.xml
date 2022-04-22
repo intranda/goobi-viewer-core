@@ -730,7 +730,6 @@
 		<view-id value="/userBackendEditBookmarkList.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-    
     <url-mapping id="userMenuContentUpload">
         <pattern value="/user/upload/" />
         <view-id value="/userBackendContentUpload.xhtml" />
