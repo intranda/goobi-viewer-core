@@ -20,7 +20,9 @@ import org.jdom2.Element;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class UploadJobTest {
+import io.goobi.viewer.AbstractTest;
+
+public class UploadJobTest extends AbstractTest {
 
     /**
      * @see UploadJob#buildXmlBody()
@@ -38,6 +40,8 @@ public class UploadJobTest {
         Assert.assertNotNull(doc);
         Assert.assertNotNull(doc.getRootElement());
         Assert.assertEquals("PPN123", doc.getRootElement().getChildText("identifier"));
+        Assert.assertEquals("manuscript", doc.getRootElement().getChildText("docstruct"));
+        Assert.assertEquals("loreip_PPN123", doc.getRootElement().getChildText("processtitle"));
 
         {
             Element eleMetadataList = doc.getRootElement().getChild("metadataList");

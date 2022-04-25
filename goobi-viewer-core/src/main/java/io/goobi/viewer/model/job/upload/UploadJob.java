@@ -15,9 +15,13 @@
  */
 package io.goobi.viewer.model.job.upload;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.StringTokenizer;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,6 +31,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
@@ -84,15 +89,25 @@ public class UploadJob implements Serializable {
     @Column(name = "date_created", nullable = false)
     private LocalDateTime dateCreated;
 
+    /** User ID of the creator. */
     @Column(name = "creator_id", nullable = false)
     private Long creatorId;
 
-    @Column(name = "email")
+    /** E-mail notification address. */
+    @Column(name = "email", nullable = false)
     private String email;
+
+    /** User consent for being contacted. */
+    @Column(name = "consent", nullable = false)
+    private boolean consent = false;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     protected JobStatus status = JobStatus.UNDEFINED;
+
+    /** Error messages, etc. */
+    @Column(name = "message", nullable = true)
+    protected String message;
 
     /** Assigned Goobi workflow process ID. */
     @Column(name = "process_id")
@@ -109,8 +124,8 @@ public class UploadJob implements Serializable {
     @Column(name = "description", columnDefinition = "LONGTEXT")
     protected String description;
 
-    @Column(name = "message", nullable = true)
-    protected String message;
+    @Transient
+    private String docstruct = DataManager.getInstance().getConfiguration().getContentUploadDocstruct();
 
     public UploadJob() {
 
@@ -201,6 +216,67 @@ public class UploadJob implements Serializable {
     }
 
     /**
+     * @return the consent
+     */
+    public boolean isConsent() {
+        return consent;
+    }
+
+    /**
+     * @param consent the consent to set
+     */
+    public void setConsent(boolean consent) {
+        this.consent = consent;
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>status</code>.
+     * </p>
+     *
+     * @return the status
+     */
+    public JobStatus getStatus() {
+        if (status == null) {
+            status = JobStatus.UNDEFINED;
+        }
+        return status;
+    }
+
+    /**
+     * <p>
+     * Setter for the field <code>status</code>.
+     * </p>
+     *
+     * @param status the status to set
+     */
+    public void setStatus(JobStatus status) {
+        this.status = status;
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>message</code>.
+     * </p>
+     *
+     * @return the message
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * <p>
+     * Setter for the field <code>message</code>.
+     * </p>
+     *
+     * @param message the message to set
+     */
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>pi</code>.
      * </p>
@@ -234,31 +310,6 @@ public class UploadJob implements Serializable {
      */
     public void setProcessId(Integer processId) {
         this.processId = processId;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>status</code>.
-     * </p>
-     *
-     * @return the status
-     */
-    public JobStatus getStatus() {
-        if (status == null) {
-            status = JobStatus.UNDEFINED;
-        }
-        return status;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>status</code>.
-     * </p>
-     *
-     * @param status the status to set
-     */
-    public void setStatus(JobStatus status) {
-        this.status = status;
     }
 
     /**
@@ -297,28 +348,6 @@ public class UploadJob implements Serializable {
         this.description = description;
     }
 
-    /**
-     * <p>
-     * Getter for the field <code>message</code>.
-     * </p>
-     *
-     * @return the message
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>message</code>.
-     * </p>
-     *
-     * @param message the message to set
-     */
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
         try {
             Client client = ClientBuilder.newClient();
@@ -342,8 +371,8 @@ public class UploadJob implements Serializable {
         Document doc = new Document();
         Element root = new Element("record")
                 .addContent(new Element("identifier").setText(getPi()))
-                .addContent(new Element("processtitle").setText("TODO"))
-                .addContent(new Element("docstruct").setText("monograph")); // TODO
+                .addContent(new Element("processtitle").setText(createAtstsl(title, null) + "_" + pi))
+                .addContent(new Element("docstruct").setText(docstruct));
         doc.setRootElement(root);
 
         Element eleMetadataList = new Element("metadataList")
@@ -458,6 +487,64 @@ public class UploadJob implements Serializable {
             setMessage("Unable to parse TaskManager response");
         }
 
+    }
+
+    /**
+     * 
+     * @param title
+     * @param author
+     * @return
+     */
+    public String createAtstsl(String title, String author) {
+        StringBuilder result = new StringBuilder(8);
+        if (author != null && author.trim().length() > 0) {
+            result.append(author.length() > 4 ? author.substring(0, 4) : author);
+            result.append(title.length() > 4 ? title.substring(0, 4) : title);
+        } else {
+            StringTokenizer titleWords = new StringTokenizer(title);
+            int wordNo = 1;
+            while (titleWords.hasMoreTokens() && wordNo < 5) {
+                String word = titleWords.nextToken();
+                switch (wordNo) {
+                    case 1:
+                        result.append(word.length() > 4 ? word.substring(0, 4) : word);
+                        break;
+                    case 2:
+                    case 3:
+                        result.append(word.length() > 2 ? word.substring(0, 2) : word);
+                        break;
+                    case 4:
+                        result.append(word.length() > 1 ? word.substring(0, 1) : word);
+                        break;
+                }
+                wordNo++;
+            }
+        }
+        String res = convertUmlaut(result.toString()).toLowerCase();
+        return res.replaceAll("[\\W]", ""); // delete umlauts etc.
+    }
+
+    /**
+     * 
+     * @param inString
+     * @return
+     */
+    static String convertUmlaut(String inString) {
+        String temp = inString;
+        String filename =  DataManager.getInstance().getConfiguration().getUmlautsFilePath();
+
+        try (FileInputStream fis = new FileInputStream(filename); InputStreamReader isr = new InputStreamReader(fis, "UTF8");
+                BufferedReader in = new BufferedReader(isr);) {
+            String str;
+            while ((str = in.readLine()) != null) {
+                if (str.length() > 0) {
+                    temp = temp.replaceAll(str.split(" ")[0], str.split(" ")[1]);
+                }
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+        return temp;
     }
 
     /* (non-Javadoc)

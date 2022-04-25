@@ -3751,6 +3751,18 @@ public final class Configuration extends AbstractConfiguration {
     public String getStopwordsFilePath() {
         return getLocalString("stopwordsFile");
     }
+    
+    /**
+     * <p>
+     * getStopwordsFilePath.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getUmlautsFilePath() {
+        return getLocalString("umlautsFile");
+    }
 
     /**
      * Returns the locally configured page type name for URLs (e.g. "bild" instead of default "image").
@@ -5450,5 +5462,14 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getContentUploadToken() {
         return getLocalString("upload.token");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getContentUploadDocstruct() {
+        return getLocalString("upload.docstruct", "monograph");
     }
 }

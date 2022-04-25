@@ -12,7 +12,7 @@
 	<composite:interface />
     <composite:implementation>
 
-			<!-- Modal -->
+		<!-- Modal -->
 		<div class="modal fade view-contentUploadModal show" id="contentUploadModal" tabindex="-1" role="dialog" aria-label="#msg.feedbackTitle" aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
@@ -29,8 +29,7 @@
 							<h:outputText value="#{msg.user__upload_content_modal_desc}" />
 						</p>
 
-						<h:form id="contentUploadModal__feedbackForm" styleClass="form-horizontal"
-							prependId="false">
+						<h:form id="contentUploadModal__feedbackForm" styleClass="form-horizontal" prependId="false">
 							<div id="contentUploadModal__feedback" class="contentUploadModal">
 
 								<!-- TITLE -->
@@ -52,29 +51,31 @@
 									</div>
 								</div>
 
-                                <!-- MESSAGE -->
+                                <!-- DESCRIPTION -->
                                 <div class="form-group form-row">
                                     <label id="contentUploadModal__labelUploadJobDescription" for="contentUploadModal__uploadJobDescription"
                                         class="col-lg-3 control-label">
-                                        <span class="contentUploadModal__label-span">#{msg.message}:</span>
+                                        <span class="contentUploadModal__label-span">#{msg.description}:</span>
                                         </label>
                                     
                                     <div class="col-12 col-lg-9">
                                         <h:inputTextarea id="contentUploadModal__uploadJobDescription"
                                             styleClass="form-control"
-                                            value="#{userBean.feedback.message}"
+                                            value="#{uploadBean.currentUploadJob.description}"
                                             pt:data-require-input-text="feedbackInput">
                                             <f:passThroughAttribute name="aria-labelledby"
                                                 value="contentUploadModal__labelFeedbackMessage" />
                                         </h:inputTextarea>
                                     </div>
                                 </div>
+                                
+                                <!-- FILES -->
+                                <!-- TODO -->
 
-
-								<!-- E-MAIL FOR NOT LOGGED IN USERS -->
+								<!-- E-MAIL -->
 								<h:panelGroup rendered="#{!userBean.loggedIn}" layout="block"
 									styleClass="form-group form-row" id="emailGroup">
-									<label id="contentUploadModal__labelFeedbackEmail" for="contentUploadModal__feedbackEmail"
+									<label id="contentUploadModal__labelEmail" for="contentUploadModal__feedbackEmail"
 										class="col-lg-3 control-label">
 										<span class="contentUploadModal__label-span">#{msg.email}:</span>
 										<span class="contentUploadModal__label-required-field">(#{msg.form__required_field})</span>
@@ -91,9 +92,10 @@
 													class="fa fa-exclamation" aria-hidden="true"></i>
 											</div>
 										</div>
-										<h:inputText id="contentUploadModal__feedbackEmail" label="feedbackEmail"
+										<h:inputText id="contentUploadModal__email" label="feedbackEmail"
 											immediate="true" required="true" pt:data-require-input-text="feedbackInput"
-											value="#{userBean.feedback.senderAddress}" styleClass="form-control">
+											value="#{uploadBean.currentUploadJob.email}" styleClass="form-control"
+											disabled="true">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="contentUploadModal__labelFeedbackEmail" />
 											<f:validator validatorId="emailValidator" for="feedbackEmail" />
@@ -131,30 +133,6 @@
 									</div>
 								</h:panelGroup>
 
-								<!-- SECURITY QUESTION -->
-								<ui:fragment
-									rendered="#{userBean.resetSecurityQuestion() and userBean.securityQuestion != null}">
-									<div class="form-group form-row mb-0">
-										<label id="contentUploadModal__feedbackSecurityQuestion" for="contentUploadModal__feedbackSecurityQuestion"
-											class="col-lg-3 control-label">#{msg.user__security_question}:</label>
-										<div class="col-12 col-12 col-lg-9 composite-control pt-0">
-											<span class="control-label d-block pb-1">#{msg[userBean.securityQuestion.questionKey]}:</span>
-											<h:messages for="feedbackSecurityQuestion"
-												styleClass="m-0 p-0 pb-1 list-unstyled"
-												infoClass="cms-module__option-message-status success"
-												warnClass="cms-module__option-message-status warning"
-												errorClass="cms-module__option-message-status danger" />
-											<h:inputSecret id="feedbackSecurityQuestion"
-												styleClass="form-control" autocomplete="off"
-												pt:data-require-input-text="feedbackInput"
-												pt:aria-labelledby="contentUploadModal__feedbackSecurityQuestion"
-												pt:autocomplete="new-password"
-												value="#{userBean.securityAnswer}" required="true"
-												requiredMessage="#{msg.user__security_question_required_msg}">
-						                	</h:inputSecret>
-										</div>
-									</div>
-								</ui:fragment>
 							</div>
 								<!-- REQUIRED CHECKBOX FOR USAGE OF PERSONAL DATA OR ANYTHING ELSE -->
 								<!-- TO DO: CONFIG SWITCH FOR THIS RENDERED CONDITION CHECKBOX, VALUE + ADDITIONAL TEXT WHICH IS SEND BY FORM(?) -->
@@ -166,17 +144,18 @@
 										  
 										  
 						  					<div id="sendContactFormAcceptTerms" class="col-12 col-sm-3 contentUploadModal__accept-terms-label">
-												<label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
+												<label class="mr-3 mb-0">#{msg.user__upload_content_modal_consent_desc}:</label>
 											</div>	
 	                                       
 	                                       
 	                                        <div class="col-12 col-md-9 mt-3 mt-sm-0 contentUploadModal__accept-terms-radios admin__radio-switch">
-	                                            <h:selectOneRadio group="requiredFeedbackTerms" value="false"
+	                                            <h:selectOneRadio group="requiredFeedbackTerms" value="#{uploadBean.currentUploadJob.consent}"
 	                                                immediate="true" checked="false"
 	                                                pt:data-require-input-checkbox="uncheckedChecker">
 	                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
 	                                            </h:selectOneRadio>
-	                                            <h:selectOneRadio id="requiredTermsCheckbox2" group="requiredFeedbackTerms" value="true"
+	                                            <h:selectOneRadio id="requiredTermsCheckbox2" group="requiredFeedbackTerms"
+	                                                value="#{uploadBean.currentUploadJob.consent}"
 	                                                immediate="true" checked="true"
 	                                                pt:data-require-input-checkbox="feedbackInput">
 	                                                <f:selectItem itemValue="#{contentUploadModalAcceptedTerms}" itemLabel="#{msg.yes}" />
@@ -194,7 +173,7 @@
 								<div class="col-sm-12 d-flex justify-content-end">
 									<h:commandButton styleClass="btn btn--full"
 										value="#{msg.submit}" pt:data-require-input="feedbackInput"
-										action="#{userBean.submitFeedbackAction(true)}" />
+										action="#{uploadBean.createProcessAction}" />
 								</div>
 							</div>
 

@@ -131,11 +131,29 @@ public class UploadBean implements Serializable {
         return lazyModelUploadJobs;
     }
 
-    /*
+    /**
+     * @return the currentUploadJob
+     */
+    public UploadJob getCurrentUploadJob() {
+        return currentUploadJob;
+    }
+
+    /**
+     * @param currentUploadJob the currentUploadJob to set
+     */
+    public void setCurrentUploadJob(UploadJob currentUploadJob) {
+        this.currentUploadJob = currentUploadJob;
+    }
+
+    /**
      * 
      */
     public void newUploadJobAction() {
         this.currentUploadJob = new UploadJob();
+        if (userBean != null && userBean.getUser() != null) {
+            this.currentUploadJob.setCreatorId(userBean.getUser().getId());
+            this.currentUploadJob.setEmail(userBean.getUser().getEmail());
+        }
     }
 
     public String createProcessAction() {

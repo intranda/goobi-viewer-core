@@ -54,9 +54,10 @@
 	<!-- hotfolder: defines the hotfolder from the solr Indexer for indexing 
 		uploaded born-digital-material (see <content> also) -->
 	<hotfolder>hotfolder</hotfolder>
-	<!-- Folders for generated download files -->
 	<!-- stopwordsFile: location of the stopword.txt file used in Solr -->
 	<stopwordsFile>src/test/resources/stopwords.txt</stopwordsFile>
+    <!-- umlautsFile: location of the goobi_opacUmlaut.txt file for process title creation -->
+    <umlautsFile>src/test/resources/goobi_opacUmlaut.txt</umlautsFile>
 	<!-- dbPersistenceUnit: Name of the JPA persistence unit defined in persistence.xml. 
 		This element is optional and usually does not need to be configured. Default 
 		is 'intranda_viewer_tomcat'. -->
@@ -1157,7 +1158,10 @@
     
     <!-- upload/@enabled: If true, users are allowed to upload content for processing in Goobi workflow -->
     <upload enabled="true">
+        <!-- token: Goobi workflow API authorization token. -->
         <token>12345-GOOBI-WORKFLOW-REST-TOKEN-67890</token>
+        <!-- docstruct: Document type to be used when creating a new process from uploaded data. Default is 'monograph'. -->
+        <docstruct>manuscript</docstruct>
     </upload>
 
 	<!-- Transkribus settings (enabled: default false) -->
