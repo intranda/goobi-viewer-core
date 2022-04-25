@@ -19,8 +19,7 @@
 
 	<composite:implementation>
 		<div class="thumbnail-paginator">
-			<ui:repeat var="order"
-				value="#{navigationHelper.getRange(cc.attrs.currentPageOrder - cc.attrs.range, cc.attrs.currentPageOrder + cc.attrs.range)}">
+			<ui:repeat var="order" value="#{activeDocumentBean.viewManager.getPageRangeAroundPage(cc.attrs.currentPageOrder, cc.attrs.range)}">
 				<ui:param name="page" value="#{activeDocumentBean.viewManager.getPage(order).orElse(null)}"></ui:param>
 				<div class="thumbnail-paginator__item #{order == cc.attrs.currentPageOrder ? '-activePage' : ''}">
 					<ui:fragment rendered="#{page != null}">

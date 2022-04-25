@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
 
+import org.apache.tomcat.util.buf.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -352,43 +354,44 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(new Dimension(1000 * 600 / 2000, 600), thumbOption.getBoxSizeInPixel());
 
     }
-    
+
     @Test
-    public void test_setCurrentImageOrderString() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException, DAOException, ViewerConfigurationException {
+    public void test_setCurrentImageOrderString()
+            throws IndexUnreachableException, PresentationException, IDDOCNotFoundException, DAOException, ViewerConfigurationException {
         StructElement se = new StructElement(iddocKleiuniv);
         Assert.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
         {
             viewManager.setCurrentImageOrderString(null);
-            assertEquals(1,viewManager.getCurrentImageOrder());
+            assertEquals(1, viewManager.getCurrentImageOrder());
         }
         {
             viewManager.setCurrentImageOrderString("");
-            assertEquals(1,viewManager.getCurrentImageOrder());
+            assertEquals(1, viewManager.getCurrentImageOrder());
         }
         {
             viewManager.setCurrentImageOrderString("\"\"");
-            assertEquals(1,viewManager.getCurrentImageOrder());
+            assertEquals(1, viewManager.getCurrentImageOrder());
         }
         {
             viewManager.setCurrentImageOrderString("fgsdfgdf");
-            assertEquals(1,viewManager.getCurrentImageOrder());
+            assertEquals(1, viewManager.getCurrentImageOrder());
         }
         {
             viewManager.setCurrentImageOrderString("12");
-            assertEquals(12,viewManager.getCurrentImageOrder());
+            assertEquals(12, viewManager.getCurrentImageOrder());
         }
         {
             viewManager.setCurrentImageOrderString("5-8");
-            assertEquals(5,viewManager.getCurrentImageOrder());
+            assertEquals(5, viewManager.getCurrentImageOrder());
         }
         {
             viewManager.setCurrentImageOrderString("235674");
-            assertEquals(viewManager.getPageLoader().getLastPageOrder(),viewManager.getCurrentImageOrder());
+            assertEquals(viewManager.getPageLoader().getLastPageOrder(), viewManager.getCurrentImageOrder());
         }
         {
             viewManager.setCurrentImageOrderString("-8");
-            assertEquals(viewManager.getPageLoader().getFirstPageOrder(),viewManager.getCurrentImageOrder());
+            assertEquals(viewManager.getPageLoader().getFirstPageOrder(), viewManager.getCurrentImageOrder());
         }
     }
 
@@ -406,6 +409,71 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenReturn(page);
 
         return new ViewManager(se, pageLoader, se.getLuceneId(), null, null, new ImageDeliveryBean());
+    }
+
+    @Test
+    public void test_getElementsAroundPage() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+        StructElement se = new StructElement(iddocKleiuniv);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
+        assertEquals(16, viewManager.getAllPages().size());
+        assertEquals(1, viewManager.getFirstPageOrder());
+        assertEquals(16, viewManager.getLastPageOrder());
+        
+        {
+            List<Integer> pages = viewManager.getPageRangeAroundPage(3, 2);
+            for (Integer integer : pages) {
+                System.out.println(integer);
+            }
+            assertEquals(5, pages.size());
+            assertEquals(1, pages.get(0).intValue());
+            assertEquals(5, pages.get(4).intValue());
+        }
+        {
+            List<Integer> pages = viewManager.getPageRangeAroundPage(1, 2);
+            for (Integer integer : pages) {
+                System.out.println(integer);
+            }
+            assertEquals(5, pages.size());
+            assertEquals(1, pages.get(0).intValue());
+            assertEquals(5, pages.get(4).intValue());
+        }
+        {
+            List<Integer> pages = viewManager.getPageRangeAroundPage(3, 3);
+            for (Integer integer : pages) {
+                System.out.println(integer);
+            }
+            assertEquals(7, pages.size());
+            assertEquals(1, pages.get(0).intValue());
+            assertEquals(7, pages.get(6).intValue());
+        }
+        {
+            List<Integer> pages = viewManager.getPageRangeAroundPage(16, 2);
+            for (Integer integer : pages) {
+                System.out.println(integer);
+            }
+            assertEquals(5, pages.size());
+            assertEquals(12, pages.get(0).intValue());
+            assertEquals(16, pages.get(4).intValue());
+        }
+        {
+            List<Integer> pages = viewManager.getPageRangeAroundPage(15, 2);
+            for (Integer integer : pages) {
+                System.out.println(integer);
+            }
+            assertEquals(5, pages.size());
+            assertEquals(12, pages.get(0).intValue());
+            assertEquals(16, pages.get(4).intValue());
+        }
+        {
+            List<Integer> pages = viewManager.getPageRangeAroundPage(10, 3);
+            for (Integer integer : pages) {
+                System.out.println(integer);
+            }
+            assertEquals(7, pages.size());
+            assertEquals(7, pages.get(0).intValue());
+            assertEquals(13, pages.get(6).intValue());
+        }
+
     }
 
 }
