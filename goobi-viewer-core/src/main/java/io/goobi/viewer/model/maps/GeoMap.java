@@ -461,7 +461,7 @@ public class GeoMap {
                         }
                     }
                 });
-            } 
+            }
         } else if ("Feature".equalsIgnoreCase(type)) {
             GeoMapFeature feature = new GeoMapFeature(json.toString());
             feature.setTitle(title);

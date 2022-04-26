@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
@@ -46,6 +47,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.common.SolrDocument;
@@ -73,7 +75,6 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.ArchiveBean;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
@@ -3959,5 +3960,50 @@ public class ViewManager implements Serializable {
         ViewManager ret = new ViewManager(topDocument, AbstractPageLoader.create(topDocument), iddoc, null, null, null);
 
         return ret;
+    }
+    
+    /**
+     * Returns an integer list such that
+     * <ul>
+     * <li>the 'pageOrder' is contained in the list</li>
+     * <li>the list contains (2*range)+1 consecutive numbers, or all page numbers of the current record if it is less than that</li>
+     * <li>the first number is not less than the first image order</li>
+     * <li>the last number is not larger than the last image order</li>
+     * <li>the 'pageOrder' is as far in the middle of the list as possible without violating any of the other points</li>
+     * </li>
+     * Used int thumbnailPaginator.xhtml to calculate the pages to display.
+     * @param pageOrder The current page number around which to center the numbers
+     * @param range     The number of numbers to include above and below the current page number, if possible
+     * @return  an integer list
+     * @throws IndexUnreachableException    If the page numbers could not be read from SOLR
+     * @throws IllegalArgumentException     If the pageOrder is not within the range of page numbers of the current record or if range is less than zero
+     */
+    public List<Integer> getPageRangeAroundPage(int pageOrder, int range) throws IndexUnreachableException {
+        
+        if(pageOrder < pageLoader.getFirstPageOrder() || pageOrder > pageLoader.getLastPageOrder()) {
+            throw new IllegalArgumentException("the given pageOrder must be within the range of page numbers of the current record. The given pageOrder is " + pageOrder);
+        } else if(range < 0) {
+            throw new IllegalArgumentException("the given range must not be less than zero. It is " + range);
+        }
+        
+        int firstPage = pageOrder;
+        int lastPage = pageOrder;
+        int numPages = 2*range+1;
+        int totalPages = pageLoader.getNumPages();
+        while(lastPage - firstPage + 1 < numPages && lastPage - firstPage + 1 < totalPages) {
+            boolean changed = false;
+            if(firstPage > pageLoader.getFirstPageOrder()) {
+                firstPage--;
+                changed = true;
+            }
+            if(lastPage < pageLoader.getLastPageOrder()) {
+                lastPage++; 
+                changed = true;
+            }
+            if(!changed) {
+                break;
+            }
+        }
+        return IntStream.range(firstPage, lastPage+1).boxed().collect(Collectors.toList());
     }
 }

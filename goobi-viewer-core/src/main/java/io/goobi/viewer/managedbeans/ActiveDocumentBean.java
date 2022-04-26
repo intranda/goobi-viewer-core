@@ -257,7 +257,7 @@ public class ActiveDocumentBean implements Serializable {
             clearCacheMode = null;
             prevDocstructUrlCache.clear();
             nextDocstructUrlCache.clear();
-            // lastReceivedIdentifier = null;
+            lastReceivedIdentifier = null;
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -289,7 +289,7 @@ public class ActiveDocumentBean implements Serializable {
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             } catch (RecordNotFoundException | RecordDeletedException | RecordLimitExceededException e) {
-                if (e.getMessage() != null && !"null".equals(e.getMessage())) {
+                if (e.getMessage() != null && !"null".equals(e.getMessage()) && !"???".equals(e.getMessage())) {
                     logger.warn("{}: {}", e.getClass().getName(), e.getMessage());
                 }
             } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
@@ -342,7 +342,10 @@ public class ActiveDocumentBean implements Serializable {
         synchronized (this) {
             if (topDocumentIddoc == 0) {
                 try {
-                    throw new RecordNotFoundException(lastReceivedIdentifier);
+                    if (StringUtils.isNotEmpty(lastReceivedIdentifier)) {
+                        throw new RecordNotFoundException(lastReceivedIdentifier);
+                    }
+                    throw new RecordNotFoundException("???");
                 } finally {
                     lastReceivedIdentifier = null;
                 }
@@ -1208,7 +1211,7 @@ public class ActiveDocumentBean implements Serializable {
 
         return getPageUrl(number + "-" + (number + 1));
     }
-    
+
     public String getPageUrl(int order) throws IndexUnreachableException {
         return getPageUrl(Integer.toString(order));
     }
