@@ -23,11 +23,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
 
-import org.apache.tomcat.util.buf.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +33,6 @@ import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
-import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
@@ -44,10 +41,10 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.model.download.DownloadOption;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 
 public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
