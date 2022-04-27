@@ -83,7 +83,8 @@
 				      				clusterMarkers: true,
 				      				style: {
 				      					fillOpacity: 0.02
-				      				}
+				      				},
+									markerIcon: #{configurationBean.markerForFacetting.toJSONString()}
 				      			},
 				      			areaLayer: {
 				      				style : {
@@ -94,7 +95,7 @@
 				      			}
 				      		},
 				      		heatmap: {
-				      			showSearchResultsHeatmap: true,
+				      			showSearchResultsHeatmap: #{configurationBean.useHeatmapForFacetting()},
 				      			heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
 				      			featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
 				      			mainQuery: "#{searchBean.getFinalSolrQueryEscaped()}",
@@ -123,7 +124,7 @@
 				      	}
 					    
 					    let facetMap = new viewerJS.GeoMapFacet(config);
-				    	let features = {};//#{searchBean.getHitsLocations()};
+				    	let features = #{searchBean.getHitsLocations()};
 				    	facetMap.init(features, {
 	                            zoom: 1,
 	                            center: [0,0] //long, lat

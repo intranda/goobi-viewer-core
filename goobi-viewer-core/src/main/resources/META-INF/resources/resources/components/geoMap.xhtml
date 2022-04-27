@@ -53,7 +53,7 @@
 		            	loader: "##{cc.attrs.mapId} .ajax_loader"
 		            },
 		            heatmap: {
-		            	showSearchResultsHeatmap: #{cc.attrs.geoMap.type == 'SOLR_QUERY'},
+		            	showSearchResultsHeatmap: #{cc.attrs.geoMap.type == 'SOLR_QUERY' and configurationBean.useHeatmapForCMSMaps()},
 		            	heatmapUrl: "#{geoMapBean.heatmapUrl}",
 		            	featureUrl: "#{geoMapBean.featureUrl}",
 		        	    filterQuery: "#{cc.attrs.geoMap.solrQueryEncoded}",

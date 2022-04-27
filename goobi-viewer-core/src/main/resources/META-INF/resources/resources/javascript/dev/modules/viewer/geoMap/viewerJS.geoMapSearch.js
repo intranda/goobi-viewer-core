@@ -48,7 +48,13 @@ var viewerJS = ( function ( viewer ) {
 				clusterMarkers: true,
 				style: {
 					fillOpacity: 0.02
-				}
+				},
+				markerIcon: {
+					icon: "fa-number",
+					svg: true,
+					prefix: "fa",
+					iconRotate: 0
+			    }
 			},
 			heatmap: {
 				showSearchResultsHeatmap: true,

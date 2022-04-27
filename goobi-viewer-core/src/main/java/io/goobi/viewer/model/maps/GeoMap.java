@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -366,6 +367,19 @@ public class GeoMap {
                     string = "[" + string + "]";
                     return string;
                 case SOLR_QUERY:
+                    if(DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps()) {
+                        //No features required since they will be loaded dynamically with the heatmap
+                        return "[]";    
+                    } else {                        
+                        Collection<GeoMapFeature> features = getFeaturesFromSolrQuery(getSolrQuery(), Collections.emptyList(), getMarkerTitleField());
+                        String ret = features.stream()
+                                .distinct()
+                                .map(GeoMapFeature::getJsonObject)
+                                .map(Object::toString)
+                                .collect(Collectors.joining(","));
+                        
+                        return "[" + ret + "]";
+                    }
                 default:
                     return "[]";
             }

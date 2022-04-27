@@ -90,7 +90,7 @@ var viewerJS = ( function ( viewer ) {
 
 	viewer.GeoMapFacet.prototype.init = function (features,  view ) {
 		this.area = this.getArea( this.config.areaString );
-		this.features = features;
+		this.features = this.config.heatmap.showSearchResultsHeatmap ? {} : features;
 		this.geoMap.init(view);
 
 		this.drawLayer = this.initDrawLayer();
@@ -118,7 +118,7 @@ var viewerJS = ( function ( viewer ) {
 	}
 
 	viewer.GeoMapFacet.prototype.initHitsLayer = function (features) {
-		console.log("init hits layer ", this.config.map.hitsLayer);
+		//console.log("init hits layer ", this.config.map.hitsLayer);
 		let hitsLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, this.config.map.hitsLayer)
 		hitsLayer.init(features, false);
 		hitsLayer.onFeatureClick.subscribe(f => {
@@ -194,6 +194,7 @@ var viewerJS = ( function ( viewer ) {
 				toggleFeatures: this.config.buttons.$toggleMarkersEditMode.get(0),
 				search_enabled: this.config.editMode.enableAddressSearch,
 				search_placeholder: this.config.editMode.addressSearchPlaceholder,
+				hitsLayer: this.config.map.hitsLayer,
 				heatmap: this.config.heatmap,
 				onFeatureSelect: area => {
 					//console.log("Set facetting area", area);

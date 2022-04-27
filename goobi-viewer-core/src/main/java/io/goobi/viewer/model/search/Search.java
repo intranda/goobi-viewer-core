@@ -427,7 +427,7 @@ public class Search implements Serializable {
                 fieldList = Arrays.asList(SolrConstants.IDDOC, SolrConstants.WKT_COORDS, SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT,
                         SolrConstants.ISANCHOR, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.BOOL_IMAGEAVAILABLE,
                         SolrConstants.MIMETYPE);
-                maxResults = Integer.MAX_VALUE;
+                maxResults = DataManager.getInstance().getConfiguration().useHeatmapForFacetting() ? 0 : Integer.MAX_VALUE;
             }
 
             // Actual search

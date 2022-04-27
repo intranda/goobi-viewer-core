@@ -41,6 +41,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.download.DownloadOption;
+import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.language.Language;
@@ -1501,5 +1502,32 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
         return DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels(facetField);
+    }
+    
+    public boolean useHeatmapForMapSearch() {
+        return DataManager.getInstance().getConfiguration().useHeatmapForMapSearch();
+    }
+    
+    public GeoMapMarker getMarkerForMapSearch() {
+        return DataManager.getInstance().getConfiguration().getMarkerForMapSearch();
+    }
+    
+    public boolean useHeatmapForFacetting() {
+        return DataManager.getInstance().getConfiguration().useHeatmapForFacetting();
+    }
+    
+    public GeoMapMarker getMarkerForFacetting() {
+        return DataManager.getInstance().getConfiguration().getMarkerForFacetting();
+    }
+    
+    public boolean useHeatmapForCMSMaps() {
+        return DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps();
+    }
+    
+    public GeoMapMarker getDefaultMarkerForCMSMaps() {
+        List<GeoMapMarker> markers = DataManager.getInstance().getConfiguration().getGeoMapMarkers();
+        GeoMapMarker marker = markers.stream().filter(m -> m.getName().equalsIgnoreCase("default")).findAny()
+                .orElse(new GeoMapMarker("default"));
+        return marker;
     }
 }

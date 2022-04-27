@@ -60,6 +60,12 @@
 									    reset_button: $("[data-feature='reset']"),
 									    msg: {
 									        action__toggle_map_markers : "#{msg.action__toggle_map_markers}"
+									    },
+									    heatmap: {
+											showSearchResultsHeatmap: #{configurationBean.useHeatmapForMapSearch()},
+									    },
+									    hitsLayer: {
+											markerIcon: #{configurationBean.markerForMapSearch.toJSONString()}
 									    }
 						    		}
 							    }

@@ -2431,22 +2431,7 @@ this.initMap = function() {
         element : this.refs.map,
         language: viewerJS.translator.language,
         fixed: this.opts.inactive ? true : false,
-        layer: {
-	        allowMovingFeatures: false,
-	        popover: $("<div><p data-metadata='title'></p></div>"),
-	        popoverOnHover: true,
-	        emptyMarkerMessage: undefined,
-	        clusterMarkers: true,
-		    style: {
-				fillOpacity: 0.02
-			},
-			markerIcon: {
-				icon: "fa-number",
-				svg: true,
-				prefix: "fa",
-				iconRotate: 0
-			}
-        }
+        layer: this.opts.hitsLayer
     })
     let initialView = {
         zoom: 5,
@@ -2695,6 +2680,7 @@ this.getType = function(layer) {
 }.bind(this)
 
 this.initHitsLayer = function(map) {
+    console.log("opts ", this.opts);
 	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer)
 	hitsLayer.init(this.opts.features, false);
 	hitsLayer.onFeatureClick.subscribe(f => {

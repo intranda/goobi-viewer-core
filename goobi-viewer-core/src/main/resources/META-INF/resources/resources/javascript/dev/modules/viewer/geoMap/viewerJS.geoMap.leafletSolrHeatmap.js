@@ -410,7 +410,7 @@ L.SolrHeatmap = L.GeoJSON.extend({
   
   _expandMarker(marker) {
   		var visibleOne = this.clusterMarkers.getVisibleParent(marker);
-	    console.log("expand ", marker, visibleOne);
+	    //console.log("expand ", marker, visibleOne);
 	    if(visibleOne === marker) {
 			let bounds = marker.options.bounds;
 		    if(bounds && this.queryAdapter.ajaxOptionsForSearchHits) {
@@ -418,7 +418,7 @@ L.SolrHeatmap = L.GeoJSON.extend({
 		        .then(res => {
         			res.forEach(geoJson => {
                 let m = this.featureGroup.addMarker(geoJson);
-                console.log("added ", geoJson, " to ", marker);
+                //console.log("added ", geoJson, " to ", marker);
         			});
         		});
 		       		

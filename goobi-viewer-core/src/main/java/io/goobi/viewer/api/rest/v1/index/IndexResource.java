@@ -158,10 +158,6 @@ public class IndexResource {
             return ret.toString();
         }
 
-        // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
-        //        String query =
-        //                new StringBuilder().append("+").append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
-
         String termQuery = null;
         if (params.boostTopLevelDocstructs) {
             Map<String, Set<String>> searchTerms = SearchHelper.extractSearchTermsFromQuery(params.query.replace("\\", ""), null);
@@ -282,19 +278,14 @@ public class IndexResource {
         if(!finalQuery.startsWith("{!join")) {            
             finalQuery = 
                     new StringBuilder().append("+(").append(filterQuery).append(") ").append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
+        } else {
+            //search query. Ignore all polygon results or the heatmap will have hits everywhere
+            finalQuery = finalQuery.substring(0, finalQuery.length()-1) + "-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
         }
         logger.debug("q: {}", finalQuery);
         
         String facetQuery = "";
 
-//            SearchBean searchBean = BeanUtils.findInstanceInSessionAttributes(servletRequest, SearchBean.class).orElse(null);
-//            String query = "";
-//            if(searchBean != null) {
-//                query = searchBean.getFinalSolrQuery();
-//                facetQuery = searchBean.getCombinedFilterQuery();
-//                finalQuery = query;
-//            }            
-        
         return DataManager.getInstance()
                         .getSearchIndex().getHeatMap(solrField, wktRegion, finalQuery, facetQuery, gridLevel);
         
