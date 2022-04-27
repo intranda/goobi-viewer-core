@@ -15,45 +15,35 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.Part;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.omnifaces.util.Servlets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.UploadException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.model.annotation.comments.Comment;
-import io.goobi.viewer.model.annotation.serialization.AnnotationLister;
-import io.goobi.viewer.model.annotation.serialization.SqlAnnotationLister;
-import io.goobi.viewer.model.annotation.serialization.SqlCommentLister;
-import io.goobi.viewer.model.bookmark.Bookmark;
-import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.job.upload.UploadJob;
-import io.goobi.viewer.model.search.Search;
-import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.security.user.UserActivity;
 
 @Named
 @ViewScoped
@@ -135,6 +125,9 @@ public class UploadBean implements Serializable {
      * @return the currentUploadJob
      */
     public UploadJob getCurrentUploadJob() {
+        if (currentUploadJob == null) {
+            newUploadJobAction();
+        }
         return currentUploadJob;
     }
 
@@ -149,6 +142,7 @@ public class UploadBean implements Serializable {
      * 
      */
     public void newUploadJobAction() {
+        logger.trace("newUploadJobAction");
         this.currentUploadJob = new UploadJob();
         if (userBean != null && userBean.getUser() != null) {
             this.currentUploadJob.setCreatorId(userBean.getUser().getId());
@@ -157,17 +151,29 @@ public class UploadBean implements Serializable {
     }
 
     public String createProcessAction() {
+        logger.trace("createProcessAction");
         if (currentUploadJob == null) {
             return "";
         }
 
         try {
             currentUploadJob.createProcess();
+            currentUploadJob.uploadFiles();
+            setCurrentUploadJob(null);
             Messages.info("TODO");
         } catch (UploadException e) {
+            logger.error(e.getMessage());
+            Messages.error(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            Messages.error(e.getMessage());
+        } catch (HTTPException e) {
+            logger.error(e.getMessage());
             Messages.error(e.getMessage());
         }
 
         return "";
     }
+
+
 }

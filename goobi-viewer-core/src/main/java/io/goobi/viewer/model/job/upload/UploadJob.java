@@ -16,11 +16,18 @@
 package io.goobi.viewer.model.job.upload;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.persistence.Column;
@@ -32,6 +39,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.servlet.http.Part;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
@@ -46,11 +54,13 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.glassfish.jersey.client.ClientProperties;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.omnifaces.util.Servlets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,9 +137,8 @@ public class UploadJob implements Serializable {
     @Transient
     private String docstruct = DataManager.getInstance().getConfiguration().getContentUploadDocstruct();
 
-    public UploadJob() {
-
-    }
+    @Transient
+    private List<Part> files;
 
     /**
      * <p>
@@ -149,6 +158,251 @@ public class UploadJob implements Serializable {
         }
 
         return StringTools.generateHash(sbCriteria.toString());
+    }
+
+    public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
+        try {
+            Client client = ClientBuilder.newClient();
+            client.property(ClientProperties.CONNECT_TIMEOUT, 12000);
+            client.property(ClientProperties.READ_TIMEOUT, 30000);
+            return client
+                    .target(url)
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(javax.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
+        } catch (Throwable e) {
+            throw new IOException("Error connecting to " + url, e);
+        }
+    }
+
+    /**
+     * 
+     * @return {@link Document}
+     * @should create xml document correctly
+     */
+    Document buildXmlBody() {
+        Document doc = new Document();
+        Element root = new Element("record")
+                .addContent(new Element("identifier").setText(getPi()))
+                .addContent(new Element("processtitle").setText(createAtstsl(title, null) + "_" + pi))
+                .addContent(new Element("docstruct").setText(docstruct));
+        doc.setRootElement(root);
+
+        Element eleMetadataList = new Element("metadataList")
+                .addContent(new Element("metadata").setAttribute("name", "TitleDocMain").setText(getTitle()))
+                .addContent(new Element("metadata").setAttribute("name", "Description").setText(getDescription()));
+        root.addContent(eleMetadataList);
+
+        Element propertyList = new Element("propertyList").addContent(new Element("property").setAttribute("name", "email").setText(email));
+        root.addContent(propertyList);
+
+        return doc;
+    }
+
+    /**
+     * @throws UploadException
+     */
+    public void createProcess() throws UploadException {
+        String url = DataManager.getInstance().getConfiguration().getWorkflowRestUrl() + "processes";
+        String body = XmlTools.getStringFromElement(buildXmlBody(), StringTools.DEFAULT_ENCODING);
+
+        try {
+            String response = NetTools.getWebContentPOST(url,
+                    Collections.singletonMap("token", DataManager.getInstance().getConfiguration().getContentUploadToken()), null, null, body, null);
+            if (StringUtils.isEmpty(response)) {
+                logger.error("No XML response received.");
+                throw new UploadException("No XML response received.");
+            }
+            Document doc = XmlTools.getDocumentFromString(response, StringTools.DEFAULT_ENCODING);
+            if (doc == null || doc.getRootElement() == null) {
+                logger.error("Could not parse XML.");
+                throw new UploadException("Could not parse XML.");
+            }
+
+            if (!"success".equals(doc.getRootElement().getChildText("result"))) {
+                String errorText = doc.getRootElement().getChildText("errorText");
+                throw new UploadException(errorText);
+            }
+
+            String processId = doc.getRootElement().getChildText("processId");
+            try {
+                setProcessId(Integer.valueOf(processId));
+                if (DataManager.getInstance().getDao().addUploadJob(this)) {
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                logger.error("Cannot parse process ID: {}", processId);
+                throw new UploadException("Cannot parse process ID: " + processId);
+            } catch (DAOException e) {
+                logger.error(e.getMessage());
+                throw new UploadException(e.getMessage());
+            }
+        } catch (ClientProtocolException e) {
+            logger.error(e.getMessage());
+            throw new UploadException(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            throw new UploadException(e.getMessage());
+        } catch (HTTPException e) {
+            logger.error(e.getMessage());
+            throw new UploadException(e.getMessage());
+        } catch (JDOMException e) {
+            logger.error(e.getMessage());
+            throw new UploadException(e.getMessage());
+        }
+    }
+
+    /**
+     * 
+     * @throws IOException
+     * @throws HTTPException
+     */
+    public void uploadFiles() throws IOException, HTTPException {
+        logger.trace("uploadFiles");
+        if (getFiles() == null) {
+            logger.debug("No files to upload.");
+            return;
+        }
+
+        Path tempFolder = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder());
+        if (!Files.exists(tempFolder)) {
+            Files.createDirectory(tempFolder);
+        }
+
+        for (Part file : getFiles()) {
+            String fileName = Servlets.getSubmittedFileName(file);
+            Path tempFile = Paths.get(tempFolder.toAbsolutePath().toString(), fileName);
+            long bytes = Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
+            if (bytes > 0) {
+                //uploadFile(tempFile.toFile());
+                logger.trace("Temp file: {}", tempFile.toAbsolutePath());
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param file
+     * @throws HTTPException
+     * @throws IOException
+     * @throws ClientProtocolException
+     */
+    public void uploadFile(File file) throws ClientProtocolException, IOException, HTTPException {
+        if (file == null) {
+            throw new IllegalArgumentException("file may not be null");
+        }
+        String url = DataManager.getInstance().getConfiguration().getWorkflowRestUrl() + "processes/" + processId + "/master";
+        String response = NetTools.getWebContentPOST(url,
+                Collections.singletonMap("token", DataManager.getInstance().getConfiguration().getContentUploadToken()), null, null, null, file);
+        // TODO evaluate response?
+    }
+
+    /**
+     * <p>
+     * getJobStatus.
+     * </p>
+     *
+     * @param processId a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public String getJobStatus(Integer processId) {
+        StringBuilder url = new StringBuilder()
+                .append(DataManager.getInstance().getConfiguration().getWorkflowRestUrl())
+                .append("process/details/id/")
+                .append(processId)
+                .append('/');
+        ResponseHandler<String> handler = new BasicResponseHandler();
+
+        HttpGet httpGet = new HttpGet(url.toString());
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            CloseableHttpResponse response = httpclient.execute(httpGet);
+            String ret = handler.handleResponse(response);
+            logger.trace("TaskManager response: {}", ret);
+            return ret;
+        } catch (Throwable e) {
+            logger.error("Error getting response from TaskManager", e);
+            return "";
+        }
+    }
+
+    /**
+     * <p>
+     * updateStatus.
+     * </p>
+     */
+    public void updateStatus() {
+        String ret = getJobStatus(processId);
+        try {
+            JSONObject object = new JSONObject(ret);
+            String statusString = object.getString("status");
+            JobStatus status = JobStatus.getByName(statusString);
+            setStatus(status);
+            if (JobStatus.ERROR.equals(status)) {
+                String errorMessage = object.getString("errorMessage");
+                setMessage(errorMessage);
+            }
+        } catch (JSONException e) {
+            setStatus(JobStatus.ERROR);
+            setMessage("Unable to parse TaskManager response");
+        }
+
+    }
+
+    /**
+     * 
+     * @param title
+     * @param author
+     * @return
+     */
+    String createAtstsl(String title, String author) {
+        StringBuilder result = new StringBuilder(8);
+        if (author != null && author.trim().length() > 0) {
+            result.append(author.length() > 4 ? author.substring(0, 4) : author);
+            result.append(title.length() > 4 ? title.substring(0, 4) : title);
+        } else {
+            StringTokenizer titleWords = new StringTokenizer(title);
+            int wordNo = 1;
+            while (titleWords.hasMoreTokens() && wordNo < 5) {
+                String word = titleWords.nextToken();
+                switch (wordNo) {
+                    case 1:
+                        result.append(word.length() > 4 ? word.substring(0, 4) : word);
+                        break;
+                    case 2:
+                    case 3:
+                        result.append(word.length() > 2 ? word.substring(0, 2) : word);
+                        break;
+                    case 4:
+                        result.append(word.length() > 1 ? word.substring(0, 1) : word);
+                        break;
+                }
+                wordNo++;
+            }
+        }
+        String res = convertUmlaut(result.toString()).toLowerCase();
+        return res.replaceAll("[\\W]", ""); // delete umlauts etc.
+    }
+
+    /**
+     * 
+     * @param inString
+     * @return
+     */
+    static String convertUmlaut(String inString) {
+        String temp = inString;
+        String filename = DataManager.getInstance().getConfiguration().getUmlautsFilePath();
+
+        try (FileInputStream fis = new FileInputStream(filename); InputStreamReader isr = new InputStreamReader(fis, "UTF8");
+                BufferedReader in = new BufferedReader(isr);) {
+            String str;
+            while ((str = in.readLine()) != null) {
+                if (str.length() > 0) {
+                    temp = temp.replaceAll(str.split(" ")[0], str.split(" ")[1]);
+                }
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+        return temp;
     }
 
     /**
@@ -348,203 +602,18 @@ public class UploadJob implements Serializable {
         this.description = description;
     }
 
-    public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
-        try {
-            Client client = ClientBuilder.newClient();
-            client.property(ClientProperties.CONNECT_TIMEOUT, 12000);
-            client.property(ClientProperties.READ_TIMEOUT, 30000);
-            return client
-                    .target(url)
-                    .request(MediaType.APPLICATION_JSON)
-                    .post(javax.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
-        } catch (Throwable e) {
-            throw new IOException("Error connecting to " + url, e);
-        }
+    /**
+     * @return the files
+     */
+    public List<Part> getFiles() {
+        return files;
     }
 
     /**
-     * 
-     * @return {@link Document}
-     * @should create xml document correctly
+     * @param files the files to set
      */
-    Document buildXmlBody() {
-        Document doc = new Document();
-        Element root = new Element("record")
-                .addContent(new Element("identifier").setText(getPi()))
-                .addContent(new Element("processtitle").setText(createAtstsl(title, null) + "_" + pi))
-                .addContent(new Element("docstruct").setText(docstruct));
-        doc.setRootElement(root);
-
-        Element eleMetadataList = new Element("metadataList")
-                .addContent(new Element("metadata").setAttribute("name", "TitleDocMain").setText(getTitle()))
-                .addContent(new Element("metadata").setAttribute("name", "Description").setText(getDescription()));
-        root.addContent(eleMetadataList);
-
-        Element propertyList = new Element("propertyList").addContent(new Element("property").setAttribute("name", "email").setText(email));
-        root.addContent(propertyList);
-
-        return doc;
-    }
-
-    /**
-     * @throws UploadException
-     */
-    public void createProcess() throws UploadException {
-        String url = DataManager.getInstance().getConfiguration().getWorkflowRestUrl() + "processes";
-        String body = XmlTools.getStringFromElement(buildXmlBody(), StringTools.DEFAULT_ENCODING);
-        try {
-            // TODO auth via header param "password"
-            String response = NetTools.getWebContentPOST(url, null, null, body, description);
-            if (StringUtils.isEmpty(response)) {
-                logger.error("No XML response received.");
-                throw new UploadException("No XML response received.");
-            }
-            Document doc = XmlTools.getDocumentFromString(response, StringTools.DEFAULT_ENCODING);
-            if (doc == null || doc.getRootElement() == null) {
-                logger.error("Could not parse XML.");
-                throw new UploadException("Could not parse XML.");
-            }
-
-            if (!"success".equals(doc.getRootElement().getChildText("result"))) {
-                String errorText = doc.getRootElement().getChildText("errorText");
-                throw new UploadException(errorText);
-            }
-
-            String processId = doc.getRootElement().getChildText("processId");
-            try {
-                setProcessId(Integer.valueOf(processId));
-                if (DataManager.getInstance().getDao().addUploadJob(this)) {
-                    return;
-                }
-            } catch (NumberFormatException e) {
-                logger.error("Cannot parse process ID: {}", processId);
-                throw new UploadException("Cannot parse process ID: " + processId);
-            } catch (DAOException e) {
-                logger.error(e.getMessage());
-                throw new UploadException(e.getMessage());
-            }
-        } catch (ClientProtocolException e) {
-            logger.error(e.getMessage());
-            throw new UploadException(e.getMessage());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            throw new UploadException(e.getMessage());
-        } catch (HTTPException e) {
-            logger.error(e.getMessage());
-            throw new UploadException(e.getMessage());
-        } catch (JDOMException e) {
-            logger.error(e.getMessage());
-            throw new UploadException(e.getMessage());
-        }
-    }
-
-    /**
-     * <p>
-     * getJobStatus.
-     * </p>
-     *
-     * @param processId a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getJobStatus(Integer processId) {
-        StringBuilder url = new StringBuilder()
-                .append(DataManager.getInstance().getConfiguration().getWorkflowRestUrl())
-                .append("process/details/id/")
-                .append(processId)
-                .append('/');
-        ResponseHandler<String> handler = new BasicResponseHandler();
-
-        HttpGet httpGet = new HttpGet(url.toString());
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            CloseableHttpResponse response = httpclient.execute(httpGet);
-            String ret = handler.handleResponse(response);
-            logger.trace("TaskManager response: {}", ret);
-            return ret;
-        } catch (Throwable e) {
-            logger.error("Error getting response from TaskManager", e);
-            return "";
-        }
-    }
-
-    /**
-     * <p>
-     * updateStatus.
-     * </p>
-     */
-    public void updateStatus() {
-        String ret = getJobStatus(processId);
-        try {
-            JSONObject object = new JSONObject(ret);
-            String statusString = object.getString("status");
-            JobStatus status = JobStatus.getByName(statusString);
-            setStatus(status);
-            if (JobStatus.ERROR.equals(status)) {
-                String errorMessage = object.getString("errorMessage");
-                setMessage(errorMessage);
-            }
-        } catch (JSONException e) {
-            setStatus(JobStatus.ERROR);
-            setMessage("Unable to parse TaskManager response");
-        }
-
-    }
-
-    /**
-     * 
-     * @param title
-     * @param author
-     * @return
-     */
-    public String createAtstsl(String title, String author) {
-        StringBuilder result = new StringBuilder(8);
-        if (author != null && author.trim().length() > 0) {
-            result.append(author.length() > 4 ? author.substring(0, 4) : author);
-            result.append(title.length() > 4 ? title.substring(0, 4) : title);
-        } else {
-            StringTokenizer titleWords = new StringTokenizer(title);
-            int wordNo = 1;
-            while (titleWords.hasMoreTokens() && wordNo < 5) {
-                String word = titleWords.nextToken();
-                switch (wordNo) {
-                    case 1:
-                        result.append(word.length() > 4 ? word.substring(0, 4) : word);
-                        break;
-                    case 2:
-                    case 3:
-                        result.append(word.length() > 2 ? word.substring(0, 2) : word);
-                        break;
-                    case 4:
-                        result.append(word.length() > 1 ? word.substring(0, 1) : word);
-                        break;
-                }
-                wordNo++;
-            }
-        }
-        String res = convertUmlaut(result.toString()).toLowerCase();
-        return res.replaceAll("[\\W]", ""); // delete umlauts etc.
-    }
-
-    /**
-     * 
-     * @param inString
-     * @return
-     */
-    static String convertUmlaut(String inString) {
-        String temp = inString;
-        String filename =  DataManager.getInstance().getConfiguration().getUmlautsFilePath();
-
-        try (FileInputStream fis = new FileInputStream(filename); InputStreamReader isr = new InputStreamReader(fis, "UTF8");
-                BufferedReader in = new BufferedReader(isr);) {
-            String str;
-            while ((str = in.readLine()) != null) {
-                if (str.length() > 0) {
-                    temp = temp.replaceAll(str.split(" ")[0], str.split(" ")[1]);
-                }
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-        return temp;
+    public void setFiles(List<Part> files) {
+        this.files = files;
     }
 
     /* (non-Javadoc)

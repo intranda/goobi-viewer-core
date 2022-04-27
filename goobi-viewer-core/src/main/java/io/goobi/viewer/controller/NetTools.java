@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -56,6 +57,8 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -178,18 +181,19 @@ public class NetTools {
      * </p>
      *
      * @param url a {@link java.lang.String} object.
+     * @param headers
      * @param params a {@link java.util.Map} object.
      * @param cookies a {@link java.util.Map} object.
-     * @param body Optional entity content.
-     * @param contentType Optional mime type.
+     * @param stringBody Optional entity content.
+     * @param file
      * @return a {@link java.lang.String} object.
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
      */
-    public static String getWebContentPOST(String url, Map<String, String> params, Map<String, String> cookies, String body, String contentType)
-            throws ClientProtocolException, IOException, HTTPException {
-        return getWebContent("POST", url, params, cookies, body, contentType);
+    public static String getWebContentPOST(String url, Map<String, String> headers, Map<String, String> params, Map<String, String> cookies,
+            String stringBody, File file) throws ClientProtocolException, IOException, HTTPException {
+        return getWebContent("POST", url, headers, params, cookies, stringBody, file);
     }
 
     /**
@@ -198,18 +202,18 @@ public class NetTools {
      * </p>
      *
      * @param url a {@link java.lang.String} object.
+     * @param headers
      * @param params a {@link java.util.Map} object.
      * @param cookies a {@link java.util.Map} object.
      * @param body Optional entity content.
-     * @param contentType Optional mime type.
      * @return a {@link java.lang.String} object.
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
      */
-    public static String getWebContentDELETE(String url, Map<String, String> params, Map<String, String> cookies, String body, String contentType)
-            throws ClientProtocolException, IOException, HTTPException {
-        return getWebContent("DELETE", url, params, cookies, body, contentType);
+    public static String getWebContentDELETE(String url, Map<String, String> headers, Map<String, String> params, Map<String, String> cookies,
+            String body) throws ClientProtocolException, IOException, HTTPException {
+        return getWebContent("DELETE", url, headers, params, cookies, body, null);
     }
 
     /**
@@ -219,17 +223,18 @@ public class NetTools {
      *
      * @param method POST | PUT | DELETE
      * @param url a {@link java.lang.String} object.
+     * @param headers
      * @param params a {@link java.util.Map} object.
      * @param cookies a {@link java.util.Map} object.
-     * @param body Optional entity content.
+     * @param stringBody Optional entity content.
      * @param contentType Optional mime type.
      * @return a {@link java.lang.String} object.
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
      */
-    static String getWebContent(String method, String url, Map<String, String> params, Map<String, String> cookies, String body, String contentType)
-            throws ClientProtocolException, IOException, HTTPException {
+    static String getWebContent(String method, String url, Map<String, String> headers, Map<String, String> params, Map<String, String> cookies,
+            String stringBody, File file) throws ClientProtocolException, IOException, HTTPException {
         if (method == null || !("POST".equals(method.toUpperCase()) || "PUT".equals(method.toUpperCase()) || "DELETE".equals(method.toUpperCase()))) {
             throw new IllegalArgumentException("Illegal method: " + method);
         }
@@ -281,14 +286,27 @@ public class NetTools {
                 default:
                     return "";
             }
-            if (StringUtils.isNotEmpty(contentType)) {
-                requestBase.setHeader("Content-Type", contentType);
+            //            if (StringUtils.isNotEmpty(contentType)) {
+            //                requestBase.setHeader("Content-Type", contentType);
+            //            }
+            if (headers != null && !headers.isEmpty()) {
+                for (String key : headers.keySet()) {
+                    requestBase.addHeader(key, params.get(key));
+                }
             }
             Charset.forName(StringTools.DEFAULT_ENCODING);
             // TODO allow combinations of params + body
             if (requestBase instanceof HttpPost || requestBase instanceof HttpPut) {
-                if (StringUtils.isNotEmpty(body)) {
-                    ((HttpEntityEnclosingRequestBase) requestBase).setEntity(new ByteArrayEntity(body.getBytes(StringTools.DEFAULT_ENCODING)));
+                if (file != null) {
+                    // Multipart
+                    ((HttpEntityEnclosingRequestBase) requestBase).setEntity(
+                            MultipartEntityBuilder.create()
+                                    .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
+                                    .addBinaryBody("file", file)
+                                    .addTextBody("filename", file.getName())
+                                    .build());
+                } else if (StringUtils.isNotEmpty(stringBody)) {
+                    ((HttpEntityEnclosingRequestBase) requestBase).setEntity(new ByteArrayEntity(stringBody.getBytes(StringTools.DEFAULT_ENCODING)));
                 } else {
                     ((HttpEntityEnclosingRequestBase) requestBase).setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 }

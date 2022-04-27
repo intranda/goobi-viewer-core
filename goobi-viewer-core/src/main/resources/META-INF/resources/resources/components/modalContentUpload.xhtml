@@ -1,10 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
@@ -13,7 +14,7 @@
     <composite:implementation>
 
 		<!-- Modal -->
-		<div class="modal fade view-contentUploadModal show" id="contentUploadModal" tabindex="-1" role="dialog" aria-label="#msg.feedbackTitle" aria-hidden="true">
+		<div class="modal fade view-contentUploadModal show" id="contentUploadModal" tabindex="-1" role="dialog" aria-label="#msg.contentUploadTitle" aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -29,8 +30,8 @@
 							<h:outputText value="#{msg.user__upload_content_modal_desc}" />
 						</p>
 
-						<h:form id="contentUploadModal__feedbackForm" styleClass="form-horizontal" prependId="false">
-							<div id="contentUploadModal__feedback" class="contentUploadModal">
+						<h:form id="contentUploadModal__contentUploadForm" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
+							<div id="contentUploadModal__contentUpload" class="contentUploadModal">
 
 								<!-- TITLE -->
 								<div class="form-group form-row">
@@ -44,7 +45,7 @@
 										<h:inputText id="contentUploadModal__uploadJobTitle" styleClass="form-control"
 											value="#{uploadBean.currentUploadJob.title}" required="true"
 											requiredMessage="#{msg.errFeedbackNameRequired}"
-											aria-labelledby="labelUploadJobTitle" pt:data-require-input-text="feedbackInput">
+											aria-labelledby="labelUploadJobTitle" pt:data-require-input-text="contentUploadInput">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="contentUploadModal__labelUploadJobTitle" />
 										</h:inputText>
@@ -56,13 +57,13 @@
                                     <label id="contentUploadModal__labelUploadJobDescription" for="contentUploadModal__uploadJobDescription"
                                         class="col-lg-3 control-label">
                                         <span class="contentUploadModal__label-span">#{msg.description}:</span>
-                                        </label>
+                                    </label>
                                     
                                     <div class="col-12 col-lg-9">
                                         <h:inputTextarea id="contentUploadModal__uploadJobDescription"
                                             styleClass="form-control"
                                             value="#{uploadBean.currentUploadJob.description}"
-                                            pt:data-require-input-text="feedbackInput">
+                                            pt:data-require-input-text="contentUploadInput">
                                             <f:passThroughAttribute name="aria-labelledby"
                                                 value="contentUploadModal__labelFeedbackMessage" />
                                         </h:inputTextarea>
@@ -70,19 +71,31 @@
                                 </div>
                                 
                                 <!-- FILES -->
-                                <!-- TODO -->
+                                <div class="form-group form-row">
+                                    <label id="contentUploadModal__labelUploadJobFiles" for="contentUploadModal__uploadJobFiles"
+                                        class="col-lg-3 control-label">
+                                        <span class="contentUploadModal__label-span">#{msg.description}:</span>
+                                    </label>
+                                    
+                                    <div class="col-12 col-lg-9">
+                                        <o:inputFile value="#{uploadBean.currentDownloadJob.files}" multiple="true">
+                                            <f:ajax listener="#{uploadBean.uploadFiles}" />
+                                        </o:inputFile>
+                                    </div>
+                                </div>
+                                
 
 								<!-- E-MAIL -->
-								<h:panelGroup rendered="#{!userBean.loggedIn}" layout="block"
+								<h:panelGroup layout="block"
 									styleClass="form-group form-row" id="emailGroup">
-									<label id="contentUploadModal__labelEmail" for="contentUploadModal__feedbackEmail"
+									<label id="contentUploadModal__labelEmail" for="contentUploadModal__contentUploadEmail"
 										class="col-lg-3 control-label">
 										<span class="contentUploadModal__label-span">#{msg.email}:</span>
 										<span class="contentUploadModal__label-required-field">(#{msg.form__required_field})</span>
 									</label>
 									<div class="cms-module__option-control col-12 col-lg-9">
 										<div class="cms-module__option-message">
-											<h:messages for="feedbackEmail"
+											<h:messages for="contentUploadEmail"
 												styleClass="m-0 p-0 pb-1 list-unstyled"
 												infoClass="cms-module__option-message-status success"
 												warnClass="cms-module__option-message-status warning"
@@ -92,47 +105,17 @@
 													class="fa fa-exclamation" aria-hidden="true"></i>
 											</div>
 										</div>
-										<h:inputText id="contentUploadModal__email" label="feedbackEmail"
-											immediate="true" required="true" pt:data-require-input-text="feedbackInput"
+										<h:inputText id="contentUploadModal__email" label="contentUploadEmail"
+											immediate="true" required="true" pt:data-require-input-text="contentUploadInput"
 											value="#{uploadBean.currentUploadJob.email}" styleClass="form-control"
 											disabled="true">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="contentUploadModal__labelFeedbackEmail" />
-											<f:validator validatorId="emailValidator" for="feedbackEmail" />
+											<f:validator validatorId="emailValidator" for="contentUploadEmail" />
 											<f:ajax render="emailGroup" />
 										</h:inputText>
 									</div>
 								</h:panelGroup>
-
-								<!-- E-MAIL FOR LOGGED IN USERS -->
-								<h:panelGroup rendered="#{userBean.loggedIn}" layout="block"
-									styleClass="form-group form-row" id="emailGroup2">
-									<label id="labelFeedbackEmail2" for="feedbackEmail2"
-										class="col-lg-3 control-label">#{msg.email}:</label>
-									<div class="cms-module__option-control col-12 col-lg-9">
-										<div class="cms-module__option-message">
-											<h:messages for="feedbackEmail2"
-												styleClass="m-0 p-0 pb-1 list-unstyled"
-												infoClass="cms-module__option-message-status success"
-												warnClass="cms-module__option-message-status warning"
-												errorClass="cms-module__option-message-status danger" />
-											<div class="cms-module__option-message-mark">
-												<i class="fa fa-check" aria-hidden="true"></i> 
-												<i class="fa fa-exclamation" aria-hidden="true"></i>
-											</div>
-										</div>
-										<h:inputText id="feedbackEmail2" label="feedbackEmail2"
-											immediate="true" required="true" disabled="true" pt:data-require-input-text="feedbackInput"
-											value="#{userBean.feedback.senderAddress}" styleClass="form-control">
-											<f:passThroughAttribute name="aria-labelledby"
-												value="labelFeedbackEmail2" />
-											<f:validator validatorId="emailValidator"
-												for="feedbackEmail2" />
-											<f:ajax render="emailGroup2" />
-										</h:inputText>
-									</div>
-								</h:panelGroup>
-
 							</div>
 								<!-- REQUIRED CHECKBOX FOR USAGE OF PERSONAL DATA OR ANYTHING ELSE -->
 								<!-- TO DO: CONFIG SWITCH FOR THIS RENDERED CONDITION CHECKBOX, VALUE + ADDITIONAL TEXT WHICH IS SEND BY FORM(?) -->
@@ -140,11 +123,11 @@
 									<div class="contentUploadModal__required-checkbox-wrapper">
 									  
 									  	<div class="form-row">
-										  	<p class="col-12 contentUploadModal__accept-terms-text">#{msg.feedbackAcceptingTerms}</p>
+										  	<p class="col-12 contentUploadModal__accept-terms-text">#{msg.user__upload_content_modal_consent_desc}</p>
 										  
 										  
 						  					<div id="sendContactFormAcceptTerms" class="col-12 col-sm-3 contentUploadModal__accept-terms-label">
-												<label class="mr-3 mb-0">#{msg.user__upload_content_modal_consent_desc}:</label>
+												<label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
 											</div>	
 	                                       
 	                                       
@@ -157,7 +140,7 @@
 	                                            <h:selectOneRadio id="requiredTermsCheckbox2" group="requiredFeedbackTerms"
 	                                                value="#{uploadBean.currentUploadJob.consent}"
 	                                                immediate="true" checked="true"
-	                                                pt:data-require-input-checkbox="feedbackInput">
+	                                                pt:data-require-input-checkbox="contentUploadInput">
 	                                                <f:selectItem itemValue="#{contentUploadModalAcceptedTerms}" itemLabel="#{msg.yes}" />
 	                                            </h:selectOneRadio>
 	                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
@@ -172,7 +155,7 @@
 							<div class="form-group form-row contentUploadModal__action">
 								<div class="col-sm-12 d-flex justify-content-end">
 									<h:commandButton styleClass="btn btn--full"
-										value="#{msg.submit}" pt:data-require-input="feedbackInput"
+										value="#{msg.submit}" pt:data-require-input="contentUploadInput"
 										action="#{uploadBean.createProcessAction}" />
 								</div>
 							</div>
