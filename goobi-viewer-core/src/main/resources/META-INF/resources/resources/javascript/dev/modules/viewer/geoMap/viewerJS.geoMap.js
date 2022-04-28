@@ -33,7 +33,7 @@ var viewerJS = ( function( viewer ) {
     }
         
     // default variables
-    var _debug = true;
+    var _debug = false;
     
     var _defaults = {
             mapId : "geomap",
@@ -211,7 +211,7 @@ var viewerJS = ( function( viewer ) {
      * Center must be an array containing longitude andlatitude as numbers - in that order
      * zoom must be a number
      */
-    viewer.GeoMap.prototype.setView = function(view) {
+    viewer.GeoMap.prototype.setView = function(view, panning) {
         if(_debug) {
             console.log("set view to ", view);
         }
@@ -225,9 +225,9 @@ var viewerJS = ( function( viewer ) {
         if(view.center) {
             let center = L.latLng(view.center[1], view.center[0]);
             if(view.zoom) {
-                this.map.setView(center, view.zoom);
+                this.map.setView(center, view.zoom, {animate: panning});
             } else {                
-                this.map.panTo(center);
+                this.map.panTo(center, {animate: panning});
             }
         } else if(view.zoom) {   
             this.map.setZoom(view.zoom);

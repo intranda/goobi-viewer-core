@@ -171,10 +171,12 @@ var viewerJS = ( function( viewer ) {
         
     }
      
-    viewer.GeoMap.featureGroup.prototype.setViewToFeatures = function(setViewToHighlighted) {
+    viewer.GeoMap.featureGroup.prototype.setViewToFeatures = function(setViewToHighlighted, zoom) {
     	let features = this.getFeatures();
     	if(features && features.length > 0) {
-            let zoom = this.geoMap.view ? this.geoMap.zoom : this.geoMap.config.initialView.zoom;
+            if(!zoom) {
+                zoom = this.geoMap.view ? this.geoMap.zoom : this.geoMap.config.initialView.zoom;
+            }
             let highlightedFeatures = features.filter(f => f.properties.highlighted);
             //console.log(" highlightedFeatures", highlightedFeatures);
             if(setViewToHighlighted && highlightedFeatures.length > 0) {
