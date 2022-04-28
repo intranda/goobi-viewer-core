@@ -4005,20 +4005,8 @@ public class ViewManager implements Serializable {
             }
         }
         if(fillToSize) {
-            double center = (lastPage - firstPage + 1)/2.0;
             while(lastPage - firstPage + 1 < numPages) {
-                if(pageOrder <= center) {                    
-                    firstPage--;
-                } else {
-                    lastPage++;
-                }
-                if(lastPage - firstPage + 1 < numPages) {
-                    if(pageOrder <= center) {                    
-                        lastPage++;
-                    } else {
-                        firstPage--;
-                    }
-                }
+                lastPage++;
             }
         }
         return IntStream.range(firstPage, lastPage+1).boxed().collect(Collectors.toList());
