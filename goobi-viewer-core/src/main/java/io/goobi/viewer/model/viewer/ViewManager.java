@@ -3974,11 +3974,12 @@ public class ViewManager implements Serializable {
      * Used int thumbnailPaginator.xhtml to calculate the pages to display.
      * @param pageOrder The current page number around which to center the numbers
      * @param range     The number of numbers to include above and below the current page number, if possible
+     * @param fillToSize    if true, always return a list of exactly 2*range+1 elements, no matter the total number of pages in the current record
      * @return  an integer list
      * @throws IndexUnreachableException    If the page numbers could not be read from SOLR
      * @throws IllegalArgumentException     If the pageOrder is not within the range of page numbers of the current record or if range is less than zero
      */
-    public List<Integer> getPageRangeAroundPage(int pageOrder, int range) throws IndexUnreachableException {
+    public List<Integer> getPageRangeAroundPage(int pageOrder, int range, boolean fillToSize) throws IndexUnreachableException {
         
         if(pageOrder < pageLoader.getFirstPageOrder() || pageOrder > pageLoader.getLastPageOrder()) {
             throw new IllegalArgumentException("the given pageOrder must be within the range of page numbers of the current record. The given pageOrder is " + pageOrder);
@@ -3989,8 +3990,7 @@ public class ViewManager implements Serializable {
         int firstPage = pageOrder;
         int lastPage = pageOrder;
         int numPages = 2*range+1;
-        int totalPages = pageLoader.getNumPages();
-        while(lastPage - firstPage + 1 < numPages && lastPage - firstPage + 1 < totalPages) {
+        while( lastPage - firstPage + 1 < numPages) {
             boolean changed = false;
             if(firstPage > pageLoader.getFirstPageOrder()) {
                 firstPage--;
@@ -4002,6 +4002,23 @@ public class ViewManager implements Serializable {
             }
             if(!changed) {
                 break;
+            }
+        }
+        if(fillToSize) {
+            double center = (lastPage - firstPage + 1)/2.0;
+            while(lastPage - firstPage + 1 < numPages) {
+                if(pageOrder <= center) {                    
+                    firstPage--;
+                } else {
+                    lastPage++;
+                }
+                if(lastPage - firstPage + 1 < numPages) {
+                    if(pageOrder <= center) {                    
+                        lastPage++;
+                    } else {
+                        firstPage--;
+                    }
+                }
             }
         }
         return IntStream.range(firstPage, lastPage+1).boxed().collect(Collectors.toList());
