@@ -487,8 +487,8 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
                 System.out.println(integer);
             }
             assertEquals(17, pages.size());
-            assertEquals(0, pages.get(0).intValue());
-            assertEquals(16, pages.get(16).intValue());
+            assertEquals(1, pages.get(0).intValue());
+            assertEquals(17, pages.get(16).intValue());
         }
 
     }
