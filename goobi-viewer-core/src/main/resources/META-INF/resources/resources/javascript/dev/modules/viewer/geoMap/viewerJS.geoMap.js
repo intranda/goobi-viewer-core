@@ -52,6 +52,7 @@ var viewerJS = ( function( viewer ) {
     
     viewer.GeoMap = function(config) {
         
+        
         if (typeof L == "undefined") {
             throw "leaflet.js is not loaded";
         }
@@ -59,6 +60,8 @@ var viewerJS = ( function( viewer ) {
         if(_debug) {
             console.log("load GeoMap with config ", this.config);
         }
+        
+        viewer.GeoMap.maps.set(this.config.mapId, this);
 
         this.layers = [];
         
@@ -75,6 +78,8 @@ var viewerJS = ( function( viewer ) {
 		viewer.GeoMap.allMaps.push(this);
     }
     
+    viewer.GeoMap.maps = new Map();
+
     viewer.GeoMap.prototype.init = function(view, features) {
        
        if(_debug)console.log("init geomap with", view, features);
