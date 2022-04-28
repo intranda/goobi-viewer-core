@@ -35,7 +35,7 @@
 
 								<!-- TITLE -->
 								<div class="form-group form-row">
-									<label id="contentUploadModal__labelFeedbackName" for="contentUploadModal__uploadJobTitle"
+									<label id="contentUploadModal__labelUploadJobTitle" for="contentUploadModal__uploadJobTitle"
 										class="col-lg-3 control-label">
 										<span class="contentUploadModal__label-span">#{msg.title}:</span>
 										<span class="contentUploadModal__label-required-field">(#{msg.form__required_field})</span>
@@ -61,11 +61,9 @@
                                     
                                     <div class="col-12 col-lg-9">
                                         <h:inputTextarea id="contentUploadModal__uploadJobDescription"
-                                            styleClass="form-control"
-                                            value="#{uploadBean.currentUploadJob.description}"
-                                            pt:data-require-input-text="contentUploadInput">
+                                            styleClass="form-control" value="#{uploadBean.currentUploadJob.description}">
                                             <f:passThroughAttribute name="aria-labelledby"
-                                                value="contentUploadModal__labelFeedbackMessage" />
+                                                value="contentUploadModal__labelUploadJobDescription" />
                                         </h:inputTextarea>
                                     </div>
                                 </div>
@@ -78,8 +76,8 @@
                                     </label>
                                     
                                     <div class="col-12 col-lg-9">
-                                        <o:inputFile value="#{uploadBean.currentDownloadJob.files}" multiple="true">
-                                            <f:ajax listener="#{uploadBean.uploadFiles}" />
+                                        <o:inputFile value="#{uploadBean.currentUploadJob.files}" multiple="true">
+<!--                                             <f:ajax listener="#{uploadBean.uploadFiles}" /> -->
                                         </o:inputFile>
                                     </div>
                                 </div>
@@ -110,7 +108,7 @@
 											value="#{uploadBean.currentUploadJob.email}" styleClass="form-control"
 											disabled="true">
 											<f:passThroughAttribute name="aria-labelledby"
-												value="contentUploadModal__labelFeedbackEmail" />
+												value="contentUploadModal__labelUploadJobEmail" />
 											<f:validator validatorId="emailValidator" for="contentUploadEmail" />
 											<f:ajax render="emailGroup" />
 										</h:inputText>
@@ -119,7 +117,6 @@
 							</div>
 								<!-- REQUIRED CHECKBOX FOR USAGE OF PERSONAL DATA OR ANYTHING ELSE -->
 								<!-- TO DO: CONFIG SWITCH FOR THIS RENDERED CONDITION CHECKBOX, VALUE + ADDITIONAL TEXT WHICH IS SEND BY FORM(?) -->
-<!-- 								<ui:fragment rendered="#{userBean.userFeedbackAdditionalCheckbox()"> -->
 									<div class="contentUploadModal__required-checkbox-wrapper">
 									  
 									  	<div class="form-row">
@@ -132,12 +129,12 @@
 	                                       
 	                                       
 	                                        <div class="col-12 col-md-9 mt-3 mt-sm-0 contentUploadModal__accept-terms-radios admin__radio-switch">
-	                                            <h:selectOneRadio group="requiredFeedbackTerms" value="#{uploadBean.currentUploadJob.consent}"
+	                                            <h:selectOneRadio group="requiredUploadJobTerms" value="#{uploadBean.currentUploadJob.consent}"
 	                                                immediate="true" checked="false"
 	                                                pt:data-require-input-checkbox="uncheckedChecker">
 	                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
 	                                            </h:selectOneRadio>
-	                                            <h:selectOneRadio id="requiredTermsCheckbox2" group="requiredFeedbackTerms"
+	                                            <h:selectOneRadio id="requiredTermsCheckbox2" group="requiredUploadJobTerms"
 	                                                value="#{uploadBean.currentUploadJob.consent}"
 	                                                immediate="true" checked="true"
 	                                                pt:data-require-input-checkbox="contentUploadInput">
@@ -148,8 +145,6 @@
                                         </div>
 
 									</div>
-
-<!-- 								</ui:fragment> -->
 
 							<!-- ACTION -->
 							<div class="form-group form-row contentUploadModal__action">
