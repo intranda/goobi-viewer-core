@@ -2407,120 +2407,120 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
 riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
 
 this.on("mount", function() {
-	this.initMap();
+	this.geoMap = this.initMap();
+	this.drawLayer = this.initDrawLayer(this.geoMap);
+    if(this.opts.area) {
+    	this.initArea(this.drawLayer, this.opts.area);
+    }
+	if(!this.opts.inactive) {
+	    this.initGeocoder(this.geoMap);
+	    this.drawnItems = this.initMapDraw(this.geoMap, this.drawLayer);
+	}
+	this.hitsLayer = this.initHitsLayer(this.geoMap);
+	if(this.opts.toggleFeatures) {
+		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
+	}
+	if(this.opts.heatmap?.showSearchResultsHeatmap) {
+		this.heatmap = this.initHeatmap(this.hitsLayer)
+	}
 });
 
 this.initMap = function() {
 
-    this.geoMap = new viewerJS.GeoMap({
+    let geoMap = new viewerJS.GeoMap({
         element : this.refs.map,
         language: viewerJS.translator.language,
         fixed: this.opts.inactive ? true : false,
-        layer: {
-	        allowMovingFeatures: false,
-	        popover: $("<div><p data-metadata='title'></p></div>"),
-	        popoverOnHover: true,
-	        emptyMarkerMessage: undefined,
-	        clusterMarkers: true,
-
-		    style: {
-				    fillOpacity: 0.02
-			}
-        }
+        layer: this.opts.hitsLayer
     })
     let initialView = {
         zoom: 5,
         center: [11.073397, 49.451993]
     };
-    this.geoMap.init(initialView, this.opts.features);
-    this.drawLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
+    geoMap.init(initialView, this.opts.features);
+    return geoMap;
+}.bind(this)
+
+this.initDrawLayer = function(map) {
+    let drawLayer = new viewerJS.GeoMap.featureGroup(map, {
    	    style : {
          	fillColor : "#d9534f",
          	color : "#d9534f",
          	fillOpacity : 0.3,
         	}
     });
-    if(!this.opts.inactive) {
-        let geocoderConfig = {};
-        if(this.opts.search_placeholder) {
-            geocoderConfig.placeholder = this.opts.search_placeholder
-        }
-        if(this.opts.search_enabled) {
-	    	this.geoMap.initGeocoder(this.refs.geocoder, geocoderConfig);
-        }
-	    this.initMapDraw();
-    }
-
-    this.geoMap.layers[0].onFeatureClick.subscribe(f => {
-        if(f.properties && f.properties.link) {
-           window.location.assign(f.properties.link);
-       }
-    })
-
-	if(this.opts.toggleFeatures) {
-		let ToggleFeaturesControl = L.Control.extend({
-		    options: {
-		        position: "topleft"
-		    },
-		    onAdd: function(map) {
-		        let button  = this.opts.toggleFeatures;
-		        L.DomEvent.on(button, "dblclick" , (e) => {
-		            L.DomEvent.stopPropagation(e);
-		            e.stopPropagation();
-		            return false;
-		        });
-		        L.DomEvent.on(button, "click" , (e) => {
-		            this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
-		            L.DomEvent.stopPropagation(e);
-		            e.stopPropagation();
-		            return false;
-		        });
-		        return button;
-		    }.bind(this),
-		    onRemove: function(map) {
-
-		    }
-		})
-		let control = new ToggleFeaturesControl();
-		this.geoMap.map.addControl(control);
-	}
-
-    if(this.opts.area) {
-        let shape = this.opts.area;
-        if(viewerJS.isString(shape)) {
-            try {
-            	shape = JSON.parse(shape);
-            } catch(e) {
-                console.error("Unable to draw geomap area ", this.opts.area, ": cannot parse json");
-            }
-        }
-
-        let layer = undefined;
-        switch(shape.type) {
-            case "polygon":
-                layer = this.drawLayer.drawPolygon(shape.vertices, true);
-                break;
-            case "circle":
-                layer = this.drawLayer.drawCircle(shape.center, shape.radius, true);
-                break;
-            case "rectangle":
-                layer = this.drawLayer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
-                break;
-        }
-        this.onLayerDrawn({layer: layer});
-
-    }
-
+	return drawLayer;
 }.bind(this)
 
-this.initMapDraw = function() {
+this.initGeocoder = function(map) {
+	let geocoderConfig = {};
+	if(this.opts.search_placeholder) {
+		geocoderConfig.placeholder = this.opts.search_placeholder
+	}
+	if(this.opts.search_enabled) {
+   		map.initGeocoder(this.refs.geocoder, geocoderConfig);
+	}
+}.bind(this)
 
-    this.drawnItems = new L.FeatureGroup();
+this.initToggleLayer = function(geoMap, layer, button) {
+	let ToggleFeaturesControl = L.Control.extend({
+	    options: {
+	        position: "topleft"
+	    },
+	    onAdd: function(map) {
+	        L.DomEvent.on(button, "dblclick" , (e) => {
+	            L.DomEvent.stopPropagation(e);
+	            e.stopPropagation();
+	            return false;
+	        });
+	        L.DomEvent.on(button, "click" , (e) => {
+	            layer.setVisible(!layer.isVisible());
+	            L.DomEvent.stopPropagation(e);
+	            e.stopPropagation();
+	            return false;
+	        });
+	        return button;
+	    }.bind(this),
+	    onRemove: function(map) {
 
-    this.geoMap.map.addLayer(this.drawnItems);
-    this.drawControl = new L.Control.Draw({
+	    }
+	})
+	let control = new ToggleFeaturesControl();
+	geoMap.map.addControl(control);
+}.bind(this)
+
+this.initArea = function(layer, shape) {
+	if(viewerJS.isString(shape)) {
+        try {
+        	shape = JSON.parse(shape);
+        } catch(e) {
+            console.error("Unable to draw geomap area ", this.opts.area, ": cannot parse json");
+        }
+    }
+
+    let feature = undefined;
+    switch(shape.type) {
+        case "polygon":
+            feature = layer.drawPolygon(shape.vertices, true);
+            break;
+        case "circle":
+            feature = layer.drawCircle(shape.center, shape.radius, true);
+            break;
+        case "rectangle":
+            feature = layer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
+            break;
+    }
+    this.onLayerDrawn({layer: feature});
+}.bind(this)
+
+this.initMapDraw = function(geomap, drawLayer) {
+
+    let drawnItems = new L.FeatureGroup();
+
+    geomap.map.addLayer(drawnItems);
+    let drawControl = new L.Control.Draw({
         edit: {
-            featureGroup: this.drawnItems,
+            featureGroup: drawnItems,
             edit: false,
             remove: false
         },
@@ -2530,41 +2530,44 @@ this.initMapDraw = function() {
             circlemarker: false
         }
     });
-    this.drawControl.setDrawingOptions({
+    drawControl.setDrawingOptions({
         rectangle: {
-        	shapeOptions: this.drawLayer.config.style
+        	shapeOptions: drawLayer.config.style
         },
         circle: {
-        	shapeOptions: this.drawLayer.config.style
+        	shapeOptions: drawLayer.config.style
         },
         polygon: {
-        	shapeOptions: this.drawLayer.config.style
+        	shapeOptions: drawLayer.config.style
         }
     });
 
-    this.geoMap.map.addControl(this.drawControl);
+    geomap.map.addControl(drawControl);
 
     let edited = new rxjs.Subject();
     edited.pipe(rxjs.operators.debounceTime(300)).subscribe(e => this.onLayerEdited(e));
-    this.geoMap.map.on(L.Draw.Event.EDITMOVE, e => edited.next(e));
-    this.geoMap.map.on(L.Draw.Event.EDITRESIZE, e => edited.next(e));
-    this.geoMap.map.on(L.Draw.Event.EDITVERTEX, e => edited.next(e));
+    geomap.map.on(L.Draw.Event.EDITMOVE, e => edited.next(e));
+    geomap.map.on(L.Draw.Event.EDITRESIZE, e => edited.next(e));
+    geomap.map.on(L.Draw.Event.EDITVERTEX, e => edited.next(e));
 
     let deleted = new rxjs.Subject();
     deleted.subscribe(e => this.onLayerDeleted(e));
-    this.geoMap.map.on(L.Draw.Event.DELETED, e => deleted.next(e));
-    this.geoMap.map.on(L.Draw.Event.DRAWSTART, e => deleted.next(e));
+    geomap.map.on(L.Draw.Event.DELETED, e => deleted.next(e));
+    geomap.map.on(L.Draw.Event.DRAWSTART, e => deleted.next(e));
 
-    this.geoMap.map.on(L.Draw.Event.CREATED, (e) => this.onLayerDrawn(e));
+    geomap.map.on(L.Draw.Event.CREATED, (e) => this.onLayerDrawn(e));
 
     if(this.opts.reset_button) {
         $(this.opts.reset_button).on("click",  e => deleted.next(e));
     }
+    return drawnItems;
 }.bind(this)
 
 this.onLayerDeleted = function(e) {
     if(this.searchLayer) {
-        this.drawnItems.removeLayer(this.searchLayer);
+        if(this.drawnItems) {
+        	this.drawnItems.removeLayer(this.searchLayer);
+        }
         this.searchLayer = undefined;
     }
     this.notifyFeatureSet(undefined);
@@ -2584,11 +2587,14 @@ this.onLayerEdited = function(e) {
 }.bind(this)
 
 this.onLayerDrawn = function(e) {
-
-    this.searchLayer = e.layer;
-	this.drawnItems.addLayer(e.layer);
-	this.searchLayer.editing.enable();
-	this.setSearchArea(this.searchLayer);
+    if(e.layer) {
+	    this.searchLayer = e.layer;
+		if(this.drawnItems) {
+	    	this.drawnItems.addLayer(e.layer);
+		}
+		this.searchLayer.editing.enable();
+		this.setSearchArea(this.searchLayer);
+    }
 }.bind(this)
 
 this.setSearchArea = function(layer) {
@@ -2671,6 +2677,33 @@ this.getType = function(layer) {
     } else {
         throw "Unknown layer type: " + layer;
     }
+}.bind(this)
+
+this.initHitsLayer = function(map) {
+    console.log("opts ", this.opts);
+	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer)
+	hitsLayer.init(this.opts.features, false);
+	hitsLayer.onFeatureClick.subscribe(f => {
+		if(f.properties && f.properties.link) {
+			$(this.opts.search.loader).show();
+			window.location.assign(f.properties.link);
+		}
+	})
+
+	return hitsLayer;
+}.bind(this)
+
+this.initHeatmap = function(hitsLayer) {
+	let heatmapQuery = this.opts.heatmap.mainQuery;
+	let heatmap = L.solrHeatmap(this.opts.heatmap.heatmapUrl, this.opts.heatmap.featureUrl, hitsLayer, {
+		field: "WKT_COORDS",
+		type: "clusters",
+		filterQuery: heatmapQuery,
+		labelField: this.opts.heatmap.labelField,
+		queryAdapter: "goobiViewer"
+	});
+	heatmap.addTo(this.geoMap.map);
+	return heatmap;
 }.bind(this)
 
 });

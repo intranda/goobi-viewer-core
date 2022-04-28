@@ -82,7 +82,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.9</alto.version>
-		<ics.version>3.3.3</ics.version>
+		<ics.version>3.3.4</ics.version>
 		<tei-conversion.version>1.2.2</tei-conversion.version>
 
 		<iiif-api-model.version>2.2.2</iiif-api-model.version>
@@ -130,7 +130,7 @@
         <jsoup.version>1.14.3</jsoup.version>
         <junit.version>4.13.2</junit.version>
         <mariadb-java-client.version>2.7.5</mariadb-java-client.version>
-        <mockito.version>4.5.0</mockito.version>
+        <mockito.version>4.5.1</mockito.version>
         <mockserver.version>5.13.2</mockserver.version>
         <oauth.version>1.0.2</oauth.version>
         <omnifaces.version>3.13</omnifaces.version>

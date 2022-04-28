@@ -15,11 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v1.index;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_FIELDS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_QUERY;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STATISTICS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STREAM;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,13 +26,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
@@ -71,7 +71,11 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.maps.GeoMap;
+import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
@@ -154,10 +158,6 @@ public class IndexResource {
             return ret.toString();
         }
 
-        // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
-        //        String query =
-        //                new StringBuilder().append("+").append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
-
         String termQuery = null;
         if (params.boostTopLevelDocstructs) {
             Map<String, Set<String>> searchTerms = SearchHelper.extractSearchTermsFromQuery(params.query.replace("\\", ""), null);
@@ -204,6 +204,130 @@ public class IndexResource {
         } catch (PresentationException e) {
             throw new IllegalRequestException(e.getMessage());
         }
+    }
+    
+
+    /**
+     * 
+     * @param expression
+     * @return
+     */
+    @POST
+    @Path(INDEX_STREAM)
+    @Consumes({ MediaType.TEXT_PLAIN })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(
+            tags = { "index" },
+            summary = "Post a streaming expression to the SOLR index and forward its response")
+    @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
+    @ApiResponse(responseCode = "500", description = "Solr not available or unable to respond")
+    public StreamingOutput stream(
+            @Schema(description = "Raw SOLR streaming expression",
+                    example = "search(collection1,q=\"+ISANCHOR:*\", sort=\"YEAR asc\", fl=\"YEAR,PI,DOCTYPE\", rows=5, qt=\"/select\")") String expression) {
+        String solrUrl = DataManager.getInstance().getSearchIndex().getSolrServerUrl();
+        logger.trace("Call solr " + solrUrl);
+        logger.trace("Streaming expression " + expression);
+        return executeStreamingExpression(expression, solrUrl);
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IOException
+     */
+    @GET
+    @Path(INDEX_FIELDS)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieves a JSON list of all existing Solr fields.", tags = { "index" })
+    public List<SolrFieldInfo> getAllIndexFields() throws IOException {
+        logger.trace("getAllIndexFields");
+
+        try {
+            return collectFieldInfo();
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage());
+            servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+
+        return Collections.emptyList();
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws IOException
+     * @throws IndexUnreachableException 
+     */
+    @GET
+    @Path(INDEX_SPATIAL_HEATMAP)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Returns a heatmap of geospatial search results", tags = { "index" })
+    public String getHeatmap(
+            @Parameter(description="SOLR field containing spatial coordinates") 
+            @PathParam("solrField") String solrField,
+            @Parameter(description="Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain the whole world")
+            @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
+            @Parameter(description="Additional query to filter results by")
+            @QueryParam("query") @DefaultValue("*:*") String filterQuery,
+            @Parameter(description="The granularity of each grid cell")
+            @QueryParam("gridLevel") Integer gridLevel
+            ) throws IOException, IndexUnreachableException {
+        servletResponse.addHeader("Cache-Control", "max-age=300");
+        
+        String finalQuery = filterQuery;
+        if(!finalQuery.startsWith("{!join")) {            
+            finalQuery = 
+                    new StringBuilder().append("+(").append(filterQuery).append(") ").append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
+        } else {
+            //search query. Ignore all polygon results or the heatmap will have hits everywhere
+            finalQuery = finalQuery.substring(0, finalQuery.length()-1) + "-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
+        }
+        logger.debug("q: {}", finalQuery);
+        
+        String facetQuery = "";
+
+        return DataManager.getInstance()
+                        .getSearchIndex().getHeatMap(solrField, wktRegion, finalQuery, facetQuery, gridLevel);
+        
+    }
+    
+    @GET
+    @Path(INDEX_SPATIAL_SEARCH)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Returns results of a geospatial search as GeoJson objects", tags = { "index" })
+    public String getGeoJsonResuls(
+            @Parameter(description="SOLR field containing spatial coordinates") 
+            @PathParam("solrField") String solrField,
+            @Parameter(description="Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain the whole world")
+            @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
+            @Parameter(description="Additional query to filter results by")
+            @QueryParam("query") @DefaultValue("*:*") String filterQuery,
+            @Parameter(description="The SOLR field to be used as label for each feature")
+            @QueryParam("labelField") String labelField
+            ) throws IOException, IndexUnreachableException, PresentationException {
+        servletResponse.addHeader("Cache-Control", "max-age=300");
+        
+        String finalQuery = filterQuery;
+        List<String> facetQueries = new ArrayList<>();
+        if(!finalQuery.startsWith("{!join")) {  
+            finalQuery =
+                    new StringBuilder()
+                    .append(filterQuery)
+                    .append(" +({wktField}:{wktCoords}) ".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion))
+                    .append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
+            logger.debug("q: {}", finalQuery);
+        } else {
+            String coordQuery = "{wktField}:{wktCoords}".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion);
+            facetQueries.add(coordQuery);
+        }
+        
+        
+        String objects = GeoMap.getFeaturesFromSolrQuery(finalQuery, facetQueries, labelField)
+            .stream()
+            .map(GeoMapFeature::getJsonObject)
+            .map(Object::toString)
+            .collect(Collectors.joining(","));
+        return "[" + objects + "]";
     }
 
     private static Optional<JSONArray> getFacetResults(QueryResponse response) {
@@ -257,50 +381,6 @@ public class IndexResource {
         return jsonArray;
     }
 
-    /**
-     * 
-     * @param expression
-     * @return
-     */
-    @POST
-    @Path(INDEX_STREAM)
-    @Consumes({ MediaType.TEXT_PLAIN })
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(
-            tags = { "index" },
-            summary = "Post a streaming expression to the SOLR index and forward its response")
-    @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
-    @ApiResponse(responseCode = "500", description = "Solr not available or unable to respond")
-    public StreamingOutput stream(
-            @Schema(description = "Raw SOLR streaming expression",
-                    example = "search(collection1,q=\"+ISANCHOR:*\", sort=\"YEAR asc\", fl=\"YEAR,PI,DOCTYPE\", rows=5, qt=\"/select\")") String expression) {
-        String solrUrl = DataManager.getInstance().getSearchIndex().getSolrServerUrl();
-        logger.trace("Call solr " + solrUrl);
-        logger.trace("Streaming expression " + expression);
-        return executeStreamingExpression(expression, solrUrl);
-    }
-
-    /**
-     * 
-     * @return
-     * @throws IOException
-     */
-    @GET
-    @Path(INDEX_FIELDS)
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Retrieves a JSON list of all existing Solr fields.", tags = { "index" })
-    public List<SolrFieldInfo> getAllIndexFields() throws IOException {
-        logger.trace("getAllIndexFields");
-
-        try {
-            return collectFieldInfo();
-        } catch (DAOException e) {
-            logger.error(e.getMessage());
-            servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-        }
-
-        return Collections.emptyList();
-    }
 
     /**
      * 
@@ -308,7 +388,7 @@ public class IndexResource {
      * @throws DAOException
      * @should create list correctly
      */
-    static List<SolrFieldInfo> collectFieldInfo() throws DAOException {
+    static List<SolrFieldInfo> collectFieldInfo() throws IndexUnreachableException {
         List<String> fieldNames = DataManager.getInstance().getSearchIndex().getAllFieldNames();
         if (fieldNames == null) {
             return Collections.emptyList();

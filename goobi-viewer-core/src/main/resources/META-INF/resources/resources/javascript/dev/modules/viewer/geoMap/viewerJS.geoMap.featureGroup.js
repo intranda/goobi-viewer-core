@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Javascript interface for geoMap.tag
+ * Javascript implementation of a collection of features within a map. Wraps a L.FeatureGroup layer
  * GeoJson coordinates are always [lng, lat]
  * 
  * @version 3.4.0
- * @module viewerJS.geoMap
+ * @module viewerJS.geoMap.featureGroup
  * @requires jQuery
  */
 
@@ -29,250 +29,7 @@ var viewerJS = ( function( viewer ) {
         
     // default variables
     var _debug = false;
-    
-    var _defaults = {
-            mapId : "geomap",
-            minZoom : 1,
-            maxZoom : 19,
-            initialView : {
-                zoom: 5,
-                center: [11.073397, 49.451993] //long, lat
-            },
-            mapBoxToken : undefined,
-            language: "de",
-            fixed: false
-            
-    }
-    
-    viewer.GeoMap = function(config) {
-        
-        if (typeof L == "undefined") {
-            throw "leaflet.js is not loaded";
-        }
-        this.config = $.extend( true, {}, _defaults, config );
-        if(_debug) {
-            console.log("load GeoMap with config ", this.config);
-        }
-
-        this.layers = [];
-        
-        this.onMapRightclick = new rxjs.Subject();
-        this.onMapClick = new rxjs.Subject();
-        this.onMapMove = new rxjs.Subject();
-        this.initialized = new Promise( (resolve, reject) => {
-        	this.resolveInitialization = resolve;
-        	this.rejectInitialization = reject;
-        });
-
-        new viewer.GeoMap.featureGroup(this, this.config.layer);
-
-		viewer.GeoMap.allMaps.push(this);
-    }
-    
-    viewer.GeoMap.prototype.init = function(view, features) {
-       
-       if(_debug)console.log("init geomap with", view, features);
-       
-        if(this.map) {
-            this.map.remove();
-        }
-        //init mapBox config. If no config object is set in viewerJS, only get token from viewerJS
-        //if that doesn't exists, don't create mapBox config
-        if(!this.config.mapBox && viewerJS.getMapBoxToken()) {
-            if(viewerJS.mapBoxConfig) {
-                this.config.mapBox = viewerJS.mapBoxConfig;
-            } else {
-                this.config.mapBox = {
-                        token : viewerJS.getMapBoxToken()
-                }
-            }
-        }
-        if(this.config.mapBox && !this.config.mapBox.user) {
-            this.config.mapBox.user = "mapbox";
-        }
-        if(this.config.mapBox && !this.config.mapBox.styleId) {
-            this.config.mapBox.styleId = "streets-v11";
-        }
-        
-        if(_debug) {
-            console.log("init GeoMap with config ", this.config);
-        }
-        
-        this.map = new L.Map(this.config.element ? this.config.element : this.config.mapId, {
-            zoomControl: !this.config.fixed,
-            doubleClickZoom: !this.config.fixed,
-            scrollWheelZoom: !this.config.fixed,
-            dragging: !this.config.fixed,    
-            keyboard: !this.config.fixed,
-            // Fix desktop safari browsers: 
-            // disabling the tap option shows popups when clicking on geoMap markers in safari
-            // it should however be set to true when a mobile version of Safari is used
-            tap: viewer.iOS() ? true : false
-        });
-        this.htmlElement = this.map._container;
-        
-        this.map.whenReady(e => {
-        	this.resolveInitialization(this);
-        });
-                
-        if(this.config.mapBox) {
-            let url = 'https://api.mapbox.com/styles/v1/{1}/{2}/tiles/{z}/{x}/{y}?access_token={3}'
-                .replace("{1}", this.config.mapBox.user)
-                .replace("{2}", this.config.mapBox.styleId)
-                .replace("{3}", this.config.mapBox.token);
-            var mapbox = new L.TileLayer(url, {
-                        tileSize: 512,
-                        zoomOffset: -1,
-                        minZoom: this.config.minZoom,
-                		maxZoom: this.config.maxZoom,
-                        attribution: '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    });
-            if(_debug) {                
-                console.log("Add mapbox layer");
-            }
-            this.map.addLayer(mapbox);
-        } else {            
-            var osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                minZoom: this.config.minZoom,
-                maxZoom: this.config.maxZoom,
-                attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
-            });
-            if(_debug) {                         
-                console.log("add openStreatMap layer");
-            }
-            this.map.addLayer(osm);
-        }
-        
-        //this.setView(this.config.initialView);
-        
-        //init map events
-        rxjs.fromEvent(this.map, "moveend").pipe(rxjs.operators.map(e => this.getView())).subscribe(this.onMapMove);
-        rxjs.fromEvent(this.map, "contextmenu")
-        .pipe(rxjs.operators.map(e => this.layers[0].createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
-        .subscribe(this.onMapRightclick);
-        rxjs.fromEvent(this.map, "click")
-        .pipe(rxjs.operators.map(e => this.layers[0].createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
-        .subscribe(this.onMapClick);
-    
-        
-       	this.layers[0].init(features, false);
-        if(features && features.length > 0) {
-        	this.layers[0].setViewToFeatures(true)
-            
-        } else if(view){                                                    
-            this.setView(view);
-        }
-        
-        return this.initialized;
-        
-    }
-    
-    viewer.GeoMap.prototype.initGeocoder = function(element, config) {
-    	if(this.config.mapBox && this.config.mapBox.token) {
-	    	config = $.extend(config ? config: {}, {
-	    		accessToken : this.config.mapBox.token,
-	    		mapboxgl: mapboxgl
-	    	});
-	    	if(_debug)console.log("init geocoder with config" , config);
-	    	this.geocoder = new MapboxGeocoder(config);
-	    	this.geocoder.addTo(element);
-	    	this.geocoder.on("result", (event) => {
-	    		//console.log("geocoder result",  event.result, event.result.center, event.result.place_type, event.result.place_name);
-	    		
-	    		if(event.result.bbox) {
-	    			let p1 = new L.latLng(event.result.bbox[1], event.result.bbox[0]);
-	    			let p2 = new L.latLng(event.result.bbox[3], event.result.bbox[2]);
-	    			let bounds = new L.latLngBounds(p1, p2);
-	    			this.map.fitBounds(bounds);
-	    		} else {
-		    		let view = {
-		                "zoom": this.config.maxZoom,
-		                "center": event.result.center
-		            }
-		            this.setView(view);
-	    		}
-	    	});
-    	} else {
-    		console.warn("Cannot initialize geocoder: No mapbox token");
-    	}
-    }
-    
-    /**
-     * Center must be an array containing longitude andlatitude as numbers - in that order
-     * zoom must be a number
-     */
-    viewer.GeoMap.prototype.setView = function(view) {
-        if(_debug) {
-            console.log("set view to ", view);
-        }
-        this.view = view;
-        if(!view) {
-            return;
-        } else if(typeof view === "string") {
-            view = JSON.parse(view);
-        }
-        view.zoom = (view.zoom == undefined || Number.isNaN(view.zoom)) ? 1 : Math.max(view.zoom, 1);
-        if(view.center) {
-            let center = L.latLng(view.center[1], view.center[0]);
-            if(view.zoom) {
-                this.map.setView(center, view.zoom);
-            } else {                
-                this.map.panTo(center);
-            }
-        } else if(view.zoom) {   
-            this.map.setZoom(view.zoom);
-        }
-    }
-    
-    viewer.GeoMap.prototype.getView = function() {
-        let zoom  = this.map.getZoom();
-        let center = this.map.getCenter();
-        return {
-            "zoom": zoom,
-            "center": [center.lng, center.lat]
-        }
-    }
-    
-    viewer.GeoMap.prototype.getViewAroundFeatures = function(features, defaultZoom, zoomPadding) {
-        if(!defaultZoom) {
-            defaultZoom = this.map.getZoom();
-        }
-        if(!zoomPadding) {
-        	zoomPadding = 0.2;
-        }
-        if(!features || features.length == 0) {
-            return undefined;
-        } else {
-            if(_debug) {
-        	console.log("view around ", features);
-            }
-        	let bounds = L.latLngBounds();
-        	features.map(f => L.geoJson(f).getBounds()).forEach(b => bounds.extend(b));
-            let center = bounds.getCenter();
-            let diameter = this.getDiameter(bounds);
-            return {
-                "zoom": diameter > 0 ?  Math.max(1, this.map.getBoundsZoom(bounds.pad(zoomPadding))) : defaultZoom,
-                "center": [center.lng, center.lat]
-            }
-        }
-    }
-
-    
-    viewer.GeoMap.prototype.getZoom = function() {
-        return this.map.getZoom();
-    }
-
-    
-    viewer.GeoMap.prototype.close = function() {
-        this.onMapClick.complete();
-        this.layers.forEach(l => l.close());
-        this.onMapMove.complete();
-        if(this.map) {
-            this.map.remove();
-        }
-    }
-    
-    // FEATURE GROUP
+ 
     var _defaults_featureGroup = {
             allowMovingFeatures: false,
             clusterMarkers : false,
@@ -342,7 +99,8 @@ var viewerJS = ( function( viewer ) {
             pointToLayer: function(geoJsonPoint, latlng) {
                 let marker = L.marker(latlng, {
                     draggable: this.config.allowMovingFeatures,
-                    icon: this.getMarkerIcon(geoJsonPoint.properties && geoJsonPoint.properties.highlighted)
+                    icon: this.getMarkerIcon(geoJsonPoint.properties),
+                    count: geoJsonPoint.properties?.count ? geoJsonPoint.properties.count : 1
                 });
                 return marker; 
             }.bind(this),
@@ -383,7 +141,7 @@ var viewerJS = ( function( viewer ) {
         });
         
         //add layer
-		this.geoMap.map.addLayer(this.layer);
+        this.geoMap.map.addLayer(this.layer);
         if(this.config.clusterMarkers) {        
             try {                
                 this.cluster = this.createMarkerCluster();
@@ -412,11 +170,13 @@ var viewerJS = ( function( viewer ) {
         }
         
     }
-    
-    viewer.GeoMap.featureGroup.prototype.setViewToFeatures = function(setViewToHighlighted) {
+     
+    viewer.GeoMap.featureGroup.prototype.setViewToFeatures = function(setViewToHighlighted, zoom) {
     	let features = this.getFeatures();
     	if(features && features.length > 0) {
-            let zoom = this.geoMap.view ? this.geoMap.zoom : this.geoMap.config.initialView.zoom;
+            if(!zoom) {
+                zoom = this.geoMap.view ? this.geoMap.zoom : this.geoMap.config.initialView.zoom;
+            }
             let highlightedFeatures = features.filter(f => f.properties.highlighted);
             //console.log(" highlightedFeatures", highlightedFeatures);
             if(setViewToHighlighted && highlightedFeatures.length > 0) {
@@ -427,11 +187,11 @@ var viewerJS = ( function( viewer ) {
 	            this.geoMap.setView(viewAroundFeatures);
             }
         }
-    }
+    } 
     
-        viewer.GeoMap.featureGroup.prototype.isEmpty = function() {
-        	return this.markers.length == 0 && this.areas.length == 0;
-        }
+    viewer.GeoMap.featureGroup.prototype.isEmpty = function() {
+    	return this.markers.length == 0 && this.areas.length == 0;
+    }
     
     
     
@@ -457,14 +217,12 @@ var viewerJS = ( function( viewer ) {
             maxClusterRadius: 80,
             zoomToBoundsOnClick: !this.geoMap.config.fixed,
             iconCreateFunction: function(cluster) {
-                return this.getClusterIcon(cluster.getChildCount());
+                return this.getClusterIcon(this.getClusterCount(cluster));
             }.bind(this)
         });
         if(!this.geoMap.config.fixed) {            
             cluster.on('clustermouseover', function (a) {
                 this.removePolygon();
-                
-//            a.layer.setOpacity(0.2);
                 this.shownLayer = a.layer;
                 this.polygon = L.polygon(a.layer.getConvexHull());
                 this.layer.addLayer(this.polygon);
@@ -474,6 +232,12 @@ var viewerJS = ( function( viewer ) {
         }
         return cluster;
     }
+    
+    viewer.GeoMap.featureGroup.prototype.getClusterCount = function(cluster) { 
+	  	let count = cluster.getAllChildMarkers().map(child => child.options?.count ? child.options.count : 0).reduce((a, b) => a + b, 0)
+	  	return count;
+	  }
+    
     
     viewer.GeoMap.featureGroup.prototype.removePolygon = function() {
         if (this.shownLayer) {
@@ -531,7 +295,12 @@ var viewerJS = ( function( viewer ) {
         return icon;
     }
     
-    viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function(highlighted) {
+    viewer.GeoMap.featureGroup.prototype.getMarkerIcon = function(properties) {
+    	
+    	let count = properties?.count;
+	    count = count ? count : 1;
+    	let highlighted = properties?.highlighted;
+        
         if(this.config.markerIcon && !jQuery.isEmptyObject(this.config.markerIcon)) {
         	if(this.config.markerIcon.useDefault) {
         		if(this.config.markerIcon.highlightIcon && highlighted) {
@@ -545,7 +314,7 @@ var viewerJS = ( function( viewer ) {
         			return new L.Icon.Default();
         		}
         	} else {
-	            let icon = L.ExtraMarkers.icon(this.config.markerIcon);
+	            let icon = count > 1 ? this.getClusterIcon(count) : L.ExtraMarkers.icon(this.config.markerIcon);
 	        	icon.options.name = "";	//remove name property to avoid it being displayed on the map
 	            if(this.config.markerIcon.shadow === false) {                
 	                icon.options.shadowSize = [0,0];
@@ -649,6 +418,12 @@ var viewerJS = ( function( viewer ) {
         let index = this.markers.indexOf(marker);
         this.markers.splice(index, 1);
     }
+    
+    viewer.GeoMap.featureGroup.prototype.removeAllMarkers = function(feature) {
+    	this.markers.forEach(m => m.remove());
+    	this.init();
+    }
+    
 
 
     viewer.GeoMap.featureGroup.prototype.createGeoJson = function(location, zoom, center) {
@@ -715,7 +490,8 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.featureGroup.prototype.setVisible = function(visible) {
-	    if(visible && !this.isVisible()) {
+        console.log("set Visible ", visible, this);
+        if(visible && !this.isVisible()) {
 	    	this.geoMap.map.addLayer(this.layer);
 	    } else if(!visible) {
 	    	this.geoMap.map.removeLayer(this.layer);
@@ -727,10 +503,6 @@ var viewerJS = ( function( viewer ) {
         this.onFeatureMove.complete();	
     }
     
-    //static methods to get all loaded maps
-    viewer.GeoMap.allMaps = [];
-    
-
     return viewer;
     
 } )( viewerJS || {}, jQuery );

@@ -1995,7 +1995,7 @@ public class CmsBean implements Serializable {
             filteredLuceneFields = filteredLuceneFields.sorted();
             return filteredLuceneFields.collect(Collectors.toList());
 
-        } catch (DAOException e) {
+        } catch (IndexUnreachableException e) {
             logger.error("Error retrieving solr fields", e);
             return Collections.singletonList("");
         }
@@ -2466,7 +2466,7 @@ public class CmsBean implements Serializable {
      * @throws java.io.IOException if any.
      * @throws DAOException
      */
-    public List<String> getPossibleGroupFields() throws SolrServerException, IOException, DAOException {
+    public List<String> getPossibleGroupFields() throws IndexUnreachableException {
 
         if (this.solrGroupFields == null) {
             this.solrGroupFields = DataManager.getInstance()

@@ -124,4 +124,16 @@ public class MessageEntryTest extends AbstractTest {
         Assert.assertEquals(TranslationStatus.PARTIAL, entry.getTranslationStatusForLanguage("de"));
         Assert.assertEquals(TranslationStatus.NONE, entry.getTranslationStatusForLanguage("fr"));
     }
+
+    /**
+     * @see MessageEntry#getKey()
+     * @verifies trim suffix
+     */
+    @Test
+    public void getKey_shouldTrimSuffix() throws Exception {
+        MessageEntry entry = new MessageEntry("foo", "bar   ", Collections.emptyList());
+        Assert.assertEquals("foo", entry.getKeyPrefix());
+        Assert.assertEquals("bar   ", entry.getKeySuffix());
+        Assert.assertEquals("foobar", entry.getKey());
+    }
 }

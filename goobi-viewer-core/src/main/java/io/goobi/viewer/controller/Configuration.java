@@ -1554,7 +1554,7 @@ public final class Configuration extends AbstractConfiguration {
             boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
             boolean range = subElement.getBoolean("[@range]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
-            int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 10);
+            int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 50);
 
             ret.add(new AdvancedSearchFieldConfiguration(field)
                     .setLabel(label)
@@ -5249,6 +5249,32 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("maps.coordinateFields.field", Arrays.asList("MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON"));
     }
 
+
+    public boolean useHeatmapForCMSMaps() {
+        return getLocalBoolean("maps.cms.heatmap[@enabled]", false);
+    }
+
+    public boolean useHeatmapForMapSearch() {
+        return getLocalBoolean("maps.search.heatmap[@enabled]", false);
+    }
+
+    public boolean useHeatmapForFacetting() {
+        return getLocalBoolean("maps.facet.heatmap[@enabled]", false);
+    }
+
+    public GeoMapMarker getMarkerForMapSearch() {
+        HierarchicalConfiguration<ImmutableNode> config = getLocalConfigurationAt("maps.search.marker");
+        GeoMapMarker marker = readGeoMapMarker(config);
+        return marker;
+    }
+
+    public GeoMapMarker getMarkerForFacetting() {
+        HierarchicalConfiguration<ImmutableNode> config = getLocalConfigurationAt("maps.facet.marker");
+        GeoMapMarker marker = readGeoMapMarker(config);
+        return marker;
+    }
+
+
     public boolean includeCoordinateFieldsFromMetadataDocs() {
         return getLocalBoolean("maps.coordinateFields[@includeMetadataDocs]", false);
     }
@@ -5274,8 +5300,8 @@ public final class Configuration extends AbstractConfiguration {
      */
     public static GeoMapMarker readGeoMapMarker(HierarchicalConfiguration<ImmutableNode> config) {
         GeoMapMarker marker = null;
-        String name = config.getString(".");
-        if (StringUtils.isNotBlank(name)) {
+        if (config != null) {
+            String name = config.getString(".", "default");
             marker = new GeoMapMarker(name);
             marker.setExtraClasses(config.getString("[@extraClasses]", marker.getExtraClasses()));
             marker.setIcon(config.getString("[@icon]", marker.getIcon()));

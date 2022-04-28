@@ -841,6 +841,48 @@ public class SearchBean implements SearchInterface, Serializable {
                 DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
     }
 
+    public String getFinalSolrQuery() throws IndexUnreachableException {
+        if(this.currentSearch != null) { 
+            String query = this.currentSearch.generateFinalSolrQuery(null, advancedSearchGroupOperator);
+            return query;
+        } else {
+            return "";
+        }
+    }
+    
+    public List<String> getFilterQueries() {
+        List<String> queries = new ArrayList<>();
+        if (this.currentSearch != null) {
+            String customQuery = this.currentSearch.getCustomFilterQuery();
+            if(StringUtils.isNotBlank(customQuery)) {
+                queries.add(customQuery);
+            }
+        }
+        if (this.facets != null) {
+            List<String> facetQueries = this.facets.generateFacetFilterQueries(this.advancedSearchGroupOperator, true, true);
+            queries.addAll(facetQueries);
+        }
+        return  queries;
+    }
+    
+    public String getCombinedFilterQuery() {
+        String query = "";
+        if (this.currentSearch != null) {
+            String customQuery = this.currentSearch.getCustomFilterQuery();
+            if(StringUtils.isNotBlank(customQuery)) {
+                query += " +(" + customQuery + ")";
+            }
+        }
+        if (this.facets != null) {
+            List<String> facetQueries = this.facets.generateFacetFilterQueries(this.advancedSearchGroupOperator, true, true);
+            String facetQuery = StringUtils.join(facetQueries, " " + this.advancedSearchGroupOperator + " ");
+            if(StringUtils.isNotBlank(facetQuery)) {
+                query += " +(" + facetQuery + ")";
+            }
+        }
+        return  query;
+    }
+
     /** {@inheritDoc} */
     @Override
     public int getActiveSearchType() {
@@ -2837,23 +2879,25 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public List<FacetItem> getFieldFacetValues(String field, int num, String filterQuery) throws IndexUnreachableException, PresentationException {
         try {
-        num = num <= 0 ? Integer.MAX_VALUE : num;
-        String query = "+(ISWORK:* OR ISANCHOR:*) " + SearchHelper.getAllSuffixes();
-        if (StringUtils.isNotBlank(filterQuery)) {
-            query += " +(" + filterQuery + ")";
-        }
-        String facetField = SearchHelper.facetifyField(field);
-        QueryResponse response =
-                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Collections.singletonList(facetField), 1, false);
-        return response.getFacetField(facetField)
-                .getValues()
-                .stream()
-                .filter(count -> !StringTools.checkValueEmptyOrInverted(count.getName()))
-                .map(count -> new FacetItem(count))
-                .sorted((f1, f2) -> Long.compare(f2.getCount(), f1.getCount()))
-                .limit(num)
-                .collect(Collectors.toList());
-        } catch(PresentationException e) {
+            num = num <= 0 ? Integer.MAX_VALUE : num;
+            String query = "+(ISWORK:* OR ISANCHOR:*) " + SearchHelper.getAllSuffixes();
+            if (StringUtils.isNotBlank(filterQuery)) {
+                query += " +(" + filterQuery + ")";
+            }
+            String facetField = SearchHelper.facetifyField(field);
+            QueryResponse response =
+                    DataManager.getInstance()
+                            .getSearchIndex()
+                            .searchFacetsAndStatistics(query, null, Collections.singletonList(facetField), 1, false);
+            return response.getFacetField(facetField)
+                    .getValues()
+                    .stream()
+                    .filter(count -> !StringTools.checkValueEmptyOrInverted(count.getName()))
+                    .map(count -> new FacetItem(count))
+                    .sorted((f1, f2) -> Long.compare(f2.getCount(), f1.getCount()))
+                    .limit(num)
+                    .collect(Collectors.toList());
+        } catch (PresentationException e) {
             logger.warn("Error rendering field facet values: {}", e.toString());
             return Collections.emptyList();
         }
@@ -2884,6 +2928,14 @@ public class SearchBean implements SearchInterface, Serializable {
     public long getQueryResultCount(String query) throws IndexUnreachableException, PresentationException {
         String finalQuery = SearchHelper.buildFinalQuery(query, null, true, false); 
         return DataManager.getInstance().getSearchIndex().getHitCount(finalQuery);
+   }
+    
+   public String getFinalSolrQueryEscaped() throws IndexUnreachableException {
+       return StringTools.encodeUrl(getFinalSolrQuery());
+   }
+   
+   public String getCombinedFilterQueryEscaped() {
+       return StringTools.encodeUrl(getCombinedFilterQuery());
    }
 
 }

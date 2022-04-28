@@ -82,10 +82,12 @@ module.exports = function (grunt) {
 				sourceMap: false
 			},
 			viewer: {
-				src: [
+				src: [ 
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.js',
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.helper.js',
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.*.js',
+					'<%=src.jsDevFolderModules %>viewer/geoMap/viewerJS.geoMap.js',
+					'<%=src.jsDevFolderModules %>viewer/geoMap/*.js',
 					'<%=src.jsDevFolderModules %>cms/cmsJS.js',
 					'<%=src.jsDevFolderModules %>cms/cmsJS.*.js',
 					'<%=src.jsDevFolderModules %>admin/adminJS.js',

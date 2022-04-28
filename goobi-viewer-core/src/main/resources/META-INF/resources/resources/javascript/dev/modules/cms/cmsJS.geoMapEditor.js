@@ -44,6 +44,13 @@ var cmsJS = ( function( cms ) {
             descLabel: "description",
             descHelp: "help description",
             deleteLabel: "delete"
+        },
+        heatmap: {
+	    	showSearchResultsHeatmap: false,
+	    	heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
+	    	featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
+	    	filterQuery: "BOOL_WKT_COORDS:*",
+	        labelField: "LABEL",
         }
     };
     
@@ -105,6 +112,19 @@ var cmsJS = ( function( cms ) {
     cms.GeoMapEditor.prototype.init = function(defaultView) {
         let features = JSON.parse($(this.config.featuresInput).val());
         this.geoMap.init(this.getView(defaultView), features);
+        
+        //display search results as heatmap
+    	if(this.config.heatmap.showSearchResultsHeatmap) {	        	    
+        	this.heatmap = L.solrHeatmap(this.config.heatmap.heatmapUrl, this.config.heatmap.featureUrl, this.geoMap.layers[0], {
+        	    field: "WKT_COORDS",
+        	    type: "clusters",
+        	    filterQuery: this.config.heatmap.filterQuery,
+        	    labelField: this.config.heatmap.labelField,
+        	    queryAdapter: "goobiViewer"    
+        	});
+        	this.heatmap.addTo(this.geoMap.map);
+    	}    
+        
         if($("metadataEditor").length > 0) {  
             if(this.metadataEditor) {
                 this.metadataEditor.forEach(component => {
@@ -125,7 +145,6 @@ var cmsJS = ( function( cms ) {
     
     cms.GeoMapEditor.prototype.addFeature = function(geojson) {
         this.currentFeature = geojson;
-        console.log("layers", this.geoMap.layers);
         this.geoMap.layers[0].addMarker(geojson).openPopup();
         this.updateMetadata(geojson);
     }

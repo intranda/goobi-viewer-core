@@ -16,6 +16,7 @@
 package io.goobi.viewer.solr;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -24,11 +25,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.solr.client.solrj.response.FieldStatsInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -276,5 +278,33 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
                 assertTrue(suggestions.contains("thier"));
                 assertTrue(suggestions.contains("teil"));
         
+    }
+    
+    @Test
+    public void test_getHeatMap() throws IndexUnreachableException {
+        
+        String world = "[\"-180 -90\" TO \"180 90\"]";
+        String query = "*:*";
+        
+        String string = DataManager.getInstance()
+        .getSearchIndex().getHeatMap("WKT_COORDS", world, query, "", 1);
+        assertNotNull(string);
+        JSONObject json = new JSONObject(string);
+        
+        assertEquals(1, json.get("gridLevel"));
+        assertEquals(8, json.get("columns"));
+        assertEquals(4, json.get("rows"));
+        assertEquals(-180.0, json.getDouble("minX"), 0.0);
+        assertEquals(180.0, json.getDouble("maxX"), 0.0);
+        assertEquals(-90.0, json.getDouble("minY"), 0.0);
+        assertEquals(90.0, json.getDouble("maxY"), 0.0);
+        
+        JSONArray rows = json.getJSONArray("counts_ints2D");
+        assertEquals(4, rows.length());
+        assertEquals(8, rows.getJSONArray(0).length());
+        assertEquals(0, rows.getJSONArray(0).getInt(0));
+        assertEquals(3, rows.getJSONArray(0).getInt(4));
+        assertEquals(JSONObject.NULL, rows.get(2));
+        assertEquals(JSONObject.NULL, rows.get(3));
     }
 }
