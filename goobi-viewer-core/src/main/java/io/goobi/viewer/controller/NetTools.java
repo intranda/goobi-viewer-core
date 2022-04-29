@@ -291,7 +291,7 @@ public class NetTools {
             //            }
             if (headers != null && !headers.isEmpty()) {
                 for (String key : headers.keySet()) {
-                    requestBase.addHeader(key, params.get(key));
+                    requestBase.addHeader(key, headers.get(key));
                 }
             }
             Charset.forName(StringTools.DEFAULT_ENCODING);
