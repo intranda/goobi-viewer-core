@@ -773,10 +773,6 @@
 
 								<!-- jaxb-runtime needs to be available to remove the warning "JAXBContext implementation could not be found. WADL feature is disabled" during tomcat startup -->
                                 <ignoredUnusedDeclaredDependency>org.glassfish.jaxb:jaxb-runtime</ignoredUnusedDeclaredDependency>
-                                
-                                <!-- netty-transport-* used by SolrJ are flawed; newer version is imported via Mockserver - these are the remaining libs -->
-                                <ignoredUnusedDeclaredDependency>io.netty:netty-transport-native-epoll</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>io.netty:netty-transport-native-unix-common</ignoredUnusedDeclaredDependency>
 
                                 <!-- rewrite-servlet is used by prettyfaces -->
 								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-integration-faces</ignoredUnusedDeclaredDependency>
