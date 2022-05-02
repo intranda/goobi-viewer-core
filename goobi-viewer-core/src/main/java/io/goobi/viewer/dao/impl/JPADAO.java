@@ -2702,6 +2702,26 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      * 
+     * @should return all rows
+     */
+    @Override
+    public List<UploadJob> getAllUploadJobs() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<UploadJob> cq = cb.createQuery(UploadJob.class);
+            Root<UploadJob> root = cq.from(UploadJob.class);
+            cq.select(root);
+            return em.createQuery(cq).getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
      * @should return rows in correct order
      * @should return empty list if creatorId null
      */
@@ -6573,4 +6593,5 @@ public class JPADAO implements IDAO {
         String filterString = join.append(where).toString();
         return filterString;
     }
+
 }

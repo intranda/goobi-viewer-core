@@ -91,7 +91,9 @@ public class Task {
         /**
          * Update data repository names of a record
          */
-        UPDATE_DATA_REPOSITORY_NAMES;
+        UPDATE_DATA_REPOSITORY_NAMES,
+        /** Update uploaded processes status. */
+        UPDATE_UPLOAD_JOBS;
     }
     
     public static enum TaskStatus {
@@ -147,6 +149,7 @@ public class Task {
             case NOTIFY_SEARCH_UPDATE: 
             case UPDATE_SITEMAP:
             case UPDATE_DATA_REPOSITORY_NAMES:
+            case UPDATE_UPLOAD_JOBS:
                 return Accessibility.TOKEN;
             case SEARCH_EXCEL_EXPORT:
                 return Accessibility.SESSION;

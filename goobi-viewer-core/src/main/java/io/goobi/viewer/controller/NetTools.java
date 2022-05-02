@@ -314,8 +314,9 @@ public class NetTools {
             try (CloseableHttpResponse response = (context == null ? httpClient.execute(requestBase) : httpClient.execute(requestBase, context));
                     StringWriter writer = new StringWriter()) {
                 int code = response.getStatusLine().getStatusCode();
+                logger.trace("{}: {}", code, response.getStatusLine().getReasonPhrase());
                 if (code == HttpStatus.SC_OK) {
-                    logger.trace("{}: {}", code, response.getStatusLine().getReasonPhrase());
+                  
                     return EntityUtils.toString(response.getEntity(), StringTools.DEFAULT_ENCODING);
                 }
                 throw new HTTPException(code, response.getStatusLine().getReasonPhrase());

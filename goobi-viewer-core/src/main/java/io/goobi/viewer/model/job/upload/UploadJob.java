@@ -212,6 +212,7 @@ public class UploadJob implements Serializable {
                 logger.error("No XML response received.");
                 throw new UploadException("No XML response received.");
             }
+            logger.trace(response);
             Document doc = XmlTools.getDocumentFromString(response, StringTools.DEFAULT_ENCODING);
             if (doc == null || doc.getRootElement() == null) {
                 logger.error("Could not parse XML.");
@@ -330,12 +331,15 @@ public class UploadJob implements Serializable {
      * </p>
      */
     public void updateStatus() {
-        String ret = getJobStatus(processId);
+        String result = getJobStatus(processId);
         try {
-            JSONObject object = new JSONObject(ret);
+            JSONObject object = new JSONObject(result);
             String statusString = object.getString("status");
             JobStatus status = JobStatus.getByName(statusString);
-            setStatus(status);
+            if (status != null && !status.equals(getStatus())) {
+                setStatus(status);
+                logger.trace("Status updated for job {}: {}", id, status);
+            }
             if (JobStatus.ERROR.equals(status)) {
                 String errorMessage = object.getString("errorMessage");
                 setMessage(errorMessage);
@@ -344,7 +348,6 @@ public class UploadJob implements Serializable {
             setStatus(JobStatus.ERROR);
             setMessage("Unable to parse TaskManager response");
         }
-
     }
 
     /**

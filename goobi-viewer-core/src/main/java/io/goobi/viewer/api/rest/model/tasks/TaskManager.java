@@ -46,6 +46,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -145,15 +146,15 @@ public class TaskManager {
                 };
             case UPDATE_SITEMAP:
                 return (request, job) -> {
-                    
+
                     SitemapRequestParameters params = Optional.ofNullable(job.params)
                             .filter(p -> p instanceof SitemapRequestParameters)
                             .map(p -> (SitemapRequestParameters) p)
                             .orElse(null);
-                    
+
                     String viewerRootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
                     String outputPath = params.getOutputPath();
-                    if(StringUtils.isBlank(outputPath)) {
+                    if (StringUtils.isBlank(outputPath)) {
                         outputPath = request.getServletContext().getRealPath("/");
                     }
                     try {
@@ -171,6 +172,19 @@ public class TaskManager {
                     DataManager.getInstance().getSearchIndex().updateDataRepositoryNames(params.getPi(), params.getDataRepositoryName());
                     // Reset access condition and view limit for record
                     DataManager.getInstance().getRecordLockManager().emptyCacheForRecord(params.getPi());
+                };
+            case UPDATE_UPLOAD_JOBS:
+                return (request, job) -> {
+                    try {
+                        int count = 0;
+                        for (UploadJob uj : DataManager.getInstance().getDao().getAllUploadJobs()) {
+                            uj.updateStatus();
+                            count++;
+                        }
+                        logger.debug("{} upload jobs checked.", count);
+                    } catch (DAOException e) {
+                        job.setError(e.getMessage());
+                    }
                 };
             default:
                 return (request, job) -> {

@@ -2258,7 +2258,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertTrue(DataManager.getInstance().getDao().deleteDownloadJob(job));
         Assert.assertNull(DataManager.getInstance().getDao().getDownloadJob(1));
     }
-    
 
     /**
      * @see JPADAO#getUploadJobsForCreatorId(Long)
@@ -2271,7 +2270,16 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(Long.valueOf(2), result.get(0).getId());
         Assert.assertEquals(Long.valueOf(1), result.get(1).getId());
     }
-    
+
+    /**
+     * @see JPADAO#getAllUploadJobs()
+     * @verifies return all rows
+     */
+    @Test
+    public void getAllUploadJobs_shouldReturnAllRows() throws Exception {
+        List<UploadJob> result = DataManager.getInstance().getDao().getAllUploadJobs();
+        Assert.assertEquals(2, result.size());
+    }
 
     /**
      * @see JPADAO#getUploadJobsForCreatorId(Long)

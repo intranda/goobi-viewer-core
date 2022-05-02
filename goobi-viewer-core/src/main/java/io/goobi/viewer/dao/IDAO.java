@@ -1255,7 +1255,14 @@ public interface IDAO {
     public boolean deleteDownloadJob(DownloadJob downloadJob) throws DAOException;
 
     // UploadJob
-    
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<UploadJob> getAllUploadJobs() throws DAOException;
+
     /**
      * 
      * @param creatorId User id of the creator
