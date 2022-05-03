@@ -1162,6 +1162,8 @@
         <token>12345-GOOBI-WORKFLOW-REST-TOKEN-67890</token>
         <!-- docstruct: Document type to be used when creating a new process from uploaded data. Default is 'monograph'. -->
         <docstruct>manuscript</docstruct>
+        <!-- templateName: Goobi workflow template name for process creation (required). -->
+        <templateName>Sample_workflow</templateName>
     </upload>
 
 	<!-- Transkribus settings (enabled: default false) -->

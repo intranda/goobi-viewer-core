@@ -27,8 +27,10 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -66,6 +68,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -124,7 +128,7 @@ public class UploadJob implements Serializable {
     protected Integer processId;
 
     @Column(name = "pi", nullable = false)
-    protected String pi;
+    protected String pi = String.valueOf(UUID.randomUUID());
 
     /** Title field. */
     @Column(name = "title", columnDefinition = "LONGTEXT")
@@ -135,30 +139,13 @@ public class UploadJob implements Serializable {
     protected String description;
 
     @Transient
+    private String templateName = DataManager.getInstance().getConfiguration().getContentUploadTemplateName();
+
+    @Transient
     private String docstruct = DataManager.getInstance().getConfiguration().getContentUploadDocstruct();
 
     @Transient
     private List<Part> files;
-
-    /**
-     * <p>
-     * generateDownloadJobId.
-     * </p>
-     *
-     * @param criteria a {@link java.lang.String} object.
-     * @should generate same id from same criteria
-     * @return a {@link java.lang.String} object.
-     */
-    public static String generateDownloadJobId(String... criteria) {
-        StringBuilder sbCriteria = new StringBuilder(criteria.length * 10);
-        for (String criterion : criteria) {
-            if (criterion != null) {
-                sbCriteria.append(criterion);
-            }
-        }
-
-        return StringTools.generateHash(sbCriteria.toString());
-    }
 
     public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
         try {
@@ -179,6 +166,7 @@ public class UploadJob implements Serializable {
      * @return {@link Document}
      * @should create xml document correctly
      */
+    @Deprecated
     Document buildXmlBody() {
         Document doc = new Document();
         Element root = new Element("record")
@@ -199,13 +187,42 @@ public class UploadJob implements Serializable {
     }
 
     /**
+     * 
+     * @return {@link ProcessCreationRequest}
+     * @should create request object correctly
+     */
+    ProcessCreationRequest buildProcessCreationRequest() {
+        ProcessCreationRequest ret = new ProcessCreationRequest();
+        ret.setTemplateName(templateName);
+        ret.setIdentifier(pi);
+        ret.setProcesstitle(createAtstsl(title, null) + "_" + pi);
+        ret.setLogicalDSType(docstruct);
+
+        ret.setMetadata(new HashMap<>(2));
+        ret.getMetadata().put("TitleDocMain", title);
+        ret.getMetadata().put("Description", description);
+
+        ret.setProperties(new HashMap<>(1));
+        ret.getProperties().put("email", email);
+
+        try {
+            logger.trace(new ObjectMapper().writeValueAsString(ret));
+        } catch (JsonProcessingException e) {
+            logger.trace(e.getMessage());
+        }
+
+        return ret;
+    }
+
+    /**
      * @throws UploadException
      */
     public void createProcess() throws UploadException {
         String url = DataManager.getInstance().getConfiguration().getWorkflowRestUrl() + "processes";
-        String body = XmlTools.getStringFromElement(buildXmlBody(), StringTools.DEFAULT_ENCODING);
-
+        // String body = XmlTools.getStringFromElement(buildXmlBody(), StringTools.DEFAULT_ENCODING);
+        ProcessCreationRequest pcr = buildProcessCreationRequest();
         try {
+            String body = new ObjectMapper().writeValueAsString(pcr);
             String response = NetTools.getWebContentPOST(url,
                     Collections.singletonMap("token", DataManager.getInstance().getConfiguration().getContentUploadToken()), null, null, body, null);
             if (StringUtils.isEmpty(response)) {
@@ -603,6 +620,34 @@ public class UploadJob implements Serializable {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * @return the templateName
+     */
+    String getTemplateName() {
+        return templateName;
+    }
+
+    /**
+     * @param templateName the templateName to set
+     */
+    void setTemplateName(String templateName) {
+        this.templateName = templateName;
+    }
+
+    /**
+     * @return the docstruct
+     */
+    String getDocstruct() {
+        return docstruct;
+    }
+
+    /**
+     * @param docstruct the docstruct to set
+     */
+    void setDocstruct(String docstruct) {
+        this.docstruct = docstruct;
     }
 
     /**

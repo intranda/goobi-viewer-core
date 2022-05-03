@@ -3201,4 +3201,13 @@ public class ConfigurationTest extends AbstractTest {
     public void getContentUploadDocstruct_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("manuscript", DataManager.getInstance().getConfiguration().getContentUploadDocstruct());
     }
+
+    /**
+     * @see Configuration#getContentUploadTemplateName()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadTemplateName_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("Sample_workflow", DataManager.getInstance().getConfiguration().getContentUploadTemplateName());
+    }
 }

@@ -316,7 +316,6 @@ public class NetTools {
                 int code = response.getStatusLine().getStatusCode();
                 logger.trace("{}: {}", code, response.getStatusLine().getReasonPhrase());
                 if (code == HttpStatus.SC_OK) {
-                  
                     return EntityUtils.toString(response.getEntity(), StringTools.DEFAULT_ENCODING);
                 }
                 throw new HTTPException(code, response.getStatusLine().getReasonPhrase());

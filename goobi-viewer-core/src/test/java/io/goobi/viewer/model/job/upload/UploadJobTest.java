@@ -76,6 +76,33 @@ public class UploadJobTest extends AbstractTest {
                 }
             }
         }
+    }
+    
 
+    /**
+     * @see UploadJob#buildProcessCreationRequest()
+     * @verifies create request object correctly
+     */
+    @Test
+    public void buildProcessCreationRequest_shouldCreateRequestObjectCorrectly() throws Exception {
+        UploadJob uj = new UploadJob();
+        uj.setTemplateName("Sample_workflow");
+        uj.setEmail("a@b.com");
+        uj.setPi("PPN123");
+        uj.setTitle("Lorem ipsum");
+        uj.setDescription("Lorem ipsum dolor sit amet...");
+        
+        ProcessCreationRequest result = uj.buildProcessCreationRequest();
+        Assert.assertNotNull(result);
+        Assert.assertEquals("Sample_workflow", result.getTemplateName());
+        Assert.assertEquals("PPN123", result.getIdentifier());
+        Assert.assertEquals("loreip_PPN123", result.getProcesstitle());
+        
+        Assert.assertNotNull(result.getMetadata());
+        Assert.assertEquals("Lorem ipsum", result.getMetadata().get("TitleDocMain"));
+        Assert.assertEquals("Lorem ipsum dolor sit amet...", result.getMetadata().get("Description"));
+        
+        Assert.assertNotNull(result.getProperties());
+        Assert.assertEquals("a@b.com", result.getProperties().get("email"));
     }
 }

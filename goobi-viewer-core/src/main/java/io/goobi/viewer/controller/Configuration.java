@@ -5498,4 +5498,13 @@ public final class Configuration extends AbstractConfiguration {
     public String getContentUploadDocstruct() {
         return getLocalString("upload.docstruct", "monograph");
     }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getContentUploadTemplateName() {
+        return getLocalString("upload.templateName"); 
+    }
 }
