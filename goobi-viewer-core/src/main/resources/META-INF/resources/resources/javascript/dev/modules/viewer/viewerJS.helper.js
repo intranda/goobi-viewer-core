@@ -539,7 +539,7 @@ var viewerJS = ( function( viewer ) {
      */
     viewer.unique = (value, index, self) => {
         return self.indexOf(value) === index;
-    }
+    } 
     
     /**
     * Create a map from the given object by using the property names as keys and their values as values
@@ -565,7 +565,7 @@ var viewerJS = ( function( viewer ) {
 	    } else if(isNaN(ib)) {
 	    	return -1;
 	    } else {
-	    	return ia > ib;
+	    	return ia-ib;
 	    }
 	}
 	
