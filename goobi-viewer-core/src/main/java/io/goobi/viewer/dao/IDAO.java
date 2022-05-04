@@ -2488,4 +2488,11 @@ public interface IDAO {
      */
     void handleException(EntityManager em);
 
+    /**
+     * @return
+     * @throws DAOException
+     * @throws SQLException
+     */
+    List<String> getTableNames() throws DAOException, SQLException;
+
 }

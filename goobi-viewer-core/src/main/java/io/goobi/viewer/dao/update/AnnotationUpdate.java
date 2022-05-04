@@ -81,7 +81,7 @@ public class AnnotationUpdate implements IModelUpdate {
     private void updateCrowdsourcingAnnotations(IDAO dao) throws DAOException {
         AnnotationSaver saver = new SqlAnnotationSaver(dao);
         
-        List<Object[]> info = dao.getNativeQueryResults("desc annotations");
+        List<Object[]> info = dao.getNativeQueryResults("SHOW COLUMNS FROM annotations");
         
         List<Object[]> annotations = dao.getNativeQueryResults("SELECT * FROM annotations");
         

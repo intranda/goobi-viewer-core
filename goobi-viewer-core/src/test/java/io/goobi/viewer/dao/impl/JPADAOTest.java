@@ -3259,7 +3259,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         
         IDAO dao = DataManager.getInstance().getDao();
         
-        List<String> columns = dao.getColumnNames("users");
+        List<String>  tables = dao.getTableNames();
+//        tables.forEach(table -> System.out.println(table));
+        
+        List<String> columns = dao.getColumnNames("USERS");
         assertTrue(columns != null && !columns.isEmpty());
         columns.forEach(col -> System.out.println(col));
     }
