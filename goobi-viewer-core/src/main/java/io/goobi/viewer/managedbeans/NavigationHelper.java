@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
@@ -59,6 +61,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileResourceManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -77,9 +80,9 @@ import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 import io.goobi.viewer.model.viewer.CollectionLabeledLink;
-import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.LabeledLink;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
@@ -409,7 +412,7 @@ public class NavigationHelper implements Serializable {
      * setCurrentPageBrowse.
      * </p>
      *
-     * @param collection a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     * @param collection a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      */
     public void setCurrentPageBrowse(CollectionView collection) {
         if (collection != null) {
@@ -487,7 +490,12 @@ public class NavigationHelper implements Serializable {
         breadcrumbBean.resetBreadcrumbs();
         resetCurrentDocument();
         if (pageName != null && !pageName.trim().isEmpty()) {
-            this.currentPage = pageName;
+            PageType pageType = PageType.getByName(pageName);
+            if(pageType== null || PageType.other == pageType) {
+                this.currentPage = PageType.admin.name();
+            } else {
+                this.currentPage = pageType.name();
+            }
         } else {
             this.currentPage = "adminAllUsers";
         }
@@ -1569,6 +1577,19 @@ public class NavigationHelper implements Serializable {
         return (String) BeanUtils.getRequest().getSession(false).getAttribute("lastRequest");
     }
 
+
+    public String getSessionIPAddress() {
+        String ipAddress = NetTools.getIpAddress(BeanUtils.getRequest());
+        return ipAddress;
+    }
+    
+    
+    public Optional<String> getSessionId() {
+        return Optional.ofNullable(FacesContext.getCurrentInstance())
+        .map(FacesContext::getExternalContext)
+        .map(extCtx -> extCtx.getSessionId(false));
+    }
+    
     /**
      * <p>
      * getStatusMapValue.
@@ -2033,5 +2054,10 @@ public class NavigationHelper implements Serializable {
             json.put(key, translation);
         }
         return json.toString();
+    }
+    
+    public List<Integer> getRange(long from, long to) {
+        List<Integer> range = IntStream.range((int)from, (int)to+1).boxed().collect(Collectors.toList());
+        return range;
     }
 }

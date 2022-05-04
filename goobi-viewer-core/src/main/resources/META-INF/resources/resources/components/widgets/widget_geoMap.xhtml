@@ -9,6 +9,7 @@
     <!-- INTERFACE OPTIONS -->
     <composite:interface>
         <composite:attribute name="geoMap" type="io.goobi.viewer.model.maps.GeoMap" required="true" />
+    	<composite:attribute name="title" required="false" default="#{cc.attrs.geoMap.title}"/>
         <composite:attribute name="linkToSearch" required="false" default="true" />
     	<composite:attribute name="allowFullscreen" required="false" default="true" />
     	<composite:attribute name="showAnnotations" type="java.lang.Boolean" required="false" default="false"/>
@@ -23,7 +24,7 @@
             <!-- STANDARD -->
                 <div id="widgetGeoMap_#{cc.attrs.geoMap.id}" class="widget widget-geomap">
                     <h2>
-                        #{cc.attrs.geoMap.title}
+                        #{cc.attrs.title}
                         <ui:fragment rendered="#{cc.attrs.allowFullscreen}">
 	                        <button id="expandMap_#{cc.attrs.geoMap.id}" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="widget-geomap__expand" aria-label="#{msg.fullscreen_enter}">
 	                        	<i class="fa fa-expand"/>

@@ -211,7 +211,8 @@ public class UserDataBean implements Serializable {
     }
 
     public long getNumComments(User user) throws DAOException {
-        return DataManager.getInstance().getDao().getCommentCount(null, user);
+        // TODO filter via PI whitelist here?
+        return DataManager.getInstance().getDao().getCommentCount(null, user, null);
     }
     
     public long getNumAnnotations(User user) throws DAOException {

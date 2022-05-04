@@ -44,6 +44,7 @@ public class CitationDataProvider implements ItemDataProvider {
     public static final String PUBLISHER_PLACE = "placepublish";
     public static final String PUBLISHER = "publisher";
     public static final String TITLE = "title";
+    public static final String URL = "url";
 
     private final Map<String, CSLItemData> itemDataMap = new TreeMap<>();
 
@@ -121,6 +122,9 @@ public class CitationDataProvider implements ItemDataProvider {
                     break;
                 case TITLE:
                     builder.title(fields.get(key).get(0));
+                    break;
+                case URL:
+                    builder.URL(fields.get(key).get(0));
                     break;
             }
         }

@@ -32,13 +32,14 @@ var viewerJS = ( function( viewer ) {
         width: '100%',
         height: 400,
         theme: 'silver',
-        plugins: 'print preview paste searchreplace autolink directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount spellchecker imagetools media textpattern help',
+        plugins: 'print preview paste searchreplace autolink directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount media textpattern help',
         toolbar: ['formatselect | undo redo | bold italic underline strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | fullscreen code | addFeedbackModalLink'],
         menubar: false,
         statusbar: false,
         pagebreak_separator: '<span class="pagebreak"></span>',
         relative_urls: false,
         language: 'de',
+		valid_children: '+a[div]',
         
         setup: function (editor) {
             editor.ui.registry.addButton('myCustomToolbarButton', {

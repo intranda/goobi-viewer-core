@@ -3,6 +3,7 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -150,8 +151,8 @@
 	                                                            </h:selectOneRadio>
 	                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
 	                                                        </div>
-	                                                        <span class="admin__form-help-text">#{msg.cms_menu_help_create_item_new_tab}</span>                                                            
-                                                        </div>                                                        
+	                                                        <span class="admin__form-help-text">#{msg.cms_menu_help_create_item_new_tab}</span>
+                                                        </div>
                                                         <div class="cms-module__option-help">
                                                             <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
@@ -201,9 +202,11 @@
                                                 </div>
 
                                                 <div class="cms-menu__available-item-page-add">
-                                                    <h:commandLink class="btn btn--default" action="#{cmsNavigationBean.addSelectedItemsToMenu()}">
+                                                    <button
+														class="btn btn--default"
+														jsf:action="#{cmsNavigationBean.addSelectedItemsToMenu()}">
                                                         #{msg.cms_menu_add_to_menu}
-                                                    </h:commandLink>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </li>
@@ -233,7 +236,7 @@
                                                             <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                             </button>
-                                                        </div>                                                        
+                                                        </div>
                                                     </div>
 
                                                     <!-- OPTION GROUP -->
@@ -263,13 +266,13 @@
 	                                                        <div class="admin__radio-switch">
 	                                                            <h:selectOneRadio group="privCmsMenu" value="#{cmsNavigationBean.navigationItem.openInNewWindow}" immediate="true">
 	                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-	                                                            </h:selectOneRadio>	                                                        
+	                                                            </h:selectOneRadio>
 	                                                            <h:selectOneRadio group="privCmsMenu" value="#{cmsNavigationBean.navigationItem.openInNewWindow}" immediate="true">
 	                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
 	                                                            </h:selectOneRadio>
 	                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
 	                                                        </div>
-	                                                        <span class="admin__form-help-text">#{msg.cms_menu_help_create_item_new_tab}</span>                                                            
+	                                                        <span class="admin__form-help-text">#{msg.cms_menu_help_create_item_new_tab}</span>
                                                         </div>
                                                         <div class="col-1 cms-module__option-help">
                                                             <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
@@ -308,13 +311,13 @@
                 } );
             </script>
         </h:panelGroup>
-        
+
        <ui:fragment rendered="#{!navigationHelper.solrIndexOnline}">
            <div class="alert alert-danger" role="alert">
                <h:outputText rendered="#{errMsg == null}" value="#{msg.errIndexUnreachableMsg}" />
            </div>
        </ui:fragment>
-        
+
     </ui:define>
 
 </ui:composition>

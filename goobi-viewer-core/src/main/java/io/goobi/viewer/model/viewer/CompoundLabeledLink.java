@@ -26,6 +26,9 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.viewer.collections.CollectionView;
+import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
+import io.goobi.viewer.model.viewer.collections.SimpleBrowseElementInfo;
 
 /**
  * <p>

@@ -60,6 +60,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.converter.StringListConverter;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -82,7 +83,7 @@ public class Question {
     
     private static final String URI_ID_TEMPLATE =
             DataManager.getInstance().getConfiguration().getRestApiUrl() + "crowdsourcing/campaigns/{campaignId}/questions/{questionId}";
-    private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/questions/(\\d+)/?$";
+    private static final String URI_ID_REGEX = "/crowdsourcing/campaigns/(\\d{1,19})/questions/(\\d{1,19})/?$";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -355,7 +356,7 @@ public class Question {
      * @throws SolrServerException 
      */
     @JsonIgnore
-    public List<String> getAvailableMetadataFields() throws DAOException {
+    public List<String> getAvailableMetadataFields() throws IndexUnreachableException {
         Locale locale = BeanUtils.getLocale();
         return DataManager.getInstance().getSearchIndex().getAllFieldNames().stream()
         .filter(field -> field.startsWith("MD_"))
@@ -382,6 +383,7 @@ public class Question {
      *
      * @param idAsURI a {@link java.net.URI} object.
      * @return a {@link java.lang.Long} object.
+     * @should extract id correctly
      */
     public static Long getQuestionId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
@@ -398,6 +400,7 @@ public class Question {
      *
      * @param idAsURI a {@link java.net.URI} object.
      * @return a {@link java.lang.Long} object.
+     * @should extract id correctly
      */
     public static Long getCampaignId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
@@ -445,7 +448,7 @@ public class Question {
         if(this.metadataFieldSelection == null) {
             try {                
                 this.metadataFieldSelection = getAvailableMetadataFields().stream().collect(Collectors.toMap(field -> field, field -> this.metadataFields.contains(field)));
-            } catch(DAOException e) {
+            } catch(IndexUnreachableException e) {
                 //If the possible fields cannot be retrieved from solr, just show the already selected ones
                 logger.error("Failed to load all possible metadata fields " + e.toString());
                 this.metadataFieldSelection = this.metadataFields.stream().collect(Collectors.toMap(field -> field, field -> Boolean.TRUE));

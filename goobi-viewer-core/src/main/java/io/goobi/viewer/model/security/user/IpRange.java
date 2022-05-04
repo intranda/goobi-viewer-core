@@ -134,6 +134,7 @@ public class IpRange implements ILicensee, Serializable {
      * @param inIp a {@link java.lang.String} object.
      * @return a boolean.
      * @should match IPv6 localhost to IPv4 mask
+     * @should match edge addresses
      */
     public boolean matchIp(String inIp) {
         if (inIp.equals(NetTools.ADDRESS_LOCALHOST_IPV6)) {
@@ -147,11 +148,12 @@ public class IpRange implements ILicensee, Serializable {
         }
 
         try {
-            SubnetInfo subnet = new SubnetUtils(subnetMask).getInfo();
-            if (subnet.isInRange(inIp)) {
+            SubnetUtils subnetUtils = new SubnetUtils(subnetMask);
+            subnetUtils.setInclusiveHostCount(true);
+            if (subnetUtils.getInfo().isInRange(inIp)) {
                 logger.debug("IP matches: {}", inIp);
             }
-            return subnet.isInRange(inIp);
+            return subnetUtils.getInfo().isInRange(inIp);
         } catch (IllegalArgumentException e) {
             if (!NetTools.ADDRESS_LOCALHOST_IPV6.equals(inIp)) {
                 logger.error(e.getMessage());
@@ -213,7 +215,7 @@ public class IpRange implements ILicensee, Serializable {
             return true;
         }
 
-        logger.trace(privilegeName);
+        // logger.trace(privilegeName);
         Map<String, Boolean> permissionMap = new HashMap<>(conditionList.size());
         for (String accessCondition : conditionList) {
             permissionMap.put(accessCondition, false);

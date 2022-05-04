@@ -87,9 +87,9 @@ import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
-import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.model.viewer.collections.DcSortingList;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -949,16 +949,12 @@ public final class Configuration extends AbstractConfiguration {
             String level = sub.getString("[@for]");
             String label = sub.getString("[@label]");
             String field = sub.getString("[@field]");
-            String prefix = sub.getString("[@prefix]");
-            String suffix = sub.getString("[@suffix]");
+            String pattern = sub.getString("[@pattern]");
             boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
-            boolean appendImageNumberToSuffix = sub.getBoolean("[@appendImageNumberToSuffix]", false);
             try {
                 ret.add(new CitationLink(type, level, label).setField(field)
-                        .setPrefix(prefix)
-                        .setSuffix(suffix)
-                        .setTopstructValueFallback(topstructValueFallback)
-                        .setAppendImageNumberToSuffix(appendImageNumberToSuffix));
+                        .setPattern(pattern)
+                        .setTopstructValueFallback(topstructValueFallback));
             } catch (IllegalArgumentException e) {
                 logger.error(e.getMessage());
             }
@@ -1554,13 +1550,15 @@ public final class Configuration extends AbstractConfiguration {
             boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
             boolean range = subElement.getBoolean("[@range]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
+            int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 50);
 
             ret.add(new AdvancedSearchFieldConfiguration(field)
                     .setLabel(label)
                     .setHierarchical(hierarchical)
                     .setRange(range)
                     .setUntokenizeForPhraseSearch(untokenizeForPhraseSearch)
-                    .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#'));
+                    .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#')
+                    .setDisplaySelectItemsThreshold(displaySelectItemsThreshold));
         }
 
         return ret;
@@ -1587,7 +1585,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct values
      */
     public List<String> getDisplayAdditionalMetadataIgnoreFields() {
-        return getLocalList("search.displayAdditionalMetadata.ignoreField", Collections.emptyList());
+        return getDisplayAdditionalMetadataFieldsByType("ignore", false);
     }
 
     /**
@@ -1600,14 +1598,48 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct values
      */
     public List<String> getDisplayAdditionalMetadataTranslateFields() {
-        List<String> fields = getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
-        if (fields.isEmpty()) {
-            return fields;
+        return getDisplayAdditionalMetadataFieldsByType("translate", true);
+    }
+
+    /**
+     * <p>
+     * getDisplayAdditionalMetadataIgnoreFields.
+     * </p>
+     *
+     * @return List of configured fields; empty list if none found.
+     * @should return correct values
+     */
+    public List<String> getDisplayAdditionalMetadataOnelineFields() {
+        return getDisplayAdditionalMetadataFieldsByType("oneline", false);
+    }
+
+    /**
+     * 
+     * @param type Value of the type attribute
+     * @param normalize If true; field will be normalized
+     * @return List of <field> elements filtered by type
+     */
+    List<String> getDisplayAdditionalMetadataFieldsByType(String type, boolean normalize) {
+        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("search.displayAdditionalMetadata.field");
+        if (type == null) {
+            throw new IllegalArgumentException("type may not be null");
+        }
+        if (fields == null || fields.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        List<String> ret = new ArrayList<>(fields.size());
-        for (String field : fields) {
-            ret.add(SearchHelper.normalizeField(field));
+        List<String> ret = new ArrayList<>();
+        for (HierarchicalConfiguration<ImmutableNode> node : fields) {
+            if (!type.equals(node.getString("[@type]"))) {
+                continue;
+            }
+            String value = node.getString(".");
+            if (StringUtils.isNotEmpty(value)) {
+                if (normalize) {
+                    value = SearchHelper.normalizeField(value);
+                }
+                ret.add(value);
+            }
         }
 
         return ret;
@@ -1650,6 +1682,28 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field) {
         return isAdvancedSearchFieldHasAttribute(field, "untokenizeForPhraseSearch");
+    }
+
+    /**
+     * 
+     * @param field
+     * @return
+     * @should return correct value
+     */
+    public int getAdvancedSearchFieldDisplaySelectItemsThreshold(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        if (fieldList == null) {
+            return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
+        }
+
+        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fieldList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+            if (subElement.getString(".").equals(field)) {
+                return subElement.getInt("[@displaySelectItemsThreshold]", AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD);
+            }
+        }
+
+        return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
     }
 
     /**
@@ -2802,7 +2856,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getLabelFieldForFacetField(String facetField) {
         return getPropertyForFacetField(facetField, "[@labelField]", null);
     }
-    
+
     /**
      * 
      * @param facetField
@@ -2810,7 +2864,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
-        String value= getPropertyForFacetField(facetField, "[@translateLabels]", "true");
+        String value = getPropertyForFacetField(facetField, "[@translateLabels]", "true");
         return Boolean.valueOf(value);
     }
 
@@ -3869,46 +3923,10 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * isCommentsEnabled.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isCommentsEnabled() {
-        return getLocalBoolean(("comments[@enabled]"), false);
-    }
-
-    /**
      * @return
      */
     public boolean reviewEnabledForComments() {
         return getLocalBoolean("comments.review[@enabled]", false);
-    }
-
-    /**
-     * <p>
-     * getCommentsCondition.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getCommentsCondition() {
-        return getLocalString("comments.condition");
-    }
-
-    /**
-     * <p>
-     * getCommentsNotificationEmailAddresses.
-     * </p>
-     *
-     * @should return all configured elements
-     * @return a {@link java.util.List} object.
-     */
-    public List<String> getCommentsNotificationEmailAddresses() {
-        return getLocalList("comments.notificationEmailAddress");
     }
 
     /**
@@ -4476,8 +4494,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getCmsMediaDisplayHeight.
-     * If not configured, return 100.000. In this case the actual image size always depends on the requested width
+     * getCmsMediaDisplayHeight. If not configured, return 100.000. In this case the actual image size always depends on the requested width
      * </p>
      *
      * @return a int.
@@ -5199,6 +5216,32 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("maps.coordinateFields.field", Arrays.asList("MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON"));
     }
 
+
+    public boolean useHeatmapForCMSMaps() {
+        return getLocalBoolean("maps.cms.heatmap[@enabled]", false);
+    }
+
+    public boolean useHeatmapForMapSearch() {
+        return getLocalBoolean("maps.search.heatmap[@enabled]", false);
+    }
+
+    public boolean useHeatmapForFacetting() {
+        return getLocalBoolean("maps.facet.heatmap[@enabled]", false);
+    }
+
+    public GeoMapMarker getMarkerForMapSearch() {
+        HierarchicalConfiguration<ImmutableNode> config = getLocalConfigurationAt("maps.search.marker");
+        GeoMapMarker marker = readGeoMapMarker(config);
+        return marker;
+    }
+
+    public GeoMapMarker getMarkerForFacetting() {
+        HierarchicalConfiguration<ImmutableNode> config = getLocalConfigurationAt("maps.facet.marker");
+        GeoMapMarker marker = readGeoMapMarker(config);
+        return marker;
+    }
+
+
     public boolean includeCoordinateFieldsFromMetadataDocs() {
         return getLocalBoolean("maps.coordinateFields[@includeMetadataDocs]", false);
     }
@@ -5224,8 +5267,8 @@ public final class Configuration extends AbstractConfiguration {
      */
     public static GeoMapMarker readGeoMapMarker(HierarchicalConfiguration<ImmutableNode> config) {
         GeoMapMarker marker = null;
-        String name = config.getString(".");
-        if (StringUtils.isNotBlank(name)) {
+        if (config != null) {
+            String name = config.getString(".", "default");
             marker = new GeoMapMarker(name);
             marker.setExtraClasses(config.getString("[@extraClasses]", marker.getExtraClasses()));
             marker.setIcon(config.getString("[@icon]", marker.getIcon()));
@@ -5395,24 +5438,24 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isFuzzySearchEnabled() {
         return getLocalBoolean("search.fuzzy[@enabled]", false);
     }
-    
-//    /**
-//     * 
-//     * @return
-//     * @should return correct value
-//     */
-//    public boolean isProximitySearchEnabled() {
-//        return getLocalBoolean("search.proximity[@enabled]", false);
-//    }
-//    
-//    
-//    /**
-//     * 
-//     * @return
-//     * @should return correct value
-//     */
-//    public int getProximitySearchDistance() {
-//        return getLocalInt("search.proximity[@distance]", 10);
-//    }
+
+    //    /**
+    //     * 
+    //     * @return
+    //     * @should return correct value
+    //     */
+    //    public boolean isProximitySearchEnabled() {
+    //        return getLocalBoolean("search.proximity[@enabled]", false);
+    //    }
+    //    
+    //    
+    //    /**
+    //     * 
+    //     * @return
+    //     * @should return correct value
+    //     */
+    //    public int getProximitySearchDistance() {
+    //        return getLocalInt("search.proximity[@distance]", 10);
+    //    }
 
 }

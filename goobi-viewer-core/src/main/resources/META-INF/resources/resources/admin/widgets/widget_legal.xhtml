@@ -1,0 +1,41 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <composite:interface />
+
+    <composite:implementation>
+        <h:panelGroup rendered="#{userBean.admin}">
+            <div id="widgetLegal" class="admin-widget">
+                <h:form id="widgetLegalForm">
+                    <div class="admin-widget__header">#{msg.admin__legal__title}</div>
+                    <ul>
+                    	<li class="#{navigationHelper.currentPage == 'adminUserTerms' ? 'active' : ''}">
+                             <h:outputLink value="#{navigationHelper.getPageUrl('adminUserTerms')}/">
+                                <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                                <span>#{msg.admin__terms_of_use__title}</span>
+                            </h:outputLink>
+                        </li>
+                        <li class="#{navigationHelper.currentPage == 'adminCookieBanner' ? 'active' : ''}">
+                             <h:outputLink value="#{navigationHelper.getPageUrl('adminCookieBanner')}/">
+                                <i class="fa fa-bullhorn" aria-hidden="true"></i>
+                                <span>#{msg.label__cookie_banner}</span>
+                            </h:outputLink>
+                        </li>
+                        <li class="#{navigationHelper.currentPage == 'adminDisclaimer' ? 'active' : ''}">
+                             <h:outputLink value="#{navigationHelper.getPageUrl('adminDisclaimer')}/">
+                                <i class="fa fa-gavel" aria-hidden="true"></i>
+                                <span>#{msg.label__legal_disclaimer}</span>
+                            </h:outputLink>
+                        </li>
+                    </ul>
+                </h:form>
+            </div>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>

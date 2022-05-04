@@ -11,31 +11,34 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- COOKIE BANNER -->
-    <div id="cookieBanner" class="cookie-banner">
-        <div class="cookie-banner__info">
-            <div class="cookie-banner__info-inner">
-            
-            	<div class="cookie-banner__icon-wrapper">
-            		<div class="cookie-banner__icon">
-            		<ui:include src="/resources/images/icons/icon-cookie.svg" />
-            		</div>
-				</div>
-				
-				<div class="cookie-banner__info-inserted-content">
-                	<h:outputText value="#{cookieBannerBean.cookieBanner.text.textOrDefault}" escape="false" />
-				</div>
-                <div class="cookie-banner__info-actions">
-                    <button type="button" class="btn btn--full cookie-banner__accept-button" data-set="cookie-banner-accept">#{msg.cookieBanner_accept}</button>
-					<button type="button" class="btn btn--default cookie-banner__decline-button" data-set="cookie-banner-decline">#{msg.cookieBanner_decline}</button>
-                </div>                    
-            </div>
-        </div>
-        
-        <!-- OVERLAY -->
-        <div class="cookie-banner__overlay"></div>
-    </div>
-    
-    <script>
-    	$(document).ready(() => viewerJS.cookieBanner.init(#{cookieBannerBean.cookieBannerConfig}));
-    </script>
+    <!-- ONLY RENDER IF ACTIVATED -->
+    <ui:fragment rendered="#{cookieBannerBean.bannerActive}">
+	    <div id="cookieBanner" class="cookie-banner">
+	        <div class="cookie-banner__info">
+	            <div class="cookie-banner__info-inner">
+	            
+	            	<div class="cookie-banner__icon-wrapper">
+	            		<div class="cookie-banner__icon">
+	            		<ui:include src="/resources/images/icons/icon-cookie.svg" />
+	            		</div>
+					</div>
+					
+					<div class="cookie-banner__info-inserted-content">
+	                	<h:outputText value="#{cookieBannerBean.cookieBanner.text.textOrDefault}" escape="false" />
+					</div>
+	                <div class="cookie-banner__info-actions">
+	                    <button type="button" class="btn btn--full cookie-banner__accept-button" data-set="cookie-banner-accept">#{msg.cookieBanner_accept}</button>
+						<button type="button" class="btn btn--default cookie-banner__decline-button" data-set="cookie-banner-decline">#{msg.cookieBanner_decline}</button>
+	                </div>                    
+	            </div>
+	        </div>
+	        
+	        <!-- OVERLAY -->
+	        <div class="cookie-banner__overlay"></div>
+	    </div>
+	    
+	    <script>
+	    	$(document).ready(() => viewerJS.cookieBanner.init(#{cookieBannerBean.cookieBannerConfig}));
+	    </script>
+    </ui:fragment>
 </ui:composition>

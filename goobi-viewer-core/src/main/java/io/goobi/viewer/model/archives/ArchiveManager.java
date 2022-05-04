@@ -1,9 +1,23 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.model.archives;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,17 +35,17 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -53,7 +67,7 @@ public class ArchiveManager {
 
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 
-    private final Map<ArchiveResource, ArchiveTree> archives = new HashMap<>();
+    private Map<ArchiveResource, ArchiveTree> archives = new HashMap<>();
 
     private final List<NodeType> nodeTypes;
 
@@ -91,11 +105,7 @@ public class ArchiveManager {
         if (StringUtils.isNotBlank(basexUrl)) {
             try {
                 eadParser = new BasexEADParser(basexUrl, searchIndex);
-                //initialize archives with 'null' archive tree values
-                List<ArchiveResource> databases = eadParser.getPossibleDatabases();
-                for (ArchiveResource db : databases) {
-                    this.archives.put(db, null);
-                }
+                initArchivesFromBaseXServer(eadParser);
                 //this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
                 this.databaseState = DatabaseState.ARCHIVES_LOADED;
             } catch (PresentationException | IndexUnreachableException e) {
@@ -112,11 +122,7 @@ public class ArchiveManager {
 
     public ArchiveManager(BasexEADParser eadParser, Map<String, String> archiveNodeTypes) {
         try {
-            //initialize archives with 'null' archive tree values
-            List<ArchiveResource> databases = eadParser.getPossibleDatabases();
-            for (ArchiveResource db : databases) {
-                this.archives.put(db, null);
-            }
+            initArchivesFromBaseXServer(eadParser);
             //this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
             this.databaseState = DatabaseState.ARCHIVES_LOADED;
         } catch (IOException | HTTPException e) {
@@ -125,6 +131,50 @@ public class ArchiveManager {
         }
         this.eadParser = eadParser;
         this.nodeTypes = loadNodeTypes(archiveNodeTypes);
+    }
+
+    /**
+     * Queries the list of databases from the basex server and updated the internal database list from it.
+     * 
+     * @param eadParser
+     * @return true if the internal list of databases was updated, either because a database was outdated, didn't exist before or doesn't exist
+     *         anymore
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws HTTPException
+     */
+    private boolean initArchivesFromBaseXServer(BasexEADParser eadParser) throws ClientProtocolException, IOException, HTTPException {
+        //initialize archives with 'null' archive tree values
+        List<ArchiveResource> databases = eadParser.getPossibleDatabases();
+        Map<ArchiveResource, ArchiveTree> cachedDatabases = this.archives;
+        this.archives = new HashMap<ArchiveResource, ArchiveTree>();
+        boolean updated = false;
+        for (ArchiveResource db : databases) {
+            ArchiveResource cachedResource =
+                    cachedDatabases.keySet().stream().filter(res -> res.getCombinedId().equals(db.getCombinedId())).findAny().orElse(null);
+            ArchiveTree cachedTree = cachedDatabases.get(cachedResource);
+
+            if (cachedResource == null || isOutdated(cachedResource, db)) {
+                this.archives.put(db, null);
+                updated = true;
+            } else {
+                this.archives.put(cachedResource, cachedTree);
+                cachedDatabases.remove(cachedResource);
+            }
+        }
+        //cached databases that are included in the basex response are removed from the cachedDatabases list. If it is still not empty at this point, databases were removed
+        updated = updated || !cachedDatabases.isEmpty();
+        return updated;
+    }
+
+    private static boolean isOutdated(ArchiveResource cachedResource, ArchiveResource currentResource) {
+        if (cachedResource == null) {
+            return true;
+        } else if (currentResource == null) {
+            return true;
+        } else {
+            return currentResource.getModifiedDate().isAfter(cachedResource.getModifiedDate());
+        }
     }
 
     public ArchiveTree getArchiveTree(String archiveId, String resourceId) {
@@ -148,9 +198,9 @@ public class ArchiveManager {
     public Optional<ArchiveResource> getOnlyDatabaseResource() {
         if (this.databaseState == DatabaseState.ARCHIVES_LOADED && this.archives.size() == 1) {
             return this.archives.keySet().stream().findFirst();
-        } else {
-            return Optional.empty();
         }
+
+        return Optional.empty();
     }
 
     public ArchiveResource loadArchiveForEntry(String identifier) {
@@ -162,12 +212,12 @@ public class ArchiveManager {
     public String getArchiveUrl(ArchiveResource resource, String entryIdentifier) {
         if (resource == null || StringUtils.isBlank(entryIdentifier)) {
             return "archives/";
-        } else {
-            return "archives/{database}/{filename}/?selected={identifier}#selected"
-                    .replace("{database}", resource.getDatabaseId())
-                    .replace("{filename}", resource.getResourceId())
-                    .replace("{identifier}", entryIdentifier);
         }
+
+        return "archives/{database}/{filename}/?selected={identifier}#selected"
+                .replace("{database}", resource.getDatabaseId())
+                .replace("{filename}", resource.getResourceId())
+                .replace("{identifier}", entryIdentifier);
     }
 
     public DatabaseState getDatabaseState() {
@@ -234,17 +284,20 @@ public class ArchiveManager {
         ArchiveTree tree = archives.get(resource);
         if (tree != null) {
             ArchiveEntry entry = tree.getEntryById(identifier);
+            ArchiveEntry trueRoot = getTrueRoot(archives.get(resource));
             if (entry == null) {
-                //            return Collections.emptyList();
-                return Collections.singletonList(getTrueRoot(archives.get(resource)));
-            } else if (getTrueRoot(archives.get(resource)).equals(entry) || getTrueRoot(archives.get(resource)).equals(entry.getParentNode())) {
+                if (trueRoot == null) {
+                    Collections.emptyList();
+                }
+                return Collections.singletonList(trueRoot);
+            } else if (trueRoot != null && (trueRoot.equals(entry) || trueRoot.equals(entry.getParentNode()))) {
                 return Collections.singletonList(entry);
             } else {
                 return entry.getAncestors(false).stream().skip(1).collect(Collectors.toList());
             }
-        } else {
-            return Collections.emptyList();
         }
+
+        return Collections.emptyList();
     }
 
     public ArchiveResource getArchive(String databaseId, String resourceId) {
@@ -257,9 +310,9 @@ public class ArchiveManager {
                     .findAny()
                     .orElse(null);
             return archive;
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     private ArchiveResource getArchiveForEntry(String identifier) {
@@ -268,7 +321,7 @@ public class ArchiveManager {
 
         try {
             String response = NetTools.getWebContentGET(requestUri.toString());
-            Document doc = new SAXBuilder().build(new StringReader(response));
+            Document doc = XmlTools.getSAXBuilder().build(new StringReader(response));
             String database = Optional.ofNullable(doc)
                     .map(Document::getRootElement)
                     .map(d -> d.getChild("record", null))
@@ -292,7 +345,7 @@ public class ArchiveManager {
      * 
      * @return actual root element of the document, even if it's not in the displayed tree
      */
-    private ArchiveEntry getTrueRoot(ArchiveTree tree) {
+    private static ArchiveEntry getTrueRoot(ArchiveTree tree) {
         if (tree == null) {
             return null;
         }
@@ -338,9 +391,8 @@ public class ArchiveManager {
                     resources.stream().filter(extResource -> extResource.getCombinedId().equals(resource.getCombinedId())).findAny().orElse(null);
             if (externalResource != null) {
                 return externalResource.getModifiedDate().isAfter(resource.getModifiedDate());
-            } else {
-                throw new BaseXException("Resource " + resource.getCombinedName() + " not found on basex server " + this.eadParser.getBasexUrl());
             }
+            throw new BaseXException("Resource " + resource.getCombinedName() + " not found on basex server " + this.eadParser.getBasexUrl());
         } catch (HTTPException e) {
             throw new IOException("BaseX server cannot be reached: " + e.toString());
         }
@@ -355,7 +407,7 @@ public class ArchiveManager {
         return loadTree(rootElement);
     }
 
-    private ArchiveTree loadTree(ArchiveEntry rootElement) {
+    private static ArchiveTree loadTree(ArchiveEntry rootElement) {
 
         ArchiveTree ret = new ArchiveTree();
         ret.generate(rootElement);
@@ -369,11 +421,29 @@ public class ArchiveManager {
 
     }
 
-    private List<NodeType> loadNodeTypes(Map<String, String> archiveNodeTypes) {
+    private static List<NodeType> loadNodeTypes(Map<String, String> archiveNodeTypes) {
         if (archiveNodeTypes != null) {
             return archiveNodeTypes.entrySet().stream().map(entry -> new NodeType(entry.getKey(), entry.getValue())).collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * Checks the list of ead archives for updates. An update occurs if either the "lastModifiedDate" of an archive has changed since the last
+     * request, or if an archive was added or removed. In these cases, the list of records assiciated with an archive entry is updated as well
+     */
+    public void updateArchiveList() {
+        try {
+            if (this.initArchivesFromBaseXServer(eadParser)) {
+                this.eadParser.updateAssociatedRecordMap();
+            }
+        } catch (IOException | HTTPException e) {
+            logger.error("Failed to retrieve database names from '{}': {}", eadParser.getBasexUrl(), e.toString());
+            this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error("Failed to retrieve associated records from SOLR: {}", e.toString());
+            this.databaseState = DatabaseState.ERROR_NOT_CONFIGURED;
         }
     }
 }

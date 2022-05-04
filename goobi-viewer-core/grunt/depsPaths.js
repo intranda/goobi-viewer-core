@@ -2,8 +2,8 @@
 Static path definitions for Goobi viewer JS + CSS dependencies 
 They define what will be copied from node_modules to which Goobi viewer core lib directory
 
-They are feed into the copy tasks `copy:js` and `copy:css`,
-which can be called separately (`grunt copy:js` / `grunt copy:css`), or at once (`grunt copyDeps`)
+They are fed into the copy tasks `copy:js` and `copy:css`,
+which can be called separately (`grunt copy:js` / `grunt copy:css`), or at once (`grunt copyDeps  [--verbose]`)
 Run these tasks after updating dependencies with `npm update`
 Add new definitions after installing new packages with `npm install [<@scope>/]<name>` 
 */
@@ -72,7 +72,7 @@ const depsPathsJS = [
     cwd: 'node_modules/jquery-ui-dist/',
     src: ['LICENSE.txt', 'jquery-ui.min.js'], 
     flatten: true,
-    dest:`${jsLibsDir}jqueryUI/1.12.1`
+    dest:`${jsLibsDir}jqueryUi/`
   },
 
   { // LEAFLET
@@ -116,6 +116,15 @@ const depsPathsJS = [
     ],
     flatten: true,
     dest:`${jsLibsDir}leaflet/draw/`
+  },
+  
+    
+  { // leaflet solr heatmap
+    expand: true,
+    cwd: nodeModules,
+    src: ['leaflet-solr-heatmap/leafletSolrHeatmap.js'],
+    flatten: true,
+    dest: `${jsLibsDir}leaflet/solr-heatmap/`
   },
 
   { // MAPBOX GL
@@ -303,6 +312,17 @@ const depsPathsCSS = [
     ], 
     flatten: false,
     dest:`${cssLibsDir}`
+  },
+
+   { // JQUERY UI
+    expand: true,
+    cwd: 'node_modules/jquery-ui-dist/',
+    src: [
+      'jquery-ui.min.css',
+      'jquery-ui.structure.min.css'
+    ], 
+    flatten: false,
+    dest:`${cssLibsDir}jQueryUi/`
   },
 
   { // LEAFLET

@@ -101,8 +101,9 @@ import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
-import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.collections.CollectionView;
+import io.goobi.viewer.model.viewer.collections.Sorting;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -1874,7 +1875,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Get the {@link io.goobi.viewer.model.viewer.CollectionView} of the given content item in the given page. If the view hasn't been initialized
+     * Get the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been initialized
      * yet, do so and add it to the Bean's CollectionView map
      *
      * @param id The ContentItemId of the ContentItem to look for
@@ -1906,7 +1907,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * get a list of all {@link io.goobi.viewer.model.viewer.CollectionView}s with the given solr field which are already loaded via
+     * get a list of all {@link io.goobi.viewer.model.viewer.collections.CollectionView}s with the given solr field which are already loaded via
      * {@link #getCollection(CMSPage)} or {@link #getCollection(String, CMSPage)
      *
      * @param field The solr field the colleciton is based on
@@ -1917,7 +1918,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Get the first available {@link io.goobi.viewer.model.viewer.CollectionView} from any {@link io.goobi.viewer.model.cms.CMSContentItem} of the
+     * Get the first available {@link io.goobi.viewer.model.viewer.collections.CollectionView} from any {@link io.goobi.viewer.model.cms.CMSContentItem} of the
      * given {@link CMSPage page}. The CollectionView is added to the Bean's internal collection map
      *
      * @param page The CMSPage to provide the collection
@@ -1995,7 +1996,7 @@ public class CmsBean implements Serializable {
             filteredLuceneFields = filteredLuceneFields.sorted();
             return filteredLuceneFields.collect(Collectors.toList());
 
-        } catch (DAOException e) {
+        } catch (IndexUnreachableException e) {
             logger.error("Error retrieving solr fields", e);
             return Collections.singletonList("");
         }
@@ -2466,7 +2467,7 @@ public class CmsBean implements Serializable {
      * @throws java.io.IOException if any.
      * @throws DAOException
      */
-    public List<String> getPossibleGroupFields() throws SolrServerException, IOException, DAOException {
+    public List<String> getPossibleGroupFields() throws IndexUnreachableException {
 
         if (this.solrGroupFields == null) {
             this.solrGroupFields = DataManager.getInstance()
@@ -2760,6 +2761,10 @@ public class CmsBean implements Serializable {
 
     public List<CMSNavigationItem> getActiveNavigationMenuItems() {
         return getNavigationMenuItems().stream().filter(CMSNavigationItem::isEnabled).collect(Collectors.toList());
+    }
+    
+    public Collection<Sorting> getSortingModes() {
+        return Arrays.asList(Sorting.values());
     }
 
 }

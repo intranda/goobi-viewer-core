@@ -2,7 +2,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -73,8 +73,12 @@
                         <!-- ACTION -->
                             <div
 								class="row no-gutters justify-content-end admin__final-actions">
-                            <h:commandLink action="#{cmsCategoriesBean.cancelAction}" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
-                            <h:commandLink action="#{cmsCategoriesBean.saveCategoryAction}" value="#{msg.save}" styleClass="btn btn--success" />
+                            <h:commandButton action="#{cmsCategoriesBean.cancelAction}" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
+                            <button
+                                jsf:action="#{cmsCategoriesBean.saveCategoryAction}"
+                                class="btn btn--success">
+                                #{msg.save}
+                            </button>
                         </div>
                     </h:form>
                 </div>

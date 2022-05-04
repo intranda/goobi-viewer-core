@@ -49,11 +49,10 @@
 					language="#{navigationHelper.localeString}"
 					defaultlanguage="#{navigationHelper.defaultLocale.language}"
 					blacklist="#{cmsPage.getContentItem('collection').ignoreCollections}"
+					sorting="#{cmsPage.getContentItem('collection').sorting}"
 					></collectionView>
 				</div>
-				
-<!-- 				<div class="tpl-stacked-collection__collections"></div> -->
-				
+								
 				<script type="text/javascript">
 				riot.mount("collectionView");
                 </script>

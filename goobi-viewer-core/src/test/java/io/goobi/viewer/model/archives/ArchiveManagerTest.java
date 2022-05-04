@@ -1,3 +1,18 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.model.archives;
 
 import static org.junit.Assert.assertEquals;
@@ -8,6 +23,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,6 +44,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 public class ArchiveManagerTest extends AbstractTest{
 
     BasexEADParser eadParser;
+    List<ArchiveResource> possibleDatabases;
     
     @Before
     public void before() {
@@ -37,12 +54,13 @@ public class ArchiveManagerTest extends AbstractTest{
             ArchiveEntry root = tempParser.readConfiguration(DataManager.getInstance().getConfiguration().getArchiveMetadataConfig())
                     .parseEadFile(doc);
             
+            possibleDatabases = new ArrayList<>(); 
+            possibleDatabases.add(new ArchiveResource("database 1", "resource 1", ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
+            possibleDatabases.add(new ArchiveResource("database 1", "resource 2", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
+            
             eadParser = new BasexEADParser(null, null) {
                 public List<ArchiveResource> getPossibleDatabases() {
-                    return Arrays.asList(
-                            new ArchiveResource("database 1", "resource 1", ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10"),
-                            new ArchiveResource("database 1", "resource 2", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER), "10")
-                            );
+                    return possibleDatabases;
                 }
                 
                 public ArchiveEntry loadDatabase(ArchiveResource database) {
@@ -89,11 +107,33 @@ public class ArchiveManagerTest extends AbstractTest{
             Mockito.verify(archiveManager, Mockito.times(1)).loadDatabase(Mockito.any(), Mockito.any());
         }
         {            
-            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
-            archiveManager.getArchiveTree("database 1", "resource 2");
-            archiveManager.getArchiveTree("database 1", "resource 2");
-            Mockito.verify(archiveManager, Mockito.times(2)).loadDatabase(Mockito.any(), Mockito.any());
+//            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
+//            archiveManager.getArchiveTree("database 1", "resource 2");
+//            archiveManager.getArchiveTree("database 1", "resource 2");
+//            Mockito.verify(archiveManager, Mockito.times(2)).loadDatabase(Mockito.any(), Mockito.any());
         }
+    }
+    
+    @Test
+    public void testAddNewArchive() {
+        ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
+        
+        ArchiveResource newArchive = new ArchiveResource("database 1", "resource 3", ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10");
+        possibleDatabases.add(newArchive);
+        assertNull(archiveManager.getArchive("database 1", "resource 3"));
+        archiveManager.updateArchiveList();
+        assertNotNull(archiveManager.getArchive("database 1", "resource 3"));
+
+    }
+    
+    @Test
+    public void testRemoveArchive() {
+        ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
+        possibleDatabases.remove(1);
+        assertNotNull(archiveManager.getArchive("database 1", "resource 2"));
+        archiveManager.updateArchiveList();
+        assertNull(archiveManager.getArchive("database 1", "resource 2"));
+
     }
 
 

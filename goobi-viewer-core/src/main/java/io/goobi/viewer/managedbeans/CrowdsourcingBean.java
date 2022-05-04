@@ -369,6 +369,7 @@ public class CrowdsourcingBean implements Serializable {
      * @return
      * @throws DAOException
      */
+    @Deprecated
     public boolean isUserOwnsAnyCampaigns(User user) throws DAOException {
         return CrowdsourcingTools.isUserOwnsAnyCampaigns(user);
     }
@@ -599,6 +600,7 @@ public class CrowdsourcingBean implements Serializable {
         if (this.targetCampaign != null &&  !this.targetCampaign.equals(targetCampaign)) {
             resetTarget();
         }
+        
         this.targetCampaign = targetCampaign;
     }
 
@@ -861,7 +863,7 @@ public class CrowdsourcingBean implements Serializable {
             return "pretty:crowdCampaigns";
         } else if (getTargetCampaign() == null) {
             return "pretty:crowdCampaigns";
-        } else if (CrowdsourcingStatus.FINISHED.equals(getTargetRecordStatus())) {
+        } else if (StatisticMode.RECORD == getTargetCampaign().getStatisticMode() && CrowdsourcingStatus.FINISHED.equals(getTargetRecordStatus())) {
             return "pretty:crowdCampaigns";
         } else if (getTargetCampaign().isHasEnded() || !getTargetCampaign().isHasStarted()) {
             return "pretty:crowdCampaigns";

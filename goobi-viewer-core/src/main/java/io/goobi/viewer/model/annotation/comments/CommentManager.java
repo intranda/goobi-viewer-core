@@ -19,31 +19,35 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.annotation.AgentType;
-import de.intranda.api.annotation.IResource;
-import de.intranda.api.annotation.SimpleResource;
-import de.intranda.api.annotation.wa.Agent;
 import de.intranda.api.annotation.wa.Motivation;
-import de.intranda.api.annotation.wa.TextualResource;
-import de.intranda.api.annotation.wa.WebAnnotation;
-import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.AjaxResponseException;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.notification.ChangeNotificator;
+import io.goobi.viewer.model.annotation.notification.CommentMailNotificator;
 import io.goobi.viewer.model.annotation.serialization.AnnotationDeleter;
 import io.goobi.viewer.model.annotation.serialization.AnnotationLister;
 import io.goobi.viewer.model.annotation.serialization.AnnotationSaver;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Class to create comments from a text input for a given PI and page order and to save them using a given {@link AnnotationSaver}
@@ -54,13 +58,20 @@ import io.goobi.viewer.model.security.user.User;
 public class CommentManager implements AnnotationLister<Comment> {
 
     private final static Logger logger = LoggerFactory.getLogger(CommentManager.class);
-    
+
     private final AnnotationSaver saver;
     private final AnnotationDeleter deleter;
     private final List<ChangeNotificator> notificators;
     private final AnnotationConverter converter = new AnnotationConverter();
     private final AnnotationLister<Comment> lister;
 
+    /**
+     * 
+     * @param saver
+     * @param deleter
+     * @param lister
+     * @param notificators
+     */
     public CommentManager(AnnotationSaver saver, AnnotationDeleter deleter, AnnotationLister<Comment> lister, ChangeNotificator... notificators) {
         this.saver = saver;
         this.deleter = deleter;
@@ -68,18 +79,62 @@ public class CommentManager implements AnnotationLister<Comment> {
         this.notificators = Arrays.asList(notificators);
     }
 
+    /**
+     * 
+     * @param text
+     * @param creator
+     * @param pi
+     * @param pageOrder
+     * @param license
+     * @param publicationStatus
+     */
     public void createComment(String text, User creator, String pi, Integer pageOrder, String license, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, creator, pi, pageOrder);
         Comment comment = new Comment(pi, pageOrder, creator, textCleaned, license, publicationStatus);
         comment.setPublicationStatus(publicationStatus);
         try {
             saver.save(comment);
-            notificators.forEach(n -> n.notifyCreation(comment, BeanUtils.getLocale()));
+            notificators.parallelStream().forEach(n -> {
+                if (n.getClass().equals(CommentMailNotificator.class)) {
+                    Thread fileChangedObserver = new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            try {
+                                // Send notification mails to each user group that receives notifications
+                                Set<UserGroup> groups = getNotificationUserGroupsForRecord(pi);
+                                Set<String> usedAddresses = new HashSet<>();
+                                for (UserGroup group : groups) {
+                                    populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
+                                    n.notifyCreation(comment, BeanUtils.getLocale());
+                                }
+                            } catch (DAOException e) {
+                                logger.error(e.getMessage());
+                            } catch (PresentationException e) {
+                                logger.error(e.getMessage());
+                            } catch (IndexUnreachableException e) {
+                                logger.error(e.getMessage());
+                            }
+                        }
+                    });
+                    fileChangedObserver.start();
+                } else {
+                    n.notifyCreation(comment, BeanUtils.getLocale());
+                }
+            });
         } catch (IOException e) {
             notificators.forEach(n -> n.notifyError(e, BeanUtils.getLocale()));
         }
     }
 
+    /**
+     * 
+     * @param comment
+     * @param text
+     * @param editor
+     * @param license
+     * @param publicationStatus
+     */
     public void editComment(Comment comment, String text, User editor, String license, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, editor, comment.getTargetPI(), comment.getTargetPageOrder());
         Comment editedComment = new Comment(comment);
@@ -88,12 +143,80 @@ public class CommentManager implements AnnotationLister<Comment> {
         editedComment.setDateModified(LocalDateTime.now());
         try {
             saver.save(editedComment);
-            notificators.forEach(n -> n.notifyEdit(comment, editedComment, BeanUtils.getLocale()));
+            notificators.parallelStream().forEach(n -> {
+                if (n.getClass().equals(CommentMailNotificator.class)) {
+                    Thread fileChangedObserver = new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            try {
+                                // Send notification mails to each user group that receives notifications
+                                Set<UserGroup> groups = getNotificationUserGroupsForRecord(editedComment.getTargetPI());
+                                Set<String> usedAddresses = new HashSet<>();
+                                for (UserGroup group : groups) {
+                                    populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
+                                    n.notifyEdit(comment, editedComment, BeanUtils.getLocale());
+                                }
+                            } catch (DAOException e) {
+                                logger.error(e.getMessage());
+                            } catch (PresentationException e) {
+                                logger.error(e.getMessage());
+                            } catch (IndexUnreachableException e) {
+                                logger.error(e.getMessage());
+                            }
+                        }
+                    });
+                    fileChangedObserver.start();
+                } else {
+                    n.notifyEdit(comment, editedComment, BeanUtils.getLocale());
+                }
+            });
         } catch (IOException e) {
             notificators.forEach(n -> n.notifyError(e, BeanUtils.getLocale()));
         }
     }
 
+    /**
+     * Populates recipient and BCC lists for given from given user group owner and members.
+     * 
+     * @param pi
+     * @param notificator
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should not add addresses included in usedAddresses
+     */
+    static void populateRecipientsForGroup(UserGroup group, CommentMailNotificator notificator, Set<String> usedAddresses)
+            throws DAOException, PresentationException, IndexUnreachableException {
+        if (group == null) {
+            throw new IllegalArgumentException("group may not be null");
+        }
+        if (notificator == null) {
+            throw new IllegalArgumentException("notificator may not be null");
+        }
+        if (usedAddresses == null) {
+            throw new IllegalArgumentException("usedAddresses may not be null");
+        }
+
+        notificator.setRecipients(Collections.singletonList(group.getOwner().getEmail()));
+        usedAddresses.add(group.getOwner().getEmail());
+        // logger.trace("Added owner for group '{}': '{}'", group.getName(), group.getOwner().getEmail());
+        Set<User> members = group.getMembers();
+        List<String> bcc = new ArrayList<>(members.size());
+        for (User member : members) {
+            if (!usedAddresses.contains(member.getEmail())) {
+                bcc.add(member.getEmail());
+                usedAddresses.add(member.getEmail());
+                // logger.trace("Added member for group '{}': '{}'", group.getName(), member.getEmail());
+            }
+        }
+        notificator.setBcc(bcc);
+    }
+
+    /**
+     * 
+     * @param comment
+     */
     public void deleteComment(Comment comment) {
         try {
             deleter.delete(comment);
@@ -127,13 +250,13 @@ public class CommentManager implements AnnotationLister<Comment> {
             List<Long> creators, String targetPi, Integer targetPage, String sortField, boolean sortDescending) {
         List<String> allMotivations = new ArrayList<>();
         allMotivations.add(Motivation.COMMENTING);
-        if(motivations  != null) {
-            allMotivations.addAll(allMotivations);
+        if (motivations != null) {
+            allMotivations.addAll(motivations);
         }
-        return lister.getAnnotations(firstIndex, items, textQuery, allMotivations, generators, creators, targetPi, targetPage, sortField, sortDescending);
+        return lister.getAnnotations(firstIndex, items, textQuery, allMotivations, generators, creators, targetPi, targetPage, sortField,
+                sortDescending);
     }
 
-    
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.annotation.serialization.AnnotationLister#getAnnotationCount(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer)
      */
@@ -142,23 +265,32 @@ public class CommentManager implements AnnotationLister<Comment> {
             Integer targetPage) {
         List<String> allMotivations = new ArrayList<>();
         allMotivations.add(Motivation.COMMENTING);
-        if(motivations  != null) {
-            allMotivations.addAll(allMotivations);
+        if (motivations != null) {
+            allMotivations.addAll(motivations);
         }
         return lister.getAnnotationCount(textQuery, allMotivations, generators, creators, targetPi, targetPage);
     }
 
+    /**
+     * 
+     * @param text
+     * @param editor
+     * @param pi
+     * @param page
+     * @return
+     */
     public static String checkAndCleanScripts(String text, User editor, String pi, Integer page) {
         if (text != null) {
             String cleanText = StringTools.stripJS(text);
             if (cleanText.length() < text.length()) {
-                logger.warn("User {} attempted to add a script block into a comment for {}, page {}, which was removed:\n{}", Optional.ofNullable(editor).map(User::getId).orElse(null), pi, page, text);
+                logger.warn("User {} attempted to add a script block into a comment for {}, page {}, which was removed:\n{}",
+                        Optional.ofNullable(editor).map(User::getId).orElse(null), pi, page, text);
                 text = cleanText;
             }
             return cleanText;
-        } else {
-            return text;
         }
+
+        return text;
     }
 
     /* (non-Javadoc)
@@ -168,4 +300,126 @@ public class CommentManager implements AnnotationLister<Comment> {
     public Optional<Comment> getAnnotation(Long id) {
         return lister.getAnnotation(id);
     }
+
+    /**
+     * Returns a list of email addresses that are configured (via comment views) to receive notifications for comments for the given record
+     * identifier.
+     * 
+     * @param pi
+     * @return List of email addresses
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @should return user groups for matching comment views
+     * @should skip comment groups where notifications disabled
+     */
+    static Set<UserGroup> getNotificationUserGroupsForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
+        List<CommentGroup> commentGroups = DataManager.getInstance().getDao().getAllCommentGroups();
+        if (commentGroups.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        Set<UserGroup> ret = new HashSet<>();
+        for (CommentGroup commentGroup : commentGroups) {
+            if (commentGroup.getUserGroup() == null || !commentGroup.isSendEmailNotifications()) {
+                continue;
+            }
+            if (StringUtils.isNotEmpty(commentGroup.getSolrQuery())) {
+                if (queryCommentGroupIdentifiers(commentGroup)) {
+                    if ((commentGroup.isCoreType() && StringUtils.isEmpty(commentGroup.getSolrQuery()))
+                            || commentGroup.getIdentifiers().contains(pi)) {
+                        ret.add(commentGroup.getUserGroup());
+                    }
+                }
+            } else if (commentGroup.isCoreType()) {
+                // "All comments" group without a filter query - add all users email addresses
+                ret.add(commentGroup.getUserGroup());
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns {@link UserGroup}s linked to {@link CommentGroup}s (non-core only) whose Solr query matches the given <code>pi</code>.
+     * 
+     * @param pi
+     * @return
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public static Set<CommentGroup> getRelevantCommentGroupsForRecord(String pi)
+            throws DAOException, PresentationException, IndexUnreachableException {
+        List<CommentGroup> commentGroups = DataManager.getInstance().getDao().getAllCommentGroups();
+        if (commentGroups.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        Set<CommentGroup> ret = new HashSet<>();
+        for (CommentGroup commentGroup : commentGroups) {
+            if (commentGroup.isCoreType() || StringUtils.isEmpty(commentGroup.getSolrQuery())) {
+                continue;
+            }
+            if (queryCommentGroupIdentifiers(commentGroup) && commentGroup.getIdentifiers().contains(pi)) {
+                ret.add(commentGroup);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * 
+     * @param commentGroup
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public static boolean queryCommentGroupIdentifiers(CommentGroup commentGroup) throws PresentationException, IndexUnreachableException {
+        if (commentGroup == null) {
+            return false;
+        }
+        if (StringUtils.isBlank(commentGroup.getSolrQuery())) {
+            commentGroup.setIdentifiersQueried(true);
+            return false;
+        }
+
+        String query = "+" + SolrConstants.ISWORK + ":true +(" + commentGroup.getSolrQuery() + ")";
+        commentGroup.getIdentifiers().addAll(SearchHelper.getFacetValues(query, SolrConstants.PI, 1));
+        commentGroup.setIdentifiersQueried(true);
+
+        return !commentGroup.getIdentifiers().isEmpty();
+    }
+
+    /**
+     * Checks whether the given user has access to any comment groups, whether via being admin or owner or member of any linked user group.
+     * 
+     * @param user
+     * @return true if user has access; false otherwise
+     * @throws DAOException
+     * @should return false if user null
+     * @should return true if user admin
+     * @should return true if user owner of user group linked to comment group
+     * @should return true if user member of user group linked to comment group
+     */
+    public static boolean isUserHasAccessToCommentGroups(User user) throws DAOException {
+        if (user == null) {
+            return false;
+        }
+        if (user.isSuperuser()) {
+            return true;
+        }
+        for (CommentGroup commentGroup : DataManager.getInstance().getDao().getAllCommentGroups()) {
+            if (commentGroup.getUserGroup() != null) {
+                if (user.equals(commentGroup.getUserGroup().getOwner()) || commentGroup.getUserGroup().getMembers().contains(user)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }

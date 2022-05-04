@@ -16,7 +16,7 @@
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsOverview' ? 'active' : '' or
                                          navigationHelper.currentPage == 'adminCmsEditPage' ? 'active' : '' or
-                                         navigationHelper.currentPage == 'adminCmsCreatePage' ? 'active' : ''}">
+                                         navigationHelper.currentPage == 'adminCmsNewPage' ? 'active' : ''}">
                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsOverview')}/">
                                     <i class="fa fa-clone" aria-hidden="true"></i>
                                     <span>#{msg.cms_overview}</span>

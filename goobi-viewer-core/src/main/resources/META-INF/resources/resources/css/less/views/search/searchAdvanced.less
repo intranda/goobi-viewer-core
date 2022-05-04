@@ -1,6 +1,6 @@
 /* ==============================================================
    Search Advanced
-   style declarations for searchAdvanced.xhtml 
+   style declarations for searchAdvanced.xhtml
    ==============================================================*/
 /* SAERCH ADVANCED */
 /* BLOCK */
@@ -12,7 +12,7 @@
         margin-bottom: 21px;
         padding: 10px;
         border: 1px solid @middlegray;
-        span.remove {
+        .remove[disabled="disabled"] {
             display: none;
         }
         .remove {
@@ -20,7 +20,12 @@
             top: 0;
             right: .5rem;
             padding: .5rem;
-            color: @black;
+            color: inherit;
+			&:focus,
+			&:hover,
+			&:active {
+				color: inherit;
+			}
         }
     }
     &__loader {
@@ -117,7 +122,7 @@
 	    display: flex;
 		align-items: center;
 		padding: 0 0.7rem;
-		font-size: 1.6rem;	
+		font-size: 1.6rem;
     }
     &__year-span-from {
     		align-self: center;
@@ -129,16 +134,20 @@
     		margin-left: 1rem;
     }
     &__input-col {
-        a {
+        a, button {
             display: inline-block;
             padding: 7px;
-            color: @black;
+			color: inherit;
             &:hover,
             &:focus,
             &:active {
                 text-decoration: none;
                 outline: none !important;
+				color: inherit;
             }
+			&[disabled="disabled"]{
+				display:none;
+			}
         }
         span {
             display: none;
@@ -154,24 +163,25 @@
         margin-bottom: 21px;
         padding: .5rem 18px;
         text-align: right;
-        a {
-            color: @black;
+        a, button {
+            color: inherit;
             &:hover,
             &:focus,
             &:active {
                 text-decoration: none;
-                color: @black;
+                color:inherit;
             }
         }
     }
     &__action {
-        text-align: right;
+		display: flex;
+		flex-flow: row-reverse;
         .btn {
             margin: 0 0 0 5px;
         }
-    } 
+    }
 }
-/* MODIFICATION */    
+/* MODIFICATION */
 
 @{RTL} .search-advanced {
 	&__input-group {
@@ -189,7 +199,7 @@
 
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {}
@@ -197,8 +207,8 @@
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
     .search-advanced__input-group input[type="text"],
-    .search-advanced__input-group .form-control__select { 
-    } 
+    .search-advanced__input-group .form-control__select {
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */

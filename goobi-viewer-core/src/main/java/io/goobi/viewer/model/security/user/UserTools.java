@@ -15,7 +15,9 @@
  */
 package io.goobi.viewer.model.security.user;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
@@ -24,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.faces.validators.EmailValidator;
+import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.modules.IModule;
@@ -81,9 +84,28 @@ public class UserTools {
                     DataManager.getInstance().getDao().deleteUserRole(userRole);
                 }
             }
+
+            // Remove group  from comment groups
+            List<CommentGroup> commentGroups = DataManager.getInstance().getDao().getAllCommentGroups();
+            Set<CommentGroup> toUpdate = new HashSet<>();
+            for (CommentGroup commentGroup : commentGroups) {
+                if (userGroup.equals(commentGroup.getUserGroup())) {
+                    commentGroup.setUserGroup(null);
+                    toUpdate.add(commentGroup);
+                }
+
+            }
+            if (!toUpdate.isEmpty()) {
+                for (CommentGroup commentGroup : toUpdate) {
+                    DataManager.getInstance().getDao().updateCommentGroup(commentGroup);
+                }
+            }
+
             if (DataManager.getInstance().getDao().deleteUserGroup(userGroup)) {
-                logger.debug("User group '{}' belonging to user {} deleted", userGroup.getName(), owner.getId());
+                logger.info("User group '{}' belonging to user {} deleted", userGroup.getName(), owner.getId());
                 count++;
+            } else {
+                logger.error("User group '{}' could not be deleted", userGroup.getName());
             }
         }
 
@@ -233,21 +255,22 @@ public class UserTools {
      * @param nickname
      * @param userId
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public static boolean isNicknameInUse(String nickname, Long userId) throws DAOException {
         if (nickname == null) {
             throw new IllegalArgumentException("nickname may not be null");
         }
-        
+
         User nicknameOwner = DataManager.getInstance().getDao().getUserByNickname(nickname); // This basically resets all changes
         return nicknameOwner != null && nicknameOwner.getId() != null && !nicknameOwner.getId().equals(userId);
     }
+
     public static boolean isEmailInUse(String email, Long userId) throws DAOException {
         if (email == null) {
             throw new IllegalArgumentException("email may not be null");
         }
-        
+
         User emailOwner = DataManager.getInstance().getDao().getUserByEmail(email); // This basically resets all changes
         return emailOwner != null && emailOwner.getId() != null && !emailOwner.getId().equals(userId);
     }

@@ -81,8 +81,9 @@ import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.viewer.CollectionView;
-import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
+import io.goobi.viewer.model.viewer.collections.CollectionView;
+import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider;
+import io.goobi.viewer.model.viewer.collections.Sorting;
 
 /**
  * This class represents both template content configuration items and instance items of actual pages. Only the latter are persisted to the DB.
@@ -280,6 +281,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @JoinColumn(name = "slider_id")
     private CMSSlider slider = null;
 
+    @Column(name = "sorting")
+    @Enumerated(EnumType.STRING)
+    private Sorting sorting  = Sorting.alphanumeric;
+    
     /**
      * This object may contain item type specific functionality (methods and transient properties)
      * 
@@ -362,7 +367,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         this.setGroupBy(blueprint.groupBy);
         this.setGeoMap(blueprint.getGeoMap());
         this.setSlider(blueprint.slider);
-
+        this.setSorting(blueprint.sorting);   
     }
 
     /**
@@ -1854,6 +1859,20 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     
     public boolean isRandomizeItems() {
         return Optional.ofNullable(getItemTemplate()).map(CMSContentItemTemplate::isRandomizeItems).orElse(false);
+    }
+    
+    /**
+     * @return the sorting
+     */
+    public Sorting getSorting() {
+        return sorting;
+    }
+    
+    /**
+     * @param sorting the sorting to set
+     */
+    public void setSorting(Sorting sorting) {
+        this.sorting = sorting;
     }
 
 }

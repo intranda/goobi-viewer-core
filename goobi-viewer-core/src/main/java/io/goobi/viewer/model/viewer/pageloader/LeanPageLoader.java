@@ -112,7 +112,6 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
             }
             return currentPage;
         } else if (pageOrder == currentPageNumber) {
-            ;
             return currentPage;
         } else {
             return null;

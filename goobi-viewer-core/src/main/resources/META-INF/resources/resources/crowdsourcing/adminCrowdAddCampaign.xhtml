@@ -14,7 +14,7 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin(crowdsourcingBean.editMode ? 'adminCrowdEditCampaign' : 'adminCrowdAddCampaign')}" />
+				listener="#{navigationHelper.setCurrentPageAdmin('adminCrowdsourcingCampaigns')}" />
 		</f:metadata>
 	</ui:define>
 
@@ -449,7 +449,7 @@
 									<div class="row no-gutters justify-content-end admin__final-actions mb-0">
 	                                    <h:commandLink id="cancelAddCampaignButton" type="submit" styleClass="btn admin__cancel-button" value="#{msg.cancel}"
 	                                        action="pretty:adminCrowdCampaigns" immediate="true" />
-	                                    <h:commandLink id="saveAddCampaignButton" styleClass="btn btn--success" value="#{msg.button__save}"
+	                                    <h:commandButton id="saveAddCampaignButton" styleClass="btn btn--success" value="#{msg.button__save}"
 	                                        action="#{crowdsourcingBean.saveSelectedCampaignAction}" />
 	                                </div>
 	                                

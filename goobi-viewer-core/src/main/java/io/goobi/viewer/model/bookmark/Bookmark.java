@@ -639,7 +639,7 @@ public class Bookmark implements Serializable {
                 SolrDocument doc = retrieveSolrDocument();
                 if (doc != null) {
                     Locale locale = BeanUtils.getLocale();
-                    SearchHit sh = SearchHit.createSearchHit(doc, null, null, locale, "", null, null, null, null, null,
+                    SearchHit sh = SearchHit.createSearchHit(doc, null, null, locale, "", null, null, null, null, null, null,
                             SearchHit.HitType.DOCSTRCT, 0, BeanUtils.getImageDeliveryBean().getThumbs());
                     this.browseElement = sh.getBrowseElement();
                 }

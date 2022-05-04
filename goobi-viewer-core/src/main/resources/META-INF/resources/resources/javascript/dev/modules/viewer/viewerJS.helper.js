@@ -555,6 +555,27 @@ var viewerJS = ( function( viewer ) {
     	return map;
     }
 
+	viewer.helper.compareNumerical = (a, b) => {
+	    let ia = parseInt(a);
+	    let ib = parseInt(b);
+	    if(isNaN(ia) && isNaN(ib)) {
+	        return 0;
+	    } else if(isNaN(ia)) {
+	        return 1;
+	    } else if(isNaN(ib)) {
+	    	return ia > ib;
+	    }
+	}
+	
+	viewer.helper.compareAlphanumerical = (a, b) => {
+	    if(a && b) {
+	        return a.localeCompare(b);
+	    } else if(a) {
+	        return 1;
+	    } else {
+	        return -1;
+	    }
+	}
 
 
     

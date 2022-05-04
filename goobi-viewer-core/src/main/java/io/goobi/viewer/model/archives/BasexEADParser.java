@@ -71,11 +71,12 @@ public class BasexEADParser {
 
     private final String basexUrl;
 
-    private String selectedDatabase;
+    private final SolrSearchIndex searchIndex;
 
     private List<ArchiveMetadataField> configuredFields;
 
-    private final Map<String, Entry<String, Boolean>> associatedRecordMap;
+    private Map<String, Entry<String, Boolean>> associatedRecordMap;
+    
 
     //    private List<StringPair> eventList;
     //    private List<String> editorList;
@@ -89,7 +90,12 @@ public class BasexEADParser {
      */
     public BasexEADParser(String basexUrl, SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
         this.basexUrl = basexUrl;
-        this.associatedRecordMap = getAssociatedRecordPis(searchIndex);
+        this.searchIndex = searchIndex;
+        updateAssociatedRecordMap();
+    }
+
+    public void updateAssociatedRecordMap() throws PresentationException, IndexUnreachableException {
+        this.associatedRecordMap = getAssociatedRecordPis(this.searchIndex);
     }
 
     private static Map<String, Entry<String, Boolean>> getAssociatedRecordPis(SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
@@ -115,8 +121,7 @@ public class BasexEADParser {
      * @throws ClientProtocolException
      */
     public List<ArchiveResource> getPossibleDatabases() throws ClientProtocolException, IOException, HTTPException {
-        String response = "";
-            response = NetTools.getWebContentGET(basexUrl + "databases");
+        String response = NetTools.getWebContentGET(basexUrl + "databases");
         if (StringUtils.isBlank(response)) {
             return Collections.emptyList();
         }
@@ -170,18 +175,6 @@ public class BasexEADParser {
         return parseEadFile(document);
     }
 
-    public List<String> getDistinctDatabaseNames() throws ClientProtocolException, IOException, HTTPException {
-        List<String> answer = new ArrayList<>();
-        List<ArchiveResource> completeList = getPossibleDatabases();
-        for (ArchiveResource resource : completeList) {
-            String dbName = resource.getCombinedName();
-            if (!answer.contains(dbName)) {
-                answer.add(dbName);
-            }
-        }
-
-        return answer;
-    }
 
     /**
      * Reads the hierarchy from the given EAD document.
@@ -474,13 +467,6 @@ public class BasexEADParser {
         }
 
         return this;
-    }
-
-    /**
-     * @return the selectedDatabase
-     */
-    public String getSelectedDatabase() {
-        return selectedDatabase;
     }
 
     /**

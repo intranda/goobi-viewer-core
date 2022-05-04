@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +32,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.apache.commons.lang3.StringUtils;
@@ -44,17 +46,23 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.request.QueryRequest;
+import org.apache.solr.client.solrj.request.json.HeatmapFacetMap;
+import org.apache.solr.client.solrj.request.json.JsonQueryRequest;
 import org.apache.solr.client.solrj.response.LukeResponse;
 import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.client.solrj.response.SpellCheckResponse;
+import org.apache.solr.client.solrj.response.json.HeatmapJsonFacet;
+import org.apache.solr.client.solrj.response.json.NestableJsonFacet;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.luke.FieldFlag;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.SpellingParams;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +81,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  * SolrSearchIndex class.
  * </p>
  */
-public final class SolrSearchIndex {
+public class SolrSearchIndex {
 
     private static final Logger logger = LoggerFactory.getLogger(SolrSearchIndex.class);
 
@@ -280,7 +288,6 @@ public final class SolrSearchIndex {
                 // logger.trace("&{}={}", key, params.get(key));
             }
         }
-        
 
         try {
             //             logger.trace("Solr query : {}", solrQuery.getQuery());
@@ -289,7 +296,7 @@ public final class SolrSearchIndex {
             //             logger.debug("fieldList: {}", fieldList);                  
             QueryResponse resp = client.query(solrQuery);
             //             logger.debug("found: {}", resp.getResults().getNumFound());
-//                         logger.debug("fetched: {}", resp.getResults().size());
+            //                         logger.debug("fetched: {}", resp.getResults().size());
 
             return resp;
         } catch (SolrServerException e) {
@@ -318,19 +325,19 @@ public final class SolrSearchIndex {
     public List<String> querySpellingSuggestions(String query, float accuracy, boolean build) throws IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.set(CommonParams.QT, "/spell");
-        solrQuery.set("spellcheck", true);  
+        solrQuery.set("spellcheck", true);
         solrQuery.set(SpellingParams.SPELLCHECK_ACCURACY, Float.toString(accuracy));
         solrQuery.set(SpellingParams.SPELLCHECK_BUILD, build);
         try {
             QueryResponse resp = client.query(solrQuery);
             QueryRequest request = new QueryRequest(solrQuery);
-            SpellCheckResponse response = request.process(client).getSpellCheckResponse(); 
+            SpellCheckResponse response = request.process(client).getSpellCheckResponse();
             return response.getSuggestions().stream().flatMap(suggestion -> suggestion.getAlternatives().stream()).collect(Collectors.toList());
-        } catch(IOException | SolrException | SolrServerException e) {
+        } catch (IOException | SolrException | SolrServerException e) {
             throw new IndexUnreachableException(e.toString());
         }
     }
-    
+
     /**
      * <p>
      * search.
@@ -419,21 +426,6 @@ public final class SolrSearchIndex {
     public SolrDocumentList search(String query) throws PresentationException, IndexUnreachableException {
         //        logger.trace("search: {}", query);
         return search(query, 0, MAX_HITS, null, null, null).getResults();
-    }
-
-    /**
-     * <p>
-     * count.
-     * </p>
-     *
-     * @param query a {@link java.lang.String} object.
-     * @return a long.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public long count(String query) throws PresentationException, IndexUnreachableException {
-        //        logger.trace("search: {}", query);
-        return search(query, 0, 0, null, null, null).getResults().getNumFound();
     }
 
     /**
@@ -912,17 +904,35 @@ public final class SolrSearchIndex {
      * @param facetFields List of facet fields.
      * @param facetMinCount a int.
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
+     * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should generate facets correctly
      * @should generate field statistics for every facet field if requested
      * @should not return any docs
+     */
+    public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
+            boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
+        return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, null, getFieldStatistics);
+    }
+
+    /**
+     * Returns facets for the given facet field list. No actual docs are returned since they aren't necessary.
+     *
+     * @param query The query to use.
+     * @param filterQueries Optional filter queries
+     * @param facetFields List of facet fields.
+     * @param facetMinCount a int.
+     * @param params
+     * @param getFieldStatistics If true, field statistics will be generated for every facet field.
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
-            boolean getFieldStatistics)
+            Map<String, String> params, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
-        return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, getFieldStatistics);
+        return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, params, getFieldStatistics);
     }
 
     /**
@@ -951,6 +961,7 @@ public final class SolrSearchIndex {
      * @param facetFields List of facet fields.
      * @param facetMinCount a int.
      * @param facetPrefix The facet field value must start with these characters. Ignored if null or blank
+     * @param params
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -960,7 +971,7 @@ public final class SolrSearchIndex {
      * @should not return any docs
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
-            String facetPrefix, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
+            String facetPrefix, Map<String, String> params, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
         // logger.trace("searchFacetsAndStatistics: {}", query);
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(0);
@@ -985,6 +996,14 @@ public final class SolrSearchIndex {
             solrQuery.setFacetPrefix(facetPrefix);
         }
         solrQuery.setFacetLimit(-1); // no limit
+
+        if (params != null && !params.isEmpty()) {
+            for (String key : params.keySet()) {
+                solrQuery.set(key, params.get(key));
+                // logger.trace("&{}={}", key, params.get(key));
+            }
+        }
+
         try {
             QueryResponse resp = client.query(solrQuery);
             return resp;
@@ -1021,7 +1040,7 @@ public final class SolrSearchIndex {
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws java.io.IOException if any.
      */
-    public List<String> getAllFieldNames() throws DAOException {
+    public List<String> getAllFieldNames() throws IndexUnreachableException {
         try {
             if (this.solrFields == null) {
                 LukeRequest lukeRequest = new LukeRequest();
@@ -1040,7 +1059,7 @@ public final class SolrSearchIndex {
                 this.solrFields = list;
             }
         } catch (IllegalStateException | SolrServerException | RemoteSolrException | IOException e) {
-            throw new DAOException("Failed to load SOLR field names: " + e.toString());
+            throw new IndexUnreachableException("Failed to load SOLR field names: " + e.toString());
         }
 
         return this.solrFields;
@@ -1064,7 +1083,7 @@ public final class SolrSearchIndex {
         List<String> list = new ArrayList<>();
         for (String name : fieldInfoMap.keySet()) {
             FieldInfo info = fieldInfoMap.get(name);
-            if ((name.startsWith("SORT_") || name.startsWith("SORTNUM_") || name.equals("DATECREATED") ) && !name.contains("_LANG_")) {
+            if ((name.startsWith("SORT_") || name.startsWith("SORTNUM_") || name.equals("DATECREATED")) && !name.contains("_LANG_")) {
                 list.add(name);
             }
         }
@@ -1292,5 +1311,78 @@ public final class SolrSearchIndex {
         }
 
         return null;
+    }
+
+    /**
+     * 
+     * 
+     * @param solrField
+     * @param wktRegion
+     * @param finalQuery
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getHeatMap(String solrField, String wktRegion, String query, String filterQuery, Integer gridLevel) throws IndexUnreachableException {
+        
+        HeatmapFacetMap facetMap = new HeatmapFacetMap(solrField)
+                .setHeatmapFormat(HeatmapFacetMap.HeatmapFormat.INTS2D)
+                .setRegionQuery(wktRegion);
+        if (gridLevel != null) {
+            facetMap.setGridLevel(gridLevel);
+        }
+      
+        final JsonQueryRequest request = new JsonQueryRequest()
+                .setQuery(query)
+                .withFilter(filterQuery)
+                .setLimit(0)
+                .withFacet("heatmapFacet", facetMap);
+
+        try {
+            QueryResponse response = request.process(client);
+            final NestableJsonFacet topLevelFacet = response.getJsonFacetingResponse();
+            final HeatmapJsonFacet heatmap = topLevelFacet.getHeatmapFacetByName("heatmapFacet");
+            if(heatmap != null) {                
+                return getAsJson(heatmap);
+            } else {
+                return "{}";
+            }
+        } catch (SolrServerException | IOException e) {
+            throw new IndexUnreachableException("Error getting facet heatmap: " + e.toString());
+        }
+    }
+
+    /**
+     * @param heatmap
+     * @return
+     */
+    private String getAsJson(HeatmapJsonFacet heatmap) {
+        JSONObject json = new JSONObject();
+        json.put("gridLevel", heatmap.getGridLevel());
+        json.put("columns", heatmap.getNumColumns());
+        json.put("rows", heatmap.getNumRows());
+        json.put("minX", heatmap.getMinX());
+        json.put("maxX", heatmap.getMaxX());
+        json.put("minY", heatmap.getMinY());
+        json.put("maxY", heatmap.getMaxY());
+        JSONArray rows = new JSONArray();
+        List<List<Integer>> grid = heatmap.getCountGrid();
+        int count = 0;
+        if (grid != null) {
+            for (int row = 0; row < heatmap.getNumRows(); row++) {
+                List<Integer> gridRow = grid.get(row);
+                if (gridRow == null) {
+                    rows.put(JSONObject.NULL);
+                } else {
+                    JSONArray column = new JSONArray();
+                    count += gridRow.stream().mapToInt(Integer::intValue).sum();
+                    column.putAll(gridRow);
+                    rows.put(column);
+                }
+            }
+        }
+        json.put("count", count);
+        json.put("counts_ints2D", rows);
+
+        return json.toString();
     }
 }

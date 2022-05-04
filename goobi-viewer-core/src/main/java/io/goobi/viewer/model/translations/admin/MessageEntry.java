@@ -59,7 +59,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
             keyPrefix = "";
         }
 
-        String key = keyPrefix + keySuffix;
+        String key = keyPrefix + keySuffix.trim();
         List<MessageValue> values = new ArrayList<>(allLocales.size());
         for (Locale locale : allLocales) {
             String translation = ViewerResourceBundle.getTranslation(key, locale, false, false, false, false);
@@ -192,9 +192,10 @@ public class MessageEntry implements Comparable<MessageEntry> {
 
     /**
      * @return the key
+     * @should trim suffix
      */
     public String getKey() {
-        return keyPrefix + keySuffix;
+        return keyPrefix + (keySuffix != null ? keySuffix.trim() : "");
     }
 
     /**
@@ -224,7 +225,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
     public void setKeySuffix(String keySuffix) {
         this.keySuffix = keySuffix;
     }
-    
+
     /**
      * 
      * @return true if keySuffix blank; false otherwise

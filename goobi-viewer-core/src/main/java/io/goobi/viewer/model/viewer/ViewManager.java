@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
@@ -46,6 +47,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.common.SolrDocument;
@@ -73,7 +75,6 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.ArchiveBean;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
@@ -219,38 +220,41 @@ public class ViewManager implements Serializable {
         this.mainMimeType = mainMimeType;
         logger.trace("mainMimeType: {}", mainMimeType);
 
-        String archiveId = getArchiveEntryIdentifier();
-        if (StringUtils.isNotBlank(archiveId)) {
-            this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
-            this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
-        } 
+        if (DataManager.getInstance().getConfiguration().isArchivesEnabled()) {
+            String archiveId = getArchiveEntryIdentifier();
+            if (StringUtils.isNotBlank(archiveId)) {
+                DataManager.getInstance().getArchiveManager().updateArchiveList();
+                this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
+                this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
+            }
+        }
     }
-    
+
     public Pair<Optional<String>, Optional<String>> getArchiveTreeNeighbours() {
         return archiveTreeNeighbours;
     }
-    
+
     public List<ArchiveEntry> getArchiveHierarchyForIdentifier(String identifier) {
-        if(this.archiveResource != null) {            
+        if (this.archiveResource != null) {
             return DataManager.getInstance().getArchiveManager().getArchiveHierarchyForIdentifier(this.archiveResource, identifier);
         } else {
             return Collections.emptyList();
         }
     }
-    
+
     public String getArchiveUrlForIdentifier(String identifier) {
         String url = DataManager.getInstance().getArchiveManager().getArchiveUrl(this.archiveResource, identifier);
         return url.replaceAll("\\s", "+");
     }
-    
+
     private void setDoublePageModeForDropDown(boolean doublePages) {
         this.dropdownFulltext.forEach(i -> i.setDoublePageMode(doublePages));
         this.dropdownPages.forEach(i -> i.setDoublePageMode(doublePages));
-        
+
     }
 
     public String getPageUrl(SelectItem item) {
-        if(isDoublePageMode()) {
+        if (isDoublePageMode()) {
             return item.getValue().toString() + item.getValue().toString();
         } else {
             return item.getValue().toString();
@@ -332,8 +336,9 @@ public class ViewManager implements Serializable {
             urlBuilder.append("[");
             String imageInfoLeft =
                     (leftPage.isPresent() && leftPage.get().isDoubleImage()) ? null : leftPage.map(page -> getImageInfo(page, pageType)).orElse(null);
-            String imageInfoRight = (rightPage.isPresent() && (rightPage.get().isDoubleImage() || rightPage.get().equals(leftPage.orElse(null)))) ? null
-                    : rightPage.map(page -> getImageInfo(page, pageType)).orElse(null);
+            String imageInfoRight =
+                    (rightPage.isPresent() && (rightPage.get().isDoubleImage() || rightPage.get().equals(leftPage.orElse(null)))) ? null
+                            : rightPage.map(page -> getImageInfo(page, pageType)).orElse(null);
             if (StringUtils.isNotBlank(imageInfoLeft)) {
                 urlBuilder.append("\"").append(imageInfoLeft).append("\"");
             }
@@ -1344,8 +1349,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * Main method for setting the current page(s) in this ViewManager. If the given String cannot be parsed to an integer
-     * the current image order is set to 1
+     * Main method for setting the current page(s) in this ViewManager. If the given String cannot be parsed to an integer the current image order is
+     * set to 1
      * 
      * @param currentImageOrderString A string containing a single page number or a range of two pages
      * @throws IndexUnreachableException
@@ -1690,9 +1695,9 @@ public class ViewManager implements Serializable {
      * </p>
      */
     public void updateDropdownSelected() {
-        if(doublePageMode) {
+        if (doublePageMode) {
             setDropdownSelected(String.valueOf(currentImageOrder) + "-" + String.valueOf(currentImageOrder));
-        } else {            
+        } else {
             setDropdownSelected(String.valueOf(currentImageOrder));
         }
     }
@@ -1875,7 +1880,7 @@ public class ViewManager implements Serializable {
      */
     public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         String pi = getPi();
-        if(pi != null) {            
+        if (pi != null) {
             return DataManager.getInstance()
                     .getRestApiManager()
                     .getContentApiManager()
@@ -1974,14 +1979,14 @@ public class ViewManager implements Serializable {
             return "";
         }
         String pi = getPi();
-        if(StringUtils.isNoneBlank(pi, filename)) {
+        if (StringUtils.isNoneBlank(pi, filename)) {
             return DataManager.getInstance()
                     .getRestApiManager()
                     .getContentApiManager()
                     .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
                             .params(pi, filename)
                             .build())
-                    .orElse("");            
+                    .orElse("");
         } else {
             return "";
         }
@@ -2183,41 +2188,17 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * Indicates whether user comments are allowed for the current record based on several criteria.
-     *
-     * @return a boolean.
+     * @return the allowUserComments
      */
-    public boolean isAllowUserComments() {
-        if (!DataManager.getInstance().getConfiguration().isCommentsEnabled()) {
-            return false;
-        }
-
-        if (allowUserComments == null) {
-            String query = DataManager.getInstance().getConfiguration().getCommentsCondition();
-            try {
-                if (StringUtils.isNotEmpty(query) && DataManager.getInstance()
-                        .getSearchIndex()
-                        .getHitCount(new StringBuilder(SolrConstants.PI).append(':')
-                                .append(pi)
-                                .append(" AND (")
-                                .append(query)
-                                .append(')')
-                                .toString()) == 0) {
-                    allowUserComments = false;
-                    logger.trace("User comments are not allowed for this record.");
-                } else {
-                    allowUserComments = true;
-                }
-            } catch (IndexUnreachableException e) {
-                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-                return false;
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-                return false;
-            }
-        }
-
+    public Boolean isAllowUserComments() {
         return allowUserComments;
+    }
+
+    /**
+     * @param allowUserComments the allowUserComments to set
+     */
+    public void setAllowUserComments(Boolean allowUserComments) {
+        this.allowUserComments = allowUserComments;
     }
 
     /**
@@ -2597,7 +2578,7 @@ public class ViewManager implements Serializable {
         try {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                     BeanUtils.getRequest());
-        } catch ( RecordNotFoundException e) {
+        } catch (RecordNotFoundException e) {
             return false;
         }
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
@@ -2629,7 +2610,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException  {
+    public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
         if (isBornDigital()) {
             return false;
         }
@@ -3598,7 +3579,6 @@ public class ViewManager implements Serializable {
         return firstPageOrientation;
     }
 
-
     /**
      * <p>
      * Setter for the field <code>firstPageOrientation</code>.
@@ -3980,5 +3960,55 @@ public class ViewManager implements Serializable {
         ViewManager ret = new ViewManager(topDocument, AbstractPageLoader.create(topDocument), iddoc, null, null, null);
 
         return ret;
+    }
+    
+    /**
+     * Returns an integer list such that
+     * <ul>
+     * <li>the 'pageOrder' is contained in the list</li>
+     * <li>the list contains (2*range)+1 consecutive numbers, or all page numbers of the current record if it is less than that</li>
+     * <li>the first number is not less than the first image order</li>
+     * <li>the last number is not larger than the last image order</li>
+     * <li>the 'pageOrder' is as far in the middle of the list as possible without violating any of the other points</li>
+     * </li>
+     * Used int thumbnailPaginator.xhtml to calculate the pages to display.
+     * @param pageOrder The current page number around which to center the numbers
+     * @param range     The number of numbers to include above and below the current page number, if possible
+     * @param fillToSize    if true, always return a list of exactly 2*range+1 elements, no matter the total number of pages in the current record
+     * @return  an integer list
+     * @throws IndexUnreachableException    If the page numbers could not be read from SOLR
+     * @throws IllegalArgumentException     If the pageOrder is not within the range of page numbers of the current record or if range is less than zero
+     */
+    public List<Integer> getPageRangeAroundPage(int pageOrder, int range, boolean fillToSize) throws IndexUnreachableException {
+        
+        if(pageOrder < pageLoader.getFirstPageOrder() || pageOrder > pageLoader.getLastPageOrder()) {
+            throw new IllegalArgumentException("the given pageOrder must be within the range of page numbers of the current record. The given pageOrder is " + pageOrder);
+        } else if(range < 0) {
+            throw new IllegalArgumentException("the given range must not be less than zero. It is " + range);
+        }
+        
+        int firstPage = pageOrder;
+        int lastPage = pageOrder;
+        int numPages = 2*range+1;
+        while( lastPage - firstPage + 1 < numPages) {
+            boolean changed = false;
+            if(firstPage > pageLoader.getFirstPageOrder()) {
+                firstPage--;
+                changed = true;
+            }
+            if(lastPage < pageLoader.getLastPageOrder()) {
+                lastPage++; 
+                changed = true;
+            }
+            if(!changed) {
+                break;
+            }
+        }
+        if(fillToSize) {
+            while(lastPage - firstPage + 1 < numPages) {
+                lastPage++;
+            }
+        }
+        return IntStream.range(firstPage, lastPage+1).boxed().collect(Collectors.toList());
     }
 }

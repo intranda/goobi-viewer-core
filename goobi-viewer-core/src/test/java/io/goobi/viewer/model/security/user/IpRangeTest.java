@@ -87,4 +87,16 @@ public class IpRangeTest extends AbstractDatabaseEnabledTest {
         ipRange.setSubnetMask("127.0.0.1/32");
         Assert.assertTrue(ipRange.matchIp(NetTools.ADDRESS_LOCALHOST_IPV6));
     }
+
+    /**
+     * @see IpRange#matchIp(String)
+     * @verifies match edge addresses
+     */
+    @Test
+    public void matchIp_shouldMatchEdgeAddresses() throws Exception {
+        IpRange ipRange = new IpRange();
+        ipRange.setSubnetMask("192.168.1.10/31");
+        Assert.assertTrue(ipRange.matchIp("192.168.1.10"));
+        Assert.assertTrue(ipRange.matchIp("192.168.1.11"));
+    }
 }

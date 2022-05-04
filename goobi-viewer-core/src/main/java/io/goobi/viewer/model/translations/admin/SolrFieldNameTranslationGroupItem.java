@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 
 public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
 
@@ -44,7 +45,7 @@ public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
      * @see io.goobi.viewer.model.translations.TranslationGroupKey#loadValues()
      */
     @Override
-    protected void loadEntries() throws DAOException {
+    protected void loadEntries() throws IndexUnreachableException {
         List<String> keys;
         if (regex) {
                 keys = StringTools.filterStringsViaRegex(DataManager.getInstance().getSearchIndex().getAllFieldNames(), key);

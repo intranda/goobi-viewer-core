@@ -2,6 +2,7 @@
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -62,10 +63,10 @@
 														<h:panelGroup
 															rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
 															<div class="collection__structure text-center">
-																<h:commandLink
-																	action="#{browseBean.dcCollection.toggleChildren(browseDcElement)}">
-																	<f:passThroughAttribute name="aria-label"
-																		value="#{msg.aria_label__show_details}" />
+																<button
+																	class="btn btn--link"
+																	jsf:action="#{browseBean.dcCollection.toggleChildren(browseDcElement)}">
+																	<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__show_details}" />
 																	<h:panelGroup
 																		rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
 																		<i class="fa fa-plus-square-o" aria-hidden="true"></i>
@@ -75,7 +76,7 @@
 																		<i class="fa fa-minus-square-o" aria-hidden="true"></i>
 																	</h:panelGroup>
 																	<f:ajax render="collectionTreeGroup" />
-																</h:commandLink>
+																</button>
 															</div>
 														</h:panelGroup>
 													</div>

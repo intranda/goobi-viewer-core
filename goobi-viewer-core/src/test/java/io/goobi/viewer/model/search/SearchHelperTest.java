@@ -1700,4 +1700,18 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertFalse(SearchHelper.isPhrase("foo bar~10"));
         Assert.assertTrue(SearchHelper.isPhrase("\"foo bar\"~10"));
     }
+
+    /**
+     * @see SearchHelper#getFacetValues(String,String,String,int,Map)
+     * @verifies return correct values via json response
+     */
+    @Test
+    public void getFacetValues_shouldReturnCorrectValuesViaJsonResponse() throws Exception {
+        Map<String, String> params = Collections.singletonMap("json.facet", "{uniqueCount : \"unique(" + SolrConstants.PI + ")\"}");
+        List<String> values = SearchHelper.getFacetValues(SolrConstants.PI + ":[* TO *]", "json:uniqueCount", null, 1, params);
+        Assert.assertNotNull(values);
+        Assert.assertEquals(1, values.size());
+        int size = !values.isEmpty() ? Integer.valueOf(values.get(0)) : 0;
+        Assert.assertTrue(size > 0);
+    }
 }

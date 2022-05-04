@@ -165,10 +165,14 @@ public class CookieBannerBean implements Serializable {
         if (this.dao != null) {
             CookieBanner banner = dao.getCookieBanner();
             banner.setRequiresConsentAfter(LocalDateTime.now());
-            dao.saveCookieBanner(banner);
-            if (this.editCookieBanner != null) {
-                this.editCookieBanner.setRequiresConsentAfter(LocalDateTime.now());
-                this.editCookieBanner.setId(banner.getId());
+            if(dao.saveCookieBanner(banner)) {                
+                if (this.editCookieBanner != null) {
+                    this.editCookieBanner.setRequiresConsentAfter(LocalDateTime.now());
+                    this.editCookieBanner.setId(banner.getId());
+                }
+                Messages.info("admin__legal__reset_cookie_banner_consent__success");
+            } else {
+                Messages.error("admin__legal__reset_cookie_banner_consent__error");
             }
         }
     }

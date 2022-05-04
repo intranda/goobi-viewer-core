@@ -63,6 +63,8 @@ import io.goobi.viewer.filters.LoginFilter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.comments.CommentManager;
+import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
@@ -114,6 +116,7 @@ public class UserBean implements Serializable {
     private Feedback feedback;
     private String transkribusUserName;
     private String transkribusPassword;
+    private Boolean hasAdminBackendAccess;
 
     /** Reusable Random object. */
     Random random = new SecureRandom();
@@ -414,6 +417,7 @@ public class UserBean implements Serializable {
         setUser(null);
         createFeedback();
         password = null;
+        hasAdminBackendAccess = null;
         if (loggedInProvider != null) {
             loggedInProvider.logout();
             loggedInProvider = null;
@@ -1120,14 +1124,10 @@ public class UserBean implements Serializable {
      */
     public boolean resetSecurityQuestion() {
         List<SecurityQuestion> questions = DataManager.getInstance().getConfiguration().getSecurityQuestions();
-        if (questions.isEmpty()) {
-            return true;
+        if (!questions.isEmpty() && (securityQuestion == null || securityQuestion.isAnswered())) {
+            // Reset if quesions not empty and security question is not yet set or has been already answered
+            securityQuestion = questions.get(random.nextInt(questions.size()));
         }
-        if (securityQuestion != null && !securityQuestion.isAnswered()) {
-            // Do not reset if not set set or not yet answered
-            return true;
-        }
-        securityQuestion = questions.get(random.nextInt(questions.size()));
 
         return true;
     }
@@ -1278,6 +1278,35 @@ public class UserBean implements Serializable {
      */
     public void setTranskribusPassword(String transkribusPassword) {
         this.transkribusPassword = transkribusPassword;
+    }
+
+    /**
+     * Checks whether the logged in user has access to the admin backend via being an admin or having CMS/campaign/comments access. Result is
+     * persisted for the duration of the session.
+     * 
+     * @return the hasAdminBackendAccess
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public Boolean getHasAdminBackendAccess() throws PresentationException, IndexUnreachableException, DAOException {
+        if (hasAdminBackendAccess == null) {
+            if (user == null) {
+                hasAdminBackendAccess = false;
+            } else {
+                hasAdminBackendAccess = user.isSuperuser() || user.isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES)
+                        || CrowdsourcingTools.isUserOwnsAnyCampaigns(user) || CommentManager.isUserHasAccessToCommentGroups(user);
+            }
+        }
+
+        return hasAdminBackendAccess;
+    }
+
+    /**
+     * @param hasAdminBackendAccess the hasAdminBackendAccess to set
+     */
+    public void setHasAdminBackendAccess(Boolean hasAdminBackendAccess) {
+        this.hasAdminBackendAccess = hasAdminBackendAccess;
     }
 
     /**

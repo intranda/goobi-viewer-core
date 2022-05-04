@@ -151,7 +151,7 @@ public class RestApiManager {
      */
     public String getIIIFDataApiUrl() {
         return getDataApiManager(getVersionToUseForIIIF()).map(AbstractApiUrlManager::getApiUrl)
-                .orElse(getDataApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(null));
+                .orElse(getDataApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(DataManager.getInstance().getConfiguration().getRestApiUrl()));
     }
     
     /**
@@ -166,7 +166,7 @@ public class RestApiManager {
      */
     public String getIIIFContentApiUrl(Version version) {
         return getContentApiManager(version).map(AbstractApiUrlManager::getApiUrl)
-                .orElse(getContentApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(null));
+                .orElse(getContentApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(DataManager.getInstance().getConfiguration().getIIIFApiUrl()));
     }
     
     public AbstractApiUrlManager getIIIFDataApiManager() {

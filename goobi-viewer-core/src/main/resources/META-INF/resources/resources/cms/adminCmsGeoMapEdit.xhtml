@@ -276,6 +276,15 @@
 				            	    if($("#geomap").length > 0) {				            	        
 					            	    let editable = #{geoMapBean.currentMap.type == 'MANUAL'};
 					            	    mapEditor.geoMap.config.popover = "#geoMapPopoverTemplate";
+					            	    
+					            	    mapEditor.config.heatmap = {
+					    		          	showSearchResultsHeatmap: #{geoMapBean.currentMap.type == 'SOLR_QUERY'},
+					    		          	heatmapUrl: "#{geoMapBean.heatmapUrl}",
+					    		          	featureUrl: "#{geoMapBean.featureUrl}",
+					    		      	    filterQuery: "#{geoMapBean.currentMap.solrQueryEncoded}",
+					    		      	    labelField: "#{geoMapBean.currentMap.markerTitleField}",
+					    		        }
+					            	    
 					            	    if(!editable) {					            	        
 						            	    if(#{geoMapBean.currentMap.markerTitleField == ''}) {
 						            	        mapEditor.geoMap.config.popover = undefined;

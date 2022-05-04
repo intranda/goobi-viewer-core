@@ -56,11 +56,11 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
 import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
-import io.goobi.viewer.model.viewer.BrowseDcElement;
-import io.goobi.viewer.model.viewer.CollectionView;
-import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.model.viewer.collections.BrowseDcElement;
+import io.goobi.viewer.model.viewer.collections.CollectionView;
+import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
@@ -527,7 +527,7 @@ public class BrowseBean implements Serializable {
                     numericalFilter = filter;
                     break;
                 default:
-                    if (filter.matches(".*[A-Z].*") && alphaFilter == null) {
+                    if (filter.matches("[A-ZÄÁÀÂÖÓÒÔÜÚÙÛÉÈÊ]{1}") && alphaFilter == null) {
                         alphaFilter = filter;
                     }
                     break;
@@ -904,7 +904,7 @@ public class BrowseBean implements Serializable {
      * getDcCollection.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      */
     public CollectionView getDcCollection() {
         return getCollection(SolrConstants.DC);
@@ -916,7 +916,7 @@ public class BrowseBean implements Serializable {
      * </p>
      *
      * @param field a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      */
     public CollectionView getCollection(String field) {
         return collections.get(field);
@@ -1051,5 +1051,12 @@ public class BrowseBean implements Serializable {
         }
 
         return null;
+    }
+    
+    public long getRecordCount(String collectionField, String collectionName) {
+        CollectionView view = this.getOrCreateCollection(collectionField);
+        return Optional.ofNullable(view.getCollectionElement(collectionName))
+        .map(e -> e.getNumberOfVolumes())
+        .orElse(0l);
     }
 }

@@ -66,7 +66,8 @@ var viewerJS = (function () {
         console.info('Current Browser = ', _defaults.browser);
         console.info('Current Theme = ', _defaults.theme);
         console.info('Current Page = ', _defaults.currentPage);
-
+ 
+ 		viewer.disclaimerModal.init(this.disclaimerConfig);
 
         //init websocket
         viewer.webSocket = new viewerJS.WebSocket(window.location.host, currentPath, viewerJS.WebSocket.PATH_SESSION_SOCKET);
@@ -333,7 +334,7 @@ var viewerJS = (function () {
                        tinymce.triggerSave();
                        //trigger a change event on the underlying textArea
                        $(ed.targetElm).change();
-                        if (currentPage === 'adminCmsCreatePage') {
+                        if (currentPage === 'adminCmsNewPage') {
                             createPageConfig.prevBtn.attr('disabled', true);
                             createPageConfig.prevDescription.show();
                         }

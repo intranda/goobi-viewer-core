@@ -6,6 +6,7 @@
     <html>cms_template_12_singleCollection.xhtml</html>
     <options>    
         <appliesToExpandedUrl>true</appliesToExpandedUrl>
+        <useSorterField>true</useSorterField>
     </options>
     <content>
  	    <item id="image01" order="1" label="cms__template_12__collection_image__label" type="MEDIA" mandatory="false" />

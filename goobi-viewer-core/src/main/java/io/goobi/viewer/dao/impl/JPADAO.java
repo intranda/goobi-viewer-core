@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,6 +43,9 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.RollbackException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -53,9 +57,11 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
+import io.goobi.viewer.model.administration.legal.Disclaimer;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
+import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
@@ -106,6 +112,7 @@ public class JPADAO implements IDAO {
     private static final String DEFAULT_PERSISTENCE_UNIT_NAME = "intranda_viewer_tomcat";
     static final String MULTIKEY_SEPARATOR = "_";
     static final String KEY_FIELD_SEPARATOR = "-";
+
     /**
      * EntityManagerFactory for the persistence context. Only build once at application startup
      */
@@ -183,6 +190,7 @@ public class JPADAO implements IDAO {
     @Override
     public EntityManager getEntityManager() {
         EntityManager em = getFactory().createEntityManager();
+        //        em.setFlushMode(FlushModeType.COMMIT);
         return em;
     }
 
@@ -1840,6 +1848,130 @@ public class JPADAO implements IDAO {
         }
     }
 
+    // CommentGroup
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getAllCommentGroups()
+     * @should return all rows
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CommentGroup> getAllCommentGroups() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM CommentGroup o");
+            q.setFlushMode(FlushModeType.COMMIT);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * @throws DAOException
+     * @see io.goobi.viewer.dao.IDAO#getCommentGroupUnfiltered()
+     * @should return correct row
+     */
+    @Override
+    public CommentGroup getCommentGroupUnfiltered() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            ;
+            return (CommentGroup) em.createQuery("SELECT o FROM CommentGroup o WHERE o.coreType = true").setMaxResults(1).getSingleResult();
+        } catch (EntityNotFoundException e) {
+            return null;
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getCommentGroup(long)
+     */
+    @Override
+    public CommentGroup getCommentGroup(long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CommentGroup o = em.getReference(CommentGroup.class, id);
+            return o;
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#addCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
+     */
+    @Override
+    public boolean addCommentGroup(CommentGroup commentGroup) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(commentGroup);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error(e.toString(), e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#updateCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
+     */
+    @Override
+    public boolean updateCommentGroup(CommentGroup commentGroup) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(commentGroup);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error(e.toString(), e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#deleteCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
+     */
+    @Override
+    public boolean deleteCommentGroup(CommentGroup commentGroup) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            CommentGroup o = em.getReference(CommentGroup.class, commentGroup.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    // Comment
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getAllComments()
      */
@@ -1857,16 +1989,32 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should sort results correctly
+     * @should filter results correctly
+     * @should apply target pi filter correctly
+     */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
+    public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters,
+            Set<String> targetPIs) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             StringBuilder sbQuery = new StringBuilder("SELECT a FROM Comment a");
             Map<String, String> params = new HashMap<>();
-            sbQuery.append(createFilterQuery(null, filters, params));
+            String filterQuery = createFilterQuery(null, filters, params);
+            sbQuery.append(filterQuery);
+            if (targetPIs != null && !targetPIs.isEmpty()) {
+                if (StringUtils.isEmpty(filterQuery)) {
+                    sbQuery.append(" WHERE ");
+                } else {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append("a.targetPI in :targetPIs");
+            }
             if (StringUtils.isNotBlank(sortField)) {
                 String[] sortFields = sortField.split("_");
                 sbQuery.append(" ORDER BY ");
@@ -1882,6 +2030,9 @@ public class JPADAO implements IDAO {
 
             Query q = em.createQuery(sbQuery.toString());
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+            if (targetPIs != null && !targetPIs.isEmpty()) {
+                q.setParameter("targetPIs", targetPIs);
+            }
             // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
         } finally {
@@ -3832,21 +3983,50 @@ public class JPADAO implements IDAO {
         return getRowCount("IpRange", null, filters);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct count
+     * @should filter correctly
+     * @should filter for users correctly
+     * @should apply target pi filter correctly
+     */
     @Override
-    public long getCommentCount(Map<String, String> filters, User owner) throws DAOException {
+    public long getCommentCount(Map<String, String> filters, User owner, Set<String> targetPIs) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Comment a");
             Map<String, String> params = new HashMap<>();
+            String filterQuery = createFilterQuery(null, filters, params);
+            boolean where = StringUtils.isNotEmpty(filterQuery);
+            sbQuery.append(filterQuery);
             if (owner != null) {
-                sbQuery.append(" WHERE a.creatorId = :owner");
+                if (where) {
+                    sbQuery.append(" AND ");
+                } else {
+                    sbQuery.append(" WHERE ");
+                    where = true;
+                }
+                sbQuery.append("a.creatorId = :owner");
             }
-            Query q = em.createQuery(sbQuery.append(createFilterQuery(null, filters, params)).toString());
+            if (targetPIs != null && !targetPIs.isEmpty()) {
+                if (where) {
+                    sbQuery.append(" AND ");
+                } else {
+                    sbQuery.append(" WHERE ");
+                    where = true;
+                }
+                sbQuery.append("a.targetPI in :targetPIs");
+            }
+            logger.trace(sbQuery.toString());
+            Query q = em.createQuery(sbQuery.toString());
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
             if (owner != null) {
                 q.setParameter("owner", owner.getId());
+            }
+            if (targetPIs != null && !targetPIs.isEmpty()) {
+                q.setParameter("targetPIs", targetPIs);
             }
 
             return (long) q.getSingleResult();
@@ -4616,26 +4796,32 @@ public class JPADAO implements IDAO {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * {@inheritDoc}
+     * @should sort correctly
+     * @should throw IllegalArgumentException if sortField unknown
+     */
     @Override
     public List<CrowdsourcingAnnotation> getAllAnnotations(String sortField, boolean descending) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            String query = "SELECT a FROM CrowdsourcingAnnotation a";
-
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<CrowdsourcingAnnotation> cq = cb.createQuery(CrowdsourcingAnnotation.class);
+            Root<CrowdsourcingAnnotation> root = cq.from(CrowdsourcingAnnotation.class);
+            cq.select(root);
             if (StringUtils.isNotEmpty(sortField)) {
-                StringBuilder sbOrder = new StringBuilder();
-                sbOrder.append(" ORDER BY a.").append(sortField);
-                if (descending) {
-                    sbOrder.append(" DESC");
+                if (!CrowdsourcingAnnotation.VALID_COLUMNS_FOR_ORDER_BY.contains(sortField)) {
+                    throw new IllegalArgumentException("Sorting field not allowed: " + sortField);
                 }
-                query += sbOrder.toString();
+                if (descending) {
+                    cq.orderBy(cb.desc(root.get(sortField)));
+                } else {
+                    cq.orderBy(cb.asc(root.get(sortField)));
+                }
             }
 
-            Query q = em.createQuery(query);
-
-            return q.getResultList();
+            return em.createQuery(cq).getResultList();
         } finally {
             close(em);
         }
@@ -4860,6 +5046,7 @@ public class JPADAO implements IDAO {
     /**
      * @see io.goobi.viewer.dao.IDAO#getAnnotationsForUser(java.lang.Long)
      * @should return correct rows
+     * @should throw IllegalArgumentException if sortField unknown
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -4872,17 +5059,22 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            String queryString = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<CrowdsourcingAnnotation> cq = cb.createQuery(CrowdsourcingAnnotation.class);
+            Root<CrowdsourcingAnnotation> root = cq.from(CrowdsourcingAnnotation.class);
+            cq.select(root).where(cb.or(cb.equal(root.get("creatorId"), userId), cb.equal(root.get("reviewerId"), userId)));
             if (StringUtils.isNotEmpty(sortField)) {
-                StringBuilder sbOrder = new StringBuilder();
-                sbOrder.append(" ORDER BY a.").append(sortField);
-                if (descending) {
-                    sbOrder.append(" DESC");
+                if (!CrowdsourcingAnnotation.VALID_COLUMNS_FOR_ORDER_BY.contains(sortField)) {
+                    throw new IllegalArgumentException("Sorting field not allowed: " + sortField);
                 }
-                queryString += sbOrder.toString();
+                if (descending) {
+                    cq.orderBy(cb.desc(root.get(sortField)));
+                } else {
+                    cq.orderBy(cb.asc(root.get(sortField)));
+                }
             }
 
-            Query query = em.createQuery(queryString).setParameter("userId", userId);
+            Query query = em.createQuery(cq);
             if (maxResults != null) {
                 query.setMaxResults(maxResults);
             }
@@ -4918,6 +5110,9 @@ public class JPADAO implements IDAO {
                 StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CrowdsourcingAnnotation a");
                 StringBuilder order = new StringBuilder();
                 if (StringUtils.isNotEmpty(sortField)) {
+                    if (!CrowdsourcingAnnotation.VALID_COLUMNS_FOR_ORDER_BY.contains(sortField)) {
+                        throw new IllegalArgumentException("Sorting field not allowed: " + sortField);
+                    }
                     order.append(" ORDER BY a.").append(sortField);
                     if (descending) {
                         order.append(" DESC");
@@ -5039,7 +5234,7 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            GeoMap o = em.find(GeoMap.class, mapId);
+            GeoMap o = em.getReference(GeoMap.class, mapId);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
@@ -5853,13 +6048,57 @@ public class JPADAO implements IDAO {
     }
 
     @Override
+    public boolean saveDisclaimer(Disclaimer disclaimer) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            if (disclaimer.getId() == null) {
+                //create initial tou
+                em.persist(disclaimer);
+            } else {
+                em.merge(disclaimer);
+            }
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error saving disclaimer", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public Disclaimer getDisclaimer() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT u FROM Disclaimer u");
+            //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+            @SuppressWarnings("unchecked")
+            List<Disclaimer> results = q.getResultList();
+            if (results.isEmpty()) {
+                //No results. Just return a new object which may be saved later
+                return null;
+            }
+            return results.get(0);
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
     public Long getNumRecordsWithComments(User user) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             Query query =
                     em.createNativeQuery(
-                            "SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id=" + user.getId());
+                            "SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id = :userId")
+                            .setParameter("userId", user.getId());
             return (Long) query.getSingleResult();
         } finally {
             close(em);
