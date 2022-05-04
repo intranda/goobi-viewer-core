@@ -119,6 +119,7 @@ public class JPADAO implements IDAO {
     private final EntityManagerFactory factory;
     private Object cmsRequestLock = new Object();
     private Object crowdsourcingRequestLock = new Object();
+    private final String persistenceUnitName;
 
     /**
      * <p>
@@ -148,6 +149,7 @@ public class JPADAO implements IDAO {
         if (StringUtils.isEmpty(persistenceUnitName)) {
             persistenceUnitName = DEFAULT_PERSISTENCE_UNIT_NAME;
         }
+        this.persistenceUnitName = persistenceUnitName;
         logger.info("Using persistence unit: {}", persistenceUnitName);
         try {
             // Create EntityManagerFactory in a custom class loader
