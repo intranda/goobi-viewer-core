@@ -71,7 +71,6 @@ buildSets(collection) {
 }
 
 compareMembers(m1, m2, compareMode) {
-    console.log("compareMembers", m1, m2, compareMode); 
     let l1 = viewerJS.iiif.getValue(m1.label, this.opts.language, this.opts.defaultlanguage);
     let l2 = viewerJS.iiif.getValue(m2.label, this.opts.language, this.opts.defaultlanguage);
     if(compareMode && compareMode.toLocaleLowerCase() == "numeric") {

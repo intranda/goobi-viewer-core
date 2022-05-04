@@ -563,6 +563,8 @@ var viewerJS = ( function( viewer ) {
 	    } else if(isNaN(ia)) {
 	        return 1;
 	    } else if(isNaN(ib)) {
+	    	return -1;
+	    } else {
 	    	return ia > ib;
 	    }
 	}
