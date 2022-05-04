@@ -3253,19 +3253,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
 
     }
-    
-    @Test
-    public void test_getColumnNames() throws DAOException, SQLException {
-        
-        IDAO dao = DataManager.getInstance().getDao();
-        
-        List<String>  tables = dao.getTableNames();
-//        tables.forEach(table -> System.out.println(table));
-        
-        List<String> columns = dao.getColumnNames("USERS");
-        assertTrue(columns != null && !columns.isEmpty());
-        columns.forEach(col -> System.out.println(col));
-    }
 
     private static void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException, DAOException {
         Thread.sleep(duration);

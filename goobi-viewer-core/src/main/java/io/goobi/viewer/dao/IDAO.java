@@ -98,8 +98,6 @@ public interface IDAO {
      * @throws java.sql.SQLException if any.
      */
     boolean columnsExists(String tableName, String columnName) throws DAOException, SQLException;
-
-    List<String> getColumnNames(String tableName) throws DAOException, SQLException;
     
     // User
 
@@ -2488,11 +2486,5 @@ public interface IDAO {
      */
     void handleException(EntityManager em);
 
-    /**
-     * @return
-     * @throws DAOException
-     * @throws SQLException
-     */
-    List<String> getTableNames() throws DAOException, SQLException;
 
 }

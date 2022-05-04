@@ -81,7 +81,6 @@ public class CollectionView {
         this.splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(field);
         this.dataProvider = dataProvider;
         this.displayNumberOfVolumesLevel = DataManager.getInstance().getConfiguration().getCollectionDisplayNumberOfVolumesLevel(field);
-
     }
 
     /**

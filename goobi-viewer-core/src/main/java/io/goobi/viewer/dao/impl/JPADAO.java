@@ -6490,18 +6490,4 @@ public class JPADAO implements IDAO {
         String filterString = join.append(where).toString();
         return filterString;
     }
-    
-    @Override
-    public List<String> getTableNames() throws DAOException, SQLException {
-        String query = "SELECT table_name FROM information_schema.columns";
-        List<Object> res = getNativeQueryResults(query);
-        return res.stream().map(Object::toString).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<String> getColumnNames(String tableName) throws DAOException, SQLException {
-        String query = "SHOW COLUMNS FROM \""+tableName+"\";";
-        List<Object> res = getNativeQueryResults(query);
-        return res.stream().map(Object::toString).collect(Collectors.toList());
-    }
 }
