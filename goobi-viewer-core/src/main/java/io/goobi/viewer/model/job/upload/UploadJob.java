@@ -59,8 +59,6 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.omnifaces.util.Servlets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +66,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.goobi.viewer.controller.DataManager;
@@ -114,7 +113,7 @@ public class UploadJob implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    protected JobStatus status = JobStatus.WAITING;
+    protected JobStatus status = JobStatus.UNDEFINED;
 
     /** Error messages, etc. */
     @Column(name = "message", nullable = true)
@@ -196,6 +195,7 @@ public class UploadJob implements Serializable {
         ret.setLogicalDSType(docstruct);
 
         ret.setMetadata(new HashMap<>(2));
+        ret.getMetadata().put("CatalogIDDigital", pi);
         ret.getMetadata().put("TitleDocMain", title);
         ret.getMetadata().put("Description", description);
 
@@ -229,7 +229,7 @@ public class UploadJob implements Serializable {
                 throw new UploadException("No XML response received.");
             }
             logger.trace(response);
-            CreationResponse cr = new ObjectMapper().readValue(response, CreationResponse.class);
+            ProcessCreationResponse cr = new ObjectMapper().readValue(response, ProcessCreationResponse.class);
             if (cr == null) {
                 logger.error("Could not parse response JSON.");
                 throw new UploadException("Could not parse response JSON.");
@@ -240,6 +240,7 @@ public class UploadJob implements Serializable {
 
             try {
                 // Persist UploadJob
+                setStatus(JobStatus.WAITING);
                 setProcessId(cr.getProcessId());
                 setDateCreated(LocalDateTime.now());
                 if (DataManager.getInstance().getDao().addUploadJob(this)) {
@@ -313,55 +314,84 @@ public class UploadJob implements Serializable {
     }
 
     /**
+     * 
+     */
+    public void updateStatus() {
+        updateStatus(getJobStatus(processId));
+        logger.debug("Job {}status: {}", getId(), getStatus());
+    }
+
+    /**
      * <p>
      * getJobStatus.
      * </p>
      *
-     * @param processId a {@link java.lang.String} object.
+     * @param processId Process ID to check
      * @return a {@link java.lang.String} object.
      */
-    public String getJobStatus(Integer processId) {
+    ProcessStatusResponse getJobStatus(int processId) {
         StringBuilder url = new StringBuilder()
                 .append(DataManager.getInstance().getConfiguration().getWorkflowRestUrl())
                 .append("process/details/id/")
                 .append(processId)
-                .append('/');
+                .append("?token=")
+                .append(DataManager.getInstance().getConfiguration().getContentUploadToken());
         ResponseHandler<String> handler = new BasicResponseHandler();
 
         HttpGet httpGet = new HttpGet(url.toString());
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             CloseableHttpResponse response = httpclient.execute(httpGet);
-            String ret = handler.handleResponse(response);
-            logger.trace("TaskManager response: {}", ret);
-            return ret;
-        } catch (Throwable e) {
-            logger.error("Error getting response from TaskManager", e);
-            return "";
+            String json = handler.handleResponse(response);
+            logger.trace("Process status JSON: {}", json);
+            return new ObjectMapper().readValue(json, ProcessStatusResponse.class);
+        } catch (JsonMappingException e) {
+            logger.error(e.getMessage());
+        } catch (JsonProcessingException e) {
+            logger.error(e.getMessage());
+        } catch (ClientProtocolException e) {
+            logger.error(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
         }
+
+        return null;
     }
 
     /**
      * <p>
      * updateStatus.
-     * </p>
+     * 
+     * @param psr {@link ProcessStatusResponse}
+     *            </p>
+     * 
+     * @should do nothing if response null
+     * @should set status to error if process nonexistent
+     * @should set status to ready if process completed
+     * @should set status to ready if export step done
      */
-    public void updateStatus() {
-        String result = getJobStatus(processId);
-        try {
-            JSONObject object = new JSONObject(result);
-            String statusString = object.getString("status");
-            JobStatus status = JobStatus.getByName(statusString);
-            if (status != null && !status.equals(getStatus())) {
-                setStatus(status);
-                logger.trace("Status updated for job {}: {}", id, status);
-            }
-            if (JobStatus.ERROR.equals(status)) {
-                String errorMessage = object.getString("errorMessage");
-                setMessage(errorMessage);
-            }
-        } catch (JSONException e) {
+    void updateStatus(ProcessStatusResponse psr) {
+        if (psr == null) {
+            logger.warn("No status response, cannot update status.");
+            return;
+        }
+        // Process no longer exists
+        if (psr.getId() == 0 || psr.getCreationDate() == null) {
             setStatus(JobStatus.ERROR);
-            setMessage("Unable to parse TaskManager response");
+            setMessage("Process not found in Goobi workflow.");
+            return;
+        }
+        if (psr.isProcessCompleted()) {
+            setStatus(JobStatus.READY);
+            return;
+        }
+        for (StepResponse sr : psr.getStep()) {
+            if (sr.getTitle() != null && sr.getTitle().contains("viewer") && "Completed".equals(sr.getStatus())) {
+                setStatus(JobStatus.READY);
+                return;
+            }
+        }
+        if (!JobStatus.WAITING.equals(getStatus())) {
+            setStatus(JobStatus.WAITING);
         }
     }
 

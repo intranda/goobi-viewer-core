@@ -28,7 +28,7 @@ package io.goobi.viewer.model.job.upload;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class CreationResponse {
+public class ProcessCreationResponse {
 
     private String result; // success, error
 

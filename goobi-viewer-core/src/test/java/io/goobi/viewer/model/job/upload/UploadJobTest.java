@@ -15,12 +15,15 @@
  */
 package io.goobi.viewer.model.job.upload;
 
+import java.util.Date;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.model.job.JobStatus;
 
 public class UploadJobTest extends AbstractTest {
 
@@ -77,7 +80,6 @@ public class UploadJobTest extends AbstractTest {
             }
         }
     }
-    
 
     /**
      * @see UploadJob#buildProcessCreationRequest()
@@ -91,18 +93,79 @@ public class UploadJobTest extends AbstractTest {
         uj.setPi("PPN123");
         uj.setTitle("Lorem ipsum");
         uj.setDescription("Lorem ipsum dolor sit amet...");
-        
+
         ProcessCreationRequest result = uj.buildProcessCreationRequest();
         Assert.assertNotNull(result);
         Assert.assertEquals("Sample_workflow", result.getTemplateName());
         Assert.assertEquals("PPN123", result.getIdentifier());
         Assert.assertEquals("loreip_PPN123", result.getProcesstitle());
-        
+
         Assert.assertNotNull(result.getMetadata());
         Assert.assertEquals("Lorem ipsum", result.getMetadata().get("TitleDocMain"));
         Assert.assertEquals("Lorem ipsum dolor sit amet...", result.getMetadata().get("Description"));
-        
+
         Assert.assertNotNull(result.getProperties());
         Assert.assertEquals("a@b.com", result.getProperties().get("email"));
+    }
+
+    /**
+     * @see UploadJob#updateStatus(ProcessStatusResponse)
+     * @verifies do nothing if response null
+     */
+    @Test
+    public void updateStatus_shouldDoNothingIfResponseNull() throws Exception {
+        UploadJob uj = new UploadJob();
+        Assert.assertEquals(JobStatus.UNDEFINED, uj.getStatus());
+        uj.updateStatus(null);
+        Assert.assertEquals(JobStatus.UNDEFINED, uj.getStatus());
+    }
+
+    /**
+     * @see UploadJob#updateStatus(ProcessStatusResponse)
+     * @verifies set status to error if process nonexistent
+     */
+    @Test
+    public void updateStatus_shouldSetStatusToErrorIfProcessNonexistent() throws Exception {
+        UploadJob uj = new UploadJob();
+        ProcessStatusResponse psr = new ProcessStatusResponse();
+        psr.setId(0);
+        psr.setCreationDate(null);
+        uj.updateStatus(psr);
+        Assert.assertEquals(JobStatus.ERROR, uj.getStatus());
+
+    }
+
+    /**
+     * @see UploadJob#updateStatus(ProcessStatusResponse)
+     * @verifies set status to ready if process completed
+     */
+    @Test
+    public void updateStatus_shouldSetStatusToReadyIfProcessCompleted() throws Exception {
+        UploadJob uj = new UploadJob();
+        ProcessStatusResponse psr = new ProcessStatusResponse();
+        psr.setId(1);
+        psr.setCreationDate(new Date());
+        psr.setProcessCompleted(true);
+        uj.updateStatus(psr);
+        Assert.assertEquals(JobStatus.READY, uj.getStatus());
+    }
+
+    /**
+     * @see UploadJob#updateStatus(ProcessStatusResponse)
+     * @verifies set status to ready if export step done
+     */
+    @Test
+    public void updateStatus_shouldSetStatusToReadyIfExportStepDone() throws Exception {
+        UploadJob uj = new UploadJob();
+        ProcessStatusResponse psr = new ProcessStatusResponse();
+        psr.setId(1);
+        psr.setCreationDate(new Date());
+        psr.setProcessCompleted(false);
+        StepResponse sr = new StepResponse();
+        sr.setTitle("Export to viewer");
+        sr.setStatus("Completed");
+        psr.getStep().add(sr);
+        uj.updateStatus(psr);
+        Assert.assertEquals(JobStatus.READY, uj.getStatus());
     }
 }
