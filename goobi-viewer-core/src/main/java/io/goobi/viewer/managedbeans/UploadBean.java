@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +140,7 @@ public class UploadBean implements Serializable {
     }
 
     /**
-     * 
+     * Sets <code>currentUploadJob</code> to a fresh instance.
      */
     public void newUploadJobAction() {
         logger.trace("newUploadJobAction");
@@ -174,6 +175,5 @@ public class UploadBean implements Serializable {
 
         return "";
     }
-
 
 }

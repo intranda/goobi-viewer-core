@@ -2755,6 +2755,7 @@ public class JPADAO implements IDAO {
             em.persist(uploadJob);
             commitTransaction(em);
         } catch (PersistenceException e) {
+            logger.trace(e.getMessage(), e);
             handleException(em);
             return false;
         } finally {

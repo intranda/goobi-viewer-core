@@ -59,7 +59,6 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.omnifaces.util.Servlets;
@@ -73,8 +72,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.UploadException;
@@ -117,21 +114,21 @@ public class UploadJob implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    protected JobStatus status = JobStatus.UNDEFINED;
+    protected JobStatus status = JobStatus.WAITING;
 
     /** Error messages, etc. */
     @Column(name = "message", nullable = true)
     protected String message;
 
     /** Assigned Goobi workflow process ID. */
-    @Column(name = "process_id")
+    @Column(name = "process_id", nullable = false)
     protected Integer processId;
 
     @Column(name = "pi", nullable = false)
     protected String pi = String.valueOf(UUID.randomUUID());
 
     /** Title field. */
-    @Column(name = "title", columnDefinition = "LONGTEXT")
+    @Column(name = "title", columnDefinition = "LONGTEXT", nullable = false)
     protected String title;
 
     /** Description field. */
@@ -218,32 +215,33 @@ public class UploadJob implements Serializable {
      * @throws UploadException
      */
     public void createProcess() throws UploadException {
+        logger.trace("createProcess");
         String url = DataManager.getInstance().getConfiguration().getWorkflowRestUrl() + "processes";
-        // String body = XmlTools.getStringFromElement(buildXmlBody(), StringTools.DEFAULT_ENCODING);
         ProcessCreationRequest pcr = buildProcessCreationRequest();
         try {
+            // Create new process via REST
             String body = new ObjectMapper().writeValueAsString(pcr);
             String response = NetTools.getWebContentPOST(url,
-                    Collections.singletonMap("token", DataManager.getInstance().getConfiguration().getContentUploadToken()), null, null, body, null);
+                    Collections.singletonMap("token", DataManager.getInstance().getConfiguration().getContentUploadToken()), null, null,
+                    MediaType.APPLICATION_JSON, body, null);
             if (StringUtils.isEmpty(response)) {
-                logger.error("No XML response received.");
+                logger.error("No response received.");
                 throw new UploadException("No XML response received.");
             }
             logger.trace(response);
-            Document doc = XmlTools.getDocumentFromString(response, StringTools.DEFAULT_ENCODING);
-            if (doc == null || doc.getRootElement() == null) {
-                logger.error("Could not parse XML.");
-                throw new UploadException("Could not parse XML.");
+            CreationResponse cr = new ObjectMapper().readValue(response, CreationResponse.class);
+            if (cr == null) {
+                logger.error("Could not parse response JSON.");
+                throw new UploadException("Could not parse response JSON.");
+            }
+            if (!"success".equals(cr.getResult())) {
+                throw new UploadException(cr.getErrorText());
             }
 
-            if (!"success".equals(doc.getRootElement().getChildText("result"))) {
-                String errorText = doc.getRootElement().getChildText("errorText");
-                throw new UploadException(errorText);
-            }
-
-            String processId = doc.getRootElement().getChildText("processId");
             try {
-                setProcessId(Integer.valueOf(processId));
+                // Persist UploadJob
+                setProcessId(cr.getProcessId());
+                setDateCreated(LocalDateTime.now());
                 if (DataManager.getInstance().getDao().addUploadJob(this)) {
                     return;
                 }
@@ -261,9 +259,6 @@ public class UploadJob implements Serializable {
             logger.error(e.getMessage());
             throw new UploadException(e.getMessage());
         } catch (HTTPException e) {
-            logger.error(e.getMessage());
-            throw new UploadException(e.getMessage());
-        } catch (JDOMException e) {
             logger.error(e.getMessage());
             throw new UploadException(e.getMessage());
         }
@@ -291,8 +286,8 @@ public class UploadJob implements Serializable {
             Path tempFile = Paths.get(tempFolder.toAbsolutePath().toString(), fileName);
             long bytes = Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
             if (bytes > 0) {
-                //uploadFile(tempFile.toFile());
                 logger.trace("Temp file: {}", tempFile.toAbsolutePath());
+                uploadFile(tempFile.toFile());
             }
         }
     }
@@ -308,10 +303,13 @@ public class UploadJob implements Serializable {
         if (file == null) {
             throw new IllegalArgumentException("file may not be null");
         }
-        String url = DataManager.getInstance().getConfiguration().getWorkflowRestUrl() + "processes/" + processId + "/master";
+        String url = DataManager.getInstance().getConfiguration().getWorkflowRestUrl() + "processes/" + processId + "/images/master";
         String response = NetTools.getWebContentPOST(url,
-                Collections.singletonMap("token", DataManager.getInstance().getConfiguration().getContentUploadToken()), null, null, null, file);
-        // TODO evaluate response?
+                Collections.singletonMap("token", DataManager.getInstance().getConfiguration().getContentUploadToken()), null, null, null, null,
+                file);
+        if (StringUtils.isNotEmpty(response)) {
+            logger.trace(response);
+        }
     }
 
     /**

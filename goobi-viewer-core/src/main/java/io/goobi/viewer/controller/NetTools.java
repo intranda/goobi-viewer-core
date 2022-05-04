@@ -63,7 +63,9 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,8 +194,8 @@ public class NetTools {
      * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
      */
     public static String getWebContentPOST(String url, Map<String, String> headers, Map<String, String> params, Map<String, String> cookies,
-            String stringBody, File file) throws ClientProtocolException, IOException, HTTPException {
-        return getWebContent("POST", url, headers, params, cookies, stringBody, file);
+            String contentType, String stringBody, File file) throws ClientProtocolException, IOException, HTTPException {
+        return getWebContent("POST", url, headers, params, cookies, contentType, stringBody, file);
     }
 
     /**
@@ -205,15 +207,15 @@ public class NetTools {
      * @param headers
      * @param params a {@link java.util.Map} object.
      * @param cookies a {@link java.util.Map} object.
-     * @param body Optional entity content.
+     * @param stringBody Optional entity content.
      * @return a {@link java.lang.String} object.
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
      */
     public static String getWebContentDELETE(String url, Map<String, String> headers, Map<String, String> params, Map<String, String> cookies,
-            String body) throws ClientProtocolException, IOException, HTTPException {
-        return getWebContent("DELETE", url, headers, params, cookies, body, null);
+            String stringBody) throws ClientProtocolException, IOException, HTTPException {
+        return getWebContent("DELETE", url, headers, params, cookies, null, stringBody, null);
     }
 
     /**
@@ -226,15 +228,16 @@ public class NetTools {
      * @param headers
      * @param params a {@link java.util.Map} object.
      * @param cookies a {@link java.util.Map} object.
-     * @param stringBody Optional entity content.
      * @param contentType Optional mime type.
+     * @param stringBody Optional entity content.
+     * @param file Optional file entity content.
      * @return a {@link java.lang.String} object.
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
      */
     static String getWebContent(String method, String url, Map<String, String> headers, Map<String, String> params, Map<String, String> cookies,
-            String stringBody, File file) throws ClientProtocolException, IOException, HTTPException {
+            String contentType, String stringBody, File file) throws ClientProtocolException, IOException, HTTPException {
         if (method == null || !("POST".equals(method.toUpperCase()) || "PUT".equals(method.toUpperCase()) || "DELETE".equals(method.toUpperCase()))) {
             throw new IllegalArgumentException("Illegal method: " + method);
         }
@@ -306,7 +309,12 @@ public class NetTools {
                                     .addTextBody("filename", file.getName())
                                     .build());
                 } else if (StringUtils.isNotEmpty(stringBody)) {
-                    ((HttpEntityEnclosingRequestBase) requestBase).setEntity(new ByteArrayEntity(stringBody.getBytes(StringTools.DEFAULT_ENCODING)));
+                    ByteArrayEntity entity = new ByteArrayEntity(stringBody.getBytes(StringTools.DEFAULT_ENCODING));
+                    entity.setContentEncoding(StringTools.DEFAULT_ENCODING);
+                    if (contentType != null) {
+                        entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, contentType));
+                    }
+                    ((HttpEntityEnclosingRequestBase) requestBase).setEntity(entity);
                 } else {
                     ((HttpEntityEnclosingRequestBase) requestBase).setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 }
@@ -318,7 +326,8 @@ public class NetTools {
                 if (code == HttpStatus.SC_OK) {
                     return EntityUtils.toString(response.getEntity(), StringTools.DEFAULT_ENCODING);
                 }
-                throw new HTTPException(code, response.getStatusLine().getReasonPhrase());
+                //                throw new HTTPException(code, response.getStatusLine().getReasonPhrase());
+                return EntityUtils.toString(response.getEntity(), StringTools.DEFAULT_ENCODING);
             }
         }
     }
