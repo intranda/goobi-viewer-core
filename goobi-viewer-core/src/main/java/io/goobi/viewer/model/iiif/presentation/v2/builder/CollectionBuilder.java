@@ -51,10 +51,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.viewer.BrowseElementInfo;
-import io.goobi.viewer.model.viewer.CollectionView;
-import io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement;
-import io.goobi.viewer.model.viewer.SimpleBrowseElementInfo;
+import io.goobi.viewer.model.viewer.collections.BrowseElementInfo;
+import io.goobi.viewer.model.viewer.collections.CollectionView;
+import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
+import io.goobi.viewer.model.viewer.collections.SimpleBrowseElementInfo;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -243,8 +243,8 @@ public class CollectionBuilder extends AbstractBuilder {
      * createCollection.
      * </p>
      *
-     * @param baseElement a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
-     * @param collectionView a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     * @param baseElement a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
+     * @param collectionView a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      * @param uri a {@link java.net.URI} object.
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws java.net.URISyntaxException if any.
@@ -375,7 +375,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param collectionField a {@link java.lang.String} object.
      * @param facetField a {@link java.lang.String} object.
      * @param splittingChar a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException 
      */

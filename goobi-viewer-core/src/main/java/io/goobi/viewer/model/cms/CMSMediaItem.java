@@ -59,7 +59,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.viewer.BrowseElementInfo;
+import io.goobi.viewer.model.viewer.collections.BrowseElementInfo;
 
 /**
  * <p>

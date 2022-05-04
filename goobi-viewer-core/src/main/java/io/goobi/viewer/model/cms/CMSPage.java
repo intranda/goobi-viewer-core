@@ -96,7 +96,7 @@ import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.misc.Harvestable;
 import io.goobi.viewer.model.search.SearchInterface;
-import io.goobi.viewer.model.viewer.CollectionView;
+import io.goobi.viewer.model.viewer.collections.CollectionView;
 
 /**
  * <p>
@@ -1823,7 +1823,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * getCollection.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException

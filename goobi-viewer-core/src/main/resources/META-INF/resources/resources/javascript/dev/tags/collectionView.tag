@@ -44,6 +44,7 @@ buildSets(collection) {
     let map = new Map();
     collection.members
     .filter( member => viewerJS.iiif.isCollection(member))
+    .sort( (m1,m2) => this.compareMembers(m1, m2, this.opts.sorting) )
     .forEach( member => {
         let tagList = viewerJS.iiif.getTags(member, "grouping");
         if(tagList == undefined || tagList.length == 0) {
@@ -60,13 +61,29 @@ buildSets(collection) {
 	   	 let key2 = e2[0];
 	   	 if(key1 == "" && key2 != "") {
 	   	     return 1;
-	   	 } else if(key2 == "" && key1 != "") {
+	   	 } else if(key2 == "" && key1 != "") { 
 	   	     return -1;
 	   	 } else {
 	   	     return key1.localeCompare(key2);
 	   	 }
 	});
     return entries;
+}
+
+compareMembers(m1, m2, compareMode) {
+    console.log("compareMembers", m1, m2, compareMode); 
+    let l1 = viewerJS.iiif.getValue(m1.label, this.opts.language, this.opts.defaultlanguage);
+    let l2 = viewerJS.iiif.getValue(m2.label, this.opts.language, this.opts.defaultlanguage);
+    if(compareMode && compareMode.toLocaleLowerCase() == "numeric") {
+        let res = viewerJS.helper.compareNumerical(l1, l2);
+        if(res == 0) {
+            return viewerJS.helper.compareAlphanumerical(l1, l2);
+        } else {
+            return res;
+        }
+    } else {        
+        return viewerJS.helper.compareAlphanumerical(l1, l2);
+    }
 }
 
 addToMap(map, key, value) {
