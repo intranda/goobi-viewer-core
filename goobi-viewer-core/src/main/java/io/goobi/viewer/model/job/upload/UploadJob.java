@@ -107,10 +107,6 @@ public class UploadJob implements Serializable {
     @Column(name = "email", nullable = false)
     private String email;
 
-    /** User consent for being contacted. */
-    @Column(name = "consent", nullable = false)
-    private boolean consent = false;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     protected JobStatus status = JobStatus.UNDEFINED;
@@ -139,6 +135,10 @@ public class UploadJob implements Serializable {
 
     @Transient
     private String docstruct = DataManager.getInstance().getConfiguration().getContentUploadDocstruct();
+
+    /** User consent for being contacted. */
+    @Transient
+    private boolean consent = false;
 
     @Transient
     private List<Part> files;
@@ -518,20 +518,6 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * @return the consent
-     */
-    public boolean isConsent() {
-        return consent;
-    }
-
-    /**
-     * @param consent the consent to set
-     */
-    public void setConsent(boolean consent) {
-        this.consent = consent;
-    }
-
-    /**
      * <p>
      * Getter for the field <code>status</code>.
      * </p>
@@ -676,6 +662,20 @@ public class UploadJob implements Serializable {
      */
     void setDocstruct(String docstruct) {
         this.docstruct = docstruct;
+    }
+
+    /**
+     * @return the consent
+     */
+    public boolean isConsent() {
+        return consent;
+    }
+
+    /**
+     * @param consent the consent to set
+     */
+    public void setConsent(boolean consent) {
+        this.consent = consent;
     }
 
     /**
