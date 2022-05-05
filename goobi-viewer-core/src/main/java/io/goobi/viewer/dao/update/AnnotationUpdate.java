@@ -147,7 +147,7 @@ public class AnnotationUpdate implements IModelUpdate {
     private void updateComments(IDAO dao) throws DAOException {
         AnnotationSaver saver = new SqlAnnotationSaver(dao);
         List<Object[]> comments = dao.getNativeQueryResults("SELECT * FROM comments");
-        List<Object[]> info = dao.getNativeQueryResults("desc comments");
+        List<Object[]> info = dao.getNativeQueryResults("SHOW COLUMNS FROM comments");
         List<String> columnNames = info.stream().map(o -> (String)o[0]).collect(Collectors.toList());
         for (Object[] comment : comments) {
             Map<String, Object> columns = IntStream.range(0, columnNames.size()).boxed().filter(i -> comment[i] != null).collect(Collectors.toMap(i -> columnNames.get(i), i -> comment[i]));
