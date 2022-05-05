@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.viewer;
+package io.goobi.viewer.model.viewer.collections;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -89,7 +89,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * Constructor for BrowseDcElement.
      * </p>
      *
-     * @param blueprint a {@link io.goobi.viewer.model.viewer.BrowseDcElement} object.
+     * @param blueprint a {@link io.goobi.viewer.model.viewer.collections.BrowseDcElement} object.
      */
     public BrowseDcElement(BrowseDcElement blueprint) {
         this.name = blueprint.name;

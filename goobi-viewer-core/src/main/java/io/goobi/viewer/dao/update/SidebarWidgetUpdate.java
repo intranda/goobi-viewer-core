@@ -76,7 +76,7 @@ public class SidebarWidgetUpdate implements IModelUpdate {
     }
 
     private void migrateWidgetTables(IDAO dao) throws DAOException {
-        List<Object[]> info = dao.getNativeQueryResults("desc cms_sidebar_elements");
+        List<Object[]> info = dao.getNativeQueryResults("SHOW COLUMNS FROM cms_sidebar_elements");
 
         List<Object[]> legacyWidgets = dao.getNativeQueryResults("SELECT * FROM cms_sidebar_elements");
 

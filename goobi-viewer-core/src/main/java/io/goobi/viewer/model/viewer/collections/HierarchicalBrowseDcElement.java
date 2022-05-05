@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.viewer;
+package io.goobi.viewer.model.viewer.collections;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,7 +61,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
      * Constructor for HierarchicalBrowseDcElement.
      * </p>
      *
-     * @param blueprint a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param blueprint a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
     public HierarchicalBrowseDcElement(HierarchicalBrowseDcElement blueprint) {
         super(blueprint);
@@ -95,7 +95,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
      * Getter for the field <code>parent</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @return a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
     public HierarchicalBrowseDcElement getParent() {
         return parent;
@@ -106,7 +106,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
      * Setter for the field <code>parent</code>.
      * </p>
      *
-     * @param parent a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param parent a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
     public void setParent(HierarchicalBrowseDcElement parent) {
         this.parent = parent;
@@ -117,7 +117,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
      * addChild.
      * </p>
      *
-     * @param dc a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param dc a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
     public void addChild(HierarchicalBrowseDcElement dc) {
         this.children.add(dc);

@@ -51,12 +51,12 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.search.SearchFacets;
-import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.CompoundLabeledLink;
 import io.goobi.viewer.model.viewer.LabeledLink;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
+import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.solr.SolrConstants;
 
 @Named

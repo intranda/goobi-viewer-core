@@ -49,9 +49,9 @@ import io.goobi.viewer.model.cms.CMSCollectionTreeTab;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.admin.MessageEntry;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
+import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
-import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**

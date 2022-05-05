@@ -54,8 +54,8 @@ import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.model.viewer.BrowseElementInfo;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.collections.BrowseElementInfo;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 

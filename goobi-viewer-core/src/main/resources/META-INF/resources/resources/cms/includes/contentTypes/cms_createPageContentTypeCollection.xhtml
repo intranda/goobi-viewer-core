@@ -191,6 +191,53 @@
 		            </button>
 		        </div>
 		    </div>
+		    
+		 <!-- SORTING MODE -->
+		 <div class="cms-module__option-group">
+	        <div class="cms-module__option-label">
+	            <label for="groupByFieldCollection">#{msg.label__sorting_mode}:</label>
+	        </div>
+			 <div class="cms-module__option-control">
+	            <!-- AREA FOR AJAX REFRESH -->
+	            <h:panelGroup id="sortingSelectGroup">
+	                <!-- VALIDATION MESSAGE -->
+	                <div class="cms-module__option-message">
+	                    <h:messages for="sortingSelect" 
+	                        infoClass="cms-module__option-message-status success" 
+	                        warnClass="cms-module__option-message-status warning"
+	                        errorClass="cms-module__option-message-status danger" />
+	
+	                    <div class="cms-module__option-message-mark">
+	                        <i class="fa fa-check" aria-hidden="true"></i>
+	                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+	                    </div>
+	                </div>
+	                
+	                <!-- SELECT MENU -->
+	                <div class="custom-control custom-control--select">
+	                    <h:selectOneMenu
+	                        id="sortingSelect"
+	                        styleClass="form-control" 
+	                        value="#{contentItem.sorting}">
+	                        <f:selectItems 
+	                            value="#{cmsBean.sortingModes}"
+	                            var="mode"
+	                            itemValue="#{mode}"
+	                            itemLabel="#{msg[mode.label]}" />
+	                        <f:passThroughAttribute name="aria-label" value="#{msg.label__sorting_mode}" />
+	                    </h:selectOneMenu>
+	                </div>
+	            </h:panelGroup>
+	            
+	            <!-- INLINE HELP -->
+	            <span class="cms-module__option-control-helptext">#{msg.inline_help__sorting_mode}</span>
+	        </div>
+	        <div class="cms-module__option-help">
+	            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+	                <i class="fa fa-question-circle" aria-hidden="true"></i>
+	            </button>
+	        </div>
+	    </div>
     
     <!-- CONTENT ITEM MODE EXPANDED -->
     <ui:fragment rendered="#{contentItem.mode == 'expanded'}">
