@@ -891,6 +891,7 @@ this.buildSets = function(collection) {
     let map = new Map();
     collection.members
     .filter( member => viewerJS.iiif.isCollection(member))
+    .sort( (m1,m2) => this.compareMembers(m1, m2, this.opts.sorting) )
     .forEach( member => {
         let tagList = viewerJS.iiif.getTags(member, "grouping");
         if(tagList == undefined || tagList.length == 0) {
@@ -914,6 +915,21 @@ this.buildSets = function(collection) {
 	   	 }
 	});
     return entries;
+}.bind(this)
+
+this.compareMembers = function(m1, m2, compareMode) {
+    let l1 = viewerJS.iiif.getValue(m1.label, this.opts.language, this.opts.defaultlanguage);
+    let l2 = viewerJS.iiif.getValue(m2.label, this.opts.language, this.opts.defaultlanguage);
+    if(compareMode && compareMode.toLocaleLowerCase() == "numeric") {
+        let res = viewerJS.helper.compareNumerical(l1, l2);
+        if(res == 0) {
+            return viewerJS.helper.compareAlphanumerical(l1, l2);
+        } else {
+            return res;
+        }
+    } else {
+        return viewerJS.helper.compareAlphanumerical(l1, l2);
+    }
 }.bind(this)
 
 this.addToMap = function(map, key, value) {

@@ -87,9 +87,9 @@ import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
-import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.model.viewer.collections.DcSortingList;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**

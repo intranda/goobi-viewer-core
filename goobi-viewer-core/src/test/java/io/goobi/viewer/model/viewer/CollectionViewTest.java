@@ -44,7 +44,9 @@ import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.search.CollectionResult;
-import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
+import io.goobi.viewer.model.viewer.collections.CollectionView;
+import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
+import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {

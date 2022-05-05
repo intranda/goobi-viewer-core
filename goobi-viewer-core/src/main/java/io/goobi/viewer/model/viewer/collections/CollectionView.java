@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.viewer;
+package io.goobi.viewer.model.viewer.collections;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -40,6 +39,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
+import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * <p>
@@ -73,7 +73,7 @@ public class CollectionView {
      * </p>
      *
      * @param field a {@link java.lang.String} object.
-     * @param dataProvider a {@link io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider} object.
+     * @param dataProvider a {@link io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider} object.
      */
     public CollectionView(String field, BrowseDataProvider dataProvider) {
         super();
@@ -81,13 +81,12 @@ public class CollectionView {
         this.splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(field);
         this.dataProvider = dataProvider;
         this.displayNumberOfVolumesLevel = DataManager.getInstance().getConfiguration().getCollectionDisplayNumberOfVolumesLevel(field);
-
     }
 
     /**
      * Creates a new CollectionView from an already existing one, keeping only the list of all collections without any display information
      *
-     * @param blueprint a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     * @param blueprint a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      */
     public CollectionView(CollectionView blueprint) {
         this.completeCollectionList =
@@ -260,7 +259,7 @@ public class CollectionView {
         }
     }
 
-    List<HierarchicalBrowseDcElement> getAncestors(String elementName, boolean includeSelf) {
+    public List<HierarchicalBrowseDcElement> getAncestors(String elementName, boolean includeSelf) {
         List<HierarchicalBrowseDcElement> elements = new ArrayList<>();
         HierarchicalBrowseDcElement currentElement = getElement(elementName, completeCollectionList);
         if (currentElement != null) {
@@ -428,7 +427,7 @@ public class CollectionView {
      * Setter for the field <code>topVisibleElement</code>.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
     public void setTopVisibleElement(HierarchicalBrowseDcElement element) {
         this.topVisibleElement = element.getName();
@@ -439,7 +438,7 @@ public class CollectionView {
      * showChildren.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
     public void showChildren(HierarchicalBrowseDcElement element) {
         int elementIndex = visibleCollectionList.indexOf(element);
@@ -455,7 +454,7 @@ public class CollectionView {
      * hideChildren.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
     public void hideChildren(HierarchicalBrowseDcElement element) {
         int elementIndex = visibleCollectionList.indexOf(element);
@@ -471,7 +470,7 @@ public class CollectionView {
      * toggleChildren.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @return a {@link java.lang.String} object.
      */
     public String toggleChildren(HierarchicalBrowseDcElement element) {
@@ -658,7 +657,7 @@ public class CollectionView {
     /**
      * Sets all descendents of this element to visible
      *
-     * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
     public void expandAll(HierarchicalBrowseDcElement element) {
         expandAll(element, -1);
@@ -668,7 +667,7 @@ public class CollectionView {
      * Sets all descendents of this element to visible, but not beyond level 'depth'
      *
      * @param depth a int.
-     * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
     public void expandAll(HierarchicalBrowseDcElement element, int depth) {
         if (depth < 0 || element.getLevel() < depth) {
@@ -718,7 +717,7 @@ public class CollectionView {
      * expand.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
@@ -797,7 +796,7 @@ public class CollectionView {
      * isTopVisibleElement.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @return a boolean.
      */
     public boolean isTopVisibleElement(HierarchicalBrowseDcElement element) {
@@ -928,7 +927,7 @@ public class CollectionView {
      * loadCollection.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @return a {@link java.lang.String} object.
      */
     public String loadCollection(HierarchicalBrowseDcElement element) {
@@ -944,7 +943,7 @@ public class CollectionView {
      * getCollectionUrl.
      * </p>
      *
-     * @param collection a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @return a {@link java.lang.String} object.
      */
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
@@ -956,7 +955,7 @@ public class CollectionView {
      * getCollectionUrl.
      * </p>
      *
-     * @param collection a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @should return identifier resolver url if single record and pi known
@@ -1059,7 +1058,7 @@ public class CollectionView {
     }
 
     /**
-     * Set the {@link io.goobi.viewer.model.viewer.BrowseElementInfo} of the {@link io.goobi.viewer.model.viewer.BrowseDcElement} with the given name
+     * Set the {@link io.goobi.viewer.model.viewer.collections.BrowseElementInfo} of the {@link io.goobi.viewer.model.viewer.collections.BrowseDcElement} with the given name
      * to the given info object
      *
      * @param name The collection name
@@ -1077,7 +1076,7 @@ public class CollectionView {
 
     /**
      * Remove all custom collection info from the browse element with the given name. The element will get a new
-     * {@link io.goobi.viewer.model.viewer.SimpleBrowseElementInfo}
+     * {@link io.goobi.viewer.model.viewer.collections.SimpleBrowseElementInfo}
      *
      * @param name The collection name
      */
