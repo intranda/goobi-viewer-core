@@ -45,8 +45,7 @@
     </suppress>
 
 
-    <!-- ignore weld-servlet reports, as they are for bootstrap, probe.js,  or jquery versions we don't use -->
-    <!-- keep only relevant reports -->
+    <!-- ignore weld-servlet reports that are for bootstrap, probe.js, moment.js or jquery versions we don't use -->
     <suppress>
        <notes><![CDATA[
        file name: weld-servlet-shaded-3.1.9.Final.jar: probe.js
@@ -64,7 +63,11 @@
        <cve>CVE-2020-11022</cve>
        <cve>CVE-2020-11023</cve>
        <cve>CVE-2022-24785</cve>
+       <vulnerabilityName>Regular Expression Denial of Service (ReDoS)</vulnerabilityName>
+       <vulnerabilityName>reDOS - regular expression denial of service</vulnerabilityName>
     </suppress>
+
+
 
 
     <!-- ignore javax.faces-2.3.9.jar, all known reports are for other products we don't use, not for the jar itself -->
