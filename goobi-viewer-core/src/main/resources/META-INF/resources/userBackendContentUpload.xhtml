@@ -19,10 +19,12 @@
 
     <ui:define name="content">
         <ui:fragment rendered="#{userBean.loggedIn and configurationBean.contentUploadEnabled}">
-		    <div id="userContentUploadWrap" class="page-wrapp">
+		    <div id="userContentUploadWrap" class="user-content-upload page-wrapp">
 				<h1>#{msg.user__upload_content}</h1>
+				
+				<p>#{msg.user__upload_content_info}</p>
 
-				<div id="userContentUpload" class="user-comments">
+				<div id="userContentUpload" class="user-content-upload__table-wrapper">
 					<h:form id="userUploadJobsForm" prependId="false">
 
 							<div class="admin__table-tools flex-wrap">
@@ -32,44 +34,39 @@
 								</div>
 							</div>
 
+							<h2>#{msg.viewOverview}</h2>
 
 							<!-- ALL USER UPLOAD JOBS TABLE -->
-							<div id="userUploadJobsTable" class="user-comments__table" role="grid" aria-label="#{msg.overview}">
+							<div id="userUploadJobsTable" class="user-content-upload__table" role="grid" aria-label="#{msg.overview}">
 
 								<!-- TITLE ROW -->
-								<div class="user-comments__table-title" role="row">
+								<div class="user-content-upload__table-title" role="row">
 								
                                     <!-- DATE COL -->
-                                    <div class="user-comments__table-title-date" role="presentation">
-                                        <viewerComponent:sortingArrow filterType="dateCreated"
-                                            colHeading="#{msg.date}"
-                                            list="#{uploadBean.lazyModelUploadJobs}" />
+                                    <div class="user-content-upload__table-title-date" role="presentation">
+										<span class="admin__table-sorting__heading">#{msg.date}</span>  
                                     </div>
 								
 									<!-- TARGET COL -->
-									<div class="user-comments__table-title-target" role="presentation">
-										<viewerComponent:sortingArrow filterType="targetPI_targetPageOrder"
-											colHeading="#{msg.title}"
-											list="#{uploadBean.lazyModelUploadJobs}" />
+									<div class="user-content-upload__table-title-target" role="presentation">
+										<span class="admin__table-sorting__heading">#{msg.title}</span> 
 									</div>
 
 									<!-- TEXT COL -->
-									<div class="user-comments__table-title-comment" role="presentation">
-										<viewerComponent:sortingArrow filterType="body"
-											colHeading="#{msg.status}"
-											list="#{uploadBean.lazyModelUploadJobs}" />
+									<div class="user-content-upload__table-title-status" role="presentation">
+										<span class="admin__table-sorting__heading">#{msg.status}</span> 
 									</div>
 
 
 								</div>
 
-								<div class="user-comments__table-body" role="presentation">
+								<div class="user-content-upload__table-body" role="presentation">
 
 									<!-- INDIVIDUAL JOB ROWS -->
 									<ui:repeat var="job" value="#{uploadBean.lazyModelUploadJobs.paginatorList}">
-										<div class="user-comments__table-entry" role="row">
+										<div class="user-content-upload__table-entry" role="row">
                                             <!-- DATE -->
-                                            <div class="user-comments__table-entry-date" role="cell">
+                                            <div class="user-content-upload__table-entry-date" role="cell">
                                                 <h:outputText value="#{job.dateCreated}">
                                                     <f:converter converterId="localDateTimeConverter" />
                                                     <f:attribute name="pattern"
@@ -77,20 +74,21 @@
                                                 </h:outputText>
                                             </div>
 											<!-- TITLE -->
-											<div class="user-comments__table-entry-label" role="cell">
+											<div class="user-content-upload__table-entry-label" role="cell">
 												<h:outputText value="#{job.title}" />	
 											</div>
 
 											<!-- STATUS -->
-											<div class="user-comments__table-entry-text" role="cell">
+											<div class="user-content-upload__table-entry-status" role="cell">
 												<ui:fragment rendered="#{job.status eq 'WAITING'}">
-												    TODO (W)
+												    <i class="fa fa-hourglass-start" aria-label="#{msg.waiting}"></i>
 												</ui:fragment>
                                                 <ui:fragment rendered="#{job.status eq 'READY'}">
-                                                    TODO (V)
+                                                    <i class="fa fa-check" aria-label="#{msg.ready}"></i>
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{job.status eq 'ERROR'}">
-                                                    TODO (X)
+                                                    <i class="fa fa-times" aria-label="#{msg.error}"></i>
+
                                                 </ui:fragment>
 											</div>
 										</div>
@@ -108,16 +106,16 @@
 
 	<ui:define name="sidebar">
 	    <ui:fragment rendered="#{userBean.loggedIn and configurationBean.contentUploadEnabled}">
-            <div class="admin__content-side -sticky">
-                <div class="admin__default-block">
-                    <div id="widgetSidebar" class="widget">
-                            <h2>#{msg.user__upload_content__sidebar_label}</h2>
-                            <h:outputText value="#{msg.user__upload_content__sidebar_desc}" />
-                            <!-- TODO Call #{uploadBean.newUploadJobAction} when opening modal -->
-                            <button class="btn btn--icon" data-toggle="modal" data-target="#contentUploadModal">#{msg.user__upload_content}</button>
-                    </div>
-                </div>
-            </div>
+                 <div id="widgetSidebar" class="widget widget-user-content-upload">
+                 	<h2>#{msg.user__upload_content__sidebar_label}</h2>
+					<div class="widget__body">                        
+                        <h:outputText value="#{msg.user__upload_content__sidebar_desc}" />
+                        <!-- TODO Call #{uploadBean.newUploadJobAction} when opening modal -->
+                        <div class="d-flex justify-content-center mt-3">
+                        	<button class="btn btn--full" data-toggle="modal" data-target="#contentUploadModal">#{msg.user__upload_content}</button>
+                 		</div>
+                 	</div>
+                 </div>
         </ui:fragment>
 	</ui:define>
 	

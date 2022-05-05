@@ -14,7 +14,7 @@
     <composite:implementation>
 
 		<!-- Modal -->
-		<div class="modal fade view-contentUploadModal show" id="contentUploadModal" tabindex="-1" role="dialog" aria-label="#msg.contentUploadTitle" aria-hidden="true">
+		<div class="modal fade content-upload-modal show" id="contentUploadModal" tabindex="-1" role="dialog" aria-label="#msg.contentUploadTitle" aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -30,52 +30,52 @@
 							<h:outputText value="#{msg.user__upload_content_modal_desc}" />
 						</p>
 
-						<h:form id="contentUploadModal__contentUploadForm" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
-							<div id="contentUploadModal__contentUpload" class="contentUploadModal">
+						<h:form id="content-upload-modal__contentUploadForm" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
+							<div id="content-upload-modal__contentUpload" class="contentUploadModal">
 
 								<!-- TITLE -->
 								<div class="form-group form-row">
-									<label id="contentUploadModal__labelUploadJobTitle" for="contentUploadModal__uploadJobTitle"
+									<label id="content-upload-modal__labelUploadJobTitle" for="content-upload-modal__uploadJobTitle"
 										class="col-lg-3 control-label">
-										<span class="contentUploadModal__label-span">#{msg.title}:</span>
-										<span class="contentUploadModal__label-required-field">(#{msg.form__required_field})</span>
+										<span class="content-upload-modal__label-span">#{msg.title}:</span>
+										<span class="content-upload-modal__label-required-field">(#{msg.form__required_field})</span>
 									</label>
 									
 									<div class="col-12 col-lg-9">
-										<h:inputText id="contentUploadModal__uploadJobTitle" styleClass="form-control"
+										<h:inputText id="content-upload-modal__uploadJobTitle" styleClass="form-control"
 											value="#{uploadBean.currentUploadJob.title}" required="true"
 											requiredMessage="#{msg.errFeedbackNameRequired}"
 											aria-labelledby="labelUploadJobTitle" pt:data-require-input-text="contentUploadInput">
 											<f:passThroughAttribute name="aria-labelledby"
-												value="contentUploadModal__labelUploadJobTitle" />
+												value="content-upload-modal__labelUploadJobTitle" />
 										</h:inputText>
 									</div>
 								</div>
 
                                 <!-- DESCRIPTION -->
                                 <div class="form-group form-row">
-                                    <label id="contentUploadModal__labelUploadJobDescription" for="contentUploadModal__uploadJobDescription"
+                                    <label id="content-upload-modal__labelUploadJobDescription" for="content-upload-modal__uploadJobDescription"
                                         class="col-lg-3 control-label">
-                                        <span class="contentUploadModal__label-span">#{msg.description}:</span>
+                                        <span class="content-upload-modal__label-span">#{msg.description}:</span>
                                     </label>
                                     
                                     <div class="col-12 col-lg-9">
-                                        <h:inputTextarea id="contentUploadModal__uploadJobDescription"
+                                        <h:inputTextarea id="content-upload-modal__uploadJobDescription"
                                             styleClass="form-control" value="#{uploadBean.currentUploadJob.description}">
                                             <f:passThroughAttribute name="aria-labelledby"
-                                                value="contentUploadModal__labelUploadJobDescription" />
+                                                value="content-upload-modal__labelUploadJobDescription" />
                                         </h:inputTextarea>
                                     </div>
                                 </div>
                                 
                                 <!-- FILES -->
                                 <div class="form-group form-row">
-                                    <label id="contentUploadModal__labelUploadJobFiles" for="contentUploadModal__uploadJobFiles"
+                                    <label id="content-upload-modal__labelUploadJobFiles" for="content-upload-modal__uploadJobFiles"
                                         class="col-lg-3 control-label">
-                                        <span class="contentUploadModal__label-span">#{msg.files}:</span>
+                                        <span class="content-upload-modal__label-span">#{msg.files}:</span>
                                     </label>
                                     
-                                    <div class="col-12 col-lg-9">
+                                    <div class="col-12 col-lg-9 content-upload-modal__file-upload-button">
                                         <o:inputFile value="#{uploadBean.currentUploadJob.files}" multiple="true">
 <!--                                             <f:ajax listener="#{uploadBean.uploadFiles}" /> -->
                                         </o:inputFile>
@@ -86,10 +86,10 @@
 								<!-- E-MAIL -->
 								<h:panelGroup layout="block"
 									styleClass="form-group form-row" id="emailGroup">
-									<label id="contentUploadModal__labelEmail" for="contentUploadModal__contentUploadEmail"
+									<label id="content-upload-modal__labelEmail" for="content-upload-modal__contentUploadEmail"
 										class="col-lg-3 control-label">
-										<span class="contentUploadModal__label-span">#{msg.email}:</span>
-										<span class="contentUploadModal__label-required-field">(#{msg.form__required_field})</span>
+										<span class="content-upload-modal__label-span">#{msg.email}:</span>
+										<span class="content-upload-modal__label-required-field">(#{msg.form__required_field})</span>
 									</label>
 									<div class="cms-module__option-control col-12 col-lg-9">
 										<div class="cms-module__option-message">
@@ -103,12 +103,12 @@
 													class="fa fa-exclamation" aria-hidden="true"></i>
 											</div>
 										</div>
-										<h:inputText id="contentUploadModal__email" label="contentUploadEmail"
+										<h:inputText id="content-upload-modal__email" label="contentUploadEmail"
 											immediate="true" required="true" pt:data-require-input-text="contentUploadInput"
 											value="#{uploadBean.currentUploadJob.email}" styleClass="form-control"
 											disabled="true">
 											<f:passThroughAttribute name="aria-labelledby"
-												value="contentUploadModal__labelUploadJobEmail" />
+												value="content-upload-modal__labelUploadJobEmail" />
 											<f:validator validatorId="emailValidator" for="contentUploadEmail" />
 											<f:ajax render="emailGroup" />
 										</h:inputText>
@@ -117,18 +117,18 @@
 							</div>
 								<!-- REQUIRED CHECKBOX FOR USAGE OF PERSONAL DATA OR ANYTHING ELSE -->
 								<!-- TO DO: CONFIG SWITCH FOR THIS RENDERED CONDITION CHECKBOX, VALUE + ADDITIONAL TEXT WHICH IS SEND BY FORM(?) -->
-									<div class="contentUploadModal__required-checkbox-wrapper">
+									<div class="content-upload-modal__required-checkbox-wrapper">
 									  
 									  	<div class="form-row">
-										  	<p class="col-12 contentUploadModal__accept-terms-text">#{msg.user__upload_content_modal_consent_desc}</p>
+										  	<p class="col-12 content-upload-modal__accept-terms-text">#{msg.user__upload_content_modal_consent_desc}</p>
 										  
 										  
-						  					<div id="sendContactFormAcceptTerms" class="col-12 col-sm-3 contentUploadModal__accept-terms-label">
+						  					<div id="sendContactFormAcceptTerms" class="col-12 col-sm-3 content-upload-modal__accept-terms-label">
 												<label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
 											</div>	
 	                                       
 	                                       
-	                                        <div class="col-12 col-md-9 mt-3 mt-sm-0 contentUploadModal__accept-terms-radios admin__radio-switch">
+	                                        <div class="col-12 col-md-9 mt-3 mt-sm-0 content-upload-modal__accept-terms-radios admin__radio-switch">
 	                                            <h:selectOneRadio group="requiredUploadJobTerms" value="#{uploadBean.currentUploadJob.consent}"
 	                                                immediate="true" checked="false"
 	                                                pt:data-require-input-checkbox="uncheckedChecker">
@@ -147,7 +147,7 @@
 									</div>
 
 							<!-- ACTION -->
-							<div class="form-group form-row contentUploadModal__action">
+							<div class="form-group form-row content-upload-modal__action">
 								<div class="col-sm-12 d-flex justify-content-end">
 									<h:commandButton styleClass="btn btn--full"
 										value="#{msg.submit}" pt:data-require-input="contentUploadInput"
