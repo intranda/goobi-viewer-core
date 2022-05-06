@@ -16,12 +16,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.Part;
 
-import org.omnifaces.util.Servlets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,6 +102,7 @@ public class UploadBean implements Serializable {
 
                 @Override
                 public void resetTotalNumberOfRecords() {
+                    //
                 }
             });
             lazyModelUploadJobs.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -151,6 +145,11 @@ public class UploadBean implements Serializable {
         }
     }
 
+    /**
+     * Creates new Goobi workflow process via REST and uploads the images.
+     * 
+     * @return Navigation target
+     */
     public String createProcessAction() {
         logger.trace("createProcessAction");
         if (currentUploadJob == null) {
@@ -160,8 +159,7 @@ public class UploadBean implements Serializable {
         try {
             currentUploadJob.createProcess();
             currentUploadJob.uploadFiles();
-            setCurrentUploadJob(null);
-            Messages.info("TODO");
+            Messages.info("user__upload_content_success_msg");
         } catch (UploadException e) {
             logger.error(e.getMessage());
             Messages.error(e.getMessage());
@@ -171,6 +169,9 @@ public class UploadBean implements Serializable {
         } catch (HTTPException e) {
             logger.error(e.getMessage());
             Messages.error(e.getMessage());
+        } finally {
+            // Any outcome should reset currentUploadJob, otherwise a new PI won't be generated
+            setCurrentUploadJob(null);
         }
 
         return "";
