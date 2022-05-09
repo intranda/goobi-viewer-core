@@ -36,6 +36,7 @@ import io.goobi.viewer.solr.SolrTools;
  * Servlet for deleting cache elements. Should not be accessible to unauthorized persons. This is a temporary solutions which will probably be
  * replaced with some kind of GUI later.
  */
+@Deprecated
 public class ToolServlet extends HttpServlet implements Serializable {
 
     private static final long serialVersionUID = -2888790425901398519L;
