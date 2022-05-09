@@ -17,69 +17,13 @@ package io.goobi.viewer.model.job.upload;
 
 import java.util.Date;
 
-import org.jdom2.Document;
-import org.jdom2.Element;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.job.JobStatus;
 
-public class UploadJobTest extends AbstractTest {
-
-    /**
-     * @see UploadJob#buildXmlBody()
-     * @verifies create xml document correctly
-     */
-    @Test
-    public void buildXmlBody_shouldCreateXmlDocumentCorrectly() throws Exception {
-        UploadJob uj = new UploadJob();
-        uj.setEmail("a@b.com");
-        uj.setPi("PPN123");
-        uj.setTitle("Lorem ipsum");
-        uj.setDescription("Lorem ipsum dolor sit amet...");
-
-        Document doc = uj.buildXmlBody();
-        Assert.assertNotNull(doc);
-        Assert.assertNotNull(doc.getRootElement());
-        Assert.assertEquals("PPN123", doc.getRootElement().getChildText("identifier"));
-        Assert.assertEquals("manuscript", doc.getRootElement().getChildText("docstruct"));
-        Assert.assertEquals("loreip_PPN123", doc.getRootElement().getChildText("processtitle"));
-
-        {
-            Element eleMetadataList = doc.getRootElement().getChild("metadataList");
-            Assert.assertNotNull(eleMetadataList);
-            Assert.assertEquals(2, eleMetadataList.getChildren("metadata").size());
-            for (Element eleMetadata : eleMetadataList.getChildren("metadata")) {
-                switch (eleMetadata.getAttributeValue("name")) {
-                    case "Description":
-                        Assert.assertEquals("Lorem ipsum dolor sit amet...", eleMetadata.getText());
-                        break;
-                    case "TitleDocMain":
-                        Assert.assertEquals("Lorem ipsum", eleMetadata.getText());
-                        break;
-                    default:
-                        Assert.fail("Unknown metadata name: " + eleMetadata.getAttributeValue("name"));
-                        break;
-                }
-            }
-        }
-        {
-            Element elePropertyList = doc.getRootElement().getChild("propertyList");
-            Assert.assertNotNull(elePropertyList);
-            Assert.assertEquals(1, elePropertyList.getChildren("property").size());
-            for (Element eleProperty : elePropertyList.getChildren("metadata")) {
-                switch (eleProperty.getAttributeValue("name")) {
-                    case "email":
-                        Assert.assertEquals("a@b.com", eleProperty.getText());
-                        break;
-                    default:
-                        Assert.fail("Unknown property name: " + eleProperty.getAttributeValue("name"));
-                        break;
-                }
-            }
-        }
-    }
+public class UploadJobTest extends AbstractSolrEnabledTest {
 
     /**
      * @see UploadJob#buildProcessCreationRequest()
@@ -137,35 +81,50 @@ public class UploadJobTest extends AbstractTest {
 
     /**
      * @see UploadJob#updateStatus(ProcessStatusResponse)
-     * @verifies set status to ready if process completed
+     * @verifies set status to ready if record in index
      */
     @Test
-    public void updateStatus_shouldSetStatusToReadyIfProcessCompleted() throws Exception {
+    public void updateStatus_shouldSetStatusToReadyIfRecordInIndex() throws Exception {
         UploadJob uj = new UploadJob();
+        uj.setPi(PI_KLEIUNIV);
         ProcessStatusResponse psr = new ProcessStatusResponse();
         psr.setId(1);
         psr.setCreationDate(new Date());
-        psr.setProcessCompleted(true);
         uj.updateStatus(psr);
         Assert.assertEquals(JobStatus.READY, uj.getStatus());
     }
 
-    /**
-     * @see UploadJob#updateStatus(ProcessStatusResponse)
-     * @verifies set status to ready if export step done
-     */
-    @Test
-    public void updateStatus_shouldSetStatusToReadyIfExportStepDone() throws Exception {
-        UploadJob uj = new UploadJob();
-        ProcessStatusResponse psr = new ProcessStatusResponse();
-        psr.setId(1);
-        psr.setCreationDate(new Date());
-        psr.setProcessCompleted(false);
-        StepResponse sr = new StepResponse();
-        sr.setTitle("Export to viewer");
-        sr.setStatus("Completed");
-        psr.getStep().add(sr);
-        uj.updateStatus(psr);
-        Assert.assertEquals(JobStatus.READY, uj.getStatus());
-    }
+    //    /**
+    //     * @see UploadJob#updateStatus(ProcessStatusResponse)
+    //     * @verifies set status to ready if process completed
+    //     */
+    //    @Test
+    //    public void updateStatus_shouldSetStatusToReadyIfProcessCompleted() throws Exception {
+    //        UploadJob uj = new UploadJob();
+    //        ProcessStatusResponse psr = new ProcessStatusResponse();
+    //        psr.setId(1);
+    //        psr.setCreationDate(new Date());
+    //        psr.setProcessCompleted(true);
+    //        uj.updateStatus(psr);
+    //        Assert.assertEquals(JobStatus.READY, uj.getStatus());
+    //    }
+
+    //    /**
+    //     * @see UploadJob#updateStatus(ProcessStatusResponse)
+    //     * @verifies set status to ready if export step done
+    //     */
+    //    @Test
+    //    public void updateStatus_shouldSetStatusToReadyIfExportStepDone() throws Exception {
+    //        UploadJob uj = new UploadJob();
+    //        ProcessStatusResponse psr = new ProcessStatusResponse();
+    //        psr.setId(1);
+    //        psr.setCreationDate(new Date());
+    //        psr.setProcessCompleted(false);
+    //        StepResponse sr = new StepResponse();
+    //        sr.setTitle("Export to viewer");
+    //        sr.setStatus("Completed");
+    //        psr.getStep().add(sr);
+    //        uj.updateStatus(psr);
+    //        Assert.assertEquals(JobStatus.READY, uj.getStatus());
+    //    }
 }

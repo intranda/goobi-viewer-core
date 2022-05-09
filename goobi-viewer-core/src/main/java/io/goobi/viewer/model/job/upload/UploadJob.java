@@ -57,8 +57,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.glassfish.jersey.client.ClientProperties;
 import org.jboss.weld.exceptions.IllegalArgumentException;
-import org.jdom2.Document;
-import org.jdom2.Element;
 import org.omnifaces.util.Servlets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,9 +71,12 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.UploadException;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.download.AbstractTaskManagerRequest;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
@@ -155,31 +156,6 @@ public class UploadJob implements Serializable {
         } catch (Throwable e) {
             throw new IOException("Error connecting to " + url, e);
         }
-    }
-
-    /**
-     * 
-     * @return {@link Document}
-     * @should create xml document correctly
-     */
-    @Deprecated
-    Document buildXmlBody() {
-        Document doc = new Document();
-        Element root = new Element("record")
-                .addContent(new Element("identifier").setText(getPi()))
-                .addContent(new Element("processtitle").setText(createAtstsl(title, null) + "_" + pi))
-                .addContent(new Element("docstruct").setText(docstruct));
-        doc.setRootElement(root);
-
-        Element eleMetadataList = new Element("metadataList")
-                .addContent(new Element("metadata").setAttribute("name", "TitleDocMain").setText(getTitle()))
-                .addContent(new Element("metadata").setAttribute("name", "Description").setText(getDescription()));
-        root.addContent(eleMetadataList);
-
-        Element propertyList = new Element("propertyList").addContent(new Element("property").setAttribute("name", "email").setText(email));
-        root.addContent(propertyList);
-
-        return doc;
     }
 
     /**
@@ -314,9 +290,11 @@ public class UploadJob implements Serializable {
     }
 
     /**
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      * 
      */
-    public void updateStatus() {
+    public void updateStatus() throws IndexUnreachableException, PresentationException {
         updateStatus(getJobStatus(processId));
         logger.debug("Job {}status: {}", getId(), getStatus());
     }
@@ -363,13 +341,16 @@ public class UploadJob implements Serializable {
      * 
      * @param psr {@link ProcessStatusResponse}
      *            </p>
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      * 
      * @should do nothing if response null
      * @should set status to error if process nonexistent
+     * @should set status to ready if record in index
      * @should set status to ready if process completed
      * @should set status to ready if export step done
      */
-    void updateStatus(ProcessStatusResponse psr) {
+    void updateStatus(ProcessStatusResponse psr) throws IndexUnreachableException, PresentationException {
         if (psr == null) {
             logger.warn("No status response, cannot update status.");
             return;
@@ -380,19 +361,27 @@ public class UploadJob implements Serializable {
             setMessage("Process not found in Goobi workflow.");
             return;
         }
-        if (psr.isProcessCompleted()) {
+        // Process rejected + reason
+
+        // Process exported and in index
+        if (DataManager.getInstance().getSearchIndex().getHitCount("+" + SolrConstants.PI + ":" + pi + " -" + SolrConstants.DATEDELETED + ":*") > 0) {
             setStatus(JobStatus.READY);
             return;
         }
-        for (StepResponse sr : psr.getStep()) {
-            if (sr.getTitle() != null && sr.getTitle().contains("viewer") && "Completed".equals(sr.getStatus())) {
-                setStatus(JobStatus.READY);
-                return;
-            }
-        }
-        if (!JobStatus.WAITING.equals(getStatus())) {
-            setStatus(JobStatus.WAITING);
-        }
+        //        if (psr.isProcessCompleted()) {
+        //            setStatus(JobStatus.READY);
+        //            return;
+        //        }
+        //        for (StepResponse sr : psr.getStep()) {
+        //            if (sr.getTitle() != null && sr.getTitle().contains("viewer") && "Completed".equals(sr.getStatus())) {
+        //                setStatus(JobStatus.READY);
+        //                return;
+        //            }
+        //        }
+        //        if (!JobStatus.WAITING.equals(getStatus())) {
+        setStatus(JobStatus.WAITING);
+        //    }
+
     }
 
     /**

@@ -117,9 +117,9 @@ public class TaskManager {
     private static int getActiveThreads(ExecutorService pool) {
         if (pool instanceof ThreadPoolExecutor) {
             return ((ThreadPoolExecutor) pool).getActiveCount();
-        } else {
-            return -1;
         }
+        
+        return -1;
     }
 
     public List<Task> getTasks(TaskType type) {
@@ -183,6 +183,10 @@ public class TaskManager {
                         }
                         logger.debug("{} upload jobs checked.", count);
                     } catch (DAOException e) {
+                        job.setError(e.getMessage());
+                    } catch (IndexUnreachableException e) {
+                        job.setError(e.getMessage());
+                    } catch (PresentationException e) {
                         job.setError(e.getMessage());
                     }
                 };
