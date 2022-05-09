@@ -97,7 +97,7 @@ var viewerJS = ( function ( viewer ) {
 	}
 
 
-    console.log("viewer ", viewer);
+    // console.log("viewer ", viewer);
 	return viewer;
 
 } )( viewerJS || {}, jQuery );
