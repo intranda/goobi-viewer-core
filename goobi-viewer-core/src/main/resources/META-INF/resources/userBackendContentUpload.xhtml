@@ -87,8 +87,7 @@
                                                     <i class="fa fa-check" aria-label="#{msg.ready}"></i>
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{job.status eq 'ERROR'}">
-                                                    <i class="fa fa-times" aria-label="#{msg.error}"></i>
-
+                                                    <i class="fa fa-times" aria-label="#{msg.error}" title="#{job.message}" data-placement="bottom"></i>
                                                 </ui:fragment>
 											</div>
 										</div>
