@@ -19,16 +19,12 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UINamingContainer;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ValueChangeEvent;
-
-import com.sun.faces.facelets.el.ContextualCompositeMethodExpression;
 
 /**
  * @author florian
