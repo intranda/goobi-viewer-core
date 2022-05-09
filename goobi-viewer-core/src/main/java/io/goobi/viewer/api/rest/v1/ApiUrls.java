@@ -36,12 +36,14 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String INDEX = "/index";
     public static final String INDEX_FIELDS = "/fields";
     public static final String INDEX_QUERY = "/query";
+    public static final String INDEX_SCHEMA_VERSION = "/schemaversion";
     public static final String INDEX_STREAM = "/stream";
     public static final String INDEX_STATISTICS = "/statistics";
     public static final String INDEX_SPATIAL_HEATMAP = "/spatial/heatmap/{solrField}";
     public static final String INDEX_SPATIAL_SEARCH = "/spatial/search/{solrField}";
     
     public static final String MONITORING = "/monitoring";
+    public static final String MONITORING_CORE_VERSION = "/version/core";
 
     public static final String RECORDS_RSS = "/records/rss";
     public static final String RECORDS_RSS_JSON = "/channel.json";

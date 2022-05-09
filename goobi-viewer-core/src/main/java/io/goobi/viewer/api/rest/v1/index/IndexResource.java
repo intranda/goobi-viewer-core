@@ -15,7 +15,13 @@
  */
 package io.goobi.viewer.api.rest.v1.index;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_FIELDS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_QUERY;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_SPATIAL_HEATMAP;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_SPATIAL_SEARCH;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STATISTICS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STREAM;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +32,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,14 +70,13 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
 import io.goobi.viewer.api.rest.model.index.SolrFieldInfo;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.SearchBean;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMapFeature;
@@ -101,6 +105,20 @@ public class IndexResource {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
+
+    @GET
+    @Path(ApiUrls.INDEX_SCHEMA_VERSION)
+    @Produces({ MediaType.TEXT_PLAIN })
+    @Operation(tags = { "index" }, summary = "Solr schema version")
+    public String getSchemaVersion() {
+        String[] result = SolrTools.checkSolrSchemaName();
+        int status = Integer.valueOf(result[0]);
+        if (status == 200) {
+            return "OK";
+        }
+        
+        return result[1];
+    }
 
     /**
      * 
@@ -205,7 +223,6 @@ public class IndexResource {
             throw new IllegalRequestException(e.getMessage());
         }
     }
-    
 
     /**
      * 
@@ -251,82 +268,81 @@ public class IndexResource {
 
         return Collections.emptyList();
     }
-    
+
     /**
      * 
      * @return
      * @throws IOException
-     * @throws IndexUnreachableException 
+     * @throws IndexUnreachableException
      */
     @GET
     @Path(INDEX_SPATIAL_HEATMAP)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Returns a heatmap of geospatial search results", tags = { "index" })
     public String getHeatmap(
-            @Parameter(description="SOLR field containing spatial coordinates") 
-            @PathParam("solrField") String solrField,
-            @Parameter(description="Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain the whole world")
-            @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
-            @Parameter(description="Additional query to filter results by")
-            @QueryParam("query") @DefaultValue("*:*") String filterQuery,
-            @Parameter(description="The granularity of each grid cell")
-            @QueryParam("gridLevel") Integer gridLevel
-            ) throws IOException, IndexUnreachableException {
+            @Parameter(description = "SOLR field containing spatial coordinates") @PathParam("solrField") String solrField,
+            @Parameter(
+                    description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
+            @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
+            @Parameter(description = "The granularity of each grid cell") @QueryParam("gridLevel") Integer gridLevel)
+            throws IOException, IndexUnreachableException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
-        
+
         String finalQuery = filterQuery;
-        if(!finalQuery.startsWith("{!join")) {            
-            finalQuery = 
-                    new StringBuilder().append("+(").append(filterQuery).append(") ").append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
+        if (!finalQuery.startsWith("{!join")) {
+            finalQuery =
+                    new StringBuilder().append("+(")
+                            .append(filterQuery)
+                            .append(") ")
+                            .append(SearchHelper.getAllSuffixes(servletRequest, true, true))
+                            .toString();
         } else {
             //search query. Ignore all polygon results or the heatmap will have hits everywhere
-            finalQuery = finalQuery.substring(0, finalQuery.length()-1) + "-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
+            finalQuery = finalQuery.substring(0, finalQuery.length() - 1) + "-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
         }
         logger.debug("q: {}", finalQuery);
-        
+
         String facetQuery = "";
 
         return DataManager.getInstance()
-                        .getSearchIndex().getHeatMap(solrField, wktRegion, finalQuery, facetQuery, gridLevel);
-        
+                .getSearchIndex()
+                .getHeatMap(solrField, wktRegion, finalQuery, facetQuery, gridLevel);
+
     }
-    
+
     @GET
     @Path(INDEX_SPATIAL_SEARCH)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Returns results of a geospatial search as GeoJson objects", tags = { "index" })
     public String getGeoJsonResuls(
-            @Parameter(description="SOLR field containing spatial coordinates") 
-            @PathParam("solrField") String solrField,
-            @Parameter(description="Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain the whole world")
-            @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
-            @Parameter(description="Additional query to filter results by")
-            @QueryParam("query") @DefaultValue("*:*") String filterQuery,
-            @Parameter(description="The SOLR field to be used as label for each feature")
-            @QueryParam("labelField") String labelField
-            ) throws IOException, IndexUnreachableException, PresentationException {
+            @Parameter(description = "SOLR field containing spatial coordinates") @PathParam("solrField") String solrField,
+            @Parameter(
+                    description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
+            @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
+            @Parameter(description = "The SOLR field to be used as label for each feature") @QueryParam("labelField") String labelField)
+            throws IOException, IndexUnreachableException, PresentationException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
-        
+
         String finalQuery = filterQuery;
         List<String> facetQueries = new ArrayList<>();
-        if(!finalQuery.startsWith("{!join")) {  
+        if (!finalQuery.startsWith("{!join")) {
             finalQuery =
                     new StringBuilder()
-                    .append(filterQuery)
-                    .append(" +({wktField}:{wktCoords}) ".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion))
-                    .append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
+                            .append(filterQuery)
+                            .append(" +({wktField}:{wktCoords}) ".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion))
+                            .append(SearchHelper.getAllSuffixes(servletRequest, true, true))
+                            .toString();
             logger.debug("q: {}", finalQuery);
         } else {
             String coordQuery = "{wktField}:{wktCoords}".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion);
             facetQueries.add(coordQuery);
         }
-        
-        
+
         String objects = GeoMap.getFeaturesFromSolrQuery(finalQuery, facetQueries, labelField)
-            .stream()
-            .map(GeoMapFeature::getJsonObject)
-            .map(Object::toString)
-            .collect(Collectors.joining(","));
+                .stream()
+                .map(GeoMapFeature::getJsonObject)
+                .map(Object::toString)
+                .collect(Collectors.joining(","));
         return "[" + objects + "]";
     }
 
@@ -380,7 +396,6 @@ public class IndexResource {
         }
         return jsonArray;
     }
-
 
     /**
      * 

@@ -27,9 +27,11 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.Version;
 import io.goobi.viewer.api.rest.model.MonitoringStatus;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -87,6 +89,14 @@ public class MonitoringResource {
         }
 
         return ret;
+    }
+    
+    @GET
+    @Path(ApiUrls.MONITORING_CORE_VERSION)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Checks and reports the availability of relevant data providing services", tags = { "monitoring" })
+    public String getCoreVersion() {
+        return JsonTools.formatVersionString(Version.asJSON());
     }
 
 }
