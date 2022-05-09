@@ -16,9 +16,11 @@ public class PropertyResponse {
 
     /**
      * @param title the title to set
+     * @return this;
      */
-    public void setTitle(String title) {
+    public PropertyResponse setTitle(String title) {
         this.title = title;
+        return this;
     }
 
     /**
@@ -30,8 +32,10 @@ public class PropertyResponse {
 
     /**
      * @param value the value to set
+     * @return this
      */
-    public void setValue(String value) {
+    public PropertyResponse setValue(String value) {
         this.value = value;
+        return this;
     }
 }

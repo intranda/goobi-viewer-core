@@ -346,6 +346,7 @@ public class UploadJob implements Serializable {
      * 
      * @should do nothing if response null
      * @should set status to error if process nonexistent
+     * @should set status to error of process rejected
      * @should set status to ready if record in index
      * @should set status to ready if process completed
      * @should set status to ready if export step done
@@ -355,19 +356,38 @@ public class UploadJob implements Serializable {
             logger.warn("No status response, cannot update status.");
             return;
         }
+
         // Process no longer exists
         if (psr.getId() == 0 || psr.getCreationDate() == null) {
             setStatus(JobStatus.ERROR);
             setMessage("Process not found in Goobi workflow.");
             return;
         }
+
         // Process rejected + reason
+        String rejected = null;
+        String rejectedReason = null;
+        for (PropertyResponse pr : psr.getProperties()) {
+            if (pr.getTitle() != null) {
+                if (pr.getTitle().equals(DataManager.getInstance().getConfiguration().getContentUploadRejectionPropertyName())) {
+                    rejected = pr.getValue();
+                } else if (pr.getTitle().equals(DataManager.getInstance().getConfiguration().getContentUploadRejectionReasonPropertyName())) {
+                    rejectedReason = pr.getValue();
+                }
+            }
+        }
+        if ("true".equals(rejected)) {
+            setStatus(JobStatus.ERROR);
+            setMessage(rejectedReason);
+            return;
+        }
 
         // Process exported and in index
         if (DataManager.getInstance().getSearchIndex().getHitCount("+" + SolrConstants.PI + ":" + pi + " -" + SolrConstants.DATEDELETED + ":*") > 0) {
             setStatus(JobStatus.READY);
             return;
         }
+
         //        if (psr.isProcessCompleted()) {
         //            setStatus(JobStatus.READY);
         //            return;
@@ -378,10 +398,8 @@ public class UploadJob implements Serializable {
         //                return;
         //            }
         //        }
-        //        if (!JobStatus.WAITING.equals(getStatus())) {
-        setStatus(JobStatus.WAITING);
-        //    }
 
+        setStatus(JobStatus.WAITING);
     }
 
     /**

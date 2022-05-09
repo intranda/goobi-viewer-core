@@ -3210,4 +3210,22 @@ public class ConfigurationTest extends AbstractTest {
     public void getContentUploadTemplateName_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("Sample_workflow", DataManager.getInstance().getConfiguration().getContentUploadTemplateName());
     }
+
+    /**
+     * @see Configuration#getContentUploadRejectionPropertyName()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadRejectionPropertyName_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("uploadRejected", DataManager.getInstance().getConfiguration().getContentUploadRejectionPropertyName());
+    }
+
+    /**
+     * @see Configuration#getContentUploadRejectionReasonPropertyName()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadRejectionReasonPropertyName_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("uploadRejectedInformation", DataManager.getInstance().getConfiguration().getContentUploadRejectionReasonPropertyName());
+    }
 }

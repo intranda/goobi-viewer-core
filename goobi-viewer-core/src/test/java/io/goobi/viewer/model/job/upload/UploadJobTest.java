@@ -21,6 +21,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.job.JobStatus;
 
 public class UploadJobTest extends AbstractSolrEnabledTest {
@@ -77,6 +78,27 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
         uj.updateStatus(psr);
         Assert.assertEquals(JobStatus.ERROR, uj.getStatus());
 
+    }
+
+    /**
+     * @see UploadJob#updateStatus(ProcessStatusResponse)
+     * @verifies set status to error of process rejected
+     */
+    @Test
+    public void updateStatus_shouldSetStatusToErrorOfProcessRejected() throws Exception {
+        UploadJob uj = new UploadJob();
+        ProcessStatusResponse psr = new ProcessStatusResponse();
+        psr.setId(1);
+        psr.setCreationDate(new Date());
+        psr.getProperties()
+                .add(new PropertyResponse().setTitle(DataManager.getInstance().getConfiguration().getContentUploadRejectionPropertyName())
+                        .setValue("true"));
+        psr.getProperties()
+                .add(new PropertyResponse().setTitle(DataManager.getInstance().getConfiguration().getContentUploadRejectionReasonPropertyName())
+                        .setValue("Not good enough"));
+        uj.updateStatus(psr);
+        Assert.assertEquals(JobStatus.ERROR, uj.getStatus());
+        Assert.assertEquals("Not good enough", uj.getMessage());
     }
 
     /**

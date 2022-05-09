@@ -3751,7 +3751,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getStopwordsFilePath() {
         return getLocalString("stopwordsFile");
     }
-    
+
     /**
      * <p>
      * getStopwordsFilePath.
@@ -5249,7 +5249,6 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("maps.coordinateFields.field", Arrays.asList("MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON"));
     }
 
-
     public boolean useHeatmapForCMSMaps() {
         return getLocalBoolean("maps.cms.heatmap[@enabled]", false);
     }
@@ -5273,7 +5272,6 @@ public final class Configuration extends AbstractConfiguration {
         GeoMapMarker marker = readGeoMapMarker(config);
         return marker;
     }
-
 
     public boolean includeCoordinateFieldsFromMetadataDocs() {
         return getLocalBoolean("maps.coordinateFields[@includeMetadataDocs]", false);
@@ -5498,13 +5496,31 @@ public final class Configuration extends AbstractConfiguration {
     public String getContentUploadDocstruct() {
         return getLocalString("upload.docstruct", "monograph");
     }
-    
+
     /**
      * 
      * @return
      * @should return correct value
      */
     public String getContentUploadTemplateName() {
-        return getLocalString("upload.templateName"); 
+        return getLocalString("upload.templateName");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getContentUploadRejectionPropertyName() {
+        return getLocalString("upload.rejectionPropertyName");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getContentUploadRejectionReasonPropertyName() {
+        return getLocalString("upload.rejectionReasonPropertyName");
     }
 }

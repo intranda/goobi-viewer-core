@@ -1164,6 +1164,10 @@
         <docstruct>manuscript</docstruct>
         <!-- templateName: Goobi workflow template name for process creation (required). -->
         <templateName>Sample_workflow</templateName>
+        <!-- rejectionPropertyName: Goobi worklow process property name indicating whether the uploaded process was rejected. -->
+        <rejectionPropertyName>uploadRejected</rejectionPropertyName>
+        <!-- rejectionReasonPropertyName: Goobi worklow process property name containing the reason for rejection. -->
+        <rejectionReasonPropertyName>uploadRejectedInformation</rejectionReasonPropertyName>
     </upload>
 
 	<!-- Transkribus settings (enabled: default false) -->
