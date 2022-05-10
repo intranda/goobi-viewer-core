@@ -2798,10 +2798,10 @@ public final class Configuration extends AbstractConfiguration {
      * getInitialFacetElementNumber.
      * </p>
      *
+     * @param field a {@link java.lang.String} object.
+     * @return Number of initial facet values
      * @should return correct value
      * @should return default value if field not found
-     * @param field a {@link java.lang.String} object.
-     * @return a int.
      */
     public int getInitialFacetElementNumber(String facetField) {
         if (StringUtils.isBlank(facetField)) {
@@ -2809,7 +2809,7 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         String value = getPropertyForFacetField(facetField, "[@initialElementNumber]", "-1");
-        return Integer.valueOf(value);
+        return Integer.valueOf(value.trim());
     }
 
     /**
@@ -5216,7 +5216,6 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("maps.coordinateFields.field", Arrays.asList("MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON"));
     }
 
-
     public boolean useHeatmapForCMSMaps() {
         return getLocalBoolean("maps.cms.heatmap[@enabled]", false);
     }
@@ -5240,7 +5239,6 @@ public final class Configuration extends AbstractConfiguration {
         GeoMapMarker marker = readGeoMapMarker(config);
         return marker;
     }
-
 
     public boolean includeCoordinateFieldsFromMetadataDocs() {
         return getLocalBoolean("maps.coordinateFields[@includeMetadataDocs]", false);
