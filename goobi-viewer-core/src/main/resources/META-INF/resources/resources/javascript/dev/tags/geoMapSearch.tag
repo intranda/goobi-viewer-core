@@ -303,10 +303,13 @@ initHitsLayer(map) {
 
 initHeatmap(hitsLayer) {
 	let heatmapQuery = this.opts.heatmap.mainQuery;
+	let heatmapFacetQuery = this.opts.heatmap.facetQuery;
+	
 	let heatmap = L.solrHeatmap(this.opts.heatmap.heatmapUrl, this.opts.heatmap.featureUrl, hitsLayer, {
 		field: "WKT_COORDS",
 		type: "clusters",
 		filterQuery: heatmapQuery,
+		facetQuery: heatmapFacetQuery,
 		labelField: this.opts.heatmap.labelField,
 		queryAdapter: "goobiViewer"    
 	});

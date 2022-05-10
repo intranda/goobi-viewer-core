@@ -202,7 +202,7 @@
 		<view-id value="/searchGeoMap.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
-		<action onPostback="false">#{searchBean.resetSearchParameters(true)}</action>
+		<action onPostback="false">#{searchBean.reset()}</action>
 	</url-mapping>
 
 	<url-mapping id="searchList">

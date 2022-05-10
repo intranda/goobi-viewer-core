@@ -2779,7 +2779,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public String getGeoFacetFields() {
-        return getLocalString("search.facets.geoField");
+        return getLocalString("search.facets.geoField", null);
     }
 
     public String getGeoFacetFieldPredicate() {
