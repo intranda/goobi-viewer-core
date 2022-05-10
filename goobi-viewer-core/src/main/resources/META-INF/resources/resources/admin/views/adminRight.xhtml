@@ -72,9 +72,7 @@
                                              immediate="true"
                                              converter="userConverter"
                                              disabled="#{adminBean.currentLicense.id != null}">
-
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
-
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
                                              <f:ajax render="licenseTypeGroup infoGroup" />
@@ -86,9 +84,7 @@
                                              immediate="true"
                                              converter="userGroupConverter"
                                              disabled="#{adminBean.currentLicense.id != null}">
-
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
-
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItems value="#{adminBean.allUserGroups}" />
                                              <f:ajax render="licenseTypeGroup infoGroup" />
@@ -100,9 +96,7 @@
                                              immediate="true"
                                              converter="ipRangeConverter"
                                              disabled="#{adminBean.currentLicense.id != null}">
-
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
-
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItems var="ipRange" value="#{adminBean.allIpRanges}" itemLabel="#{ipRange.name} (#{ipRange.subnetMask})" />
                                              <f:ajax render="licenseTypeGroup infoGroup" />
@@ -123,9 +117,7 @@
                                              immediate="true"
                                              converter="iLicenseTypeConverter"
                                              disabled="#{adminBean.currentLicense.id != null}">
-                                             <f:converter converterId="iLicenseTypeConverter"   />
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_license_type_select_label}" />
-
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItems var="item" value="#{adminBean.groupedLicenseTypeSelectItems}"
                                                     itemLabel="#{msg[item.value.name]}" itemValue="#{item.value}"/>
