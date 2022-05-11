@@ -52,7 +52,8 @@ public class ILicenseTypeConverter implements Converter<ILicenseType> {
                 long id = Long.valueOf(value.substring(Campaign.class.getSimpleName().length()));
                 return DataManager.getInstance().getDao().getCampaign(id);
             }
-            throw new IllegalArgumentException("'" + value + "' is not a valid value.");
+            //            throw new IllegalArgumentException("'" + value + "' is not a valid value.");
+            return null;
         } catch (NumberFormatException e) {
             logger.error(e.getMessage());
             return null;
