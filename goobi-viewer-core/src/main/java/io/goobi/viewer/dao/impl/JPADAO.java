@@ -4798,6 +4798,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
+     * 
      * @should sort correctly
      * @should throw IllegalArgumentException if sortField unknown
      */
@@ -6097,8 +6098,8 @@ public class JPADAO implements IDAO {
         try {
             Query query =
                     em.createNativeQuery(
-                            "SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id = :userId")
-                            .setParameter("userId", user.getId());
+                            "SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id = ?1")
+                            .setParameter(1, user.getId());
             return (Long) query.getSingleResult();
         } finally {
             close(em);
