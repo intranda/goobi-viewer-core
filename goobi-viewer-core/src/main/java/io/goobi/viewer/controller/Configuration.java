@@ -2783,7 +2783,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public String getGeoFacetFields() {
-        return getLocalString("search.facets.geoField");
+        return getLocalString("search.facets.geoField", null);
     }
 
     public String getGeoFacetFieldPredicate() {
@@ -2802,10 +2802,10 @@ public final class Configuration extends AbstractConfiguration {
      * getInitialFacetElementNumber.
      * </p>
      *
+     * @param field a {@link java.lang.String} object.
+     * @return Number of initial facet values
      * @should return correct value
      * @should return default value if field not found
-     * @param field a {@link java.lang.String} object.
-     * @return a int.
      */
     public int getInitialFacetElementNumber(String facetField) {
         if (StringUtils.isBlank(facetField)) {
@@ -2813,7 +2813,7 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         String value = getPropertyForFacetField(facetField, "[@initialElementNumber]", "-1");
-        return Integer.valueOf(value);
+        return Integer.valueOf(value.trim());
     }
 
     /**

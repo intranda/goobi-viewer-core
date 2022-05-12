@@ -544,7 +544,7 @@ var viewerJS = ( function( viewer ) {
                 hitSetChildrenDt.append( '<i class="fa fa-copyright" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;
             case 'COMMENT':
-                hitSetChildrenDt.append( '<i class="fa fa-comment" title="' + iconTitle + '" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-comment-o" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;
             case 'CMS':
                 hitSetChildrenDt.append( '<i class="fa fa-file-text-o" title="' + iconTitle + '" aria-hidden="true"></i>' );

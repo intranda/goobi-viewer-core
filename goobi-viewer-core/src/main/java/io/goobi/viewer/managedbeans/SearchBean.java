@@ -373,15 +373,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String resetSearchAction() {
         logger.trace("resetSearchAction");
-        generateSimpleSearchString("");
-        setCurrentPage(1);
-        setExactSearchString("");
-        mirrorAdvancedSearchCurrentHierarchicalFacets();
-        resetSearchResults();
-        resetSearchParameters(true);
-        searchInCurrentItemString = null;
-        customFilterQuery = null;
-        proximitySearchDistance = 0;
+        reset();
 
         // After resetting, return to the correct search entry page
         switch (activeSearchType) {
@@ -392,6 +384,21 @@ public class SearchBean implements SearchInterface, Serializable {
             default:
                 return "pretty:" + PageType.search.name();
         }
+    }
+
+    /**
+     * Same as {@link #resetSearchAction()} without the redirect
+     */
+    public void reset() {
+        generateSimpleSearchString("");
+        setCurrentPage(1);
+        setExactSearchString("");
+        mirrorAdvancedSearchCurrentHierarchicalFacets();
+        resetSearchResults();
+        resetSearchParameters(true);
+        searchInCurrentItemString = null;
+        customFilterQuery = null;
+        proximitySearchDistance = 0;
     }
 
     /**
@@ -846,7 +853,7 @@ public class SearchBean implements SearchInterface, Serializable {
             String query = this.currentSearch.generateFinalSolrQuery(null, advancedSearchGroupOperator);
             return query;
         } else {
-            return "";
+            return new Search().generateFinalSolrQuery(null, advancedSearchGroupOperator);
         }
     }
     

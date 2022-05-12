@@ -262,6 +262,15 @@ public final class SearchHelper {
                     // It will simply be added to the metadata list of the main hit
                     //                    if (!(DocType.DOCSTRCT.name().equals(docType) && ownerId != null && ownerId.equals(topStructId))) {
                     HitType hitType = HitType.getByName(docType);
+                    if (DocType.UGC.name().equals(docType)) {
+                        // For user-generated content hits use the metadata type for the hit type
+                        String ugcType = (String) childDoc.getFieldValue(SolrConstants.UGCTYPE);
+                        logger.trace("ugcType: {}", ugcType);
+                        if (StringUtils.isNotEmpty(ugcType)) {
+                            hitType = HitType.getByName(ugcType);
+                            logger.trace("hit type found: {}", hitType);
+                        }
+                    }
                     int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                     hit.getHitTypeCounts().put(hitType, count + 1);
                     //                    }

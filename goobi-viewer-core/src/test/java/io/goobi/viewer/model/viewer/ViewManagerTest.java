@@ -419,7 +419,6 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(3, 2, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(5, pages.size());
             assertEquals(1, pages.get(0).intValue());
@@ -428,7 +427,6 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(1, 2, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(5, pages.size());
             assertEquals(1, pages.get(0).intValue());
@@ -437,7 +435,6 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(3, 3, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(7, pages.size());
             assertEquals(1, pages.get(0).intValue());
@@ -446,7 +443,6 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(16, 2, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(5, pages.size());
             assertEquals(12, pages.get(0).intValue());
@@ -455,7 +451,6 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(15, 2, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(5, pages.size());
             assertEquals(12, pages.get(0).intValue());
@@ -464,7 +459,6 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(10, 3, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(7, pages.size());
             assertEquals(7, pages.get(0).intValue());
@@ -474,7 +468,6 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(1, 8, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(16, pages.size());
             assertEquals(1, pages.get(0).intValue());
@@ -484,7 +477,6 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(1, 8, true);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(17, pages.size());
             assertEquals(1, pages.get(0).intValue());

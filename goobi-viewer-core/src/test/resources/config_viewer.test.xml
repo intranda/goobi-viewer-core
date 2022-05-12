@@ -435,7 +435,7 @@
             </static>
 		</sorting>
 		<facets>
-			<hierarchicalField initialElementNumber="4" priorityValues="collection2;collection1">DC</hierarchicalField>
+			<hierarchicalField initialElementNumber=" 4" priorityValues="collection2;collection1">DC</hierarchicalField>
 			<field labelField="MD_FIELDLABEL" sortOrder="numerical" translateLabels="false">YEAR</field>
 			<hierarchicalField labelField="MD_FIRSTNAME" sortOrder="alphabetical" translateLabels="false">MD_CREATOR</hierarchicalField>
 			<field initialElementNumber="16" priorityValues="val1;val2;val3">MD_PLACEPUBLISH</field>

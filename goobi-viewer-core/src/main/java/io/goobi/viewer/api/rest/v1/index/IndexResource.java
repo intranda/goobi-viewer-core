@@ -284,6 +284,7 @@ public class IndexResource {
             @Parameter(
                     description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
+            @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
             @Parameter(description = "The granularity of each grid cell") @QueryParam("gridLevel") Integer gridLevel)
             throws IOException, IndexUnreachableException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
@@ -302,8 +303,6 @@ public class IndexResource {
         }
         logger.debug("q: {}", finalQuery);
 
-        String facetQuery = "";
-
         return DataManager.getInstance()
                 .getSearchIndex()
                 .getHeatMap(solrField, wktRegion, finalQuery, facetQuery, gridLevel);
@@ -319,12 +318,18 @@ public class IndexResource {
             @Parameter(
                     description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
+            @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
             @Parameter(description = "The SOLR field to be used as label for each feature") @QueryParam("labelField") String labelField)
             throws IOException, IndexUnreachableException, PresentationException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
         String finalQuery = filterQuery;
         List<String> facetQueries = new ArrayList<>();
+        
+        if(StringUtils.isNotBlank(facetQuery)) {            
+            facetQueries.add(facetQuery);
+        }
+        
         if (!finalQuery.startsWith("{!join")) {
             finalQuery =
                     new StringBuilder()
