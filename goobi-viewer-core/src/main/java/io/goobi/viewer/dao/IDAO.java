@@ -35,6 +35,7 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.clients.ClientApplication;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSMediaItem;
@@ -2421,6 +2422,15 @@ public interface IDAO {
 
     public int executeUpdate(String string) throws DAOException;
 
+    
+    public List<ClientApplication> getAllClientApplications() throws DAOException;
+    
+    public ClientApplication getClientApplication(long id) throws DAOException;
+    
+    public boolean saveClientApplication(ClientApplication client) throws DAOException;
+    
+    public boolean deleteClientApplication(long id) throws DAOException;
+    
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
      * 

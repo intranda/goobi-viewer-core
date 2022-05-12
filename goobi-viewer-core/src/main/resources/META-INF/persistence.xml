@@ -73,6 +73,7 @@
 		<class>io.goobi.viewer.model.administration.legal.Disclaimer</class>
 		<class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
 		<class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
+		<class>io.goobi.viewer.model.clients.ClientApplication</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -171,6 +172,7 @@
 		<class>io.goobi.viewer.model.administration.legal.Disclaimer</class>
 		<class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
 		<class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
+		<class>io.goobi.viewer.model.clients.ClientApplication</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />

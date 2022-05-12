@@ -63,6 +63,7 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.clients.ClientApplication;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSContentItem;
@@ -6489,5 +6490,72 @@ public class JPADAO implements IDAO {
         }
         String filterString = join.append(where).toString();
         return filterString;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<ClientApplication> getAllClientApplications() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT c FROM ClientApplication c");
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public ClientApplication getClientApplication(long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            ClientApplication o = em.getReference(ClientApplication.class, id);
+            return o;
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean saveClientApplication(ClientApplication client) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            if (client.getId() == null) {
+                em.persist(client);
+            } else {
+                em.merge(client);
+            }
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error saving disclaimer", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean deleteClientApplication(long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            ClientApplication o = em.getReference(ClientApplication.class, id);
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
     }
 }
