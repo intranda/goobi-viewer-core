@@ -147,7 +147,8 @@
 									<h:inputSecret id="adminPasswordOneNew"
 										styleClass="form-control" value="#{adminBean.passwordOne}"
 										required="true"
-										requiredMessage="#{msg.newUserPasswordOneRequired}" />
+										requiredMessage="#{msg.newUserPasswordOneRequired}"
+										validator="passwordValidator" />
 								</div>
 							</div>
 							<div class="form-group form-row">
@@ -178,7 +179,8 @@
 									value="#{msg.newUserPasswordOne}:" />
 								<div class="col-11 col-lg-9">
 									<h:inputSecret id="adminPasswordOne" styleClass="form-control"
-										value="#{adminBean.passwordOne}" />
+										value="#{adminBean.passwordOne}"
+										validator="passwordValidator" />
 								</div>
 							</div>
 							<div class="form-group form-row">
